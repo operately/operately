@@ -1,7 +1,7 @@
 #
 # Where to start with the project?
 #
-# Start by running the 'make setup' commnad to install all the dependencies.
+# Start by running the 'make setup' command to install all the dependencies.
 # Then run 'make dev.server' to start the development server.
 # Run 'make test' to run the tests.
 
