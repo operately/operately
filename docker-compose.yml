@@ -1,0 +1,43 @@
+version: "3"
+
+#
+# We will set up two services
+#
+# - app that runs our application. This will also be the container
+#   where we will run all the development commands.
+#
+# - db that runs the main database for our application.
+#
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        - USER_ID=${UID}
+        - GROUP_ID=${GID}
+    user: ${UID}:${GID}
+    volumes:
+      - ./:/home/dev/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=keyboard-cat
+
+  db:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: keyboard-cat
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+    driver: local
