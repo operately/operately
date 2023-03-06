@@ -1,6 +1,6 @@
 <.header>
-  Edit Group <%= @group.id %>
-  <:subtitle>Use this form to manage group records in your database.</:subtitle>
+  Editing <%= @group.name %>
+  <:subtitle></:subtitle>
 </.header>
 
 <.simple_form :let={f} for={@changeset} method="put" action={~p"/groups/#{@group}"}>
@@ -9,7 +9,7 @@
   </.error>
   <.input field={f[:name]} type="text" label="Name" />
   <:actions>
-    <.button>Save Group</.button>
+    <.button>Save</.button>
   </:actions>
 </.simple_form>
 

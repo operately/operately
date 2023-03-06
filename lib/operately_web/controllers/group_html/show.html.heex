@@ -1,9 +1,9 @@
 <.header>
-  Group <%= @group.id %>
-  <:subtitle>This is a group record from your database.</:subtitle>
+  Group <%= @group.name %>
+  <:subtitle></:subtitle>
   <:actions>
     <.link href={~p"/groups/#{@group}/edit"}>
-      <.button>Edit group</.button>
+      <.button>Edit</.button>
     </.link>
   </:actions>
 </.header>

@@ -19,7 +19,7 @@ config :operately, Operately.Repo,
 config :operately, OperatelyWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "NFTmJV4MLY6l2RZWQQYr5XdVpKZ2hIpKsTdJOuUiyc/iHf4rXH1iCdHcNKtWjdV3",
-  server: false
+  server: true
 
 # In test we don't send emails.
 config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Test

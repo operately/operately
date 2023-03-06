@@ -1,5 +1,4 @@
 Feature: Groups
-  Given I am logged in as an admin
 
   Scenario: List all groups
     Given that a group with the name "Marketing" exists
@@ -13,7 +12,8 @@ Feature: Groups
   Scenario: Changing the name of a group
     Given that a group with the name "Marketing" exists
     When I edit the group "Marketing" and change the name to "Sales"
-    Then the group "Marketing" is renamed to "Sales"
+    Then the group "Marketing" is no longer visible on the groups page
+    And the group "Sales" is visible on the groups page
 
   Scenario: Delete an existing group
     Given that a group with the name "Sales" exists

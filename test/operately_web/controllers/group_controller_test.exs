@@ -3,8 +3,8 @@ defmodule OperatelyWeb.GroupControllerTest do
 
   import Operately.GroupsFixtures
 
-  @create_attrs %{name: "some name"}
-  @update_attrs %{name: "some updated name"}
+  @create_attrs %{name: "Marketing"}
+  @update_attrs %{name: "Sales"}
   @invalid_attrs %{name: nil}
 
   describe "index" do
@@ -29,7 +29,7 @@ defmodule OperatelyWeb.GroupControllerTest do
       assert redirected_to(conn) == ~p"/groups/#{id}"
 
       conn = get(conn, ~p"/groups/#{id}")
-      assert html_response(conn, 200) =~ "Group #{id}"
+      assert html_response(conn, 200) =~ "Group #{@create_attrs.name}"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.GroupControllerTest do
 
     test "renders form for editing chosen group", %{conn: conn, group: group} do
       conn = get(conn, ~p"/groups/#{group}/edit")
-      assert html_response(conn, 200) =~ "Edit Group"
+      assert html_response(conn, 200) =~ "Edit"
     end
   end
 
@@ -55,12 +55,12 @@ defmodule OperatelyWeb.GroupControllerTest do
       assert redirected_to(conn) == ~p"/groups/#{group}"
 
       conn = get(conn, ~p"/groups/#{group}")
-      assert html_response(conn, 200) =~ "some updated name"
+      assert html_response(conn, 200) =~ @update_attrs.name
     end
 
     test "renders errors when data is invalid", %{conn: conn, group: group} do
       conn = put(conn, ~p"/groups/#{group}", group: @invalid_attrs)
-      assert html_response(conn, 200) =~ "Edit Group"
+      assert html_response(conn, 200) =~ "Edit"
     end
   end
 
