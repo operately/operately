@@ -8,7 +8,8 @@
 import Config
 
 config :operately,
-  ecto_repos: [Operately.Repo]
+  ecto_repos: [Operately.Repo],
+  generators: [binary_id: true]
 
 # Configures the endpoint
 config :operately, OperatelyWeb.Endpoint,

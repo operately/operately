@@ -1,0 +1,24 @@
+<.header>
+  Listing Groups
+  <:actions>
+    <.link href={~p"/groups/new"}>
+      <.button>New Group</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="groups" rows={@groups} row_click={&JS.navigate(~p"/groups/#{&1}")}>
+  <:col :let={group} label="Name"><.link navigate={~p"/groups/#{group}"}><%= group.name %></.link></:col>
+
+  <:action :let={group}>
+    <div class="sr-only">
+      <.link navigate={~p"/groups/#{group}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/groups/#{group}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={group}>
+    <.link href={~p"/groups/#{group}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
