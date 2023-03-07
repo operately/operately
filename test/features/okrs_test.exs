@@ -28,11 +28,18 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> click(Query.button("Save Objective"))
   end
 
-  defand ~r/^I add a Key Result with the name "(?<kr_name>[^"]+)" and the target value "(?<direction>[^"]+)" "(?<value>[^"]+)"$/, %{kr_name: name, direction: direction, value: value}, state do
-    state.session |> click("Add Key Result")
-    state.session |> fill_in("Name", with: name)
-    state.session |> select(direction, from: "Direction")
-    state.session |> fill_in("Target value", with: value)
+  defand ~r/^I add a Key Result with the name "(?<kr_name>[^"]+)" as "(?<unit>[^"]+)" and the target value "(?<direction>[^"]+)" "(?<value>[^"]+)"$/, %{kr_name: name, direction: direction, unit: unit, value: value}, state do
+    state.session
+    |> click(Query.button("Add Key Result"))
+    |> ts()
+    |> scroll_into_view("#key-results-container")
+    |> find(Query.css("#key-results-container [data-key-result]:last-child"), fn container ->
+      container
+      |> fill_in(Query.text_field("Name"), with: name)
+      |> select(unit, from: "Unit")
+      |> select(direction, from: "Direction")
+      |> fill_in(Query.text_field("Target"), with: value)
+    end)
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the list of Objectives$/, %{name: name}, state do

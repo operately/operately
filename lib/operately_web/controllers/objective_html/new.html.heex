@@ -3,6 +3,17 @@
   <:subtitle>Use this form to manage objective records in your database.</:subtitle>
 </.header>
 
+<div id="key-result-template" style="display: none;">
+  <div data-key-result class="mt-2 px-2 py-2 block w-full rounded-lg border border-zinc-300">
+    <.input id="key_result[name][]" name="key_result[name][]" type="text" label="Name" value="" />
+
+    <.input class="mt-1" id="key_result[unit][]" name="key_result[unit][]" type="select" label="Unit" options={["Percentage", "Number"]} value="Percentage" />
+    <.input class="mt-1" id="key_result[direction][]" name="key_result[direction][]" type="select" label="Direction" options={["Above", "Below"]} value="Percentage" />
+
+    <.input class="mt-1" id="key_result[target][]" name="key_result[target][]" type="text" label="Target" value="" />
+  </div>
+</div>
+
 <.simple_form :let={f} for={@changeset} action={~p"/objectives"}>
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
@@ -14,15 +25,22 @@
 
   <p>How will you measure success?</p>
 
-  <%# <%= inputs_for f, :key_results, fn v -> %1> %>
-  <%#   <div class="flex flex-wrap -mx-1 overflow-hidden"> %>
-  <%#     <div class="form-group px-1 w-3/6"> %>
-  <%#       <.input field={v[:name]} type="text" label="Name" /> %>
-  <%#       <.input field={v[:target]} type="select" label="Unit" options={["Percentage", "Number"]} /> %>
-  <%#       <.input field={v[:target]} type="text" label="Target" /> %>
-  <%#     </div> %>
-  <%#   </div> %>
-  <%# <% end %1> %>
+  <div id="key-results-container">
+  </div>
+
+  <.button type="button" class="btn btn-primary" id="add-key-result">Add Key Result</.button>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+      var addKeyResultButton = document.getElementById("add-key-result");
+      var keyResultContainer = document.getElementById("key-results-container");
+      var keyResultTemplate = document.getElementById("key-result-template");
+
+      addKeyResultButton.addEventListener("click", function() {
+        keyResultContainer.innerHTML += keyResultTemplate.innerHTML;
+      });
+    });
+  </script>
 
   <:actions>
     <.button>Save Objective</.button>

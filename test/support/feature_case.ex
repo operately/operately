@@ -35,6 +35,10 @@ defmodule Operately.FeatureCase do
       defp ts(session) do
         take_screenshot(session)
       end
+
+      def scroll_into_view(session, css_selector) do
+        session |> execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
+      end
     end
   end
 end
