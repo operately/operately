@@ -1,0 +1,24 @@
+<.header>
+  Listing Objectives
+  <:actions>
+    <.link href={~p"/objectives/new"}>
+      <.button>New Objective</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="objectives" rows={@objectives} row_click={&JS.navigate(~p"/objectives/#{&1}")}>
+  <:col :let={objective} label="Name"><%= objective.name %></:col>
+  <:col :let={objective} label="Description"><%= objective.description %></:col>
+  <:action :let={objective}>
+    <div class="sr-only">
+      <.link navigate={~p"/objectives/#{objective}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/objectives/#{objective}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={objective}>
+    <.link href={~p"/objectives/#{objective}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

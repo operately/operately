@@ -23,11 +23,17 @@ defmodule Operately.FeatureCase do
         :ok
       end
 
-      defp select(session, option, from: select) do
+      defp select(session, option_name, from: select_name) do
+        alias Wallaby.Query
+
         session
-        |> find(select, fn select ->
-          click(select, option)
+        |> find(Query.select(select_name), fn select ->
+          click(select, Query.option(option_name))
         end)
+      end
+
+      defp ts(session) do
+        take_screenshot(session)
       end
     end
   end

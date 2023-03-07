@@ -1,0 +1,17 @@
+<.header>
+  Edit Objective <%= @objective.id %>
+  <:subtitle>Use this form to manage objective records in your database.</:subtitle>
+</.header>
+
+<.simple_form :let={f} for={@changeset} method="put" action={~p"/objectives/#{@objective}"}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:description]} type="text" label="Description" />
+  <:actions>
+    <.button>Save Objective</.button>
+  </:actions>
+</.simple_form>
+
+<.back navigate={~p"/objectives"}>Back to objectives</.back>

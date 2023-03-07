@@ -9,15 +9,15 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defwhen ~r/^I click on the Create Objective button$/, _vars, state do
-    state.session |> click("Create Objective")
+    state.session |> click(Query.button("New Objective"))
   end
 
   defand ~r/^I fill in the Objective Name field with "(?<name>[^"]+)"$/, %{name: name}, state do
-    state.session |> fill_in("Name", with: name)
+    state.session |> fill_in(Query.text_field("Name"), with: name)
   end
 
   defand ~r/^I fill in the Objective Description field with "(?<description>[^"]+)"$/, %{description: description}, state do
-    state.session |> fill_in("Description", with: description)
+    state.session |> fill_in(Query.text_field("Description"), with: description)
   end
 
   defand ~r/^I choose "(?<timeframe>[^"]+)" from the Timeframe dropdown$/, %{timeframe: timeframe}, state do
@@ -25,7 +25,7 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defand ~r/^I click on the Create Objective and results button$/, _vars, state do
-    state.session |> click("Create Objective with results")
+    state.session |> click(Query.button("Save Objective"))
   end
 
   defand ~r/^I add a Key Result with the name "(?<kr_name>[^"]+)" and the target value "(?<direction>[^"]+)" "(?<value>[^"]+)"$/, %{kr_name: name, direction: direction, value: value}, state do

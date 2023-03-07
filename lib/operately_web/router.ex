@@ -20,6 +20,7 @@ defmodule OperatelyWeb.Router do
     get "/", PageController, :home
 
     resources "/groups", GroupController
+    resources "/objectives", ObjectiveController
   end
 
   # Other scopes may use custom stacks.

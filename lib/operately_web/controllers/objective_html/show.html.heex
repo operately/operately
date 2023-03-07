@@ -1,0 +1,16 @@
+<.header>
+  Objective <%= @objective.id %>
+  <:subtitle>This is a objective record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/objectives/#{@objective}/edit"}>
+      <.button>Edit objective</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @objective.name %></:item>
+  <:item title="Description"><%= @objective.description %></:item>
+</.list>
+
+<.back navigate={~p"/objectives"}>Back to objectives</.back>
