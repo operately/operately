@@ -12,9 +12,6 @@ defmodule Operately.FeatureCase do
     quote do
       alias Operately.Repo
 
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
       import Operately.DataCase
 
       use Cabbage.Feature, async: false, file: unquote(file)
@@ -24,6 +21,13 @@ defmodule Operately.FeatureCase do
         Operately.DataCase.setup_sandbox(async: false)
 
         :ok
+      end
+
+      defp select(session, option, from: select) do
+        session
+        |> find(select, fn select ->
+          click(select, option)
+        end)
       end
     end
   end
