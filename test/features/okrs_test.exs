@@ -45,4 +45,25 @@ defmodule MyApp.Features.OkrsTest do
   defthen ~r/^I should see "(?<name>[^"]+)" in the list of Objectives$/, %{name: name}, state do
     state.session |> visit("/objectives") |> assert_text(name)
   end
+
+  defwhen ~r/^I click on the "(?<name>[^"]+)" objective$/, %{name: name}, state do
+    # Your implementation here
+  end
+
+  defthen ~r/^I should see "(?<name>[^"]+)" in the Objective title$/, %{name: name}, state do
+    state.session |> assert_text(name)
+  end
+
+  defand ~r/^I should see "(?<description>[^"]+)" in the Objective description$/, %{description: description}, state do
+    state.session |> assert_text(description)
+  end
+
+  defand ~r/^I should see "(?<name>[^"]+)" in the list of Key Results$/, %{timeframe: timeframe}, state do
+    state.session |> assert_text(timeframe)
+  end
+
+  defand ~r/^I should see "(?<name>[^"]+)" in the list of Key Results$/, %{name: name}, state do
+    state.session |> assert_text(name)
+  end
+
 end
