@@ -35,7 +35,11 @@ defmodule Operately.Okrs do
       ** (Ecto.NoResultsError)
 
   """
-  def get_objective!(id), do: Repo.get!(Objective, id)
+  def get_objective!(id) do
+    Objective
+    |> Repo.get!(id)
+    |> Repo.preload(:key_results)
+  end
 
   @doc """
   Creates a objective.

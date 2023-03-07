@@ -5,12 +5,12 @@
 
 <div id="key-result-template" style="display: none;">
   <div data-key-result class="mt-2 px-2 py-2 block w-full rounded-lg border border-zinc-300">
-    <.input id="key_result[name][]" name="key_result[name][]" type="text" label="Name" value="" />
+    <.input id="key_results[][name]" name="key_results[][name]" type="text" label="Name" value="" />
 
-    <.input class="mt-1" id="key_result[unit][]" name="key_result[unit][]" type="select" label="Unit" options={["Percentage", "Number"]} value="Percentage" />
-    <.input class="mt-1" id="key_result[direction][]" name="key_result[direction][]" type="select" label="Direction" options={["Above", "Below"]} value="Percentage" />
+    <.input class="mt-1" id="key_results[][unit]" name="key_results[][unit]" type="select" label="Unit" options={["Percentage", "Number"]} value="Percentage" />
+    <.input class="mt-1" id="key_results[][direction]" name="key_results[][direction]" type="select" label="Direction" options={["Above", "Below"]} value="Percentage" />
 
-    <.input class="mt-1" id="key_result[target][]" name="key_result[target][]" type="text" label="Target" value="" />
+    <.input class="mt-1" id="key_results[][target]" name="key_results[][target]" type="text" label="Target" value="" />
   </div>
 </div>
 

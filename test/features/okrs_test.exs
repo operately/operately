@@ -47,10 +47,11 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defwhen ~r/^I click on the "(?<name>[^"]+)" objective$/, %{name: name}, state do
-    # Your implementation here
+    state.session |> click(Query.link(name))
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the Objective title$/, %{name: name}, state do
+    state.session |> ts()
     state.session |> assert_text(name)
   end
 

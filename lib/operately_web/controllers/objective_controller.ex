@@ -14,7 +14,9 @@ defmodule OperatelyWeb.ObjectiveController do
     render(conn, :new, changeset: changeset)
   end
 
-  def create(conn, %{"objective" => objective_params}) do
+  def create(conn, %{"objective" => objective_params, "key_results" => key_results_params}) do
+    IO.inspect(objective_params)
+    IO.inspect(key_results_params)
     case Okrs.create_objective(objective_params) do
       {:ok, objective} ->
         conn

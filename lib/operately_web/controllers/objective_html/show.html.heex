@@ -1,12 +1,23 @@
 <.header>
-  Objective <%= @objective.id %>
-  <:subtitle>This is a objective record from your database.</:subtitle>
+  Objective <%= @objective.name %>
+  <:subtitle><%= @objective.description %></:subtitle>
   <:actions>
     <.link href={~p"/objectives/#{@objective}/edit"}>
       <.button>Edit objective</.button>
     </.link>
   </:actions>
 </.header>
+
+<div>
+  <%= for key_result <- @objective.key_results do %>
+    <div>
+      <%= key_result.name %>
+      <%= key_result.direction %>
+      <%= key_result.target %>
+      <%= key_result.unit %>
+    </div>
+  <% end %>
+</div>
 
 <.list>
   <:item title="Name"><%= @objective.name %></:item>
