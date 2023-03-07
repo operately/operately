@@ -3,17 +3,6 @@
   <:subtitle>Use this form to manage objective records in your database.</:subtitle>
 </.header>
 
-<div id="key-result-template" style="display: none;">
-  <div data-key-result class="mt-2 px-2 py-2 block w-full rounded-lg border border-zinc-300">
-    <.input id="key_results[][name]" name="key_results[][name]" type="text" label="Name" value="" />
-
-    <.input class="mt-1" id="key_results[][unit]" name="key_results[][unit]" type="select" label="Unit" options={["Percentage", "Number"]} value="Percentage" />
-    <.input class="mt-1" id="key_results[][direction]" name="key_results[][direction]" type="select" label="Direction" options={["Above", "Below"]} value="Percentage" />
-
-    <.input class="mt-1" id="key_results[][target]" name="key_results[][target]" type="text" label="Target" value="" />
-  </div>
-</div>
-
 <.simple_form :let={f} for={@changeset} action={~p"/objectives"}>
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
@@ -30,21 +19,40 @@
 
   <.button type="button" class="btn btn-primary" id="add-key-result">Add Key Result</.button>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function(event) {
-      var addKeyResultButton = document.getElementById("add-key-result");
-      var keyResultContainer = document.getElementById("key-results-container");
-      var keyResultTemplate = document.getElementById("key-result-template");
-
-      addKeyResultButton.addEventListener("click", function() {
-        keyResultContainer.innerHTML += keyResultTemplate.innerHTML;
-      });
-    });
-  </script>
-
   <:actions>
     <.button>Save Objective</.button>
   </:actions>
 </.simple_form>
 
 <.back navigate={~p"/objectives"}>Back to objectives</.back>
+
+<!-- This is the part of the form that is responsible for a single key result -->
+<!-- First, you have a template that is hidden by default -->
+<!-- Then, you have a script that clones the template and appends it to the key results container -->
+
+<div id="key-result-template" style="display: none;">
+  <div data-key-result class="mt-2 px-2 py-2 block w-full rounded-lg border border-zinc-300">
+    <.input id="key_results[__INDEX__][name]" name="key_results[__INDEX__][name]" type="text" label="Name" value="" />
+
+    <.input class="mt-1" id="key_results[__INDEX__][unit]" name="key_results[__INDEX__][unit]" type="select" label="Unit" options={["Percentage", "Number"]} value="Percentage" />
+    <.input class="mt-1" id="key_results[__INDEX__][direction]" name="key_results[__INDEX__][direction]" type="select" label="Direction" options={["Above", "Below"]} value="Percentage" />
+
+    <.input class="mt-1" id="key_results[__INDEX__][target]" name="key_results[__INDEX__][target]" type="text" label="Target" value="" />
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    var addKeyResultButton = document.getElementById("add-key-result");
+    var keyResultContainer = document.getElementById("key-results-container");
+    var keyResultTemplate = document.querySelector("#key-result-template [data-key-result]");
+
+    addKeyResultButton.addEventListener("click", function() {
+      var keyResult = keyResultTemplate.cloneNode(true);
+      keyResult.style.display = "block";
+      keyResult.innerHTML = keyResult.innerHTML.replace(/__INDEX__/g, keyResultContainer.children.length);
+
+      keyResultContainer.appendChild(keyResult);
+    });
+  });
+</script>
