@@ -5,6 +5,8 @@ defmodule Operately.Okrs.Objective do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "objectives" do
+    has_many :key_results, Operately.Okrs.KeyResult, on_delete: :delete_all
+
     field :description, :string
     field :name, :string
 

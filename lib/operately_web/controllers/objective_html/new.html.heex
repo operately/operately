@@ -14,15 +14,15 @@
 
   <p>How will you measure success?</p>
 
-  <%= inputs_for f, :key_results, fn v -> %>
-    <div class="flex flex-wrap -mx-1 overflow-hidden">
-      <div class="form-group px-1 w-3/6">
-        <.input field={v[:name]} type="text" label="Name" />
-        <.input field={v[:target]} type="select" label="Unit" options={["Percentage", "Number"]} />
-        <.input field={v[:target]} type="text" label="Target" />
-      </div>
-    </div>
-  <% end %>
+  <%# <%= inputs_for f, :key_results, fn v -> %1> %>
+  <%#   <div class="flex flex-wrap -mx-1 overflow-hidden"> %>
+  <%#     <div class="form-group px-1 w-3/6"> %>
+  <%#       <.input field={v[:name]} type="text" label="Name" /> %>
+  <%#       <.input field={v[:target]} type="select" label="Unit" options={["Percentage", "Number"]} /> %>
+  <%#       <.input field={v[:target]} type="text" label="Target" /> %>
+  <%#     </div> %>
+  <%#   </div> %>
+  <%# <% end %1> %>
 
   <:actions>
     <.button>Save Objective</.button>
