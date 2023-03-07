@@ -15,9 +15,9 @@ defmodule OperatelyWeb.ObjectiveController do
   end
 
   def create(conn, %{"objective" => objective_params, "key_results" => key_results_params}) do
-    IO.inspect(objective_params)
-    IO.inspect(key_results_params)
-    case Okrs.create_objective(objective_params) do
+    params = Map.merge(objective_params, %{"key_results" => Map.values(key_results_params)})
+
+    case Okrs.create_objective(params) do
       {:ok, objective} ->
         conn
         |> put_flash(:info, "Objective created successfully.")
