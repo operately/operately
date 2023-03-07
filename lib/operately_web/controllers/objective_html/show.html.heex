@@ -8,20 +8,20 @@
   </:actions>
 </.header>
 
-<div>
-  <%= for key_result <- @objective.key_results do %>
-    <div>
-      <%= key_result.name %>
-      <%= key_result.direction %>
-      <%= key_result.target %>
-      <%= key_result.unit %>
-    </div>
-  <% end %>
-</div>
-
 <.list>
   <:item title="Name"><%= @objective.name %></:item>
   <:item title="Description"><%= @objective.description %></:item>
 </.list>
+
+<h2 class="mt-8">Key Results</h2>
+
+<div>
+  <%= for key_result <- @objective.key_results do %>
+    <div class="mt1">
+      <h3><%= key_result.name %></h3>
+      <%= key_result.direction%> <%= key_result.target%> <%= key_result.unit %>
+    </div>
+  <% end %>
+</div>
 
 <.back navigate={~p"/objectives"}>Back to objectives</.back>
