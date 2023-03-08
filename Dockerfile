@@ -80,6 +80,14 @@ WORKDIR $APP_HOME
 
 RUN echo "export PS1='\w $ '" >> /home/dev/.bashrc
 
+# Wallaby tests are printing out an error message without this folder.
+# The error message is harmless, but it is annoying.
+# This is a workaround for the error message.
+#
+# The message is:
+# find: ‘/home/dev/.config/chromium/Crash Reports/pending/’: No such file or directory.
+RUN mkdir -p "/home/dev/.config/chromium/Crash Reports/pending"
+
 # Set the default command to run when the container starts.
 # Start the phoenix server.
 
