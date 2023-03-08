@@ -12,9 +12,6 @@ defmodule Operately.FeatureCase do
     quote do
       alias Operately.Repo
 
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
       import Operately.DataCase
 
       use Cabbage.Feature, async: false, file: unquote(file)
@@ -24,6 +21,23 @@ defmodule Operately.FeatureCase do
         Operately.DataCase.setup_sandbox(async: false)
 
         :ok
+      end
+
+      defp select(session, option_name, from: select_name) do
+        alias Wallaby.Query
+
+        session
+        |> find(Query.select(select_name), fn select ->
+          click(select, Query.option(option_name))
+        end)
+      end
+
+      defp ts(session) do
+        take_screenshot(session)
+      end
+
+      def scroll_into_view(session, css_selector) do
+        session |> execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
       end
     end
   end
