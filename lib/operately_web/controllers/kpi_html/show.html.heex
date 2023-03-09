@@ -1,0 +1,22 @@
+<.header>
+  Kpi <%= @kpi.id %>
+  <:subtitle>This is a kpi record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/kpis/#{@kpi}/edit"}>
+      <.button>Edit kpi</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @kpi.name %></:item>
+  <:item title="Unit"><%= @kpi.unit %></:item>
+  <:item title="Target"><%= @kpi.target %></:item>
+  <:item title="Target direction"><%= @kpi.target_direction %></:item>
+  <:item title="Warning threshold"><%= @kpi.warning_threshold %></:item>
+  <:item title="Warning direction"><%= @kpi.warning_direction %></:item>
+  <:item title="Danger threshold"><%= @kpi.danger_threshold %></:item>
+  <:item title="Danger direction"><%= @kpi.danger_direction %></:item>
+</.list>
+
+<.back navigate={~p"/kpis"}>Back to kpis</.back>

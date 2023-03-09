@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Router do
     resources "/groups", GroupController
     resources "/objectives", ObjectiveController
     resources "/tenets", TenetController
+    resources "/kpis", KpiController
   end
 
   # Other scopes may use custom stacks.

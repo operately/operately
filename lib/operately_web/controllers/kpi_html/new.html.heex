@@ -1,0 +1,47 @@
+<.header>
+  New Kpi
+  <:subtitle>Use this form to manage kpi records in your database.</:subtitle>
+</.header>
+
+<.simple_form :let={f} for={@changeset} action={~p"/kpis"}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input
+    field={f[:unit]}
+    type="select"
+    label="Unit"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(Operately.Kpis.Kpi, :unit)}
+  />
+  <.input field={f[:target]} type="number" label="Target" />
+  <.input
+    field={f[:target_direction]}
+    type="select"
+    label="Target direction"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(Operately.Kpis.Kpi, :target_direction)}
+  />
+  <.input field={f[:warning_threshold]} type="number" label="Warning threshold" />
+  <.input
+    field={f[:warning_direction]}
+    type="select"
+    label="Warning direction"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(Operately.Kpis.Kpi, :warning_direction)}
+  />
+  <.input field={f[:danger_threshold]} type="number" label="Danger threshold" />
+  <.input
+    field={f[:danger_direction]}
+    type="select"
+    label="Danger direction"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(Operately.Kpis.Kpi, :danger_direction)}
+  />
+  <:actions>
+    <.button>Save Kpi</.button>
+  </:actions>
+</.simple_form>
+
+<.back navigate={~p"/kpis"}>Back to kpis</.back>

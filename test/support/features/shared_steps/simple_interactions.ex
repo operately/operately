@@ -15,4 +15,8 @@ defmodule Operately.Features.SharedSteps.SimpleInteractions do
       click(select, Query.option(option))
     end)
   end
+
+  defand ~r/^I take a screenshot$/, _vars, state do
+    state.session |> take_screenshot()
+  end
 end

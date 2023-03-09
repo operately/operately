@@ -1,4 +1,4 @@
-defmodule Operately.Features.GroupsTest do
+defmodule Operately.Features.KpisTest do
   use Operately.FeatureCase, file: "kpis.feature"
 
   import_steps(Operately.Features.SharedSteps.Login)
