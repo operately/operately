@@ -1,8 +1,7 @@
 defmodule MyApp.Features.OkrsTest do
   use Operately.FeatureCase, file: "okrs.feature"
 
-  defgiven ~r/^I am logged in as a user$/, _vars, state do
-  end
+  import_steps(Operately.Features.SharedSteps.Login)
 
   defand ~r/^I am on the Objectives page$/, _vars, state do
     state.session |> visit("/objectives")

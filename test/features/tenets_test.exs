@@ -1,4 +1,4 @@
-defmodule MyApp.Features.TenetsTest do
+defmodule Operately.Features.TenetsTest do
   use Operately.FeatureCase, file: "tenets.feature"
 
   defgiven ~r/^I am logged in as a user$/, _vars, state do

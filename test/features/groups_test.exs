@@ -1,4 +1,4 @@
-defmodule MyApp.Features.GroupsTest do
+defmodule Operately.Features.GroupsTest do
   use Operately.FeatureCase, file: "groups.feature"
 
   alias Operately.Groups

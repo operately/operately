@@ -1,0 +1,73 @@
+defmodule Operately.KpisTest do
+  use Operately.DataCase
+
+  alias Operately.Kpis
+
+  describe "kpis" do
+    alias Operately.Kpis.Kpi
+
+    import Operately.KpisFixtures
+
+    @invalid_attrs %{danger_direction: nil, danger_threshold: nil, name: nil, target: nil, target_direction: nil, unit: nil, warning_direction: nil, warning_threshold: nil}
+
+    test "list_kpis/0 returns all kpis" do
+      kpi = kpi_fixture()
+      assert Kpis.list_kpis() == [kpi]
+    end
+
+    test "get_kpi!/1 returns the kpi with given id" do
+      kpi = kpi_fixture()
+      assert Kpis.get_kpi!(kpi.id) == kpi
+    end
+
+    test "create_kpi/1 with valid data creates a kpi" do
+      valid_attrs = %{danger_direction: :above, danger_threshold: 42, name: "some name", target: 42, target_direction: :above, unit: :currency, warning_direction: :above, warning_threshold: 42}
+
+      assert {:ok, %Kpi{} = kpi} = Kpis.create_kpi(valid_attrs)
+      assert kpi.danger_direction == :above
+      assert kpi.danger_threshold == 42
+      assert kpi.name == "some name"
+      assert kpi.target == 42
+      assert kpi.target_direction == :above
+      assert kpi.unit == :currency
+      assert kpi.warning_direction == :above
+      assert kpi.warning_threshold == 42
+    end
+
+    test "create_kpi/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Kpis.create_kpi(@invalid_attrs)
+    end
+
+    test "update_kpi/2 with valid data updates the kpi" do
+      kpi = kpi_fixture()
+      update_attrs = %{danger_direction: :below, danger_threshold: 43, name: "some updated name", target: 43, target_direction: :below, unit: :number, warning_direction: :below, warning_threshold: 43}
+
+      assert {:ok, %Kpi{} = kpi} = Kpis.update_kpi(kpi, update_attrs)
+      assert kpi.danger_direction == :below
+      assert kpi.danger_threshold == 43
+      assert kpi.name == "some updated name"
+      assert kpi.target == 43
+      assert kpi.target_direction == :below
+      assert kpi.unit == :number
+      assert kpi.warning_direction == :below
+      assert kpi.warning_threshold == 43
+    end
+
+    test "update_kpi/2 with invalid data returns error changeset" do
+      kpi = kpi_fixture()
+      assert {:error, %Ecto.Changeset{}} = Kpis.update_kpi(kpi, @invalid_attrs)
+      assert kpi == Kpis.get_kpi!(kpi.id)
+    end
+
+    test "delete_kpi/1 deletes the kpi" do
+      kpi = kpi_fixture()
+      assert {:ok, %Kpi{}} = Kpis.delete_kpi(kpi)
+      assert_raise Ecto.NoResultsError, fn -> Kpis.get_kpi!(kpi.id) end
+    end
+
+    test "change_kpi/1 returns a kpi changeset" do
+      kpi = kpi_fixture()
+      assert %Ecto.Changeset{} = Kpis.change_kpi(kpi)
+    end
+  end
+end

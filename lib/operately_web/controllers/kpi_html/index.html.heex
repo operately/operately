@@ -1,0 +1,30 @@
+<.header>
+  Listing Kpis
+  <:actions>
+    <.link href={~p"/kpis/new"}>
+      <.button>New Kpi</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="kpis" rows={@kpis} row_click={&JS.navigate(~p"/kpis/#{&1}")}>
+  <:col :let={kpi} label="Name"><%= kpi.name %></:col>
+  <:col :let={kpi} label="Unit"><%= kpi.unit %></:col>
+  <:col :let={kpi} label="Target"><%= kpi.target %></:col>
+  <:col :let={kpi} label="Target direction"><%= kpi.target_direction %></:col>
+  <:col :let={kpi} label="Warning threshold"><%= kpi.warning_threshold %></:col>
+  <:col :let={kpi} label="Warning direction"><%= kpi.warning_direction %></:col>
+  <:col :let={kpi} label="Danger threshold"><%= kpi.danger_threshold %></:col>
+  <:col :let={kpi} label="Danger direction"><%= kpi.danger_direction %></:col>
+  <:action :let={kpi}>
+    <div class="sr-only">
+      <.link navigate={~p"/kpis/#{kpi}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/kpis/#{kpi}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={kpi}>
+    <.link href={~p"/kpis/#{kpi}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
