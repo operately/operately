@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Router do
     resources "/objectives", ObjectiveController
     resources "/tenets", TenetController
     resources "/kpis", KpiController
+    resources "/projects", ProjectController
   end
 
   # Other scopes may use custom stacks.
