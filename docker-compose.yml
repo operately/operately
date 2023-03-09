@@ -14,9 +14,9 @@ services:
     build:
       context: .
       args:
-        - USER_ID=${UID}
-        - GROUP_ID=${GID}
-    user: ${UID}:${GID}
+        - USER_ID
+        - GROUP_ID
+    user: ${USER_ID}:${GROUP_ID}
     volumes:
       - ./:/home/dev/app
     ports:
