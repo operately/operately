@@ -24,7 +24,7 @@
 #
 # See https://docs.docker.com/engine/security/userns-remap/
 # for more information.
-USER_CONTEXT = export GID=$$(id -g) && export UID=$$(id -u)
+USER_CONTEXT = export GROUP_ID=$$(id -g) && export USER_ID=$$(id -u)
 
 #
 # Prepare a command to run the container.
