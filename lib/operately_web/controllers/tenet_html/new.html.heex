@@ -1,0 +1,17 @@
+<.header>
+  New Tenet
+  <:subtitle>Use this form to manage tenet records in your database.</:subtitle>
+</.header>
+
+<.simple_form :let={f} for={@changeset} action={~p"/tenets"}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:description]} type="text" label="Description" />
+  <:actions>
+    <.button>Save Tenet</.button>
+  </:actions>
+</.simple_form>
+
+<.back navigate={~p"/tenets"}>Back to tenets</.back>

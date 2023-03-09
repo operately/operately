@@ -1,0 +1,16 @@
+<.header>
+  Tenet <%= @tenet.id %>
+  <:subtitle>This is a tenet record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/tenets/#{@tenet}/edit"}>
+      <.button>Edit tenet</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @tenet.name %></:item>
+  <:item title="Description"><%= @tenet.description %></:item>
+</.list>
+
+<.back navigate={~p"/tenets"}>Back to tenets</.back>

@@ -1,0 +1,24 @@
+<.header>
+  Listing Tenets
+  <:actions>
+    <.link href={~p"/tenets/new"}>
+      <.button>New Tenet</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="tenets" rows={@tenets} row_click={&JS.navigate(~p"/tenets/#{&1}")}>
+  <:col :let={tenet} label="Name"><%= tenet.name %></:col>
+  <:col :let={tenet} label="Description"><%= tenet.description %></:col>
+  <:action :let={tenet}>
+    <div class="sr-only">
+      <.link navigate={~p"/tenets/#{tenet}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/tenets/#{tenet}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={tenet}>
+    <.link href={~p"/tenets/#{tenet}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
