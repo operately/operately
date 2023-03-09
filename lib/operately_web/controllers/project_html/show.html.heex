@@ -1,0 +1,16 @@
+<.header>
+  Project <%= @project.id %>
+  <:subtitle>This is a project record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/projects/#{@project}/edit"}>
+      <.button>Edit project</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @project.name %></:item>
+  <:item title="Description"><%= @project.description %></:item>
+</.list>
+
+<.back navigate={~p"/projects"}>Back to projects</.back>
