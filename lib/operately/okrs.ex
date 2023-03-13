@@ -38,6 +38,11 @@ defmodule Operately.Okrs do
   def get_objective!(id) do
     Objective
     |> Repo.get!(id)
+  end
+
+  def get_objective_with_key_results!(id) do
+    Objective
+    |> Repo.get!(id)
     |> Repo.preload(:key_results)
   end
 

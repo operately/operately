@@ -29,7 +29,7 @@ defmodule OperatelyWeb.ObjectiveController do
   end
 
   def show(conn, %{"id" => id}) do
-    objective = Okrs.get_objective!(id)
+    objective = Okrs.get_objective_with_key_results!(id)
     render(conn, :show, objective: objective)
   end
 
