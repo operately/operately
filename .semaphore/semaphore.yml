@@ -1,0 +1,15 @@
+version: v1.0
+name: Operately — Build & Test
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Tests
+    task:
+      jobs:
+        - name: mix test
+          commands:
+            - checkout
+            - make setup
+            - make test
