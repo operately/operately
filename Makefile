@@ -40,7 +40,7 @@ USER_CONTEXT = export GROUP_ID=$$(id -g) && export USER_ID=$$(id -u)
 # Most importantly, it is able to seemlesly use ARM images on ARM machines, and
 # AMD64 images on AMD64 machines.
 #
-DOCKER_COMPOSE = docker compose run --rm -v /vagrant/screenshots:/tmp/screenshots
+DOCKER_COMPOSE = docker compose run --rm -v $(PWD)/screenshots:/tmp/screenshots
 
 #
 # Prepare commands to run the containers in various modes.
@@ -58,8 +58,15 @@ DEV_CONTAINER_WITH_PORTS = $(USER_CONTEXT) && $(DOCKER_COMPOSE) --service-ports 
 #
 setup:
 	$(USER_CONTEXT) && docker compose build
+	$(MAKE) dev.setup
+
+dev.setup:
 	$(DEV_CONTAINER) mix deps.get
 	$(DEV_CONTAINER) mix deps.compile
+
+test.setup:
+	$(TEST_CONTAINER) mix deps.get
+	$(TEST_CONTAINER) mix deps.compile
 
 #
 # Development tasks
