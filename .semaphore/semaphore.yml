@@ -11,5 +11,5 @@ blocks:
         - name: mix test
           commands:
             - checkout
-            - make setup
+            - make test.setup
             - make test
