@@ -37,3 +37,6 @@ npm-debug.log
 
 # Screenshots generated during tests
 screenshots
+
+# Don't store environment secrets in the repository
+.env

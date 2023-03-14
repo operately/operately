@@ -3,6 +3,8 @@ defmodule OperatelyWeb.TenetControllerTest do
 
   import Operately.TenetsFixtures
 
+  setup :register_and_log_in_account
+
   @create_attrs %{description: "some description", name: "some name"}
   @update_attrs %{description: "some updated description", name: "some updated name"}
   @invalid_attrs %{description: nil, name: nil}

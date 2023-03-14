@@ -32,6 +32,7 @@ defmodule Operately.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
@@ -51,6 +52,8 @@ defmodule Operately.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+      {:ueberauth, "~> 0.7"},
+      {:ueberauth_google, "~> 0.10"},
 
       # testing
       {:cabbage, "~> 0.3.6", only: :test},

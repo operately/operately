@@ -1,0 +1,15 @@
+<div class="mx-auto max-w-sm">
+  <.header class="text-center">Confirm account</.header>
+
+  <.simple_form for={@conn.params["account"]} as={:account} action={~p"/accounts/confirm/#{@token}"}>
+    <:actions>
+      <.button class="w-full">Confirm my account</.button>
+    </:actions>
+  </.simple_form>
+
+  <p class="text-center mt-4">
+    <.link href={~p"/accounts/register"}>Register</.link>
+    |
+    <.link href={~p"/accounts/log_in"}>Log in</.link>
+  </p>
+</div>

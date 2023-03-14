@@ -3,6 +3,8 @@ defmodule Operately.Features.GroupsTest do
 
   alias Operately.Groups
 
+  import_steps(Operately.Features.SharedSteps.Login)
+
   defgiven ~r/^that a group with the name "(?<name>[^"]+)" exists$/, %{name: name}, %{session: session} do
     Groups.create_group(%{name: name})
   end

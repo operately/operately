@@ -1,5 +1,8 @@
 import Config
 
+# Only in tests, remove the complexity from the password hashing algorithm
+config :bcrypt_elixir, :log_rounds, 1
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -20,6 +23,9 @@ config :operately, OperatelyWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "NFTmJV4MLY6l2RZWQQYr5XdVpKZ2hIpKsTdJOuUiyc/iHf4rXH1iCdHcNKtWjdV3",
   server: true
+
+# Enable test routes, login helpers, etc.
+config :operately, :test_routes, true
 
 # In test we don't send emails.
 config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Test

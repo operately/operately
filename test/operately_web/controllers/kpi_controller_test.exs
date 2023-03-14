@@ -3,6 +3,8 @@ defmodule OperatelyWeb.KpiControllerTest do
 
   import Operately.KpisFixtures
 
+  setup :register_and_log_in_account
+
   @create_attrs %{danger_direction: :above, danger_threshold: 42, name: "some name", target: 42, target_direction: :above, unit: :currency, warning_direction: :above, warning_threshold: 42}
   @update_attrs %{danger_direction: :below, danger_threshold: 43, name: "some updated name", target: 43, target_direction: :below, unit: :number, warning_direction: :below, warning_threshold: 43}
   @invalid_attrs %{danger_direction: nil, danger_threshold: nil, name: nil, target: nil, target_direction: nil, unit: nil, warning_direction: nil, warning_threshold: nil}
