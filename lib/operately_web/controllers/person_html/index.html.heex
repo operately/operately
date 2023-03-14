@@ -1,0 +1,25 @@
+<.header>
+  Listing People
+  <:actions>
+    <.link href={~p"/people/new"}>
+      <.button>New Person</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="people" rows={@people} row_click={&JS.navigate(~p"/people/#{&1}")}>
+  <:col :let={person} label="Full name"><%= person.full_name %></:col>
+  <:col :let={person} label="Handle"><%= person.handle %></:col>
+  <:col :let={person} label="Title"><%= person.title %></:col>
+  <:action :let={person}>
+    <div class="sr-only">
+      <.link navigate={~p"/people/#{person}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/people/#{person}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={person}>
+    <.link href={~p"/people/#{person}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

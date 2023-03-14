@@ -1,0 +1,18 @@
+<.header>
+  New Person
+  <:subtitle>Use this form to manage person records in your database.</:subtitle>
+</.header>
+
+<.simple_form :let={f} for={@changeset} action={~p"/people"}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:full_name]} type="text" label="Full name" />
+  <.input field={f[:handle]} type="text" label="Handle" />
+  <.input field={f[:title]} type="text" label="Title" />
+  <:actions>
+    <.button>Save Person</.button>
+  </:actions>
+</.simple_form>
+
+<.back navigate={~p"/people"}>Back to people</.back>

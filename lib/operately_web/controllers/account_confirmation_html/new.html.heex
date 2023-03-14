@@ -1,0 +1,14 @@
+<.header>Resend confirmation instructions</.header>
+
+<.simple_form :let={f} for={@conn.params["account"]} as={:account} action={~p"/accounts/confirm"}>
+  <.input field={f[:email]} type="email" label="Email" required />
+  <:actions>
+    <.button>Resend confirmation instructions</.button>
+  </:actions>
+</.simple_form>
+
+<p>
+  <.link href={~p"/accounts/register"}>Register</.link>
+  |
+  <.link href={~p"/accounts/log_in"}>Log in</.link>
+</p>
