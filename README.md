@@ -1,10 +1,10 @@
 <h1>
-  <img width="250" src="/docs/images/logo-white.svg#gh-light-mode-only" alt="operately">
-  <img width="250" src="/docs/images/logo-black.svg#gh-dark-mode-only" alt="operately">
+  <img width="200" src="/docs/images/logo-white.svg#gh-light-mode-only" alt="operately">
+  <img width="200" src="/docs/images/logo-black.svg#gh-dark-mode-only" alt="operately">
 </h1>
 
 <p>
-  <p align="center">Open-source startup operating system. Coming in 2023.</p>
+  <p>Open-source startup operating system. Coming in 2023.</p>
 </p>
 
 <h4>
