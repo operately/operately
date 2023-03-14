@@ -3,9 +3,7 @@
   <img width="400" src="/docs/images/logo-black.svg#gh-dark-mode-only" alt="operately">
 </h1>
 
-<p>
-  <p align="center">Open-source startup operating system. Coming in 2023.</p>
-</p>
+
 
 <h4>
   <a href="https://operately.com/">Masterplan</a> |
@@ -13,6 +11,8 @@
   <a href="https://twitter.com/operately">Twitter</a> |
   <a href="https://blog.operately.com/">Discord</a>
 </h4>
+
+<p>Open-source startup operating system. Coming in 2023.</p>
 
 <h4>
   <a href="https://operately.semaphoreci.com/projects/operately">
