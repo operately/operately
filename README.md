@@ -1,3 +1,21 @@
-# Operately
+<h1 align="center">
+  <img width="300" src="/docs/images/logo-black.svg#gh-light-mode-only" alt="operately">
+  <img width="300" src="/docs/images/logo-white.svg#gh-dark-mode-only" alt="operately">
+</h1>
 
-[![Build Status](https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields)](https://operately.semaphoreci.com/projects/operately)
+<p align="center">
+  <p align="center">Open-source startup operating system. Coming in 2023.</p>
+</p>
+
+<h4 align="center">
+  <a href="https://operately.com/">Masterplan</a> |
+  <a href="https://discord.gg/RWWMGwjM">Blog</a>
+  <a href="https://twitter.com/operately">Twitter</a> |
+  <a href="https://blog.operately.com/">Discord</a>
+</h4>
+
+<h4 align="center">
+  <a href="https://operately.semaphoreci.com/projects/operately">
+    <img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="Operately CI/CD Status" />
+  </a>
+</h4>
