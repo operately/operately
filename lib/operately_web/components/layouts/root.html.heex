@@ -34,23 +34,6 @@
             Log out
           </.link>
         </li>
-      <% else %>
-        <li>
-          <.link
-            href={~p"/accounts/register"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Register
-          </.link>
-        </li>
-        <li>
-          <.link
-            href={~p"/accounts/log_in"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Log in
-          </.link>
-        </li>
       <% end %>
     </ul>
     <%= @inner_content %>
