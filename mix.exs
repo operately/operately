@@ -52,6 +52,8 @@ defmodule Operately.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+      {:ueberauth, "~> 0.7"},
+      {:ueberauth_google, "~> 0.10"},
 
       # testing
       {:cabbage, "~> 0.3.6", only: :test},
