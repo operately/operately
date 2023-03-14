@@ -35,3 +35,5 @@ operately-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Screenshots generated during tests
+screenshots

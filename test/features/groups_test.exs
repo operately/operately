@@ -53,7 +53,6 @@ defmodule Operately.Features.GroupsTest do
   defwhen ~r/^I delete the group "(?<name>[^"]+)"$/, %{name: name}, %{session: session} do
     session
     |> visit("/groups")
-    |> take_screenshot()
     |> click(Query.link("Delete"))
   end
 

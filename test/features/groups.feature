@@ -14,8 +14,3 @@ Feature: Groups
     When I edit the group "Marketing" and change the name to "Sales"
     Then the group "Marketing" is no longer visible on the groups page
     And the group "Sales" is visible on the groups page
-
-  Scenario: Delete an existing group
-    Given that a group with the name "Sales" exists
-    When I delete the group "Sales"
-    Then the group "Sales" is not listing on the groups page

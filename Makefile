@@ -58,8 +58,15 @@ DEV_CONTAINER_WITH_PORTS = $(USER_CONTEXT) && $(DOCKER_COMPOSE) --service-ports 
 #
 setup:
 	$(USER_CONTEXT) && docker compose build
+	$(MAKE) dev.setup
+
+dev.setup:
 	$(DEV_CONTAINER) mix deps.get
 	$(DEV_CONTAINER) mix deps.compile
+
+test.setup:
+	$(TEST_CONTAINER) mix deps.get
+	$(TEST_CONTAINER) mix deps.compile
 
 #
 # Development tasks
