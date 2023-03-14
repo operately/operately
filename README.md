@@ -1,3 +1,5 @@
+<div>Operately</div>
+
 <h1 align="center">
   <img width="200" src="/docs/images/logo-white.svg#gh-light-mode-only" alt="operately">
   <img width="200" src="/docs/images/logo-black.svg#gh-dark-mode-only" alt="operately">
