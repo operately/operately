@@ -31,6 +31,9 @@ defmodule OperatelyWeb.Router do
     post "/accounts/reset_password", AccountResetPasswordController, :create
     get "/accounts/reset_password/:token", AccountResetPasswordController, :edit
     put "/accounts/reset_password/:token", AccountResetPasswordController, :update
+
+    get "/accounts/auth/:provider", AccountOauthController, :request
+    get "/accounts/auth/:provider/callback", AccountOauthController, :callback
   end
 
   scope "/", OperatelyWeb do

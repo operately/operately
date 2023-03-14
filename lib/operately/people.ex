@@ -446,4 +446,23 @@ defmodule Operately.People do
       {:error, :account, changeset, _} -> {:error, changeset}
     end
   end
+
+  @doc """
+  Fetch an existing account by email, or create a new one based on the given attributes.
+
+  ## Examples
+
+      iex> get_or_create_account(%{email: "test@tester.com"})
+      {:ok, %Account{}}
+  """
+  def fetch_or_create_account(attrs) do
+    case get_account_by_email(attrs.email) do
+      %Account{} = account ->
+        {:ok, account}
+    _ ->
+        %Account{}
+        |> Account.registration_changeset(attrs)
+        |> Repo.insert()
+    end
+  end
 end
