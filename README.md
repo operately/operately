@@ -8,9 +8,9 @@
 </p>
 
 <h4 align="center">
-  <a href="https://operately.com/">Masterplan</a> &mdash;
-  <a href="https://discord.gg/RWWMGwjM">Blog</a> &mdash;
-  <a href="https://twitter.com/operately">Twitter</a> &mdash;
+  <a href="https://operately.com/">Masterplan</a> |
+  <a href="https://discord.gg/RWWMGwjM">Blog</a> |
+  <a href="https://twitter.com/operately">Twitter</a> |
   <a href="https://blog.operately.com/">Discord</a>
 </h4>
 
