@@ -3,6 +3,8 @@ defmodule OperatelyWeb.PersonControllerTest do
 
   import Operately.PeopleFixtures
 
+  setup :register_and_log_in_account
+
   @create_attrs %{full_name: "some full_name", handle: "some handle", title: "some title"}
   @update_attrs %{full_name: "some updated full_name", handle: "some updated handle", title: "some updated title"}
   @invalid_attrs %{full_name: nil, handle: nil, title: nil}

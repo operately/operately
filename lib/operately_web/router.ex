@@ -23,14 +23,7 @@ defmodule OperatelyWeb.Router do
   scope "/", OperatelyWeb do
     pipe_through [:browser, :redirect_if_account_is_authenticated]
 
-    get "/accounts/register", AccountRegistrationController, :new
-    post "/accounts/register", AccountRegistrationController, :create
     get "/accounts/log_in", AccountSessionController, :new
-    post "/accounts/log_in", AccountSessionController, :create
-    get "/accounts/reset_password", AccountResetPasswordController, :new
-    post "/accounts/reset_password", AccountResetPasswordController, :create
-    get "/accounts/reset_password/:token", AccountResetPasswordController, :edit
-    put "/accounts/reset_password/:token", AccountResetPasswordController, :update
   end
 
   scope "/", OperatelyWeb do

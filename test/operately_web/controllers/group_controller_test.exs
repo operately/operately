@@ -3,6 +3,8 @@ defmodule OperatelyWeb.GroupControllerTest do
 
   import Operately.GroupsFixtures
 
+  setup :register_and_log_in_account
+
   @create_attrs %{name: "Marketing"}
   @update_attrs %{name: "Sales"}
   @invalid_attrs %{name: nil}
