@@ -27,6 +27,8 @@ services:
       - DB_HOST=db
       - DB_USERNAME=postgres
       - DB_PASSWORD=keyboard-cat
+    env_file:
+      - .env
 
   db:
     image: postgres:14.5
