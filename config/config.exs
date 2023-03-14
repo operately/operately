@@ -63,7 +63,9 @@ config :phoenix, :json_library, Jason
 config :ueberauth, Ueberauth,
   base_path: "/accounts/auth",
   providers: [
-    google: {Ueberauth.Strategy.Google, [[default_scope: "email profile plus.me"]]}
+    google: {Ueberauth.Strategy.Google, [
+      default_scope: "email profile"
+    ]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,

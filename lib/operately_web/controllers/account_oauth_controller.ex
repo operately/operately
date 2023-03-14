@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.UserOauthController do
+defmodule OperatelyWeb.AccountOauthController do
   use OperatelyWeb, :controller
 
   alias Operately.People
