@@ -4,7 +4,7 @@
 </h1>
 
 <p align="center">
-  <p>Open-source startup operating system. Coming in 2023.</p>
+  <p align="center">Open-source startup operating system. Coming in 2023.</p>
 </p>
 
 <h4 align="center">
