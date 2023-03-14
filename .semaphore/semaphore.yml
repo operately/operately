@@ -11,5 +11,6 @@ blocks:
         - name: mix test
           commands:
             - checkout
+            - make test.seed.env
             - make test.setup
             - make test

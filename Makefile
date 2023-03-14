@@ -68,6 +68,9 @@ test.setup:
 	$(TEST_CONTAINER) mix deps.get
 	$(TEST_CONTAINER) mix deps.compile
 
+test.seed.env:
+	touch .env
+
 #
 # Development tasks
 #
