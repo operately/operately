@@ -44,6 +44,15 @@ defmodule OperatelyWeb.Router do
   scope "/", OperatelyWeb do
     pipe_through [:browser]
 
+    # In Wallaby, we use the following route to log in as a user
+    # during feature tests. The route is not available in production.
+    #
+    # The route accepts one query parameter, `email`, which is the
+    # email address of the user to log in as.
+    if Application.compile_env(:operately, :test_routes) do
+      get "/accounts/auth/test_login", AccountOauthController, :test_login
+    end
+
     delete "/accounts/log_out", AccountSessionController, :delete
     get "/accounts/confirm", AccountConfirmationController, :new
     post "/accounts/confirm", AccountConfirmationController, :create
