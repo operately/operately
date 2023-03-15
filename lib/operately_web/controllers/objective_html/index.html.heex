@@ -16,19 +16,19 @@
 
 </div>
 
-<%= for objective <- @objectives do %>
-  <.link href={~p"/objectives/#{objective}"}>
-    <div class="shadow-md rounded-lg shadow bg-white divide-solid divide-gray-100 ">
+<div class="shadow-md rounded-lg shadow bg-white divide-y divide-gray-100 grid grid-cols-1 ">
+  <%= for objective <- @objectives do %>
+    <.link href={~p"/objectives/#{objective}"}>
       <div class="px-4 py-4">
         <div class="flex items-center">
           <div class="w-10 mr-2">
             <div class="flex items-center">
               <div>
                 <img
-                  alt="Man"
-                  src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                  class="h-10 w-10 rounded object-cover"
-                />
+                    alt="Man"
+                    src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+                    class="h-10 w-10 rounded object-cover"
+                    />
               </div>
 
             </div>
@@ -49,6 +49,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </.link>
-<% end %>
+    </.link>
+  <% end %>
+</div>
