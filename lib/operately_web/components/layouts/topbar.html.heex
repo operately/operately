@@ -1,10 +1,12 @@
-<header aria-label="Page Header" class="bg-gray-50">
+<header aria-label="Page Header" class="fixed bg-gray-50 border-solid border-b top-0 left-0 right-0">
   <div class="px-2 py-2">
     <div class="flex items-center sm:justify-between sm:gap-4">
       <div class="w-1/4 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
+        <button data-toggle-sidebar="">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
 
         <h1 class="text-xl font-bold pl-2">Operately</h1>
       </div>
@@ -103,3 +105,15 @@
     </div>
   </div>
 </header>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    var toggleButton = document.querySelector("[data-toggle-sidebar]");
+
+    toggleButton.addEventListener("click", function() {
+      var sidebar = document.querySelector("[data-sidebar]");
+      sidebar.classList.toggle("hidden");
+    })
+  });
+</script>
+
