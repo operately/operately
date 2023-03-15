@@ -2,13 +2,10 @@ defmodule MyApp.Features.OkrsTest do
   use Operately.FeatureCase, file: "okrs.feature"
 
   import_steps(Operately.Features.SharedSteps.Login)
+  import_steps(Operately.Features.SharedSteps.SimpleInteractions)
 
   defand ~r/^I am on the Objectives page$/, _vars, state do
     state.session |> visit("/objectives")
-  end
-
-  defwhen ~r/^I click on the Create Objective button$/, _vars, state do
-    state.session |> click(Query.button("New Objective"))
   end
 
   defand ~r/^I fill in the Objective Name field with "(?<name>[^"]+)"$/, %{name: name}, state do
