@@ -5,7 +5,7 @@ defmodule OperatelyWeb.AccountSessionController do
   alias OperatelyWeb.AccountAuth
 
   def new(conn, _params) do
-    render(conn, :new, error_message: nil)
+    render(conn, :new, error_message: nil, layout: false)
   end
 
   def delete(conn, _params) do
