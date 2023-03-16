@@ -1,4 +1,4 @@
-<div data-sidebar class="fixed flex h-screen flex-col justify-between border-r bg-white w-64 bg-gray-50 hidden z-50">
+<div data-sidebar class="fixed flex h-screen flex-col justify-between border-r bg-white w-64 bg-white hidden z-50" style="margin-top: 57px">
   <div class="px-2 py-4">
 
     <nav aria-label="Main Nav" class="flex flex-col space-y-1">
@@ -36,6 +36,17 @@
       </.link>
 
       <.link
+        href={~p"/projects"}
+        class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+        </svg>
+
+        <span class="text-sm font-medium"> Projects</span>
+      </.link>
+
+      <.link
         href={~p"/groups"}
         class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
       >
@@ -47,14 +58,14 @@
       </.link>
 
       <.link
-        href={~p"/projects"}
+        href={~p"/people"}
         class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
 
-        <span class="text-sm font-medium"> Projects</span>
+        <span class="text-sm font-medium"> People</span>
       </.link>
     </nav>
   </div>
