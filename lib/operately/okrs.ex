@@ -114,19 +114,6 @@ defmodule Operately.Okrs do
 
 
   @doc """
-  Returns the list of key_results.
-
-  ## Examples
-
-      iex> list_key_results()
-      [%KeyResult{}, ...]
-
-  """
-  def list_key_results do
-    raise "TODO"
-  end
-
-  @doc """
   Gets a single key_result.
 
   Raises if the Key result does not exist.
@@ -137,7 +124,9 @@ defmodule Operately.Okrs do
       %KeyResult{}
 
   """
-  def get_key_result!(id), do: raise "TODO"
+  def get_key_result!(id) do
+    KeyResult |> Repo.get!(id)
+  end
 
   @doc """
   Creates a key_result.
@@ -170,7 +159,9 @@ defmodule Operately.Okrs do
 
   """
   def update_key_result(%KeyResult{} = key_result, attrs) do
-    raise "TODO"
+    key_result
+    |> KeyResult.changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -186,7 +177,7 @@ defmodule Operately.Okrs do
 
   """
   def delete_key_result(%KeyResult{} = key_result) do
-    raise "TODO"
+    Repo.delete(key_result)
   end
 
   @doc """

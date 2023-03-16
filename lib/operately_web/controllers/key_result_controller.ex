@@ -45,7 +45,7 @@ defmodule OperatelyWeb.KeyResultController do
       {:ok, key_result} ->
         conn
         |> put_flash(:info, "Key result updated successfully.")
-        |> redirect(to: ~p"/key_results/#{key_result}")
+        |> redirect(to: ~p"/objectives/#{key_result.objective_id}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit, key_result: key_result, changeset: changeset)
@@ -58,7 +58,7 @@ defmodule OperatelyWeb.KeyResultController do
 
     conn
     |> put_flash(:info, "Key result deleted successfully.")
-    |> redirect(to: ~p"/key_results")
+    |> redirect(to: ~p"/objectives/#{key_result.objective_id}")
   end
 
   defp find_objective(conn, _params) do

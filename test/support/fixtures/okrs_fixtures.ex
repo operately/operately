@@ -22,6 +22,13 @@ defmodule Operately.OkrsFixtures do
   @doc """
   Generate a key_result.
   """
+  def key_result_fixture(:with_objective, attrs) do
+    objective = objective_fixture()
+    key_result = key_result_fixture(Map.merge(attrs, %{objective_id: objective.id}))
+
+    {objective, key_result}
+  end
+
   def key_result_fixture(attrs \\ %{}) do
     {:ok, key_result} =
       attrs

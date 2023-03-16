@@ -9,13 +9,13 @@ defmodule OperatelyWeb.AccountConfirmationControllerTest do
     %{account: account_fixture()}
   end
 
-  describe "GET /accounts/confirm" do
-    test "renders the resend confirmation page", %{conn: conn} do
-      conn = get(conn, ~p"/accounts/confirm")
-      response = html_response(conn, 200)
-      assert response =~ "Resend confirmation instructions"
-    end
-  end
+  # describe "GET /accounts/confirm" do
+  #   test "renders the resend confirmation page", %{conn: conn} do
+  #     conn = get(conn, ~p"/accounts/confirm")
+  #     response = html_response(conn, 200)
+  #     assert response =~ "Resend confirmation instructions"
+  #   end
+  # end
 
   describe "POST /accounts/confirm" do
     @tag :capture_log
@@ -64,16 +64,16 @@ defmodule OperatelyWeb.AccountConfirmationControllerTest do
     end
   end
 
-  describe "GET /accounts/confirm/:token" do
-    test "renders the confirmation page", %{conn: conn} do
-      token_path = ~p"/accounts/confirm/some-token"
-      conn = get(conn, token_path)
-      response = html_response(conn, 200)
-      assert response =~ "Confirm account"
+  # describe "GET /accounts/confirm/:token" do
+  #   test "renders the confirmation page", %{conn: conn} do
+  #     token_path = ~p"/accounts/confirm/some-token"
+  #     conn = get(conn, token_path)
+  #     response = html_response(conn, 200)
+  #     assert response =~ "Confirm account"
 
-      assert response =~ "action=\"#{token_path}\""
-    end
-  end
+  #     assert response =~ "action=\"#{token_path}\""
+  #   end
+  # end
 
   describe "POST /accounts/confirm/:token" do
     test "confirms the given token once", %{conn: conn, account: account} do

@@ -66,18 +66,22 @@ defmodule Operately.OkrsTest do
 
     @invalid_attrs %{direction: nil, name: nil, target: nil, unit: nil}
 
-    test "list_key_results/0 returns all key_results" do
-      key_result = key_result_fixture()
-      assert Okrs.list_key_results() == [key_result]
-    end
-
     test "get_key_result!/1 returns the key_result with given id" do
-      key_result = key_result_fixture()
+      {_, key_result} = key_result_fixture(:with_objective, %{})
+
       assert Okrs.get_key_result!(key_result.id) == key_result
     end
 
     test "create_key_result/1 with valid data creates a key_result" do
-      valid_attrs = %{direction: :above, name: "some name", target: 42, unit: :percentage}
+      objective = objective_fixture()
+
+      valid_attrs = %{
+        objective_id: objective.id,
+        direction: :above,
+        name: "some name",
+        target: 42,
+        unit: :percentage
+      }
 
       assert {:ok, %KeyResult{} = key_result} = Okrs.create_key_result(valid_attrs)
       assert key_result.direction == :above
@@ -91,7 +95,7 @@ defmodule Operately.OkrsTest do
     end
 
     test "update_key_result/2 with valid data updates the key_result" do
-      key_result = key_result_fixture()
+      {_, key_result} = key_result_fixture(:with_objective, %{})
       update_attrs = %{direction: :below, name: "some updated name", target: 43, unit: :number}
 
       assert {:ok, %KeyResult{} = key_result} = Okrs.update_key_result(key_result, update_attrs)
@@ -102,19 +106,20 @@ defmodule Operately.OkrsTest do
     end
 
     test "update_key_result/2 with invalid data returns error changeset" do
-      key_result = key_result_fixture()
+      {_, key_result} = key_result_fixture(:with_objective, %{})
+
       assert {:error, %Ecto.Changeset{}} = Okrs.update_key_result(key_result, @invalid_attrs)
       assert key_result == Okrs.get_key_result!(key_result.id)
     end
 
     test "delete_key_result/1 deletes the key_result" do
-      key_result = key_result_fixture()
+      {_, key_result} = key_result_fixture(:with_objective, %{})
       assert {:ok, %KeyResult{}} = Okrs.delete_key_result(key_result)
       assert_raise Ecto.NoResultsError, fn -> Okrs.get_key_result!(key_result.id) end
     end
 
     test "change_key_result/1 returns a key_result changeset" do
-      key_result = key_result_fixture()
+      {_objective, key_result} = key_result_fixture(:with_objective, %{})
       assert %Ecto.Changeset{} = Okrs.change_key_result(key_result)
     end
   end

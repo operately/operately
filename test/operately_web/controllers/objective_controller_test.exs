@@ -35,14 +35,14 @@ defmodule OperatelyWeb.ObjectiveControllerTest do
   describe "index" do
     test "lists all objectives", %{conn: conn} do
       conn = get(conn, ~p"/objectives")
-      assert html_response(conn, 200) =~ "Listing Objectives"
+      assert html_response(conn, 200) =~ "Objectives"
     end
   end
 
   describe "new objective" do
     test "renders form", %{conn: conn} do
       conn = get(conn, ~p"/objectives/new")
-      assert html_response(conn, 200) =~ "New Objective"
+      assert html_response(conn, 200) =~ "Add an Objective"
     end
   end
 
@@ -54,12 +54,12 @@ defmodule OperatelyWeb.ObjectiveControllerTest do
       assert redirected_to(conn) == ~p"/objectives/#{id}"
 
       conn = get(conn, ~p"/objectives/#{id}")
-      assert html_response(conn, 200) =~ "Objective #{@create_attrs.name}"
+      assert html_response(conn, 200) =~ @create_attrs.name
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, ~p"/objectives", objective: @invalid_attrs, key_results: %{})
-      assert html_response(conn, 200) =~ "New Objective"
+      assert html_response(conn, 200) =~ "Add an Objective"
     end
   end
 
