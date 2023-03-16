@@ -1,6 +1,8 @@
 defmodule MyApp.Features.OkrsTest do
   use Operately.FeatureCase, file: "okrs.feature"
 
+  alias Operately.OkrsFixtures
+
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
 
@@ -61,6 +63,14 @@ defmodule MyApp.Features.OkrsTest do
 
   defand ~r/^I should see "(?<name>[^"]+)" in the list of Key Results$/, %{name: name}, state do
     state.session |> assert_text(name)
+  end
+
+  defand ~r/^I have an objective called "(?<name>[^"]+)"$/, %{name: name}, state do
+    OkrsFixtures.objective_fixture(%{name: name})
+  end
+
+  defwhen ~r/^I click on the "(?<name>[^"]+)" Objective$/, %{name: name}, state do
+    state.session |> click(Query.link(name))
   end
 
 end
