@@ -1,8 +1,8 @@
-<.topbar current_account={@current_account}></.topbar>
+<.topbar breadcrumbs={assigns[:breadcrumbs]} current_account={@current_account}></.topbar>
 <.sidebar current_account={@current_account}></.sidebar>
 
-<main class="px-4 py-20 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-2xl">
+<main class={app_top_padding(assigns) <> " px-4 sm:px-6 lg:px-8"}>
+  <div class="mx-auto max-w-4xl">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
   </div>

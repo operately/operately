@@ -1,5 +1,5 @@
-<header aria-label="Page Header" class="fixed bg-white border-solid border-b top-0 left-0 right-0">
-  <div class="px-2 py-2">
+<header aria-label="Page Header" class="fixed bg-white top-0 left-0 right-0">
+  <div class="px-2 py-2 border-solid border-b">
     <div class="flex items-center sm:justify-between sm:gap-4">
       <div class="w-1/4 flex items-center">
         <button data-toggle-sidebar="">
@@ -104,6 +104,28 @@
       </div>
     </div>
   </div>
+
+  <%= if assigns[:breadcrumbs] do %>
+    <div class="flex items-center bg-white border-b border-gray-200 text-gray-500 text-sm px-2 py-2">
+      <.link href={~p"/"}>
+        <div class="scale-75">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
+          </svg>
+        </div>
+      </.link>
+
+      <div class="scale-75">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+          <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+        </svg>
+      </div>
+
+      <.link href={Enum.at(assigns[:breadcrumbs], 0).path}>
+        <%= Enum.at(assigns[:breadcrumbs], 0).name %>
+      </.link>
+    </div>
+  <% end %>
 </header>
 
 <script>
@@ -116,4 +138,3 @@
     })
   });
 </script>
-

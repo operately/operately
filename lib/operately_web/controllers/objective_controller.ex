@@ -30,7 +30,13 @@ defmodule OperatelyWeb.ObjectiveController do
 
   def show(conn, %{"id" => id}) do
     objective = Okrs.get_objective_with_key_results!(id)
-    render(conn, :show, objective: objective)
+
+    render(
+      conn,
+      :show,
+      objective: objective,
+      breadcrumbs: [%{name: "Objectives", path: "/objectives"}]
+    )
   end
 
   def edit(conn, %{"id" => id}) do

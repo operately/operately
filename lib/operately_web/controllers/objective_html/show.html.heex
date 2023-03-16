@@ -1,27 +1,58 @@
-<.header>
-  Objective <%= @objective.name %>
-  <:subtitle><%= @objective.description %></:subtitle>
-  <:actions>
-    <.link href={~p"/objectives/#{@objective}/edit"}>
-      <.button>Edit objective</.button>
-    </.link>
-  </:actions>
-</.header>
-
-<.list>
-  <:item title="Name"><%= @objective.name %></:item>
-  <:item title="Description"><%= @objective.description %></:item>
-</.list>
-
-<h2 class="mt-8">Key Results</h2>
-
 <div>
+  <div class="mb-8 flex justify-between items-top">
+    <div class="text-xl font-bold">
+      <%= @objective.name %>
+      <!--
+      <p class="font-normal text-sm"><%= @objective.description%></p>
+      -->
+    </div>
+
+    <div>
+      <button class="scale-75">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="mb-2">
+  <div class="text-l font-bold">Key Results</div>
+  <div class="text-sm text-gray-500">How do you measure that you are on the right track?</div>
+</div>
+
+<div class="shadow-md rounded-lg shadow bg-white divide-y divide-gray-100 grid grid-cols-1 mt-4">
+  <div class="px-4 py-2 flex items-center text-sm">
+    <div class="w-32">Status</div>
+    <div class="w-32">Completion</div>
+    <div class="flex-1">Name</div>
+    <div class="w-32 pl-4 text-right">Last Update</div>
+  </div>
+
   <%= for key_result <- @objective.key_results do %>
     <div class="mt1">
-      <h3><%= key_result.name %></h3>
-      <%= key_result.direction%> <%= key_result.target%> <%= key_result.unit %>
+      <div class="px-4 py-4 flex items-center">
+        <div class="w-32">
+          <span class="inline-flex items-center justify-center rounded-full bg-gray-200 px-2.5 py-0.5 text-gray-500">
+            <p class="whitespace-nowrap text-sm">Unknown</p>
+          </span>
+        </div>
+
+        <div class="w-32">
+          0 / <%= key_result.target %>
+        </div>
+
+        <div class="flex-1">
+          <%= key_result.name %>
+        </div>
+
+
+        <div class="w-32 pl-4 text-right">
+          Never
+        </div>
+      </div>
     </div>
   <% end %>
 </div>
 
-<.back navigate={~p"/objectives"}>Back to objectives</.back>
