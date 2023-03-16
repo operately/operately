@@ -63,10 +63,13 @@ defmodule OperatelyWeb.Router do
 
     resources "/people", PersonController
     resources "/groups", GroupController
-    resources "/objectives", ObjectiveController
     resources "/tenets", TenetController
     resources "/kpis", KpiController
     resources "/projects", ProjectController
+
+    resources "/objectives", ObjectiveController do
+      resources "/key_results", KeyResultController, except: [:index]
+    end
   end
 
   # Other scopes may use custom stacks.

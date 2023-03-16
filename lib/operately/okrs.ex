@@ -7,6 +7,7 @@ defmodule Operately.Okrs do
   alias Operately.Repo
 
   alias Operately.Okrs.Objective
+  alias Operately.Okrs.KeyResult
 
   @doc """
   Returns the list of objectives.
@@ -109,5 +110,95 @@ defmodule Operately.Okrs do
   """
   def change_objective(%Objective{} = objective, attrs \\ %{}) do
     Objective.changeset(objective, attrs)
+  end
+
+
+  @doc """
+  Returns the list of key_results.
+
+  ## Examples
+
+      iex> list_key_results()
+      [%KeyResult{}, ...]
+
+  """
+  def list_key_results do
+    raise "TODO"
+  end
+
+  @doc """
+  Gets a single key_result.
+
+  Raises if the Key result does not exist.
+
+  ## Examples
+
+      iex> get_key_result!(123)
+      %KeyResult{}
+
+  """
+  def get_key_result!(id), do: raise "TODO"
+
+  @doc """
+  Creates a key_result.
+
+  ## Examples
+
+      iex> create_key_result(%{field: value})
+      {:ok, %KeyResult{}}
+
+      iex> create_key_result(%{field: bad_value})
+      {:error, ...}
+
+  """
+  def create_key_result(attrs \\ %{}) do
+    %KeyResult{}
+    |> KeyResult.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a key_result.
+
+  ## Examples
+
+      iex> update_key_result(key_result, %{field: new_value})
+      {:ok, %KeyResult{}}
+
+      iex> update_key_result(key_result, %{field: bad_value})
+      {:error, ...}
+
+  """
+  def update_key_result(%KeyResult{} = key_result, attrs) do
+    raise "TODO"
+  end
+
+  @doc """
+  Deletes a KeyResult.
+
+  ## Examples
+
+      iex> delete_key_result(key_result)
+      {:ok, %KeyResult{}}
+
+      iex> delete_key_result(key_result)
+      {:error, ...}
+
+  """
+  def delete_key_result(%KeyResult{} = key_result) do
+    raise "TODO"
+  end
+
+  @doc """
+  Returns a data structure for tracking key_result changes.
+
+  ## Examples
+
+      iex> change_key_result(key_result)
+      %Todo{...}
+
+  """
+  def change_key_result(%KeyResult{} = key_result, attrs \\ %{}) do
+    KeyResult.changeset(key_result, attrs)
   end
 end

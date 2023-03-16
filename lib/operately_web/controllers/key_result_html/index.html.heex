@@ -1,0 +1,26 @@
+<.header>
+  Listing Key results
+  <:actions>
+    <.link href={~p"/key_results/new"}>
+      <.button>New Key result</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="key_results" rows={@key_results} row_click={&JS.navigate(~p"/key_results/#{&1}")}>
+  <:col :let={key_result} label="Name"><%= key_result.name %></:col>
+  <:col :let={key_result} label="Target"><%= key_result.target %></:col>
+  <:col :let={key_result} label="Unit"><%= key_result.unit %></:col>
+  <:col :let={key_result} label="Direction"><%= key_result.direction %></:col>
+  <:action :let={key_result}>
+    <div class="sr-only">
+      <.link navigate={~p"/key_results/#{key_result}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/key_results/#{key_result}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={key_result}>
+    <.link href={~p"/key_results/#{key_result}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
