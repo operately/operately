@@ -17,9 +17,17 @@
   </div>
 </div>
 
-<div class="mb-2">
-  <div class="text-l font-bold">Key Results</div>
-  <div class="text-sm text-gray-500">How do you measure that you are on the right track?</div>
+<div class="mb-2 flex justify-between">
+  <div>
+    <div class="text-l font-bold">Key Results</div>
+    <div class="text-sm text-gray-500">How do you measure that you are on the right track?</div>
+  </div>
+
+  <div>
+    <.link href={~p"/objectives/#{@objective}"}>
+      <button class="inline-flex -space-x-px overflow-hidden rounded-md border bg-white shadow-sm inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:shadow focus:relative">Add Key Result</button>
+    </.link>
+  </div>
 </div>
 
 <div class="shadow-md rounded-lg shadow bg-white divide-y divide-gray-100 grid grid-cols-1 mt-4">
@@ -46,7 +54,6 @@
         <div class="flex-1">
           <%= key_result.name %>
         </div>
-
 
         <div class="w-32 pl-4 text-right">
           Never
