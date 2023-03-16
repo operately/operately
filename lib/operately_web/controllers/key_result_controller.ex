@@ -8,7 +8,9 @@ defmodule OperatelyWeb.KeyResultController do
   plug :set_breradcrumb when action in [:new, :create]
 
   def new(conn, _params) do
-    changeset = Okrs.change_key_result(%KeyResult{})
+    changeset = Okrs.change_key_result(%KeyResult{
+      objective_id: conn.assigns.objective.id
+    })
 
     render(conn, :new, changeset: changeset)
   end
@@ -18,7 +20,7 @@ defmodule OperatelyWeb.KeyResultController do
       {:ok, key_result} ->
         conn
         |> put_flash(:info, "Key result created successfully.")
-        |> redirect(to: ~p"/objective/#{key_result.objective_id}")
+        |> redirect(to: ~p"/objectives/#{conn.assigns.objective.id}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new, changeset: changeset)

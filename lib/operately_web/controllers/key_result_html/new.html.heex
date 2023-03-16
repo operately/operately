@@ -51,13 +51,16 @@
       <.input field={f[:name]} type="text" label="Name" placeholder="ex. Increase reccuring revenue from $2M to $2.4M" />
       <.input field={f[:description]} type="textarea" label="Description — How does this result validate the success on the objective?" placeholder="ex. By increasing brand awareness, our company can establish a stronger presence in the market and differentiate ourselves from competitors." />
 
-      <div class="flex gap-4">
-        <div class="w-1/2">
-          <.input label="Target" field={f[:target]} placeholder="ex. 2.4" />
+      <p class="font-bold text-sm -mb-2">What is your target?</p>
+
+      <div class="flex gap-4 items-center">
+        <div class="w-32">
+          <.input type="select" field={f[:direction]} options={["above", "below"]} />
         </div>
 
-        <div class="w-1/2">
-          <.input type="select" label="Direction" field={f[:direction]} options={["above", "below"]} />
+        <div class="relative">
+          <.input class="w-64 pr-36 text-right" field={f[:target]} placeholder="ex. 2.4" />
+          <.input class="w-32 border-none bg-gray-50 px-2 mr-1 py-1 text-sm absolute top-1/2 right-1 -translate-y-1/2" type="select" field={f[:unit]} options={["percentage", "number"]} />
         </div>
       </div>
     </div>

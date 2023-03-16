@@ -18,7 +18,7 @@ defmodule Operately.Okrs.KeyResult do
   @doc false
   def changeset(key_result, attrs) do
     key_result
-    |> cast(attrs, [:name, :unit, :target, :direction])
-    |> validate_required([:name, :unit, :target, :direction])
+    |> cast(attrs, [:name, :unit, :target, :direction, :objective_id])
+    |> validate_required([:name, :unit, :target, :direction, :objective_id])
   end
 end
