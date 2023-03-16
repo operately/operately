@@ -22,24 +22,6 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> select(timeframe, from: "Timeframe")
   end
 
-  defand ~r/^I click on the Create Objective and results button$/, _vars, state do
-    state.session |> click(Query.button("Save Objective"))
-  end
-
-  defand ~r/^I add a Key Result with the name "(?<kr_name>[^"]+)" as "(?<unit>[^"]+)" and the target value "(?<direction>[^"]+)" "(?<value>[^"]+)"$/, %{kr_name: name, direction: direction, unit: unit, value: value}, state do
-    state.session
-    |> click(Query.button("Add Key Result"))
-    |> ts()
-    |> scroll_into_view("#key-results-container")
-    |> find(Query.css("#key-results-container [data-key-result]:last-child"), fn container ->
-      container
-      |> fill_in(Query.text_field("Name"), with: name)
-      |> select(unit, from: "Unit")
-      |> select(direction, from: "Direction")
-      |> fill_in(Query.text_field("Target"), with: value)
-    end)
-  end
-
   defthen ~r/^I should see "(?<name>[^"]+)" in the list of Objectives$/, %{name: name}, state do
     state.session |> visit("/objectives") |> assert_text(name)
   end
@@ -71,6 +53,34 @@ defmodule MyApp.Features.OkrsTest do
 
   defwhen ~r/^I click on the "(?<name>[^"]+)" Objective$/, %{name: name}, state do
     state.session |> click(Query.link(name))
+  end
+
+  defand ~r/^I set the target to "(?<target>[^"]+)"$/, %{target: target}, state do
+    state.session |> fill_in(Query.css("input[name=\"key_result[target]\"]"), with: "95")
+  end
+
+  defand ~r/^I set the name to "(?<name>[^"]+)"$/, %{name: name}, state do
+    state.session |> fill_in(Query.text_field("Name"), with: name)
+  end
+
+  defand ~r/^I set the description to "(?<description>[^"]+)"$/, %{description: description}, state do
+    state.session |> fill_in(Query.text_field("Description"), with: description)
+  end
+
+  defthen ~r/^I should see "(?<name>[^"]+)" in the key results list$/, %{name: name}, state do
+    state.session |> assert_text(name)
+  end
+
+  defand ~r/^I click on Add$/, _vars, state do
+    state.session |> click(Query.button("Add"))
+  end
+
+  defwhen ~r/^I click on Add Objective$/, _vars, state do
+    state.session |> click(Query.link("Add Objective"))
+  end
+
+  defand ~r/^I click Add Key Result$/, _vars, state do
+    state.session |> click(Query.link("Add Key Result"))
   end
 
 end

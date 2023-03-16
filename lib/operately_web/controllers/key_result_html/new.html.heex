@@ -1,35 +1,3 @@
-<!--
-<.header>
-  New Key result
-  <:subtitle>Use this form to manage key_result records in your database.</:subtitle>
-</.header>
-
-<.simple_form :let={f} for={@changeset} action={~p"/key_results"}>
-  <.error :if={@changeset.action}>
-    Oops, something went wrong! Please check the errors below.
-  </.error>
-  <.input field={f[:name]} type="text" label="Name" />
-  <.input field={f[:target]} type="number" label="Target" />
-  <.input
-    field={f[:unit]}
-    type="select"
-    label="Unit"
-    prompt="Choose a value"
-    options={Ecto.Enum.values(Operately.Okrs.KeyResult, :unit)}
-  />
-  <.input
-    field={f[:direction]}
-    type="select"
-    label="Direction"
-    prompt="Choose a value"
-    options={Ecto.Enum.values(Operately.Okrs.KeyResult, :direction)}
-  />
-  <:actions>
-    <.button>Save Key result</.button>
-  </:actions>
-</.simple_form>
--->
-
 <.form :let={f} for={@changeset} action={~p"/objectives/#{@objective}/key_results"} class="px-4 py-4">
   <.input type="hidden" field={f[:objective_id]}/>
 
