@@ -1,62 +1,31 @@
-<.header>
-  New Objective
-  <:subtitle>Use this form to manage objective records in your database.</:subtitle>
-</.header>
+<.form :let={f} for={@changeset} action={~p"/objectives"} class="px-4 py-4">
+  <div class="mb-8 flex justify-between items-center">
+    <div class="text-xl font-bold">
+      Add an Objectives
+      <p class="font-normal text-sm">Set a business goal that you aim to achive</p>
+    </div>
 
-<.simple_form :let={f} for={@changeset} action={~p"/objectives"}>
-  <.error :if={@changeset.action}>
-    Oops, something went wrong! Please check the errors below.
-  </.error>
-  <.input field={f[:name]} type="text" label="Name" />
-  <.input field={f[:description]} type="text" label="Description" />
+    <div>
+      <.link href={~p"/objectives"} class="inline-flex -space-x-px overflow-hidden rounded-md border bg-white shadow-sm inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:shadow focus:relative">Cancel</.link>
 
-  <.input type="select" label="Timeframe" field={f[:timeframe]} options={["Current quarter"]} />
-
-  <hr>
-
-  <p>How will you measure success?</p>
-
-  <div id="key-results-container">
+      <button class="inline-flex -space-x-px overflow-hidden rounded-md border bg-black text-white shadow-sm inline-block px-4 py-2 text-sm font-medium hover:shadow focus:relative">Add</button>
+    </div>
   </div>
 
-  <.button type="button" class="btn btn-primary" id="add-key-result">Add Key Result</.button>
+  <div class="shadow-md rounded-lg shadow bg-white grid grid-cols-1 px-4 py-4">
+    <div class="grid grid-cols-1 gap-4">
+      <div class="flex gap-4">
+        <div class="w-1/2">
+          <.input type="select" label="Owner" field={f[:owner]} options={["John Johnson", "Igor Sarcevic"]} />
+        </div>
 
-  <hr>
+        <div class="w-1/2">
+          <.input type="select" label="Timeframe" field={f[:timeframe]} options={["Current quarter"]} />
+        </div>
+      </div>
 
-  <:actions>
-    <.button>Save Objective</.button>
-  </:actions>
-</.simple_form>
-
-<.back navigate={~p"/objectives"}>Back to objectives</.back>
-
-<!-- This is the part of the form that is responsible for a single key result -->
-<!-- First, you have a template that is hidden by default -->
-<!-- Then, you have a script that clones the template and appends it to the key results container -->
-
-<div id="key-result-template" style="display: none;">
-  <div data-key-result class="mt-2 px-2 py-2 block w-full rounded-lg border border-zinc-300">
-    <.input id="key_results[__INDEX__][name]" name="key_results[__INDEX__][name]" type="text" label="Name" value="" />
-
-    <.input class="mt-1" id="key_results[__INDEX__][unit]" name="key_results[__INDEX__][unit]" type="select" label="Unit" options={["percentage", "number"]} value="Percentage" />
-    <.input class="mt-1" id="key_results[__INDEX__][direction]" name="key_results[__INDEX__][direction]" type="select" label="Direction" options={["above", "below"]} value="Percentage" />
-
-    <.input class="mt-1" id="key_results[__INDEX__][target]" name="key_results[__INDEX__][target]" type="text" label="Target" value="" />
+      <.input field={f[:name]} type="text" label="Name" placeholder="ex. Increase Brand Awareness of the Company" />
+      <.input field={f[:description]} type="textarea" label="Description — Why it matters?" placeholder="ex. By increasing brand awareness, our company can establish a stronger presence in the market and differentiate ourselves from competitors." />
+    </div>
   </div>
-</div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function(event) {
-    var addKeyResultButton = document.getElementById("add-key-result");
-    var keyResultContainer = document.getElementById("key-results-container");
-    var keyResultTemplate = document.querySelector("#key-result-template [data-key-result]");
-
-    addKeyResultButton.addEventListener("click", function() {
-      var keyResult = keyResultTemplate.cloneNode(true);
-      keyResult.style.display = "block";
-      keyResult.innerHTML = keyResult.innerHTML.replace(/__INDEX__/g, keyResultContainer.children.length);
-
-      keyResultContainer.appendChild(keyResult);
-    });
-  });
-</script>
+</.form>

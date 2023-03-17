@@ -17,7 +17,6 @@ defmodule Operately.Okrs.Objective do
   def changeset(objective, attrs) do
     objective
     |> cast(attrs, [:name, :description])
-    |> cast_assoc(:key_results)
     |> validate_required([:name, :description])
   end
 end

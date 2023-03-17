@@ -1,24 +1,53 @@
-<.header>
-  Listing Objectives
-  <:actions>
-    <.link href={~p"/objectives/new"}>
-      <.button>New Objective</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="mb-8 flex justify-between">
+  <div class="text-xl font-bold">
+    Objectives
+    <p class="font-normal text-sm">Set your goals and track your progress</p>
+  </div>
 
-<.table id="objectives" rows={@objectives} row_click={&JS.navigate(~p"/objectives/#{&1}")}>
-  <:col :let={objective} label="Name"><.link navigate={~p"/objectives/#{objective}"}><%= objective.name %></.link></:col>
-  <:col :let={objective} label="Description"><%= objective.description %></:col>
-  <:action :let={objective}>
-    <div class="sr-only">
-      <.link navigate={~p"/objectives/#{objective}"}>Show</.link>
-    </div>
-    <.link navigate={~p"/objectives/#{objective}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={objective}>
-    <.link href={~p"/objectives/#{objective}"} method="delete" data-confirm="Are you sure?">
-      Delete
+  <div>
+    <.link href={~p"/objectives/new"}>
+      <button class="inline-flex -space-x-px overflow-hidden rounded-md border bg-white shadow-sm inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:shadow focus:relative">Add Objective</button>
     </.link>
-  </:action>
-</.table>
+  </div>
+</div>
+
+<div class="mb-2">
+  <div class="text-l font-bold">Q1 2023</div>
+</div>
+
+<div class="shadow-md rounded-lg shadow bg-white divide-y divide-gray-100 grid grid-cols-1 ">
+  <%= for objective <- @objectives do %>
+    <.link href={~p"/objectives/#{objective}"}>
+      <div class="px-4 py-4">
+        <div class="flex items-center">
+          <div class="w-10 mr-2">
+            <div class="flex items-center">
+              <div>
+                <img
+                    alt="Man"
+                    src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+                    class="h-10 w-10 rounded object-cover"
+                    />
+              </div>
+
+            </div>
+          </div>
+
+          <div class="flex-1">
+            <span><%= objective.name %></span>
+
+            <div>
+              <p class="text-sm"><span class="text-sky-500">John Doe</span> &middot; <span class="text-sky-500">Head of Customer Success</span></p>
+            </div>
+          </div>
+
+          <div class="w-32 text-right">
+            <span class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+              <p class="whitespace-nowrap text-sm">On Track</p>
+            </span>
+          </div>
+        </div>
+      </div>
+    </.link>
+  <% end %>
+</div>

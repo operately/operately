@@ -40,3 +40,5 @@ config :logger, level: :warning
 config :phoenix, :plug_init_mode, :runtime
 
 config :wallaby, screenshot_on_failure: true
+
+config :mix_test_watch, extra_extensions: [".feature"]

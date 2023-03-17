@@ -18,4 +18,28 @@ defmodule Operately.OkrsFixtures do
 
     objective
   end
+
+  @doc """
+  Generate a key_result.
+  """
+  def key_result_fixture(:with_objective, attrs) do
+    objective = objective_fixture()
+    key_result = key_result_fixture(Map.merge(attrs, %{objective_id: objective.id}))
+
+    {objective, key_result}
+  end
+
+  def key_result_fixture(attrs \\ %{}) do
+    {:ok, key_result} =
+      attrs
+      |> Enum.into(%{
+        direction: :above,
+        name: "some name",
+        target: 42,
+        unit: :percentage
+      })
+      |> Operately.Okrs.create_key_result()
+
+    key_result
+  end
 end

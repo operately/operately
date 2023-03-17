@@ -1,0 +1,146 @@
+<header aria-label="Page Header" class="fixed bg-white top-0 left-0 right-0">
+  <div class="px-2 py-2 border-solid border-b">
+    <div class="flex items-center sm:justify-between sm:gap-4">
+      <div class="w-1/4 flex items-center">
+        <button data-toggle-sidebar="">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+
+        <h1 class="text-xl font-bold pl-2">Operately</h1>
+      </div>
+
+      <div class="relative hidden sm:block w-1/2">
+        <button
+          type="button"
+          class="absolute top-1/2 left-1 -translate-y-1/2 rounded-md bg-gray-50 p-2 text-gray-600 transition hover:text-gray-700"
+        >
+          <span class="sr-only">Search</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </button>
+
+        <label class="sr-only" for="search"> Search </label>
+
+        <input
+          class="h-10 w-full rounded-lg border-none bg-white pl-10 text-sm shadow"
+          id="search"
+          type="search"
+          placeholder="Search"
+        />
+
+        <span class="absolute top-1/2 right-1 -translate-y-1/2 text-gray-600 text-xs pr-2">⌘K</span>
+      </div>
+
+      <div
+        class="flex items-center justify-between gap-8 sm:justify-end w-1/4"
+      >
+        <div class="flex gap-4">
+          <button
+            type="button"
+            class="block shrink-0 rounded-lg bg-white p-2.5 text-gray-600 shadow-sm hover:text-gray-700 sm:hidden"
+          >
+            <span class="sr-only">Search</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="group flex shrink-0 items-center rounded-lg transition"
+        >
+          <span class="sr-only">Menu</span>
+          <img
+            alt="Man"
+            src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+            class="h-10 w-10 rounded-full object-cover"
+          />
+
+          <p class="ml-2 hidden text-left text-xs sm:block">
+            <strong class="block font-medium">Igor Sarcevic</strong>
+
+            <span class="text-gray-500"><%= @current_account.email %></span>
+          </p>
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="ml-4 hidden h-5 w-5 text-gray-500 transition group-hover:text-gray-700 sm:block"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <%= if assigns[:breadcrumbs] do %>
+    <div class="flex items-center bg-white border-b border-gray-200 text-gray-500 text-sm px-2 py-2">
+      <.link href={~p"/"}>
+        <div class="scale-75">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
+          </svg>
+        </div>
+      </.link>
+
+      <%= for crumb <- assigns[:breadcrumbs] do %>
+        <div class="scale-75">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+          </svg>
+        </div>
+
+        <%= if crumb.path do %>
+          <.link href={crumb.path}>
+            <%= crumb.name %>
+          </.link>
+        <% else %>
+          <%= crumb.name %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</header>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    var toggleButton = document.querySelector("[data-toggle-sidebar]");
+
+    toggleButton.addEventListener("click", function() {
+      var sidebar = document.querySelector("[data-sidebar]");
+      sidebar.classList.toggle("hidden");
+    })
+  });
+</script>

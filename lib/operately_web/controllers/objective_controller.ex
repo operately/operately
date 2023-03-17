@@ -14,9 +14,7 @@ defmodule OperatelyWeb.ObjectiveController do
     render(conn, :new, changeset: changeset)
   end
 
-  def create(conn, %{"objective" => objective_params, "key_results" => key_results_params}) do
-    params = Map.merge(objective_params, %{"key_results" => Map.values(key_results_params)})
-
+  def create(conn, %{"objective" => params}) do
     case Okrs.create_objective(params) do
       {:ok, objective} ->
         conn
@@ -30,7 +28,13 @@ defmodule OperatelyWeb.ObjectiveController do
 
   def show(conn, %{"id" => id}) do
     objective = Okrs.get_objective_with_key_results!(id)
-    render(conn, :show, objective: objective)
+
+    render(
+      conn,
+      :show,
+      objective: objective,
+      breadcrumbs: [%{name: "Objectives", path: "/objectives"}]
+    )
   end
 
   def edit(conn, %{"id" => id}) do
