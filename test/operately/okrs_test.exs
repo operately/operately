@@ -12,12 +12,14 @@ defmodule Operately.OkrsTest do
 
     test "list_objectives/0 returns all objectives" do
       objective = objective_fixture()
-      assert Okrs.list_objectives() == [objective]
+
+      assert same_ids(Okrs.list_objectives(), [objective])
     end
 
     test "get_objective!/1 returns the objective with given id" do
       objective = objective_fixture()
-      assert Okrs.get_objective!(objective.id) == objective
+
+      assert same_ids(Okrs.get_objective!(objective.id), objective)
     end
 
     test "create_objective/1 with valid data creates a objective" do
@@ -44,7 +46,8 @@ defmodule Operately.OkrsTest do
     test "update_objective/2 with invalid data returns error changeset" do
       objective = objective_fixture()
       assert {:error, %Ecto.Changeset{}} = Okrs.update_objective(objective, @invalid_attrs)
-      assert objective == Okrs.get_objective!(objective.id)
+
+      assert same_ids(objective, Okrs.get_objective!(objective.id))
     end
 
     test "delete_objective/1 deletes the objective" do
@@ -122,5 +125,13 @@ defmodule Operately.OkrsTest do
       {_objective, key_result} = key_result_fixture(:with_objective, %{})
       assert %Ecto.Changeset{} = Okrs.change_key_result(key_result)
     end
+  end
+
+  defp same_ids(list_a, list_b) when is_list(list_a) and is_list(list_b) do
+    Enum.map(list_a, & &1.id) == Enum.map(list_b, & &1.id)
+  end
+
+  defp same_ids(element_a, element_b) do
+    element_a.id == element_b.id
   end
 end

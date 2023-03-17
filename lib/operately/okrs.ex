@@ -41,10 +41,8 @@ defmodule Operately.Okrs do
     |> Repo.get!(id)
   end
 
-  def get_objective_with_key_results!(id) do
-    Objective
-    |> Repo.get!(id)
-    |> Repo.preload(:key_results)
+  def get_objective!(id, preload: associations) do
+    get_objective!(id) |> Repo.preload(associations)
   end
 
   @doc """
