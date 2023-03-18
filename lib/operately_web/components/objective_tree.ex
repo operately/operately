@@ -33,34 +33,45 @@ defmodule OperatelyWeb.ObjectiveTree do
     style = "margin-left: #{depth * 20}px"
 
     ~H"""
-      <div style={style} class="objective my-1 shadow-md rounded-lg shadow bg-white">
-        <div class="px-2 py-1">
-          <div class="flex items-center">
-            <div class="w-10 mr-2">
-              <div class="flex items-center">
-                <div>
-                  <img
-                      alt="Man"
-                      src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                      class="h-10 w-10 rounded object-cover"
-                      />
+      <div style={style} class="flex items-center relative">
+        <div class="w-4">
+          <div class="border-l border-gray-300 absolute top-0 bottom-0"></div>
+
+          <div class="flex items-center -ml-1">
+            <div class="w-1 h-1 bg-gray-200 rounded-full"></div>
+            <div class="w-4 border border-gray-200"></div>
+          </div>
+        </div>
+
+        <div class="flex-1 objective my-1 shadow-md rounded-lg shadow bg-white">
+          <div class="px-2 py-1">
+            <div class="flex items-center">
+              <div class="w-10 mr-2">
+                <div class="flex items-center">
+                  <div>
+                    <img
+                        alt="Man"
+                        src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+                        class="h-10 w-10 rounded object-cover"
+                        />
+                  </div>
+
                 </div>
-
               </div>
-            </div>
 
-            <div class="flex-1">
-              <span><%= objective.name %></span>
+              <div class="flex-1">
+                <span><%= objective.name %></span>
 
-              <div>
-                <p class="text-sm"><span class="text-sky-500">John Doe</span> &middot; <span class="text-sky-500">Head of Customer Success</span></p>
+                <div>
+                  <p class="text-sm"><span class="text-sky-500">John Doe</span> &middot; <span class="text-sky-500">Head of Customer Success</span></p>
+                </div>
               </div>
-            </div>
 
-            <div class="w-32 text-right">
-              <span class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-                <p class="whitespace-nowrap text-sm">On Track</p>
-              </span>
+              <div class="w-32 text-right">
+                <span class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+                  <p class="whitespace-nowrap text-sm">On Track</p>
+                </span>
+              </div>
             </div>
           </div>
         </div>
