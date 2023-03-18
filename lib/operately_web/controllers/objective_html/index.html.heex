@@ -15,39 +15,6 @@
   <div class="text-l font-bold">Q1 2023</div>
 </div>
 
-<div class="shadow-md rounded-lg shadow bg-white divide-y divide-gray-100 grid grid-cols-1 ">
-  <%= for objective <- @objectives do %>
-    <.link href={~p"/objectives/#{objective}"}>
-      <div class="px-4 py-4">
-        <div class="flex items-center">
-          <div class="w-10 mr-2">
-            <div class="flex items-center">
-              <div>
-                <img
-                    alt="Man"
-                    src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                    class="h-10 w-10 rounded object-cover"
-                    />
-              </div>
-
-            </div>
-          </div>
-
-          <div class="flex-1">
-            <span><%= objective.name %></span>
-
-            <div>
-              <p class="text-sm"><span class="text-sky-500">John Doe</span> &middot; <span class="text-sky-500">Head of Customer Success</span></p>
-            </div>
-          </div>
-
-          <div class="w-32 text-right">
-            <span class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-              <p class="whitespace-nowrap text-sm">On Track</p>
-            </span>
-          </div>
-        </div>
-      </div>
-    </.link>
-  <% end %>
+<div class="">
+  <.objective_tree objective={@objectives} alignments={@alignments} />
 </div>

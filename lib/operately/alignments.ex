@@ -8,6 +8,18 @@ defmodule Operately.Alignments do
 
   alias Operately.Alignments.Alignment
 
+  @doc """
+  Returns the list of alignments.
+
+  ## Examples
+
+      iex> list_alignments()
+      [%Alignment{}, ...]
+
+  """
+  def list_alignments do
+    Repo.all(Alignment)
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking alignment changes.

@@ -3,11 +3,14 @@ defmodule OperatelyWeb.ObjectiveController do
 
   alias Operately.Okrs
   alias Operately.Okrs.Objective
+  alias Operately.Alignments
   alias Operately.Alignments.Alignment
 
   def index(conn, _params) do
     objectives = Okrs.list_objectives()
-    render(conn, :index, objectives: objectives)
+    alignments = Alignments.list_alignments()
+
+    render(conn, :index, objectives: objectives, alignments: alignments)
   end
 
   def new(conn, _params) do
