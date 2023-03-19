@@ -15,12 +15,16 @@
   <div class="shadow-md rounded-lg shadow bg-white grid grid-cols-1 px-4 py-4">
     <div class="grid grid-cols-1 gap-4">
       <div class="flex gap-4">
-        <div class="w-1/2">
+        <div class="w-1/3">
           <.input type="select" label="Owner" field={f[:owner]} options={["John Johnson", "Igor Sarcevic"]} />
         </div>
 
-        <div class="w-1/2">
+        <div class="w-1/3">
           <.input type="select" label="Timeframe" field={f[:timeframe]} options={["Current quarter"]} />
+        </div>
+
+        <div class="w-1/3">
+          <.input type="select" label="Aligns With" field={f[:aligns_with]} prompt="Nothing (Top level objective)" options={@parent_options} />
         </div>
       </div>
 
