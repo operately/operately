@@ -19,7 +19,19 @@ defmodule OperatelyWeb.ObjectiveTree do
 
     tree = Tree.build_tree(assigns.objective, assigns.alignments)
 
-    objective_children(%{nodes: tree, indent: "ml0"})
+    ~H"""
+      <div class="relative z-20 mb-4 flex">
+        <div class="px-2 py-1 bg-white shadow rounded-lg flex gap-2 items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h10.5a.75.75 0 010 1.5H12v13.75a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-2.5a.75.75 0 010-1.5H2v-13h-.25A.75.75 0 011 2.75zM4 5.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zM4.5 9a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zM8 5.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zM8.5 9a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zM14.25 6a.75.75 0 00-.75.75V17a1 1 0 001 1h3.75a.75.75 0 000-1.5H18v-9h.25a.75.75 0 000-1.5h-4zm.5 3.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z" clip-rule="evenodd" />
+          </svg>
+
+          Rendered Text &mdash; <%= length(assigns.objective) %> objectives
+        </div>
+      </div>
+
+      <%= objective_children(%{nodes: tree, indent: "ml-4"}) %>
+    """
   end
 
   defp objective_children(%{nodes: [], indent: indent} = assigns) do
@@ -30,7 +42,6 @@ defmodule OperatelyWeb.ObjectiveTree do
     ~H"""
       <div class={"relative " <> @indent}>
         <div class="absolute -mt-4 border-l border-gray-200 top-0 bottom-8"></div>
-        <div class="absolute w-2 h-2 rounded-full bg-gray-200 top-0" style="margin-top: -7px; margin-left: -3px"></div>
 
         <%= for node <- @nodes do %>
           <%= objective_tree_node(%{node: node}) %>
@@ -82,7 +93,11 @@ defmodule OperatelyWeb.ObjectiveTree do
                 </div>
               </div>
 
-              <div class="w-32 text-right">
+              <div class="text-right inline-flex gap-2">
+                <span class="inline-flex items-center justify-center rounded-full bg-sky-100 px-2.5 py-0.5 text-sky-500">
+                  <p class="whitespace-nowrap text-sm">Q1 2023</p>
+                </span>
+
                 <span class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
                   <p class="whitespace-nowrap text-sm">On Track</p>
                 </span>
