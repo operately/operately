@@ -1,15 +1,6 @@
 defmodule OperatelyWeb.ObjectiveTree do
-  @moduledoc """
-  Provides core UI components.
-
-  The components in this module use Tailwind CSS, a utility-first CSS framework.
-  See the [Tailwind CSS documentation](https://tailwindcss.com) to learn how to
-  customize the generated components in this module.
-
-  Icons are provided by [heroicons](https://heroicons.com), using the
-  [heroicons_elixir](https://github.com/mveytsman/heroicons_elixir) project.
-  """
   use Phoenix.Component
+  use OperatelyWeb, :html
 
   attr :objective, :list
   attr :alignments, :list
@@ -69,7 +60,7 @@ defmodule OperatelyWeb.ObjectiveTree do
           </div>
         </div>
 
-        <div class="flex-1 my-1 shadow-md rounded-lg shadow bg-white">
+        <a href={~p"/objectives/#{@objective}"} class="block flex-1 my-1 shadow-md rounded-lg bg-white hover:border-r hover:border-r-8">
           <div class="px-2 py-1">
             <div class="flex items-center">
               <div class="w-10 mr-2">
@@ -104,7 +95,7 @@ defmodule OperatelyWeb.ObjectiveTree do
               </div>
             </div>
           </div>
-        </div>
+        </a>
       </div>
     """
   end
