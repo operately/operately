@@ -10,11 +10,17 @@ defmodule OperatelyWeb.ObjectiveController do
 
   def index(conn, params) do
     focus_on = params["focus_on"] || "Alignment"
+    {max_depth, _} = Integer.parse(params["max_depth"] || "1000")
 
     objectives = Okrs.list_objectives(preload: [:owner])
     alignments = Alignments.list_alignments()
 
-    render(conn, :index, objectives: objectives, alignments: alignments, focus_on: focus_on)
+    render(conn, :index,
+      objectives: objectives,
+      alignments: alignments,
+      focus_on: focus_on,
+      max_depth: max_depth
+    )
   end
 
   def new(conn, _params) do

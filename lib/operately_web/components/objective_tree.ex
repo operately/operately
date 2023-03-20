@@ -29,7 +29,10 @@ defmodule OperatelyWeb.ObjectiveTree do
   attr :group_by, :string
 
   def objective_list(assigns) do
-    grouped_objectives = Enum.group_by(assigns.objectives, fn o -> o.owner.id end)
+    grouped_objectives =
+      assigns.objectives
+      |> Enum.group_by(fn o -> o.owner.id end)
+      |> Enum.sort_by(fn {_, objectives} -> -length(objectives) end)
 
     ~H"""
     <div class="flex flex-col gap-4">
@@ -64,11 +67,12 @@ defmodule OperatelyWeb.ObjectiveTree do
 
   attr :objective, :list
   attr :alignments, :list
+  attr :max_depth, :integer
 
   def objective_tree(assigns) do
     alias OperatelyWeb.ObjectiveTree.Tree
 
-    tree = Tree.build_tree(assigns.objective, assigns.alignments)
+    tree = Tree.build_tree(assigns.objective, assigns.alignments, assigns.max_depth)
 
     ~H"""
       <div class="relative z-20 mb-4 flex">
@@ -164,12 +168,12 @@ defmodule OperatelyWeb.ObjectiveTree do
   end
 
   defmodule Tree do
-    def build_tree(objectives, alignments) do
+    def build_tree(objectives, alignments, max_depth) do
       root_objectives = find_root_objectives(objectives, alignments)
 
       root_objectives
       |> Enum.map(fn root_objective ->
-        build_tree_for_objective(root_objective, objectives, alignments)
+        build_tree_for_objective(root_objective, objectives, alignments, 0, max_depth)
       end)
     end
 
@@ -182,19 +186,23 @@ defmodule OperatelyWeb.ObjectiveTree do
       end)
     end
 
-    def build_tree_for_objective(objective, objectives, alignments) do
-      children = Enum.filter(objectives, fn possible_child ->
-        Enum.any?(alignments, fn alignment ->
-          alignment.parent == objective.id && alignment.child == possible_child.id
+    def build_tree_for_objective(objective, objectives, alignments, depth, max_depth) do
+      if depth >= max_depth - 1 do
+        %{objective: objective, children: []}
+      else
+        children = Enum.filter(objectives, fn possible_child ->
+          Enum.any?(alignments, fn alignment ->
+            alignment.parent == objective.id && alignment.child == possible_child.id
+          end)
         end)
-      end)
 
-      children = children
-                 |> Enum.map(fn child ->
-                   build_tree_for_objective(child, objectives, alignments)
-                 end)
+        children = children
+                   |> Enum.map(fn child ->
+                     build_tree_for_objective(child, objectives, alignments, depth+1, max_depth)
+                   end)
 
-      %{objective: objective, children: children}
+        %{objective: objective, children: children}
+      end
     end
 
     def to_list_preorder(tree, level \\ 0) do
