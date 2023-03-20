@@ -80,7 +80,7 @@ defmodule OperatelyWeb.ObjectiveTree do
                 <span><%= @objective.name %></span>
 
                 <div>
-                  <p class="text-sm"><span class="text-sky-500">John Doe</span> &middot; <span class="text-sky-500">Head of Customer Success</span></p>
+                  <p class="text-sm"><span class="text-sky-500"><%= @objective.owner.full_name %></span> &middot; <span class="text-sky-500"><%= @objective.owner.title %></span></p>
                 </div>
               </div>
 
