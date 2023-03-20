@@ -38,6 +38,24 @@ defmodule Operately.People do
   def get_person!(id), do: Repo.get!(Person, id)
 
   @doc """
+  Gets the first person with the given name.
+
+  Raises `Ecto.NoResultsError` if the Person does not exist.
+
+  ## Examples
+
+      iex> get_person_by_name!("John Johnson")
+      %Person{}
+
+      iex> get_person_by_name!("John Doe")
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_person_by_name!(name) do
+    Repo.one!(from p in Person, where: p.full_name == ^name)
+  end
+
+  @doc """
   Creates a person.
 
   ## Examples
