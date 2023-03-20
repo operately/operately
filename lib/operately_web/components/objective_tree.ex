@@ -5,6 +5,33 @@ defmodule OperatelyWeb.ObjectiveTree do
   attr :objective, :list
   attr :alignments, :list
 
+  def avatar(person) do
+    name_parts = person.full_name |> String.split(" ") |> Enum.map(&String.at(&1, 0))
+
+    first_name = List.first(name_parts)
+    last_name = List.last(name_parts)
+
+    first_letter = String.at(first_name, 0)
+    last_letter = String.at(last_name, 0)
+
+    initials = String.upcase(first_letter <> last_letter)
+    assigns = %{initials: initials}
+
+    colors = ["green", "blue", "zinc"]
+    color_index = initials |> String.to_charlist() |> Enum.sum() |> rem(Enum.count(colors))
+    IO.inspect(color_index)
+    color = Enum.at(colors, color_index)
+
+    bg_color = "bg-" <> color <> "-500"
+    text_color = "text-" <> color <> "-100"
+
+    ~H"""
+    <div class={bg_color <> " rounded-lg w-10 h-10 flex items-center justify-center"}>
+      <span class={text_color <> " font-bold text-lg"}><%= @initials %></span>
+    </div>
+    """
+  end
+
   def objective_tree(assigns) do
     alias OperatelyWeb.ObjectiveTree.Tree
 
@@ -32,7 +59,7 @@ defmodule OperatelyWeb.ObjectiveTree do
   defp objective_children(%{nodes: nodes, indent: indent} = assigns) do
     ~H"""
       <div class={"relative " <> @indent}>
-        <div class="absolute -mt-4 border-l border-gray-200 top-0 bottom-8"></div>
+        <div class="absolute -mt-4 border-l border-gray-300 top-0 bottom-8"></div>
 
         <%= for node <- @nodes do %>
           <%= objective_tree_node(%{node: node}) %>
@@ -55,24 +82,19 @@ defmodule OperatelyWeb.ObjectiveTree do
       <div class="flex items-center relative z-10">
         <div class="w-4">
           <div class="flex items-center" style="margin-left: -1px">
-            <div class="w-1 h-1 bg-gray-200 rounded-full"></div>
-            <div class="w-4 border-t border-gray-200"></div>
+            <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
+            <div class="w-4 border-t border-gray-300"></div>
           </div>
         </div>
 
-        <a href={~p"/objectives/#{@objective}"} class="block flex-1 my-1 shadow-md rounded-lg bg-white hover:border-r hover:border-r-8">
+        <a href={~p"/objectives/#{@objective}"} class="block flex-1 my-1 shadow rounded-lg bg-white hover:border-r hover:border-r-8">
           <div class="px-2 py-1">
             <div class="flex items-center">
               <div class="w-10 mr-2">
                 <div class="flex items-center">
                   <div>
-                    <img
-                      alt="Man"
-                      src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                      class="h-10 w-10 rounded object-cover"
-                    />
+                    <span><%= avatar(@objective.owner) %></span>
                   </div>
-
                 </div>
               </div>
 
