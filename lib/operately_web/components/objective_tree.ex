@@ -86,7 +86,6 @@ defmodule OperatelyWeb.ObjectiveTree do
         <a href={~p"/objectives/#{@objective}"} class="block flex-1 my-1 shadow rounded-lg bg-white hover:border-r hover:border-r-8">
           <div class="px-2 py-1">
             <div class="flex items-center">
-
               <div class="flex-1">
                 <span class="font-bold"><%= @objective.name %></span>
 
