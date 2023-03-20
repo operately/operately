@@ -12,5 +12,46 @@
 </div>
 
 <div class=" ">
-  <.objective_tree objective={@objectives} alignments={@alignments} />
+  <%= case @focus_on do %>
+  <% "Alignment" -> %>
+    <.objective_tree objective={@objectives} alignments={@alignments} />
+  <% "Individual Ownership" -> %>
+    <.objective_list group_by="individual_ownership" objectives={@objectives} />
+  <% end %>
 </div>
+
+<div data-objective-sidebar class="fixed top-0 right-0 bottom-0 flex h-screen flex-col justify-between border-l border-gray-300 bg-white w-64 bg-gray-100 z-50" style="margin-top: 57px">
+  <div class="py-4 px-4">
+    <.input type="select" id="view_mode" label="Focus On" name="view_mode" value={@focus_on} options={["Alignment", "Group Ownership", "Individual Ownership", "Status", "Timeframes"]} />
+
+    <p class="mt-4 font-bold text-sm">Show</p>
+    <.input type="checkbox" id="show_tenets" label="Tenets" checked={false} name="tenets" value="false" />
+    <.input type="checkbox" id="show_projects" label="Projects" checked={false} name="projects" value="false" />
+    <.input type="checkbox" id="show_timeframes" label="Timeframes" checked={true} name="timeframes" value="true" />
+    <.input type="checkbox" id="show_owners" label="Owners" checked={true} name="owners" value="true" />
+
+    <p class="mt-4 font-bold text-sm">Filter by State</p>
+    <.input type="checkbox" id="show_on_track" label="On Track" checked={true} name="tenets" value="false" />
+    <.input type="checkbox" id="show_off_track" label="Off Track" checked={true} name="projects" value="false" />
+    <.input type="checkbox" id="show_unknown" label="Unknown" checked={true} name="timeframes" value="true" />
+    <.input type="checkbox" id="show_completed" label="Completed" checked={true} name="owners" value="true" />
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const focusOn = document.getElementById("view_mode");
+
+      focusOn.addEventListener("change", function() {
+        var url = window.location.href;
+
+        if(url.indexOf("?") > -1) {
+          url += "&focus_on=" + focusOn.value;
+        } else {
+          url += "?focus_on=" + focusOn.value;
+        }
+
+        window.location.href = url;
+      })
+  });
+</script>

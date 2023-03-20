@@ -2,10 +2,7 @@ defmodule OperatelyWeb.ObjectiveTree do
   use Phoenix.Component
   use OperatelyWeb, :html
 
-  attr :objective, :list
-  attr :alignments, :list
-
-  def avatar(person) do
+  def avatar(person, size \\ "w-10 h-10") do
     name_parts = person.full_name |> String.split(" ") |> Enum.map(&String.at(&1, 0))
 
     first_name = List.first(name_parts)
@@ -22,11 +19,51 @@ defmodule OperatelyWeb.ObjectiveTree do
     color = Enum.at(colors, color_index)
 
     ~H"""
-    <div class={color <> " rounded-lg w-10 h-10 flex items-center justify-center"}>
-      <span class="font-bold text-lg"}><%= @initials %></span>
+    <div class={color <> " " <> size <> " rounded-lg flex items-center justify-center"}>
+      <span class="font-bold text-lg"><%= @initials %></span>
     </div>
     """
   end
+
+  attr :objectives, :list
+  attr :group_by, :string
+
+  def objective_list(assigns) do
+    grouped_objectives = Enum.group_by(assigns.objectives, fn o -> o.owner.id end)
+
+    ~H"""
+    <div class="flex flex-col gap-4">
+      <%= for {owner_id, objectives} <- grouped_objectives do %>
+        <div>
+          <div class="flex flex-row items-center gap-2 z-10 relative">
+            <div class="rounded-lg border border-zinc-200">
+              <div class="flex items-center">
+                <div>
+                  <%= avatar(Enum.at(objectives, 0).owner, "w-10 h-10") %>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-left gap-2">
+              <div class="text font-bold"><%= Enum.at(objectives, 0).owner.full_name %></div>
+              <div class="text text-gray-500 text-xs"><%= Enum.at(objectives, 0).owner.title %></div>
+            </div>
+          </div>
+
+          <div class="ml-6 mt-2 relative">
+            <div class="absolute -mt-4 border-l border-gray-300 top-0 bottom-8"></div>
+            <%= for objective <- objectives do %>
+              <%= objective_tree_objective(%{objective: objective, show_owner: false}) %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    """
+  end
+
+  attr :objective, :list
+  attr :alignments, :list
 
   def objective_tree(assigns) do
     alias OperatelyWeb.ObjectiveTree.Tree
@@ -67,13 +104,13 @@ defmodule OperatelyWeb.ObjectiveTree do
   defp objective_tree_node(%{node: node} = assigns) do
     ~H"""
     <div>
-      <%= objective_tree_objective(%{objective: @node.objective}) %>
+      <%= objective_tree_objective(%{objective: @node.objective, show_owner: true}) %>
       <%= objective_children(%{nodes: @node.children, indent: "ml-10"}) %>
     </div>
     """
   end
 
-  defp objective_tree_objective(%{objective: objective} = assigns) do
+  defp objective_tree_objective(%{objective: objective, show_owner: show_owner} = assigns) do
     ~H"""
       <div class="flex items-center relative z-10">
         <div class="w-4">
@@ -105,18 +142,20 @@ defmodule OperatelyWeb.ObjectiveTree do
                 </div>
               </div>
 
-              <div class="text-right gap-2">
-                <div class="text-sm"><%= @objective.owner.full_name %></div>
-                <div class="text-xs text-gray-500"><%= @objective.owner.title %></div>
-              </div>
+              <%= if @show_owner do %>
+                <div class="text-right gap-2">
+                  <div class="text-sm"><%= @objective.owner.full_name %></div>
+                  <div class="text-xs text-gray-500"><%= @objective.owner.title %></div>
+                </div>
 
-              <div class="w-10 ml-2">
-                <div class="flex items-center">
-                  <div>
-                    <span><%= avatar(@objective.owner) %></span>
+                <div class="w-10 ml-2">
+                  <div class="flex items-center">
+                    <div>
+                      <span><%= avatar(@objective.owner) %></span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              <% end %>
             </div>
           </div>
         </a>
