@@ -7,6 +7,19 @@ defmodule Operately.OkrsFixtures do
   @doc """
   Generate a objective.
   """
+  def objective_fixture(:with_owner, attrs) do
+    person = Operately.PeopleFixtures.person_fixture()
+    objective = objective_fixture(attrs)
+
+    Operately.OwnershipsFixtures.ownership_fixture(%{
+      person_id: person.id,
+      target_type: "objective",
+      target: objective.id
+    })
+
+    {person, objective}
+  end
+
   def objective_fixture(attrs \\ %{}) do
     {:ok, objective} =
       attrs

@@ -10,7 +10,6 @@ defmodule OperatelyWeb.ObjectiveController do
 
   def index(conn, _params) do
     objectives = Okrs.list_objectives(preload: [:owner])
-    IO.inspect(objectives)
     alignments = Alignments.list_alignments()
 
     render(conn, :index, objectives: objectives, alignments: alignments)
@@ -35,8 +34,6 @@ defmodule OperatelyWeb.ObjectiveController do
         |> redirect(to: ~p"/objectives/#{objective}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset)
-
         render_new_form(conn, changeset)
     end
   end
@@ -53,13 +50,13 @@ defmodule OperatelyWeb.ObjectiveController do
   end
 
   def edit(conn, %{"id" => id}) do
-    objective = Okrs.get_objective!(id, preload: [:parent])
+    objective = Okrs.get_objective!(id, preload: [:parent, :owner])
     changeset = Okrs.change_objective(objective)
     render(conn, :edit, objective: objective, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "objective" => objective_params}) do
-    objective = Okrs.get_objective!(id, preload: [:parent])
+    objective = Okrs.get_objective!(id, preload: [:parent, :owner])
 
     case Okrs.update_objective(objective, objective_params) do
       {:ok, objective} ->
