@@ -22,6 +22,10 @@ defmodule Operately.Okrs do
     Repo.all(Objective)
   end
 
+  def list_objectives(preload: associations) do
+    Repo.all(Objective) |> Repo.preload(associations)
+  end
+
   @doc """
   Gets a single objective.
 

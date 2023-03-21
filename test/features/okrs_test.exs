@@ -2,12 +2,22 @@ defmodule MyApp.Features.OkrsTest do
   use Operately.FeatureCase, file: "okrs.feature"
 
   alias Operately.OkrsFixtures
+  alias Operately.PeopleFixtures
+  alias Operately.OwnershipsFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
 
   defand ~r/^I am on the Objectives page$/, _vars, state do
     state.session |> visit("/objectives")
+  end
+
+  defand ~r/^I have "(?<person_name>[^"]+)" in my organization as the "(?<title>[^"]+)"$/, %{person_name: name, title: title}, state do
+    PeopleFixtures.person_fixture(%{
+      full_name: name,
+      handle: name |> String.downcase |> String.replace(" ", "_"),
+      title: title
+    })
   end
 
   defand ~r/^I fill in the Objective Name field with "(?<name>[^"]+)"$/, %{name: name}, state do
@@ -20,6 +30,10 @@ defmodule MyApp.Features.OkrsTest do
 
   defand ~r/^I choose "(?<timeframe>[^"]+)" from the Timeframe dropdown$/, %{timeframe: timeframe}, state do
     state.session |> select(timeframe, from: "Timeframe")
+  end
+
+  defand ~r/^I choose "(?<person>[^"]+)" from the Owner dropdown$/, %{person: person}, state do
+    state.session |> select(person, from: "Owner")
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the list of Objectives$/, %{name: name}, state do
@@ -47,8 +61,15 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> assert_text(name)
   end
 
-  defand ~r/^I have an objective called "(?<name>[^"]+)"$/, %{name: name}, state do
-    OkrsFixtures.objective_fixture(%{name: name})
+  defand ~r/^I have an objective called "(?<name>[^"]+)" owned by "(?<person_name>[^"]+)"$/, %{name: name, person_name: person_name}, state do
+    person = Operately.People.get_person_by_name!(person_name)
+    objective = OkrsFixtures.objective_fixture(%{name: name})
+
+    OwnershipsFixtures.ownership_fixture(%{
+      person_id: person.id,
+      target: objective.id,
+      target_id: :objective
+    })
   end
 
   defwhen ~r/^I click on the "(?<name>[^"]+)" Objective$/, %{name: name}, state do

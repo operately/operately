@@ -103,7 +103,7 @@ defmodule OperatelyWeb.ObjectiveControllerTest do
   end
 
   defp create_objective(_) do
-    objective = objective_fixture()
+    {_, objective} = objective_fixture(:with_owner, %{})
     %{objective: objective}
   end
 end
