@@ -13,15 +13,35 @@ defmodule OperatelyWeb.ObjectiveTree do
 
     initials = String.upcase(first_letter <> last_letter)
 
-    colors = ["bg-zinc-100", "bg-rose-50", "bg-emerald-100", "bg-sky-100", "bg-gray-100"]
-    color_index = initials |> String.to_charlist() |> Enum.sum() |> rem(Enum.count(colors))
+    colors = [
+      "bg-zinc-100",
+      "bg-rose-50",
+      "bg-emerald-100",
+      "bg-sky-100",
+      "bg-[#89CFF0]",
+      "bg-[#FFDAB9]",
+      "bg-[#E6E6FA]",
+      "bg-[#98FB98]",
+      "bg-[#FADADD]",
+      "bg-[#FFF8DC]",
+      "bg-[#C8A2C8]",
+      "bg-[#FFFF99]",
+      "bg-[#87CEEB]",
+      "bg-[#F08080]",
+      "bg-[#DCD0FF]",
+      "bg-[#B0E0E6]",
+      "bg-[#FFDAB9]"
+    ]
+
+    color_index = initials |> String.to_charlist() |> Enum.map(fn c -> c * c * 15 end) |> Enum.sum() |> rem(Enum.count(colors))
+    IO.inspect(color_index)
     color = Enum.at(colors, color_index)
 
     assigns = %{initials: initials, color: color, size: size}
 
     ~H"""
     <div class={@color <> " " <> @size <> " rounded-lg flex items-center justify-center"}>
-      <span class="font-bold text-lg"><%= @initials %></span>
+      <span class="font-bold"><%= @initials %></span>
     </div>
     """
   end
