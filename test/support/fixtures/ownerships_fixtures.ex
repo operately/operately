@@ -11,8 +11,8 @@ defmodule Operately.OwnershipsFixtures do
     {:ok, ownership} =
       attrs
       |> Enum.into(%{
-        person_id: "some person_id",
-        target: "some target",
+        person_id: Ecto.UUID.generate(),
+        target: Ecto.UUID.generate(),
         target_type: :objective
       })
       |> Operately.Ownerships.create_ownership()

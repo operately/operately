@@ -21,11 +21,18 @@ defmodule Operately.OwnershipsTest do
     end
 
     test "create_ownership/1 with valid data creates a ownership" do
-      valid_attrs = %{person_id: "some person_id", target: "some target", target_type: :objective}
+      person = Operately.PeopleFixtures.person_fixture()
+      objective = Operately.OkrsFixtures.objective_fixture()
+
+      valid_attrs = %{
+        person_id: person.id,
+        target: objective.id,
+        target_type: :objective
+      }
 
       assert {:ok, %Ownership{} = ownership} = Ownerships.create_ownership(valid_attrs)
-      assert ownership.person_id == "some person_id"
-      assert ownership.target == "some target"
+      assert ownership.person_id == person.id
+      assert ownership.target == objective.id
       assert ownership.target_type == :objective
     end
 
@@ -34,13 +41,27 @@ defmodule Operately.OwnershipsTest do
     end
 
     test "update_ownership/2 with valid data updates the ownership" do
-      ownership = ownership_fixture()
-      update_attrs = %{person_id: "some updated person_id", target: "some updated target", target_type: :tenet}
+      person_a = Operately.PeopleFixtures.person_fixture()
+      person_b = Operately.PeopleFixtures.person_fixture()
+
+      objective = Operately.OkrsFixtures.objective_fixture()
+
+      ownership = ownership_fixture(
+        person_id: person_a.id,
+        target: objective.id,
+        target_type: :objective
+      )
+
+      update_attrs = %{
+        person_id: person_b.id,
+        target: objective.id,
+        target_type: :objective
+      }
 
       assert {:ok, %Ownership{} = ownership} = Ownerships.update_ownership(ownership, update_attrs)
-      assert ownership.person_id == "some updated person_id"
-      assert ownership.target == "some updated target"
-      assert ownership.target_type == :tenet
+      assert ownership.person_id == person_b.id
+      assert ownership.target == objective.id
+      assert ownership.target_type == :objective
     end
 
     test "update_ownership/2 with invalid data returns error changeset" do
