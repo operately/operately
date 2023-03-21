@@ -22,6 +22,24 @@ defmodule Operately.Alignments do
   end
 
   @doc """
+  Creates a alignment.
+
+  ## Examples
+
+      iex> create_alignment(%{field: value})
+      {:ok, %Alignment{}}
+
+      iex> create_alignment(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_alignment(attrs \\ %{}) do
+    %Alignment{}
+    |> Alignment.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking alignment changes.
 
   ## Examples
