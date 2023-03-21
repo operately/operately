@@ -34,7 +34,6 @@ defmodule OperatelyWeb.ObjectiveTree do
     ]
 
     color_index = initials |> String.to_charlist() |> Enum.map(fn c -> c * c * 15 end) |> Enum.sum() |> rem(Enum.count(colors))
-    IO.inspect(color_index)
     color = Enum.at(colors, color_index)
 
     assigns = %{initials: initials, color: color, size: size}

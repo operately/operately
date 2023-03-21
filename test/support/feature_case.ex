@@ -17,8 +17,10 @@ defmodule Operately.FeatureCase do
       use Cabbage.Feature, async: false, file: unquote(file)
       use Wallaby.Feature
 
-      setup tags do
+      setup data do
         Operately.DataCase.setup_sandbox(async: false)
+
+        Wallaby.Browser.resize_window(data.session, 1920, 1080)
 
         :ok
       end

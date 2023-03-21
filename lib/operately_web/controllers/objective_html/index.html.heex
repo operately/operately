@@ -67,16 +67,18 @@
         window.location.href = url;
       })
 
-      maxDepth.addEventListener("change", function() {
-        var url = window.location.href;
+      if(maxDepth) {
+        maxDepth.addEventListener("change", function() {
+          var url = window.location.href;
 
-        if(url.indexOf("?") > -1) {
-          url += "&max_depth=" + maxDepth.value;
-        } else {
-          url += "?max_depth=" + maxDepth.value;
-        }
+          if(url.indexOf("?") > -1) {
+            url += "&max_depth=" + maxDepth.value;
+          } else {
+            url += "?max_depth=" + maxDepth.value;
+          }
 
-        window.location.href = url;
-      })
+          window.location.href = url;
+        })
+      }
   });
 </script>
