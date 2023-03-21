@@ -55,7 +55,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # We will call this user 'dev' inside of the development container.
 # The name might differ from your host machine, but the UID and GID will be the same.
 
-RUN groupadd --gid ${GROUP_ID} dev \
+RUN groupadd --force --gid ${GROUP_ID} dev \
  && useradd --uid ${USER_ID} --gid dev --shell /bin/bash --create-home dev
 
 # Switch to the 'dev' user.
