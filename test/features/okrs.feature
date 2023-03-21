@@ -12,7 +12,7 @@ Feature: Objectives and Key Results
     And I click on Add
     Then I should see "Maintain support happiness" in the Objective title
 
-  Scenario: Creating an Objective
+  Scenario: Adding Key Results to an Objective
     Given I am logged in as a user
     And I have "John Johnson" in my organization as the "Head of Support"
     And I have an objective called "Maintain support happiness" owned by "John Johnson"
@@ -25,3 +25,19 @@ Feature: Objectives and Key Results
     And I take a screenshot
     And I click on Add
     Then I should see "Maintain a happiness score of 95% or higher" in the key results list
+
+  Scenario: Viewing Objectives while focusing on Alignment
+    Given I am logged in as a user
+    And I have "John Johnson" in my organization as the "Head of Support"
+    And I have an objective called "Maintain support happiness" owned by "John Johnson"
+    And I am on the Objectives page
+    When I select "Alignment" from the Focus dropdown
+    Then I should see "Maintain support happiness" in the Objective title
+
+  Scenario: Viewing Objectives while focusing on Individual Ownership
+    Given I am logged in as a user
+    And I have "John Johnson" in my organization as the "Head of Support"
+    And I have an objective called "Maintain support happiness" owned by "John Johnson"
+    And I am on the Objectives page
+    When I select "Individual Ownership" from the Focus dropdown
+    Then I should see "Maintain support happiness" in the Objective title

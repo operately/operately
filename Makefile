@@ -96,6 +96,9 @@ dev.db.rollback:
 dev.db.reset:
 	$(DEV_CONTAINER) mix ecto.reset
 
+dev.db.seed:
+	$(DEV_CONTAINER) mix run priv/repo/seeds.exs
+
 #
 # Testing tasks
 #

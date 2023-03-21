@@ -317,7 +317,7 @@ defmodule OperatelyWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+      <label class="flex items-center gap-2 text-sm leading-6 text-zinc-600">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -325,7 +325,7 @@ defmodule OperatelyWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class={"rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 " <> {@class}}
+          class={"rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 " <> @class}
           {@rest}
         />
         <%= @label %>

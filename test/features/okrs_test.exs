@@ -104,4 +104,9 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> click(Query.link("Add Key Result"))
   end
 
+  defwhen ~r/^I select "(?<name>[^"]+)" from the Focus dropdown$/, %{name: name}, state do
+    state.session |> take_screenshot()
+    state.session |> select(name, from: "Focus On")
+  end
+
 end
