@@ -12,14 +12,15 @@ defmodule OperatelyWeb.ObjectiveTree do
     last_letter = String.at(last_name, 0)
 
     initials = String.upcase(first_letter <> last_letter)
-    assigns = %{initials: initials}
 
     colors = ["bg-zinc-100", "bg-rose-50", "bg-emerald-100", "bg-sky-100", "bg-gray-100"]
     color_index = initials |> String.to_charlist() |> Enum.sum() |> rem(Enum.count(colors))
     color = Enum.at(colors, color_index)
 
+    assigns = %{initials: initials, color: color, size: size}
+
     ~H"""
-    <div class={color <> " " <> size <> " rounded-lg flex items-center justify-center"}>
+    <div class={@color <> " " <> @size <> " rounded-lg flex items-center justify-center"}>
       <span class="font-bold text-lg"><%= @initials %></span>
     </div>
     """
@@ -34,9 +35,11 @@ defmodule OperatelyWeb.ObjectiveTree do
       |> Enum.group_by(fn o -> o.owner.id end)
       |> Enum.sort_by(fn {_, objectives} -> -length(objectives) end)
 
+    assigns = assign(assigns, :grouped_objectives, grouped_objectives)
+
     ~H"""
     <div class="flex flex-col gap-4">
-      <%= for {owner_id, objectives} <- grouped_objectives do %>
+      <%= for {_owner_id, objectives} <- @grouped_objectives do %>
         <div>
           <div class="flex flex-row items-center gap-2 z-10 relative">
             <div class="rounded-lg border border-zinc-200">
@@ -72,7 +75,12 @@ defmodule OperatelyWeb.ObjectiveTree do
   def objective_tree(assigns) do
     alias OperatelyWeb.ObjectiveTree.Tree
 
-    tree = Tree.build_tree(assigns.objective, assigns.alignments, assigns.max_depth)
+    tree = Tree.build_tree(
+      assigns.objective,
+      assigns.alignments,
+      assigns.max_depth)
+
+    assigns = assign(assigns, :tree, tree)
 
     ~H"""
       <div class="relative z-20 mb-4 flex">
@@ -81,19 +89,19 @@ defmodule OperatelyWeb.ObjectiveTree do
             <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h10.5a.75.75 0 010 1.5H12v13.75a.75.75 0 01-.75.75h-1.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-2.5a.75.75 0 010-1.5H2v-13h-.25A.75.75 0 011 2.75zM4 5.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zM4.5 9a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zM8 5.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zM8.5 9a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zM14.25 6a.75.75 0 00-.75.75V17a1 1 0 001 1h3.75a.75.75 0 000-1.5H18v-9h.25a.75.75 0 000-1.5h-4zm.5 3.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z" clip-rule="evenodd" />
           </svg>
 
-          Rendered Text &mdash; <%= length(assigns.objective) %> objectives
+          Rendered Text &mdash; <%= length(@objective) %> objectives
         </div>
       </div>
 
-      <%= objective_children(%{nodes: tree, indent: "ml-4"}) %>
+      <%= objective_children(%{nodes: @tree, indent: "ml-4"}) %>
     """
   end
 
-  defp objective_children(%{nodes: [], indent: indent} = assigns) do
+  defp objective_children(%{nodes: [], indent: _indent} = _assigns) do
     ""
   end
 
-  defp objective_children(%{nodes: nodes, indent: indent} = assigns) do
+  defp objective_children(%{nodes: _nodes, indent: _indent} = assigns) do
     ~H"""
       <div class={"relative " <> @indent}>
         <div class="absolute -mt-4 border-l border-gray-300 top-0 bottom-8"></div>
@@ -105,7 +113,7 @@ defmodule OperatelyWeb.ObjectiveTree do
     """
   end
 
-  defp objective_tree_node(%{node: node} = assigns) do
+  defp objective_tree_node(%{node: _node} = assigns) do
     ~H"""
     <div>
       <%= objective_tree_objective(%{objective: @node.objective, show_owner: true}) %>
@@ -114,7 +122,7 @@ defmodule OperatelyWeb.ObjectiveTree do
     """
   end
 
-  defp objective_tree_objective(%{objective: objective, show_owner: show_owner} = assigns) do
+  defp objective_tree_objective(%{objective: _objective, show_owner: _show_owner} = assigns) do
     ~H"""
       <div class="flex items-center relative z-10">
         <div class="w-4">
