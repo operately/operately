@@ -5,8 +5,11 @@ defmodule OperatelyWeb.GroupController do
   alias Operately.Groups.Group
 
   def index(conn, _params) do
-    groups = Groups.list_groups()
-    render(conn, :index, groups: groups)
+    props = %{
+      groups: Groups.list_groups()
+    }
+
+    render(conn, :index, props: Jason.encode!(props))
   end
 
   def new(conn, _params) do

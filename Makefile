@@ -81,6 +81,8 @@ dev.setup:
 test.setup:
 	$(TEST_CONTAINER) mix deps.get
 	$(TEST_CONTAINER) mix deps.compile
+	$(TEST_CONTAINER) bash -c "cd assets && npm install"
+	$(TEST_CONTAINER) mix assets.deploy
 
 test.seed.env:
 	touch .env

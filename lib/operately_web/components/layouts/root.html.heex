@@ -9,6 +9,19 @@
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
 
+    <script>
+      // Disable annoying Download the React DevTools for a better
+      // development experience: https://fb.me/react-devtools message
+
+      (function() {
+        var info = console.info
+
+        console.info = function (message) {
+          if (!/Download the React DevTools/.test(message)) info.apply(console, arguments)
+        }
+      })()
+    </script>
+
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
 
