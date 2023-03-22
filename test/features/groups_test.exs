@@ -20,7 +20,7 @@ defmodule Operately.Features.GroupsTest do
   defwhen ~r/^I create a new group with the name "(?<name>[^"]+)"$/, %{name: name}, %{session: session} do
     session
     |> visit("/groups")
-    |> click(Query.link("New Group"))
+    |> click(Query.link("Add Group"))
     |> fill_in(Query.text_field("Name"), with: name)
     |> click(Query.button("Save"))
   end

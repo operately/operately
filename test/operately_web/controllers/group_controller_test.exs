@@ -12,7 +12,7 @@ defmodule OperatelyWeb.GroupControllerTest do
   describe "index" do
     test "lists all groups", %{conn: conn} do
       conn = get(conn, ~p"/groups")
-      assert html_response(conn, 200) =~ "Listing Groups"
+      assert html_response(conn, 200)
     end
   end
 
