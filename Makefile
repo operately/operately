@@ -17,6 +17,20 @@
 #
 .PHONY: test
 
+# If you want to run the tests that generate screenshots, you need to
+# set the SCREENSHOTS_DIR environment variable to a directory where
+# the screenshots will be saved.
+#
+# If the directory does not exist, it will be created automatically
+# in the root of the project.
+#
+# For vagrant users, add the following line to your .bashrc/.zshrc file to
+# be albe to access the screenshots from your host machine:
+#
+#   export SCREENSHOTS_DIR=/vagrant/screenshots
+#
+SCREENSHOTS_DIR ?= $(PWD)/screenshots
+
 #
 # Use the same user id and group id as the host user
 # to avoid permission issues with the mounted volume
@@ -40,7 +54,7 @@ USER_CONTEXT = export GROUP_ID=$$(id -g) && export USER_ID=$$(id -u)
 # Most importantly, it is able to seemlesly use ARM images on ARM machines, and
 # AMD64 images on AMD64 machines.
 #
-DOCKER_COMPOSE = docker compose run --rm -v $(PWD)/screenshots:/tmp/screenshots
+DOCKER_COMPOSE = docker compose run --rm -v $(SCREENSHOTS_DIR):/tmp/screenshots
 
 #
 # Prepare commands to run the containers in various modes.
@@ -104,6 +118,7 @@ dev.db.seed:
 #
 
 test:
+	mkdir -p $(SCREENSHOTS_DIR)
 	$(TEST_CONTAINER) mix test $(FILE)
 
 test.watch:
