@@ -40,7 +40,7 @@ USER_CONTEXT = export GROUP_ID=$$(id -g) && export USER_ID=$$(id -u)
 # Most importantly, it is able to seemlesly use ARM images on ARM machines, and
 # AMD64 images on AMD64 machines.
 #
-DOCKER_COMPOSE = docker compose run --rm -v /vagrant/screenshots:/tmp/screenshots
+DOCKER_COMPOSE = docker compose run --rm -v $(PWD)/screenshots:/tmp/screenshots
 
 #
 # Prepare commands to run the containers in various modes.
