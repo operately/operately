@@ -4,6 +4,7 @@ defmodule Operately.Groups.Group do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Jason.Encoder, only: [:id, :name, :inserted_at, :updated_at]}
   schema "groups" do
     field :name, :string
 
