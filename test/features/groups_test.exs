@@ -2,6 +2,7 @@ defmodule Operately.Features.GroupsTest do
   use Operately.FeatureCase, file: "groups.feature"
 
   alias Operately.Groups
+  alias Operately.PeopleFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
 
@@ -62,6 +63,31 @@ defmodule Operately.Features.GroupsTest do
     session
     |> visit("/groups")
     |> refute_has(Query.text(name))
+  end
+
+  defand ~r/^I have "(?<person_name>[^"]+)" in my organization as the "(?<title>[^"]+)"$/, %{person_name: name, title: title}, state do
+    PeopleFixtures.person_fixture(%{
+      full_name: name,
+      handle: name |> String.downcase |> String.replace(" ", "_"),
+      title: title
+    })
+  end
+
+  defwhen ~r/^I visit the group "(?<name>[^"]+)" page$/, %{name: name}, state do
+    state.session
+    |> visit("/groups")
+    |> click(Query.link(name))
+  end
+
+  defand ~r/^I add the user "(?<name>[^"]+)" to the group$/, %{name: name}, state do
+    state.session
+    |> click(Query.link("Add Member"))
+    |> select(Query.select("Person"), with: name)
+  end
+
+  defthen ~r/^the user "(?<person>[^"]+)" is visible on the group "(?<group>[^"]+)" page$/, %{person: person, group: group}, state do
+    state.session
+    |> assert_has(Query.text(person))
   end
 
 end
