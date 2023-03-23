@@ -1,15 +1,1 @@
-<.header>
-  Group <%= @group.name %>
-  <:subtitle></:subtitle>
-  <:actions>
-    <.link href={~p"/groups/#{@group}/edit"}>
-      <.button>Edit</.button>
-    </.link>
-  </:actions>
-</.header>
-
-<.list>
-  <:item title="Name"><%= @group.name %></:item>
-</.list>
-
-<.back navigate={~p"/groups"}>Back to groups</.back>
+<x-groups-show props-json={@props} />

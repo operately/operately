@@ -30,8 +30,14 @@ defmodule OperatelyWeb.GroupController do
   end
 
   def show(conn, %{"id" => id}) do
-    group = Groups.get_group!(id)
-    render(conn, :show, group: group)
+    props = %{
+      group: Groups.get_group!(id)
+    }
+
+    render(conn, :show,
+      props: Jason.encode!(props),
+      breadcrumbs: [%{name: "Groups", path: "/groups"}]
+    )
   end
 
   def edit(conn, %{"id" => id}) do
