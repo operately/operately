@@ -5,17 +5,7 @@ import AsyncSelect from 'react-select/async';
 import PageTitle from "./page_title";
 import Modal from "./modal";
 
-const peopleSearch = (inputValue: string) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {value: "1", label: "Igor"},
-        {value: "2", label: "John"},
-        {value: "3", label: "Peter"}
-      ]);
-    })
-  }, 10000)
-}
+import axios from 'axios';
 
 
 export default function GroupsShowPage({group: group}) {
@@ -24,6 +14,18 @@ export default function GroupsShowPage({group: group}) {
 
   const handleOpenModal = () => { setShowModal(true); }
   const handleCloseModal = () => { setShowModal(false); }
+
+  const peopleSearch = (inputValue: string) => {
+    const url = `/groups/${group.id}/people_search`
+
+    return axios
+      .get(url, {withCredentials: true, params: {contains: inputValue}})
+      .then((resp) => {
+        return resp.data.map((person) => {
+          return {value: person.id, label: person.full_name}
+        })
+      })
+  }
 
   return (
     <>

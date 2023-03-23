@@ -68,4 +68,13 @@ defmodule OperatelyWeb.GroupController do
     |> put_flash(:info, "Group deleted successfully.")
     |> redirect(to: ~p"/groups")
   end
+
+  def people_search(conn, %{"contains" => str}) do
+    people =
+      Operately.People.list_people()
+      |> Enum.filter(fn p -> String.contains?(String.downcase(p.full_name), String.downcase(str)) end)
+      |> Enum.map(fn p -> %{"full_name" => p.full_name, "id" => p.id} end)
+
+    json(conn, people)
+  end
 end

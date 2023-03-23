@@ -62,10 +62,14 @@ defmodule OperatelyWeb.Router do
     get "/", PageController, :home
 
     resources "/people", PersonController
-    resources "/groups", GroupController
+
     resources "/tenets", TenetController
     resources "/kpis", KpiController
     resources "/projects", ProjectController
+
+    resources "/groups", GroupController do
+      get "/people_search", GroupController, :people_search
+    end
 
     resources "/objectives", ObjectiveController do
       resources "/key_results", KeyResultController, except: [:index]
