@@ -35,7 +35,7 @@ export default function GroupsShowPage({group: group}) {
     return axios
       .post(url, {withCredentials: true, data: {people: people}})
       .then((resp) => {
-        console.log(resp)
+        handleCloseModal()
       })
   }
 
