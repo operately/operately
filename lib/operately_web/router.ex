@@ -69,6 +69,7 @@ defmodule OperatelyWeb.Router do
 
     resources "/groups", GroupController do
       get "/people_search", GroupController, :people_search
+      post "/add_people", GroupController, :add_people
     end
 
     resources "/objectives", ObjectiveController do

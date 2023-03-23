@@ -77,4 +77,10 @@ defmodule OperatelyWeb.GroupController do
 
     json(conn, people)
   end
+
+  def add_people(conn, params) do
+    people_ids = get_in(params, ["data", "people"])
+
+    IO.inspect(people_ids)
+  end
 end
