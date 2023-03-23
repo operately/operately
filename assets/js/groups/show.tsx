@@ -16,15 +16,19 @@ export default function GroupsShowPage({group: group}) {
   const handleOpenModal = () => { setShowModal(true); }
   const handleCloseModal = () => { setShowModal(false); }
 
+  const isAlreadyAdded = (id) => {
+    return selectedPeople.find((p) => p.value == id)
+  }
+
   const peopleSearch = (inputValue: string) => {
     const url = `/groups/${group.id}/people_search`
 
     return axios
       .get(url, {withCredentials: true, params: {contains: inputValue}})
       .then((resp) => {
-        return resp.data.map((person) => {
-          return {value: person.id, label: person.full_name}
-        })
+        const people = resp.data.map((person) => { return {value: person.id, label: person.full_name} })
+
+        return people.filter((p1) => !isAlreadyAdded(p1.value))
       })
   }
 
@@ -44,6 +48,10 @@ export default function GroupsShowPage({group: group}) {
     setSelectedPerson(null);
   }
 
+  const removePersonFromList = (id) => {
+    setSelectedPeople(selectedPeople.filter((p) => p.value !== id))
+  }
+
   return (
     <>
       <PageTitle name={group.name} />
@@ -53,11 +61,21 @@ export default function GroupsShowPage({group: group}) {
       <Modal showModal={showModal}>
         <h1 className="font-bold mb-4">Add people to {group.name}</h1>
 
-        <AsyncSelect value={selectedPerson} cacheOptions onChange={addSelected} loadOptions={peopleSearch} />
+        <AsyncSelect value={selectedPerson} onChange={addSelected} loadOptions={peopleSearch} />
 
         <div className="flex flex-col gap-2 mt-4">
           {selectedPeople.map((p) => {
-            return (<p className="px-2 py-1 border border-gray-200 round" key={p.value}>{p.label}</p>)
+            return (
+              <div className="px-2 py-1 border border-gray-200 round flex justify-between" key={p.value}>
+                <p>{p.label}</p>
+
+                <div className="hover:cursor-pointer" onClick={() => removePersonFromList(p.value)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+              </div>
+            )
           })}
         </div>
 
