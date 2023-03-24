@@ -64,6 +64,14 @@ defmodule MyApp.Features.OkrsTest do
     })
   end
 
+  defand ~r/^I have "(?<person_name>[^"]+)" in my organization as the "(?<title>[^"]+)"$/, %{person_name: name, title: title}, state do
+    PeopleFixtures.person_fixture(%{
+      full_name: name,
+      handle: name |> String.downcase |> String.replace(" ", "_"),
+      title: title
+    })
+  end
+
   defwhen ~r/^I click on the "(?<name>[^"]+)" Objective$/, %{name: name}, state do
     state.session |> click(Query.link(name))
   end
@@ -97,7 +105,6 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defwhen ~r/^I select "(?<name>[^"]+)" from the Focus dropdown$/, %{name: name}, state do
-    state.session |> take_screenshot()
     state.session |> select(name, from: "Focus On")
   end
 
