@@ -82,8 +82,27 @@ defmodule OperatelyWeb.GroupController do
     group = Operately.Groups.get_group!(id)
     people_ids = get_in(params, ["data", "people"])
 
-    Operately.Groups.add_members(group, people_ids)
+    {:ok, _} = Operately.Groups.add_members(group, people_ids)
 
     json(conn, [])
+  end
+
+  def members(conn, %{"group_id" => id} = params) do
+    limit = Map.get(params, "limit", nil)
+    include_total = Map.get(params, "include_total", "true")
+
+    {members, total} = Operately.Groups.list_members(id, limit, include_total)
+
+    res = %{}
+
+    res = if include_total do
+      res |> Map.put("total", total)
+    else
+      res
+    end
+
+    res = Map.put(res, "members", members)
+
+    json(conn, res)
   end
 end

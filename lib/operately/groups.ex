@@ -7,6 +7,8 @@ defmodule Operately.Groups do
   alias Operately.Repo
 
   alias Operately.Groups.Group
+  alias Operately.Groups.Member
+  alias Operately.People.Person
 
   @doc """
   Returns the list of groups.
@@ -131,5 +133,30 @@ defmodule Operately.Groups do
        Ecto.Multi.insert(multi, Integer.to_string(index), changeset)
     end)
     |> Repo.transaction()
+  end
+
+  def list_members(group_id, limit, include_total) do
+    total = if include_total do
+      query = (
+        from m in Member,
+        where: m.group_id == ^group_id,
+        select: count(m.person_id)
+      )
+
+      Repo.one(query)
+    else
+      nil
+    end
+
+    query = (
+      from p in Person,
+      join: m in Member, on: m.person_id == p.id,
+      where: m.group_id == ^group_id,
+      limit: ^limit
+    )
+
+    members = Repo.all(query)
+
+    {members, total}
   end
 end

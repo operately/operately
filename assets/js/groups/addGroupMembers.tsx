@@ -1,7 +1,6 @@
 import React from "react";
 import AsyncSelect from 'react-select/async';
-
-import axios from 'axios';
+import GroupsApi from "../api/GroupsApi";
 
 function SearchField({onSelect, loader}) {
   const [selected, setSelected] = React.useState(null);
@@ -29,27 +28,6 @@ function PeopleList({people, removePerson}) {
   )
 }
 
-class GroupsAPI {
-  constructor(groupID) {
-    this.groupID = groupID;
-  }
-
-  search(pattern) {
-    const url = `/groups/${this.groupID}/people_search`
-    const params = {withCredentials: true, params: {contains: pattern}}
-
-    return axios.get(url, params).then((resp) => resp.data)
-  }
-
-  addMembers(peopleIds) {
-    const url = `/groups/${this.groupID}/add_people`
-    const data = {people: peopleIds}
-    const params = {withCredentials: true, data: data}
-
-    return axios.post(url, params)
-  }
-}
-
 export default function AddGroupMembers({group, onComplete}) {
   const [peopleList, setPeopleList] = React.useState([]);
 
@@ -57,10 +35,8 @@ export default function AddGroupMembers({group, onComplete}) {
   const isAdded  = ((id) => peopleList.find((p) => p.value == id));
   const remove   = ((id) => { setPeopleList(peopleList.filter((p) => p.value !== id)) })
 
-  const api = new GroupsAPI(group.id)
-
   const search = (value: string) => {
-    return api.search(value).then((data) => {
+    return GroupsApi.searchPeople(group.id, value).then((data) => {
       const people = data.map((p) => {
         return {value: p.id, label: p.full_name}
       });
@@ -70,9 +46,9 @@ export default function AddGroupMembers({group, onComplete}) {
   }
 
   const submit = () => {
-    const ids = peopleList.map((p) => p.id);
+    const ids = peopleList.map((p) => p.value);
 
-    api.addMembers(ids).then(() => onComplete())
+    GroupsApi.addMembers(group.id, ids).then(() => onComplete())
   }
 
   return (

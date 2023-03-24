@@ -15,7 +15,7 @@ defmodule Operately.Groups.Member do
   @doc false
   def changeset(member, attrs) do
     member
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:group_id, :person_id])
+    |> validate_required([:group_id, :person_id])
   end
 end
