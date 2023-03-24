@@ -10,7 +10,7 @@ function SearchField({onSelect, loader}) {
     setSelected(null);
   }
 
-  return (<AsyncSelect value={selected} onChange={onSelect} loadOptions={loader} />);
+  return (<AsyncSelect inputId="peopleSearch" value={selected} onChange={onSelect} loadOptions={loader} />);
 }
 
 function PeopleList({people, removePerson}) {

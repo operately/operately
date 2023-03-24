@@ -5,6 +5,7 @@ defmodule Operately.Features.GroupsTest do
   alias Operately.PeopleFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
+  import_steps(Operately.Features.SharedSteps.SimpleInteractions)
 
   defgiven ~r/^that a group with the name "(?<name>[^"]+)" exists$/, %{name: name}, %{session: session} do
     Groups.create_group(%{name: name})
@@ -81,8 +82,12 @@ defmodule Operately.Features.GroupsTest do
 
   defand ~r/^I add the user "(?<name>[^"]+)" to the group$/, %{name: name}, state do
     state.session
-    |> click(Query.link("Add Member"))
-    |> select(Query.select("Person"), with: name)
+    |> click(Query.button("Add Members"))
+    |> fill_in(Query.css("#peopleSearch"), with: "John")
+    |> send_keys([:enter])
+    |> find(Query.css(".ReactModalPortal"), fn modal ->
+      click(modal, Query.button("Add Members"))
+    end)
   end
 
   defthen ~r/^the user "(?<person>[^"]+)" is visible on the group "(?<group>[^"]+)" page$/, %{person: person, group: group}, state do
