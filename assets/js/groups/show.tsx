@@ -9,32 +9,35 @@ import GroupsApi from "../api/GroupsApi";
 
 export default function GroupsShowPage({group: group}) {
   const [showModal, setShowModal] = React.useState(false);
-  const [members, setMembers] = React.useState([]);
-  const [totalCount, setTotalCount] = React.useState(null)
+  const [members, setMembers] = React.useState(null);
 
   const openModal = () => { setShowModal(true); }
 
   const closeModal = () => {
     setShowModal(false);
+    updateMemberList()
   }
 
-  React.useEffect(() => {
+  const updateMemberList = () => {
     const fetchData = async () => {
       const resp = await GroupsApi.listMembers(group.id, 5, true)
-
-      setTotalCount(resp.total)
+      setMembers(resp)
     }
 
     fetchData().catch(console.error)
-  }, [totalCount])
+  }
+
+  React.useEffect(updateMemberList, [])
 
   return (
     <>
       <PageTitle name={group.name} />
 
-      <CondensedMemberList members={members} total={totalCount} />
+      <div className="flex items-center gap-4">
+        {members ? <CondensedMemberList members={members.members} total={members.total} /> : ""}
 
-      <button onClick={openModal} className="inline-flex -space-x-px overflow-hidden rounded-md border bg-white shadow-sm inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:shadow focus:relative">Add Members</button>
+        <button onClick={openModal} className="inline-flex -space-x-px overflow-hidden rounded-md border bg-white shadow-sm inline-block px-4 py-2 text-sm font-medium text-gray-700 hover:shadow focus:relative">Add Members</button>
+      </div>
 
       <Modal showModal={showModal}>
         <AddGroupMembers group={group} onComplete={closeModal} />
