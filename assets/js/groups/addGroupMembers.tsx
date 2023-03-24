@@ -53,7 +53,15 @@ export default function AddGroupMembers({group, onComplete}) {
 
   return (
     <>
-      <h1 className="font-bold mb-4">Add people to {group.name}</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="font-bold">Add people to {group.name}</h1>
+
+        <div className="hover:cursor-pointer" onClick={onComplete}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+      </div>
 
       <SearchField onSelect={add} loader={search} />
 
