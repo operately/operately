@@ -119,6 +119,7 @@ dev.db.seed:
 # Testing tasks
 #
 
+
 test:
 	mkdir -p $(SCREENSHOTS_DIR)
 	$(TEST_CONTAINER) mix test $(FILE)
@@ -128,3 +129,6 @@ test.watch:
 
 test.db.create:
 	$(TEST_CONTAINER) mix ecto.create
+
+test.assets.compile:
+	$(TEST_CONTAINER) mix assets.build

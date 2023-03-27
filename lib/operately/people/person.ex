@@ -4,6 +4,7 @@ defmodule Operately.People.Person do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Jason.Encoder, only: [:id, :full_name , :inserted_at, :handle, :title]}
   schema "people" do
     field :full_name, :string
     field :handle, :string

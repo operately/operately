@@ -30,8 +30,14 @@ defmodule OperatelyWeb.GroupController do
   end
 
   def show(conn, %{"id" => id}) do
-    group = Groups.get_group!(id)
-    render(conn, :show, group: group)
+    props = %{
+      group: Groups.get_group!(id)
+    }
+
+    render(conn, :show,
+      props: Jason.encode!(props),
+      breadcrumbs: [%{name: "Groups", path: "/groups"}]
+    )
   end
 
   def edit(conn, %{"id" => id}) do
@@ -61,5 +67,42 @@ defmodule OperatelyWeb.GroupController do
     conn
     |> put_flash(:info, "Group deleted successfully.")
     |> redirect(to: ~p"/groups")
+  end
+
+  def people_search(conn, %{"contains" => str}) do
+    people =
+      Operately.People.list_people()
+      |> Enum.filter(fn p -> String.contains?(String.downcase(p.full_name), String.downcase(str)) end)
+      |> Enum.map(fn p -> %{"full_name" => p.full_name, "id" => p.id} end)
+
+    json(conn, people)
+  end
+
+  def add_people(conn, %{"group_id" => id} = params) do
+    group = Operately.Groups.get_group!(id)
+    people_ids = get_in(params, ["data", "people"])
+
+    {:ok, _} = Operately.Groups.add_members(group, people_ids)
+
+    json(conn, [])
+  end
+
+  def members(conn, %{"group_id" => id} = params) do
+    limit = Map.get(params, "limit", nil)
+    include_total = Map.get(params, "include_total", "true")
+
+    {members, total} = Operately.Groups.list_members(id, limit, include_total)
+
+    res = %{}
+
+    res = if include_total do
+      res |> Map.put("total", total)
+    else
+      res
+    end
+
+    res = Map.put(res, "members", members)
+
+    json(conn, res)
   end
 end
