@@ -56,6 +56,12 @@ defmodule OperatelyWeb.Router do
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback
   end
 
+  scope "/api", OperatelyWeb do
+    pipe_through [:require_authenticated_account]
+
+    forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Schema
+  end
+
   scope "/", OperatelyWeb do
     pipe_through [:browser, :require_authenticated_account]
 

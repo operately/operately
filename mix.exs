@@ -55,6 +55,10 @@ defmodule Operately.MixProject do
       {:ueberauth, "~> 0.7"},
       {:ueberauth_google, "~> 0.10"},
 
+
+      {:absinthe, "~> 1.7"},
+      {:absinthe_plug, "~> 1.5"},
+
       # testing
       {:cabbage, "~> 0.3.6", only: :test},
       {:wallaby, "~> 0.30.0", runtime: false, only: :test},
