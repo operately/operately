@@ -1,15 +1,17 @@
 import React from 'react';
 
+import DefaultLayout from '../layouts/DefaultLayout';
+
 import GroupPage from '../pages/GroupPage';
-import GroupsPage from '../pages/GroupsPage';
+import GroupListPage from '../pages/GroupListPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 import { Route } from "react-router-dom";
 
 const routes = (
-  <Route path="/">
+  <Route path="/" element={<DefaultLayout />}>
     <Route>
-      <Route path="groups" element={<GroupsPage />} />
+      <Route path="groups" element={<GroupListPage />} />
       <Route path="groups/:groupId" element={<GroupPage />} />
     </Route>
 
