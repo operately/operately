@@ -15,6 +15,8 @@ defmodule OperatelyWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_current_account
   end
 
   #
@@ -56,8 +58,8 @@ defmodule OperatelyWeb.Router do
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback
   end
 
-  scope "/api", OperatelyWeb do
-    pipe_through [:require_authenticated_account]
+  scope "/api" do
+    pipe_through [:api, :require_authenticated_account]
 
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Schema
   end

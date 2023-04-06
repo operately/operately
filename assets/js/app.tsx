@@ -3,13 +3,18 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes } from "react-router-dom";
 import routes from './routes';
 
+import { ApolloProvider } from '@apollo/client';
+import client from './graphql/client';
+
 const rootElement : HTMLElement | null = document.getElementById('root');
 
 const App : JSX.Element = (
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>{routes}</Routes>
-    </BrowserRouter>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <Routes>{routes}</Routes>
+      </BrowserRouter>
+    </ApolloProvider>
   </React.StrictMode>
 );
 
