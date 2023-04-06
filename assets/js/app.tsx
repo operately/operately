@@ -1,19 +1,20 @@
 import React from 'react';
-import ReactDOMClient from 'react-dom/client';
-
-function App() : JSX.Element {
-  return (
-    <div>
-      <h1>Hello, world!</h1>
-    </div>
-  );
-}
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes } from "react-router-dom";
+import routes from './routes';
 
 const rootElement : HTMLElement | null = document.getElementById('root');
 
+const App : JSX.Element = (
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>{routes}</Routes>
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
 if(rootElement !== null) {
-  const root = ReactDOMClient.createRoot(rootElement);
-  root.render(<App />);
+  createRoot(rootElement).render(App)
 } else {
   throw new Error('Root element not found');
 }
