@@ -16,4 +16,16 @@ defmodule OperatelyWeb.Schema do
       end
     end
   end
+
+  subscription do
+    field :group_added, :group do
+      config fn _, _, _ ->
+        {:ok, %{topic: "group_added"}}
+      end
+
+      trigger "group_added", fn
+        %{group: group}, _ -> {:ok, group}
+      end
+    end
+  end
 end

@@ -6,13 +6,6 @@ import routes from './routes';
 import { ApolloProvider } from '@apollo/client';
 import client from './graphql/client';
 
-import socket from "./entity_monitor_socket.js";
-
-let channel = socket.channel("entities:lobby", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
-
 const rootElement : HTMLElement | null = document.getElementById('root');
 
 const App : JSX.Element = (

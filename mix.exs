@@ -55,9 +55,9 @@ defmodule Operately.MixProject do
       {:ueberauth, "~> 0.7"},
       {:ueberauth_google, "~> 0.10"},
 
-
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
+      {:absinthe_graphql_ws, github: "geometerio/absinthe_graphql_ws"},
 
       # testing
       {:cabbage, "~> 0.3.6", only: :test},
