@@ -92,7 +92,7 @@ test.seed.env:
 #
 
 dev.server:
-	$(DEV_CONTAINER_WITH_PORTS) mix phx.server
+	$(DEV_CONTAINER_WITH_PORTS) iex -S mix phx.server
 
 dev.shell:
 	$(DEV_CONTAINER) bash

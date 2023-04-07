@@ -20,8 +20,18 @@ const GROUP_SUBSCRIPTION = gql`
 `;
 
 export default function GroupListPage() {
-  const { loading, error, data } = useQuery(GET_GROUPS);
-  const { data: d1, loading: l1 } = useSubscription(GROUP_SUBSCRIPTION, {})
+  const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_GROUPS);
+
+  React.useEffect(() => {
+    subscribeToMore({
+      document: GROUP_SUBSCRIPTION,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        refetch();
+        return prev;
+      }
+    })
+  }, [])
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
@@ -29,10 +39,8 @@ export default function GroupListPage() {
   return data.groups.map(({ id, name, description }: any) => (
     <div key={id}>
       <p>
-        {name}: {description}
+        {name}: {description}: {new Date().toLocaleTimeString()}
       </p>
-
-      <h4>New group: {!l1 && console.log(d1)}</h4>
     </div>
   ));
 }
