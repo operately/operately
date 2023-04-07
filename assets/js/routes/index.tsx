@@ -12,7 +12,7 @@ const routes = (
   <Route path="/" element={<DefaultLayout />}>
     <Route>
       <Route path="groups" element={<GroupListPage />} />
-      <Route path="groups/:groupId" element={<GroupPage />} />
+      <Route path="groups/:id" element={<GroupPage />} />
     </Route>
 
     <Route path="*" element={<NotFoundPage />} />

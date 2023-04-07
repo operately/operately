@@ -15,6 +15,16 @@ defmodule OperatelyWeb.Schema do
         {:ok, groups}
       end
     end
+
+    field :group, :group do
+      arg :id, non_null(:id)
+
+      resolve fn args, _ ->
+        group = Operately.Groups.get_group!(args.id)
+
+        {:ok, group}
+      end
+    end
   end
 
   subscription do
