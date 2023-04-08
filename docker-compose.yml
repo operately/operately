@@ -23,6 +23,7 @@ services:
       - "4000:4000"
     depends_on:
       - db
+      - screenshots-server
     environment:
       - DB_HOST=db
       - DB_USERNAME=postgres
@@ -39,6 +40,16 @@ services:
     restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  screenshots-server:
+    image: python:3
+    working_dir: "/screenshots"
+    command: >
+      sh -c "python -m http.server 8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./screenshots:/screenshots
 
 volumes:
   postgres-data:
