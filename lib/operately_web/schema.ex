@@ -27,6 +27,20 @@ defmodule OperatelyWeb.Schema do
     end
   end
 
+  mutation do
+    field :create_group, :group do
+      arg :name, non_null(:string)
+
+      resolve fn args, _ ->
+        {:ok, group} = Operately.Groups.create_group(%{
+          name: args.name
+        })
+
+        {:ok, group}
+      end
+    end
+  end
+
   subscription do
     field :group_added, :group do
       config fn _, _ ->

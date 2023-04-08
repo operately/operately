@@ -4,6 +4,7 @@ import DefaultLayout from '../layouts/DefaultLayout';
 
 import {GroupPage, GroupPageLoader} from '../pages/GroupPage';
 import GroupListPage from '../pages/GroupListPage';
+import GroupAddPage from '../pages/GroupAddPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 import { createBrowserRouter } from "react-router-dom";
@@ -30,6 +31,10 @@ const routes = createBrowserRouter([
       {
         path: "/groups",
         element: <GroupListPage />,
+      },
+      {
+        path: "/groups/new",
+        element: <GroupAddPage />,
       },
       {
         path: "/groups/:id",

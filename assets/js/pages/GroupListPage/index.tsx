@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
 
+import ButtonLink from '../../components/ButtonLink';
 import PageTitle from '../../components/PageTitle';
 
 const GET_GROUPS = gql`
@@ -40,7 +41,7 @@ function ListOfGroups({groups}) {
   return (
       <CardList>
         {groups.map(({id, name}: any) => (
-          <Link to={`/groups/${id}`}><Card>{name}</Card></Link>
+          <Link key={name} to={`/groups/${id}`}><Card>{name}</Card></Link>
         ))}
     </CardList>
   );
@@ -65,7 +66,13 @@ export default function GroupListPage() {
 
   return (
     <>
-      <PageTitle title="Groups" />
+      <PageTitle
+        title="Groups"
+        buttons={[
+          <ButtonLink key="new" to="/groups/new">Add Group</ButtonLink>
+        ]}
+      />
+
       <ListOfGroups groups={data.groups} />
     </>
   )
