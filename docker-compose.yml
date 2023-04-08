@@ -20,7 +20,7 @@ services:
     volumes:
       - ./:/home/dev/app
     ports:
-      - "4000:4000"
+      - "127.0.0.1:4000:4000"
     depends_on:
       - db
       - screenshots-server
@@ -47,7 +47,7 @@ services:
     command: >
       sh -c "python -m http.server 8000"
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./screenshots:/screenshots
 
