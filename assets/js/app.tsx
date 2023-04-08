@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes } from "react-router-dom";
+import { RouterProvider, Routes } from "react-router-dom";
 import routes from './routes';
 
 import { ApolloProvider } from '@apollo/client';
@@ -11,9 +11,7 @@ const rootElement : HTMLElement | null = document.getElementById('root');
 const App : JSX.Element = (
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <BrowserRouter>
-        <Routes>{routes}</Routes>
-      </BrowserRouter>
+      <RouterProvider router={routes} />
     </ApolloProvider>
   </React.StrictMode>
 );

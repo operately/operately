@@ -14,10 +14,22 @@ const GET_GROUP = gql`
   }
 `;
 
-export default function GroupPage() {
-  const id = useParams().id;
+export async function GroupPageLoader(apolloClient : any, {params}) {
+  const { id } = params;
+
+  await apolloClient.query({
+    query: GET_GROUP,
+    variables: { id }
+  });
+
+  return {};
+}
+
+export function GroupPage() {
+  const { id } = useParams();
   const { loading, error, data } = useQuery(GET_GROUP, {
     variables: { id },
+    fetchPolicy: 'cache-only'
   });
 
   if (loading) return <p>Loading...</p>;
