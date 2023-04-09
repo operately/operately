@@ -12,6 +12,7 @@ function SideNavigation({ isCollapsed }: SideNavigationProps) {
       <div className="m-2 rounded bg-light-base items-strech w-full">
         <ul className={`list-none m-0 p-0 ${isCollapsed ? 'hidden' : 'block'}`}>
           <Link to="/objectives" title="Objectives" />
+          <Link to="/tenets" title="Tenets" />
           <Link to="/projects" title="Projects" />
           <Link to="/kpis" title="KPIs" />
           <Link to="/groups" title="Groups" />

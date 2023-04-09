@@ -2,14 +2,18 @@ import React from 'react';
 
 import DefaultLayout from '../layouts/DefaultLayout';
 
+import GroupAddPage from '../pages/GroupAddPage';
 import {GroupPage, GroupPageLoader} from '../pages/GroupPage';
-import {ProjectPage, ProjectPageLoader} from '../pages/ProjectPage';
-
 import {GroupListPage, GroupsListPageLoader} from '../pages/GroupListPage';
+
+import ProjectAddPage from '../pages/ProjectAddPage';
+import {ProjectPage, ProjectPageLoader} from '../pages/ProjectPage';
 import {ProjectListPage, ProjectListPageLoader} from '../pages/ProjectListPage';
 
-import GroupAddPage from '../pages/GroupAddPage';
-import ProjectAddPage from '../pages/ProjectAddPage';
+import TenetAddPage from '../pages/TenetAddPage';
+import {TenetPage, TenetPageLoader} from '../pages/TenetPage';
+import {TenetListPage, TenetListPageLoader} from '../pages/TenetListPage';
+
 import NotFoundPage from '../pages/NotFoundPage';
 
 import { createBrowserRouter } from "react-router-dom";
@@ -60,6 +64,20 @@ const routes = createBrowserRouter([
         path: "/projects/:id",
         loader: loaderWithApollo(ProjectPageLoader),
         element: <ProjectPage />,
+      },
+      {
+        path: "/tenets",
+        loader: loaderWithApollo(TenetListPageLoader),
+        element: <TenetListPage />,
+      },
+      {
+        path: "/tenets/new",
+        element: <TenetAddPage />,
+      },
+      {
+        path: "/tenets/:id",
+        loader: loaderWithApollo(TenetPageLoader),
+        element: <TenetPage />
       },
       {
         path: "*",

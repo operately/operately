@@ -1,6 +1,12 @@
 defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
 
+  object :tenet do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :description, :string
+  end
+
   object :person do
     field :id, non_null(:id)
     field :full_name, non_null(:string)
@@ -43,6 +49,24 @@ defmodule OperatelyWeb.Schema do
         group = Operately.Groups.get_group!(args.id)
 
         {:ok, group}
+      end
+    end
+
+    field :tenets, list_of(:tenet) do
+      resolve fn _, _, _ ->
+        tenets = Operately.Tenets.list_tenets()
+
+        {:ok, tenets}
+      end
+    end
+
+    field :tenet, :tenet do
+      arg :id, non_null(:id)
+
+      resolve fn args, _ ->
+        tenet = Operately.Tenets.get_tenet!(args.id)
+
+        {:ok, tenet}
       end
     end
 
@@ -93,6 +117,15 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
+    field :create_tenet, :tenet do
+      arg :name, non_null(:string)
+      arg :description, :string
+
+      resolve fn args, _ ->
+        Operately.Tenets.create_tenet(%{name: args.name, description: args[:description] || "-"})
+      end
+    end
+
     field :add_members, :group do
       arg :group_id, non_null(:id)
       arg :person_ids, non_null(list_of(non_null(:id)))
@@ -108,6 +141,18 @@ defmodule OperatelyWeb.Schema do
 
   subscription do
     field :group_added, :group do
+      config fn _, _ ->
+        {:ok, %{topic: "*"}}
+      end
+    end
+
+    field :project_added, :project do
+      config fn _, _ ->
+        {:ok, %{topic: "*"}}
+      end
+    end
+
+    field :tenet_added, :tenet do
       config fn _, _ ->
         {:ok, %{topic: "*"}}
       end
