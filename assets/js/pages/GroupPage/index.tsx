@@ -3,6 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 
 import PageTitle from '../../components/PageTitle';
+import AddMembersModal from './AddMembersModal';
 
 const GET_GROUP = gql`
   query GetGroup($id: ID!) {
@@ -38,6 +39,7 @@ export function GroupPage() {
   return (
     <div>
       <PageTitle title={data.group.name} />
+      <AddMembersModal groupId={id} />
     </div>
   )
 }
