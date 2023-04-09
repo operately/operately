@@ -28,7 +28,7 @@ defmodule Operately.Features.GroupsTest do
   end
 
   defthen ~r/^the new group "(?<name>[^"]+)" is listing on the groups page$/, %{name: name}, %{session: session} do
-    wait_to_page_load(session, "/groups")
+    wait_for_page_to_load(session, "/groups")
     session |> assert_has(Query.text(name))
   end
 

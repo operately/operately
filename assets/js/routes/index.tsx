@@ -3,8 +3,13 @@ import React from 'react';
 import DefaultLayout from '../layouts/DefaultLayout';
 
 import {GroupPage, GroupPageLoader} from '../pages/GroupPage';
+import {ProjectPage, ProjectPageLoader} from '../pages/ProjectPage';
+
 import {GroupListPage, GroupsListPageLoader} from '../pages/GroupListPage';
+import {ProjectListPage, ProjectListPageLoader} from '../pages/ProjectListPage';
+
 import GroupAddPage from '../pages/GroupAddPage';
+import ProjectAddPage from '../pages/ProjectAddPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 import { createBrowserRouter } from "react-router-dom";
@@ -41,6 +46,20 @@ const routes = createBrowserRouter([
         path: "/groups/:id",
         loader: loaderWithApollo(GroupPageLoader),
         element: <GroupPage />,
+      },
+      {
+        path: "/projects",
+        loader: loaderWithApollo(ProjectListPageLoader),
+        element: <ProjectListPage />,
+      },
+      {
+        path: "/projects/new",
+        element: <ProjectAddPage />,
+      },
+      {
+        path: "/projects/:id",
+        loader: loaderWithApollo(ProjectPageLoader),
+        element: <ProjectPage />,
       },
       {
         path: "*",

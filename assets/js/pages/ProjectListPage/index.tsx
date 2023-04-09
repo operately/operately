@@ -7,9 +7,9 @@ import PageTitle from '../../components/PageTitle';
 import Card from '../../components/Card';
 import CardList from '../../components/CardList';
 
-const GET_GROUPS = gql`
-  query GetGroups {
-    groups{
+const GET_PROJECTS = gql`
+  query GetProjects {
+    projects {
       id
       name
       description
@@ -17,39 +17,39 @@ const GET_GROUPS = gql`
   }
 `;
 
-const GROUP_SUBSCRIPTION = gql`
-  subscription OnGroupAdded {
-    groupAdded {
+const PROJECT_SUBSCRIPTION = gql`
+  subscription OnProjectAdded {
+    projectAdded {
       id
     }
   }
 `;
 
-export async function GroupsListPageLoader(apolloClient : any) {
+export async function ProjectListPageLoader(apolloClient : any) {
   await apolloClient.query({
-    query: GET_GROUPS,
+    query: GET_PROJECTS,
     fetchPolicy: 'network-only'
   });
 
   return {};
 }
 
-function ListOfGroups({groups}) {
+function ListOfProjects({projects}) {
   return (
       <CardList>
-        {groups.map(({id, name}: any) => (
-          <Link key={name} to={`/groups/${id}`}><Card>{name}</Card></Link>
+        {projects.map(({id, name, description}: any) => (
+          <Link key={name} to={`/projects/${id}`}><Card>{name} - {description}</Card></Link>
         ))}
     </CardList>
   );
 }
 
-export function GroupListPage() {
-  const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_GROUPS);
+export function ProjectListPage() {
+  const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_PROJECTS);
 
   React.useEffect(() => {
     subscribeToMore({
-      document: GROUP_SUBSCRIPTION,
+      document: PROJECT_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         refetch();
@@ -64,13 +64,13 @@ export function GroupListPage() {
   return (
     <>
       <PageTitle
-        title="Groups"
+        title="Projects"
         buttons={[
-          <ButtonLink key="new" to="/groups/new">Add Group</ButtonLink>
+          <ButtonLink key="new" to="/projects/new">New Project</ButtonLink>
         ]}
       />
 
-      <ListOfGroups groups={data.groups} />
+      <ListOfProjects projects={data.projects} />
     </>
   )
 }

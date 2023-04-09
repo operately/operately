@@ -8,7 +8,7 @@ function SubmitButton({onClick}) {
 
 function CancelButton({onClick}) {
   return (
-    <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={onClick}>Cancel</button>
+    <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={onClick} type="button">Cancel</button>
   )
 }
 

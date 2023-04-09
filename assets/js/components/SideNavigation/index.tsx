@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Link from './Link';
 
 interface SideNavigationProps {
@@ -6,18 +6,13 @@ interface SideNavigationProps {
   onCollapse: () => void;
 }
 
-function SideNavigation({ isCollapsed, onCollapse }: SideNavigationProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  function toggleOpen() {
-    setIsOpen(!isOpen);
-  }
-
+function SideNavigation({ isCollapsed }: SideNavigationProps) {
   return (
     <aside className="h-screen sticky flex w-72">
       <div className="m-2 rounded bg-light-base items-strech w-full">
         <ul className={`list-none m-0 p-0 ${isCollapsed ? 'hidden' : 'block'}`}>
           <Link to="/objectives" title="Objectives" />
+          <Link to="/projects" title="Projects" />
           <Link to="/kpis" title="KPIs" />
           <Link to="/groups" title="Groups" />
           <Link to="/people" title="People" />

@@ -7,6 +7,12 @@ defmodule OperatelyWeb.Schema do
     field :title, non_null(:string)
   end
 
+  object :project do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :description, :string
+  end
+
   object :group do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -40,6 +46,24 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
+    field :projects, list_of(:project) do
+      resolve fn _, _, _ ->
+        projects = Operately.Projects.list_projects()
+
+        {:ok, projects}
+      end
+    end
+
+    field :project, :project do
+      arg :id, non_null(:id)
+
+      resolve fn args, _ ->
+        project = Operately.Projects.get_project!(args.id)
+
+        {:ok, project}
+      end
+    end
+
     field :search_people, list_of(:person) do
       arg :query, non_null(:string)
 
@@ -57,6 +81,15 @@ defmodule OperatelyWeb.Schema do
 
       resolve fn args, _ ->
         Operately.Groups.create_group(%{name: args.name})
+      end
+    end
+
+    field :create_project, :project do
+      arg :name, non_null(:string)
+      arg :description, :string
+
+      resolve fn args, _ ->
+        Operately.Projects.create_project(%{name: args.name, description: args[:description] || "-"})
       end
     end
 
