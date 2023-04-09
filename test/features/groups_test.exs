@@ -28,9 +28,8 @@ defmodule Operately.Features.GroupsTest do
   end
 
   defthen ~r/^the new group "(?<name>[^"]+)" is listing on the groups page$/, %{name: name}, %{session: session} do
-    session
-    |> visit("/groups")
-    |> assert_has(Query.text(name))
+    wait_to_page_load(session, "/groups")
+    session |> assert_has(Query.text(name))
   end
 
   defwhen ~r/^I edit the group "(?<old_name>[^"]+)" and change the name to "(?<new_name>[^"]+)"$/, %{old_name: old_name, new_name: new_name}, %{session: session} do

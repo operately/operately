@@ -19,8 +19,9 @@ export default function GroupAddPage() {
 
   const [createGroup] = useMutation(CREATE_GROUP);
 
-  const onSubmit = () => {
-    createGroup({ variables: { name: nameInput.current?.value } });
+  const onSubmit = async () => {
+    await createGroup({ variables: { name: nameInput.current?.value } });
+
     navigate("/groups");
   };
 

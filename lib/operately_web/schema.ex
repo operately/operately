@@ -32,11 +32,7 @@ defmodule OperatelyWeb.Schema do
       arg :name, non_null(:string)
 
       resolve fn args, _ ->
-        {:ok, group} = Operately.Groups.create_group(%{
-          name: args.name
-        })
-
-        {:ok, group}
+        Operately.Groups.create_group(%{name: args.name})
       end
     end
   end
