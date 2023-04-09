@@ -31,7 +31,9 @@ export default function GroupAddPage() {
   return (
     <>
       <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <input ref={nameInput} type="text" className="" />
+        <h1 className="text-2xl font-bold mb-4">Add Group</h1>
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Name</label>
+        <input ref={nameInput} type="text" className="border border-gray-200 rounded w-full p-2" id="name" placeholder="ex. Marketing" />
       </Form>
     </>
   )
