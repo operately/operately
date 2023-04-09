@@ -38,7 +38,7 @@ function ListOfTenets({ tenets }: any) {
   return (
       <CardList>
         {tenets.map(({id, name, description}: any) => (
-          <Link key={name} to={`/projects/${id}`}><Card>{name} - {description}</Card></Link>
+          <Link key={name} to={`/tenets/${id}`}><Card>{name} - {description}</Card></Link>
         ))}
     </CardList>
   );
