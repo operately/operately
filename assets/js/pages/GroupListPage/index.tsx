@@ -23,6 +23,15 @@ const GROUP_SUBSCRIPTION = gql`
   }
 `;
 
+export async function GroupsListPageLoader(apolloClient : any) {
+  await apolloClient.query({
+    query: GET_GROUPS,
+    fetchPolicy: 'network-only'
+  });
+
+  return {};
+}
+
 function Card({children}) {
   return (
     <div className="py-2 px-4 bg-white rounded shadow-sm hover:shadow hover:cursor-pointer">
@@ -47,7 +56,7 @@ function ListOfGroups({groups}) {
   );
 }
 
-export default function GroupListPage() {
+export function GroupListPage() {
   const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_GROUPS);
 
   React.useEffect(() => {

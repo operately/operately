@@ -3,7 +3,7 @@ import React from 'react';
 import DefaultLayout from '../layouts/DefaultLayout';
 
 import {GroupPage, GroupPageLoader} from '../pages/GroupPage';
-import GroupListPage from '../pages/GroupListPage';
+import {GroupListPage, GroupsListPageLoader} from '../pages/GroupListPage';
 import GroupAddPage from '../pages/GroupAddPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
@@ -30,6 +30,7 @@ const routes = createBrowserRouter([
     children: [
       {
         path: "/groups",
+        loader: loaderWithApollo(GroupsListPageLoader),
         element: <GroupListPage />,
       },
       {
