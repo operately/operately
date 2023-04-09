@@ -483,4 +483,11 @@ defmodule Operately.People do
         |> Repo.insert()
     end
   end
+
+  def search_people(query) do
+    Repo.all(
+      from p in Person,
+      where: ilike(p.full_name, ^"%#{query}%") or ilike(p.title, ^"%#{query}%")
+    )
+  end
 end

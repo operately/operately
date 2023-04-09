@@ -1,10 +1,24 @@
 defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
 
+  object :person do
+    field :id, non_null(:id)
+    field :full_name, non_null(:string)
+    field :title, non_null(:string)
+  end
+
   object :group do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :description, :string
+
+    field :members, list_of(non_null(:person)) do
+      resolve fn group, _, _ ->
+        people = Operately.Groups.list_members(group)
+
+        {:ok, people}
+      end
+    end
   end
 
   query do
@@ -25,6 +39,16 @@ defmodule OperatelyWeb.Schema do
         {:ok, group}
       end
     end
+
+    field :search_people, list_of(:person) do
+      arg :query, non_null(:string)
+
+      resolve fn args, _ ->
+        people = Operately.People.search_people(args.query)
+
+        {:ok, people}
+      end
+    end
   end
 
   mutation do
@@ -33,6 +57,18 @@ defmodule OperatelyWeb.Schema do
 
       resolve fn args, _ ->
         Operately.Groups.create_group(%{name: args.name})
+      end
+    end
+
+    field :add_members, :group do
+      arg :group_id, non_null(:id)
+      arg :person_ids, non_null(list_of(non_null(:id)))
+
+      resolve fn args, _ ->
+        group = Operately.Groups.get_group!(args.group_id)
+        {:ok, _} = Operately.Groups.add_members(group, args.person_ids)
+
+        {:ok, group}
       end
     end
   end
