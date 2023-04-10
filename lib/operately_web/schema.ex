@@ -7,6 +7,20 @@ defmodule OperatelyWeb.Schema do
     field :description, :string
   end
 
+  object :objective do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :description, :string
+    field :timeframe, non_null(:string)
+    field :owner, non_null(:person) do
+      resolve fn objective, _, _ ->
+        person = Operately.People.get_person!(objective.owner_id)
+
+        {:ok, person}
+      end
+    end
+  end
+
   object :kpi do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -51,6 +65,13 @@ defmodule OperatelyWeb.Schema do
     field :danger_direction, non_null(:string)
   end
 
+  input_object :create_objective_input do
+    field :name, non_null(:string)
+    field :description, :string
+    field :timeframe, non_null(:string)
+    field :owner_id, non_null(:id)
+  end
+
   query do
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
@@ -67,6 +88,24 @@ defmodule OperatelyWeb.Schema do
         kpi = Operately.Kpis.get_kpi!(args.id)
 
         {:ok, kpi}
+      end
+    end
+
+    field :objectives, list_of(:objective) do
+      resolve fn _, _, _ ->
+        objectives = Operately.Okrs.list_objectives()
+
+        {:ok, objectives}
+      end
+    end
+
+    field :objective, :objective do
+      arg :id, non_null(:id)
+
+      resolve fn args, _ ->
+        objective = Operately.Okrs.get_objective!(args.id)
+
+        {:ok, objective}
       end
     end
 
@@ -170,6 +209,14 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
+    field :create_objective, :objective do
+      arg :input, non_null(:create_objective_input)
+
+      resolve fn args, _ ->
+        Operately.Objectives.create_objective(args.input)
+      end
+    end
+
     field :add_members, :group do
       arg :group_id, non_null(:id)
       arg :person_ids, non_null(list_of(non_null(:id)))
@@ -203,6 +250,12 @@ defmodule OperatelyWeb.Schema do
     end
 
     field :kpi_added, :kpi do
+      config fn _, _ ->
+        {:ok, %{topic: "*"}}
+      end
+    end
+
+    field :objective_added, :objective do
       config fn _, _ ->
         {:ok, %{topic: "*"}}
       end

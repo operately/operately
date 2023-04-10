@@ -18,6 +18,10 @@ import KpiAddPage from '../pages/KpiAddPage';
 import {KpiPage, KpiPageLoader} from '../pages/KpiPage';
 import {KpiListPage, KpiListPageLoader} from '../pages/KpiListPage';
 
+import ObjectiveAddPage from '../pages/ObjectiveAddPage';
+import {ObjectivePage, ObjectivePageLoader} from '../pages/ObjectivePage';
+import {ObjectiveListPage, ObjectiveListPageLoader} from '../pages/ObjectiveListPage';
+
 import NotFoundPage from '../pages/NotFoundPage';
 
 import { createBrowserRouter } from "react-router-dom";
@@ -96,6 +100,20 @@ const routes = createBrowserRouter([
         path: "/kpis/:id",
         loader: loaderWithApollo(KpiPageLoader),
         element: <KpiPage />
+      },
+      {
+        path: "/objectives",
+        loader: loaderWithApollo(ObjectiveListPageLoader),
+        element: <ObjectiveListPage />,
+      },
+      {
+        path: "/objectives/new",
+        element: <ObjectiveAddPage />,
+      },
+      {
+        path: "/objectives/:id",
+        loader: loaderWithApollo(ObjectivePageLoader),
+        element: <ObjectivePage />
       },
       {
         path: "*",
