@@ -11,14 +11,6 @@ defmodule OperatelyWeb.Schema do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :description, :string
-    field :timeframe, non_null(:string)
-    field :owner, non_null(:person) do
-      resolve fn objective, _, _ ->
-        person = Operately.People.get_person!(objective.owner_id)
-
-        {:ok, person}
-      end
-    end
   end
 
   object :kpi do

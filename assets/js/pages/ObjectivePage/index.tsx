@@ -6,7 +6,7 @@ import PageTitle from '../../components/PageTitle';
 
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
-    project(id: $id) {
+    objective(id: $id) {
       id
       name
       description
@@ -28,7 +28,7 @@ export async function ObjectivePageLoader(apolloClient : any, {params}) {
 export function ObjectivePage() {
   const { id } = useParams();
 
-  if (!id) return <p>Unable to find project</p>;
+  if (!id) return <p>Unable to find objective</p>;
 
   const { loading, error, data } = useQuery(GET_OBJECTIVE, {
     variables: { id },
@@ -40,7 +40,7 @@ export function ObjectivePage() {
 
   return (
     <div>
-      <PageTitle title={data.project.name} />
+      <PageTitle title={data.objective.name} />
     </div>
   )
 }
