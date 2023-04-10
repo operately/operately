@@ -7,6 +7,12 @@ defmodule OperatelyWeb.Schema do
     field :description, :string
   end
 
+  object :kpi do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :description, :string
+  end
+
   object :person do
     field :id, non_null(:id)
     field :full_name, non_null(:string)
@@ -33,7 +39,37 @@ defmodule OperatelyWeb.Schema do
     end
   end
 
+  input_object :create_kpi_input do
+    field :name, non_null(:string)
+    field :description, :string
+    field :unit, non_null(:string)
+    field :target, non_null(:integer)
+    field :target_direction, non_null(:string)
+    field :warning_threshold, non_null(:integer)
+    field :warning_direction, non_null(:string)
+    field :danger_threshold, non_null(:integer)
+    field :danger_direction, non_null(:string)
+  end
+
   query do
+    field :kpis, list_of(:kpi) do
+      resolve fn _, _, _ ->
+        kpis = Operately.Kpis.list_kpis()
+
+        {:ok, kpis}
+      end
+    end
+
+    field :kpi, :kpi do
+      arg :id, non_null(:id)
+
+      resolve fn args, _ ->
+        kpi = Operately.Kpis.get_kpi!(args.id)
+
+        {:ok, kpi}
+      end
+    end
+
     field :groups, list_of(:group) do
       resolve fn _, _, _ ->
         groups = Operately.Groups.list_groups()
@@ -126,6 +162,14 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
+    field :create_kpi, :kpi do
+      arg :input, non_null(:create_kpi_input)
+
+      resolve fn args, _ ->
+        Operately.Kpis.create_kpi(args.input)
+      end
+    end
+
     field :add_members, :group do
       arg :group_id, non_null(:id)
       arg :person_ids, non_null(list_of(non_null(:id)))
@@ -153,6 +197,12 @@ defmodule OperatelyWeb.Schema do
     end
 
     field :tenet_added, :tenet do
+      config fn _, _ ->
+        {:ok, %{topic: "*"}}
+      end
+    end
+
+    field :kpi_added, :kpi do
       config fn _, _ ->
         {:ok, %{topic: "*"}}
       end

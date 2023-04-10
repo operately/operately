@@ -132,3 +132,6 @@ test.db.create:
 
 test.assets.compile:
 	$(TEST_CONTAINER) mix assets.build
+
+test.screenshots.clear:
+	rm -rf $(SCREENSHOTS_DIR)/*

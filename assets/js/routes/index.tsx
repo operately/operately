@@ -14,6 +14,10 @@ import TenetAddPage from '../pages/TenetAddPage';
 import {TenetPage, TenetPageLoader} from '../pages/TenetPage';
 import {TenetListPage, TenetListPageLoader} from '../pages/TenetListPage';
 
+import KpiAddPage from '../pages/KpiAddPage';
+import {KpiPage, KpiPageLoader} from '../pages/KpiPage';
+import {KpiListPage, KpiListPageLoader} from '../pages/KpiListPage';
+
 import NotFoundPage from '../pages/NotFoundPage';
 
 import { createBrowserRouter } from "react-router-dom";
@@ -78,6 +82,20 @@ const routes = createBrowserRouter([
         path: "/tenets/:id",
         loader: loaderWithApollo(TenetPageLoader),
         element: <TenetPage />
+      },
+      {
+        path: "/kpis",
+        loader: loaderWithApollo(KpiListPageLoader),
+        element: <KpiListPage />,
+      },
+      {
+        path: "/kpis/new",
+        element: <KpiAddPage />,
+      },
+      {
+        path: "/kpis/:id",
+        loader: loaderWithApollo(KpiPageLoader),
+        element: <KpiPage />
       },
       {
         path: "*",
