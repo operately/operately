@@ -205,7 +205,7 @@ defmodule OperatelyWeb.Schema do
       arg :input, non_null(:create_objective_input)
 
       resolve fn args, _ ->
-        Operately.Objectives.create_objective(args.input)
+        Operately.Okrs.create_objective(args.input)
       end
     end
 

@@ -66,7 +66,7 @@ export function ObjectiveListPage() {
       <PageTitle
         title="Objectives"
         buttons={[
-          <ButtonLink key="new" to="/objectives/new">New Objective</ButtonLink>
+          <ButtonLink key="new" to="/objectives/new">Add Objective</ButtonLink>
         ]}
       />
 

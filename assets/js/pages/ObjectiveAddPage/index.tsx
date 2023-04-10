@@ -6,12 +6,13 @@ import { useMutation, gql, useApolloClient } from "@apollo/client";
 import Form from "../../components/Form";
 import FormTextInput from "../../components/FormTextInput";
 import FormTextArea from "../../components/FormTextArea";
+import FormSelect from "../../components/FormSelect";
 
 import AsyncSelect from 'react-select/async';
 
 const CREATE_OBJECTIVE = gql`
-  mutation CreateObjective($name: String!, $description: String) {
-    createObjective(name: $name, description: $description) {
+  mutation CreateObjective($input: CreateObjectiveInput!) {
+    createObjective(input: $input) {
       id
       name
     }
@@ -47,7 +48,7 @@ function SearchField({id, onSelect, loader}) {
     onSelect(value);
   }
 
-  return (<AsyncSelect id={id} inputId="peopleSearch" value={selected} onChange={onChange} loadOptions={loader} />);
+  return (<AsyncSelect inputId={id} value={selected} onChange={onChange} loadOptions={loader} />);
 }
 
 function convertToSelectOption(person : Person) : SelectOption {
@@ -60,21 +61,33 @@ function convertToSelectOptions(people : Person[]) : SelectOption[] {
 
 export default function ObjectiveAddPage() {
   const client = useApolloClient();
+
+  const [selectedOwner, setSelectedOwner] = React.useState<SelectOption | null>(null);
+
   let navigate = useNavigate();
   let nameInput = React.useRef<HTMLInputElement>(null);
   let descriptionInput = React.useRef<HTMLTextAreaElement>(null);
+  let timeframeInput = React.useRef<HTMLSelectElement>(null);
 
   const [createObjective] = useMutation(CREATE_OBJECTIVE);
 
   const onSubmit = async () => {
-    await createObjective({
-      variables: {
-        name: nameInput.current?.value,
-        description: descriptionInput.current?.value
-      }
-    });
+    try {
+      await createObjective({
+        variables: {
+          input : {
+            name: nameInput.current?.value,
+            description: descriptionInput.current?.value,
+            timeframe: timeframeInput.current?.value,
+            owner_id: selectedOwner
+          }
+        }
+      });
 
-    navigate("/objectives");
+      navigate("/objectives");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const onCancel = () => {
@@ -102,7 +115,13 @@ export default function ObjectiveAddPage() {
         <FormTextArea ref={descriptionInput} id="description" label="Description" placeholder="Describe the details of the objective" />
 
         <label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner</label>
-        <SearchField id="owner" onSelect={() => null} loader={search} />
+        <SearchField id="owner" onSelect={(e : any) => {
+          setSelectedOwner(e.value)
+        }} loader={search} />
+
+        <FormSelect ref={timeframeInput} id="timeframe" label="Timeframe">
+          <option value="current-quarter">Current quarter</option>
+        </FormSelect>
       </Form>
     </>
   )

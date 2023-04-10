@@ -25,7 +25,10 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defand ~r/^I choose "(?<person>[^"]+)" from the Owner dropdown$/, %{person: person}, state do
-    state.session |> select(person, from: "Owner")
+    state.session
+    |> fill_in(Query.css("#owner"), with: "John")
+    |> assert_text("John Johnson")
+    |> send_keys([:enter])
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the list of Objectives$/, %{name: name}, state do
@@ -37,7 +40,6 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the Objective title$/, %{name: name}, state do
-    state.session |> ts()
     state.session |> assert_text(name)
   end
 
@@ -92,8 +94,8 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> assert_text(name)
   end
 
-  defand ~r/^I click on Add$/, _vars, state do
-    state.session |> click(Query.button("Add"))
+  defand ~r/^I click on Save$/, _vars, state do
+    state.session |> click(Query.button("Save"))
   end
 
   defwhen ~r/^I click on Add Objective$/, _vars, state do
