@@ -15,6 +15,8 @@ defmodule OperatelyWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_current_account
   end
 
   #
@@ -56,32 +58,17 @@ defmodule OperatelyWeb.Router do
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback
   end
 
+  scope "/api" do
+    pipe_through [:api, :require_authenticated_account]
+
+    forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Schema
+  end
+
   scope "/", OperatelyWeb do
     pipe_through [:browser, :require_authenticated_account]
 
-    get "/", PageController, :home
-
-    resources "/people", PersonController
-
-    resources "/tenets", TenetController
-    resources "/kpis", KpiController
-    resources "/projects", ProjectController
-
-    resources "/groups", GroupController do
-      get "/people_search", GroupController, :people_search
-      post "/add_people", GroupController, :add_people
-      get "/members", GroupController, :members
-    end
-
-    resources "/objectives", ObjectiveController do
-      resources "/key_results", KeyResultController, except: [:index]
-    end
+    get "/*page", PageController, :index
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", OperatelyWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:operately, :dev_routes) do

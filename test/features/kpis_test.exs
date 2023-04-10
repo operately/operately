@@ -8,9 +8,11 @@ defmodule Operately.Features.KpisTest do
     state.session |> visit("/kpis")
   end
 
+  defand ~r/^I click New KPI/, _vars, state do
+    state.session |> click(Query.link("New Kpi"))
+  end
+
   defthen ~r/^I should see "(?<name>[^"]+)" in the KPI list$/, %{name: name}, state do
-    state.session
-    |> visit("/kpis")
-    |> assert_has(Query.text(name))
+    state.session |> assert_has(Query.text(name))
   end
 end

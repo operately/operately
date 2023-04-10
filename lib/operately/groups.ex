@@ -111,12 +111,18 @@ defmodule Operately.Groups do
 
   ## Examples
 
-      iex> list_members()
+      iex> list_members(group)
       [%Member{}, ...]
 
   """
-  def list_members do
-    Repo.all(Member)
+  def list_members(group) do
+    query = (
+      from p in Person,
+      join: m in Member, on: m.person_id == p.id,
+      where: m.group_id == ^group.id
+    )
+
+    Repo.all(query)
   end
 
   def add_members(group, people_ids) do

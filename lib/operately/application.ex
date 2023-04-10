@@ -8,18 +8,12 @@ defmodule Operately.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       OperatelyWeb.Telemetry,
-      # Start the Ecto repository
       Operately.Repo,
-      # Start the PubSub system
       {Phoenix.PubSub, name: Operately.PubSub},
-      # Start Finch
       {Finch, name: Operately.Finch},
-      # Start the Endpoint (http/https)
-      OperatelyWeb.Endpoint
-      # Start a worker by calling: Operately.Worker.start_link(arg)
-      # {Operately.Worker, arg}
+      OperatelyWeb.Endpoint,
+      {Absinthe.Subscription, OperatelyWeb.Endpoint}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

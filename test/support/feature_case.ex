@@ -41,6 +41,16 @@ defmodule Operately.FeatureCase do
       def scroll_into_view(session, css_selector) do
         session |> execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
       end
+
+      def wait_for_page_to_load(session, path) do
+        Wallaby.Browser.retry(fn ->
+          if Wallaby.Browser.current_path(session) == path do
+            {:ok, session}
+          else
+            {:error, :not_yet}
+          end
+        end)
+      end
     end
   end
 end
