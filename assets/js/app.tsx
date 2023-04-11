@@ -1,10 +1,11 @@
 import React from 'react';
 import { createRoot } from "react-dom/client";
-import { RouterProvider, Routes } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import routes from './routes';
 
 import { ApolloProvider } from '@apollo/client';
 import client from './graphql/client';
+import "./i18n";
 
 const rootElement : HTMLElement | null = document.getElementById('root');
 

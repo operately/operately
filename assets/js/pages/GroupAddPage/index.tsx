@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
@@ -16,6 +17,8 @@ const CREATE_GROUP = gql`
 `;
 
 export default function GroupAddPage() {
+  const { t } = useTranslation();
+
   let navigate = useNavigate();
   let nameInput = React.useRef<HTMLInputElement>(null);
 
@@ -34,9 +37,14 @@ export default function GroupAddPage() {
   return (
     <>
       <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">Add Group</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("forms.group_add_title")}</h1>
 
-        <FormTextInput ref={nameInput} id="name" label="Name" placeholder="ex. Marketing" />
+        <FormTextInput
+          ref={nameInput}
+          id="name"
+          label={t("forms.group_name_label")}
+          placeholder={t("forms.group_name_placeholder")}
+        />
       </Form>
     </>
   )
