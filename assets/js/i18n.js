@@ -7,9 +7,9 @@ i18n
     resources: {
       "en": {
         translation: {
-          "Objectives": "objectives",
-          "Tenets": "tenets",
-          "Projects": "projects",
+          "Objectives": "Objectives",
+          "Tenets": "Tenets",
+          "Projects": "Projects",
           "KPIs": "KPIs",
           "Groups": "Groups",
           "People": "People",
@@ -25,10 +25,10 @@ i18n
           actions: {
             "add_group": "Add Group",
             "add_person": "Add Person",
-            "add_project": "Add Project",
-            "add_kpi": "Add KPI",
+            "add_project": "New Project",
+            "add_kpi": "New Kpi",
             "add_objective": "Add Objective",
-            "add_tenet": "Add Tenet",
+            "add_tenet": "New Tenet",
           },
 
           forms: {
@@ -49,15 +49,15 @@ i18n
             "kpi_unit_currency": "currency",
             "kpi_target_label": "Target",
             "kpi_target_placeholder": "ex. 1000000",
-            "kpi_target_direction_label": "Target Direction",
-            "kpi_target_direction_above": "Above",
-            "kpi_target_direction_below": "Below",
-            "kpi_warning_trigger_label": "Warning Threshold",
-            "kpi_warning_trigger_placeholder": "ex. 500000",
-            "kpi_danger_threshold_label": "Danger Threshold",
+            "kpi_target_direction_label": "Target direction",
+            "kpi_target_direction_above": "above",
+            "kpi_target_direction_below": "below",
+            "kpi_warning_threshold_label": "Warning threshold",
+            "kpi_warning_threshold_placeholder": "ex. 500000",
+            "kpi_danger_threshold_label": "Danger threshold",
             "kpi_danger_threshold_placeholder": "ex. 100000",
-            "kpi_danger_direction_label": "Danger Direction",
-            "kpi_warning_direction_label": "Warning Direction",
+            "kpi_danger_direction_label": "Danger direction",
+            "kpi_warning_direction_label": "Warning direction",
 
             "objective_add_title": "Add Objective",
             "objective_name_label": "Name",
@@ -67,7 +67,7 @@ i18n
             "objective_owner_label": "Owner",
             "objective_owner_search_placeholder": "Search for a person...",
             "objective_timeframe_label": "Timeframe",
-            "objective_timeframe_current_quarter": "Current Quarter",
+            "objective_timeframe_current_quarter": "Current quarter",
 
             "project_add_title": "Add Project",
             "project_name_label": "Name",
@@ -327,7 +327,7 @@ i18n
       }
     },
     returnNull: false,
-    lng: "jp",
+    lng: "en",
     fallbackLng: "en",
   });
 
