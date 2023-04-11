@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import ButtonLink from '../../components/ButtonLink';
 import PageTitle from '../../components/PageTitle';
@@ -45,6 +46,7 @@ function ListOfKpis({kpis}) {
 }
 
 export function KpiListPage() {
+  const { t } = useTranslation();
   const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_KPIS);
 
   React.useEffect(() => {
@@ -58,15 +60,15 @@ export function KpiListPage() {
     })
   }, [])
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   return (
     <>
       <PageTitle
-        title="Kpis"
+        title={t("KPIs")}
         buttons={[
-          <ButtonLink key="new" to="/kpis/new">New Kpi</ButtonLink>
+          <ButtonLink key="new" to="/kpis/new">{t("actions.add_kpi")}</ButtonLink>
         ]}
       />
 

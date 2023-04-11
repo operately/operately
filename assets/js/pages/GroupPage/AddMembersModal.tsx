@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AsyncSelect from 'react-select/async';
 import Modal from './Modal';
@@ -43,7 +44,7 @@ function convertToSelectOptions(people : Person[]) : SelectOption[] {
   return people.map(convertToSelectOption);
 }
 
-function SearchField({onSelect, loader}) {
+function SearchField({onSelect, loader, placeholder}) {
   const [selected, setSelected] = React.useState(null);
 
   const onChange = (value : Person | null) : void => {
@@ -51,7 +52,7 @@ function SearchField({onSelect, loader}) {
     setSelected(null);
   }
 
-  return (<AsyncSelect inputId="peopleSearch" value={selected} onChange={onChange} loadOptions={loader} />);
+  return (<AsyncSelect placeholder={placeholder} inputId="peopleSearch" value={selected} onChange={onChange} loadOptions={loader} />);
 }
 
 function RemoveIcon({onClick}) {
@@ -81,6 +82,7 @@ function PeopleList({people, removePerson} : {people: SelectOption[], removePers
 }
 
 export default function AddMembersModal({ groupId, onSubmit }) {
+  const { t } = useTranslation();
   const client = useApolloClient();
   const [peopleList, setPeopleList] : [SelectOption[], any] = React.useState([]);
   const [isModalOpen, setIsModalOpen] : [boolean, any] = React.useState(false);
@@ -126,15 +128,15 @@ export default function AddMembersModal({ groupId, onSubmit }) {
     <>
       <Button onClick={openModal}>Add Members</Button>
 
-      <Modal title="Add People" isOpen={isModalOpen} hideModal={hideModal}>
-        <SearchField onSelect={add} loader={search} />
+      <Modal title={t("forms.add_group_members_title")} isOpen={isModalOpen} hideModal={hideModal}>
+        <SearchField onSelect={add} loader={search} placeholder={t("forms.add_group_members_search_placeholder")} />
 
         <div className="flex flex-col gap-2 mt-4">
           <PeopleList people={peopleList} removePerson={remove} />
         </div>
 
         <div className="mt-4">
-          <Button onClick={submit}>Add Members</Button>
+          <Button onClick={submit}>{t("forms.add_group_members_button")}</Button>
         </div>
       </Modal>
     </>

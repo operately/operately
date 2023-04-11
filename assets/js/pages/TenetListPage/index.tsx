@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
 
@@ -45,6 +47,8 @@ function ListOfTenets({ tenets }: any) {
 }
 
 export function TenetListPage() {
+  const { t } = useTranslation();
+
   const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_TENETS);
 
   React.useEffect(() => {
@@ -58,15 +62,15 @@ export function TenetListPage() {
     })
   }, [])
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   return (
     <>
       <PageTitle
-        title="Tenets"
+        title={t("Tenets")}
         buttons={[
-          <ButtonLink key="new" to="/tenets/new">New Tenet</ButtonLink>
+          <ButtonLink key="new" to="/tenets/new">{t("actions.add_tenet")}</ButtonLink>
         ]}
       />
 

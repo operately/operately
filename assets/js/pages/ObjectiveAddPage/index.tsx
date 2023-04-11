@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql, useApolloClient } from "@apollo/client";
@@ -40,7 +41,7 @@ interface SelectOption {
   label: string;
 }
 
-function SearchField({id, onSelect, loader}) {
+function SearchField({id, onSelect, loader, placeholder}) {
   const [selected, setSelected] = React.useState<SelectOption | null>(null);
 
   const onChange = (value : SelectOption | null) : void => {
@@ -48,7 +49,7 @@ function SearchField({id, onSelect, loader}) {
     onSelect(value);
   }
 
-  return (<AsyncSelect inputId={id} value={selected} onChange={onChange} loadOptions={loader} />);
+  return (<AsyncSelect placeholder={placeholder} inputId={id} value={selected} onChange={onChange} loadOptions={loader} />);
 }
 
 function convertToSelectOption(person : Person) : SelectOption {
@@ -60,6 +61,7 @@ function convertToSelectOptions(people : Person[]) : SelectOption[] {
 }
 
 export default function ObjectiveAddPage() {
+  const { t } = useTranslation();
   const client = useApolloClient();
 
   const [selectedOwner, setSelectedOwner] = React.useState<SelectOption | null>(null);
@@ -109,19 +111,42 @@ export default function ObjectiveAddPage() {
   return (
     <>
       <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">Add Objective</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("forms.objective_add_title")}</h1>
 
-        <FormTextInput ref={nameInput} id="name" label="Name" placeholder="ex. Company Website" />
-        <FormTextArea ref={descriptionInput} id="description" label="Description" placeholder="Describe the details of the objective" />
+        <div className="flex flex-col gap-4">
+          <FormTextInput
+            ref={nameInput}
+            id="name"
+            label={t("forms.objective_name_label")}
+            placeholder={t("forms.objective_name_placeholder")!}
+          />
 
-        <label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner</label>
-        <SearchField id="owner" onSelect={(e : any) => {
-          setSelectedOwner(e.value)
-        }} loader={search} />
+          <FormTextArea
+            ref={descriptionInput}
+            id="description"
+            label={t("forms.objective_description_label")}
+            placeholder={t("forms.objective_description_placeholder")!}
+          />
 
-        <FormSelect ref={timeframeInput} id="timeframe" label="Timeframe">
-          <option value="current-quarter">Current quarter</option>
-        </FormSelect>
+
+          <div>
+            <label
+              htmlFor="owner"
+              className="block text-sm font-bold text-gray-700 mb-2"
+            >{t("forms.objective_owner_label")}</label>
+
+            <SearchField
+              id="owner"
+              onSelect={(e : any) => setSelectedOwner(e.value)}
+              placeholder={t("forms.objective_owner_search_placeholder")!}
+              loader={search}
+            />
+          </div>
+
+          <FormSelect ref={timeframeInput} id="timeframe" label={t("forms.objective_timeframe_label")}>
+            <option value="current-quarter">{t("forms.objective_timeframe_current_quarter")}</option>
+          </FormSelect>
+        </div>
       </Form>
     </>
   )

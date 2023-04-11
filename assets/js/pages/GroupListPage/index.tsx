@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import ButtonLink from '../../components/ButtonLink';
 import PageTitle from '../../components/PageTitle';
@@ -45,6 +46,7 @@ function ListOfGroups({groups}) {
 }
 
 export function GroupListPage() {
+  const { t } = useTranslation();
   const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_GROUPS);
 
   React.useEffect(() => {
@@ -58,15 +60,15 @@ export function GroupListPage() {
     })
   }, [])
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   return (
     <>
       <PageTitle
-        title="Groups"
+        title={t("Groups")}
         buttons={[
-          <ButtonLink key="new" to="/groups/new">Add Group</ButtonLink>
+          <ButtonLink key="new" to="/groups/new">{t("actions.add_group")}</ButtonLink>
         ]}
       />
 

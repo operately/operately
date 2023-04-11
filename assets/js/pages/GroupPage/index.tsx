@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import PageTitle from '../../components/PageTitle';
 import AddMembersModal from './AddMembersModal';
@@ -48,6 +49,7 @@ function MemberList({ members } : { members: Person[] }) {
 }
 
 export function GroupPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   if (!id) return <p>Unable to find group</p>;
@@ -57,8 +59,8 @@ export function GroupPage() {
     fetchPolicy: 'cache-only'
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   const handleAddMembersModalSubmit = () => {
     refetch();
