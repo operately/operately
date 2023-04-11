@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
+
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
 
@@ -45,6 +47,7 @@ function ListOfObjectives({objectives}) {
 }
 
 export function ObjectiveListPage() {
+  const { t } = useTranslation();
   const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_OBJECTIVES);
 
   React.useEffect(() => {
@@ -64,9 +67,9 @@ export function ObjectiveListPage() {
   return (
     <>
       <PageTitle
-        title="Objectives"
+        title={t('Objectives')}
         buttons={[
-          <ButtonLink key="new" to="/objectives/new">Add Objective</ButtonLink>
+          <ButtonLink key="new" to="/objectives/new">{t("actions.add_objective")}</ButtonLink>
         ]}
       />
 

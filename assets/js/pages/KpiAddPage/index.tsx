@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
@@ -26,6 +27,7 @@ function asInt(value: string | undefined) {
 }
 
 export default function KpiAddPage() {
+  const { t } = useTranslation();
   let navigate = useNavigate();
 
   let nameInput = React.useRef<HTMLInputElement>(null);
@@ -67,33 +69,35 @@ export default function KpiAddPage() {
   return (
     <>
       <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">Add Kpi</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("forms.kpi_add_title")}</h1>
 
-        <FormTextInput ref={nameInput} id="name" label="Name" placeholder="ex. Company Website" />
-        <FormTextArea ref={descriptionInput} id="description" label="Description" placeholder="Describe the details of the kpi" />
+        <div className="flex flex-col gap-4">
+          <FormTextInput ref={nameInput} id="name" label={t("forms.kpi_name_label")} placeholder={t("forms.kpi_name_placeholder")!} />
+          <FormTextArea ref={descriptionInput} id="description" label={t("forms.kpi_description_label")} placeholder={t("forms.kpi_description_placeholder")!} />
 
-        <FormSelect ref={unitInput} id="unit" label="Unit">
-          <option value="percentage">percentage</option>
-          <option value="currency">currency</option>
-        </FormSelect>
+          <FormSelect ref={unitInput} id="unit" label={t("forms.kpi_unit_label")}>
+            <option value="percentage">{t("forms.kpi_unit_percentage")}</option>
+            <option value="currency">{t("forms.kpi_unit_currency")}</option>
+          </FormSelect>
 
-        <FormTextInput ref={targetInput} id="target" label="Target" />
-        <FormSelect ref={targetDirectionInput} id="targetDirection" label="Target direction">
-          <option value="above">above</option>
-          <option value="below">below</option>
-        </FormSelect>
+          <FormTextInput ref={targetInput} id="target" label={t("forms.kpi_target_label")} placeholder={t("forms.kpi_target_placeholder")!} />
+          <FormSelect ref={targetDirectionInput} id="targetDirection" label={t("forms.kpi_target_direction_label")}>
+            <option value="above">{t("forms.kpi_target_direction_above")}</option>
+            <option value="below">{t("forms.kpi_target_direction_below")}</option>
+          </FormSelect>
 
-        <FormTextInput ref={warningThresholdInput} id="warningThreshold" label="Warning threshold" />
-        <FormSelect ref={warningDirectionInput} id="warningDirection" label="Warning direction">
-          <option value="above">above</option>
-          <option value="below">below</option>
-        </FormSelect>
+          <FormTextInput ref={warningThresholdInput} id="warningThreshold" label={t("forms.kpi_warning_threshold_label")} placeholder={t("forms.kpi_warning_threshold_placeholder")!} />
+          <FormSelect ref={warningDirectionInput} id="warningDirection" label={t("forms.kpi_warning_direction_label")}>
+            <option value="above">{t("forms.kpi_target_direction_above")}</option>
+            <option value="below">{t("forms.kpi_target_direction_below")}</option>
+          </FormSelect>
 
-        <FormTextInput ref={dangerThresholdInput} id="dangerThreshold" label="Danger threshold" />
-        <FormSelect ref={dangerDirectionInput} id="dangerDirection" label="Danger direction">
-          <option value="above">above</option>
-          <option value="below">below</option>
-        </FormSelect>
+          <FormTextInput ref={dangerThresholdInput} id="dangerThreshold" label={t("forms.kpi_danger_threshold_label")} placeholder={t("forms.kpi_danger_threshold_placeholder")!} />
+          <FormSelect ref={dangerDirectionInput} id="dangerDirection" label={t("forms.kpi_danger_direction_label")}>
+            <option value="above">{t("forms.kpi_target_direction_above")}</option>
+            <option value="below">{t("forms.kpi_target_direction_below")}</option>
+          </FormSelect>
+        </div>
       </Form>
     </>
   )

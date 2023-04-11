@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
 
@@ -45,6 +46,7 @@ function ListOfProjects({projects}) {
 }
 
 export function ProjectListPage() {
+  const { t } = useTranslation();
   const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_PROJECTS);
 
   React.useEffect(() => {
@@ -58,15 +60,15 @@ export function ProjectListPage() {
     })
   }, [])
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   return (
     <>
       <PageTitle
-        title="Projects"
+        title={t("Projects")}
         buttons={[
-          <ButtonLink key="new" to="/projects/new">New Project</ButtonLink>
+          <ButtonLink key="new" to="/projects/new">{t("actions.add_project")}</ButtonLink>
         ]}
       />
 

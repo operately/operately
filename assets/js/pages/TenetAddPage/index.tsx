@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
@@ -17,6 +18,7 @@ const CREATE_TENET = gql`
 `;
 
 export default function TenetAddPage() {
+  const { t } = useTranslation();
   let navigate = useNavigate();
   let nameInput = React.useRef<HTMLInputElement>(null);
   let descriptionInput = React.useRef<HTMLTextAreaElement>(null);
@@ -41,10 +43,23 @@ export default function TenetAddPage() {
   return (
     <>
       <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">Add Tenet</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("forms.tenet_add_title")}</h1>
 
-        <FormTextInput ref={nameInput} id="name" label="Name" placeholder="ex. Quality" />
-        <FormTextArea ref={descriptionInput} id="description" label="Description" placeholder="Describe the tenet" />
+        <div className="flex flex-col gap-4">
+          <FormTextInput
+            ref={nameInput}
+            id="name"
+            label={t("forms.tenet_name_label")}
+            placeholder={t("forms.tenet_name_placeholder")!}
+          />
+
+          <FormTextArea
+            ref={descriptionInput}
+            id="description"
+            label={t("forms.tenet_description_label")}
+            placeholder={t("forms.tenet_description_placeholder")!}
+          />
+        </div>
       </Form>
     </>
   )

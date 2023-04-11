@@ -43,7 +43,7 @@ export default function GroupAddPage() {
           ref={nameInput}
           id="name"
           label={t("forms.group_name_label")}
-          placeholder={t("forms.group_name_placeholder")}
+          placeholder={t("forms.group_name_placeholder")!}
         />
       </Form>
     </>

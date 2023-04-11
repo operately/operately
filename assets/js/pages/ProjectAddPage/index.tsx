@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
@@ -17,6 +18,8 @@ const CREATE_PROJECT = gql`
 `;
 
 export default function ProjectAddPage() {
+  const { t } = useTranslation();
+
   let navigate = useNavigate();
   let nameInput = React.useRef<HTMLInputElement>(null);
   let descriptionInput = React.useRef<HTMLTextAreaElement>(null);
@@ -41,10 +44,23 @@ export default function ProjectAddPage() {
   return (
     <>
       <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">Add Project</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("forms.project_add_title")}</h1>
 
-        <FormTextInput ref={nameInput} id="name" label="Name" placeholder="ex. Company Website" />
-        <FormTextArea ref={descriptionInput} id="description" label="Description" placeholder="Describe the details of the project" />
+        <div className="flex flex-col gap-4">
+          <FormTextInput
+            ref={nameInput}
+            id="name"
+            label={t("forms.project_name_label")}
+            placeholder={t("forms.project_name_placeholder")!}
+          />
+
+          <FormTextArea
+            ref={descriptionInput}
+            id="description"
+            label={t("forms.project_description_label")}
+            placeholder={t("forms.project_description_placeholder")!}
+          />
+        </div>
       </Form>
     </>
   )
