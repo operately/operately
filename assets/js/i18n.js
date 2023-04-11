@@ -11,8 +11,8 @@ i18n
           "Tenets": "tenets",
           "Projects": "projects",
           "KPIs": "KPIs",
-          "groups": "groups",
-          "people": "people",
+          "Groups": "Groups",
+          "People": "People",
 
           erorr: {
             "error": "Error",
@@ -65,8 +65,8 @@ i18n
             "objective_description_label": "Description",
             "objective_description_placeholder": "ex. Increase revenue by 10%",
             "objective_owner_label": "Owner",
-            "objective_owenr_search_placeholder": "Search for a person...",
-            "objective_timeline_label": "Timeframe",
+            "objective_owner_search_placeholder": "Search for a person...",
+            "objective_timeframe_label": "Timeframe",
             "objective_timeframe_current_quarter": "Current Quarter",
 
             "project_add_title": "Add Project",
@@ -161,9 +161,173 @@ i18n
           }
         },
       },
+      "hu": {
+        translation: {
+          "Objectives": "Célok",
+          "Tenets": "Alapelvek",
+          "Projects": "Projektek",
+          "KPIs": "Mérőszámok",
+          "Groups": "Csoportok",
+          "People": "Személyek",
+
+          erorr: {
+            "error": "Hiba",
+          },
+
+          loading: {
+            "loading": "Betöltés...",
+          },
+
+          actions: {
+            "add_group": "Uj csoport",
+            "add_person": "Új személy",
+            "add_project": "Új projekt",
+            "add_kpi": "Új mérőszám",
+            "add_objective": "Új cél",
+            "add_tenet": "Új alapelv",
+          },
+
+          forms: {
+            "save": "Mentés",
+            "cancel": "Mégse",
+
+            "group_add_title": "Új csoport",
+            "group_name_label": "Név",
+            "group_name_placeholder": "pl. Marketing",
+
+            "kpi_add_title": "Új mérőszám",
+            "kpi_name_label": "Név",
+            "kpi_name_placeholder": "pl. Bevételek",
+            "kpi_description_label": "Leírás",
+            "kpi_description_placeholder": "pl. Az összes bevételek eladásokból",
+            "kpi_unit_label": "Mértékegység",
+            "kpi_unit_percentage": "százalék",
+            "kpi_unit_currency": "pénznem",
+            "kpi_target_label": "Cél",
+            "kpi_target_placeholder": "pl. 1000000",
+            "kpi_target_direction_label": "Cél iránya",
+            "kpi_target_direction_above": "Nagyobb",
+            "kpi_target_direction_below": "Kisebb",
+            "kpi_warning_trigger_label": "Figyelmeztetési küszöb",
+            "kpi_warning_trigger_placeholder": "pl. 500000",
+            "kpi_danger_threshold_label": "Veszély küszöb",
+            "kpi_danger_threshold_placeholder": "pl. 100000",
+            "kpi_danger_direction_label": "Veszély iránya",
+            "kpi_warning_direction_label": "Figyelmeztetés iránya",
+
+            "objective_add_title": "Új cél",
+            "objective_name_label": "Név",
+            "objective_name_placeholder": "pl. Bevételek növelése",
+            "objective_description_label": "Leírás",
+            "objective_description_placeholder": "pl. Bevételek növelése 10%-kal",
+            "objective_owner_label": "Felelős",
+            "objective_owner_search_placeholder": "Keresés személyek között...",
+            "objective_timeframe_label": "Időkeret",
+            "objective_timeframe_current_quarter": "Jelenlegi negyedév",
+
+            "project_add_title": "Új projekt",
+            "project_name_label": "Név",
+            "project_name_placeholder": "pl. Új weboldal",
+            "project_description_label": "Leírás",
+            "project_description_placeholder": "pl. Új weboldal készítése a cégnek",
+
+            "tenet_add_title": "Új alapelv",
+            "tenet_name_label": "Név",
+            "tenet_name_placeholder": "pl. A használó az első",
+            "tenet_description_label": "Leírás",
+            "tenet_description_placeholder": "pl. Mindig a használó érdekében cselekszünk",
+
+            "add_group_members_title": "Csoport tagjainak hozzáadása",
+            "add_group_members_search_placeholder": "Keresés személyek között...",
+            "add_group_members_button": "Csoport tagjainak hozzáadása",
+          }
+        },
+      },
+      "jp": {
+        translation: {
+          "Objectives": "目的",
+          "Tenets": "原則",
+          "Projects": "プロジェクト",
+          "KPIs": "KPIs",
+          "Groups": "団体",
+          "People": "人々",
+
+          erorr: {
+            "error": "エラー",
+          },
+
+          loading: {
+            "loading": "読み込み中...",
+          },
+
+          actions: {
+            "add_group": "新しいグループ",
+            "add_person": "新しい人",
+            "add_project": "新しいプロジェクト",
+            "add_kpi": "新しいKPI",
+            "add_objective": "新しい目的",
+            "add_tenet": "新しい原則",
+          },
+
+          forms: {
+            "save": "保存する",
+            "cancel": "キャンセル",
+
+            "group_add_title": "新しいグループ",
+            "group_name_label": "名前",
+            "group_name_placeholder": "例：マーケティング",
+
+            "kpi_add_title": "新しいKPI",
+            "kpi_name_label": "名前",
+            "kpi_name_placeholder": "例：収益",
+            "kpi_description_label": "説明",
+            "kpi_description_placeholder": "例：すべての収益は売上から来る",
+            "kpi_unit_label": "単位",
+            "kpi_unit_percentage": "パーセンテージ",
+            "kpi_unit_currency": "通貨",
+            "kpi_target_label": "目標",
+            "kpi_target_placeholder": "例：1000000",
+            "kpi_target_direction_label": "目標の方向",
+            "kpi_target_direction_above": "上",
+            "kpi_target_direction_below": "下",
+            "kpi_warning_trigger_label": "警告のしきい値",
+            "kpi_warning_trigger_placeholder": "例：500000",
+            "kpi_danger_threshold_label": "危険なしきい値",
+            "kpi_danger_threshold_placeholder": "例：100000",
+            "kpi_danger_direction_label": "危険な方向",
+            "kpi_warning_direction_label": "警告の方向",
+
+            "objective_add_title": "新しい目的",
+            "objective_name_label": "名前",
+            "objective_name_placeholder": "例：収益の増加",
+            "objective_description_label": "説明",
+            "objective_description_placeholder": "例：収益を10％増やす",
+            "objective_owner_label": "所有者",
+            "objective_owner_search_placeholder": "人々を検索...",
+            "objective_timeframe_label": "時間枠",
+            "objective_timeframe_current_quarter": "現在の四半期",
+
+            "project_add_title": "新しいプロジェクト",
+            "project_name_label": "名前",
+            "project_name_placeholder": "例：新しいウェブサイト",
+            "project_description_label": "説明",
+            "project_description_placeholder": "例：会社の新しいウェブサイトを作成する",
+
+            "tenet_add_title": "新しい原則",
+            "tenet_name_label": "名前",
+            "tenet_name_placeholder": "例：ユーザー第一",
+            "tenet_description_label": "説明",
+            "tenet_description_placeholder": "例：常にユーザーのために行動する",
+
+            "add_group_members_title": "グループメンバーの追加",
+            "add_group_members_search_placeholder": "人々を検索...",
+            "add_group_members_button": "グループメンバーを追加",
+          }
+        },
+      }
     },
     returnNull: false,
-    lng: "sr-Cyrl-RS",
+    lng: "jp",
     fallbackLng: "en",
   });
 

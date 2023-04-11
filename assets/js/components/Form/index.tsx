@@ -27,7 +27,7 @@ export default function Form({children, onCancel, onSubmit}) {
     <form>
       {children}
 
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-2 mt-4">
         <SubmitButton onClick={handleSubmit} />
         <CancelButton onClick={onCancel} />
       </div>
