@@ -30,13 +30,18 @@ import nprogress from 'nprogress';
 
 function loaderWithApollo(loader : any) {
   return async (params : any) => {
-    nprogress.start();
+    try {
+      nprogress.start();
 
-    const data = await loader(client, params);
+      const data = await loader(client, params);
 
-    nprogress.done();
+      nprogress.done();
 
-    return data;
+      return data;
+    } catch (error) {
+      console.error(error);
+      nprogress.done();
+    }
   };
 }
 

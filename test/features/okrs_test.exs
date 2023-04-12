@@ -3,7 +3,6 @@ defmodule MyApp.Features.OkrsTest do
 
   alias Operately.OkrsFixtures
   alias Operately.PeopleFixtures
-  alias Operately.OwnershipsFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
@@ -55,14 +54,16 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> assert_text(name)
   end
 
-  defand ~r/^I have an objective called "(?<name>[^"]+)" owned by "(?<person_name>[^"]+)"$/, %{name: name, person_name: person_name}, state do
+  defand ~r/^I have an objective called "(?<name>[^"]+)" owned by "(?<person_name>[^"]+)" with a description of "(?<description>[^"]+)"$/, %{name: name, person_name: person_name, description: description}, state do
     person = Operately.People.get_person_by_name!(person_name)
-    objective = OkrsFixtures.objective_fixture(%{name: name})
 
-    OwnershipsFixtures.ownership_fixture(%{
-      person_id: person.id,
-      target: objective.id,
-      target_id: :objective
+    OkrsFixtures.objective_fixture(%{
+      name: name,
+      description: description,
+      ownership: %{
+        target_type: :objective,
+        person_id: person.id
+      }
     })
   end
 
@@ -108,6 +109,10 @@ defmodule MyApp.Features.OkrsTest do
 
   defwhen ~r/^I select "(?<name>[^"]+)" from the Focus dropdown$/, %{name: name}, state do
     state.session |> select(name, from: "Focus On")
+  end
+
+  defand ~r/^I should see "(?<name>[^"]+)" as the Objective owner$/, %{name: name}, state do
+    state.session |> assert_text(name)
   end
 
 end
