@@ -3,7 +3,6 @@ defmodule MyApp.Features.OkrsTest do
 
   alias Operately.OkrsFixtures
   alias Operately.PeopleFixtures
-  alias Operately.OwnershipsFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
@@ -61,8 +60,8 @@ defmodule MyApp.Features.OkrsTest do
     OkrsFixtures.objective_fixture(%{
       name: name,
       description: description,
-      ownership: %Operately.Ownerships.Ownership{
-        target: :objective,
+      ownership: %{
+        target_type: :objective,
         person_id: person.id
       }
     })

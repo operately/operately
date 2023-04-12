@@ -9,13 +9,12 @@ defmodule Operately.OkrsFixtures do
   """
   def objective_fixture(:with_owner, attrs) do
     person = Operately.PeopleFixtures.person_fixture()
-    objective = objective_fixture(attrs)
-
-    Operately.OwnershipsFixtures.ownership_fixture(%{
-      person_id: person.id,
-      target_type: "objective",
-      target: objective.id
-    })
+    objective = objective_fixture(Map.merge(attrs, %{
+      ownership: %{
+        person_id: person.id,
+        target_type: :objective
+      }
+    }))
 
     {person, objective}
   end
@@ -36,7 +35,7 @@ defmodule Operately.OkrsFixtures do
   Generate a key_result.
   """
   def key_result_fixture(:with_objective, attrs) do
-    objective = objective_fixture()
+    {_, objective} = objective_fixture(:with_owner, %{})
     key_result = key_result_fixture(Map.merge(attrs, %{objective_id: objective.id}))
 
     {objective, key_result}

@@ -16,7 +16,6 @@ defmodule Operately.Ownerships.Ownership do
   @doc false
   def changeset(ownership, attrs) do
     ownership
-    |> cast(attrs, [:target, :target_type, :person_id])
-    |> validate_required([:target, :target_type, :person_id])
+    |> cast(attrs, [:target_type, :person_id])
   end
 end

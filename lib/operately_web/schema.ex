@@ -215,7 +215,7 @@ defmodule OperatelyWeb.Schema do
       resolve fn args, _ ->
         owner_id = args.input.owner_id
 
-        ownership = %Operately.Ownerships.Ownership{
+        ownership = %{
           target_type: :objective,
           person_id: owner_id
         }
