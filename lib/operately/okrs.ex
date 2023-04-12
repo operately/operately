@@ -49,6 +49,11 @@ defmodule Operately.Okrs do
     get_objective!(id) |> Repo.preload(associations)
   end
 
+  def get_owner!(objective) do
+    objective = Repo.preload(objective, [:owner])
+    objective.owner
+  end
+
   @doc """
   Creates a objective.
 

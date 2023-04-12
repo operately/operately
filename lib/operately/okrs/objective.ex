@@ -24,7 +24,7 @@ defmodule Operately.Okrs.Objective do
     objective
     |> cast(attrs, [:name, :description])
     |> put_assoc(:parent, Map.get(attrs, "aligns_with"))
-    |> put_assoc(:ownership, Map.get(attrs, "owned_by"))
-    |> validate_required([:name, :description])
+    |> put_assoc(:ownership, Map.get(attrs, :ownership))
+    |> validate_required([:name, :description, :ownership])
   end
 end

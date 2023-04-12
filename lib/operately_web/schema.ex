@@ -11,6 +11,14 @@ defmodule OperatelyWeb.Schema do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :description, :string
+
+    field :owner, :person do
+      resolve fn objective, _, _ ->
+        person = Operately.Okrs.get_owner!(objective)
+
+        {:ok, person}
+      end
+    end
   end
 
   object :kpi do
@@ -205,7 +213,19 @@ defmodule OperatelyWeb.Schema do
       arg :input, non_null(:create_objective_input)
 
       resolve fn args, _ ->
-        Operately.Okrs.create_objective(args.input)
+        owner_id = args.input.owner_id
+
+        ownership = %Operately.Ownerships.Ownership{
+          target_type: :objective,
+          person_id: owner_id
+        }
+
+        params =
+          args.input
+          |> Map.delete(:owner_id)
+          |> Map.put(:ownership, ownership)
+
+        Operately.Okrs.create_objective(params)
       end
     end
 
