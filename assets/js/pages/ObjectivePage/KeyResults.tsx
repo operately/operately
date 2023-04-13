@@ -11,6 +11,7 @@ const GET_KEY_RESULTS = gql`
     keyResults(objectiveID: $objectiveID) {
       id
       name
+      status
     }
   }
 `;
@@ -18,6 +19,7 @@ const GET_KEY_RESULTS = gql`
 interface KeyResult {
   id: string;
   name: string;
+  status: string;
 }
 
 export default function KeyResults({objectiveID} : {objectiveID: string}) {
@@ -45,7 +47,7 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
 
   const rows = data.keyResults.map((keyResult: KeyResult) => {
     return {
-      status: <StatusBadge status="pending" />,
+      status: <StatusBadge status={keyResult.status} />,
       completion: "---",
       keyResult: keyResult.name,
       lastUpdated: "---",

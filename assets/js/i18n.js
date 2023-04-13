@@ -94,6 +94,11 @@ i18n
 
             "statuses": {
               "pending": "Pending",
+              "on_track": "On Track",
+              "at_risk": "At Risk",
+              "off_track": "Off Track",
+              "completed": "Completed",
+              "cancelled": "Cancelled",
             }
           }
         },
