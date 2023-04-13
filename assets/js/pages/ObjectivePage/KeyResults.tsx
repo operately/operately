@@ -12,6 +12,7 @@ const GET_KEY_RESULTS = gql`
       id
       name
       status
+      updatedAt
     }
   }
 `;
@@ -20,6 +21,7 @@ interface KeyResult {
   id: string;
   name: string;
   status: string;
+  updatedAt: string;
 }
 
 export default function KeyResults({objectiveID} : {objectiveID: string}) {
@@ -50,7 +52,7 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
       status: <StatusBadge status={keyResult.status} />,
       completion: "---",
       keyResult: keyResult.name,
-      lastUpdated: "---",
+      lastUpdated: keyResult.updatedAt,
     }
   })
 
