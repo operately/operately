@@ -6,7 +6,7 @@ interface Header {
 }
 
 interface Row {
-  [key: string]: string;
+  [key: string]: string | JSX.Element;
 }
 
 interface TableHeaderRowProps {
@@ -16,7 +16,7 @@ interface TableHeaderRowProps {
 
 function TableHeaderRow({headers, columnClasses} : TableHeaderRowProps) : JSX.Element {
   return (
-    <div className="w-full flex gap-2 justify-between px-4 py-1 border-b border-stone-200">
+    <div className="w-full flex gap-2 justify-between text-sm px-4 py-2">
       {headers.map((header: Header, index: number) => (
         <div key={index} className={columnClasses[header.id]}>{header.label}</div>
       ))}
@@ -32,7 +32,7 @@ interface TableRowProps {
 
 function TableRow({headers, row, columnClasses} : TableRowProps) : JSX.Element {
   return (
-    <div className="w-full flex gap-2 justify-between px-4 py-1 border-b border-stone-200">
+    <div className="w-full flex gap-2 justify-between px-4 py-2 border-t border-stone-200 hover:bg-stone-100">
       {headers.map((header: Header) => (
         <div className={columnClasses[header.id]}>{row[header.id]}</div>
       ))}
@@ -48,7 +48,7 @@ interface TableProps {
 
 export default function Table({headers, columnClasses, rows} : TableProps) : JSX.Element {
   return (
-    <div className="mt-4 flex flex-col gap-2 items-center rounded border border-stone-200">
+    <div className="mt-4 flex flex-col items-center rounded border border-stone-200">
       <TableHeaderRow headers={headers} columnClasses={columnClasses} />
 
       {rows.map((row: Row, index: number) => {

@@ -371,7 +371,7 @@ i18n
       }
     },
     returnNull: false,
-    lng: "jp",
+    lng: "en",
     fallbackLng: "en",
   });
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, gql } from '@apollo/client';
 
 import Table from './Table';
+import StatusBadge from './StatusBadge';
 
 const GET_KEY_RESULTS = gql`
   query GetKeyResults($objectiveID: ID!) {
@@ -44,7 +45,7 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
 
   const rows = data.keyResults.map((keyResult: KeyResult) => {
     return {
-      status: t("keyResults.statuses.pending"),
+      status: <StatusBadge status="pending" />,
       completion: "---",
       keyResult: keyResult.name,
       lastUpdated: "---",
