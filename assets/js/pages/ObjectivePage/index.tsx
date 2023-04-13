@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import Avatar from '../../components/Avatar';
 import PageTitle from '../../components/PageTitle';
+import KeyResults from './KeyResults';
 
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
@@ -67,6 +68,8 @@ export function ObjectivePage() {
       <p className="max-w-lg">{data.objective.description}</p>
 
       <Champion person={data.objective.owner as Person} />
+
+      <KeyResults objectiveID={id} />
     </div>
   )
 }

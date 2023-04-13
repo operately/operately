@@ -53,6 +53,12 @@ defmodule OperatelyWeb.Schema do
     end
   end
 
+  object :key_result do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :status, non_null(:string)
+  end
+
   input_object :create_kpi_input do
     field :name, non_null(:string)
     field :description, :string
@@ -170,6 +176,17 @@ defmodule OperatelyWeb.Schema do
         people = Operately.People.search_people(args.query)
 
         {:ok, people}
+      end
+    end
+
+    field :key_results, list_of(:key_result) do
+      arg :objective_id, non_null(:id)
+
+      resolve fn args, _ ->
+        objective_id = args.objective_id
+        key_results = Operately.Okrs.list_key_results!(objective_id)
+
+        {:ok, key_results}
       end
     end
   end
