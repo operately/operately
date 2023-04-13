@@ -116,12 +116,12 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defand ~r/^I have a key result called "(?<name>[^"]+)" for the "(?<objective>[^"]+)" objective$/, %{name: name, objective: objecive}, state do
-    # objective = Operately.Okrs.get_objective_by_name!(objecive)
+    objective = Operately.Okrs.get_objective_by_name!(objecive)
 
-    # OkrsFixtures.key_result_fixture(%{
-    #   name: name,
-    #   objective_id: objective.id
-    # })
+    OkrsFixtures.key_result_fixture(%{
+      name: name,
+      objective_id: objective.id
+    })
   end
 
   defand ~r/^I am on the "(?<name>[^"]+)" Objective page$/, %{name: name}, state do
