@@ -7,6 +7,8 @@ i18n
     resources: {
       "en": {
         translation: {
+          "intlDateTime": "{{val, datetime}}",
+
           "Objectives": "Objectives",
           "Tenets": "Tenets",
           "Projects": "Projects",

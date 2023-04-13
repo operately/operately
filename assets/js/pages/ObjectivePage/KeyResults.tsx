@@ -5,6 +5,7 @@ import { useQuery, gql } from '@apollo/client';
 
 import Table from './Table';
 import StatusBadge from './StatusBadge';
+import DateTime from './DateTime';
 
 const GET_KEY_RESULTS = gql`
   query GetKeyResults($objectiveID: ID!) {
@@ -52,7 +53,12 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
       status: <StatusBadge status={keyResult.status} />,
       completion: "---",
       keyResult: keyResult.name,
-      lastUpdated: keyResult.updatedAt,
+      lastUpdated: t('intlDateTime', {
+        val: Date.parse(keyResult.updatedAt),
+        formatParams: {
+          val: {month: 'long', day: 'numeric'},
+        }
+      }),
     }
   })
 
