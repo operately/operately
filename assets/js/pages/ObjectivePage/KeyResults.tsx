@@ -25,14 +25,14 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
     variables: { objectiveID: objectiveID },
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   const headers = [
-    { id: "status", label: "Status" },
-    { id: "completion", label: "Completion" },
-    { id: "keyResult", label: "Key Result" },
-    { id: "lastUpdated", label: "Last Updated" },
+    { id: "status", label: t("keyResults.status") },
+    { id: "completion", label: t("keyResults.completion") },
+    { id: "keyResult", label: t("keyResults.keyResult") },
+    { id: "lastUpdated", label: t("keyResults.lastUpdated") },
   ]
 
   const columnClasses = {
@@ -44,7 +44,7 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
 
   const rows = data.keyResults.map((keyResult: KeyResult) => {
     return {
-      status: "Pending",
+      status: t("keyResults.statuses.pending"),
       completion: "---",
       keyResult: keyResult.name,
       lastUpdated: "---",
