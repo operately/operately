@@ -29,4 +29,4 @@ Feature: Objectives and Key Results
     And I have a key result called "Increase happiness score by 10% in Q2" for the "Maintain support happiness" objective
     And I am on the "Maintain support happiness" Objective page
     Then I should see "Increase happiness score by 10% in Q2" in the "Maintain support happiness" Objective key results
-    And I should see that "Increase happiness score by 10% in Q2" has status "pending"
+    And I should see that "Increase happiness score by 10% in Q2" has status "Pending"
