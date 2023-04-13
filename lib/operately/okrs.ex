@@ -26,6 +26,16 @@ defmodule Operately.Okrs do
     Repo.all(Objective) |> Repo.preload(associations)
   end
 
+  def list_key_results!(objective_id) do
+    query = (
+      from kr in KeyResult,
+      where: kr.objective_id == ^objective_id
+    )
+
+    Repo.all(query)
+  end
+
+
   @doc """
   Gets a single objective.
 
@@ -52,6 +62,10 @@ defmodule Operately.Okrs do
   def get_owner!(objective) do
     objective = Repo.preload(objective, [:owner])
     objective.owner
+  end
+
+  def get_objective_by_name!(name) do
+    Objective |> Repo.get_by!(name: name)
   end
 
   @doc """

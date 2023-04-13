@@ -8,6 +8,8 @@ defmodule Operately.Okrs.KeyResult do
     belongs_to :objective, Operately.Okrs.Objective
 
     field :name, :string
+    field :status, Ecto.Enum, values: [:pending, :on_track, :at_risk, :off_track, :completed, :cancelled], default: :pending
+
     field :target, :integer
     field :unit, Ecto.Enum, values: [:percentage, :number]
     field :direction, Ecto.Enum, values: [:above, :below]
@@ -18,7 +20,7 @@ defmodule Operately.Okrs.KeyResult do
   @doc false
   def changeset(key_result, attrs) do
     key_result
-    |> cast(attrs, [:name, :unit, :target, :direction, :objective_id])
-    |> validate_required([:name, :unit, :target, :direction, :objective_id])
+    |> cast(attrs, [:name, :unit, :target, :direction, :objective_id, :status])
+    |> validate_required([:name, :unit, :target, :direction, :objective_id, :status])
   end
 end

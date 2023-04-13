@@ -7,6 +7,8 @@ i18n
     resources: {
       "en": {
         translation: {
+          "intlDateTime": "{{val, datetime}}",
+
           "Objectives": "Objectives",
           "Tenets": "Tenets",
           "Projects": "Projects",
@@ -84,6 +86,22 @@ i18n
             "add_group_members_title": "Add Group Members",
             "add_group_members_search_placeholder": "Search for a person...",
             "add_group_members_button": "Add Members",
+          },
+
+          "keyResults": {
+            "status": "Status",
+            "completion": "Completion",
+            "lastUpdated": "Last Updated",
+            "keyResult": "Key Result",
+
+            "statuses": {
+              "pending": "Pending",
+              "on_track": "On Track",
+              "at_risk": "At Risk",
+              "off_track": "Off Track",
+              "completed": "Completed",
+              "cancelled": "Cancelled",
+            }
           }
         },
       },
@@ -158,6 +176,17 @@ i18n
             "add_group_members_title": "Додај чланове групе",
             "add_group_members_search_placeholder": "Прonaђи човека...",
             "add_group_members_button": "Додај чланове",
+          },
+
+          "keyResults": {
+            "status": "Cтатус",
+            "completion": "Cтепен завршетка",
+            "lastUpdated": "Последња ажурирања",
+            "keyResult": "Кључни резултат",
+
+            "statuses": {
+              "pending": "Почетак",
+            }
           }
         },
       },
@@ -240,6 +269,17 @@ i18n
             "add_group_members_title": "Csoport tagjainak hozzáadása",
             "add_group_members_search_placeholder": "Keresés személyek között...",
             "add_group_members_button": "Csoport tagjainak hozzáadása",
+          },
+
+          "keyResults": {
+            "status": "Státusz",
+            "completion": "Teljesítés",
+            "lastUpdated": "Utolsó frissítés",
+            "keyResult": "Kulcs eredmény",
+
+            "statuses": {
+              "pending": "Indítás",
+            }
           }
         },
       },
@@ -322,6 +362,17 @@ i18n
             "add_group_members_title": "グループメンバーの追加",
             "add_group_members_search_placeholder": "人々を検索...",
             "add_group_members_button": "グループメンバーを追加",
+          },
+
+          "keyResults": {
+            "status": "スターテス",
+            "completion": "完了",
+            "lastUpdated": "最終更新",
+            "keyResult": "キーリザルト",
+
+            "statuses": {
+              "pending": "開始",
+            }
           }
         },
       }
