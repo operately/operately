@@ -8,6 +8,8 @@ defmodule Operately.Okrs.KeyResult do
     belongs_to :objective, Operately.Okrs.Objective
 
     field :name, :string
+    field :status, Ecto.Enum, values: [:pending, :on_track, :at_risk, :off_track, :completed, :cancelled], default: :pending
+
     field :target, :integer
     field :unit, Ecto.Enum, values: [:percentage, :number]
     field :direction, Ecto.Enum, values: [:above, :below]
