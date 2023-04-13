@@ -54,6 +54,10 @@ defmodule Operately.Okrs do
     objective.owner
   end
 
+  def get_objective_by_name!(name) do
+    Objective |> Repo.get_by!(name: name)
+  end
+
   @doc """
   Creates a objective.
 

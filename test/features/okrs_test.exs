@@ -115,4 +115,30 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> assert_text(name)
   end
 
+  defand ~r/^I have a key result called "(?<name>[^"]+)" for the "(?<objective>[^"]+)" objective$/, %{name: name, objective: objecive}, state do
+    # objective = Operately.Okrs.get_objective_by_name!(objecive)
+
+    # OkrsFixtures.key_result_fixture(%{
+    #   name: name,
+    #   objective_id: objective.id
+    # })
+  end
+
+  defand ~r/^I am on the "(?<name>[^"]+)" Objective page$/, %{name: name}, state do
+    objective = Operately.Okrs.get_objective_by_name!(name)
+
+    state.session
+    |> visit("/objectives/#{objective.id}")
+    |> wait_for_page_to_load("/objectives/#{objective.id}")
+  end
+
+  defthen ~r/^I should see "(?<name>[^"]+)" in the "(?<objective>[^"]+)" Objective key results$/, %{name: name, objective: objective}, state do
+    state.session |> take_screenshot()
+    state.session |> assert_text(name)
+  end
+
+  defand ~r/^I should see that "(?<name>[^"]+)" has status "(?<status>[^"]+)"$/, %{name: name, status: status}, state do
+    state.session |> assert_text(status)
+  end
+
 end
