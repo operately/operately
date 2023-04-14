@@ -1,29 +1,28 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react';
+import { useApolloClient, gql } from '@apollo/client';
 
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import BulletList from '@tiptap/extension-bullet-list';
 import Mention from '@tiptap/extension-mention';
 
-import tippy from 'tippy.js';
+import tippy, { Instance } from 'tippy.js';
 
 interface MentionListProps {
-  items: string[];
-  command: (id: string) => void;
-  editor: any;
+  items: { id: string, label: string }[];
+  command: ({ id, label }: { id: string, label: string }) => void;
 }
 
 const MentionList = forwardRef((props : MentionListProps, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
-  const selectItem = index => {
-    const item = props.items[index]
+  const selectItem = (index : number) => {
+    const item = props.items[index];
 
-    if (item) {
-      console.log("selectItem", item);
-      props.command({ id: item })
+    if(item) {
+      props.command(item);
     }
   }
 
@@ -62,34 +61,45 @@ const MentionList = forwardRef((props : MentionListProps, ref) => {
     },
   }))
 
+  const baseClass = 'px-1 py-0.5 text-left';
+  const selectedClass = baseClass + ' bg-sky-200 text-black';
+  const unselectedClass = baseClass + ' text-stone-500 rounded hover:bg-sky-200 hover:text-black transition';
+
+  const noResult = <div className={unselectedClass}>No result</div>;
+
   return (
-    <div className="items">
+    <div className="flex flex-col border bg-white rounded">
       {props.items.length
         ? props.items.map((item, index) => (
           <button
-            className={`item ${index === selectedIndex ? 'is-selected' : ''}`}
             key={index}
+            className={index === selectedIndex ? selectedClass : unselectedClass}
             onClick={() => selectItem(index)}
-          >
-            {item}
-          </button>
+          >{item.label}</button>
         ))
-        : <div className="item">No result</div>
+        : noResult
       }
     </div>
   )
 })
 
+const SEARCH_PEOPLE = gql`
+  query SearchPeople($query: String!) {
+    searchPeople(query: $query) {
+      id
+      fullName
+      title
+    }
+  }
+`;
+
 const suggestion = {
-  items: ({ query } : { query: string }) => {
-    return ['Lea Thompson', 'Cyndi Lauper', 'Tom Cruise'];
-  },
   render: () => {
     let component: ReactRenderer | null = null;
-    let popup = null;
+    let popup : Instance[] | null = null;
 
     return {
-      onStart: props => {
+      onStart: (props) => {
         component = new ReactRenderer(MentionList, {
           props,
           editor: props.editor,
@@ -111,6 +121,9 @@ const suggestion = {
       },
 
       onUpdate(props) {
+        if(!component) return;
+        if(!popup) return;
+
         component.updateProps(props)
 
         if (!props.clientRect) {
@@ -123,6 +136,9 @@ const suggestion = {
       },
 
       onKeyDown(props) {
+        if(!component) return;
+        if(!popup) return;
+
         if (props.event.key === 'Escape') {
           popup[0].hide()
 
@@ -133,6 +149,9 @@ const suggestion = {
       },
 
       onExit() {
+        if(!component) return;
+        if(!popup) return;
+
         popup[0].destroy()
         component.destroy()
       },
@@ -202,7 +221,31 @@ const MenuBar = ({ editor }) : JSX.Element | null  => {
   );
 };
 
+interface Person {
+  id: string;
+  fullName: string;
+}
+
 export default function Editor() {
+  const client = useApolloClient();
+
+  const search = ({query}: {query : string}) : Promise<any> => {
+    return new Promise((resolve) => {
+      client
+        .query({ query: SEARCH_PEOPLE, variables: { query } })
+        .then(({ data }) => {
+          resolve(
+            data.searchPeople.map((person : Person) => ({
+              id: person.id,
+              label: person.fullName,
+            })));
+        })
+        .catch((err : any) => {
+          console.log(err);
+        });
+    });
+  }
+
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -228,7 +271,10 @@ export default function Editor() {
         HTMLAttributes: {
           class: 'text-sky-500',
         },
-        suggestion: suggestion,
+        suggestion: {
+          ...suggestion,
+          items: search,
+        }
       }),
     ],
   })
