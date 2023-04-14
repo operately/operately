@@ -8,7 +8,7 @@ defmodule Operately.Ownerships.Ownership do
     belongs_to :person, Operately.People.Person
 
     field :target, Ecto.UUID
-    field :target_type, Ecto.Enum, values: [:objective, :tenet]
+    field :target_type, Ecto.Enum, values: [:objective, :tenet, :project]
 
     timestamps()
   end

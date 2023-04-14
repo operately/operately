@@ -30,3 +30,13 @@ Feature: Objectives and Key Results
     And I am on the "Maintain support happiness" Objective page
     Then I should see "Increase happiness score by 10% in Q2" in the "Maintain support happiness" Objective key results
     And I should see that "Increase happiness score by 10% in Q2" has status "Pending"
+
+  Scenario: Viewing ongoing projects on an Objective
+    Given I am logged in as a user
+    And I have "John Johnson" in my organization as the "Head of Support"
+    And I have "Asara Utsuhashi" in my organization as the "Senior Software Engineer"
+    And I have an objective called "Maintain support happiness" owned by "John Johnson" with a description of "The happiness score is a measure of how happy our customers are with our support. We want to maintain a score of 95% or higher in order to live up to our core tenant which states that we focus on delighting customers."
+    And I have a project called "Live Support Chat" for the "Maintain support happiness" objective championed by "Asara Utsuhashi"
+    And I am on the "Maintain support happiness" Objective page
+    Then I should see "Live Support Chat" in the "Maintain support happiness" Objective projects
+    And I should see that "Asara Utsuhashi" is the champion of "Live Support Chat"
