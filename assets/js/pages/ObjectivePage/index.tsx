@@ -8,6 +8,8 @@ import PageTitle from '../../components/PageTitle';
 import KeyResults from './KeyResults';
 import Projects from './Projects';
 
+import TipTap from './TipTap';
+
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
     objective(id: $id) {
@@ -74,6 +76,8 @@ export function ObjectivePage() {
 
       <KeyResults objectiveID={id} />
       <Projects objectiveID={id} />
+
+      <TipTap />
     </div>
   )
 }
