@@ -154,11 +154,11 @@ defmodule MyApp.Features.OkrsTest do
       }
     })
 
-    Operately.Alignments.create_alignment(%{
+    {:ok, _} = Operately.Alignments.create_alignment(%{
       child: project.id,
       child_type: :project,
       parent: objective.id,
-      parant_type: :objective,
+      parent_type: :objective,
     })
   end
 

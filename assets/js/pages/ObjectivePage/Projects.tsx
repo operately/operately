@@ -80,8 +80,6 @@ export default function Projects({objectiveID} : {objectiveID: string}) : JSX.El
 
   if (data.alignedProjects.length === 0) return <></>;
 
-  console.log(data);
-
   return <div className="mt-4">
     <Title />
 
