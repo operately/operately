@@ -4,9 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import ListItem from '@tiptap/extension-list-item';
 import BulletList from '@tiptap/extension-bullet-list';
-import TextStyle from '@tiptap/extension-text-style';
 
 function MenuBarToggle({ children, isActive, onClick }) : JSX.Element {
   const baseClass = "rounded px-1 py-0.5 w-8 text-center";
@@ -62,7 +60,7 @@ const MenuBar = ({ editor }) : JSX.Element | null  => {
   }
 
   return (
-    <div className="flex gap-2 border-b border-stone-200 py-1 px-2">
+    <div className="flex gap-0.5 border-b border-stone-200 py-1 px-2">
       <BoldButton editor={editor} />
       <ItalicButton editor={editor} />
       <BulletListButton editor={editor} />
@@ -79,7 +77,6 @@ export default function Editor() {
     },
     extensions: [
       BulletList,
-      TextStyle.configure({ types: [ListItem.name] }),
       StarterKit.configure({
         bulletList: {
           keepMarks: true,
@@ -97,7 +94,7 @@ export default function Editor() {
   })
 
   return (
-    <div className="mt-4 rounder bg-white shadow">
+    <div className="mt-4 rounded bg-white shadow-sm border border-stone-200">
       <div className="p-4 py-2 border-b border-stone-200 text-sm">POST AN UPDATE</div>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />

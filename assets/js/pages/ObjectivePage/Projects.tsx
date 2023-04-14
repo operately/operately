@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, gql } from '@apollo/client';
 
 import Avatar, {AvatarSize} from '../../components/Avatar';
+import { Link } from "react-router-dom";
 
 const GET_ALIGNED_PROJECTS = gql`
   query GetAlignedProjects($objectiveID: ID!) {
@@ -44,12 +45,12 @@ interface Project {
 }
 
 function Card({project} : {project: Project}) : JSX.Element {
-  return <div className="flex gap-2 mt-2 rounded shadow p-2 bg-white">
+  return <Link to={`/projects/` + project.id} className="flex gap-2 mt-2 rounded shadow-sm p-2 bg-white items-center hover:shadow border border-stone-200">
     <div className="w-1/4 text-sm">{project.name}</div>
     <div className="w-1/4 text-sm">---</div>
     <div className="w-1/4 text-sm"><Champion person={project.owner} /></div>
     <div className="w-1/4 text-sm">{project.updatedAt}</div>
-  </div>;
+  </Link>;
 }
 
 function Champion({person} : {person: Owner}) : JSX.Element {
