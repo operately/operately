@@ -1,10 +1,144 @@
-import React from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react';
 
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import BulletList from '@tiptap/extension-bullet-list';
+import Mention from '@tiptap/extension-mention';
+
+import tippy from 'tippy.js';
+
+interface MentionListProps {
+  items: string[];
+  command: (id: string) => void;
+  editor: any;
+}
+
+const MentionList = forwardRef((props : MentionListProps, ref) => {
+  const [selectedIndex, setSelectedIndex] = useState(0)
+
+  const selectItem = index => {
+    const item = props.items[index]
+
+    if (item) {
+      console.log("selectItem", item);
+      props.command({ id: item })
+    }
+  }
+
+  const upHandler = () => {
+    setSelectedIndex((selectedIndex + props.items.length - 1) % props.items.length)
+  }
+
+  const downHandler = () => {
+    setSelectedIndex((selectedIndex + 1) % props.items.length)
+  }
+
+  const enterHandler = () => {
+    selectItem(selectedIndex)
+  }
+
+  useEffect(() => setSelectedIndex(0), [props.items])
+
+  useImperativeHandle(ref, () => ({
+    onKeyDown: ({ event }) => {
+      if (event.key === 'ArrowUp') {
+        upHandler()
+        return true
+      }
+
+      if (event.key === 'ArrowDown') {
+        downHandler()
+        return true
+      }
+
+      if (event.key === 'Enter') {
+        enterHandler()
+        return true
+      }
+
+      return false
+    },
+  }))
+
+  return (
+    <div className="items">
+      {props.items.length
+        ? props.items.map((item, index) => (
+          <button
+            className={`item ${index === selectedIndex ? 'is-selected' : ''}`}
+            key={index}
+            onClick={() => selectItem(index)}
+          >
+            {item}
+          </button>
+        ))
+        : <div className="item">No result</div>
+      }
+    </div>
+  )
+})
+
+const suggestion = {
+  items: ({ query } : { query: string }) => {
+    return ['Lea Thompson', 'Cyndi Lauper', 'Tom Cruise'];
+  },
+  render: () => {
+    let component: ReactRenderer | null = null;
+    let popup = null;
+
+    return {
+      onStart: props => {
+        component = new ReactRenderer(MentionList, {
+          props,
+          editor: props.editor,
+        })
+
+        if (!props.clientRect) {
+          return
+        }
+
+        popup = tippy('body', {
+          getReferenceClientRect: props.clientRect,
+          appendTo: () => document.body,
+          content: component.element,
+          showOnCreate: true,
+          interactive: true,
+          trigger: 'manual',
+          placement: 'bottom-start',
+        })
+      },
+
+      onUpdate(props) {
+        component.updateProps(props)
+
+        if (!props.clientRect) {
+          return
+        }
+
+        popup[0].setProps({
+          getReferenceClientRect: props.clientRect,
+        })
+      },
+
+      onKeyDown(props) {
+        if (props.event.key === 'Escape') {
+          popup[0].hide()
+
+          return true
+        }
+
+        return component.ref?.onKeyDown(props)
+      },
+
+      onExit() {
+        popup[0].destroy()
+        component.destroy()
+      },
+    }
+  }
+};
 
 function MenuBarToggle({ children, isActive, onClick }) : JSX.Element {
   const baseClass = "rounded px-1 py-0.5 w-8 text-center";
@@ -89,6 +223,12 @@ export default function Editor() {
       }),
       Placeholder.configure({
         placeholder: 'Write an update…',
+      }),
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'text-sky-500',
+        },
+        suggestion: suggestion,
       }),
     ],
   })
