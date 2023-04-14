@@ -7,6 +7,7 @@ import Avatar from '../../components/Avatar';
 import PageTitle from '../../components/PageTitle';
 import KeyResults from './KeyResults';
 import Projects from './Projects';
+import Editor from './Editor';
 
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
@@ -74,6 +75,8 @@ export function ObjectivePage() {
 
       <KeyResults objectiveID={id} />
       <Projects objectiveID={id} />
+
+      <Editor />
     </div>
   )
 }

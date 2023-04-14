@@ -2,5 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "./nprogress";
+@import "./prosemirror";
 
 /* This file is for your main application CSS */
