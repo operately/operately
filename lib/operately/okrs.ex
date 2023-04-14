@@ -35,6 +35,18 @@ defmodule Operately.Okrs do
     Repo.all(query)
   end
 
+  def list_aligned_projects!(objective_id) do
+    alias Operately.Alignments.Alignment
+    alias Operately.Projects.Project
+
+    query = (
+      from p in Project,
+      join: a in Alignment, on: p.id == a.child and a.child_type == :project,
+      where: a.parent == ^objective_id and a.parent_type == :objective
+    )
+
+    Repo.all(query)
+  end
 
   @doc """
   Gets a single objective.

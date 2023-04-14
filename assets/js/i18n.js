@@ -102,6 +102,15 @@ i18n
               "completed": "Completed",
               "cancelled": "Cancelled",
             }
+          },
+
+          "objectives": {
+            "projects_in_progress_title": "Projects in Progress",
+
+            "project_list_title": "Project Title",
+            "project_list_timeline": "Timeline",
+            "project_list_team": "Team",
+            "project_list_last_updated": "Last Updated",
           }
         },
       },
