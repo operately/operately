@@ -48,7 +48,7 @@ interface TableProps {
 
 export default function Table({headers, columnClasses, rows} : TableProps) : JSX.Element {
   return (
-    <div className="mt-4 flex flex-col items-center rounded border border-stone-200">
+    <div className="mt-4 flex flex-col items-center rounded border border-stone-200 bg-white">
       <TableHeaderRow headers={headers} columnClasses={columnClasses} />
 
       {rows.map((row: Row, index: number) => {

@@ -37,6 +37,11 @@ defmodule Operately.Projects do
   """
   def get_project!(id), do: Repo.get!(Project, id)
 
+  def get_owner!(project) do
+    project = Repo.preload(project, [:owner])
+    project.owner
+  end
+
   @doc """
   Creates a project.
 

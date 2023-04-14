@@ -1,10 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 
 import Avatar from '../../components/Avatar';
 import PageTitle from '../../components/PageTitle';
 import KeyResults from './KeyResults';
+import Projects from './Projects';
 
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
@@ -50,6 +52,7 @@ export async function ObjectivePageLoader(apolloClient : any, {params}) {
 }
 
 export function ObjectivePage() {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   if (!id) return <p>Unable to find objective</p>;
@@ -59,8 +62,8 @@ export function ObjectivePage() {
     fetchPolicy: 'cache-only'
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   return (
     <div>
@@ -70,6 +73,7 @@ export function ObjectivePage() {
       <Champion person={data.objective.owner as Person} />
 
       <KeyResults objectiveID={id} />
+      <Projects objectiveID={id} />
     </div>
   )
 }

@@ -6,7 +6,7 @@ defmodule Operately.Alignments.Alignment do
   @foreign_key_type :binary_id
   schema "alignments" do
     field :child, Ecto.UUID
-    field :child_type, Ecto.Enum, values: [:objective]
+    field :child_type, Ecto.Enum, values: [:objective, :project]
     field :parent, Ecto.UUID
     field :parent_type, Ecto.Enum, values: [:objective]
 

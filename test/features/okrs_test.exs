@@ -3,6 +3,7 @@ defmodule MyApp.Features.OkrsTest do
 
   alias Operately.OkrsFixtures
   alias Operately.PeopleFixtures
+  alias Operately.ProjectsFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
@@ -139,6 +140,34 @@ defmodule MyApp.Features.OkrsTest do
 
   defand ~r/^I should see that "(?<name>[^"]+)" has status "(?<status>[^"]+)"$/, %{name: name, status: status}, state do
     state.session |> assert_text(status)
+  end
+
+  defand ~r/^I have a project called "(?<name>[^"]+)" for the "(?<objective>[^"]+)" objective championed by "(?<champion>[^"]+)"$/, %{name: name, objective: objective, champion: champion}, state do
+    objective = Operately.Okrs.get_objective_by_name!(objective)
+    champion = Operately.People.get_person_by_name!(champion)
+
+    project = ProjectsFixtures.project_fixture(%{
+      name: name,
+      ownership: %{
+        target_type: :project,
+        person_id: champion.id
+      }
+    })
+
+    {:ok, _} = Operately.Alignments.create_alignment(%{
+      child: project.id,
+      child_type: :project,
+      parent: objective.id,
+      parent_type: :objective,
+    })
+  end
+
+  defthen ~r/^I should see "(?<project>[^"]+)" in the "(?<objective>[^"]+)" Objective projects$/, %{project: project, objective: objective}, state do
+    state.session |> assert_text(project)
+  end
+
+  defand ~r/^I should see that "(?<champion>[^"]+)" is the champion of "(?<project>[^"]+)"$/, %{champion: champion, project: project}, state do
+    state.session |> assert_text(champion)
   end
 
 end

@@ -6,8 +6,6 @@ defmodule Operately.OwnershipsTest do
   describe "ownerships" do
     import Operately.OwnershipsFixtures
 
-    @invalid_attrs %{person_id: nil, target: nil, target_type: nil}
-
     test "list_ownerships/0 returns all ownerships" do
       ownership = ownership_fixture()
       assert Ownerships.list_ownerships() == [ownership]

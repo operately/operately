@@ -39,6 +39,15 @@ defmodule OperatelyWeb.Schema do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :description, :string
+    field :updated_at, non_null(:date)
+
+    field :owner, :person do
+      resolve fn objective, _, _ ->
+        person = Operately.Projects.get_owner!(objective)
+
+        {:ok, person}
+      end
+    end
   end
 
   object :group do
@@ -190,6 +199,17 @@ defmodule OperatelyWeb.Schema do
         key_results = Operately.Okrs.list_key_results!(objective_id)
 
         {:ok, key_results}
+      end
+    end
+
+    field :aligned_projects, list_of(:project) do
+      arg :objective_id, non_null(:id)
+
+      resolve fn args, _ ->
+        objective_id = args.objective_id
+        projects = Operately.Okrs.list_aligned_projects!(objective_id)
+
+        {:ok, projects}
       end
     end
   end
