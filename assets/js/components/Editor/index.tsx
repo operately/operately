@@ -9,6 +9,7 @@ import Mention from '@tiptap/extension-mention';
 
 import MenuBar from './MenuBar';
 import MentionPopup from './MentionPopup';
+import Footer from './Footer';
 
 export type EditorMentionSearchFunc = ({query} : {query : string}) => Promise<Person[]> | any[];
 
@@ -64,6 +65,7 @@ export default function Editor({placeholder, title, peopleSearch} : EditorProps)
       {header}
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
+      <Footer />
     </div>
   );
 }
