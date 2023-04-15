@@ -1,11 +1,5 @@
 import React from 'react';
 
-import { useEditor, EditorContent } from '@tiptap/react'
-
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import BulletList from '@tiptap/extension-bullet-list';
-
 function MenuBarToggle({ children, isActive, onClick }) : JSX.Element {
   const baseClass = "rounded px-1 py-0.5 w-8 text-center";
   const activeClass = baseClass + ' bg-sky-200 text-black';
@@ -54,7 +48,7 @@ function BulletListButton({ editor }) : JSX.Element {
   );
 }
 
-const MenuBar = ({ editor }) : JSX.Element | null  => {
+export default function MenuBar({ editor }) : JSX.Element | null {
   if (!editor) {
     return null;
   }
@@ -67,37 +61,3 @@ const MenuBar = ({ editor }) : JSX.Element | null  => {
     </div>
   );
 };
-
-export default function Editor() {
-  const editor = useEditor({
-    editorProps: {
-      attributes: {
-        class: 'p-4 prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none'
-      }
-    },
-    extensions: [
-      BulletList,
-      StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-      }),
-      Placeholder.configure({
-        placeholder: 'Write an update…',
-      }),
-    ],
-  })
-
-  return (
-    <div className="mt-4 rounded bg-white shadow-sm border border-stone-200">
-      <div className="p-4 py-2 border-b border-stone-200 text-sm">POST AN UPDATE</div>
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
-    </div>
-  );
-}

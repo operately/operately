@@ -111,6 +111,11 @@ i18n
             "project_list_timeline": "Timeline",
             "project_list_team": "Team",
             "project_list_last_updated": "Last Updated",
+
+            "write_an_update": {
+              "title": "POST AN UPDATE",
+              "placeholder": "Write an update…",
+            }
           }
         },
       },
