@@ -34,6 +34,15 @@ const SEARCH_PEOPLE = gql`
   }
 `;
 
+const CREATE_UPDATE = gql`
+  mutation CreateUpdate($input: CreateUpdateInput!) {
+    createUpdate(input: $input) {
+      id
+    }
+  }
+`;
+
+
 interface Person {
   fullName: string;
   title: string;
@@ -98,6 +107,21 @@ export function ObjectivePage() {
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
+  const handleAddUpdate = async ({json}) => {
+    console.log("Saving update", JSON.stringify(json));
+
+    await client.mutate({
+      mutation: CREATE_UPDATE,
+      variables: {
+        input: {
+          updatableId: id,
+          updatableType: "objective",
+          content: JSON.stringify(json),
+        }
+      }
+    })
+  }
+
   return (
     <div>
       <PageTitle title={data.objective.name} />
@@ -112,9 +136,7 @@ export function ObjectivePage() {
         title={t("objectives.write_an_update.title")}
         placeholder={t("objectives.write_an_update.placeholder")}
         peopleSearch={peopleSearch}
-        onSave={(data) => {
-          console.log(data.json);
-        }}
+        onSave={handleAddUpdate}
       />
     </div>
   )

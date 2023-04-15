@@ -3,6 +3,14 @@ defmodule OperatelyWeb.Schema do
 
   import_types Absinthe.Type.Custom
 
+  object :update do
+    field :id, non_null(:id)
+    # field :content, non_null(:string)
+    # field :author, non_null(:person)
+    # field :updateable_id, non_null(:id)
+    # field :created_at, non_null(:date)
+  end
+
   object :tenet do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -88,6 +96,12 @@ defmodule OperatelyWeb.Schema do
     field :description, :string
     field :timeframe, non_null(:string)
     field :owner_id, non_null(:id)
+  end
+
+  input_object :create_update_input do
+    field :content, non_null(:string)
+    field :updatable_id, non_null(:id)
+    field :updatable_type, non_null(:string)
   end
 
   query do
@@ -278,6 +292,14 @@ defmodule OperatelyWeb.Schema do
         {:ok, _} = Operately.Groups.add_members(group, args.person_ids)
 
         {:ok, group}
+      end
+    end
+
+    field :create_update, :update do
+      arg :input, non_null(:create_update_input)
+
+      resolve fn args, _ ->
+        {:ok, %{id: Ecto.UUID.generate()}}
       end
     end
   end
