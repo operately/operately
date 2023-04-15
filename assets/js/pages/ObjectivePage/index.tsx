@@ -112,7 +112,10 @@ export function ObjectivePage() {
         title={t("objectives.write_an_update.title")}
         placeholder={t("objectives.write_an_update.placeholder")}
         peopleSearch={peopleSearch}
-        />
+        onSave={(data) => {
+          console.log(data.json);
+        }}
+      />
     </div>
   )
 }

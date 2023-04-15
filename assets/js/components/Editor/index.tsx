@@ -18,13 +18,19 @@ interface Person {
   fullName: string;
 }
 
+interface OnSaveData {
+  json: any;
+  html: string;
+}
+
 interface EditorProps {
   placeholder: string,
   title: string,
-  peopleSearch: EditorMentionSearchFunc
+  peopleSearch: EditorMentionSearchFunc,
+  onSave?: (data: OnSaveData) => void;
 }
 
-export default function Editor({placeholder, title, peopleSearch} : EditorProps) : JSX.Element {
+export default function Editor({placeholder, title, peopleSearch, onSave} : EditorProps) : JSX.Element {
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -60,12 +66,22 @@ export default function Editor({placeholder, title, peopleSearch} : EditorProps)
 
   const header = <div className="p-4 py-2 border-b border-stone-200 text-sm">{title}</div>;
 
+  const handleSave = () => {
+    if(!editor) return;
+    if(!onSave) return;
+
+    onSave({
+      json: editor.getJSON(),
+      html: editor.getHTML(),
+    });
+  };
+
   return (
     <div className="mt-4 rounded bg-white shadow-sm border border-stone-200">
       {header}
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-      <Footer />
+      <Footer onSave={handleSave} />
     </div>
   );
 }
