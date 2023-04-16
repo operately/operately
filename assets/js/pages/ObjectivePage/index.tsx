@@ -58,6 +58,14 @@ const GET_UPDATES = gql`
   }
 `;
 
+const UPDATE_ADDED_SUBSCRIPTION = gql`
+  subscription OnUpdateAdded($updatableId: ID!, $updatableType: String!) {
+    updateAdded(updatableId: $updatableId, updatableType: $updatableType) {
+      id
+    }
+  }
+`;
+
 interface Person {
   fullName: string;
   title: string;
@@ -128,19 +136,36 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
 
 function Feed({objectiveID} : {objectiveID: string}) : JSX.Element {
   const { t } = useTranslation();
-  const { loading, error, data } = useQuery(GET_UPDATES, {
+  const { loading, error, data, refetch, subscribeToMore } = useQuery(GET_UPDATES, {
     variables: {
       updatableId: objectiveID,
       updatableType: "objective"
     }
   });
 
+  React.useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: UPDATE_ADDED_SUBSCRIPTION,
+      variables: {
+        updatableId: objectiveID,
+        updatableType: "objective"
+      },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        refetch();
+        return prev;
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   return (
     <div>
-      {data.updates.map((update : Update) => <FeedItem key={update.id} update={update} />)}
+      {data.updates.slice(0).reverse().map((update : Update) => <FeedItem key={update.id} update={update} />)}
     </div>
   );
 }

@@ -24,8 +24,7 @@ defmodule Operately.Updates do
   def list_updates(updatable_id, updatable_type) do
     query = from u in Update,
       where: u.updatable_id == ^updatable_id,
-      where: u.updatable_type == ^updatable_type,
-      limit: 10
+      where: u.updatable_type == ^updatable_type
 
     Repo.all(query)
   end
@@ -62,6 +61,16 @@ defmodule Operately.Updates do
     %Update{}
     |> Update.changeset(attrs)
     |> Repo.insert()
+    |> publish_update_added()
+  end
+
+  def publish_update_added({:ok, update}) do
+    Absinthe.Subscription.publish(
+      OperatelyWeb.Endpoint,
+      update,
+      update_added: "*")
+
+    {:ok, update}
   end
 
   @doc """
