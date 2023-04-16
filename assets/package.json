@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@apollo/client": "^3.7.11",
+    "@formatjs/intl-relativetimeformat": "^11.1.10",
     "@tiptap/extension-bullet-list": "^2.0.3",
     "@tiptap/extension-list-item": "^2.0.3",
     "@tiptap/extension-mention": "^2.0.3",

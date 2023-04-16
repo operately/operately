@@ -5,7 +5,6 @@ import { useQuery, gql } from '@apollo/client';
 
 import Table from './Table';
 import StatusBadge from './StatusBadge';
-import DateTime from './DateTime';
 
 const GET_KEY_RESULTS = gql`
   query GetKeyResults($objectiveID: ID!) {

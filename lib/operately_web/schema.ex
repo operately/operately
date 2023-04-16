@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Schema do
     field :id, non_null(:id)
     field :content, non_null(:string)
     field :updateable_id, non_null(:id)
-    field :created_at, non_null(:date)
+    field :inserted_at, non_null(:naive_datetime)
 
     field :author, :person do
       resolve fn update, _, _ ->

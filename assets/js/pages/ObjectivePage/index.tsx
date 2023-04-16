@@ -8,6 +8,7 @@ import PageTitle from '../../components/PageTitle';
 import KeyResults from './KeyResults';
 import Projects from './Projects';
 import Editor, { EditorMentionSearchFunc } from '../../components/Editor';
+import RelativeTime from '../../components/RelativeTime';
 
 import Bold from '@tiptap/extension-bold'
 import Document from '@tiptap/extension-document'
@@ -54,6 +55,11 @@ const GET_UPDATES = gql`
     updates(updatableId: $updatableId, updatableType: $updatableType) {
       id
       content
+      author {
+        id
+        fullName
+      }
+      insertedAt
     }
   }
 `;
@@ -75,6 +81,8 @@ interface Person {
 interface Update {
   id: string;
   content: string;
+  author: Person;
+  insertedAt: string;
 }
 
 function Champion({person} : {person: Person}) : JSX.Element {
@@ -133,9 +141,9 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
     <div className="rounded bg-white shadow-sm border border-stone-200 rounded">
       <div className="p-4 py-2 border-b border-stone-200">
         <div className="flex gap-1 items-center">
-          <Avatar person_full_name="John Doe" size={AvatarSize.Small} />
-          <span className="ml-1">John Doe</span>
-          <span className="text-gray-400">posted an update 2 hours ago</span>
+          <Avatar person_full_name={update.author.fullName} size={AvatarSize.Small} />
+          <span className="ml-1">{update.author.fullName}</span>
+          <span className="text-gray-400">posted an update <RelativeTime date={update.insertedAt} /></span>
         </div>
       </div>
       <div className="prose p-4" dangerouslySetInnerHTML={{__html: html}} />

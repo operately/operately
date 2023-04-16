@@ -16,7 +16,7 @@ defmodule Operately.Updates.Update do
   @doc false
   def changeset(update, attrs) do
     update
-    |> cast(attrs, [:content, :updatable_id, :updatable_type])
-    |> validate_required([:content, :updatable_id, :updatable_type])
+    |> cast(attrs, [:content, :updatable_id, :updatable_type, :author_id])
+    |> validate_required([:content, :updatable_id, :updatable_type, :author_id])
   end
 end

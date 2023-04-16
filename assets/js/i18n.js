@@ -8,6 +8,7 @@ i18n
       "en": {
         translation: {
           "intlDateTime": "{{val, datetime}}",
+          "intlRelativeDateTime": "{{val, relativetime}}",
 
           "Objectives": "Objectives",
           "Tenets": "Tenets",
