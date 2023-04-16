@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, gql, useApolloClient, ApolloClient } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 
-import Avatar from '../../components/Avatar';
+import Avatar, {AvatarSize} from '../../components/Avatar';
 import PageTitle from '../../components/PageTitle';
 import KeyResults from './KeyResults';
 import Projects from './Projects';
@@ -130,7 +130,16 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
   ]);
 
   return (
-    <div className="prose" dangerouslySetInnerHTML={{__html: html}} />
+    <div className="rounded bg-white shadow-sm border border-stone-200 rounded">
+      <div className="p-4 py-2 border-b border-stone-200">
+        <div className="flex gap-1 items-center">
+          <Avatar person_full_name="John Doe" size={AvatarSize.Small} />
+          <span className="ml-1">John Doe</span>
+          <span className="text-gray-400">posted an update 2 hours ago</span>
+        </div>
+      </div>
+      <div className="prose p-4" dangerouslySetInnerHTML={{__html: html}} />
+    </div>
   );
 }
 
@@ -163,11 +172,13 @@ function Feed({objectiveID} : {objectiveID: string}) : JSX.Element {
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
-  return (
-    <div>
+  return <div className="mt-4">
+    <div className="text-sm uppercase">FEED</div>
+
+    <div className="mt-4 flex flex-col gap-2">
       {data.updates.slice(0).reverse().map((update : Update) => <FeedItem key={update.id} update={update} />)}
     </div>
-  );
+  </div>;
 }
 
 export function ObjectivePage() {
