@@ -5,10 +5,17 @@ defmodule OperatelyWeb.Schema do
 
   object :update do
     field :id, non_null(:id)
-    # field :content, non_null(:string)
-    # field :author, non_null(:person)
-    # field :updateable_id, non_null(:id)
-    # field :created_at, non_null(:date)
+    field :content, non_null(:string)
+    field :updateable_id, non_null(:id)
+    field :created_at, non_null(:date)
+
+    field :author, :person do
+      resolve fn update, _, _ ->
+        person = Operately.People.get_person!(update.author_id)
+
+        {:ok, person}
+      end
+    end
   end
 
   object :tenet do
@@ -299,7 +306,12 @@ defmodule OperatelyWeb.Schema do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, _ ->
-        {:ok, %{id: Ecto.UUID.generate()}}
+        Operately.Updates.create_update(%{
+          author_id: hd(Operately.People.list_people()).id,
+          updatable_type: args.input.updatable_type,
+          updatable_id: args.input.updatable_id,
+          content: args.input.content
+        })
       end
     end
   end
