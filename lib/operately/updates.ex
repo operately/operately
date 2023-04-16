@@ -21,6 +21,15 @@ defmodule Operately.Updates do
     Repo.all(Update)
   end
 
+  def list_updates(updatable_id, updatable_type) do
+    query = from u in Update,
+      where: u.updatable_id == ^updatable_id,
+      where: u.updatable_type == ^updatable_type,
+      limit: 10
+
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single update.
 

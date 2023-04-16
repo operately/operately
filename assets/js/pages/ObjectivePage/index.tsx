@@ -9,6 +9,13 @@ import KeyResults from './KeyResults';
 import Projects from './Projects';
 import Editor, { EditorMentionSearchFunc } from '../../components/Editor';
 
+import Bold from '@tiptap/extension-bold'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
+import Mention from '@tiptap/extension-mention'
+import { generateHTML } from '@tiptap/html';
+
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
     objective(id: $id) {
@@ -42,11 +49,24 @@ const CREATE_UPDATE = gql`
   }
 `;
 
+const GET_UPDATES = gql`
+  query updates($updatableId: ID!, $updatableType: String!) {
+    updates(updatableId: $updatableId, updatableType: $updatableType) {
+      id
+      content
+    }
+  }
+`;
 
 interface Person {
   fullName: string;
   title: string;
   id: string;
+}
+
+interface Update {
+  id: string;
+  content: string;
 }
 
 function Champion({person} : {person: Person}) : JSX.Element {
@@ -89,6 +109,40 @@ function PeopleSuggestions(client : ApolloClient<any>) : EditorMentionSearchFunc
         });
     });
   }
+}
+
+function FeedItem({update} : {update: Update}) : JSX.Element {
+  const json = JSON.parse(update.content);
+  const html = generateHTML(json, [
+    Document,
+    Paragraph,
+    Text,
+    Bold,
+    Mention,
+  ]);
+
+  return (
+    <div className="prose" dangerouslySetInnerHTML={{__html: html}} />
+  );
+}
+
+function Feed({objectiveID} : {objectiveID: string}) : JSX.Element {
+  const { t } = useTranslation();
+  const { loading, error, data } = useQuery(GET_UPDATES, {
+    variables: {
+      updatableId: objectiveID,
+      updatableType: "objective"
+    }
+  });
+
+  if (loading) return <p>{t("loading.loading")}</p>;
+  if (error) return <p>{t("error.error")}: {error.message}</p>;
+
+  return (
+    <div>
+      {data.updates.map((update : Update) => <FeedItem key={update.id} update={update} />)}
+    </div>
+  );
 }
 
 export function ObjectivePage() {
@@ -138,6 +192,8 @@ export function ObjectivePage() {
         peopleSearch={peopleSearch}
         onSave={handleAddUpdate}
       />
+
+      <Feed objectiveID={id} />
     </div>
   )
 }

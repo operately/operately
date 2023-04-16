@@ -233,6 +233,19 @@ defmodule OperatelyWeb.Schema do
         {:ok, projects}
       end
     end
+
+    field :updates, list_of(:update) do
+      arg :updatable_id, non_null(:id)
+      arg :updatable_type, non_null(:string)
+
+      resolve fn args, _ ->
+        updatable_id = args.updatable_id
+        updatable_type = args.updatable_type
+        updates = Operately.Updates.list_updates(updatable_id, updatable_type)
+
+        {:ok, updates}
+      end
+    end
   end
 
   mutation do
