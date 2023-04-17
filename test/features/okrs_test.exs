@@ -134,7 +134,6 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the "(?<objective>[^"]+)" Objective key results$/, %{name: name, objective: objective}, state do
-    state.session |> take_screenshot()
     state.session |> assert_text(name)
   end
 
@@ -168,6 +167,23 @@ defmodule MyApp.Features.OkrsTest do
 
   defand ~r/^I should see that "(?<champion>[^"]+)" is the champion of "(?<project>[^"]+)"$/, %{champion: champion, project: project}, state do
     state.session |> assert_text(champion)
+  end
+
+  defwhen ~r/^I fill in the Update field with "(?<message>[^"]+)"$/, %{message: message}, state do
+    editor = state.session |> find(Query.css(".ProseMirror"))
+    editor |> send_keys(message)
+  end
+
+  defand ~r/^I click on Post Update$/, _vars, state do
+    state.session |> click(Query.button("Post"))
+  end
+
+  defthen ~r/^I should see "(?<message>[^"]+)" in the Objective updates$/, %{message: message}, state do
+    feed = Query.css("[data-test=\"feed\"]")
+
+    find(state.session, feed, fn element ->
+      element |> assert_text(message)
+    end)
   end
 
 end

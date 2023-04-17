@@ -3,6 +3,21 @@ defmodule OperatelyWeb.Schema do
 
   import_types Absinthe.Type.Custom
 
+  object :update do
+    field :id, non_null(:id)
+    field :content, non_null(:string)
+    field :updateable_id, non_null(:id)
+    field :inserted_at, non_null(:naive_datetime)
+
+    field :author, :person do
+      resolve fn update, _, _ ->
+        person = Operately.People.get_person!(update.author_id)
+
+        {:ok, person}
+      end
+    end
+  end
+
   object :tenet do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -88,6 +103,12 @@ defmodule OperatelyWeb.Schema do
     field :description, :string
     field :timeframe, non_null(:string)
     field :owner_id, non_null(:id)
+  end
+
+  input_object :create_update_input do
+    field :content, non_null(:string)
+    field :updatable_id, non_null(:id)
+    field :updatable_type, non_null(:string)
   end
 
   query do
@@ -212,6 +233,19 @@ defmodule OperatelyWeb.Schema do
         {:ok, projects}
       end
     end
+
+    field :updates, list_of(:update) do
+      arg :updatable_id, non_null(:id)
+      arg :updatable_type, non_null(:string)
+
+      resolve fn args, _ ->
+        updatable_id = args.updatable_id
+        updatable_type = args.updatable_type
+        updates = Operately.Updates.list_updates(updatable_id, updatable_type)
+
+        {:ok, updates}
+      end
+    end
   end
 
   mutation do
@@ -280,6 +314,19 @@ defmodule OperatelyWeb.Schema do
         {:ok, group}
       end
     end
+
+    field :create_update, :update do
+      arg :input, non_null(:create_update_input)
+
+      resolve fn args, _ ->
+        Operately.Updates.create_update(%{
+          author_id: hd(Operately.People.list_people()).id,
+          updatable_type: args.input.updatable_type,
+          updatable_id: args.input.updatable_id,
+          content: args.input.content
+        })
+      end
+    end
   end
 
   subscription do
@@ -308,6 +355,15 @@ defmodule OperatelyWeb.Schema do
     end
 
     field :objective_added, :objective do
+      config fn _, _ ->
+        {:ok, %{topic: "*"}}
+      end
+    end
+
+    field :update_added, :update do
+      arg :updatable_id, non_null(:id)
+      arg :updatable_type, non_null(:string)
+
       config fn _, _ ->
         {:ok, %{topic: "*"}}
       end
