@@ -116,6 +116,10 @@ i18n
             "write_an_update": {
               "title": "POST AN UPDATE",
               "placeholder": "Write an update…",
+            },
+
+            "leave_comment": {
+              "placeholder": "Leave a comment…",
             }
           }
         },

@@ -25,7 +25,7 @@ interface OnSaveData {
 
 interface EditorProps {
   placeholder: string,
-  title: string,
+  title?: string,
   peopleSearch: EditorMentionSearchFunc,
   onSave?: (data: OnSaveData) => void;
 }
@@ -64,7 +64,7 @@ export default function Editor({placeholder, title, peopleSearch, onSave} : Edit
     ],
   })
 
-  const header = <div className="p-4 py-2 border-b border-stone-200 text-sm">{title}</div>;
+  const header = title ? <div className="p-4 py-2 border-b border-stone-200 text-sm">{title}</div> : null;
 
   const handleSave = () => {
     if(!editor) return;
@@ -76,12 +76,20 @@ export default function Editor({placeholder, title, peopleSearch, onSave} : Edit
     });
   };
 
-  return (
-    <div className="mt-4 rounded bg-white shadow-sm border border-stone-200">
-      {header}
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
-      <Footer onSave={handleSave} />
-    </div>
-  );
+  React.useEffect(() => {
+    console.log("Focusing1")
+
+    if(!editor) return;
+
+    console.log("Focusing2")
+
+    editor.commands.focus();
+  }, [editor]);
+
+  return <>
+    {header}
+    <MenuBar editor={editor} />
+    <EditorContent editor={editor} />
+    <Footer onSave={handleSave} />
+  </>
 }
