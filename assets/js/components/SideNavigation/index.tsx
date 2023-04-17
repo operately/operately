@@ -13,20 +13,17 @@ function SideNavigation({ isCollapsed }: SideNavigationProps) {
   const { t } = useTranslation();
 
   return (
-    <aside className="h-screen sticky flex w-72">
-      <div className="m-2 rounded bg-light-base items-strech w-full">
-        <div className="flex items-center gap-1 mb-12 mx-2 mt-4">
+    <aside className="top-0 left-0 bottom-0 fixed flex w-72 bg-light-base border-r border-[#E1E1E1] z-50">
+      <div className="items-strech w-full mx-5">
+        <div className="flex items-center gap-1 mb-12 mt-4">
           <Icon name="logo" />
           <span className="text-lg font-bold block">Operately</span>
         </div>
 
-        <ul className={`list-none m-0 p-0 ${isCollapsed ? 'hidden' : 'block'}`}>
+        <ul className={`flex flex-col gap-2.5 list-none m-0 p-0 ${isCollapsed ? 'hidden' : 'block'}`}>
           <Link to="/objectives" title={t("Objectives")} icon={<Icon name="goal" />} />
-          <Link to="/tenets" title={t("Tenets")} />
-          <Link to="/projects" title={t("Projects")} />
-          <Link to="/kpis" title={t("KPIs")} />
+          <Link to="/projects" title={t("Projects")} icon={<Icon name="project" />} />
           <Link to="/groups" title={t("Groups")} icon={<Icon name="group" />} />
-          <Link to="/people" title={t("People")} />
         </ul>
       </div>
     </aside>

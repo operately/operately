@@ -11,8 +11,15 @@ function Goal() : JSX.Element {
     <path stroke="currentColor" d="M11 12C11 12.2652 11.1054 12.5196 11.2929 12.7071C11.4804 12.8946 11.7348 13 12 13C12.2652 13 12.5196 12.8946 12.7071 12.7071C12.8946 12.5196 13 12.2652 13 12C13 11.7348 12.8946 11.4804 12.7071 11.2929C12.5196 11.1054 12.2652 11 12 11C11.7348 11 11.4804 11.1054 11.2929 11.2929C11.1054 11.4804 11 11.7348 11 12Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path stroke="currentColor" d="M12 7C11.0111 7 10.0444 7.29324 9.22215 7.84265C8.39991 8.39206 7.75904 9.17295 7.3806 10.0866C7.00217 11.0002 6.90315 12.0055 7.09608 12.9755C7.289 13.9454 7.76521 14.8363 8.46447 15.5355C9.16373 16.2348 10.0546 16.711 11.0246 16.9039C11.9945 17.0969 12.9998 16.9978 13.9134 16.6194C14.827 16.241 15.6079 15.6001 16.1574 14.7779C16.7068 13.9556 17 12.9889 17 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path stroke="currentColor" d="M13 3.0549C11.1461 2.84691 9.2733 3.22018 7.64079 4.12307C6.00827 5.02596 4.69667 6.41385 3.88743 8.09476C3.07818 9.77566 2.81128 11.6665 3.12365 13.5057C3.43601 15.345 4.31221 17.0417 5.63103 18.3611C6.94985 19.6806 8.64611 20.5577 10.4852 20.871C12.3242 21.1843 14.2152 20.9183 15.8965 20.1099C17.5779 19.3015 18.9664 17.9906 19.8701 16.3586C20.7738 14.7265 21.148 12.8539 20.941 10.9999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path stroke="currentColor" d="M15 9V6L18 3V6H21L18 9H15ZM15 9L12 12" stroke="#878787" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path stroke="currentColor" d="M15 9V6L18 3V6H21L18 9H15ZM15 9L12 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
+}
+
+function Project() : JSX.Element {
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="currentColor" d="M9 5H7C6.46957 5 5.96086 5.21071 5.58579 5.58579C5.21071 5.96086 5 6.46957 5 7V19C5 19.5304 5.21071 20.0391 5.58579 20.4142C5.96086 20.7893 6.46957 21 7 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V7C19 6.46957 18.7893 5.96086 18.4142 5.58579C18.0391 5.21071 17.5304 5 17 5H15" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path stroke="currentColor" d="M9 12H9.01M13 12H15M9 16H9.01M13 16H15M9 5C9 4.46957 9.21071 3.96086 9.58579 3.58579C9.96086 3.21071 10.4696 3 11 3H13C13.5304 3 14.0391 3.21071 14.4142 3.58579C14.7893 3.96086 15 4.46957 15 5C15 5.53043 14.7893 6.03914 14.4142 6.41421C14.0391 6.78929 13.5304 7 13 7H11C10.4696 7 9.96086 6.78929 9.58579 6.41421C9.21071 6.03914 9 5.53043 9 5Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>;
 }
 
 function Logo() : JSX.Element {
@@ -34,6 +41,8 @@ export default function Icon({name}) : JSX.Element {
       return <Goal />;
     case 'logo':
       return <Logo />;
+    case 'project':
+      return <Project />;
     default:
       return <></>;
   }

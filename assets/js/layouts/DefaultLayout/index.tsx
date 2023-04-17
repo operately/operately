@@ -5,10 +5,12 @@ import { Outlet } from 'react-router-dom';
 
 export default function DefaultLayout() {
   return (
-    <div className="flex items-stretch">
+    <div>
       <SideNavigation />
-      <div className="flex-1 mt-2 mr-2">
-        <Outlet />
+      <div className="ml-72">
+        <div className="m-11">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
