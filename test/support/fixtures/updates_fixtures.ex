@@ -24,9 +24,17 @@ defmodule Operately.UpdatesFixtures do
     update
   end
 
-  @doc """
-  Generate a comment.
-  """
+  def comment_fixture(:with_update, :with_author, attrs) do
+    {update, author} = update_fixture(:with_author, %{})
+
+    comment = comment_fixture(Map.merge(attrs, %{
+      update_id: update.id,
+      author_id: author.id
+    }))
+
+    {comment, update, author}
+  end
+
   def comment_fixture(attrs \\ %{}) do
     {:ok, comment} =
       attrs

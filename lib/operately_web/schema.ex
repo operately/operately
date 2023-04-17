@@ -16,6 +16,28 @@ defmodule OperatelyWeb.Schema do
         {:ok, person}
       end
     end
+
+    field :comments, list_of(:comment) do
+      resolve fn update, _, _ ->
+        comments = Operately.Updates.list_comments(update.id)
+
+        {:ok, comments}
+      end
+    end
+  end
+
+  object :comment do
+    field :id, non_null(:id)
+    field :content, non_null(:string)
+    field :inserted_at, non_null(:naive_datetime)
+
+    field :author, :person do
+      resolve fn comment, _, _ ->
+        person = Operately.People.get_person!(comment.author_id)
+
+        {:ok, person}
+      end
+    end
   end
 
   object :tenet do
@@ -109,6 +131,11 @@ defmodule OperatelyWeb.Schema do
     field :content, non_null(:string)
     field :updatable_id, non_null(:id)
     field :updatable_type, non_null(:string)
+  end
+
+  input_object :create_comment_input do
+    field :content, non_null(:string)
+    field :update_id, non_null(:id)
   end
 
   query do
@@ -323,6 +350,18 @@ defmodule OperatelyWeb.Schema do
           author_id: hd(Operately.People.list_people()).id,
           updatable_type: args.input.updatable_type,
           updatable_id: args.input.updatable_id,
+          content: args.input.content
+        })
+      end
+    end
+
+    field :create_comment, :comment do
+      arg :input, non_null(:create_comment_input)
+
+      resolve fn args, _ ->
+        Operately.Updates.create_comment(%{
+          author_id: hd(Operately.People.list_people()).id,
+          update_id: args.input.update_id,
           content: args.input.content
         })
       end

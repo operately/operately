@@ -77,11 +77,7 @@ export default function Editor({placeholder, title, peopleSearch, onSave} : Edit
   };
 
   React.useEffect(() => {
-    console.log("Focusing1")
-
     if(!editor) return;
-
-    console.log("Focusing2")
 
     editor.commands.focus();
   }, [editor]);

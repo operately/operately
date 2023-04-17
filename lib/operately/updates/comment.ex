@@ -15,7 +15,7 @@ defmodule Operately.Updates.Comment do
   @doc false
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:content])
-    |> validate_required([:content])
+    |> cast(attrs, [:content, :update_id, :author_id])
+    |> validate_required([:content, :update_id, :author_id])
   end
 end

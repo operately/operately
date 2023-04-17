@@ -126,17 +126,11 @@ defmodule Operately.Updates do
 
   alias Operately.Updates.Comment
 
-  @doc """
-  Returns the list of comments.
+  def list_comments(update_id) do
+    query = from c in Comment,
+      where: c.update_id == ^update_id
 
-  ## Examples
-
-      iex> list_comments()
-      [%Comment{}, ...]
-
-  """
-  def list_comments do
-    Repo.all(Comment)
+    Repo.all(query)
   end
 
   @doc """
@@ -171,6 +165,20 @@ defmodule Operately.Updates do
     %Comment{}
     |> Comment.changeset(attrs)
     |> Repo.insert()
+    |> publish_comment_added()
+  end
+
+  def publish_comment_added({:ok, comment}) do
+    Absinthe.Subscription.publish(
+      OperatelyWeb.Endpoint,
+      comment,
+      comment_added: "*")
+
+    {:ok, comment}
+  end
+
+  def publish_comment_added(e) do
+    e
   end
 
   @doc """

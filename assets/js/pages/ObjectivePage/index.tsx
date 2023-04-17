@@ -50,16 +50,33 @@ const CREATE_UPDATE = gql`
   }
 `;
 
+const CREATE_COMMENT = gql`
+  mutation CreateComment($input: CreateCommentInput!) {
+    createComment(input: $input) {
+      id
+    }
+  }
+`;
+
 const GET_UPDATES = gql`
   query updates($updatableId: ID!, $updatableType: String!) {
     updates(updatableId: $updatableId, updatableType: $updatableType) {
       id
       content
+      insertedAt
+
       author {
         id
         fullName
       }
-      insertedAt
+
+      comments {
+        content
+        author {
+          id
+          fullName
+        }
+      }
     }
   }
 `;
@@ -78,11 +95,18 @@ interface Person {
   id: string;
 }
 
+interface Comment {
+  id: string;
+  content: string;
+  author: Person;
+}
+
 interface Update {
   id: string;
   content: string;
   author: Person;
   insertedAt: string;
+  comments: Comment[];
 }
 
 function Champion({person} : {person: Person}) : JSX.Element {
@@ -148,12 +172,37 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
       </div>
       <div className="prose p-4" dangerouslySetInnerHTML={{__html: html}} />
 
-      <CommentEditor />
+      <Comments comments={update.comments} />
+      <CommentEditor updateId={update.id} />
     </div>
   );
 }
 
-function CommentEditor() : JSX.Element {
+function Comment({comment}) : JSX.Element {
+  const json = JSON.parse(comment.content);
+  const html = generateHTML(json, [
+    Document,
+    Paragraph,
+    Text,
+    Bold,
+    Mention,
+  ]);
+
+  return <div>
+    <div className="flex gap-1 items-center ml-4 pt-4 border-t border-ston-200">
+      <Avatar person_full_name={comment.author.fullName} size={AvatarSize.Small} />
+      <span className="ml-1">{comment.author.fullName}</span>
+    </div>
+
+    <div className="prose p-4" dangerouslySetInnerHTML={{__html: html}} />
+  </div>;
+}
+
+function Comments({comments} : {comments: any[]}) : JSX.Element {
+  return <>{comments.map((comment) => <Comment key={comment.id} comment={comment} />)}</>;
+}
+
+function CommentEditor({updateId}) : JSX.Element {
   const [active, setActive] = React.useState(false);
 
   const { t } = useTranslation();
@@ -161,17 +210,17 @@ function CommentEditor() : JSX.Element {
   const peopleSearch = PeopleSuggestions(client);
 
   const handleAddComment = async ({json}) => {
-    console.log(json)
-    // await client.mutate({
-    //   mutation: CREATE_UPDATE,
-    //   variables: {
-    //     input: {
-    //       updatableId: id,
-    //       updatableType: "objective",
-    //       content: JSON.stringify(json),
-    //     }
-    //   }
-    // })
+    console.log("Saving")
+
+    await client.mutate({
+      mutation: CREATE_COMMENT,
+      variables: {
+        input: {
+          updateId: updateId,
+          content: JSON.stringify(json)
+        }
+      }
+    })
   }
 
 
