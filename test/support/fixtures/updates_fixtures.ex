@@ -23,4 +23,18 @@ defmodule Operately.UpdatesFixtures do
 
     update
   end
+
+  @doc """
+  Generate a comment.
+  """
+  def comment_fixture(attrs \\ %{}) do
+    {:ok, comment} =
+      attrs
+      |> Enum.into(%{
+        content: "some content"
+      })
+      |> Operately.Updates.create_comment()
+
+    comment
+  end
 end
