@@ -14,11 +14,13 @@ module.exports = {
     extend: {
       colors: {
         brandPrimaryLight: {
+          "base": "#3185FF",
           "2": "#E3F2FF"
         },
         light: {
           "base": "#FFFFFF",
           "1": "#F9FAF7",
+          "gray": "#F9FAF7",
         },
         dark: {
           "base": "#000000",
