@@ -180,7 +180,7 @@ function Feed({objectiveID} : {objectiveID: string}) : JSX.Element {
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
-  return <div className="mt-4">
+  return <div className="mt-4" data-test="feed">
     <div className="text-sm uppercase">FEED</div>
 
     <div className="mt-4 flex flex-col gap-2">
@@ -206,8 +206,6 @@ export function ObjectivePage() {
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
   const handleAddUpdate = async ({json}) => {
-    console.log("Saving update", JSON.stringify(json));
-
     await client.mutate({
       mutation: CREATE_UPDATE,
       variables: {

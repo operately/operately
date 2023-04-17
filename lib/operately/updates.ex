@@ -73,6 +73,10 @@ defmodule Operately.Updates do
     {:ok, update}
   end
 
+  def publish_update_added(e) do
+    e
+  end
+
   @doc """
   Updates a update.
 

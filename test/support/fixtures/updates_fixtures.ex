@@ -4,16 +4,20 @@ defmodule Operately.UpdatesFixtures do
   entities via the `Operately.Updates` context.
   """
 
-  @doc """
-  Generate a update.
-  """
+  def update_fixture(:with_author, attrs) do
+    person = Operately.PeopleFixtures.person_fixture()
+    update = update_fixture(Map.put(attrs, :author_id, person.id))
+
+    {update, person}
+  end
+
   def update_fixture(attrs \\ %{}) do
     {:ok, update} =
       attrs
       |> Enum.into(%{
         content: "some content",
-        updatable_id: "7488a646-e31f-11e4-aace-600308960662",
-        updatable_type: :objective
+        updatable_id: Ecto.UUID.generate(),
+        updatable_type: :objective,
       })
       |> Operately.Updates.create_update()
 
