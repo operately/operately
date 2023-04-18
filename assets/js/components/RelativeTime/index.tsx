@@ -24,6 +24,10 @@ export default function RelativeTime({date} : Props) : JSX.Element {
   const months = Math.floor(days / 30);
   const years = Math.floor(days / 365);
 
+  if (seconds < 10) {
+    return <>{t("intlRelativeDateTimeJustNow")}</>;
+  }
+
   if (seconds < 60) {
     return <>{t("intlRelativeDateTime", {val: -seconds, range: "second"})}</>;
   }
