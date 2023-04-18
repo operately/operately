@@ -42,15 +42,17 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
 
   const columnClasses = {
     status: "w-32",
-    completion: "w-32",
-    keyResult: "flex-1",
-    lastUpdated: "w-32 text-right",
+    completion: "w-32 text-dark-1",
+    keyResult: "flex-1 text-dark-1",
+    lastUpdated: "w-32 text-dark-2",
   };
 
   const rows = data.keyResults.map((keyResult: KeyResult) => {
     return {
       status: <StatusBadge status={keyResult.status} />,
-      completion: "---",
+      completion: <div className="font-bold">
+        <span className="text-success-base">1</span> of 3
+      </div>,
       keyResult: keyResult.name,
       lastUpdated: t('intlDateTime', {
         val: Date.parse(keyResult.updatedAt),

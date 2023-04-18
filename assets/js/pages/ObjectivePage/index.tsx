@@ -54,10 +54,14 @@ export function ObjectivePage() {
 
   return (
     <div>
-      <PageTitle title={data.objective.name} />
-      <p className="max-w-lg">{data.objective.description}</p>
+      <div className="flex items-start justify-between text-dark-1 mb-10">
+        <div>
+          <PageTitle title={data.objective.name} />
+          <p className="max-w-lg">{data.objective.description}</p>
+        </div>
 
-      <Champion person={data.objective.owner} />
+        <Champion person={data.objective.owner} />
+      </div>
 
       <KeyResults objectiveID={id} />
       <Projects objectiveID={id} />

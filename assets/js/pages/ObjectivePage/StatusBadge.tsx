@@ -6,7 +6,7 @@ const StatusBadgeClasses = {
   "on_track": "bg-green-200 text-green-800",
   "at_risk": "bg-yellow-200 text-yellow-800",
   "off_track": "bg-red-200 text-red-800",
-  "completed": "bg-green-200 text-green-800",
+  "completed": "bg-success-2 text-success-base",
   "cancelled": "bg-gray-200 text-gray-800",
 }
 
@@ -19,7 +19,7 @@ export default function StatusBadge({status}: {status: string}) {
   }
 
   return (
-    <span className={"inline-flex items-center px-2.5 py-0.5 rounded-full text-sm " + colorClasses}>
+    <span className={"uppercase inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold " + colorClasses}>
       {t("keyResults.statuses." + status)}
     </span>
   );

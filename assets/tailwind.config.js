@@ -20,6 +20,7 @@ module.exports = {
         light: {
           "base": "#FFFFFF",
           "1": "#F9FAF7",
+          "2": "#F1F2EF",
           "gray": "#F9FAF7",
         },
         dark: {
@@ -28,6 +29,10 @@ module.exports = {
           "2": "#878787",
           "7%": "rgba(0, 0, 0, 0.07)",
           "8%": "rgba(0, 0, 0, 0.08)",
+        },
+        success: {
+          "base": "#548B53",
+          "2": "#D7ECD7",
         }
       }
     },
