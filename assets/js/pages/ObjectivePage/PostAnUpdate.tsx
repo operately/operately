@@ -34,6 +34,8 @@ export default function PostAnUpdate({objectiveID}) : JSX.Element {
         }
       }
     })
+
+    setActive(false);
   }
 
   const handleBlur = ({html}) => {
