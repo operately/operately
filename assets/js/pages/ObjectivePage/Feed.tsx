@@ -123,6 +123,12 @@ function CommentEditor({updateId}) : JSX.Element {
     })
   }
 
+  const handleBlur = ({html}) => {
+    if(html === "<p></p>") {
+      setActive(false);
+    }
+  }
+
   if (!active) {
     return (
       <div className="p-4 text-gray-500 cursor-pointer bg-light-1 flex items-center gap-2" onClick={() => setActive(true)}>
@@ -131,11 +137,14 @@ function CommentEditor({updateId}) : JSX.Element {
       </div>
     );
   } else {
-    return <Editor
-      placeholder={t("objectives.leave_comment.placeholder")}
-      peopleSearch={peopleSearch}
-      onSave={handleAddComment}
-    />;
+    return <div className="border-t border-dark-8% mt-2">
+      <Editor
+        placeholder={t("objectives.leave_comment.placeholder")}
+        peopleSearch={peopleSearch}
+        onSave={handleAddComment}
+        onBlur={handleBlur}
+      />
+    </div>
   }
 }
 
