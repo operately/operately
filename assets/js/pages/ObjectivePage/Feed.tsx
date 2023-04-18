@@ -169,6 +169,10 @@ export default function Feed({objectiveID} : {objectiveID: string}) : JSX.Elemen
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
+  if(data.updates.length == 0) {
+    return <></>;
+  }
+
   return <div className="mt-4" data-test="feed">
     <div className="text-sm uppercase">FEED</div>
 
