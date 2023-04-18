@@ -196,7 +196,7 @@ export default function Feed({objectiveID} : {objectiveID: string}) : JSX.Elemen
   return <div className="mt-4" data-test="feed">
     <SectionHeader>{t("objectives.feed.title")}</SectionHeader>
 
-    <div className="mt-4 flex flex-col gap-2.5">
+    <div className="flex flex-col gap-2.5">
       {data.updates.slice(0).reverse().map((update : Update) => <FeedItem key={update.id} update={update} />)}
     </div>
   </div>;
