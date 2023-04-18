@@ -13,7 +13,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brandPrimaryLight: {
+        brand: {
           "base": "#3185FF",
           "2": "#E3F2FF"
         },
@@ -24,7 +24,9 @@ module.exports = {
         },
         dark: {
           "base": "#000000",
-          "2": "#878787"
+          "1": "#333333",
+          "2": "#878787",
+          "8%": "rgba(0, 0, 0, 0.08)",
         }
       }
     },

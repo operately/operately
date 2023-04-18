@@ -170,6 +170,8 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defwhen ~r/^I fill in the Update field with "(?<message>[^"]+)"$/, %{message: message}, state do
+    state.session |> click(Query.button("Write an update"))
+
     editor = state.session |> find(Query.css(".ProseMirror"))
     editor |> send_keys(message)
   end

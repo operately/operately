@@ -4,11 +4,16 @@ import Button, {ButtonSize} from '../../components/Button';
 
 interface FooterProps {
   onSave: () => void;
+  submitDisabled: boolean;
 }
 
-export default function Footer({onSave} : FooterProps) : JSX.Element {
-  return <div className="bg-light-1 p-2 border-t border-stone-200 flex justify-between">
+export default function Footer({onSave, submitDisabled} : FooterProps) : JSX.Element {
+  return <div className="bg-light-1 p-2 flex justify-between">
     <div></div>
-    <Button onClick={onSave} size={ButtonSize.Small} >Post</Button>
+    <Button disabled={submitDisabled} onClick={onSave} size={ButtonSize.Small} >Post</Button>
   </div>;
 }
+
+Footer.defaultProps = {
+  submitDisabled: false,
+};

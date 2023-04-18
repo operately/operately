@@ -33,6 +33,14 @@ function Logo() : JSX.Element {
   );
 }
 
+function Close() : JSX.Element {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path stroke="currentColor" d="M1 1L13 13M13 1L1 13L13 1Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  );
+}
+
 export default function Icon({name}) : JSX.Element {
   switch (name) {
     case 'group':
@@ -43,6 +51,8 @@ export default function Icon({name}) : JSX.Element {
       return <Logo />;
     case 'project':
       return <Project />;
+    case 'close':
+      return <Close/>;
     default:
       return <></>;
   }
