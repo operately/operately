@@ -4,7 +4,6 @@ import { useEditor, EditorContent } from '@tiptap/react';
 
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import BulletList from '@tiptap/extension-bullet-list';
 import Mention from '@tiptap/extension-mention';
 
 import MenuBar from './MenuBar';
@@ -23,14 +22,19 @@ interface OnSaveData {
   html: string;
 }
 
-interface EditorProps {
-  placeholder: string,
-  title?: string,
-  peopleSearch: EditorMentionSearchFunc,
-  onSave?: (data: OnSaveData) => void;
+interface OnBlurData {
+  json: any;
+  html: string;
 }
 
-export default function Editor({placeholder, title, peopleSearch, onSave} : EditorProps) : JSX.Element {
+interface EditorProps {
+  placeholder: string,
+  peopleSearch: EditorMentionSearchFunc,
+  onSave?: (data: OnSaveData) => void;
+  onBlur?: (data: OnBlurData) => void;
+}
+
+export default function Editor({placeholder, peopleSearch, onSave, onBlur} : EditorProps) : JSX.Element {
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -38,7 +42,6 @@ export default function Editor({placeholder, title, peopleSearch, onSave} : Edit
       }
     },
     extensions: [
-      BulletList,
       StarterKit.configure({
         bulletList: {
           keepMarks: true,
@@ -62,9 +65,20 @@ export default function Editor({placeholder, title, peopleSearch, onSave} : Edit
         }
       }),
     ],
+    onBlur: ({editor}) => {
+      if(!onBlur) return;
+
+      onBlur({
+        json: editor.getJSON(),
+        html: editor.getHTML(),
+      });
+    },
+    onUpdate: ({editor}) => {
+      setSubmitActive(editor.state.doc.textContent.length > 0);
+    }
   })
 
-  const header = title ? <div className="p-4 py-2 border-b border-stone-200 text-sm">{title}</div> : null;
+  const [submitActive, setSubmitActive] = React.useState(false);
 
   const handleSave = () => {
     if(!editor) return;
@@ -83,9 +97,8 @@ export default function Editor({placeholder, title, peopleSearch, onSave} : Edit
   }, [editor]);
 
   return <>
-    {header}
     <MenuBar editor={editor} />
     <EditorContent editor={editor} />
-    <Footer onSave={handleSave} />
+    <Footer onSave={handleSave} submitDisabled={!submitActive} />
   </>
 }

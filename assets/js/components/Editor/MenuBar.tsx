@@ -54,7 +54,7 @@ export default function MenuBar({ editor }) : JSX.Element | null {
   }
 
   return (
-    <div className="flex gap-0.5 border-b border-stone-200 py-1 px-2">
+    <div className="flex gap-0.5 border-b border-dark-8% py-1 px-2">
       <BoldButton editor={editor} />
       <ItalicButton editor={editor} />
       <BulletListButton editor={editor} />

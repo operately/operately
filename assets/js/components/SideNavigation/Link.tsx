@@ -12,8 +12,8 @@ export default function Link({to, title, icon}: LinkProps) : JSX.Element {
   const baseClass = "block rounded p-2 py-1 text-[18px] font-medium flex gap-2";
 
   const classNameHandler = ({isActive, isPending}) => {
-    if(isActive) return baseClass + ' text-dark-base bg-brandPrimaryLight-2';
-    if(isPending) return baseClass + ' text-dark-2 bg-brandPrimaryLight-2';
+    if(isActive) return baseClass + ' text-dark-base bg-brand-2';
+    if(isPending) return baseClass + ' text-dark-2 bg-brand-2';
 
     return baseClass + ' text-dark-2 hover:bg-light-gray';
   };
@@ -24,7 +24,7 @@ export default function Link({to, title, icon}: LinkProps) : JSX.Element {
         {({ isActive, isPending }) => {
           if(isActive || isPending) {
             return <>
-              <div className="text-brandPrimaryLight-base">{icon}</div>
+              <div className="text-brand-base">{icon}</div>
               <div>{title}</div>
             </>;
           }

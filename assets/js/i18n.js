@@ -116,6 +116,8 @@ i18n
             "write_an_update": {
               "title": "POST AN UPDATE",
               "placeholder": "Write an update…",
+              "cta": "Is there an important update about your objective as a whole? Share any progress and risks.",
+              "button": "Write an update",
             },
 
             "leave_comment": {
