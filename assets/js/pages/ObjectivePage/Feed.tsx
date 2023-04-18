@@ -40,6 +40,14 @@ const UPDATE_ADDED_SUBSCRIPTION = gql`
   }
 `;
 
+const COMMENT_ADDED_SUBSCRIPTION = gql`
+  subscription OnCommentAdded($updatableId: ID!, $updatableType: String!) {
+    commentAdded(updatableId: $updatableId, updatableType: $updatableType) {
+      id
+    }
+  }
+`;
+
 const CREATE_COMMENT = gql`
   mutation CreateComment($input: CreateCommentInput!) {
     createComment(input: $input) {
@@ -132,6 +140,8 @@ function CommentEditor({updateId}) : JSX.Element {
         }
       }
     })
+
+    setActive(false);
   }
 
   const handleBlur = ({html}) => {
@@ -182,7 +192,22 @@ export default function Feed({objectiveID} : {objectiveID: string}) : JSX.Elemen
         return prev;
       }
     });
+    return () => unsubscribe();
+  }, []);
 
+  React.useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: COMMENT_ADDED_SUBSCRIPTION,
+      variables: {
+        updatableId: objectiveID,
+        updatableType: "objective"
+      },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        refetch();
+        return prev;
+      }
+    });
     return () => unsubscribe();
   }, []);
 

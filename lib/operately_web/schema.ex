@@ -407,5 +407,14 @@ defmodule OperatelyWeb.Schema do
         {:ok, %{topic: "*"}}
       end
     end
+
+    field :comment_added, :comment do
+      arg :updatable_id, non_null(:id)
+      arg :updatable_type, non_null(:string)
+
+      config fn _, _ ->
+        {:ok, %{topic: "*"}}
+      end
+    end
   end
 end
