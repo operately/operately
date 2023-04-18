@@ -5,3 +5,8 @@
 @import "./prosemirror";
 
 /* This file is for your main application CSS */
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+}

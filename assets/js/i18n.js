@@ -122,7 +122,11 @@ i18n
             },
 
             "leave_comment": {
-              "placeholder": "Leave a comment…",
+              "placeholder": "Leave a comment",
+            },
+
+            "feed": {
+              "title": "FEED",
             }
           }
         },

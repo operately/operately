@@ -14,9 +14,10 @@ import { generateHTML } from '@tiptap/html';
 
 interface RichContentProps {
   jsonContent: string;
+  className?: string;
 }
 
-export default function RichContent({jsonContent}: RichContentProps) : JSX.Element {
+export default function RichContent({jsonContent, className}: RichContentProps) : JSX.Element {
   const json = JSON.parse(jsonContent);
 
   const html = generateHTML(json, [
@@ -27,5 +28,9 @@ export default function RichContent({jsonContent}: RichContentProps) : JSX.Eleme
     Mention,
   ]);
 
-  return <div className="prose p-4" dangerouslySetInnerHTML={{__html: html}} />
+  return <div className={className} dangerouslySetInnerHTML={{__html: html}} />
 }
+
+RichContent.defaultProps = {
+  className: ""
+};
