@@ -13,7 +13,7 @@ function SideNavigation({ isCollapsed }: SideNavigationProps) {
   const { t } = useTranslation();
 
   return (
-    <aside className="top-0 left-0 bottom-0 fixed flex w-72 bg-light-base border-r border-[#E1E1E1] z-50">
+    <aside className="top-0 left-0 bottom-0 fixed flex w-72 bg-light-2 border-r border-[#E1E1E1] z-50">
       <div className="items-strech w-full mx-5">
         <div className="flex items-center gap-1 mb-12 mt-4">
           <Icon name="logo" />

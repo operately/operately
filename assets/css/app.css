@@ -5,3 +5,16 @@
 @import "./prosemirror";
 
 /* This file is for your main application CSS */
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+}
+
+.card-shadow {
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.07);
+}
+
+.hover\:card-shadow-blue:hover {
+  box-shadow: 0px 0px 12px rgba(49, 133, 255, 0.2);
+}

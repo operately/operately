@@ -2,8 +2,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, gql } from '@apollo/client';
 
+import RelativeTime from '../../components/RelativeTime';
 import Avatar, {AvatarSize} from '../../components/Avatar';
+
 import { Link } from "react-router-dom";
+import SectionHeader from './SectionHeader';
 
 const GET_ALIGNED_PROJECTS = gql`
   query GetAlignedProjects($objectiveID: ID!) {
@@ -20,15 +23,25 @@ const GET_ALIGNED_PROJECTS = gql`
   }
 `;
 
-function Title() : JSX.Element {
-  const { t } = useTranslation();
-
-  return <h1 className="uppercase text-sm px-2">{t("objectives.projects_in_progress_title")}</h1>;
+function CardListHeader({headers} : {headers: Array<{id: string, label: string}>}) : JSX.Element {
+  return <div className="flex gap-14 mt-4 px-2">
+    {headers.map((header) => <div key={header.id} className="w-1/4 text-xs text-dark-2">{header.label}</div>)}
+  </div>;
 }
 
-function CardListHeader({headers} : {headers: Array<{id: string, label: string}>}) : JSX.Element {
-  return <div className="flex gap-2 mt-4 px-2">
-    {headers.map((header) => <div key={header.id} className="w-1/4 text-sm">{header.label}</div>)}
+function Timeline({percentage, startDate, endDate}) : JSX.Element {
+  return <div>
+    <div className="text-dark-1 text-xs">{startDate} - {endDate}</div>
+    <div className="flex gap-2 items-center">
+      <div className="flex-1 relative h-1.5">
+        <div className="absolute bg-dark-8% h-1.5 rounded-full w-full"></div>
+        <div className="absolute bg-brand-base h-1.5 rounded-full" style={{width: percentage + "%"}}></div>
+      </div>
+
+      <div className="text-xs text-dark-1">
+        {percentage}%
+      </div>
+    </div>
   </div>;
 }
 
@@ -45,11 +58,23 @@ interface Project {
 }
 
 function Card({project} : {project: Project}) : JSX.Element {
-  return <Link to={`/projects/` + project.id} className="flex gap-2 mt-2 rounded shadow-sm p-2 bg-white items-center hover:shadow border border-stone-200">
-    <div className="w-1/4 text-sm">{project.name}</div>
-    <div className="w-1/4 text-sm">---</div>
-    <div className="w-1/4 text-sm"><Champion person={project.owner} /></div>
-    <div className="w-1/4 text-sm">{project.updatedAt}</div>
+  return <Link to={`/projects/` + project.id} className="flex gap-14 mt-2 rounded-lg p-4 bg-white items-center card-shadow hover:card-shadow-blue">
+    <div className="w-1/3">
+      <div className="text-brand-base font-bold">{project.name}</div>
+      <div className="text-dark-2 text-xs">In Shipping phase, 12 days and 1 milestone remaining</div>
+    </div>
+
+    <div className="w-2/6">
+      <Timeline percentage={71} startDate="Apr 6" endDate="Aug 12" />
+    </div>
+
+    <div className="w-2/6">
+      <Champion person={project.owner} />
+      <div className="text-dark-2 text-xs ml-8">with 2 colaborators</div>
+    </div>
+    <div className="w-2/6 text-dark-2">
+      <RelativeTime date={project.updatedAt} />
+    </div>
   </Link>;
 }
 
@@ -82,7 +107,7 @@ export default function Projects({objectiveID} : {objectiveID: string}) : JSX.El
   if (data.alignedProjects.length === 0) return <></>;
 
   return <div className="mt-4">
-    <Title />
+    <SectionHeader>{t("objectives.projects_in_progress_title")}</SectionHeader>
 
     <CardListHeader headers={headers} />
 

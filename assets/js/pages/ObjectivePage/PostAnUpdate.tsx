@@ -34,6 +34,8 @@ export default function PostAnUpdate({objectiveID}) : JSX.Element {
         }
       }
     })
+
+    setActive(false);
   }
 
   const handleBlur = ({html}) => {
@@ -43,7 +45,7 @@ export default function PostAnUpdate({objectiveID}) : JSX.Element {
   }
 
   return (
-    <div className="mt-4 rounded-lg bg-white shadow border border-dark-8% overflow-hidden">
+    <div className={"mt-10 rounded-lg bg-white border border-dark-8% overflow-hidden " + (active ? "card-shadow" : "")}>
       <div className="px-4 pt-4 text-sm text-dark-1 flex justify-between items-center">
         {t("objectives.write_an_update.title")}
         {active ? <div onClick={() => setActive(false)} className="text-dark-2 hover:text-black hover:cursor-pointer"><Icon name="close" /></div> : null}
