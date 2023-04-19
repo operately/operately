@@ -48,7 +48,7 @@ export default function PostAnUpdate({objectiveID}) : JSX.Element {
     <div className={"mt-10 rounded-lg bg-white border border-dark-8% overflow-hidden " + (active ? "card-shadow" : "")}>
       <div className="px-4 pt-4 text-sm text-dark-1 flex justify-between items-center">
         {t("objectives.write_an_update.title")}
-        {active ? <div onClick={() => setActive(false)} className="text-dark-2 hover:text-black hover:cursor-pointer"><Icon name="close" /></div> : null}
+        {active ? <div onClick={() => setActive(false)} className="text-dark-2 hover:text-black hover:cursor-pointer"><Icon name="cancel" color="dark-2" hoverColor="dark" size="small" /></div> : null}
       </div>
 
       {active
