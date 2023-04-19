@@ -54,7 +54,7 @@ export function ObjectivePage() {
 
   return (
     <div>
-      <div className="flex items-start justify-between text-dark-1 mb-10">
+      <div className="flex items-end justify-between text-dark-1 mb-10">
         <div>
           <PageTitle title={data.objective.name} />
           <p className="max-w-lg">{data.objective.description}</p>

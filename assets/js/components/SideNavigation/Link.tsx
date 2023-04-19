@@ -13,8 +13,8 @@ export default function Link({to, title, icon}: LinkProps) : JSX.Element {
   const baseClass = "block rounded px-2 py-1.5 text-[16px] flex gap-1.5 items-center font-semibold";
 
   const classNameHandler = ({isActive, isPending}) => {
-    if(isActive) return baseClass + ' text-dark-1 bg-light-base';
-    if(isPending) return baseClass + ' text-dark-1 bg-light-base';
+    if(isActive) return baseClass + ' text-dark-base bg-light-base';
+    if(isPending) return baseClass + ' text-dark-base bg-light-base';
 
     return baseClass + ' text-dark-1 hover:bg-light-gray';
   };
