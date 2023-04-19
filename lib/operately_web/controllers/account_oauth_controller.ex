@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.AccountOauthController do
   use OperatelyWeb, :controller
 
+  require Logger
+
   alias Operately.People
   alias OperatelyWeb.AccountAuth
 
@@ -9,15 +11,23 @@ defmodule OperatelyWeb.AccountOauthController do
   @rand_pass_length 32
 
   def callback(%{assigns: %{ueberauth_auth: %{info: account_info}}} = conn, %{"provider" => "google"}) do
-    IO.inspect(account_info)
-
-    account_params = %{email: account_info.email, password: random_password()}
+    account_params = %{
+      email: account_info.email,
+      password: random_password(),
+      person: %{
+        avatar_url: account_info.image,
+        email: account_info.email,
+        full_name: account_info.name,
+        handle: account_info.name
+      }
+    }
 
     case People.fetch_or_create_account(account_params) do
       {:ok, account} ->
         AccountAuth.log_in_account(conn, account)
 
-      _ ->
+      e ->
+        Logger.error("Failed to fetch or create account: #{inspect(e)}")
         conn
         |> put_flash(:error, "Authentication failed")
         |> redirect(to: "/")

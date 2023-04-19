@@ -69,7 +69,8 @@ defmodule OperatelyWeb.Schema do
   object :person do
     field :id, non_null(:id)
     field :full_name, non_null(:string)
-    field :title, non_null(:string)
+    field :title, :string
+    field :avatar_url, :string
   end
 
   object :project do

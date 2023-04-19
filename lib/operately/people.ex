@@ -474,13 +474,35 @@ defmodule Operately.People do
       {:ok, %Account{}}
   """
   def fetch_or_create_account(attrs) do
-    case get_account_by_email(attrs.email) do
-      %Account{} = account ->
-        {:ok, account}
-    _ ->
-        %Account{}
-        |> Account.registration_changeset(attrs)
-        |> Repo.insert()
+    get_account_by_email(attrs.email)
+    |> case do
+      %Account{} = account -> {:ok, account}
+      _ -> create_account(attrs)
+    end
+    |> case do
+      {:ok, account} -> find_or_create_person_for_account(account, attrs)
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  defp create_account(attrs) do
+    %Account{}
+    |> Account.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  defp find_or_create_person_for_account(account, attrs) do
+    account = Repo.preload(account, [:person])
+
+    if account.person do
+      {:ok, account}
+    else
+      person_attrs = Map.merge(attrs.person, %{account_id: account.id})
+
+      case create_person(person_attrs) do
+        {:ok, _} -> {:ok, Repo.preload(account, [:person])}
+        e -> e
+      end
     end
   end
 
