@@ -1,21 +1,22 @@
 import React from 'react';
 
 import { NavLink } from 'react-router-dom';
+import Icon from '../Icon';
 
 interface LinkProps {
   to: string;
   title: string | null;
-  icon: JSX.Element | null;
+  icon: string;
 }
 
 export default function Link({to, title, icon}: LinkProps) : JSX.Element {
-  const baseClass = "block rounded p-2 py-1 text-[18px] flex gap-2 font-semibold";
+  const baseClass = "block rounded px-2 py-1.5 text-[16px] flex gap-1.5 items-center font-semibold";
 
   const classNameHandler = ({isActive, isPending}) => {
     if(isActive) return baseClass + ' text-dark-1 bg-light-base';
     if(isPending) return baseClass + ' text-dark-1 bg-light-base';
 
-    return baseClass + ' text-dark-2 hover:bg-light-gray';
+    return baseClass + ' text-dark-1 hover:bg-light-gray';
   };
 
   return (
@@ -24,14 +25,14 @@ export default function Link({to, title, icon}: LinkProps) : JSX.Element {
         {({ isActive, isPending }) => {
           if(isActive || isPending) {
             return <>
-              <div className="text-brand-base">{icon}</div>
-              <div>{title}</div>
+              <Icon name={icon} size="base" color="brand" />
+              <div className="mt-0.5">{title}</div>
             </>;
           }
           else {
             return <>
-              <div>{icon}</div>
-              <div>{title}</div>
+              <Icon name={icon} size="base" color="dark" />
+              <div className="mt-0.5">{title}</div>
             </>;
           }
         }}

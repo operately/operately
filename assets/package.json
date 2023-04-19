@@ -19,6 +19,9 @@
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "nprogress": "^0.2.0",
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_html": "file:../deps/phoenix_html",
+    "phoenix_live_view": "file:../deps/phoenix_live_view",
     "pluralsh-absinthe-socket-apollo-link": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -38,6 +41,8 @@
     "@types/phoenix": "^1.5.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
-    "@types/react-modal": "^3.13.1"
+    "@types/react-modal": "^3.13.1",
+    "esbuild": "^0.14.41",
+    "esbuild-plugin-svgr": "^1.1.0"
   }
 }
