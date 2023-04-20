@@ -350,7 +350,7 @@ defmodule Operately.People do
       %Account{} = account ->
         Repo.preload(account, [:person])
       nil ->
-        {:error, :not_found}
+        nil
     end
   end
 

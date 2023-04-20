@@ -82,8 +82,8 @@ defmodule Operately.Features.GroupsTest do
   defand ~r/^I add the user "(?<name>[^"]+)" to the group$/, %{name: name}, state do
     state.session
     |> click(Query.button("Add Members"))
-    |> fill_in(Query.css("#peopleSearch"), with: "John")
-    |> assert_text("John Johnson")
+    |> fill_in(Query.css("#peopleSearch"), with: String.split(name, " ") |> List.first)
+    |> assert_text(name)
     |> send_keys([:enter])
     |> find(Query.css(".ReactModalPortal"), fn modal ->
       click(modal, Query.button("Add Members"))
