@@ -21,22 +21,22 @@ interface AvatarProps {
 function SizeClasses({size} : {size: AvatarSize}) : string {
   switch (size) {
     case AvatarSize.Small:
-      return 'w-6 h-6 text-sm';
+      return 'w-7 h-7';
     case AvatarSize.Large:
-      return 'w-12 h-12 text-2xl';
+      return 'w-12 h-12';
     case AvatarSize.Normal:
-      return 'w-10 h-10 text-lg';
+      return 'w-10 h-10';
   }
 }
 
 function TextClasses({size} : {size: AvatarSize}) : string {
   switch (size) {
     case AvatarSize.Small:
-      return 'text-sm';
+      return 'text-xs font-semibold';
     case AvatarSize.Large:
-      return 'text-2xl';
+      return 'text-2xl font-bold';
     case AvatarSize.Normal:
-      return 'text-lg';
+      return 'text-lg font-bold';
   }
 }
 
