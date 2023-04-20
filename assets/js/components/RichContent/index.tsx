@@ -5,6 +5,8 @@ import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import Mention from '@tiptap/extension-mention'
+import ListItem from '@tiptap/extension-list-item'
+import BulletList from '@tiptap/extension-bullet-list'
 import { generateHTML } from '@tiptap/html';
 
 /*
@@ -26,9 +28,11 @@ export default function RichContent({jsonContent, className}: RichContentProps) 
     Text,
     Bold,
     Mention,
+    ListItem,
+    BulletList
   ]);
 
-  return <div className={className} dangerouslySetInnerHTML={{__html: html}} />
+  return <div className={"ProseMirror " + className} dangerouslySetInnerHTML={{__html: html}} />
 }
 
 RichContent.defaultProps = {
