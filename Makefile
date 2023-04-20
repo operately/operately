@@ -124,6 +124,9 @@ test:
 	mkdir -p $(SCREENSHOTS_DIR)
 	$(TEST_CONTAINER) mix test $(FILE)
 
+test.db.migrate:
+	$(DEV_CONTAINER) mix ecto.migrate
+
 test.watch:
 	$(TEST_CONTAINER) mix test.watch $(FILE)
 

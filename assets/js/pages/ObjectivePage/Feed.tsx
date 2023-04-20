@@ -85,7 +85,7 @@ const GET_UPDATES = gql`
 function ShortName({fullName} : {fullName: string}) : JSX.Element {
   const [firstName, lastName] = fullName.split(" ");
 
-  return <>{firstName} {lastName[0]}.</>;
+  return <>{firstName} {lastName ? lastName[0] : ""}.</>;
 }
 
 function FeedItem({update} : {update: Update}) : JSX.Element {

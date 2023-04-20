@@ -54,7 +54,13 @@ defmodule OperatelyWeb.AccountOauthController do
     def test_login(conn, params) do
       account_params = %{
         email: params["email"],
-        password: random_password()
+        password: random_password(),
+        person: %{
+          email: params["email"],
+          full_name: params["email"],
+          handle: params["email"],
+          avatar_url: "https://www.gravatar.com/avatar/#{:crypto.strong_rand_bytes(16) |> Base.encode16()}"
+        }
       }
 
       case People.fetch_or_create_account(account_params) do
