@@ -140,6 +140,12 @@ defmodule OperatelyWeb.Schema do
   end
 
   query do
+    field :me, :person do
+      resolve fn _, _, _ ->
+        {:ok, Operately.People.list_people() |> List.last()}
+      end
+    end
+
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
         kpis = Operately.Kpis.list_kpis()
