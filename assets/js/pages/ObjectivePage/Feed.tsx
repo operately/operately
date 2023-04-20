@@ -14,6 +14,7 @@ import SectionHeader from './SectionHeader';
 
 interface Person {
   fullName: string;
+  avatarUrl: string;
   title: string;
   id: string;
 }
@@ -67,6 +68,7 @@ const GET_UPDATES = gql`
       author {
         id
         fullName
+        avatarUrl
       }
 
       comments {
@@ -76,6 +78,7 @@ const GET_UPDATES = gql`
         author {
           id
           fullName
+          avatarUrl
         }
       }
     }
@@ -94,7 +97,7 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
       <div className="p-4">
         <div className="pb-4 border-b border-dark-8%">
           <div className="flex gap-1.5 items-center">
-            <Avatar person={update.author} />
+            <Avatar person={update.author} size={AvatarSize.Small} />
             <span className="text-dark-1 ml-1"><ShortName fullName={update.author.fullName}></ShortName></span>
             <span className="text-dark-2 text-xs">posted an update <RelativeTime date={update.insertedAt} /></span>
           </div>
