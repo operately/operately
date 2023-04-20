@@ -52,11 +52,11 @@ const MentionList = forwardRef((props : MentionListProps, ref) => {
   }
 
   const upHandler = () => {
-    setSelectedIndex(nextIndex(selectedIndex))
+    setSelectedIndex(prevIndex(selectedIndex))
   }
 
   const downHandler = () => {
-    setSelectedIndex(prevIndex(selectedIndex))
+    setSelectedIndex(nextIndex(selectedIndex))
   }
 
   const enterHandler = () => {

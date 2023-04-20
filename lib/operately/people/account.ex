@@ -4,6 +4,8 @@ defmodule Operately.People.Account do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "accounts" do
+    has_one(:person, Operately.People.Person, foreign_key: :account_id)
+
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true

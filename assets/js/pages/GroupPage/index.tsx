@@ -16,7 +16,8 @@ const GET_GROUP = gql`
 
       members {
         id
-        full_name
+        fullName
+        avatarUrl
       }
     }
   }
@@ -35,14 +36,15 @@ export async function GroupPageLoader(apolloClient : any, {params}) {
 
 interface Person {
   id: string;
-  full_name: string;
+  fullName: string;
+  avatarUrl?: string;
 }
 
 function MemberList({ members } : { members: Person[] }) {
   return (
     <div className="flex gap-2">
       {members.map((m : Person) => (
-        <Avatar key={m.id} person_full_name={m.full_name} />
+        <Avatar key={m.id} person={m} />
       ))}
     </div>
   );

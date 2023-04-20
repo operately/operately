@@ -1,7 +1,9 @@
 import React from 'react';
 
-import SideNavigation from '../../components/SideNavigation';
 import { Outlet } from 'react-router-dom';
+
+import SideNavigation from '../../components/SideNavigation';
+import User from './User';
 
 export default function DefaultLayout() {
   return (
@@ -12,6 +14,8 @@ export default function DefaultLayout() {
           <Outlet />
         </div>
       </div>
+
+      <User />
     </div>
   );
 }

@@ -4,11 +4,15 @@ defmodule Operately.People.Person do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  @derive {Jason.Encoder, only: [:id, :full_name , :inserted_at, :handle, :title]}
+
   schema "people" do
+    belongs_to(:account, Operately.Accounts.Account)
+
     field :full_name, :string
     field :handle, :string
     field :title, :string
+    field :avatar_url, :string
+    field :email, :string
 
     timestamps()
   end
@@ -16,8 +20,8 @@ defmodule Operately.People.Person do
   @doc false
   def changeset(person, attrs) do
     person
-    |> cast(attrs, [:full_name, :handle, :title])
-    |> validate_required([:full_name, :handle, :title])
+    |> cast(attrs, [:full_name, :handle, :title, :avatar_url, :email, :account_id])
+    |> validate_required([:full_name, :handle])
     |> unique_constraint(:handle)
   end
 end

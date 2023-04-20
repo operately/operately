@@ -69,7 +69,8 @@ defmodule OperatelyWeb.Schema do
   object :person do
     field :id, non_null(:id)
     field :full_name, non_null(:string)
-    field :title, non_null(:string)
+    field :title, :string
+    field :avatar_url, :string
   end
 
   object :project do
@@ -139,6 +140,12 @@ defmodule OperatelyWeb.Schema do
   end
 
   query do
+    field :me, :person do
+      resolve fn _, _, %{context: context} ->
+        {:ok, context.current_account.person}
+      end
+    end
+
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
         kpis = Operately.Kpis.list_kpis()
@@ -345,9 +352,9 @@ defmodule OperatelyWeb.Schema do
     field :create_update, :update do
       arg :input, non_null(:create_update_input)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
         Operately.Updates.create_update(%{
-          author_id: hd(Operately.People.list_people()).id,
+          author_id: context.current_account.person.id,
           updatable_type: args.input.updatable_type,
           updatable_id: args.input.updatable_id,
           content: args.input.content
@@ -358,9 +365,9 @@ defmodule OperatelyWeb.Schema do
     field :create_comment, :comment do
       arg :input, non_null(:create_comment_input)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
         Operately.Updates.create_comment(%{
-          author_id: hd(Operately.People.list_people()).id,
+          author_id: context.current_account.person.id,
           update_id: args.input.update_id,
           content: args.input.content
         })

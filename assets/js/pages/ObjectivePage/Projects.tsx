@@ -16,7 +16,7 @@ const GET_ALIGNED_PROJECTS = gql`
       updatedAt
 
       owner {
-        full_name
+        fullName
         title
       }
     }
@@ -46,7 +46,9 @@ function Timeline({percentage, startDate, endDate}) : JSX.Element {
 }
 
 interface Owner {
-  full_name: string;
+  id: string;
+  fullName: string;
+  avatarUrl?: string;
   title: string;
 }
 
@@ -81,8 +83,8 @@ function Card({project} : {project: Project}) : JSX.Element {
 function Champion({person} : {person: Owner}) : JSX.Element {
   return (
     <div className="flex gap-2 items-center">
-      <Avatar person_full_name={person.full_name} size={AvatarSize.Small} />
-      <div>{person.full_name}</div>
+      <Avatar person={person} size={AvatarSize.Small} />
+      <div>{person.fullName}</div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useQuery, gql, useApolloClient } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
+import { useMe } from '../../graphql/Me';
 
 import Avatar, {AvatarSize} from '../../components/Avatar';
 import Editor from '../../components/Editor';
@@ -84,7 +85,7 @@ const GET_UPDATES = gql`
 function ShortName({fullName} : {fullName: string}) : JSX.Element {
   const [firstName, lastName] = fullName.split(" ");
 
-  return <>{firstName} {lastName[0]}.</>;
+  return <>{firstName} {lastName ? lastName[0] : ""}.</>;
 }
 
 function FeedItem({update} : {update: Update}) : JSX.Element {
@@ -93,7 +94,7 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
       <div className="p-4">
         <div className="pb-4 border-b border-dark-8%">
           <div className="flex gap-1.5 items-center">
-            <Avatar person_full_name={update.author.fullName} size={AvatarSize.Small} />
+            <Avatar person={update.author} />
             <span className="text-dark-1 ml-1"><ShortName fullName={update.author.fullName}></ShortName></span>
             <span className="text-dark-2 text-xs">posted an update <RelativeTime date={update.insertedAt} /></span>
           </div>
@@ -110,7 +111,7 @@ function FeedItem({update} : {update: Update}) : JSX.Element {
 function Comment({comment}) : JSX.Element {
   return <div>
     <div className="flex gap-1.5 items-center mt-4 pt-4 border-t border-dark-8%">
-      <Avatar person_full_name={comment.author.fullName} size={AvatarSize.Small} />
+      <Avatar person={comment.author} size={AvatarSize.Small} />
       <span className="text-dark-1"><ShortName fullName={comment.author.fullName}></ShortName></span>
       <span className="text-dark-2 text-xs"><RelativeTime date={comment.insertedAt} /></span>
     </div>
@@ -150,10 +151,12 @@ function CommentEditor({updateId}) : JSX.Element {
     }
   }
 
+  const {data} = useMe();
+
   if (!active) {
     return (
       <div className="p-4 text-dark-2 cursor-pointer bg-light-1 flex items-center gap-2" onClick={() => setActive(true)}>
-        <Avatar person_full_name="IS" size={AvatarSize.Small} />
+        {data ? <Avatar person={data.me} size={AvatarSize.Small} /> : null}
         <span>{t("objectives.leave_comment.placeholder")}</span>
       </div>
     );

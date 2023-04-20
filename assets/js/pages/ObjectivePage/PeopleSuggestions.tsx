@@ -3,7 +3,7 @@ import { gql, ApolloClient } from '@apollo/client';
 
 interface Person {
   fullName: string;
-  title: string;
+  title?: string;
   id: string;
 }
 
