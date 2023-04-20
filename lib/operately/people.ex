@@ -345,7 +345,13 @@ defmodule Operately.People do
   """
   def get_account_by_session_token(token) do
     {:ok, query} = AccountToken.verify_session_token_query(token)
-    Repo.one(query)
+
+    case Repo.one(query) do
+      %Account{} = account ->
+        Repo.preload(account, [:person])
+      nil ->
+        {:error, :not_found}
+    end
   end
 
   @doc """

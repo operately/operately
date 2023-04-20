@@ -19,6 +19,10 @@ defmodule OperatelyWeb.Router do
     plug :fetch_current_account
   end
 
+  pipeline :graphql do
+    plug OperatelyWeb.GraphQL.Context
+  end
+
   #
   # Account authentication and creation routes
   #
@@ -59,7 +63,7 @@ defmodule OperatelyWeb.Router do
   end
 
   scope "/api" do
-    pipe_through [:api, :require_authenticated_account]
+    pipe_through [:api, :require_authenticated_account, :graphql]
 
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Schema
   end
