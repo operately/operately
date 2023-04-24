@@ -125,7 +125,7 @@ test:
 	$(TEST_CONTAINER) mix test $(FILE)
 
 test.db.migrate:
-	$(DEV_CONTAINER) mix ecto.migrate
+	$(TEST_CONTAINER) mix ecto.migrate
 
 test.watch:
 	$(TEST_CONTAINER) mix test.watch $(FILE)
