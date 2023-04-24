@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import AddMembersModal from './AddMembersModal';
 import Avatar from '../../components/Avatar';
 import GroupMission from './GroupMission';
+import PointsOfContact from './PointsOfContact';
 
 const GET_GROUP = gql`
   query GetGroup($id: ID!) {
@@ -18,6 +19,12 @@ const GET_GROUP = gql`
         id
         fullName
         avatarUrl
+      }
+
+      pointsOfContact {
+        id
+        name
+        type
       }
     }
   }
@@ -81,6 +88,12 @@ export function GroupPage() {
 
       <MemberList members={data.group.members} />
       <AddMembersModal groupId={id} members={data.group.members} onSubmit={handleAddMembersModalSubmit} />
+
+      <PointsOfContact
+        groupId={id}
+        groupName={data.group.name}
+        pointsOfContact={data.group.pointsOfContact}
+      />
     </div>
   )
 }

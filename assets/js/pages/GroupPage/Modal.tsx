@@ -21,7 +21,7 @@ export default function Modal({isOpen, hideModal, title, children}) {
           top: "0px",
           left: "50%",
           width: "600px",
-          height: "0px",
+          height: "auto",
           marginTop: "150px",
           marginLeft: "-300px",
           borderRadius: "8px",

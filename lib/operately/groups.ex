@@ -40,6 +40,10 @@ defmodule Operately.Groups do
     Repo.all(query)
   end
 
+  def list_contacts(group_id) do
+    []
+  end
+
   @doc """
   Gets a single group.
 

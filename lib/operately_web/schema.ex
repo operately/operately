@@ -88,6 +88,12 @@ defmodule OperatelyWeb.Schema do
     end
   end
 
+  object :group_contact do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :type, non_null(:string)
+  end
+
   object :group do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -98,6 +104,14 @@ defmodule OperatelyWeb.Schema do
         people = Operately.Groups.list_members(group)
 
         {:ok, people}
+      end
+    end
+
+    field :points_of_contact, list_of(non_null(:group_contact)) do
+      resolve fn group, _, _ ->
+        contacts = Operately.Groups.list_contacts(group)
+
+        {:ok, contacts}
       end
     end
   end
