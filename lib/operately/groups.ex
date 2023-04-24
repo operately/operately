@@ -8,7 +8,10 @@ defmodule Operately.Groups do
 
   alias Operately.Groups.Group
   alias Operately.Groups.Member
+  alias Operately.Groups.Contact
+
   alias Operately.People.Person
+
 
   @doc """
   Returns the list of groups.
@@ -36,6 +39,12 @@ defmodule Operately.Groups do
       where: ilike(p.full_name, ^"%#{string_query}%") or ilike(p.title, ^"%#{string_query}%"),
       limit: ^limit
     )
+
+    Repo.all(query)
+  end
+
+  def list_contacts(group) do
+    query = (from c in Contact, where: c.group_id == ^group.id)
 
     Repo.all(query)
   end
@@ -156,6 +165,17 @@ defmodule Operately.Groups do
        Ecto.Multi.insert(multi, Integer.to_string(index), changeset)
     end)
     |> Repo.transaction()
+  end
+
+  def add_contact(group, name, value, type) do
+    contact = %Contact{
+      group_id: group.id,
+      name: name,
+      value: value,
+      type: String.to_existing_atom(type)
+    }
+
+    Repo.insert(contact)
   end
 
   def list_members(group_id, limit, include_total) do

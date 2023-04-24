@@ -88,6 +88,13 @@ defmodule OperatelyWeb.Schema do
     end
   end
 
+  object :group_contact do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :type, non_null(:string)
+    field :value, non_null(:string)
+  end
+
   object :group do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -98,6 +105,14 @@ defmodule OperatelyWeb.Schema do
         people = Operately.Groups.list_members(group)
 
         {:ok, people}
+      end
+    end
+
+    field :points_of_contact, list_of(non_null(:group_contact)) do
+      resolve fn group, _, _ ->
+        contacts = Operately.Groups.list_contacts(group)
+
+        {:ok, contacts}
       end
     end
   end
@@ -137,6 +152,12 @@ defmodule OperatelyWeb.Schema do
   input_object :create_comment_input do
     field :content, non_null(:string)
     field :update_id, non_null(:id)
+  end
+
+  input_object :contact_input do
+    field :name, non_null(:string)
+    field :value, non_null(:string)
+    field :type, non_null(:string)
   end
 
   query do
@@ -374,6 +395,24 @@ defmodule OperatelyWeb.Schema do
       resolve fn args, _ ->
         group = Operately.Groups.get_group!(args.group_id)
         {:ok, _} = Operately.Groups.set_mission(group, args.mission)
+
+        {:ok, group}
+      end
+    end
+
+    field :add_group_contact, :group do
+      arg :group_id, non_null(:id)
+      arg :contact, non_null(:contact_input)
+
+      resolve fn args, _ ->
+        group = Operately.Groups.get_group!(args.group_id)
+
+        {:ok, _} = Operately.Groups.add_contact(
+          group,
+          args.contact.name,
+          args.contact.value,
+          args.contact.type
+        )
 
         {:ok, group}
       end
