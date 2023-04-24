@@ -4,9 +4,10 @@ defmodule Operately.Groups.Group do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  @derive {Jason.Encoder, only: [:id, :name, :inserted_at, :updated_at]}
+
   schema "groups" do
     field :name, :string
+    field :mission, :string
 
     timestamps()
   end
@@ -14,7 +15,7 @@ defmodule Operately.Groups.Group do
   @doc false
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :mission])
     |> validate_required([:name])
   end
 end

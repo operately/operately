@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql, ApolloClient } from '@apollo/client';
 
 const LIST_POTENTIAL_GROUP_MEMBERS = gql`
   query ListPotentialGroupMembers($groupId: ID!, $query: String!, $excludeIds: [ID!], $limit: Int) {
@@ -19,6 +19,22 @@ interface ListPotentialGroupMembersParams {
   };
 }
 
-export function listPotentialGroupMembers(client, {variables} : ListPotentialGroupMembersParams) {
+const SET_MISSION = gql`
+  mutation SetGroupMission($groupId: ID!, $mission: String!) {
+    setGroupMission(groupId: $groupId, mission: $mission) {
+      id
+      mission
+    }
+  }
+`;
+
+export function listPotentialGroupMembers(client : ApolloClient, {variables} : ListPotentialGroupMembersParams) {
   return client.query({ query: LIST_POTENTIAL_GROUP_MEMBERS, variables })
+}
+
+export function setMission(client : ApolloClient, {variables}) {
+  return client.mutate({
+    mutation: SET_MISSION,
+    variables: variables
+  })
 }

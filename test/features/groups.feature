@@ -18,3 +18,10 @@ Feature: Groups
     When I visit the group "Marketing" page
     And I add the user "Peter Swalowski" to the group
     Then the user "PS" is visible on the group "Marketing" page
+
+  Scenario: Setting group mission
+    Given I am logged in as a user
+    Given that a group with the name "Marketing" exists
+    When I visit the group "Marketing" page
+    And I set the mission to "Let the world know about our product"
+    Then the mission of the group "Marketing" is "Let the world know about our product"
