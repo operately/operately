@@ -104,11 +104,26 @@ defmodule Operately.Features.GroupsTest do
     |> click(Query.button("Save"))
   end
 
-   defthen ~r/^the mission of the group "(?<group>[^"]+)" is "(?<mission>[^"]+)"$/, %{mission: mission}, state do
-     state.session
-     |> find(Query.css("[data-test-id=\"group-mission\"]"), fn mission_element ->
-       mission_element |> assert_has(Query.text(mission))
-     end)
-   end
+  defthen ~r/^the mission of the group "(?<group>[^"]+)" is "(?<mission>[^"]+)"$/, %{mission: mission}, state do
+    state.session
+    |> find(Query.css("[data-test-id=\"group-mission\"]"), fn mission_element ->
+      mission_element |> assert_has(Query.text(mission))
+    end)
+  end
+
+  defand ~r/^I add a point of contact "(?<type>[^"]+)" with the value "(?<name>[^"]+)"$/, %{type: type, name: name}, state do
+    state.session
+    |> find(Query.css("[data-test-id=\"group-points-of-contact\"]"), fn poc_element ->
+      poc_element |> click(Query.button("Add a Point of Contact"))
+    end)
+    |> fill_in(Query.css("[data-test-id=\"group-point-of-contact-type\"]"), with: type)
+    |> fill_in(Query.css("[data-test-id=\"group-point-of-contact-name\"]"), with: name)
+    |> click(Query.button("Save"))
+  end
+
+  defthen ~r/^the point of contact "(?<name>[^"]+)" is visible on the group "(?<group>[^"]+)" page$/, %{name: name}, state do
+    state.session
+    |> assert_has(Query.text(name))
+  end
 
 end

@@ -94,6 +94,7 @@ export function GroupPage() {
         groupId={id}
         groupName={data.group.name}
         pointsOfContact={data.group.pointsOfContact}
+        onAddContact={refetch}
       />
     </div>
   )

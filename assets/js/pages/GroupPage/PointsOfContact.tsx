@@ -10,24 +10,11 @@ import Icon from '../../components/Icon';
 import { useApolloClient } from '@apollo/client';
 import { addContact } from '../../graphql/Groups';
 
-interface Contact {
-  id: string;
-  name: string;
-  value: string;
-  type: string;
-}
-
-interface PointsOfContactProps {
-  groupId: string;
-  groupName: string;
-  pointsOfContact: Contact[];
-}
-
 function SlackInputFields() {
   return <div>
     <div className="mt-4 flex flex-col gap-4">
-      <FormTextInput id="value" label="URL" />
-      <FormTextInput id="name" label="Name" />
+      <FormTextInput data-test-id="group-point-of-contact-value" id="value" label="URL" />
+      <FormTextInput data-test-id="group-point-of-contact-name" id="name" label="Name" />
     </div>
   </div>;
 }
@@ -56,7 +43,7 @@ function AddContactModal(props : AddContactModalProps) : JSX.Element {
     <Form ref={props.formRef} onSubmit={props.onSubmit} onCancel={props.hideModal}>
       <p className="prose mb-4">Select a third-party platform where the team works together.</p>
 
-      <FormSelect id="contactType" label="Type" value={selected} onChange={(e) => setSelected(e.target.value)}>
+      <FormSelect data-test-id="group-point-of-contact-type" id="contactType" label="Type" value={selected} onChange={(e) => setSelected(e.target.value)}>
         <option value="slack">Slack Channel</option>
       </FormSelect>
 
@@ -83,18 +70,32 @@ function Contact({contact} : {contact: Contact}) {
   }
 }
 
-export default function PointsOfContact({groupId, groupName, pointsOfContact} : PointsOfContactProps) {
+interface Contact {
+  id: string;
+  name: string;
+  value: string;
+  type: string;
+}
+
+interface PointsOfContactProps {
+  groupId: string;
+  groupName: string;
+  pointsOfContact: Contact[];
+  onAddContact: () => void;
+}
+
+export default function PointsOfContact({groupId, groupName, pointsOfContact, onAddContact} : PointsOfContactProps) {
   const client = useApolloClient();
   const [showModal, setShowModal] = React.useState(false);
 
   let formRef = React.useRef<HTMLFormElement>(null);
 
-  function handleAddContact() {
+  async function handleAddContact() {
     let typeInput = formRef.current?.querySelector('#contactType') as HTMLSelectElement;
     let nameInput = formRef.current?.querySelector('#name') as HTMLInputElement;
     let valueInput = formRef.current?.querySelector('#value') as HTMLInputElement;
 
-    addContact(client, {
+    await addContact(client, {
       variables: {
         groupId: groupId,
         contact: {
@@ -106,10 +107,11 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact} : 
     });
 
     setShowModal(false);
+    onAddContact();
   }
 
   return (
-    <div className="mt-4">
+    <div className="mt-4" data-test-id="group-points-of-contact">
       <h2 className="text-lg font-semibold">Points of Contact</h2>
       <div className="mb-2">
         Create links that help reach people in the {groupName} group, such as team’s Slack channel.
