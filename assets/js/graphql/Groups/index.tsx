@@ -20,6 +20,5 @@ interface ListPotentialGroupMembersParams {
 }
 
 export function listPotentialGroupMembers(client, {variables} : ListPotentialGroupMembersParams) {
-  console.log("listPotentialGroupMembers", variables)
   return client.query({ query: LIST_POTENTIAL_GROUP_MEMBERS, variables })
 }

@@ -42,7 +42,7 @@ interface Person {
 
 function MemberList({ members } : { members: Person[] }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mb-4">
       {members.map((m : Person) => (
         <Avatar key={m.id} person={m} />
       ))}
