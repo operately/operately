@@ -8,7 +8,7 @@ export enum ButtonSize {
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size: ButtonSize;
-  ghost: boolean;
+  ghost?: boolean;
   disabled: boolean;
 }
 
@@ -47,6 +47,8 @@ function border({ghost, disabled} : ButtonProps) : string {
 }
 
 export default function Button(props : ButtonProps) : JSX.Element {
+  const {size, ghost, disabled, ...rest} = props;
+
   const style = [
     "whitespace-nowrap break-keep font-bold py-1.5 px-3 rounded",
     textSize(props),
@@ -55,7 +57,7 @@ export default function Button(props : ButtonProps) : JSX.Element {
     border(props)
   ].join(" ");
 
-  return <button {...props} className={style} />
+  return <button {...rest} className={style} />
 }
 
 Button.defaultProps = {

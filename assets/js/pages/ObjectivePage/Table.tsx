@@ -32,7 +32,7 @@ interface TableRowProps {
 
 function TableRow({headers, row, columnClasses} : TableRowProps) : JSX.Element {
   return (
-    <div className="w-full flex gap-2 justify-between px-4 py-4 border-t border-dark-8% hover:bg-dark-8%">
+    <div className="w-full flex gap-2 justify-between px-4 py-4 border-t border-dark-8% hover:bg-light-1 transition">
       {headers.map((header: Header) => (
         <div className={columnClasses[header.id]}>{row[header.id]}</div>
       ))}

@@ -17,18 +17,4 @@ defmodule Operately.GroupsFixtures do
 
     group
   end
-
-  @doc """
-  Generate a member.
-  """
-  def member_fixture(attrs \\ %{}) do
-    {:ok, member} =
-      attrs
-      |> Enum.into(%{
-
-      })
-      |> Operately.Groups.create_member()
-
-    member
-  end
 end

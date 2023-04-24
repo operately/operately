@@ -42,7 +42,7 @@ interface Person {
 
 function MemberList({ members } : { members: Person[] }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mb-4">
       {members.map((m : Person) => (
         <Avatar key={m.id} person={m} />
       ))}
@@ -72,7 +72,7 @@ export function GroupPage() {
     <div>
       <PageTitle title={data.group.name} />
       <MemberList members={data.group.members} />
-      <AddMembersModal groupId={id} onSubmit={handleAddMembersModalSubmit} />
+      <AddMembersModal groupId={id} members={data.group.members} onSubmit={handleAddMembersModalSubmit} />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import Modal from './Modal';
 import Button from '../../components/Button';
 
 import { useApolloClient, gql } from '@apollo/client';
+import { listPotentialGroupMembers } from '../../graphql/Groups';
 
 interface Person {
   id: string;
@@ -18,16 +19,6 @@ interface SelectOption {
   label: string;
 }
 
-const SEARCH_PEOPLE = gql`
-  query SearchPeople($query: String!) {
-    searchPeople(query: $query) {
-      id
-      fullName
-      title
-    }
-  }
-`;
-
 const ADD_MEMBERS = gql`
   mutation AddMembers($groupId: ID!, $personIds: [ID!]!) {
     addMembers(groupId: $groupId, personIds: $personIds) {
@@ -37,14 +28,20 @@ const ADD_MEMBERS = gql`
 `;
 
 function convertToSelectOption(person : Person) : SelectOption {
-  return { value: person.id, label: person.fullName + " - " + person.title };
+  let label = person.fullName;
+
+  if(person.title && person.title !== "") {
+    label += " - " + person.title;
+  }
+
+  return {value: person.id, label: label};
 }
 
 function convertToSelectOptions(people : Person[]) : SelectOption[] {
   return people.map(convertToSelectOption);
 }
 
-function SearchField({onSelect, loader, placeholder}) {
+function SearchField({onSelect, loader, placeholder, alreadySelected}) {
   const [selected, setSelected] = React.useState(null);
 
   const onChange = (value : Person | null) : void => {
@@ -52,7 +49,19 @@ function SearchField({onSelect, loader, placeholder}) {
     setSelected(null);
   }
 
-  return (<AsyncSelect placeholder={placeholder} inputId="peopleSearch" value={selected} onChange={onChange} loadOptions={loader} />);
+  const filterOptions = (candidate : SelectOption) => {
+    return !alreadySelected.includes(candidate.value);
+  }
+
+  return <AsyncSelect
+    placeholder={placeholder}
+    inputId="peopleSearch"
+    value={selected}
+    onChange={onChange}
+    loadOptions={loader}
+    defaultOptions
+    filterOption={filterOptions}
+  />;
 }
 
 function RemoveIcon({onClick}) {
@@ -81,7 +90,7 @@ function PeopleList({people, removePerson} : {people: SelectOption[], removePers
   return <div className="flex flex-col gap-2">{list}</div>;
 }
 
-export default function AddMembersModal({ groupId, onSubmit }) {
+export default function AddMembersModal({ groupId, onSubmit, members }) {
   const { t } = useTranslation();
   const client = useApolloClient();
   const [peopleList, setPeopleList] : [SelectOption[], any] = React.useState([]);
@@ -92,13 +101,17 @@ export default function AddMembersModal({ groupId, onSubmit }) {
 
   const search = (value: string) => {
     return new Promise((resolve) => {
-      client
-        .query({ query: SEARCH_PEOPLE, variables: { query: value } })
-        .then(({ data }) => convertToSelectOptions(data.searchPeople))
-        .then((people) => resolve(people))
-        .catch((err : any) => {
-          console.log(err);
-        });
+      let promise = listPotentialGroupMembers(client, { variables: {
+        groupId,
+        query: value,
+        excludeIds: peopleList.map((p) => p.value),
+        limit: 10
+      }})
+
+      promise
+      .then(({ data }) => convertToSelectOptions(data.potentialGroupMembers))
+      .then((people : SelectOption[]) => resolve(people))
+      .catch((err : any) => { console.log(err); });
     });
   }
 
@@ -129,7 +142,12 @@ export default function AddMembersModal({ groupId, onSubmit }) {
       <Button onClick={openModal}>Add Members</Button>
 
       <Modal title={t("forms.add_group_members_title")} isOpen={isModalOpen} hideModal={hideModal}>
-        <SearchField onSelect={add} loader={search} placeholder={t("forms.add_group_members_search_placeholder")} />
+        <SearchField
+          onSelect={add}
+          loader={search}
+          placeholder={t("forms.add_group_members_search_placeholder")}
+          alreadySelected={peopleList.map((p) => p.value) + members.map((p) => p.id)}
+        />
 
         <div className="flex flex-col gap-2 mt-4">
           <PeopleList people={peopleList} removePerson={remove} />

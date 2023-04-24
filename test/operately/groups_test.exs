@@ -7,12 +7,29 @@ defmodule Operately.GroupsTest do
     alias Operately.Groups.Group
 
     import Operately.GroupsFixtures
+    import Operately.PeopleFixtures
 
     @invalid_attrs %{name: nil}
 
     test "list_groups/0 returns all groups" do
       group = group_fixture()
       assert Groups.list_groups() == [group]
+    end
+
+    test "list_potential_members returns members that are not in the group" do
+      person1 = person_fixture(full_name: "John Doe", title: "CEO")
+      person2 = person_fixture(full_name: "Mike Smith", title: "CTO")
+
+      group = group_fixture()
+
+      assert Groups.list_potential_members(group.id, "", [], 10) == [person1, person2]
+      assert Groups.list_potential_members(group.id, "", [person1.id], 10) == [person2]
+      assert Groups.list_potential_members(group.id, "Doe", [], 10) == [person1]
+      assert Groups.list_potential_members(group.id, "CTO", [], 10) == [person2]
+
+      {:ok, _} = Groups.add_members(group, [person1.id])
+
+      assert Groups.list_potential_members(group.id, "", [], 10) == [person2]
     end
 
     test "get_group!/1 returns the group with given id" do

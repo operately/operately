@@ -23,6 +23,23 @@ defmodule Operately.Groups do
     Repo.all(Group)
   end
 
+  def list_potential_members(group_id, string_query, exclude_ids, limit) do
+    member_ids = Repo.all(
+      from m in Member,
+      where: m.group_id == ^group_id,
+      select: m.person_id
+    )
+
+    query = (
+      from p in Person,
+      where: p.id not in ^exclude_ids and p.id not in ^member_ids,
+      where: ilike(p.full_name, ^"%#{string_query}%") or ilike(p.title, ^"%#{string_query}%"),
+      limit: ^limit
+    )
+
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single group.
 
