@@ -37,7 +37,13 @@ const ADD_MEMBERS = gql`
 `;
 
 function convertToSelectOption(person : Person) : SelectOption {
-  return { value: person.id, label: person.fullName + " - " + person.title };
+  let label = person.fullName;
+
+  if(person.title && person.title !== "") {
+    label += " - " + person.title;
+  }
+
+  return {value: person.id, label: label};
 }
 
 function convertToSelectOptions(people : Person[]) : SelectOption[] {
