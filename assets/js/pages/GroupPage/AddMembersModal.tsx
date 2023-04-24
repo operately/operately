@@ -6,6 +6,7 @@ import Modal from './Modal';
 import Button from '../../components/Button';
 
 import { useApolloClient, gql } from '@apollo/client';
+import { listPotentialGroupMembers } from '../../graphql/Groups';
 
 interface Person {
   id: string;
@@ -17,16 +18,6 @@ interface SelectOption {
   value: string;
   label: string;
 }
-
-const SEARCH_PEOPLE = gql`
-  query SearchPeople($query: String!) {
-    searchPeople(query: $query) {
-      id
-      fullName
-      title
-    }
-  }
-`;
 
 const ADD_MEMBERS = gql`
   mutation AddMembers($groupId: ID!, $personIds: [ID!]!) {
@@ -58,7 +49,14 @@ function SearchField({onSelect, loader, placeholder}) {
     setSelected(null);
   }
 
-  return (<AsyncSelect placeholder={placeholder} inputId="peopleSearch" value={selected} onChange={onChange} loadOptions={loader} />);
+  return <AsyncSelect
+    placeholder={placeholder}
+    inputId="peopleSearch"
+    value={selected}
+    onChange={onChange}
+    loadOptions={loader}
+    defaultOptions
+  />;
 }
 
 function RemoveIcon({onClick}) {
@@ -98,13 +96,17 @@ export default function AddMembersModal({ groupId, onSubmit }) {
 
   const search = (value: string) => {
     return new Promise((resolve) => {
-      client
-        .query({ query: SEARCH_PEOPLE, variables: { query: value } })
-        .then(({ data }) => convertToSelectOptions(data.searchPeople))
-        .then((people) => resolve(people))
-        .catch((err : any) => {
-          console.log(err);
-        });
+      let promise = listPotentialGroupMembers(client, { variables: {
+        groupId,
+        query: value,
+        excludeIds: peopleList.map((p) => p.value),
+        limit: 10
+      }})
+
+      promise
+      .then(({ data }) => convertToSelectOptions(data.potentialGroupMembers))
+      .then((people : SelectOption[]) => resolve(people))
+      .catch((err : any) => { console.log(err); });
     });
   }
 
