@@ -182,4 +182,10 @@ defmodule Operately.Groups do
 
     {members, total}
   end
+
+  def set_mission(group, mission) do
+    group
+    |> Group.changeset(%{mission: mission})
+    |> Repo.update()
+  end
 end

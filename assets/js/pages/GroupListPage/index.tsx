@@ -13,7 +13,6 @@ const GET_GROUPS = gql`
     groups{
       id
       name
-      description
     }
   }
 `;

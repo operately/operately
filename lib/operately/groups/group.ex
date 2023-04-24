@@ -7,6 +7,7 @@ defmodule Operately.Groups.Group do
 
   schema "groups" do
     field :name, :string
+    field :mission, :string
 
     timestamps()
   end
@@ -14,7 +15,7 @@ defmodule Operately.Groups.Group do
   @doc false
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :mission])
     |> validate_required([:name])
   end
 end

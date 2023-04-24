@@ -95,4 +95,20 @@ defmodule Operately.Features.GroupsTest do
     |> assert_has(Query.text(person))
   end
 
+  defand ~r/^I set the mission to "(?<mission>[^"]+)"$/, %{mission: mission}, state do
+    state.session
+    |> find(Query.css("[data-test-id=\"group-mission\"]"), fn mission_element ->
+      mission_element |> click(Query.css("a", text: "edit"))
+    end)
+    |> fill_in(Query.css("[data-test-id=\"group-mission-textarea\"]"), with: mission)
+    |> click(Query.button("Save"))
+  end
+
+   defthen ~r/^the mission of the group "(?<group>[^"]+)" is "(?<mission>[^"]+)"$/, %{mission: mission}, state do
+     state.session
+     |> find(Query.css("[data-test-id=\"group-mission\"]"), fn mission_element ->
+       mission_element |> assert_has(Query.text(mission))
+     end)
+   end
+
 end

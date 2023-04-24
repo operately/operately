@@ -3,16 +3,16 @@ import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import PageTitle from '../../components/PageTitle';
 import AddMembersModal from './AddMembersModal';
 import Avatar from '../../components/Avatar';
+import GroupMission from './GroupMission';
 
 const GET_GROUP = gql`
   query GetGroup($id: ID!) {
     group(id: $id) {
       id
       name
-      description
+      mission
 
       members {
         id
@@ -70,7 +70,15 @@ export function GroupPage() {
 
   return (
     <div>
-      <PageTitle title={data.group.name} />
+      <h1 className="text-2xl">{data.group.name}</h1>
+
+      <div className="mb-4">
+        <GroupMission
+          groupId={id}
+          mission={data.group.mission}
+          onMissionChanged={refetch} />
+      </div>
+
       <MemberList members={data.group.members} />
       <AddMembersModal groupId={id} members={data.group.members} onSubmit={handleAddMembersModalSubmit} />
     </div>
