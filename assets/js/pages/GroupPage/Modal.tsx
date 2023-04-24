@@ -6,6 +6,7 @@ export default function Modal({isOpen, hideModal, title, children}) {
     <ReactModal
       isOpen={isOpen}
       contentLabel="Minimal Modal Example"
+      ariaHideApp={false}
       style={{
         overlay: {
           position: 'fixed',
