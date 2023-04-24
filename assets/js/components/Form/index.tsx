@@ -17,14 +17,22 @@ function CancelButton({onClick}) {
   )
 }
 
-export default function Form({children, onCancel, onSubmit}) {
+export type Ref = HTMLFormElement;
+
+interface Props {
+  children?: React.ReactNode;
+  onCancel: () => void;
+  onSubmit: () => void;
+}
+
+const Form = React.forwardRef<Ref, Props>(({children, onCancel, onSubmit}, ref) => {
   const handleSubmit = (e : Event) => {
     e.preventDefault();
     onSubmit();
   };
 
   return (
-    <form>
+    <form ref={ref}>
       {children}
 
       <div className="flex gap-2 mt-4">
@@ -33,8 +41,10 @@ export default function Form({children, onCancel, onSubmit}) {
       </div>
     </form>
   )
-}
+});
 
 Form.defaultProps = {
   children: []
 }
+
+export default Form;

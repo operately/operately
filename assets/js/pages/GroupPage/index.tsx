@@ -25,6 +25,7 @@ const GET_GROUP = gql`
         id
         name
         type
+        value
       }
     }
   }

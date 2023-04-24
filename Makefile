@@ -74,6 +74,10 @@ setup:
 	$(USER_CONTEXT) && docker compose build
 	$(MAKE) dev.setup
 
+migrate:
+	$(MAKE) dev.db.migrate
+	$(MAKE) test.db.migrate
+
 dev.setup:
 	$(DEV_CONTAINER) mix deps.get
 	$(DEV_CONTAINER) mix deps.compile
@@ -132,6 +136,9 @@ test.watch:
 
 test.db.create:
 	$(TEST_CONTAINER) mix ecto.create
+
+test.db.reset:
+	$(TEST_CONTAINER) mix ecto.reset
 
 test.assets.compile:
 	$(TEST_CONTAINER) mix assets.build

@@ -5,10 +5,15 @@ import Modal from './Modal';
 import Form from '../../components/Form';
 import FormSelect from '../../components/FormSelect';
 import FormTextInput from '../../components/FormTextInput';
+import Icon from '../../components/Icon';
+
+import { useApolloClient } from '@apollo/client';
+import { addContact } from '../../graphql/Groups';
 
 interface Contact {
   id: string;
   name: string;
+  value: string;
   type: string;
 }
 
@@ -41,13 +46,14 @@ interface AddContactModalProps {
   hideModal: () => void;
   onSubmit: () => void;
   onCancel: () => void;
+  formRef: React.RefObject<HTMLFormElement>;
 }
 
 function AddContactModal(props : AddContactModalProps) : JSX.Element {
   const [selected, setSelected] = React.useState('slack');
 
   return <Modal title="Add a Point of Contact" hideModal={props.hideModal} isOpen={props.isOpen}>
-    <Form onSubmit={props.onSubmit} onCancel={props.hideModal}>
+    <Form ref={props.formRef} onSubmit={props.onSubmit} onCancel={props.hideModal}>
       <p className="prose mb-4">Select a third-party platform where the team works together.</p>
 
       <FormSelect id="contactType" label="Type" value={selected} onChange={(e) => setSelected(e.target.value)}>
@@ -61,8 +67,46 @@ function AddContactModal(props : AddContactModalProps) : JSX.Element {
   </Modal>;
 }
 
+function SlackContact({name, value} : {name: string, value: string}) {
+  return <div className="flex gap-2 border rounded border-dark-2 px-2 py-1 shadow-sm hover:shadow-lg cursor-pointer">
+    <Icon name="slack" color="brand" hoverColor="brand" />
+    <a href={value}>{name}</a>
+  </div>;
+}
+
+function Contact({contact} : {contact: Contact}) {
+  switch (contact.type) {
+    case 'slack':
+      return SlackContact(contact);
+    default:
+      throw "Not implemented";
+  }
+}
+
 export default function PointsOfContact({groupId, groupName, pointsOfContact} : PointsOfContactProps) {
-  const [showModal, setShowModal] = React.useState(true);
+  const client = useApolloClient();
+  const [showModal, setShowModal] = React.useState(false);
+
+  let formRef = React.useRef<HTMLFormElement>(null);
+
+  function handleAddContact() {
+    let typeInput = formRef.current?.querySelector('#contactType') as HTMLSelectElement;
+    let nameInput = formRef.current?.querySelector('#name') as HTMLInputElement;
+    let valueInput = formRef.current?.querySelector('#value') as HTMLInputElement;
+
+    addContact(client, {
+      variables: {
+        groupId: groupId,
+        contact: {
+          type: typeInput.value,
+          name: nameInput.value,
+          value: valueInput.value,
+        }
+      }
+    });
+
+    setShowModal(false);
+  }
 
   return (
     <div className="mt-4">
@@ -70,6 +114,12 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact} : 
       <div className="mb-2">
         Create links that help reach people in the {groupName} group, such as team’s Slack channel.
       </div>
+
+      {pointsOfContact.length > 0 && <div className="my-4">
+        <div className="flex gap-4">
+          {pointsOfContact.map((contact) => <Contact key={contact.id} contact={contact} />)}
+        </div>
+      </div>}
 
       <Button
         ghost
@@ -79,7 +129,8 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact} : 
 
       <AddContactModal
         isOpen={showModal}
-        onSubmit={() => {}}
+        formRef={formRef}
+        onSubmit={handleAddContact}
         onCancel={() => setShowModal(false)}
         hideModal={() => setShowModal(false)}
       />
