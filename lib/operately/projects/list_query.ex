@@ -6,8 +6,8 @@ defmodule Operately.Projects.ListQuery do
   def build(filters) do
     query = from p in Project
 
-    query = apply_group_filter(query, filters.group_id)
-    query = apply_objective_filter(query, filters.objective_id)
+    query = apply_group_filter(query, filters[:group_id])
+    query = apply_objective_filter(query, filters[:objective_id])
 
     query
   end

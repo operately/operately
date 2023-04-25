@@ -8,7 +8,7 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Project
 
-  def list_projects(filters = %{}) do
+  def list_projects(filters \\ %{}) do
     Operately.Projects.ListQuery.build(filters) |> Repo.all()
   end
 
