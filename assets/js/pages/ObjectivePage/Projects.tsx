@@ -89,13 +89,13 @@ export default function Projects({objectiveID} : {objectiveID: string}) : JSX.El
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
-  if (data.alignedProjects.length === 0) return <></>;
+  if (data.projects.length === 0) return <></>;
 
   return <div className="mt-4">
     <SectionHeader>{t("objectives.projects_in_progress_title")}</SectionHeader>
 
     <CardListHeader headers={headers} />
 
-    {data.alignedProjects.map((project : Project) => <Card key={project.id} project={project} />)}
+    {data.projects.map((project : Project) => <Card key={project.id} project={project} />)}
   </div>;
 }

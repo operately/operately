@@ -2,6 +2,7 @@ defmodule Operately.Projects.ListQuery do
   import Ecto.Query, warn: false
 
   alias Operately.Projects.Project
+  alias Operately.Alignments.Alignment
 
   def build(filters) do
     query = from p in Project
@@ -31,7 +32,9 @@ defmodule Operately.Projects.ListQuery do
   end
 
   defp apply_objective_filter(query, objective_id) do
-    from p in query, where: p.objective_id == ^objective_id
+    from p in query,
+      join: a in Alignment, on: p.id == a.child and a.child_type == :project,
+      where: a.parent == ^objective_id and a.parent_type == :objective
   end
 
 end
