@@ -1,17 +1,27 @@
 defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
 
-  alias OperatelyWeb.GraphQL.Types
-  alias OperatelyWeb.GraphQL.Queries
+  alias OperatelyWeb.GraphQL.{
+    Types,
+    Queries,
+    Mutations,
+  }
 
   import_types Absinthe.Type.Custom
 
   # Types
   import_types Types.Projects
+  import_types Types.Objectives
   import_types Types.Person
 
   # Queries
   import_types Queries.Projects
+  import_types Queries.Objectives
+
+  # Mutations
+  import_types Mutations.Projects
+  import_types Mutations.Objectives
+  import_types Mutations.Groups
 
   object :update do
     field :id, non_null(:id)
@@ -56,26 +66,11 @@ defmodule OperatelyWeb.Schema do
     field :description, :string
   end
 
-  object :objective do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :description, :string
-
-    field :owner, :person do
-      resolve fn objective, _, _ ->
-        person = Operately.Okrs.get_owner!(objective)
-
-        {:ok, person}
-      end
-    end
-  end
-
   object :kpi do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :description, :string
   end
-
 
   object :group_contact do
     field :id, non_null(:id)
@@ -125,13 +120,6 @@ defmodule OperatelyWeb.Schema do
     field :danger_direction, non_null(:string)
   end
 
-  input_object :create_objective_input do
-    field :name, non_null(:string)
-    field :description, :string
-    field :timeframe, non_null(:string)
-    field :owner_id, non_null(:id)
-  end
-
   input_object :create_update_input do
     field :content, non_null(:string)
     field :updatable_id, non_null(:id)
@@ -151,6 +139,7 @@ defmodule OperatelyWeb.Schema do
 
   query do
     import_fields :project_queries
+    import_fields :objective_queries
 
     field :me, :person do
       resolve fn _, _, %{context: context} ->
@@ -173,24 +162,6 @@ defmodule OperatelyWeb.Schema do
         kpi = Operately.Kpis.get_kpi!(args.id)
 
         {:ok, kpi}
-      end
-    end
-
-    field :objectives, list_of(:objective) do
-      resolve fn _, _, _ ->
-        objectives = Operately.Okrs.list_objectives()
-
-        {:ok, objectives}
-      end
-    end
-
-    field :objective, :objective do
-      arg :id, non_null(:id)
-
-      resolve fn args, _ ->
-        objective = Operately.Okrs.get_objective!(args.id)
-
-        {:ok, objective}
       end
     end
 
@@ -285,22 +256,9 @@ defmodule OperatelyWeb.Schema do
   end
 
   mutation do
-    field :create_group, :group do
-      arg :name, non_null(:string)
-
-      resolve fn args, _ ->
-        Operately.Groups.create_group(%{name: args.name})
-      end
-    end
-
-    field :create_project, :project do
-      arg :name, non_null(:string)
-      arg :description, :string
-
-      resolve fn args, _ ->
-        Operately.Projects.create_project(%{name: args.name, description: args[:description] || "-"})
-      end
-    end
+    import_fields :objective_mutations
+    import_fields :project_mutations
+    import_fields :group_mutations
 
     field :create_tenet, :tenet do
       arg :name, non_null(:string)
@@ -316,26 +274,6 @@ defmodule OperatelyWeb.Schema do
 
       resolve fn args, _ ->
         Operately.Kpis.create_kpi(args.input)
-      end
-    end
-
-    field :create_objective, :objective do
-      arg :input, non_null(:create_objective_input)
-
-      resolve fn args, _ ->
-        owner_id = args.input.owner_id
-
-        ownership = %{
-          target_type: :objective,
-          person_id: owner_id
-        }
-
-        params =
-          args.input
-          |> Map.delete(:owner_id)
-          |> Map.put(:ownership, ownership)
-
-        Operately.Okrs.create_objective(params)
       end
     end
 
