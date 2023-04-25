@@ -240,8 +240,14 @@ defmodule OperatelyWeb.Schema do
     end
 
     field :projects, list_of(:project) do
+      arg :group_id, :id
+      arg :objective_id, :id
+
       resolve fn _, _, _ ->
-        projects = Operately.Projects.list_projects()
+        projects = Operately.Projects.list_projects(${
+          group_id: args.group_id,
+          objective_id: args.objective_id
+        })
 
         {:ok, projects}
       end
@@ -293,17 +299,6 @@ defmodule OperatelyWeb.Schema do
         key_results = Operately.Okrs.list_key_results!(objective_id)
 
         {:ok, key_results}
-      end
-    end
-
-    field :aligned_projects, list_of(:project) do
-      arg :objective_id, non_null(:id)
-
-      resolve fn args, _ ->
-        objective_id = args.objective_id
-        projects = Operately.Okrs.list_aligned_projects!(objective_id)
-
-        {:ok, projects}
       end
     end
 

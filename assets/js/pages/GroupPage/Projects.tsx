@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useTranslation } from 'react-i18next';
 import { useProjects } from '../../graphql/Projects';
 
@@ -6,7 +7,6 @@ import RelativeTime from '../../components/RelativeTime';
 import Avatar, {AvatarSize} from '../../components/Avatar';
 
 import { Link } from "react-router-dom";
-import SectionHeader from './SectionHeader';
 
 function CardListHeader({headers} : {headers: Array<{id: string, label: string}>}) : JSX.Element {
   return <div className="flex gap-14 mt-4 px-2">
@@ -74,10 +74,10 @@ function Champion({person} : {person: Owner}) : JSX.Element {
   );
 }
 
-export default function Projects({objectiveID} : {objectiveID: string}) : JSX.Element {
+export default function Projects({groupId} : {groupId: string}) : JSX.Element {
   const { t } = useTranslation();
 
-  const { loading, error, data } = useProjects({objectiveId: objectiveID});
+  const { loading, error, data } = useProjects({groupId});
 
   const headers = [
     {id: "title", label: t("objectives.project_list_title")},
@@ -92,7 +92,7 @@ export default function Projects({objectiveID} : {objectiveID: string}) : JSX.El
   if (data.alignedProjects.length === 0) return <></>;
 
   return <div className="mt-4">
-    <SectionHeader>{t("objectives.projects_in_progress_title")}</SectionHeader>
+    <h2>{t("objectives.projects_in_progress_title")}</h2>
 
     <CardListHeader headers={headers} />
 

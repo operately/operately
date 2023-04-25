@@ -17,8 +17,16 @@ defmodule Operately.Projects do
       [%Project{}, ...]
 
   """
-  def list_projects do
-    Repo.all(Project)
+  def list_projects(filters = %{}) do
+    query = Project
+
+    query = if filters.group_id do
+      query |> join(:inner, [p], g in assoc(p, :group), on: g.id == ^filters.group_id)
+    else
+      query |> join(:inner, [p], o in assoc(p, :objective), on: o.id == ^filters.objective_id)
+    end
+
+    Repo.all(query)
   end
 
   @doc """
