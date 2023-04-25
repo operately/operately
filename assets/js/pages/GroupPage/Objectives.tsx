@@ -31,7 +31,6 @@ function Card({objective} : {objective: Objective}) : JSX.Element {
   return <Link to={`/objectives/` + objective.id} className="flex gap-14 mt-2 rounded-lg p-4 bg-white items-center card-shadow hover:card-shadow-blue">
     <div className="w-1/3">
       <div className="text-brand-base font-bold">{objective.name}</div>
-      <div className="text-dark-2 text-xs">In Shipping phase, 12 days and 1 milestone remaining</div>
     </div>
 
     <div className="w-2/6">
@@ -57,11 +56,6 @@ export default function Objectives({groupId} : {groupId: string}) : JSX.Element 
 
   const { loading, error, data } = useObjectives({groupId});
 
-  const headers = [
-    {id: "title", label: t("objectives.project_list_title")},
-    {id: "team", label: t("objectives.project_list_team")},
-  ];
-
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
@@ -69,8 +63,6 @@ export default function Objectives({groupId} : {groupId: string}) : JSX.Element 
 
   return <div className="mt-4">
     <h2 className="text-lg font-semibold">Objectives</h2>
-
-    <CardListHeader headers={headers} />
 
     {data.objectives.map((project : Objective) =>
       <Card key={project.id} objective={project} />
