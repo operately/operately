@@ -3,6 +3,7 @@ defmodule Operately.Features.GroupsTest do
 
   alias Operately.Groups
   alias Operately.PeopleFixtures
+  alias Operately.ProjectsFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
@@ -124,6 +125,20 @@ defmodule Operately.Features.GroupsTest do
   defthen ~r/^the point of contact "(?<name>[^"]+)" is visible on the group "(?<group>[^"]+)" page$/, %{name: name}, state do
     state.session
     |> assert_has(Query.text(name))
+  end
+
+  defgiven ~r/^that a project with the name "(?<name>[^"]+)" exists in the group "(?<group>[^"]+)"$/, %{name: name, group: group}, state do
+    group = Groups.get_group_by_name(group)
+
+    project = ProjectsFixtures.project_fixture(%{
+      name: name,
+      group_id: group.id
+    })
+  end
+
+  defthen ~r/^I should see "(?<project>[^"]+)" in the list of projects$/, %{project: project}, state do
+    state.session
+    |> assert_has(Query.text(project))
   end
 
 end

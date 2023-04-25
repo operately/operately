@@ -7,6 +7,7 @@ import AddMembersModal from './AddMembersModal';
 import Avatar from '../../components/Avatar';
 import GroupMission from './GroupMission';
 import PointsOfContact from './PointsOfContact';
+import Projects from './Projects';
 
 const GET_GROUP = gql`
   query GetGroup($id: ID!) {
@@ -96,6 +97,8 @@ export function GroupPage() {
         pointsOfContact={data.group.pointsOfContact}
         onAddContact={refetch}
       />
+
+      <Projects groupId={id} />
     </div>
   )
 }

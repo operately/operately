@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useTranslation } from 'react-i18next';
 import { useProjects } from '../../graphql/Projects';
 
@@ -6,7 +7,6 @@ import RelativeTime from '../../components/RelativeTime';
 import Avatar, {AvatarSize} from '../../components/Avatar';
 
 import { Link } from "react-router-dom";
-import SectionHeader from './SectionHeader';
 
 function CardListHeader({headers} : {headers: Array<{id: string, label: string}>}) : JSX.Element {
   return <div className="flex gap-14 mt-4 px-2">
@@ -41,7 +41,7 @@ interface Project {
   id: string;
   name: string;
   updatedAt: string;
-  owner: Owner;
+  owner?: Owner;
 }
 
 function Card({project} : {project: Project}) : JSX.Element {
@@ -56,8 +56,13 @@ function Card({project} : {project: Project}) : JSX.Element {
     </div>
 
     <div className="w-2/6">
-      <Champion person={project.owner} />
-      <div className="text-dark-2 text-xs ml-8">with 2 colaborators</div>
+      {project.owner
+        ? <>
+            <Champion person={project.owner} />
+            <div className="text-dark-2 text-xs ml-8">with 2 colaborators</div>
+          </>
+        : <div className="text-dark-2 text-xs">No owner</div>
+      }
     </div>
     <div className="w-2/6 text-dark-2">
       <RelativeTime date={project.updatedAt} />
@@ -74,10 +79,10 @@ function Champion({person} : {person: Owner}) : JSX.Element {
   );
 }
 
-export default function Projects({objectiveID} : {objectiveID: string}) : JSX.Element {
+export default function Projects({groupId} : {groupId: string}) : JSX.Element {
   const { t } = useTranslation();
 
-  const { loading, error, data } = useProjects({objectiveId: objectiveID});
+  const { loading, error, data } = useProjects({groupId});
 
   const headers = [
     {id: "title", label: t("objectives.project_list_title")},
@@ -92,7 +97,7 @@ export default function Projects({objectiveID} : {objectiveID: string}) : JSX.El
   if (data.projects.length === 0) return <></>;
 
   return <div className="mt-4">
-    <SectionHeader>{t("objectives.projects_in_progress_title")}</SectionHeader>
+    <h2 className="text-lg font-semibold">{t("objectives.projects_in_progress_title")}</h2>
 
     <CardListHeader headers={headers} />
 

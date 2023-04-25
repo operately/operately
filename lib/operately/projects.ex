@@ -8,17 +8,8 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Project
 
-  @doc """
-  Returns the list of projects.
-
-  ## Examples
-
-      iex> list_projects()
-      [%Project{}, ...]
-
-  """
-  def list_projects do
-    Repo.all(Project)
+  def list_projects(filters \\ %{}) do
+    Operately.Projects.ListQuery.build(filters) |> Repo.all()
   end
 
   @doc """

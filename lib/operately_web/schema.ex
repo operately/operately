@@ -1,7 +1,17 @@
 defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
 
+  alias OperatelyWeb.GraphQL.Types
+  alias OperatelyWeb.GraphQL.Queries
+
   import_types Absinthe.Type.Custom
+
+  # Types
+  import_types Types.Projects
+  import_types Types.Person
+
+  # Queries
+  import_types Queries.Projects
 
   object :update do
     field :id, non_null(:id)
@@ -66,27 +76,6 @@ defmodule OperatelyWeb.Schema do
     field :description, :string
   end
 
-  object :person do
-    field :id, non_null(:id)
-    field :full_name, non_null(:string)
-    field :title, :string
-    field :avatar_url, :string
-  end
-
-  object :project do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :description, :string
-    field :updated_at, non_null(:date)
-
-    field :owner, :person do
-      resolve fn objective, _, _ ->
-        person = Operately.Projects.get_owner!(objective)
-
-        {:ok, person}
-      end
-    end
-  end
 
   object :group_contact do
     field :id, non_null(:id)
@@ -161,6 +150,8 @@ defmodule OperatelyWeb.Schema do
   end
 
   query do
+    import_fields :project_queries
+
     field :me, :person do
       resolve fn _, _, %{context: context} ->
         {:ok, context.current_account.person}
@@ -239,23 +230,6 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :projects, list_of(:project) do
-      resolve fn _, _, _ ->
-        projects = Operately.Projects.list_projects()
-
-        {:ok, projects}
-      end
-    end
-
-    field :project, :project do
-      arg :id, non_null(:id)
-
-      resolve fn args, _ ->
-        project = Operately.Projects.get_project!(args.id)
-
-        {:ok, project}
-      end
-    end
 
     field :search_people, list_of(:person) do
       arg :query, non_null(:string)
@@ -293,17 +267,6 @@ defmodule OperatelyWeb.Schema do
         key_results = Operately.Okrs.list_key_results!(objective_id)
 
         {:ok, key_results}
-      end
-    end
-
-    field :aligned_projects, list_of(:project) do
-      arg :objective_id, non_null(:id)
-
-      resolve fn args, _ ->
-        objective_id = args.objective_id
-        projects = Operately.Okrs.list_aligned_projects!(objective_id)
-
-        {:ok, projects}
       end
     end
 
