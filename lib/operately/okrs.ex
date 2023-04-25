@@ -9,17 +9,14 @@ defmodule Operately.Okrs do
   alias Operately.Okrs.Objective
   alias Operately.Okrs.KeyResult
 
-  @doc """
-  Returns the list of objectives.
+  def list_objectives(filters \\ %{}) do
+    query = if filters[:group_id] do
+      from o in Objective, where: o.group_id == ^filters[:group_id]
+    else
+      from o in Objective
+    end
 
-  ## Examples
-
-      iex> list_objectives()
-      [%Objective{}, ...]
-
-  """
-  def list_objectives do
-    Repo.all(Objective)
+    Repo.all(query)
   end
 
   def list_objectives(preload: associations) do

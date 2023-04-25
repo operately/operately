@@ -8,6 +8,7 @@ import Avatar from '../../components/Avatar';
 import GroupMission from './GroupMission';
 import PointsOfContact from './PointsOfContact';
 import Projects from './Projects';
+import Objectives from './Objectives';
 
 const GET_GROUP = gql`
   query GetGroup($id: ID!) {
@@ -99,6 +100,7 @@ export function GroupPage() {
       />
 
       <Projects groupId={id} />
+      <Objectives groupId={id} />
     </div>
   )
 }

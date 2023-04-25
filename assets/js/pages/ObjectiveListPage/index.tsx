@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from 'react-i18next';
 
-import { useQuery, gql } from '@apollo/client';
+import { useObjectives, listObjectives } from '../../graphql/Objectives';
 import { Link } from 'react-router-dom';
 
 import ButtonLink from '../../components/ButtonLink';
@@ -10,36 +10,8 @@ import Card from '../../components/Card';
 import CardList from '../../components/CardList';
 import Avatar, {AvatarSize} from '../../components/Avatar';
 
-const GET_OBJECTIVES = gql`
-  query GetObjectives {
-    objectives {
-      id
-      name
-      description
-
-      owner {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-    }
-  }
-`;
-
-const OBJECTIVE_SUBSCRIPTION = gql`
-  subscription OnObjectiveAdded {
-    objectiveAdded {
-      id
-    }
-  }
-`;
-
 export async function ObjectiveListPageLoader(apolloClient : any) {
-  await apolloClient.query({
-    query: GET_OBJECTIVES,
-    fetchPolicy: 'network-only'
-  });
+  await listObjectives(apolloClient, {});
 
   return {};
 }
@@ -74,18 +46,7 @@ function ListOfObjectives({objectives}) {
 
 export function ObjectiveListPage() {
   const { t } = useTranslation();
-  const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_OBJECTIVES);
-
-  React.useEffect(() => {
-    subscribeToMore({
-      document: OBJECTIVE_SUBSCRIPTION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        refetch();
-        return prev;
-      }
-    })
-  }, [])
+  const { loading, error, data } = useObjectives({});
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;

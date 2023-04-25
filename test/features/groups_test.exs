@@ -4,6 +4,7 @@ defmodule Operately.Features.GroupsTest do
   alias Operately.Groups
   alias Operately.PeopleFixtures
   alias Operately.ProjectsFixtures
+  alias Operately.OkrsFixtures
 
   import_steps(Operately.Features.SharedSteps.Login)
   import_steps(Operately.Features.SharedSteps.SimpleInteractions)
@@ -139,6 +140,19 @@ defmodule Operately.Features.GroupsTest do
   defthen ~r/^I should see "(?<project>[^"]+)" in the list of projects$/, %{project: project}, state do
     state.session
     |> assert_has(Query.text(project))
+  end
+
+  defgiven ~r/^that an objective with the name "(?<name>[^"]+)" exists in the group "(?<group>[^"]+)"$/, %{name: name, group: group}, state do
+    group = Groups.get_group_by_name(group)
+
+    OkrsFixtures.objective_fixture(:with_owner, %{
+      name: name,
+      group_id: group.id
+    })
+  end
+
+  defthen ~r/^I should see "(?<objective>[^"]+)" in the list of objectives$/, %{objective: objective}, state do
+    state.session |> assert_has(Query.text(objective))
   end
 
 end
