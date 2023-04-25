@@ -41,7 +41,7 @@ interface Project {
   id: string;
   name: string;
   updatedAt: string;
-  owner: Owner;
+  owner?: Owner;
 }
 
 function Card({project} : {project: Project}) : JSX.Element {
@@ -56,8 +56,13 @@ function Card({project} : {project: Project}) : JSX.Element {
     </div>
 
     <div className="w-2/6">
-      <Champion person={project.owner} />
-      <div className="text-dark-2 text-xs ml-8">with 2 colaborators</div>
+      {project.owner
+        ? <>
+            <Champion person={project.owner} />
+            <div className="text-dark-2 text-xs ml-8">with 2 colaborators</div>
+          </>
+        : <div className="text-dark-2 text-xs">No owner</div>
+      }
     </div>
     <div className="w-2/6 text-dark-2">
       <RelativeTime date={project.updatedAt} />
@@ -89,13 +94,13 @@ export default function Projects({groupId} : {groupId: string}) : JSX.Element {
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error) return <p>{t("error.error")}: {error.message}</p>;
 
-  if (data.alignedProjects.length === 0) return <></>;
+  if (data.projects.length === 0) return <></>;
 
   return <div className="mt-4">
-    <h2>{t("objectives.projects_in_progress_title")}</h2>
+    <h2 className="text-lg font-semibold">{t("objectives.projects_in_progress_title")}</h2>
 
     <CardListHeader headers={headers} />
 
-    {data.alignedProjects.map((project : Project) => <Card key={project.id} project={project} />)}
+    {data.projects.map((project : Project) => <Card key={project.id} project={project} />)}
   </div>;
 }

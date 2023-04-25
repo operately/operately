@@ -8,25 +8,8 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Project
 
-  @doc """
-  Returns the list of projects.
-
-  ## Examples
-
-      iex> list_projects()
-      [%Project{}, ...]
-
-  """
   def list_projects(filters = %{}) do
-    query = Project
-
-    query = if filters.group_id do
-      query |> join(:inner, [p], g in assoc(p, :group), on: g.id == ^filters.group_id)
-    else
-      query |> join(:inner, [p], o in assoc(p, :objective), on: o.id == ^filters.objective_id)
-    end
-
-    Repo.all(query)
+    Operately.Projects.ListQuery.build(filters) |> Repo.all()
   end
 
   @doc """

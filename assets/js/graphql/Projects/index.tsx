@@ -1,8 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
 
 const LIST_PROJECTS = gql`
-  query ListProjects($groupId: ID) {
-    projects(groupId: $groupId) {
+  query ListProjects($groupId: ID, $objectiveId: ID) {
+    projects(groupId: $groupId, objectiveId: $objectiveId) {
       id
       name
       updatedAt
