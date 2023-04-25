@@ -2,8 +2,8 @@ import React from 'react';
 import { gql, useQuery, ApolloClient } from '@apollo/client';
 
 const LIST_OBJECTIVES = gql`
-  query ListObjectives($groupId: ID!) {
-    objectives(groupId: $groupId, objectiveId: $objectiveId) {
+  query ListObjectives($groupId: ID) {
+    objectives(groupId: $groupId) {
       id
       name
       description
@@ -19,7 +19,7 @@ const LIST_OBJECTIVES = gql`
 `;
 
 const OBJECTIVE_SUBSCRIPTION = gql`
-  subscription OnObjectiveAdded() {
+  subscription OnObjectiveAdded {
     objectiveAdded {
       id
     }

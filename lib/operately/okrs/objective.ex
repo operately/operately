@@ -23,7 +23,7 @@ defmodule Operately.Okrs.Objective do
   @doc false
   def changeset(objective, attrs) do
     objective
-    |> cast(attrs, [:name, :description])
+    |> cast(attrs, [:name, :description, :group_id])
     |> put_assoc(:parent, Map.get(attrs, "aligns_with"))
     |> cast_assoc(:ownership)
     |> validate_required([:name, :description])

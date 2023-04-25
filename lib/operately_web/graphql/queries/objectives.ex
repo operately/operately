@@ -3,8 +3,12 @@ defmodule OperatelyWeb.GraphQL.Queries.Objectives do
 
   object :objective_queries do
     field :objectives, list_of(:objective) do
-      resolve fn _, _, _ ->
-        objectives = Operately.Okrs.list_objectives()
+      arg :group_id, :id
+
+      resolve fn _, args, _ ->
+        objectives = Operately.Okrs.list_objectives(%{
+          group_id: args[:group_id]
+        })
 
         {:ok, objectives}
       end
