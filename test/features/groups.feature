@@ -39,3 +39,10 @@ Feature: Groups
     Given that a project with the name "Marketing Website" exists in the group "Marketing"
     When I visit the group "Marketing" page
     Then I should see "Marketing Website" in the list of projects
+
+  Scenario: Listing objectives in a group
+    Given I am logged in as a user
+    Given that a group with the name "Marketing" exists
+    Given that an objective with the name "Increase brand awareness" exists in the group "Marketing"
+    When I visit the group "Marketing" page
+    Then I should see "Increase brand awareness" in the list of objectives
