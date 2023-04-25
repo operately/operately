@@ -33,3 +33,9 @@ Feature: Groups
     And I add a point of contact "Slack" with the value "#marketing-hq"
     Then the point of contact "#marketing-hq" is visible on the group "Marketing" page
 
+  Scenario: Listing projects in a group
+    Given I am logged in as a user
+    Given that a group with the name "Marketing" exists
+    Given that a project with the name "Marketing Website" exists in the group "Marketing"
+    When I visit the group "Marketing" page
+    Then I should see "Marketing Website" in the list of projects

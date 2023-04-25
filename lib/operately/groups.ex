@@ -65,6 +65,10 @@ defmodule Operately.Groups do
   """
   def get_group!(id), do: Repo.get!(Group, id)
 
+  def get_group_by_name(name) do
+    Repo.one(from g in Group, where: g.name == ^name)
+  end
+
   @doc """
   Creates a group.
 
