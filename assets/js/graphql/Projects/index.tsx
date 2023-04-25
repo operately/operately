@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client';
+import React from 'react';
+import { gql, useQuery, ApolloClient } from '@apollo/client';
 
 const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
@@ -15,11 +16,40 @@ const LIST_PROJECTS = gql`
   }
 `;
 
+const PROJECT_SUBSCRIPTION = gql`
+  subscription OnProjectAdded {
+    projectAdded {
+      id
+    }
+  }
+`;
+
 interface ListProjectsVariables {
   groupId?: string;
   objectiveId?: string;
 }
 
 export function useProjects(variables : ListProjectsVariables) {
-  return useQuery(LIST_PROJECTS, { variables });
+  const query = useQuery(LIST_PROJECTS, { variables });
+
+  React.useEffect(() => {
+    query.subscribeToMore({
+      document: PROJECT_SUBSCRIPTION,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        query.refetch();
+        return prev;
+      }
+    })
+  }, [])
+
+  return query;
+}
+
+export function listProjects(client : ApolloClient<object>, variables : ListProjectsVariables) {
+  return client.query({
+    query: LIST_PROJECTS,
+    variables,
+    fetchPolicy: 'network-only'
+  });
 }
