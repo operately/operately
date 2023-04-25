@@ -7,6 +7,7 @@ defmodule Operately.Okrs.Objective do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "objectives" do
+    belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     has_many :key_results, Operately.Okrs.KeyResult, on_delete: :delete_all
 
     has_one :parent, Alignment, foreign_key: :child
