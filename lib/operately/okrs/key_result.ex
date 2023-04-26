@@ -14,13 +14,16 @@ defmodule Operately.Okrs.KeyResult do
     field :unit, Ecto.Enum, values: [:percentage, :number]
     field :direction, Ecto.Enum, values: [:above, :below]
 
+    field :steps_completed, :integer
+    field :steps_total, :integer
+
     timestamps()
   end
 
   @doc false
   def changeset(key_result, attrs) do
     key_result
-    |> cast(attrs, [:name, :unit, :target, :direction, :objective_id, :status])
-    |> validate_required([:name, :unit, :target, :direction, :objective_id, :status])
+    |> cast(attrs, [:name, :unit, :target, :direction, :objective_id, :status, :steps_completed, :steps_total])
+    |> validate_required([:name, :unit, :target, :direction, :objective_id, :status, :steps_completed, :steps_total])
   end
 end
