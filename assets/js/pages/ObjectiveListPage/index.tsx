@@ -31,8 +31,8 @@ function AddGoalForm({onSubmit, onCancel}) {
     }
   }
 
-  return <div className="border border-stone-200 shadow-sm rounded flex items-center text-dark-2 gap-2 text-sm px-2 py-2">
-    <Icon name="objectives" size="small" color="dark-2" />
+  return <div className="border bg-white border-dark-8% shadow rounded flex items-center text-dark-2 gap-2 px-2 py-2">
+    <Icon name="objectives" size="small" color="brand" />
     <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe a goal you want to achieve&hellip;" onKeyDown={handleKeyDown} />
   </div>;
 }
@@ -57,9 +57,11 @@ function AddKeyResultForm({onSubmit, onCancel}) {
   }
 
   return <div className="truncate px-2 py-2 flex justify-between items-center flex-1">
-    <div className="flex items-center gap-2 pl-2 flex-1">
-      <div className="rounded-full border border-dark-2 w-2 h-2" />
-      <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe a goal you want to achieve&hellip;" onKeyDown={handleKeyDown} />
+    <div className="flex items-center gap-2 flex-1">
+      <div className="scale-75">
+        <Icon name="flag" size="small" color="dark" />
+      </div>
+      <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe what needs to happen to reach this goal&hellip;" onKeyDown={handleKeyDown} />
     </div>
   </div>
 }
@@ -85,7 +87,7 @@ function AddGoal({onGoalAdded, onActivation}) {
   }
 
   const addGoalRow = <div
-    className="border border-stone-200 shadow-sm rounded flex items-center text-dark-2 gap-2 text-sm px-2 py-2 hover:text-dark-1 cursor-pointer"
+    className="bg-white border border-dark-8% shadow-sm rounded flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
     onClick={handleActivateForm}>
     <Icon name="plus" size="small" color="dark-2" />
     <div>add goal</div>
@@ -113,25 +115,17 @@ function AddKeyResult({objectiveId, onKeyResultAdded}) {
 }
 
 function KeyResultStatus({keyResult}) {
-  const progress = Math.random() * 100;
-
   let bgColor : string = "";
 
-  switch (true) {
-    case progress < 33:
-      bgColor = "bg-yellow-400"
-      break;
-    case progress < 66:
-      bgColor = "bg-orange-200"
-      break;
-    default:
-      bgColor = "bg-emerald-200"
+  switch(keyResult.status) {
+    case "pending":
+      bgColor = "border-stone-400";
       break;
   }
 
-  return <div className="border-r border-stone-200 w-24 flex mr-4">
-      <div className={`bg-white flex items-center justify-between px-2 py-0.5 text-xs rounded gap-1`}>
-    <div className={`rounded-full w-2 h-2 ${bgColor}`} />
+  return <div className="w-24 flex mr-4">
+      <div className={`bg-white flex items-center justify-between px-2 py-0.5 rounded gap-1`}>
+    <div className={`rounded-full w-3 h-3 ${bgColor} border-2`} />
     {keyResult.status}
   </div>
   </div>;
@@ -140,26 +134,23 @@ function KeyResultStatus({keyResult}) {
 function KeyResultRow({objective, kr}) {
   return <div className="truncate px-2 py-2 flex justify-between items-center">
 
-    <div className="flex items-center gap-2 pl-2">
-      <div className="rounded-full border border-dark-2 w-2 h-2" />
+    <div className="flex items-center gap-2">
+      <div className="scale-75">
+        <Icon name="flag" size="small" color="dark" />
+      </div>
       {kr.name}
     </div>
 
     <div className="flex items-center">
-      <div className="border-r border-stone-200 pr-2 w-24 flex flex-row-reverse">
-        <div className=" rounded px-1 py-0.5 gap-0.5 text-xs flex items-center">
-          <div className="scale-75">
-            <Icon name="groups" size="small" color="dark" />
-          </div>
-          marketing
-        </div>
-      </div>
+      <Group name={kr.group} />
 
-      <div className="border-r border-stone-200 pr-2 w-24 flex mr-4">
+      <div className="border-r border-dark-8% pr-2 w-24 flex mr-4">
         <KeyResultStatus keyResult={kr} />
       </div>
 
-      {objective.owner && <Avatar person={objective.owner} size={AvatarSize.Tiny} />}
+      {objective.owner
+        ? <Avatar person={objective.owner} size={AvatarSize.Tiny} />
+        : <Icon name="user" color="dark-2" />}
     </div>
 
   </div>;
@@ -178,33 +169,36 @@ function KeyResultList({objective, editing}) {
 }
 
 function Group({name}) {
-  return <div className="border-r border-stone-200 pr-2 w-24 flex flex-row-reverse">
-    <div className="rounded px-1 py-0.5 gap-0.5 text-xs flex items-center">
+  return <div className="border-r border-dark-8% pr-2 w-48 flex flex-row-reverse">
+    <div className="text-dark-2 rounded px-1 py-0.5 gap-0.5 flex items-center">
       <div className="scale-75">
-        <Icon name="groups" size="small" color="dark" />
+        <Icon name="groups" size="small" color="dark-2" />
       </div>
-
-      {name}
+      not assigned
     </div>
   </div>;
 }
 
 function ObjectiveCard({objective, editing}) {
-  return <div className="border border-stone-200 shadow-sm rounded">
+  return <div className="border border-stone-100 shadow rounded bg-white">
     <Link to={`/objectives/${objective.id}`} className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
-      <div className="max-w-2xl flex items-center gap-2 font-semibold">
-        <Icon name="objectives" size="small" color="dark-2" />
+      <div className="flex flex-1 items-center gap-2 font-semibold">
+        <Icon name="objectives" size="small" color="brand" />
         {objective.name}
       </div>
 
       <div className="flex items-center">
         <Group name="marketing" />
+
         <KeyResultStatus keyResult={{status: "pending"}} />
-        {objective.owner && <Avatar person={objective.owner} size={AvatarSize.Tiny} />}
+
+        {objective.owner
+          ? <Avatar person={objective.owner} size={AvatarSize.Tiny} />
+          : <Icon name="user" color="dark-2" />}
       </div>
     </Link>
 
-    <div className="border-t border-stone-200 divide-y flex flex-col text-sm">
+    <div className="border-t border-dark-8% divide-y divide-dark-8% flex flex-col">
       <KeyResultList objective={objective} editing={editing} />
     </div>
   </div>;
@@ -212,7 +206,7 @@ function ObjectiveCard({objective, editing}) {
 
 
 function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation}) {
-  return <div className="flex flex-col gap-2">
+  return <div className="flex flex-col gap-4">
     {objectives.map((objective: any, i: number) =>
       <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} />
     )}
@@ -243,7 +237,7 @@ export function ObjectiveListPage() {
     <>
       <div className="mb-4">
         <h1 className="font-bold text-2xl">Acme Inc.</h1>
-        <div className="text-dark-2">Sell the best possible boxes</div>
+        <div className="text-dark-1">Sell the best possible boxes</div>
       </div>
 
       <div className="my-4 py-4">
