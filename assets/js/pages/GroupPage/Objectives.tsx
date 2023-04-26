@@ -33,8 +33,8 @@ interface Objective {
 function Card({objective} : {objective: Objective}) : JSX.Element {
   const path = `/objectives/${objective.id}`;
 
-  return <Link to={path}>
-    <div className="flex gap-14 mt-2 rounded-lg p-4 bg-white items-center card-shadow hover:card-shadow-blue">
+  return <Link to={path} className="block mt-2 rounded-lg p-4 bg-white card-shadow hover:card-shadow-blue">
+    <div className="flex gap-14 items-center">
       <div className="w-1/3">
         <div className="text-brand-base font-bold">{objective.name}</div>
       </div>
@@ -46,13 +46,14 @@ function Card({objective} : {objective: Objective}) : JSX.Element {
         }
       </div>
     </div>
-    <div>
+
+    <div className="flex flex-col gap-2 mt-4">
       {objective.keyResults.map((keyResult) => (
         <div key={keyResult.id} className="flex">
-          <div className="w-1/3">{keyResult.status}</div>
-          <div className="w-1/3">{keyResult.stepsCompleted} - {keyResult.stepsTotal}</div>
-          <div className="w-1/3">{keyResult.name}</div>
-          <div className="w-1/3"><RelativeTime date={keyResult.updatedAt} /></div>
+          <div className="w-1/6">{keyResult.status}</div>
+          <div className="w-1/6">{keyResult.stepsCompleted} out of {keyResult.stepsTotal}</div>
+          <div className="flex-1">{keyResult.name}</div>
+          <div className="w-1/6"><RelativeTime date={keyResult.updatedAt} /></div>
         </div>
       ))}
     </div>

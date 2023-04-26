@@ -96,7 +96,9 @@ defmodule Operately.OkrsTest do
         direction: :above,
         name: "some name",
         target: 42,
-        unit: :percentage
+        unit: :percentage,
+        steps_total: 10,
+        steps_completed: 5
       }
 
       assert {:ok, %KeyResult{} = key_result} = Okrs.create_key_result(valid_attrs)
