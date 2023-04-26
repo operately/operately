@@ -13,6 +13,14 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
         {:ok, person}
       end
     end
+
+    field :key_results, list_of(:key_result) do
+      resolve fn objective, _, _ ->
+        key_results = Operately.Okrs.list_key_results!(objective.id)
+
+        {:ok, key_results}
+      end
+    end
   end
 
   input_object :create_objective_input do

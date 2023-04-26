@@ -48,7 +48,9 @@ defmodule Operately.OkrsFixtures do
         direction: :above,
         name: "some name",
         target: 42,
-        unit: :percentage
+        unit: :percentage,
+        steps_total: 10,
+        steps_completed: 3
       })
       |> Operately.Okrs.create_key_result()
 

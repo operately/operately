@@ -3,16 +3,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useObjectives } from '../../graphql/Objectives';
 import Avatar, {AvatarSize} from '../../components/Avatar';
+import RelativeTime from '../../components/RelativeTime';
 
 import { Link } from "react-router-dom";
-
-function CardListHeader({headers} : {headers: Array<{id: string, label: string}>}) : JSX.Element {
-  return <div className="flex gap-14 mt-4 px-2">
-    {headers.map((header) =>
-      <div key={header.id} className="w-1/4 text-xs text-dark-2">{header.label}</div>
-    )}
-  </div>;
-}
 
 interface Owner {
   id: string;
@@ -21,23 +14,48 @@ interface Owner {
   title: string;
 }
 
+interface KeyResult {
+  id: string;
+  name: string;
+  status: string;
+  stepsCompleted: number;
+  stepsTotal: number;
+  updatedAt: string;
+}
+
 interface Objective {
   id: string;
   name: string;
   owner?: Owner;
+  keyResults: KeyResult[];
 }
 
 function Card({objective} : {objective: Objective}) : JSX.Element {
-  return <Link to={`/objectives/` + objective.id} className="flex gap-14 mt-2 rounded-lg p-4 bg-white items-center card-shadow hover:card-shadow-blue">
-    <div className="w-1/3">
-      <div className="text-brand-base font-bold">{objective.name}</div>
+  const path = `/objectives/${objective.id}`;
+
+  return <Link to={path} className="block mt-2 rounded-lg p-4 bg-white card-shadow hover:card-shadow-blue">
+    <div className="flex gap-14 items-center">
+      <div className="w-1/3">
+        <div className="text-brand-base font-bold">{objective.name}</div>
+      </div>
+
+      <div className="w-2/6">
+        {objective.owner
+          ? <Champion person={objective.owner} />
+          : <div className="text-dark-2 text-xs">No owner</div>
+        }
+      </div>
     </div>
 
-    <div className="w-2/6">
-      {objective.owner
-        ? <Champion person={objective.owner} />
-        : <div className="text-dark-2 text-xs">No owner</div>
-      }
+    <div className="flex flex-col gap-2 mt-4">
+      {objective.keyResults.map((keyResult) => (
+        <div key={keyResult.id} className="flex">
+          <div className="w-1/6">{keyResult.status}</div>
+          <div className="w-1/6">{keyResult.stepsCompleted} out of {keyResult.stepsTotal}</div>
+          <div className="flex-1">{keyResult.name}</div>
+          <div className="w-1/6"><RelativeTime date={keyResult.updatedAt} /></div>
+        </div>
+      ))}
     </div>
   </Link>;
 }

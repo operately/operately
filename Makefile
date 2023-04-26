@@ -78,6 +78,9 @@ migrate:
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
+gen.migration:
+	$(DEV_CONTAINER) mix ecto.gen.migration $(NAME)
+
 dev.setup:
 	$(DEV_CONTAINER) mix deps.get
 	$(DEV_CONTAINER) mix deps.compile

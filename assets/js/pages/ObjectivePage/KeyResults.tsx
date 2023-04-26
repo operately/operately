@@ -13,6 +13,8 @@ const GET_KEY_RESULTS = gql`
       name
       status
       updatedAt
+      stepsCompleted
+      stepsTotal
     }
   }
 `;
@@ -22,6 +24,8 @@ interface KeyResult {
   name: string;
   status: string;
   updatedAt: string;
+  stepsCompleted: number;
+  stepsTotal: number;
 }
 
 export default function KeyResults({objectiveID} : {objectiveID: string}) {
@@ -51,7 +55,7 @@ export default function KeyResults({objectiveID} : {objectiveID: string}) {
     return {
       status: <StatusBadge status={keyResult.status} />,
       completion: <div className="font-bold">
-        <span className="text-success-base">1</span> of 3
+        <span className="text-success-base">{keyResult.stepsCompleted}</span> of {keyResult.stepsTotal}
       </div>,
       keyResult: keyResult.name,
       lastUpdated: t('intlDateTime', {

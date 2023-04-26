@@ -14,6 +14,15 @@ const LIST_OBJECTIVES = gql`
         avatarUrl
         title
       }
+
+      keyResults {
+        id
+        name
+        status
+        stepsCompleted
+        stepsTotal
+        updatedAt
+      }
     }
   }
 `;
