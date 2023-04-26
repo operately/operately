@@ -1,11 +1,7 @@
 defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
 
-  alias OperatelyWeb.GraphQL.{
-    Types,
-    Queries,
-    Mutations,
-  }
+  alias OperatelyWeb.GraphQL.{Types, Queries, Mutations}
 
   import_types Absinthe.Type.Custom
 
@@ -13,6 +9,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Projects
   import_types Types.Objectives
   import_types Types.Person
+  import_types Types.KeyResults
 
   # Queries
   import_types Queries.Projects
@@ -99,13 +96,6 @@ defmodule OperatelyWeb.Schema do
         {:ok, contacts}
       end
     end
-  end
-
-  object :key_result do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :status, non_null(:string)
-    field :updated_at, non_null(:date)
   end
 
   input_object :create_kpi_input do
