@@ -95,6 +95,19 @@ defmodule Operately.Okrs do
     |> Repo.insert()
   end
 
+  def publish_objective_added(%Objective{} = objective) do
+    Absinthe.Subscription.publish(
+      OperatelyWeb.Endpoint,
+      objective,
+      objective_added: "*")
+
+    {:ok, objective}
+  end
+
+  def publish_objective_updated(e) do
+    e
+  end
+
   @doc """
   Updates a objective.
 

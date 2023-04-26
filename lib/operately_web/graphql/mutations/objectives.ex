@@ -6,19 +6,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Objectives do
       arg :input, non_null(:create_objective_input)
 
       resolve fn args, _ ->
-        owner_id = args.input.owner_id
-
-        ownership = %{
-          target_type: :objective,
-          person_id: owner_id
-        }
-
-        params =
-          args.input
-          |> Map.delete(:owner_id)
-          |> Map.put(:ownership, ownership)
-
-        Operately.Okrs.create_objective(params)
+        Operately.Okrs.create_objective(args.input)
       end
     end
   end

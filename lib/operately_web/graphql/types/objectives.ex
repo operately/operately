@@ -26,8 +26,8 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
   input_object :create_objective_input do
     field :name, non_null(:string)
     field :description, :string
-    field :timeframe, non_null(:string)
-    field :owner_id, non_null(:id)
+    field :timeframe, :string
+    field :owner_id, :id
   end
 
 end

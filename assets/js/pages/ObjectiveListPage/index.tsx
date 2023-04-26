@@ -1,12 +1,10 @@
 import React from "react";
 import { useTranslation } from 'react-i18next';
 
-import { useObjectives, listObjectives } from '../../graphql/Objectives';
+import { useApolloClient } from '@apollo/client';
+import { useObjectives, listObjectives, createObjective, createKeyResult } from '../../graphql/Objectives';
 import { Link } from 'react-router-dom';
 
-import ButtonLink from '../../components/ButtonLink';
-import Card from '../../components/Card';
-import CardList from '../../components/CardList';
 import Avatar, {AvatarSize} from '../../components/Avatar';
 import Icon from '../../components/Icon';
 
@@ -14,6 +12,104 @@ export async function ObjectiveListPageLoader(apolloClient : any) {
   await listObjectives(apolloClient, {});
 
   return {};
+}
+
+function AddGoalForm({onSubmit, onCancel}) {
+  const ref = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    ref.current?.focus();
+  }, []);
+
+  const handleKeyDown = (e : React.KeyboardEvent<HTMLInputElement>) => {
+    if(e.key === "Enter") {
+      onSubmit(ref.current?.value);
+    }
+
+    if(e.key === "Escape") {
+      onCancel();
+    }
+  }
+
+  return <div className="border border-stone-200 shadow-sm rounded flex items-center text-dark-2 gap-2 text-sm px-2 py-2">
+    <Icon name="objectives" size="small" color="dark-2" />
+    <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe a goal you want to achieve&hellip;" onKeyDown={handleKeyDown} />
+  </div>;
+}
+
+function AddKeyResultForm({onSubmit, onCancel}) {
+  const ref = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    ref.current?.focus();
+  }, []);
+
+  const handleKeyDown = async (e : React.KeyboardEvent<HTMLInputElement>) => {
+    if(e.key === "Enter") {
+      await onSubmit(ref.current?.value);
+
+      if(ref.current) ref.current.value = "";
+    }
+
+    if(e.key === "Escape") {
+      onCancel();
+    }
+  }
+
+  return <div className="truncate px-2 py-2 flex justify-between items-center flex-1">
+    <div className="flex items-center gap-2 pl-2 flex-1">
+      <div className="rounded-full border border-dark-2 w-2 h-2" />
+      <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe a goal you want to achieve&hellip;" onKeyDown={handleKeyDown} />
+    </div>
+  </div>
+}
+
+function AddGoal({onGoalAdded, onActivation}) {
+  const client = useApolloClient();
+  const [formActive, setFormActive] = React.useState(false);
+
+  const handleActivateForm = () => {
+    console.log("asdasda");
+    onActivation();
+    setFormActive(true);
+  }
+
+  const handleSubmit = async (name : string) => {
+    const { data } = await createObjective(client, {
+      input: {name: name}
+    })
+
+    onGoalAdded(data.createObjective.id);
+
+    setFormActive(false);
+  }
+
+  const addGoalRow = <div
+    className="border border-stone-200 shadow-sm rounded flex items-center text-dark-2 gap-2 text-sm px-2 py-2 hover:text-dark-1 cursor-pointer"
+    onClick={handleActivateForm}>
+    <Icon name="plus" size="small" color="dark-2" />
+    <div>add goal</div>
+  </div>;
+
+  if(formActive) {
+    return <AddGoalForm onSubmit={handleSubmit} onCancel={() => setFormActive(false)} />;
+  } else {
+    return addGoalRow;
+  }
+}
+
+function AddKeyResult({objectiveId, onKeyResultAdded}) {
+  const client = useApolloClient();
+
+  const handleSubmit = async (name : string) => {
+    await createKeyResult(client, {
+      input: {name: name, objectiveId: objectiveId}
+    })
+
+    onKeyResultAdded();
+  }
+
+  return <AddKeyResultForm onSubmit={handleSubmit} onCancel={() => null} />;
 }
 
 function KeyResultStatus({keyResult}) {
@@ -33,13 +129,67 @@ function KeyResultStatus({keyResult}) {
       break;
   }
 
-  return <div className={`bg-white flex items-center justify-between px-2 py-0.5 text-xs rounded gap-1`}>
+  return <div className="border-r border-stone-200 w-24 flex mr-4">
+      <div className={`bg-white flex items-center justify-between px-2 py-0.5 text-xs rounded gap-1`}>
     <div className={`rounded-full w-2 h-2 ${bgColor}`} />
     {keyResult.status}
   </div>
+  </div>;
 }
 
-function ObjectiveCard({objective}) {
+function KeyResultRow({objective, kr}) {
+  return <div className="truncate px-2 py-2 flex justify-between items-center">
+
+    <div className="flex items-center gap-2 pl-2">
+      <div className="rounded-full border border-dark-2 w-2 h-2" />
+      {kr.name}
+    </div>
+
+    <div className="flex items-center">
+      <div className="border-r border-stone-200 pr-2 w-24 flex flex-row-reverse">
+        <div className=" rounded px-1 py-0.5 gap-0.5 text-xs flex items-center">
+          <div className="scale-75">
+            <Icon name="groups" size="small" color="dark" />
+          </div>
+          marketing
+        </div>
+      </div>
+
+      <div className="border-r border-stone-200 pr-2 w-24 flex mr-4">
+        <KeyResultStatus keyResult={kr} />
+      </div>
+
+      {objective.owner && <Avatar person={objective.owner} size={AvatarSize.Tiny} />}
+    </div>
+
+  </div>;
+}
+
+function KeyResultList({objective, editing}) {
+  if(!editing && objective.keyResults.length === 0) {
+    return <div className="flex gap-2 px-4 py-2 text-dark-2">No assigned targets <Link to="" className="underline">add targets</Link></div>;
+  }
+
+  return <>
+    {objective.keyResults.map((kr, i : number) => <KeyResultRow key={i} objective={objective} kr={kr} />)}
+
+    {editing && <AddKeyResult objectiveId={objective.id} onKeyResultAdded={() => null} />}
+  </>;
+}
+
+function Group({name}) {
+  return <div className="border-r border-stone-200 pr-2 w-24 flex flex-row-reverse">
+    <div className="rounded px-1 py-0.5 gap-0.5 text-xs flex items-center">
+      <div className="scale-75">
+        <Icon name="groups" size="small" color="dark" />
+      </div>
+
+      {name}
+    </div>
+  </div>;
+}
+
+function ObjectiveCard({objective, editing}) {
   return <div className="border border-stone-200 shadow-sm rounded">
     <Link to={`/objectives/${objective.id}`} className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
       <div className="max-w-2xl flex items-center gap-2 font-semibold">
@@ -48,87 +198,26 @@ function ObjectiveCard({objective}) {
       </div>
 
       <div className="flex items-center">
-        <div className="border-r border-stone-200 pr-2 w-24 flex flex-row-reverse">
-          <div className="rounded px-1 py-0.5 gap-0.5 text-xs flex items-center">
-            <div className="scale-75">
-              <Icon name="groups" size="small" color="dark" />
-            </div>
-            marketing
-          </div>
-        </div>
-
-        <div className="border-r border-stone-200 w-24 flex mr-4">
-          <KeyResultStatus keyResult={{status: "pending"}} />
-        </div>
-
-        <Avatar person={objective.owner} size={AvatarSize.Tiny} />
+        <Group name="marketing" />
+        <KeyResultStatus keyResult={{status: "pending"}} />
+        {objective.owner && <Avatar person={objective.owner} size={AvatarSize.Tiny} />}
       </div>
     </Link>
 
-    {objective.keyResults.length > 0 ?
-      (<div className="border-t border-stone-200 divide-y flex flex-col text-sm">
-      {objective.keyResults.map((kr) =>
-        <div className="truncate px-2 py-2 flex justify-between items-center">
-          <div className="flex items-center gap-2 pl-2">
-            <div className="rounded-full border border-dark-2 w-2 h-2" />
-            {kr.name}
-          </div>
-
-          <div className="flex items-center">
-            <div className="border-r border-stone-200 pr-2 w-24 flex flex-row-reverse">
-              <div className=" rounded px-1 py-0.5 gap-0.5 text-xs flex items-center">
-                <div className="scale-75">
-                  <Icon name="groups" size="small" color="dark" />
-                </div>
-                marketing
-              </div>
-            </div>
-
-            <div className="border-r border-stone-200 pr-2 w-24 flex mr-4">
-              <KeyResultStatus keyResult={kr} />
-            </div>
-
-            <Avatar person={objective.owner} size={AvatarSize.Tiny} />
-          </div>
-       </div>
-      )}
-    </div>)
-    : <div className="border-t border-stone-200 divide-y flex text-sm text-dark-2 px-4 py-2 gap-3">
-        No assigned targets <Link to={`/objectives/${objective.id}`} className="underline">add targets</Link>
-      </div>
-    }
+    <div className="border-t border-stone-200 divide-y flex flex-col text-sm">
+      <KeyResultList objective={objective} editing={editing} />
+    </div>
   </div>;
 }
 
-function ListOfObjectives({objectives}) {
-  // return (
-  //   <CardList>
-  //     {objectives.map((objective: any) => (
-  //       <Link key={objective.name} to={`/objectives/${objective.id}`}>
-  //         <Card>
-  //           <div className="flex items-center gap-2 justify-between">
-  //             <div className="max-w-2xl">
-  //               <div className="text-brand-base font-bold">{objective.name}</div>
-  //               <div className="text-dark-1 truncate">{objective.description}</div>
-  //             </div>
 
-  //             <div className="flex items-center gap-2">
-  //               <Avatar person={objective.owner} size={AvatarSize.Normal} />
-
-  //               <div>
-  //                 <div className="font-medium">{objective.owner.fullName}</div>
-  //                 <div className="text-xs">{objective.owner.title}</div>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </Card>
-  //       </Link>
-  //     ))}
-  //   </CardList>
-  // );
-
+function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation}) {
   return <div className="flex flex-col gap-2">
-    {objectives.map((objective: any) => <ObjectiveCard objective={objective} />)}
+    {objectives.map((objective: any, i: number) =>
+      <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} />
+    )}
+
+    <AddGoal onGoalAdded={onGoalAdded} onActivation={onGoalAddingActivation} />
   </div>;
 }
 
@@ -136,8 +225,19 @@ export function ObjectiveListPage() {
   const { t } = useTranslation();
   const { loading, error, data } = useObjectives({});
 
+  const [editing, setEditing] = React.useState<string | null>(null);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+
+  const onGoalAdded = (id: string) => {
+    setEditing(id);
+  }
+
+  const onGoalAddingActivation = () => {
+    console.log("here")
+    setEditing(null);
+  }
 
   return (
     <>
@@ -148,7 +248,7 @@ export function ObjectiveListPage() {
 
       <div className="my-4 py-4">
         <h1 className="font-bold mb-4">Company goals</h1>
-        <ListOfObjectives objectives={data.objectives} />
+        <ListOfObjectives objectives={data.objectives} editing={editing} onGoalAdded={onGoalAdded} onGoalAddingActivation={onGoalAddingActivation} />
       </div>
     </>
   )
