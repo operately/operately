@@ -72,7 +72,14 @@ function AddKeyResultForm({onSubmit, onCancel}) {
       <div className="scale-75">
         <Icon name="flag" size="small" color="dark" />
       </div>
-      <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe what needs to happen to reach this goal&hellip;" onKeyDown={handleKeyDown} />
+
+      <input
+        data-test-id="target-form-name-input"
+        ref={ref}
+        className="flex-1 outline-0 text-dark-1"
+        placeholder="Describe what needs to happen to reach this goal&hellip;"
+        onKeyDown={handleKeyDown}
+      />
     </div>
   </div>
 }
@@ -171,7 +178,10 @@ function KeyResultList({objective, editing, startEditing}) {
   if(!editing && objective.keyResults.length === 0) {
     return <div className="flex gap-2 px-4 py-2 text-dark-2">
       No assigned targets
-      <a onClick={() => startEditing(objective.id)} className="underline hover:text-dark-1 cursor-pointer">add targets</a>
+      <a
+        data-test-id="target-add-link"
+        onClick={() => startEditing(objective.id)}
+        className="underline hover:text-dark-1 cursor-pointer">add targets</a>
     </div>;
   }
 

@@ -198,4 +198,14 @@ defmodule MyApp.Features.OkrsTest do
     end)
   end
 
+  defwhen ~r/^I click on the Add Targets link for the "(?<name>[^"]+)" Objective$/, %{name: name}, state do
+    state.session |> click(Query.css("[data-test-id=\"target-add-link\"]"))
+  end
+
+  defwhen ~r/^I fill in "(?<name>[^"]+)" target and save$/, %{name: name}, state do
+    state.session
+    |> fill_in(Query.css("[data-test-id=\"target-form-name-input\"]"), with: name)
+    |> send_keys([:enter])
+  end
+
 end
