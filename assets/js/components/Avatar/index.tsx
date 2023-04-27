@@ -1,6 +1,7 @@
 import React from 'react';
 
 export enum AvatarSize {
+  Tiny= 'tiny',
   Small = 'small',
   Normal = 'normal',
   Large = 'large',
@@ -20,6 +21,8 @@ interface AvatarProps {
 
 function SizeClasses({size} : {size: AvatarSize}) : string {
   switch (size) {
+    case AvatarSize.Tiny:
+      return 'w-5 h-5';
     case AvatarSize.Small:
       return 'w-7 h-7';
     case AvatarSize.Large:
@@ -31,6 +34,8 @@ function SizeClasses({size} : {size: AvatarSize}) : string {
 
 function TextClasses({size} : {size: AvatarSize}) : string {
   switch (size) {
+    case AvatarSize.Tiny:
+      return 'text-[10px] font-semibold';
     case AvatarSize.Small:
       return 'text-xs font-semibold';
     case AvatarSize.Large:

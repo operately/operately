@@ -35,6 +35,22 @@ const OBJECTIVE_SUBSCRIPTION = gql`
   }
 `;
 
+const CREATE_OBJECTIVE = gql`
+  mutation CreateObjective($input: CreateObjectiveInput!) {
+    createObjective(input: $input) {
+      id
+    }
+  }
+`;
+
+const CREATE_KEY_RESULT = gql`
+  mutation CreateKeyResult($input: CreateKeyResultInput!) {
+    createKeyResult(input: $input) {
+      id
+    }
+  }
+`;
+
 interface ListObjectivesVariables {
   groupId?: string;
 }
@@ -61,5 +77,43 @@ export function listObjectives(client: ApolloClient<any>, variables: ListObjecti
     query: LIST_OBJECTIVES,
     variables,
     fetchPolicy: 'network-only'
+  });
+}
+
+interface CreateObjectiveVariables {
+  input: {
+    name: string;
+    description?: string;
+    timeframe?: string;
+    ownerId?: string;
+  }
+}
+
+export function createObjective(client: ApolloClient<any>, variables: CreateObjectiveVariables) {
+  return client.mutate({
+    mutation: CREATE_OBJECTIVE,
+    variables,
+    refetchQueries: [
+      {query: LIST_OBJECTIVES},
+      'ListObjectives'
+    ]
+  });
+}
+
+interface CreateKeyResultVariables {
+  input: {
+    objectiveId: string;
+    name: string;
+  }
+}
+
+export function createKeyResult(client: ApolloClient<any>, variables: CreateKeyResultVariables) {
+  return client.mutate({
+    mutation: CREATE_KEY_RESULT,
+    variables,
+    refetchQueries: [
+      {query: LIST_OBJECTIVES},
+      'ListObjectives'
+    ]
   });
 }

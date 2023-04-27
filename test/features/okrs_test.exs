@@ -61,10 +61,7 @@ defmodule MyApp.Features.OkrsTest do
     OkrsFixtures.objective_fixture(%{
       name: name,
       description: description,
-      ownership: %{
-        target_type: :objective,
-        person_id: person.id
-      }
+      owner_id: person.id,
     })
   end
 
@@ -185,6 +182,19 @@ defmodule MyApp.Features.OkrsTest do
 
     find(state.session, feed, fn element ->
       element |> assert_text(message)
+    end)
+  end
+
+  defwhen ~r/^I fill in "(?<name>[^"]+)" and save$/, %{name: name}, state do
+    state.session
+    |> click(Query.css("[data-test-id=\"goal-add-button\"]"))
+    |> fill_in(Query.css("[data-test-id=\"goal-form-name-input\"]"), with: name)
+    |> send_keys([:enter])
+  end
+
+  defthen ~r/^I should see "(?<name>[^"]+)" in the objectives list$/, %{name: name}, state do
+    state.session |> find(Query.css("[data-test-id=\"goal-list\"]"), fn element ->
+      assert_text(element, name)
     end)
   end
 

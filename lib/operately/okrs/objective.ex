@@ -8,11 +8,11 @@ defmodule Operately.Okrs.Objective do
   @foreign_key_type :binary_id
   schema "objectives" do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
+    belongs_to :owner, Operately.People.Person, foreign_key: :owner_id
+
     has_many :key_results, Operately.Okrs.KeyResult, on_delete: :delete_all
 
     has_one :parent, Alignment, foreign_key: :child
-    has_one :ownership, Operately.Ownerships.Ownership, foreign_key: :target, on_replace: :update
-    has_one :owner, through: [:ownership, :person]
 
     field :description, :string
     field :name, :string
@@ -23,9 +23,7 @@ defmodule Operately.Okrs.Objective do
   @doc false
   def changeset(objective, attrs) do
     objective
-    |> cast(attrs, [:name, :description, :group_id])
-    |> put_assoc(:parent, Map.get(attrs, "aligns_with"))
-    |> cast_assoc(:ownership)
-    |> validate_required([:name, :description])
+    |> cast(attrs, [:name, :description, :group_id, :owner_id])
+    |> validate_required([:name])
   end
 end
