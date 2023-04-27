@@ -21,7 +21,7 @@ defmodule Operately.People.Person do
   def changeset(person, attrs) do
     person
     |> cast(attrs, [:full_name, :handle, :title, :avatar_url, :email, :account_id])
-    |> validate_required([:full_name, :handle])
+    |> validate_required([:full_name])
     |> unique_constraint(:handle)
   end
 end

@@ -16,6 +16,8 @@ defmodule Operately.Okrs do
       from o in Objective
     end
 
+    query = from o in query, order_by: [asc: o.inserted_at]
+
     Repo.all(query)
   end
 
@@ -123,6 +125,14 @@ defmodule Operately.Okrs do
   def update_objective(%Objective{} = objective, attrs) do
     objective
     |> Objective.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def set_objective_owner(id, owner_id \\ nil) do
+    objective = get_objective!(id)
+
+    objective
+    |> Objective.changeset(%{owner_id: owner_id})
     |> Repo.update()
   end
 

@@ -9,5 +9,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Objectives do
         Operately.Okrs.create_objective(args.input)
       end
     end
+
+    field :set_objective_owner, :objective do
+      arg :id, non_null(:id)
+      arg :owner_id, :id
+
+      resolve fn args, _ ->
+        Operately.Okrs.set_objective_owner(args.id, args.owner_id)
+      end
+    end
   end
 end

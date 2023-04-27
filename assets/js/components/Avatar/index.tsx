@@ -5,6 +5,8 @@ export enum AvatarSize {
   Small = 'small',
   Normal = 'normal',
   Large = 'large',
+  XLarge = 'xlarge',
+  XXLarge = 'xxlarge',
 }
 
 interface Person {
@@ -25,10 +27,14 @@ function SizeClasses({size} : {size: AvatarSize}) : string {
       return 'w-5 h-5';
     case AvatarSize.Small:
       return 'w-7 h-7';
-    case AvatarSize.Large:
-      return 'w-12 h-12';
     case AvatarSize.Normal:
       return 'w-10 h-10';
+    case AvatarSize.Large:
+      return 'w-12 h-12';
+    case AvatarSize.XLarge:
+      return 'w-14 h-14';
+    case AvatarSize.XXLarge:
+      return 'w-24 h-24';
   }
 }
 
@@ -38,10 +44,14 @@ function TextClasses({size} : {size: AvatarSize}) : string {
       return 'text-[10px] font-semibold';
     case AvatarSize.Small:
       return 'text-xs font-semibold';
-    case AvatarSize.Large:
-      return 'text-2xl font-bold';
     case AvatarSize.Normal:
       return 'text-lg font-bold';
+    case AvatarSize.Large:
+      return 'text-2xl font-bold';
+    case AvatarSize.XLarge:
+      return 'text-2xl font-bold';
+    case AvatarSize.XXLarge:
+      return 'text-5xl font-bold';
   }
 }
 

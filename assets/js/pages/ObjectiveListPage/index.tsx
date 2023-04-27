@@ -2,11 +2,11 @@ import React from "react";
 import { useTranslation } from 'react-i18next';
 
 import { useApolloClient } from '@apollo/client';
-import { useObjectives, listObjectives, createObjective, createKeyResult } from '../../graphql/Objectives';
-import { Link } from 'react-router-dom';
+import { useObjectives, listObjectives, createObjective, createKeyResult, setObjectiveOwner } from '../../graphql/Objectives';
 
-import Avatar, {AvatarSize} from '../../components/Avatar';
+import { Link } from 'react-router-dom';
 import Icon from '../../components/Icon';
+import { GoalOwner, TargetOwner } from './Champion';
 
 export async function ObjectiveListPageLoader(apolloClient : any) {
   await listObjectives(apolloClient, {});
@@ -151,7 +151,6 @@ function KeyResultStatus({keyResult}) {
 
 function KeyResultRow({objective, kr}) {
   return <div className="truncate px-2 py-2 flex justify-between items-center">
-
     <div className="flex items-center gap-2">
       <div className="scale-75">
         <Icon name="flag" size="small" color="dark" />
@@ -166,11 +165,8 @@ function KeyResultRow({objective, kr}) {
         <KeyResultStatus keyResult={kr} />
       </div>
 
-      {objective.owner
-        ? <Avatar person={objective.owner} size={AvatarSize.Tiny} />
-        : <Icon name="user" color="dark-2" />}
+      <GoalOwner objective={objective} />
     </div>
-
   </div>;
 }
 
@@ -205,22 +201,20 @@ function Group({name}) {
 
 function ObjectiveCard({objective, editing, startEditing}) {
   return <div className="border border-stone-100 shadow rounded bg-white">
-    <Link to={`/objectives/${objective.id}`} className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
-      <div className="flex flex-1 items-center gap-2 font-semibold">
+    <div className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
+      <Link to={`/objectives/${objective.id}`} className="flex flex-1 items-center gap-2 font-semibold">
         <Icon name="objectives" size="small" color="brand" />
         {objective.name}
-      </div>
+      </Link>
 
       <div className="flex items-center">
         <Group name="marketing" />
 
         <KeyResultStatus keyResult={{status: "pending"}} />
 
-        {objective.owner
-          ? <Avatar person={objective.owner} size={AvatarSize.Tiny} />
-          : <Icon name="user" color="dark-2" />}
+        <GoalOwner objective={objective} />
       </div>
-    </Link>
+    </div>
 
     <div className="border-t border-dark-8% divide-y divide-dark-8% flex flex-col">
       <KeyResultList objective={objective} editing={editing} startEditing={startEditing} />

@@ -20,6 +20,7 @@ defmodule OperatelyWeb.Schema do
   import_types Mutations.Objectives
   import_types Mutations.Groups
   import_types Mutations.KeyResults
+  import_types Mutations.People
 
   object :update do
     field :id, non_null(:id)
@@ -251,6 +252,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :project_mutations
     import_fields :group_mutations
     import_fields :key_result_mutations
+    import_fields :people_mutations
 
     field :create_tenet, :tenet do
       arg :name, non_null(:string)

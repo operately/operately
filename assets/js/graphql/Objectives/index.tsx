@@ -117,3 +117,20 @@ export function createKeyResult(client: ApolloClient<any>, variables: CreateKeyR
     ]
   });
 }
+
+export function setObjectiveOwner(client: ApolloClient<any>, variables: {id: string, owner_id?: string | null}) {
+  return client.mutate({
+    mutation: gql`
+      mutation SetObjectiveOwner($id: ID!, $owner_id: ID) {
+        setObjectiveOwner(id: $id, ownerId: $owner_id) {
+          id
+        }
+      }
+    `,
+    variables,
+    refetchQueries: [
+      {query: LIST_OBJECTIVES},
+      'ListObjectives'
+    ]
+  });
+}
