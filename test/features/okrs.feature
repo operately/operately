@@ -20,6 +20,7 @@ Feature: Objectives and Key Results
     When I click on the "Maintain support happiness" Objective
     Then I should see "Maintain support happiness" in the Objective title
     And I should see "The happiness score is a measure of how happy our customers are with our support. We want to maintain a score of 95% or higher in order to live up to our core tenant which states that we focus on delighting customers." in the Objective description
+    And I take a screenshot
     And I should see "John Johnson" as the Objective owner
 
   Scenario: Viewing key results on an Objective
