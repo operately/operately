@@ -167,9 +167,12 @@ function KeyResultRow({objective, kr}) {
   </div>;
 }
 
-function KeyResultList({objective, editing}) {
+function KeyResultList({objective, editing, startEditing}) {
   if(!editing && objective.keyResults.length === 0) {
-    return <div className="flex gap-2 px-4 py-2 text-dark-2">No assigned targets <Link to="" className="underline">add targets</Link></div>;
+    return <div className="flex gap-2 px-4 py-2 text-dark-2">
+      No assigned targets
+      <a onClick={() => startEditing(objective.id)} className="underline hover:text-dark-1 cursor-pointer">add targets</a>
+    </div>;
   }
 
   return <>
@@ -190,7 +193,7 @@ function Group({name}) {
   </div>;
 }
 
-function ObjectiveCard({objective, editing}) {
+function ObjectiveCard({objective, editing, startEditing}) {
   return <div className="border border-stone-100 shadow rounded bg-white">
     <Link to={`/objectives/${objective.id}`} className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
       <div className="flex flex-1 items-center gap-2 font-semibold">
@@ -210,16 +213,16 @@ function ObjectiveCard({objective, editing}) {
     </Link>
 
     <div className="border-t border-dark-8% divide-y divide-dark-8% flex flex-col">
-      <KeyResultList objective={objective} editing={editing} />
+      <KeyResultList objective={objective} editing={editing} startEditing={startEditing} />
     </div>
   </div>;
 }
 
 
-function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation}) {
+function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation, startEditing}) {
   return <div className="flex flex-col gap-4" data-test-id="goal-list">
     {objectives.map((objective: any, i: number) =>
-      <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} />
+      <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} startEditing={startEditing} />
     )}
 
     <AddGoal onGoalAdded={onGoalAdded} onActivation={onGoalAddingActivation} />
@@ -243,6 +246,10 @@ export function ObjectiveListPage() {
     setEditing(null);
   }
 
+  const startEditing = (goalId : string) => {
+    setEditing(goalId)
+  }
+
   return (
     <>
       <div className="mb-4">
@@ -252,7 +259,7 @@ export function ObjectiveListPage() {
 
       <div className="my-4 py-4">
         <h1 className="font-bold mb-4">Company goals</h1>
-        <ListOfObjectives objectives={data.objectives} editing={editing} onGoalAdded={onGoalAdded} onGoalAddingActivation={onGoalAddingActivation} />
+        <ListOfObjectives objectives={data.objectives} editing={editing} onGoalAdded={onGoalAdded} onGoalAddingActivation={onGoalAddingActivation} startEditing={startEditing} />
       </div>
     </>
   )
