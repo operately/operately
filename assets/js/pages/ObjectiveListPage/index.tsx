@@ -32,8 +32,19 @@ function AddGoalForm({onSubmit, onCancel}) {
   }
 
   return <div className="border bg-white border-dark-8% shadow rounded flex items-center text-dark-2 gap-2 px-2 py-2">
-    <Icon name="objectives" size="small" color="brand" />
-    <input ref={ref} className="flex-1 outline-0 text-dark-1" placeholder="Describe a goal you want to achieve&hellip;" onKeyDown={handleKeyDown} />
+    <Icon
+      name="objectives"
+      size="small"
+      color="brand"
+    />
+
+    <input
+      ref={ref}
+      data-test-id="goal-form-name-input"
+      className="flex-1 outline-0 text-dark-1"
+      placeholder="Describe a goal you want to achieve&hellip;"
+      onKeyDown={handleKeyDown}
+    />
   </div>;
 }
 
@@ -71,7 +82,6 @@ function AddGoal({onGoalAdded, onActivation}) {
   const [formActive, setFormActive] = React.useState(false);
 
   const handleActivateForm = () => {
-    console.log("asdasda");
     onActivation();
     setFormActive(true);
   }
@@ -87,6 +97,7 @@ function AddGoal({onGoalAdded, onActivation}) {
   }
 
   const addGoalRow = <div
+    data-test-id="goal-add-button"
     className="bg-white border border-dark-8% shadow-sm rounded flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
     onClick={handleActivateForm}>
     <Icon name="plus" size="small" color="dark-2" />
@@ -206,7 +217,7 @@ function ObjectiveCard({objective, editing}) {
 
 
 function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation}) {
-  return <div className="flex flex-col gap-4">
+  return <div className="flex flex-col gap-4" data-test-id="goal-list">
     {objectives.map((objective: any, i: number) =>
       <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} />
     )}
@@ -229,7 +240,6 @@ export function ObjectiveListPage() {
   }
 
   const onGoalAddingActivation = () => {
-    console.log("here")
     setEditing(null);
   }
 

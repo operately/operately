@@ -60,7 +60,7 @@ export function ObjectivePage() {
           <p className="max-w-lg">{data.objective.description}</p>
         </div>
 
-        <Champion person={data.objective.owner} />
+        {data.objective.owner && <Champion person={data.objective.owner} />}
       </div>
 
       <KeyResults objectiveID={id} />
