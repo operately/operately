@@ -202,11 +202,12 @@ export function GoalOwner({objective}) {
     <Popover.Trigger
       className="outline-0"
       children={trigger}
-      data-test-id="goal-champion"
+      data-test-id="goalChampion"
     />
 
     <Popover.Portal>
       <Popover.Content
+        data-test-id="championSelect"
         align="start"
         side="left"
         sideOffset={10}

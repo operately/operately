@@ -1,4 +1,4 @@
-defmodule MyApp.Features.OkrsTest do
+defmodule MyApp.Features.GoalPageTests do
   use Operately.FeatureCase
 
   alias Operately.OkrsFixtures

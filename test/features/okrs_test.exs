@@ -5,8 +5,75 @@ defmodule MyApp.Features.OkrsTest do
   alias Operately.PeopleFixtures
   alias Operately.ProjectsFixtures
 
-  import_steps(Operately.Features.SharedSteps.Login)
-  import_steps(Operately.Features.SharedSteps.SimpleInteractions)
+  # import_steps(Operately.Features.SharedSteps.Login)
+  # import_steps(Operately.Features.SharedSteps.SimpleInteractions)
+
+  setup session do
+    session = session |> UI.login()
+
+    {:ok, session}
+  end
+
+  feature "adding a goal", session do
+    session
+    |> UI.visit(:company_page)
+    |> add_goal(name: "Maintain support happiness")
+    |> UI.assert_text("Maintain support happiness")
+  end
+
+  feature "adding targets for goals", session do
+    session
+    |> UI.visit(:company_page)
+    |> add_goal(name: "Maintain support happiness")
+    |> click_add_targets_link()
+    |> add_target(name: "Increase support happiness by 10%")
+    |> UI.assert_text("Increase support happiness by 10%")
+  end
+
+  feature "viewing a goal", session do
+    session
+    |> UI.visit(:company_page)
+    |> add_goal(name: "Maintain support happiness")
+    |> UI.click(testid: "goal-name-link")
+    |> UI.assert_text("Maintain support happiness")
+  end
+
+  feature "viewing targets on the goal page", session do
+    session
+    |> UI.visit(:company_page)
+    |> add_goal(name: "Maintain support happiness")
+    |> click_add_targets_link()
+    |> add_target(name: "Increase support happiness by 10%")
+    |> UI.click(testid: "goal-name-link")
+    |> UI.assert_text("Increase support happiness by 10%")
+  end
+
+  feature "viewing ongoing projects on the goal page", session do
+    session
+    |> UI.visit(:company_page)
+    |> add_goal(name: "Maintain support happiness")
+    |> UI.click(testid: "goal-name-link")
+    |> UI.assert_text("No ongoing projects")
+  end
+
+  #
+  # Helpers
+  #
+
+  defp visit_company_page(session) do
+    session |> visit("/objectives")
+  end
+
+  defp add_goal(session, name) do
+    session
+    |> UI.click(testid: "goal-add-button")
+    |> UI.fill(testid: "goal-form-name-input", with: name)
+    |> UI.send_keys([:enter])
+  end
+
+  defp click_add_targets_link(session) do
+    session |> UI.click(testid: "goal-add-targets-link")
+  end
 
   defand ~r/^I am on the Objectives page$/, _vars, state do
     state.session |> visit("/objectives")

@@ -40,7 +40,7 @@ function AddGoalForm({onSubmit, onCancel}) {
 
     <input
       ref={ref}
-      data-test-id="goal-form-name-input"
+      data-test-id="goalFormNameInput"
       className="flex-1 outline-0 text-dark-1"
       placeholder="Describe a goal you want to achieve&hellip;"
       onKeyDown={handleKeyDown}
@@ -74,7 +74,7 @@ function AddKeyResultForm({onSubmit, onCancel}) {
       </div>
 
       <input
-        data-test-id="target-form-name-input"
+        data-test-id="targetFormNameInput"
         ref={ref}
         className="flex-1 outline-0 text-dark-1"
         placeholder="Describe what needs to happen to reach this goal&hellip;"
@@ -104,7 +104,7 @@ function AddGoal({onGoalAdded, onActivation}) {
   }
 
   const addGoalRow = <div
-    data-test-id="goal-add-button"
+    data-test-id="addGoalButton"
     className="bg-white border border-dark-8% shadow-sm rounded flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
     onClick={handleActivateForm}>
     <Icon name="plus" size="small" color="dark-2" />
@@ -175,7 +175,7 @@ function KeyResultList({objective, editing, startEditing}) {
     return <div className="flex gap-2 px-4 py-2 text-dark-2">
       No assigned targets
       <a
-        data-test-id="target-add-link"
+        data-test-id="addTargetsLink"
         onClick={() => startEditing(objective.id)}
         className="underline hover:text-dark-1 cursor-pointer">add targets</a>
     </div>;
@@ -224,7 +224,7 @@ function ObjectiveCard({objective, editing, startEditing}) {
 
 
 function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation, startEditing}) {
-  return <div className="flex flex-col gap-4" data-test-id="goal-list">
+  return <div className="flex flex-col gap-4" data-test-id="goalList">
     {objectives.map((objective: any, i: number) =>
       <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} startEditing={startEditing} />
     )}

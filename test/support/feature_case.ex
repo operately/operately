@@ -59,14 +59,24 @@ defmodule Operately.FeatureCase do
       session(session) |> Browser.visit(path)
     end
 
-    def click(state, testid: test_id) do
-      session(state)
-      |> Browser.click(Query.css("[data-test-id=\"#{test_id}\"]"))
+    def click(state, opts) do
+      {session, opts} = Keyword.pop(opts, :in)
+      context = session || session(state)
+      css_query = compose_css_query(opts)
+
+      context |> Browser.click(Query.css(css_query))
+
+      state
     end
 
-    def click(state, alt: alt) do
-      session(state)
-      |> Browser.click(Query.css("[alt=\"#{alt}\"]"))
+    def assert_has(state, opts) do
+      {session, opts} = Keyword.pop(opts, :in)
+      context = session || session(state)
+      css_query = compose_css_query(opts)
+
+      context |> Browser.assert_has(Query.css(css_query))
+
+      state
     end
 
     def click_button(state, text) do
@@ -107,12 +117,12 @@ defmodule Operately.FeatureCase do
       end)
     end
 
-    def assert_has(state, alt: alt) do
-      session(state) |> Browser.assert_has(Query.css("[alt=\"#{alt}\"]"))
-    end
-
     def visit(state, path) do
       session(state) |> Browser.visit(path)
+    end
+
+    def find(state, testid: id) do
+      session(state) |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"))
     end
 
     #
@@ -121,5 +131,16 @@ defmodule Operately.FeatureCase do
     #
     defp session(%{session: session}), do: session
     defp session(session), do: session
+
+    defp compose_css_query([]), do: ""
+
+    defp compose_css_query([p | rest]) do
+      case p do
+        {:title, title} -> "[title=\"#{title}\"]" <> compose_css_query(rest)
+        {:alt, alt} -> "[alt=\"#{alt}\"]" <> compose_css_query(rest)
+        {:testid, id} -> "[data-test-id=\"#{id}\"]" <> compose_css_query(rest)
+        _ -> raise "Unknown pattern #{inspect(p)}"
+      end
+    end
   end
 end

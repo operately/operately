@@ -64,7 +64,7 @@ function BackupAvatar({person, size} : AvatarProps) : JSX.Element {
   const className = baseClass + " " + sizeClass + " " + textClass;
 
   return (
-    <div className={className}>
+    <div title={person.fullName} className={className}>
       {initials}
     </div>
   );
@@ -76,7 +76,7 @@ function ImageAvatar({person, size} : AvatarProps) : JSX.Element {
   const className = baseClass + " " + sizeClass;
 
   return (
-    <div className={className}>
+    <div title={person.fullName} className={className}>
       <img src={person.avatarUrl} alt={person.fullName} />
     </div>
   );
