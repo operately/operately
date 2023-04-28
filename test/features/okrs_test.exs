@@ -55,20 +55,22 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> assert_text(name)
   end
 
-  defand ~r/^I have an objective called "(?<name>[^"]+)" owned by "(?<person_name>[^"]+)" with a description of "(?<description>[^"]+)"$/, %{name: name, person_name: person_name, description: description}, state do
+  defand ~r/^I have an objective called "(?<name>[^"]+)" owned by "(?<person_name>[^"]+)" with a description of "(?<description>[^"]+)"$/,
+         %{name: name, person_name: person_name, description: description},
+         state do
     person = Operately.People.get_person_by_name!(person_name)
 
     OkrsFixtures.objective_fixture(%{
       name: name,
       description: description,
-      owner_id: person.id,
+      owner_id: person.id
     })
   end
 
   defand ~r/^I have "(?<person_name>[^"]+)" in my organization as the "(?<title>[^"]+)"$/, %{person_name: name, title: title}, state do
     PeopleFixtures.person_fixture(%{
       full_name: name,
-      handle: name |> String.downcase |> String.replace(" ", "_"),
+      handle: name |> String.downcase() |> String.replace(" ", "_"),
       title: title
     })
   end
@@ -85,7 +87,9 @@ defmodule MyApp.Features.OkrsTest do
     state.session |> fill_in(Query.text_field("Name"), with: name)
   end
 
-  defand ~r/^I set the description to "(?<description>[^"]+)"$/, %{description: description}, state do
+  defand ~r/^I set the description to "(?<description>[^"]+)"$/,
+         %{description: description},
+         state do
     state.session |> fill_in(Query.text_field("Description"), with: description)
   end
 
@@ -142,20 +146,22 @@ defmodule MyApp.Features.OkrsTest do
     objective = Operately.Okrs.get_objective_by_name!(objective)
     champion = Operately.People.get_person_by_name!(champion)
 
-    project = ProjectsFixtures.project_fixture(%{
-      name: name,
-      ownership: %{
-        target_type: :project,
-        person_id: champion.id
-      }
-    })
+    project =
+      ProjectsFixtures.project_fixture(%{
+        name: name,
+        ownership: %{
+          target_type: :project,
+          person_id: champion.id
+        }
+      })
 
-    {:ok, _} = Operately.Alignments.create_alignment(%{
-      child: project.id,
-      child_type: :project,
-      parent: objective.id,
-      parent_type: :objective,
-    })
+    {:ok, _} =
+      Operately.Alignments.create_alignment(%{
+        child: project.id,
+        child_type: :project,
+        parent: objective.id,
+        parent_type: :objective
+      })
   end
 
   defthen ~r/^I should see "(?<project>[^"]+)" in the "(?<objective>[^"]+)" Objective projects$/, %{project: project, objective: objective}, state do
@@ -178,34 +184,51 @@ defmodule MyApp.Features.OkrsTest do
   end
 
   defthen ~r/^I should see "(?<message>[^"]+)" in the Objective updates$/, %{message: message}, state do
-    feed = Query.css("[data-test=\"feed\"]")
-
-    find(state.session, feed, fn element ->
-      element |> assert_text(message)
-    end)
+    UI.assert_text(state, message, testid: "feed")
   end
 
   defwhen ~r/^I fill in "(?<name>[^"]+)" and save$/, %{name: name}, state do
-    state.session
-    |> click(Query.css("[data-test-id=\"goal-add-button\"]"))
-    |> fill_in(Query.css("[data-test-id=\"goal-form-name-input\"]"), with: name)
-    |> send_keys([:enter])
+    state
+    |> UI.click(testid: "goal-add-button")
+    |> UI.fill(testid: "goal-form-name-input", with: name)
+    |> UI.send_keys([:enter])
   end
 
   defthen ~r/^I should see "(?<name>[^"]+)" in the objectives list$/, %{name: name}, state do
-    state.session |> find(Query.css("[data-test-id=\"goal-list\"]"), fn element ->
-      assert_text(element, name)
-    end)
+    UI.assert_text(state, name, testid: "goal-list")
   end
 
   defwhen ~r/^I click on the Add Targets link for the "(?<name>[^"]+)" Objective$/, %{name: name}, state do
-    state.session |> click(Query.css("[data-test-id=\"target-add-link\"]"))
+    UI.click(state, testid: "target-add-link")
   end
 
   defwhen ~r/^I fill in "(?<name>[^"]+)" target and save$/, %{name: name}, state do
-    state.session
-    |> fill_in(Query.css("[data-test-id=\"target-form-name-input\"]"), with: name)
-    |> send_keys([:enter])
+    state
+    |> UI.fill(testid: "target-form-name-input", with: name)
+    |> UI.send_keys([:enter])
   end
 
+  defand ~r/^I have an objective called "(?<name>[^"]+)" with no owner$/, %{name: name}, state do
+    OkrsFixtures.objective_fixture(%{name: name})
+  end
+
+  defwhen ~r/^I click on the Champion link for the "(?<name>[^"]+)" Objective$/, %{name: name}, state do
+    UI.click(state, testid: "goal-champion")
+  end
+
+  defand ~r/^I click Add New profile$/, _vars, state do
+    UI.click(state, testid: "goal-create-profile")
+  end
+
+  defand ~r/^I fill in "(?<name>[^"]+)" as the name$/, %{name: name}, state do
+    UI.fill(state, placeholder: "Name", with: name)
+  end
+
+  defand ~r/^I fill in "(?<title>[^"]+)" as the title/, %{title: title}, state do
+    UI.fill(state, placeholder: "Title", with: title)
+  end
+
+  defthen ~r/^I should see "(?<name>[^"]+)" as the champion of "(?<goal>[^"]+)"$/, %{name: name, objective: objective}, state do
+    UI.assert_has(state, alt: name)
+  end
 end

@@ -99,7 +99,7 @@ function SelectChampion({objective, onCreateNewProfile, onSelectChampion}) : JSX
       ))
     }
 
-    <div onClick={onCreateNewProfile} className="flex items-center gap-2 outline-0 hover:bg-stone-100 cursor-pointer px-1 py-1 rounded text-dark-2">
+    <div onClick={onCreateNewProfile} data-test-id="goal-create-profile" className="flex items-center gap-2 outline-0 hover:bg-stone-100 cursor-pointer px-1 py-1 rounded text-dark-2">
       <Icon name="plus" color="dark-2" size="small" /> Create new profile
     </div>
   </div>
@@ -202,6 +202,7 @@ export function GoalOwner({objective}) {
     <Popover.Trigger
       className="outline-0"
       children={trigger}
+      data-test-id="goal-champion"
     />
 
     <Popover.Portal>

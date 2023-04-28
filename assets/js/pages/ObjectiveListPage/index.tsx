@@ -200,7 +200,7 @@ function Group({name}) {
 }
 
 function ObjectiveCard({objective, editing, startEditing}) {
-  return <div className="border border-stone-100 shadow rounded bg-white">
+  return <div className="border border-stone-100 shadow rounded bg-white" data-test-id={objective.name}>
     <div className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
       <Link to={`/objectives/${objective.id}`} className="flex flex-1 items-center gap-2 font-semibold">
         <Icon name="objectives" size="small" color="brand" />

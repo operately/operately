@@ -8,18 +8,15 @@ defmodule Operately.FeatureCase do
   option in the `use Cabbage.Feature` macro.
   """
 
-  defmacro __using__([file: file]) do
+  defmacro __using__(opts) do
     quote do
       alias Operately.Repo
+      alias Operately.FeatureCase.UI
 
-      import Operately.DataCase
-
-      use Cabbage.Feature, async: false, file: unquote(file)
+      use Operately.DataCase, async: false
       use Wallaby.Feature
 
       setup data do
-        Operately.DataCase.setup_sandbox(async: false)
-
         Wallaby.Browser.resize_window(data.session, 1920, 1080)
 
         :ok
@@ -34,12 +31,8 @@ defmodule Operately.FeatureCase do
         end)
       end
 
-      defp ts(session) do
-        take_screenshot(session)
-      end
-
       def scroll_into_view(session, css_selector) do
-        session |> execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
+        session |> Wallaby.Browser.execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
       end
 
       def wait_for_page_to_load(session, path) do
@@ -52,5 +45,81 @@ defmodule Operately.FeatureCase do
         end)
       end
     end
+  end
+
+  defmodule UI do
+    alias Wallaby.Query
+
+    import Wallaby.Browser
+    alias Wallaby.Browser
+
+    def login(session) do
+      path = URI.encode("/accounts/auth/test_login?email=john@johnson.com")
+
+      session(session) |> Browser.visit(path)
+    end
+
+    def click(state, testid: test_id) do
+      session(state)
+      |> Browser.click(Query.css("[data-test-id=\"#{test_id}\"]"))
+    end
+
+    def click(state, alt: alt) do
+      session(state)
+      |> Browser.click(Query.css("[alt=\"#{alt}\"]"))
+    end
+
+    def click_button(state, text) do
+      session(state) |> Browser.click(Query.button(text))
+    end
+
+    def fill(state, placeholder: placeholder, with: value) do
+      session(state)
+      |> Browser.fill_in(Query.css("[placeholder=\"#{placeholder}\"]"), with: value)
+    end
+
+    def fill(state, testid: id, with: value) do
+      session(state)
+      |> Browser.fill_in(Query.css("[data-test-id=\"#{id}\"]"), with: value)
+    end
+
+    def fill_rich_text(state, message) do
+      session(state)
+      |> Browser.find(Query.css(".ProseMirror"), fn element ->
+        element |> Browser.send_keys(message)
+      end)
+    end
+
+    def send_keys(state, keys) do
+      session(state)
+      |> Browser.send_keys(keys)
+    end
+
+    def assert_text(state, text) do
+      session(state)
+      |> Browser.assert_text(text)
+    end
+
+    def assert_text(state, text, testid: id) do
+      session(state)
+      |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"), fn element ->
+        element |> Browser.assert_text(text)
+      end)
+    end
+
+    def assert_has(state, alt: alt) do
+      session(state) |> Browser.assert_has(Query.css("[alt=\"#{alt}\"]"))
+    end
+
+    def visit(state, path) do
+      session(state) |> Browser.visit(path)
+    end
+
+    #
+    # Handle the case when the session is a feature
+    # case session or a wallaby session
+    #
+    defp session(%{session: session}), do: session
+    defp session(session), do: session
   end
 end
