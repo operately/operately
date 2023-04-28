@@ -17,7 +17,7 @@ function EditModal(props : EditModalProps) {
   return <Modal title="Edit Mission" hideModal={props.onCancel} isOpen={props.isOpen}>
     <Form onSubmit={props.onSubmit} onCancel={props.onCancel}>
       <textarea
-        data-test-id="group-mission-textarea"
+        data-test-id="groupMissionTextarea"
         ref={props.inputRef}
         className="border border-gray-300 rounded p-2 w-full"
         placeholder="Set a mission for the group&hellip;">{props.mission}</textarea>
@@ -53,7 +53,7 @@ export default function GroupMission({groupId, mission, onMissionChanged}) {
     setShowEditModal(false);
   };
 
-  const editLink = <a className="underline cursor-pointer" onClick={handleEditMission}>edit</a>;
+  const editLink = <a data-test-id="editGroupMission" className="underline cursor-pointer" onClick={handleEditMission}>edit</a>;
 
   return <div className="text-dark-2 prose" data-test-id="group-mission">
     <EditModal

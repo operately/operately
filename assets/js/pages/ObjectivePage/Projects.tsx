@@ -41,7 +41,7 @@ interface Project {
   id: string;
   name: string;
   updatedAt: string;
-  owner: Owner;
+  owner?: Owner;
 }
 
 function Card({project} : {project: Project}) : JSX.Element {
@@ -56,7 +56,7 @@ function Card({project} : {project: Project}) : JSX.Element {
     </div>
 
     <div className="w-2/6">
-      <Champion person={project.owner} />
+      {project.owner && <Champion person={project.owner} />}
       <div className="text-dark-2 text-xs ml-8">with 2 colaborators</div>
     </div>
     <div className="w-2/6 text-dark-2">

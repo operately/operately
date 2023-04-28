@@ -224,7 +224,7 @@ export default function Feed({objectiveID} : {objectiveID: string}) : JSX.Elemen
     return <></>;
   }
 
-  return <div className="mt-4" data-test="feed">
+  return <div className="mt-4" data-test-id="feed">
     <SectionHeader>{t("objectives.feed.title")}</SectionHeader>
 
     <div className="flex flex-col gap-2.5">

@@ -1,20 +1,43 @@
 defmodule Operately.Features.ProjectsTest do
-  use Operately.FeatureCase, file: "projects.feature"
+  use Operately.FeatureCase
 
-  import_steps(Operately.Features.SharedSteps.Login)
-  import_steps(Operately.Features.SharedSteps.SimpleInteractions)
+  setup session do
+    session = session |> UI.login() |> visit_page()
 
-  defand ~r/^I go to the projects page$/, _vars, state do
-    state.session |> visit("/projects")
+    {:ok, %{session: session}}
   end
 
-  defand ~r/^I click New Project$/, _vars, state do
-    state.session |> click(Query.link("New Project"))
+  feature "creating a new project", state do
+    project = "Live support"
+
+    state
+    |> click_new_project()
+    |> set_name(project)
+    |> save()
+    |> assert_project_is_in_the_list(project)
   end
 
-  defthen ~r/^I should see the project "(?<name>[^"]+)" in the list of projects$/, %{name: name}, state do
-    state.session |> wait_for_page_to_load("/projects")
-    state.session |> assert_has(Query.text(name))
+  # ===========================================================================
+
+  defp visit_page(state) do
+    UI.visit(state, "/projects")
   end
 
+  def click_new_project(state) do
+    UI.click_link(state, "New Project")
+  end
+
+  def save(state) do
+    state
+    |> UI.click_button("Save")
+    |> UI.wait_for_page_to_load("/projects")
+  end
+
+  def set_name(state, name) do
+    UI.fill(state, "Name", with: name)
+  end
+
+  def assert_project_is_in_the_list(state, project) do
+    UI.assert_text(state, project)
+  end
 end

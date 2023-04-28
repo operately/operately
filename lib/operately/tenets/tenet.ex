@@ -15,6 +15,6 @@ defmodule Operately.Tenets.Tenet do
   def changeset(tenet, attrs) do
     tenet
     |> cast(attrs, [:name, :description])
-    |> validate_required([:name, :description])
+    |> validate_required([:name])
   end
 end

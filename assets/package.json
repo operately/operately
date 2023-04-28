@@ -2,6 +2,8 @@
   "dependencies": {
     "@apollo/client": "^3.7.11",
     "@formatjs/intl-relativetimeformat": "^11.1.10",
+    "@radix-ui/react-dropdown-menu": "^2.0.4",
+    "@radix-ui/react-popover": "^1.0.5",
     "@tiptap/extension-bullet-list": "^2.0.3",
     "@tiptap/extension-list-item": "^2.0.3",
     "@tiptap/extension-mention": "^2.0.3",
@@ -17,6 +19,8 @@
     "graphql-ws": "^5.12.1",
     "i18next": "^22.4.14",
     "localforage": "^1.10.0",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "match-sorter": "^6.3.1",
     "nprogress": "^0.2.0",
     "phoenix": "file:../deps/phoenix",

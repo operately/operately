@@ -2,11 +2,11 @@ import React from "react";
 import { useTranslation } from 'react-i18next';
 
 import { useApolloClient } from '@apollo/client';
-import { useObjectives, listObjectives, createObjective, createKeyResult } from '../../graphql/Objectives';
-import { Link } from 'react-router-dom';
+import { useObjectives, listObjectives, createObjective, createKeyResult, setObjectiveOwner } from '../../graphql/Objectives';
 
-import Avatar, {AvatarSize} from '../../components/Avatar';
+import { Link } from 'react-router-dom';
 import Icon from '../../components/Icon';
+import { GoalOwner, TargetOwner } from './Champion';
 
 export async function ObjectiveListPageLoader(apolloClient : any) {
   await listObjectives(apolloClient, {});
@@ -40,7 +40,7 @@ function AddGoalForm({onSubmit, onCancel}) {
 
     <input
       ref={ref}
-      data-test-id="goal-form-name-input"
+      data-test-id="goalFormNameInput"
       className="flex-1 outline-0 text-dark-1"
       placeholder="Describe a goal you want to achieve&hellip;"
       onKeyDown={handleKeyDown}
@@ -74,7 +74,7 @@ function AddKeyResultForm({onSubmit, onCancel}) {
       </div>
 
       <input
-        data-test-id="target-form-name-input"
+        data-test-id="targetFormNameInput"
         ref={ref}
         className="flex-1 outline-0 text-dark-1"
         placeholder="Describe what needs to happen to reach this goal&hellip;"
@@ -104,7 +104,7 @@ function AddGoal({onGoalAdded, onActivation}) {
   }
 
   const addGoalRow = <div
-    data-test-id="goal-add-button"
+    data-test-id="addGoalButton"
     className="bg-white border border-dark-8% shadow-sm rounded flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
     onClick={handleActivateForm}>
     <Icon name="plus" size="small" color="dark-2" />
@@ -151,7 +151,6 @@ function KeyResultStatus({keyResult}) {
 
 function KeyResultRow({objective, kr}) {
   return <div className="truncate px-2 py-2 flex justify-between items-center">
-
     <div className="flex items-center gap-2">
       <div className="scale-75">
         <Icon name="flag" size="small" color="dark" />
@@ -166,11 +165,8 @@ function KeyResultRow({objective, kr}) {
         <KeyResultStatus keyResult={kr} />
       </div>
 
-      {objective.owner
-        ? <Avatar person={objective.owner} size={AvatarSize.Tiny} />
-        : <Icon name="user" color="dark-2" />}
+      <TargetOwner goal={objective} target={kr} />
     </div>
-
   </div>;
 }
 
@@ -179,7 +175,7 @@ function KeyResultList({objective, editing, startEditing}) {
     return <div className="flex gap-2 px-4 py-2 text-dark-2">
       No assigned targets
       <a
-        data-test-id="target-add-link"
+        data-test-id="addTargetsLink"
         onClick={() => startEditing(objective.id)}
         className="underline hover:text-dark-1 cursor-pointer">add targets</a>
     </div>;
@@ -204,23 +200,21 @@ function Group({name}) {
 }
 
 function ObjectiveCard({objective, editing, startEditing}) {
-  return <div className="border border-stone-100 shadow rounded bg-white">
-    <Link to={`/objectives/${objective.id}`} className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
-      <div className="flex flex-1 items-center gap-2 font-semibold">
+  return <div className="border border-stone-100 shadow rounded bg-white" data-test-id={objective.name}>
+    <div className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
+      <Link to={`/objectives/${objective.id}`} className="flex flex-1 items-center gap-2 font-semibold">
         <Icon name="objectives" size="small" color="brand" />
         {objective.name}
-      </div>
+      </Link>
 
       <div className="flex items-center">
         <Group name="marketing" />
 
         <KeyResultStatus keyResult={{status: "pending"}} />
 
-        {objective.owner
-          ? <Avatar person={objective.owner} size={AvatarSize.Tiny} />
-          : <Icon name="user" color="dark-2" />}
+        <GoalOwner objective={objective} />
       </div>
-    </Link>
+    </div>
 
     <div className="border-t border-dark-8% divide-y divide-dark-8% flex flex-col">
       <KeyResultList objective={objective} editing={editing} startEditing={startEditing} />
@@ -230,7 +224,7 @@ function ObjectiveCard({objective, editing, startEditing}) {
 
 
 function ListOfObjectives({objectives, editing, onGoalAdded, onGoalAddingActivation, startEditing}) {
-  return <div className="flex flex-col gap-4" data-test-id="goal-list">
+  return <div className="flex flex-col gap-4" data-test-id="goalList">
     {objectives.map((objective: any, i: number) =>
       <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} startEditing={startEditing} />
     )}

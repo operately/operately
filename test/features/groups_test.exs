@@ -1,158 +1,117 @@
 defmodule Operately.Features.GroupsTest do
-  use Operately.FeatureCase, file: "groups.feature"
+  use Operately.FeatureCase
 
-  alias Operately.Groups
-  alias Operately.PeopleFixtures
-  alias Operately.ProjectsFixtures
-  alias Operately.OkrsFixtures
+  setup session do
+    session = session |> UI.login() |> visit_page()
 
-  import_steps(Operately.Features.SharedSteps.Login)
-  import_steps(Operately.Features.SharedSteps.SimpleInteractions)
-
-  defgiven ~r/^that a group with the name "(?<name>[^"]+)" exists$/, %{name: name}, %{session: session} do
-    Groups.create_group(%{name: name})
+    {:ok, %{session: session}}
   end
 
-  defwhen ~r/^I visit the groups page$/, _vars, %{session: session} do
-    session |> visit("/groups")
+  feature "listing existing groups", state do
+    group = create_group("Marketing")
+
+    state
+    |> visit_page()
+    |> assert_has(Query.text(group.name))
   end
 
-  defthen ~r/^I should see "(?<name>[^"]+)" in the list of groups$/, %{name: name}, %{session: session} do
-    session |> assert_has(Query.text(name))
-  end
-
-  defwhen ~r/^I create a new group with the name "(?<name>[^"]+)"$/, %{name: name}, %{session: session} do
-    session
-    |> visit("/groups")
+  feature "creating a new group", state do
+    state
+    |> visit_page()
     |> click(Query.link("Add Group"))
-    |> fill_in(Query.text_field("Name"), with: name)
+    |> fill_in(Query.text_field("Name"), with: "Marketing")
     |> click(Query.button("Save"))
+    |> assert_has(Query.text("Marketing"))
   end
 
-  defthen ~r/^the new group "(?<name>[^"]+)" is listing on the groups page$/, %{name: name}, %{session: session} do
-    wait_for_page_to_load(session, "/groups")
-    session |> assert_has(Query.text(name))
-  end
+  feature "adding group members", state do
+    group = create_group("Marketing")
+    person = crete_person("Mati Aharoni")
 
-  defwhen ~r/^I edit the group "(?<old_name>[^"]+)" and change the name to "(?<new_name>[^"]+)"$/, %{old_name: old_name, new_name: new_name}, %{session: session} do
-    session
-    |> visit("/groups")
-    |> click(Query.link(old_name))
-    |> click(Query.button("Edit"))
-    |> fill_in(Query.text_field("Name"), with: new_name)
-    |> click(Query.button("Save"))
-  end
-
-  defthen ~r/^the group "(?<name>[^"]+)" is no longer visible on the groups page$/, %{name: name}, %{session: session} do
-    session
-    |> visit("/groups")
-    |> refute_has(Query.text(name))
-  end
-
-  defand ~r/^the group "(?<name>[^"]+)" is visible on the groups page$/, %{name: name}, %{session: session} do
-    session
-    |> visit("/groups")
-    |> assert_has(Query.text(name))
-  end
-
-  defwhen ~r/^I delete the group "(?<name>[^"]+)"$/, %{name: name}, %{session: session} do
-    session
-    |> visit("/groups")
-    |> click(Query.link("Delete"))
-  end
-
-  defthen ~r/^the group "(?<name>[^"]+)" is not listing on the groups page$/, %{name: name}, %{session: session} do
-    session
-    |> visit("/groups")
-    |> refute_has(Query.text(name))
-  end
-
-  defand ~r/^I have "(?<person_name>[^"]+)" in my organization as the "(?<title>[^"]+)"$/, %{person_name: name, title: title}, state do
-    PeopleFixtures.person_fixture(%{
-      full_name: name,
-      handle: name |> String.downcase |> String.replace(" ", "_"),
-      title: title
-    })
-  end
-
-  defwhen ~r/^I visit the group "(?<name>[^"]+)" page$/, %{name: name}, state do
-    state.session
-    |> visit("/groups")
-    |> click(Query.link(name))
-  end
-
-  defand ~r/^I add the user "(?<name>[^"]+)" to the group$/, %{name: name}, state do
-    state.session
+    state
+    |> visit_page()
+    |> click(Query.link(group.name))
     |> click(Query.button("Add Members"))
-    |> fill_in(Query.css("#peopleSearch"), with: String.split(name, " ") |> List.first)
-    |> assert_text(name)
+    |> fill_in(Query.css("#peopleSearch"), with: "Mati")
+    |> assert_text("Mati Aharoni")
     |> send_keys([:enter])
     |> find(Query.css(".ReactModalPortal"), fn modal ->
       click(modal, Query.button("Add Members"))
     end)
+    |> UI.assert_has(title: person.full_name)
   end
 
-  defthen ~r/^the user "(?<person>[^"]+)" is visible on the group "(?<group>[^"]+)" page$/, %{person: person, group: group}, state do
-    state.session
-    |> assert_has(Query.text(person))
-  end
+  feature "setting group mission", state do
+    mission = "Let the world know about our products"
+    group = create_group("Marketing")
 
-  defand ~r/^I set the mission to "(?<mission>[^"]+)"$/, %{mission: mission}, state do
-    state.session
-    |> find(Query.css("[data-test-id=\"group-mission\"]"), fn mission_element ->
-      mission_element |> click(Query.css("a", text: "edit"))
-    end)
-    |> fill_in(Query.css("[data-test-id=\"group-mission-textarea\"]"), with: mission)
+    state
+    |> visit_page()
+    |> click(Query.link(group.name))
+    |> UI.click(testid: "editGroupMission")
+    |> UI.fill(testid: "groupMissionTextarea", with: mission)
     |> click(Query.button("Save"))
+    |> assert_has(Query.text(mission))
   end
 
-  defthen ~r/^the mission of the group "(?<group>[^"]+)" is "(?<mission>[^"]+)"$/, %{mission: mission}, state do
-    state.session
-    |> find(Query.css("[data-test-id=\"group-mission\"]"), fn mission_element ->
-      mission_element |> assert_has(Query.text(mission))
-    end)
+  feature "adding points of contact", state do
+    group = create_group("Marketing")
+
+    state
+    |> visit_page()
+    |> UI.click_link(group.name)
+    |> UI.click(testid: "groupAddPointOfContact")
+    |> UI.fill(testid: "groupPointOfContactName", with: "#marketing")
+    |> UI.fill(testid: "groupPointOfContactValue", with: "https://slack.com/marketing")
+    |> UI.click_button("Save")
+    |> UI.assert_text("#marketing")
   end
 
-  defand ~r/^I add a point of contact "(?<type>[^"]+)" with the value "(?<name>[^"]+)"$/, %{type: type, name: name}, state do
-    state.session
-    |> find(Query.css("[data-test-id=\"group-points-of-contact\"]"), fn poc_element ->
-      poc_element |> click(Query.button("Add a Point of Contact"))
-    end)
-    |> fill_in(Query.css("[data-test-id=\"group-point-of-contact-type\"]"), with: type)
-    |> fill_in(Query.css("[data-test-id=\"group-point-of-contact-name\"]"), with: name)
-    |> click(Query.button("Save"))
+  feature "listing projects in a group", state do
+    group = create_group("Marketing")
+
+    project1 = create_project("Marketing Website", group: group)
+    project2 = create_project("Marketing Campaign", group: group)
+
+    state
+    |> visit_page()
+    |> UI.click_link(group.name)
+    |> UI.assert_text(project1.name)
+    |> UI.assert_text(project2.name)
   end
 
-  defthen ~r/^the point of contact "(?<name>[^"]+)" is visible on the group "(?<group>[^"]+)" page$/, %{name: name}, state do
-    state.session
-    |> assert_has(Query.text(name))
+  feature "listing goals in a group", state do
+    group = create_group("Marketing")
+
+    goal1 = crete_goal("Increase traffic", group: group)
+    goal2 = crete_goal("Raise brand awareness", group: group)
+
+    state
+    |> visit_page()
+    |> UI.click_link(group.name)
+    |> UI.assert_text(goal1.name)
+    |> UI.assert_text(goal2.name)
   end
 
-  defgiven ~r/^that a project with the name "(?<name>[^"]+)" exists in the group "(?<group>[^"]+)"$/, %{name: name, group: group}, state do
-    group = Groups.get_group_by_name(group)
+  # ===========================================================================
 
-    project = ProjectsFixtures.project_fixture(%{
-      name: name,
-      group_id: group.id
-    })
+  defp visit_page(state) do
+    UI.visit(state, "/groups")
   end
 
-  defthen ~r/^I should see "(?<project>[^"]+)" in the list of projects$/, %{project: project}, state do
-    state.session
-    |> assert_has(Query.text(project))
+  defp create_group(name) do
+    Operately.GroupsFixtures.group_fixture(%{name: name})
   end
 
-  defgiven ~r/^that an objective with the name "(?<name>[^"]+)" exists in the group "(?<group>[^"]+)"$/, %{name: name, group: group}, state do
-    group = Groups.get_group_by_name(group)
-
-    OkrsFixtures.objective_fixture(:with_owner, %{
-      name: name,
-      group_id: group.id
-    })
+  defp crete_person(name) do
+    Operately.PeopleFixtures.person_fixture(%{full_name: name})
   end
 
-  defthen ~r/^I should see "(?<objective>[^"]+)" in the list of objectives$/, %{objective: objective}, state do
-    state.session |> assert_has(Query.text(objective))
+  defp create_project(name, group: group) do
+    Operately.ProjectsFixtures.project_fixture(%{name: name, group_id: group.id})
   end
 
+  defp crete_goal(name, group: group) do
+    Operately.OkrsFixtures.objective_fixture(%{name: name, group_id: group.id})
+  end
 end
