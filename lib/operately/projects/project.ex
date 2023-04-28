@@ -21,6 +21,6 @@ defmodule Operately.Projects.Project do
     project
     |> cast(attrs, [:name, :description, :group_id])
     |> cast_assoc(:ownership)
-    |> validate_required([:name, :description])
+    |> validate_required([:name])
   end
 end

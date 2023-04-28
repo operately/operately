@@ -13,8 +13,8 @@ import { addContact } from '../../graphql/Groups';
 function SlackInputFields() {
   return <div>
     <div className="mt-4 flex flex-col gap-4">
-      <FormTextInput data-test-id="group-point-of-contact-value" id="value" label="URL" />
-      <FormTextInput data-test-id="group-point-of-contact-name" id="name" label="Name" />
+      <FormTextInput data-test-id="groupPointOfContactValue" id="value" label="URL" />
+      <FormTextInput data-test-id="groupPointOfContactName" id="name" label="Name" />
     </div>
   </div>;
 }
@@ -43,7 +43,7 @@ function AddContactModal(props : AddContactModalProps) : JSX.Element {
     <Form ref={props.formRef} onSubmit={props.onSubmit} onCancel={props.hideModal}>
       <p className="prose mb-4">Select a third-party platform where the team works together.</p>
 
-      <FormSelect data-test-id="group-point-of-contact-type" id="contactType" label="Type" value={selected} onChange={(e) => setSelected(e.target.value)}>
+      <FormSelect data-test-id="groupPointOfContactType" id="contactType" label="Type" value={selected} onChange={(e) => setSelected(e.target.value)}>
         <option value="slack">Slack Channel</option>
       </FormSelect>
 
@@ -111,7 +111,7 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact, on
   }
 
   return (
-    <div className="mt-4" data-test-id="group-points-of-contact">
+    <div className="mt-4" data-test-id="groupPointsOfContact">
       <h2 className="text-lg font-semibold">Points of Contact</h2>
       <div className="mb-2">
         Create links that help reach people in the {groupName} group, such as team’s Slack channel.
@@ -124,6 +124,7 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact, on
       </div>}
 
       <Button
+        data-test-id="groupAddPointOfContact"
         ghost
         size={ButtonSize.Small}
         onClick={() => setShowModal(true)}

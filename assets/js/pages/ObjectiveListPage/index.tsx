@@ -165,7 +165,7 @@ function KeyResultRow({objective, kr}) {
         <KeyResultStatus keyResult={kr} />
       </div>
 
-      <GoalOwner objective={objective} />
+      <TargetOwner goal={objective} target={kr} />
     </div>
   </div>;
 }

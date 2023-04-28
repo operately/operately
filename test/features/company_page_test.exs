@@ -1,4 +1,4 @@
-defmodule MyApp.Features.GoalPageTests do
+defmodule MyApp.Features.CompanyPageTest do
   use Operately.FeatureCase
 
   setup session do
@@ -25,8 +25,8 @@ defmodule MyApp.Features.GoalPageTests do
   end
 
   feature "assigning goal champions", state do
-    person = create_person("John Doe")
-    objective = create_goal("Increase retention rate")
+    create_person("John Doe")
+    create_goal("Increase retention rate")
 
     state
     |> visit_page()
@@ -51,7 +51,7 @@ defmodule MyApp.Features.GoalPageTests do
 
   feature "unassigning existing champion", state do
     person = create_person("John Doe")
-    objective = create_goal("Increase retention rate", champion: person)
+    create_goal("Increase retention rate", champion: person)
 
     state
     |> visit_page()
@@ -93,10 +93,6 @@ defmodule MyApp.Features.GoalPageTests do
     state
     |> UI.fill(testid: "targetFormNameInput", with: name)
     |> UI.send_keys([:enter])
-  end
-
-  defp assert_goal_is_added_to_the_list(state, name) do
-    state |> UI.assert_text(name, testid: "goalList")
   end
 
   defp click_on_the_champion(state) do

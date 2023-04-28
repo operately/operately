@@ -8,13 +8,13 @@ defmodule Operately.FeatureCase do
   option in the `use Cabbage.Feature` macro.
   """
 
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
       alias Operately.Repo
       alias Operately.FeatureCase.UI
 
       use Operately.DataCase, async: false
-      use Wallaby.Feature
+      use Wallaby.Feature, async: false
 
       setup data do
         Wallaby.Browser.resize_window(data.session, 1920, 1080)
@@ -33,16 +33,6 @@ defmodule Operately.FeatureCase do
 
       def scroll_into_view(session, css_selector) do
         session |> Wallaby.Browser.execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
-      end
-
-      def wait_for_page_to_load(session, path) do
-        Wallaby.Browser.retry(fn ->
-          if Wallaby.Browser.current_path(session) == path do
-            {:ok, session}
-          else
-            {:error, :not_yet}
-          end
-        end)
       end
     end
   end
@@ -81,6 +71,15 @@ defmodule Operately.FeatureCase do
 
     def click_button(state, text) do
       session(state) |> Browser.click(Query.button(text))
+    end
+
+    def click_link(state, text) do
+      session(state) |> Browser.click(Query.link(text))
+    end
+
+    def fill(state, label, with: value) when is_binary(label) do
+      session(state)
+      |> Browser.fill_in(Query.text_field(label), with: value)
     end
 
     def fill(state, placeholder: placeholder, with: value) do
@@ -123,6 +122,20 @@ defmodule Operately.FeatureCase do
 
     def find(state, testid: id) do
       session(state) |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"))
+    end
+
+    def wait_for_page_to_load(state, path) do
+      s = session(state)
+
+      Wallaby.Browser.retry(fn ->
+        if Wallaby.Browser.current_path(s) == path do
+          {:ok, s}
+        else
+          {:error, :not_yet}
+        end
+      end)
+
+      state
     end
 
     #

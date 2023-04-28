@@ -54,9 +54,9 @@ function Profile({objective, onSeeProfile, onUnassign, onChangeChampion}) : JSX.
     </div>
 
     <div className="flex flex-col gap-1">
-      <CardButton title="See profile" onClick={onSeeProfile} />
-      <CardButton data-test-id="unassignChampion" title="Unassign" onClick={onUnassign} />
-      <CardButton title="Change Champion" onClick={onChangeChampion} />
+      <CardButton children="See profile" onClick={onSeeProfile} />
+      <CardButton children="Unassign" data-test-id="unassignChampion" onClick={onUnassign} />
+      <CardButton children="Change Champion" onClick={onChangeChampion} />
     </div>
   </div>;
 }
@@ -217,6 +217,40 @@ export function GoalOwner({objective}) {
   </Popover.Root>;
 }
 
-export function TargetOwner({target}) {
-  return <></>;
+export function TargetOwner({goal, target}) {
+  const notAssignedAvatar = <div title="Unassigned" className="-ml-0.5"><Icon name="user" color="dark-2" /></div>;
+
+  const [open, setOpen] = React.useState(false);
+  const [screen, setScreen] = React.useState<Screen>("default");
+
+  let trigger : JSX.Element | null = null;
+  if(target.owner) {
+    trigger = <Avatar person={target.owner} size={AvatarSize.Tiny} />;
+  } else {
+    trigger = notAssignedAvatar
+  }
+
+  const onOpenChange = (open : boolean) => {
+    setOpen(open);
+    setScreen("default");
+  }
+
+  return <Popover.Root open={open} modal={true} onOpenChange={onOpenChange}>
+    <Popover.Trigger
+      className="outline-0"
+      children={trigger}
+      data-test-id="goalChampion"
+    />
+
+    <Popover.Portal>
+      <Popover.Content
+        data-test-id="championSelect"
+        align="start"
+        side="left"
+        sideOffset={10}
+        className={"w-60 bg-white p-2 gap-1 card-shadow border border-dark-8% rounded transition"}
+        children={null}
+      />
+    </Popover.Portal>
+  </Popover.Root>;
 }
