@@ -32,12 +32,11 @@ const SEARCH_PEOPLE = gql`
   }
 `;
 
-function CardButton({title, onClick}) {
-  return (
-    <div onClick={onClick} className="block px-2 py-1 rounded cursor-pointer outline-0 hover:text-dark-1 border border-dark-8% hover:border-brand-base hover:text-brand-base">
-      {title}
-    </div>
-  );
+function CardButton(props : any) : JSX.Element {
+  return <div
+    {...props}
+    className="block px-2 py-1 rounded cursor-pointer outline-0 hover:text-dark-1 border border-dark-8% hover:border-brand-base hover:text-brand-base"
+  />
 }
 
 type Screen = "default" | "setChampion" | "createProfile";
@@ -56,7 +55,7 @@ function Profile({objective, onSeeProfile, onUnassign, onChangeChampion}) : JSX.
 
     <div className="flex flex-col gap-1">
       <CardButton title="See profile" onClick={onSeeProfile} />
-      <CardButton title="Unassign" onClick={onUnassign} />
+      <CardButton data-test-id="unassignChampion" title="Unassign" onClick={onUnassign} />
       <CardButton title="Change Champion" onClick={onChangeChampion} />
     </div>
   </div>;
@@ -99,7 +98,7 @@ function SelectChampion({objective, onCreateNewProfile, onSelectChampion}) : JSX
       ))
     }
 
-    <div onClick={onCreateNewProfile} data-test-id="goal-create-profile" className="flex items-center gap-2 outline-0 hover:bg-stone-100 cursor-pointer px-1 py-1 rounded text-dark-2">
+    <div onClick={onCreateNewProfile} data-test-id="createNewProfile" className="flex items-center gap-2 outline-0 hover:bg-stone-100 cursor-pointer px-1 py-1 rounded text-dark-2">
       <Icon name="plus" color="dark-2" size="small" /> Create new profile
     </div>
   </div>
@@ -130,12 +129,12 @@ function CreateProfile({objective, onCreateProfile, onCancel}) : JSX.Element {
 
     <div className="flex flex-col gap-1">
       <div className="text-xs">Name</div>
-      <input className="w-full outline-0 border border-dark-8% rounded px-2 py-1 mb-2" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+      <input data-test-id="personFormNameInput" className="w-full outline-0 border border-dark-8% rounded px-2 py-1 mb-2" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
 
       <div className="text-xs">Title in the company</div>
-      <input className="w-full outline-0 border border-dark-8% rounded px-2 py-1 mb-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input data-test-id="personFormTitleInput" className="w-full outline-0 border border-dark-8% rounded px-2 py-1 mb-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
 
-      <button onClick={handleCreateProfile} className="cursor-pointer text-brand-base bg-brand-light-1 hover:bg-brand-light-2 px-2 py-1 rounded text-sm hover:underline">
+      <button data-test-id="createAndAssign" onClick={handleCreateProfile} className="cursor-pointer text-brand-base bg-brand-light-1 hover:bg-brand-light-2 px-2 py-1 rounded text-sm hover:underline">
         Create & Assign
       </button>
     </div>
@@ -144,7 +143,7 @@ function CreateProfile({objective, onCreateProfile, onCancel}) : JSX.Element {
 
 export function GoalOwner({objective}) {
   const client = useApolloClient();
-  const notAssignedAvatar = <div className="-ml-0.5"><Icon name="user" color="dark-2" /></div>;
+  const notAssignedAvatar = <div title="Unassigned" className="-ml-0.5"><Icon name="user" color="dark-2" /></div>;
 
   const [open, setOpen] = React.useState(false);
   const [screen, setScreen] = React.useState<Screen>("default");

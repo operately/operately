@@ -29,16 +29,46 @@ defmodule MyApp.Features.GoalPageTests do
     objective = create_goal("Increase retention rate")
 
     state
+    |> visit_page()
     |> click_on_the_champion()
     |> choose_champion("John Doe")
 
     assert_goal_champion(state, "John Doe")
   end
 
+  feature "creating a new profile and assigning as champion", state do
+    objective = create_goal("Increase retention rate")
+
+    state
+    |> visit_page()
+    |> click_on_the_champion()
+    |> click_create_new_profile()
+    |> fill_person_form("Susan Doe", "Head of Customer Success")
+    |> click_create_and_assign()
+
+    assert_goal_champion(state, "Susan Doe")
+  end
+
+  feature "unassigning existing champion", state do
+    person = create_person("John Doe")
+    objective = create_goal("Increase retention rate", champion: person)
+
+    state
+    |> visit_page()
+    |> click_on_the_champion()
+    |> click_unassign()
+
+    assert_goal_champion(state, "Unassigned")
+  end
+
   # ===========================================================================
 
   defp create_goal(name) do
     Operately.OkrsFixtures.objective_fixture(%{name: name})
+  end
+
+  defp create_goal(name, champion: champion) do
+    Operately.OkrsFixtures.objective_fixture(%{name: name, owner_id: champion.id})
   end
 
   defp create_person(name) do
@@ -79,5 +109,23 @@ defmodule MyApp.Features.GoalPageTests do
 
   defp assert_goal_champion(state, name) do
     UI.assert_has(state, title: name, in: UI.find(state, testid: "goalChampion"))
+  end
+
+  defp click_create_new_profile(state) do
+    state |> UI.click(testid: "createNewProfile")
+  end
+
+  defp fill_person_form(state, name, title) do
+    state
+    |> UI.fill(testid: "personFormNameInput", with: name)
+    |> UI.fill(testid: "personFormTitleInput", with: title)
+  end
+
+  defp click_create_and_assign(state) do
+    state |> UI.click(testid: "createAndAssign")
+  end
+
+  defp click_unassign(state) do
+    state |> UI.click(testid: "unassignChampion")
   end
 end
