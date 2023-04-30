@@ -158,11 +158,6 @@ function CreateProfile({ objective, onCreateProfile }): JSX.Element {
 
 export function GoalOwner({ objective }) {
   const client = useApolloClient();
-  const notAssignedAvatar = (
-    <div title="Unassigned" className="-ml-0.5">
-      <Icon name="user" color="dark-2" />
-    </div>
-  );
 
   const [open, setOpen] = React.useState(false);
   const [screen, setScreen] = React.useState<Screen>("default");
@@ -229,13 +224,6 @@ export function GoalOwner({ objective }) {
       break;
   }
 
-  let trigger: JSX.Element | null = null;
-  if (objective.owner) {
-    trigger = <Avatar person={objective.owner} size={AvatarSize.Tiny} />;
-  } else {
-    trigger = notAssignedAvatar;
-  }
-
   const onOpenChange = (open: boolean) => {
     setOpen(open);
     setScreen("default");
@@ -243,11 +231,9 @@ export function GoalOwner({ objective }) {
 
   return (
     <Popover.Root open={open} modal={true} onOpenChange={onOpenChange}>
-      <Popover.Trigger
-        className="outline-0"
-        children={trigger}
-        data-test-id="goalChampion"
-      />
+      <Popover.Trigger className="outline-0" data-test-id="goalChampion">
+        <Avatar person={objective.owner} size={AvatarSize.Tiny} />
+      </Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content
@@ -255,9 +241,7 @@ export function GoalOwner({ objective }) {
           align="start"
           side="left"
           sideOffset={10}
-          className={
-            "w-60 bg-white p-2 gap-1 card-shadow border border-dark-8% rounded transition"
-          }
+          className="w-60 bg-white p-2 gap-1 card-shadow border border-dark-8% rounded transition"
           children={content}
         />
       </Popover.Portal>
@@ -266,21 +250,8 @@ export function GoalOwner({ objective }) {
 }
 
 export function TargetOwner({ goal, target }) {
-  const notAssignedAvatar = (
-    <div title="Unassigned" className="-ml-0.5">
-      <Icon name="user" color="dark-2" />
-    </div>
-  );
-
   const [open, setOpen] = React.useState(false);
   const [screen, setScreen] = React.useState<Screen>("default");
-
-  let trigger: JSX.Element | null = null;
-  if (target.owner) {
-    trigger = <Avatar person={target.owner} size={AvatarSize.Tiny} />;
-  } else {
-    trigger = notAssignedAvatar;
-  }
 
   const onOpenChange = (open: boolean) => {
     setOpen(open);
@@ -289,11 +260,9 @@ export function TargetOwner({ goal, target }) {
 
   return (
     <Popover.Root open={open} modal={true} onOpenChange={onOpenChange}>
-      <Popover.Trigger
-        className="outline-0"
-        children={trigger}
-        data-test-id="goalChampion"
-      />
+      <Popover.Trigger className="outline-0" data-test-id="goalChampion">
+        <Avatar person={target.owner} size={AvatarSize.Tiny} />
+      </Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content
@@ -301,9 +270,7 @@ export function TargetOwner({ goal, target }) {
           align="start"
           side="left"
           sideOffset={10}
-          className={
-            "w-60 bg-white p-2 gap-1 card-shadow border border-dark-8% rounded transition"
-          }
+          className="w-60 bg-white p-2 gap-1 card-shadow border border-dark-8% rounded transition"
           children={null}
         />
       </Popover.Portal>
