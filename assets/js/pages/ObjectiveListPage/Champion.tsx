@@ -3,43 +3,11 @@ import React from "react";
 import Avatar, { AvatarSize } from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
-import { gql, useQuery, useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import { setObjectiveOwner } from "../../graphql/Objectives";
-import { createProfile } from "../../graphql/People";
+import { createProfile, useDebouncedPeopleSearch } from "../../graphql/People";
 
-import * as Popover from "@radix-ui/react-popover";
-
-const debounce = (callback: any, wait: number) => {
-  let timeoutId: number | null = null;
-
-  return (...args: any[]) => {
-    if (timeoutId) window.clearTimeout(timeoutId);
-
-    timeoutId = window.setTimeout(() => {
-      callback.apply(null, args);
-    }, wait);
-  };
-};
-
-const SEARCH_PEOPLE = gql`
-  query SearchPeople($query: String!) {
-    searchPeople(query: $query) {
-      id
-      fullName
-      title
-      avatarUrl
-    }
-  }
-`;
-
-function CardButton(props: any): JSX.Element {
-  return (
-    <div
-      {...props}
-      className="block px-2 py-1 rounded cursor-pointer outline-0 border border-dark-8% hover:border-brand-base hover:text-brand-base"
-    />
-  );
-}
+import * as Popover from "../../components/Popover";
 
 type Screen = "default" | "setChampion" | "createProfile";
 
@@ -64,13 +32,13 @@ function Profile({
       </div>
 
       <div className="flex flex-col gap-1">
-        <CardButton children="See profile" onClick={onSeeProfile} />
-        <CardButton
+        <Popover.Button children="See profile" onClick={onSeeProfile} />
+        <Popover.Button
           children="Unassign"
           data-test-id="unassignChampion"
           onClick={onUnassign}
         />
-        <CardButton children="Change Champion" onClick={onChangeChampion} />
+        <Popover.Button children="Change Champion" onClick={onChangeChampion} />
       </div>
     </div>
   );
@@ -82,16 +50,7 @@ function SelectChampion({
   onSelectChampion,
 }): JSX.Element {
   const client = useApolloClient();
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const { data, loading, error } = useQuery(SEARCH_PEOPLE, {
-    variables: { query: searchQuery },
-  });
-
-  const debouncedSetSearchQuery = React.useMemo(() => {
-    return debounce((q: any) => {
-      setSearchQuery(q);
-    }, 500);
-  }, []);
+  const { data, loading, error, setSearchQuery } = useDebouncedPeopleSearch("");
 
   const handleSetChampion = (personId: string) => async () => {
     await setObjectiveOwner(client, { id: objective.id, owner_id: personId });
@@ -106,7 +65,7 @@ function SelectChampion({
       <input
         className="w-full outline-0 border border-dark-8% rounded px-2 py-1 mb-2"
         placeholder="Search&hellip;"
-        onChange={(e) => debouncedSetSearchQuery(e.target.value)}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
 
       {loading || error ? (
