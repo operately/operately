@@ -37,7 +37,7 @@ defmodule MyApp.Features.CompanyPageTest do
   end
 
   feature "creating a new profile and assigning as champion", state do
-    objective = create_goal("Increase retention rate")
+    create_goal("Increase retention rate")
 
     state
     |> visit_page()
