@@ -4,7 +4,7 @@ import Avatar, { AvatarSize } from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
 import { useApolloClient } from "@apollo/client";
-import { setObjectiveOwner } from "../../graphql/Objectives";
+import { setObjectiveOwner, setTargetOwner } from "../../graphql/Objectives";
 import { createProfile, useDebouncedPeopleSearch } from "../../graphql/People";
 
 import * as Popover from "../../components/Popover";
@@ -12,7 +12,7 @@ import * as Popover from "../../components/Popover";
 type Screen = "default" | "setChampion" | "createProfile";
 
 function Profile({
-  objective,
+  person,
   onSeeProfile,
   onUnassign,
   onChangeChampion,
@@ -21,12 +21,12 @@ function Profile({
     <div>
       <div className="w-56 p-2 flex flex-col items-center">
         <div className="my-2 flex flex-col items-center">
-          <Avatar person={objective.owner} size={AvatarSize.XXLarge} />
+          <Avatar person={person} size={AvatarSize.XXLarge} />
         </div>
         <div className="text-center">
-          <div className="font-semibold">{objective.owner.fullName}</div>
+          <div className="font-semibold">{person.fullName}</div>
           <div className="text-sm text-dark-2">
-            {objective.owner.title} at Acme Incorporated
+            {person.title} at Acme Incorporated
           </div>
         </div>
       </div>
@@ -44,19 +44,8 @@ function Profile({
   );
 }
 
-function SelectChampion({
-  objective,
-  onCreateNewProfile,
-  onSelectChampion,
-}): JSX.Element {
-  const client = useApolloClient();
+function SelectChampion({ onCreateNewProfile, onSelectChampion }): JSX.Element {
   const { data, loading, error, setSearchQuery } = useDebouncedPeopleSearch("");
-
-  const handleSetChampion = (personId: string) => async () => {
-    await setObjectiveOwner(client, { id: objective.id, owner_id: personId });
-
-    onSelectChampion();
-  };
 
   return (
     <div>
@@ -74,7 +63,7 @@ function SelectChampion({
         data.searchPeople.map((person: any) => (
           <div
             key={person.id}
-            onClick={handleSetChampion(person.id)}
+            onClick={onSelectChampion}
             className="flex items-center gap-2 outline-0 hover:bg-stone-100 cursor-pointer px-1 py-1 rounded"
           >
             <Avatar person={person} size={AvatarSize.Tiny} /> {person.fullName}
@@ -93,19 +82,12 @@ function SelectChampion({
   );
 }
 
-function CreateProfile({ objective, onCreateProfile }): JSX.Element {
-  const client = useApolloClient();
+function CreateProfile({ createAndSetChampion }): JSX.Element {
   const [name, setName] = React.useState("John Doe");
   const [title, setTitle] = React.useState("Employee");
 
-  const handleCreateProfile = async () => {
-    const { data } = await createProfile(client, name, title);
-    await setObjectiveOwner(client, {
-      id: objective.id,
-      owner_id: data.createProfile.id,
-    });
-
-    onCreateProfile();
+  const handleSubmit = async () => {
+    await createAndSetChampion(name, title);
   };
 
   return (
@@ -146,7 +128,7 @@ function CreateProfile({ objective, onCreateProfile }): JSX.Element {
 
         <button
           data-test-id="createAndAssign"
-          onClick={handleCreateProfile}
+          onClick={handleSubmit}
           className="cursor-pointer text-brand-base bg-brand-light-1 hover:bg-brand-light-2 px-2 py-1 rounded text-sm hover:underline"
         >
           Create & Assign
@@ -156,37 +138,39 @@ function CreateProfile({ objective, onCreateProfile }): JSX.Element {
   );
 }
 
-export function GoalOwner({ objective }) {
+function Owner({ person, dataTestID, setChampion }): JSX.Element {
   const client = useApolloClient();
 
   const [open, setOpen] = React.useState(false);
   const [screen, setScreen] = React.useState<Screen>("default");
 
   const handleUnassign = async () => {
-    await setObjectiveOwner(client, {
-      id: objective.id,
-      owner_id: null,
-    });
-
+    await setChampion(null);
     setOpen(false);
   };
 
+  const handleSetChampion = async (personId: string) => {
+    await setChampion(personId);
+    setOpen(false);
+  };
+
+  const handleCreateAndSetChampion = async (name: string, title: string) => {
+    const { data } = await createProfile(client, name, title);
+    await setChampion(data.createPerson.id);
+    setOpen(false);
+  };
+
+  let handleSeeProfile = () => console.log("see profile");
+  let handleChangeChampion = () => setScreen("setChampion");
+
   let content: JSX.Element | null = null;
-
-  let handleSeeProfile = () => {
-    console.log("See profile");
-  };
-
-  let handleChangeChampion = () => {
-    setScreen("setChampion");
-  };
 
   switch (screen) {
     case "default":
-      if (objective.owner) {
+      if (person) {
         content = (
           <Profile
-            objective={objective}
+            person={person}
             onSeeProfile={handleSeeProfile}
             onUnassign={handleUnassign}
             onChangeChampion={handleChangeChampion}
@@ -195,31 +179,24 @@ export function GoalOwner({ objective }) {
       } else {
         content = (
           <SelectChampion
-            objective={objective}
             onCreateNewProfile={() => setScreen("createProfile")}
-            onSelectChampion={() => setOpen(false)}
+            onSelectChampion={handleSetChampion}
           />
         );
       }
       break;
-
     case "setChampion":
       content = (
         <SelectChampion
-          objective={objective}
           onCreateNewProfile={() => setScreen("createProfile")}
-          onSelectChampion={() => setOpen(false)}
+          onSelectChampion={handleSetChampion}
         />
       );
       break;
 
     case "createProfile":
       content = (
-        <CreateProfile
-          objective={objective}
-          onCreateProfile={() => setOpen(false)}
-          onCancel={() => setScreen("default")}
-        />
+        <CreateProfile createAndSetChampion={handleCreateAndSetChampion} />
       );
       break;
   }
@@ -231,8 +208,8 @@ export function GoalOwner({ objective }) {
 
   return (
     <Popover.Root open={open} modal={true} onOpenChange={onOpenChange}>
-      <Popover.Trigger className="outline-0" data-test-id="goalChampion">
-        <Avatar person={objective.owner} size={AvatarSize.Tiny} />
+      <Popover.Trigger className="outline-0" data-test-id={dataTestID}>
+        <Avatar person={person} size={AvatarSize.Tiny} />
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -249,31 +226,30 @@ export function GoalOwner({ objective }) {
   );
 }
 
-export function TargetOwner({ goal, target }) {
-  const [open, setOpen] = React.useState(false);
-  const [screen, setScreen] = React.useState<Screen>("default");
+export function GoalOwner({ objective }) {
+  const client = useApolloClient();
 
-  const onOpenChange = (open: boolean) => {
-    setOpen(open);
-    setScreen("default");
+  const setChampion = async (personID: string | null) => {
+    await setObjectiveOwner(client, { id: objective.id, owner_id: personID });
   };
 
-  return (
-    <Popover.Root open={open} modal={true} onOpenChange={onOpenChange}>
-      <Popover.Trigger className="outline-0" data-test-id="goalChampion">
-        <Avatar person={target.owner} size={AvatarSize.Tiny} />
-      </Popover.Trigger>
+  <Owner
+    person={objective.owner}
+    dataTestID="goalChampion"
+    setChampion={setChampion}
+  />;
+}
 
-      <Popover.Portal>
-        <Popover.Content
-          data-test-id="championSelect"
-          align="start"
-          side="left"
-          sideOffset={10}
-          className="w-60 bg-white p-2 gap-1 card-shadow border border-dark-8% rounded transition"
-          children={null}
-        />
-      </Popover.Portal>
-    </Popover.Root>
-  );
+export function TargetOwner({ target }) {
+  const client = useApolloClient();
+
+  const setChampion = async (personID: string | null) => {
+    await setTargetOwner(client, { id: target.id, owner_id: personID });
+  };
+
+  <Owner
+    person={target.owner}
+    dataTestID="targetChampion"
+    setChampion={setChampion}
+  />;
 }

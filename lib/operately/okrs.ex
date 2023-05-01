@@ -136,6 +136,14 @@ defmodule Operately.Okrs do
     |> Repo.update()
   end
 
+  def set_key_result_owner(id, owner_id \\ nil) do
+    key_result = get_key_result!(id)
+
+    key_result
+    |> KeyResult.changeset(%{owner_id: owner_id})
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a objective.
 
