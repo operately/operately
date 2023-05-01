@@ -56,12 +56,22 @@ function TextClasses({ size }: { size: AvatarSize }): string {
   }
 }
 
-function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const initials = person.fullName
+function initials(fullName: string): string {
+  const firstLeters = fullName
     .split(" ")
-    .map((n) => n[0])
-    .join("");
+    .filter((e) => e !== "")
+    .map((n) => n[0]);
 
+  if (firstLeters.length === 0) {
+    return "";
+  } else if (firstLeters.length === 1) {
+    return firstLeters[0];
+  } else {
+    return firstLeters[0] + firstLeters[firstLeters.length - 1];
+  }
+}
+
+function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass =
     "flex items-center justify-center text-white rounded-full bg-brand-base";
   const sizeClass = SizeClasses({ size });
@@ -70,7 +80,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 
   return (
     <div title={person.fullName} className={className}>
-      {initials}
+      {initials(person.fullName)}
     </div>
   );
 }
