@@ -2,7 +2,7 @@ defmodule OperatelyWeb.GraphQL.Queries.KeyResults do
   use Absinthe.Schema.Notation
 
   object :key_result_queries do
-    field :key_results, list_of(:objective) do
+    field :key_results, list_of(:key_result) do
       arg :objective_id, non_null(:id)
 
       resolve fn args, _ ->

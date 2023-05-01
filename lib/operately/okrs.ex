@@ -9,7 +9,7 @@ defmodule Operately.Okrs do
   alias Operately.Okrs.Objective
   alias Operately.Okrs.KeyResult
 
-  def list_objectives(filters \\ %{}) do
+  def list_objectives(filters \\ %{}) when is_map(filters) do
     query = if filters[:group_id] do
       from o in Objective, where: o.group_id == ^filters[:group_id]
     else
@@ -19,10 +19,6 @@ defmodule Operately.Okrs do
     query = from o in query, order_by: [asc: o.inserted_at]
 
     Repo.all(query)
-  end
-
-  def list_objectives(preload: associations) do
-    Repo.all(Objective) |> Repo.preload(associations)
   end
 
   def list_key_results!(objective_id) do
