@@ -30,10 +30,25 @@ defmodule MyApp.Features.CompanyPageTest do
 
     state
     |> visit_page()
-    |> click_on_the_champion()
+    |> click_on_the_goal_champion()
     |> choose_champion("John Doe")
 
     assert_goal_champion(state, "John Doe")
+  end
+
+  feature "assigning target champions", state do
+    goal = "Increase retention rate"
+    target = "Expand the customer success team by 50%"
+
+    create_person("John Doe")
+    create_goal_with_targets(goal, [target])
+
+    state
+    |> visit_page()
+    |> click_on_the_target_champion()
+    |> choose_champion("John Doe")
+
+    assert_target_champion(state, "John Doe")
   end
 
   feature "creating a new profile and assigning as champion", state do
@@ -41,7 +56,7 @@ defmodule MyApp.Features.CompanyPageTest do
 
     state
     |> visit_page()
-    |> click_on_the_champion()
+    |> click_on_the_goal_champion()
     |> click_create_new_profile()
     |> fill_person_form("Susan Doe", "Head of Customer Success")
     |> click_create_and_assign()
@@ -55,7 +70,7 @@ defmodule MyApp.Features.CompanyPageTest do
 
     state
     |> visit_page()
-    |> click_on_the_champion()
+    |> click_on_the_goal_champion()
     |> click_unassign()
 
     assert_goal_champion(state, "Unassigned")
@@ -69,6 +84,16 @@ defmodule MyApp.Features.CompanyPageTest do
 
   defp create_goal(name, champion: champion) do
     Operately.OkrsFixtures.objective_fixture(%{name: name, owner_id: champion.id})
+  end
+
+  defp create_goal_with_targets(name, targets) do
+    goal = create_goal(name)
+
+    Enum.each(targets, fn target ->
+      Operately.OkrsFixtures.key_result_fixture(%{name: target, objective_id: goal.id})
+    end)
+
+    goal
   end
 
   defp create_person(name) do
@@ -95,8 +120,12 @@ defmodule MyApp.Features.CompanyPageTest do
     |> UI.send_keys([:enter])
   end
 
-  defp click_on_the_champion(state) do
+  defp click_on_the_goal_champion(state) do
     state |> UI.click(testid: "goalChampion")
+  end
+
+  defp click_on_the_target_champion(state) do
+    state |> UI.click(testid: "targetChampion")
   end
 
   defp choose_champion(state, name) do
@@ -105,6 +134,10 @@ defmodule MyApp.Features.CompanyPageTest do
 
   defp assert_goal_champion(state, name) do
     UI.assert_has(state, title: name, in: UI.find(state, testid: "goalChampion"))
+  end
+
+  defp assert_target_champion(state, name) do
+    UI.assert_has(state, title: name, in: UI.find(state, testid: "targetChampion"))
   end
 
   defp click_create_new_profile(state) do
