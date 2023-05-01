@@ -512,10 +512,11 @@ defmodule Operately.People do
     end
   end
 
-  def search_people(query) do
+  def search_people(query, limit \\ 5) do
     Repo.all(
       from p in Person,
-      where: ilike(p.full_name, ^"%#{query}%") or ilike(p.title, ^"%#{query}%")
+      where: ilike(p.full_name, ^"%#{query}%") or ilike(p.title, ^"%#{query}%"),
+      limit: ^limit
     )
   end
 end
