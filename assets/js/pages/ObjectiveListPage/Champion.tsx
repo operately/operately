@@ -63,7 +63,9 @@ function SelectChampion({ onCreateNewProfile, onSelectChampion }): JSX.Element {
         data.searchPeople.map((person: any) => (
           <div
             key={person.id}
-            onClick={onSelectChampion}
+            onClick={() => {
+              onSelectChampion(person.id);
+            }}
             className="flex items-center gap-2 outline-0 hover:bg-stone-100 cursor-pointer px-1 py-1 rounded"
           >
             <Avatar person={person} size={AvatarSize.Tiny} /> {person.fullName}
@@ -233,11 +235,13 @@ export function GoalOwner({ objective }) {
     await setObjectiveOwner(client, { id: objective.id, owner_id: personID });
   };
 
-  <Owner
-    person={objective.owner}
-    dataTestID="goalChampion"
-    setChampion={setChampion}
-  />;
+  return (
+    <Owner
+      person={objective.owner}
+      dataTestID="goalChampion"
+      setChampion={setChampion}
+    />
+  );
 }
 
 export function TargetOwner({ target }) {
@@ -247,9 +251,11 @@ export function TargetOwner({ target }) {
     await setTargetOwner(client, { id: target.id, owner_id: personID });
   };
 
-  <Owner
-    person={target.owner}
-    dataTestID="targetChampion"
-    setChampion={setChampion}
-  />;
+  return (
+    <Owner
+      person={target.owner}
+      dataTestID="targetChampion"
+      setChampion={setChampion}
+    />
+  );
 }
