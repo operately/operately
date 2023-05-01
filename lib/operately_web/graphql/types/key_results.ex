@@ -8,6 +8,16 @@ defmodule OperatelyWeb.GraphQL.Types.KeyResults do
     field :updated_at, non_null(:date)
     field :steps_completed, :integer
     field :steps_total, :integer
+
+    field :owner, :person do
+      resolve fn key_result, _, _ ->
+        if key_result.owner_id == nil do
+          {:ok, nil}
+        else
+          {:ok, Operately.People.get_person!(key_result.owner_id)}
+        end
+      end
+    end
   end
 
   input_object :create_key_result_input do

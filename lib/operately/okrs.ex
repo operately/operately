@@ -28,7 +28,8 @@ defmodule Operately.Okrs do
   def list_key_results!(objective_id) do
     query = (
       from kr in KeyResult,
-      where: kr.objective_id == ^objective_id
+      where: kr.objective_id == ^objective_id,
+      order_by: [asc: kr.inserted_at]
     )
 
     Repo.all(query)

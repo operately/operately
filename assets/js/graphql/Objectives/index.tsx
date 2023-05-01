@@ -22,6 +22,13 @@ const LIST_OBJECTIVES = gql`
         stepsCompleted
         stepsTotal
         updatedAt
+
+        owner {
+          id
+          fullName
+          avatarUrl
+          title
+        }
       }
     }
   }

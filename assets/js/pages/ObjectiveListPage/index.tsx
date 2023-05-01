@@ -167,7 +167,7 @@ function KeyResultStatus({ keyResult }) {
   );
 }
 
-function KeyResultRow({ objective, kr }) {
+function KeyResultRow({ kr }) {
   return (
     <div className="truncate px-2 py-2 flex justify-between items-center">
       <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ function KeyResultRow({ objective, kr }) {
           <KeyResultStatus keyResult={kr} />
         </div>
 
-        <TargetOwner goal={objective} target={kr} />
+        <TargetOwner target={kr} />
       </div>
     </div>
   );
@@ -209,7 +209,7 @@ function KeyResultList({ objective, editing, startEditing }) {
   return (
     <>
       {objective.keyResults.map((kr, i: number) => (
-        <KeyResultRow key={i} objective={objective} kr={kr} />
+        <KeyResultRow key={i} kr={kr} />
       ))}
 
       {editing && (

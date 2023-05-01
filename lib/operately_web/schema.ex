@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Schema do
   # Queries
   import_types Queries.Projects
   import_types Queries.Objectives
+  import_types Queries.KeyResults
 
   # Mutations
   import_types Mutations.Projects
@@ -132,6 +133,7 @@ defmodule OperatelyWeb.Schema do
   query do
     import_fields :project_queries
     import_fields :objective_queries
+    import_fields :key_result_queries
 
     field :me, :person do
       resolve fn _, _, %{context: context} ->
@@ -219,17 +221,6 @@ defmodule OperatelyWeb.Schema do
         )
 
         {:ok, people}
-      end
-    end
-
-    field :key_results, list_of(:key_result) do
-      arg :objective_id, non_null(:id)
-
-      resolve fn args, _ ->
-        objective_id = args.objective_id
-        key_results = Operately.Okrs.list_key_results!(objective_id)
-
-        {:ok, key_results}
       end
     end
 

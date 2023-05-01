@@ -158,7 +158,7 @@ function Owner({ person, dataTestID, setChampion }): JSX.Element {
 
   const handleCreateAndSetChampion = async (name: string, title: string) => {
     const { data } = await createProfile(client, name, title);
-    await setChampion(data.createPerson.id);
+    await setChampion(data.createProfile.id);
     setOpen(false);
   };
 
