@@ -1,35 +1,43 @@
-import React from 'react';
+import React from "react";
 
-import DefaultLayout from '../layouts/DefaultLayout';
+import DefaultLayout from "../layouts/DefaultLayout";
 
-import GroupAddPage from '../pages/GroupAddPage';
-import {GroupPage, GroupPageLoader} from '../pages/GroupPage';
-import {GroupListPage, GroupsListPageLoader} from '../pages/GroupListPage';
+import GroupAddPage from "../pages/GroupAddPage";
+import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
+import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
-import ProjectAddPage from '../pages/ProjectAddPage';
-import {ProjectPage, ProjectPageLoader} from '../pages/ProjectPage';
-import {ProjectListPage, ProjectListPageLoader} from '../pages/ProjectListPage';
+import ProjectAddPage from "../pages/ProjectAddPage";
+import { ProjectPage, ProjectPageLoader } from "../pages/ProjectPage";
+import {
+  ProjectListPage,
+  ProjectListPageLoader,
+} from "../pages/ProjectListPage";
 
-import TenetAddPage from '../pages/TenetAddPage';
-import {TenetPage, TenetPageLoader} from '../pages/TenetPage';
-import {TenetListPage, TenetListPageLoader} from '../pages/TenetListPage';
+import TenetAddPage from "../pages/TenetAddPage";
+import { TenetPage, TenetPageLoader } from "../pages/TenetPage";
+import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
 
-import KpiAddPage from '../pages/KpiAddPage';
-import {KpiPage, KpiPageLoader} from '../pages/KpiPage';
-import {KpiListPage, KpiListPageLoader} from '../pages/KpiListPage';
+import KpiAddPage from "../pages/KpiAddPage";
+import { KpiPage, KpiPageLoader } from "../pages/KpiPage";
+import { KpiListPage, KpiListPageLoader } from "../pages/KpiListPage";
 
-import ObjectiveAddPage from '../pages/ObjectiveAddPage';
-import {ObjectivePage, ObjectivePageLoader} from '../pages/ObjectivePage';
-import {ObjectiveListPage, ObjectiveListPageLoader} from '../pages/ObjectiveListPage';
+import ObjectiveAddPage from "../pages/ObjectiveAddPage";
+import { ObjectivePage, ObjectivePageLoader } from "../pages/ObjectivePage";
+import {
+  ObjectiveListPage,
+  ObjectiveListPageLoader,
+} from "../pages/ObjectiveListPage";
 
-import NotFoundPage from '../pages/NotFoundPage';
+import ProfilePage from "../pages/ProfilePage";
+
+import NotFoundPage from "../pages/NotFoundPage";
 
 import { createBrowserRouter } from "react-router-dom";
-import client from '../graphql/client';
-import nprogress from 'nprogress';
+import client from "../graphql/client";
+import nprogress from "nprogress";
 
-function loaderWithApollo(loader : any) {
-  return async (params : any) => {
+function loaderWithApollo(loader: any) {
+  return async (params: any) => {
     try {
       nprogress.start();
 
@@ -90,7 +98,7 @@ const routes = createBrowserRouter([
       {
         path: "/tenets/:id",
         loader: loaderWithApollo(TenetPageLoader),
-        element: <TenetPage />
+        element: <TenetPage />,
       },
       {
         path: "/kpis",
@@ -104,7 +112,7 @@ const routes = createBrowserRouter([
       {
         path: "/kpis/:id",
         loader: loaderWithApollo(KpiPageLoader),
-        element: <KpiPage />
+        element: <KpiPage />,
       },
       {
         path: "/objectives",
@@ -118,14 +126,18 @@ const routes = createBrowserRouter([
       {
         path: "/objectives/:id",
         loader: loaderWithApollo(ObjectivePageLoader),
-        element: <ObjectivePage />
+        element: <ObjectivePage />,
+      },
+      {
+        path: "/people/:id",
+        element: <ProfilePage />,
       },
       {
         path: "*",
         element: <NotFoundPage />,
-      }
-    ]
-  }
+      },
+    ],
+  },
 ]);
 
 export default routes;

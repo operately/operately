@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Schema do
   import_types Queries.Projects
   import_types Queries.Objectives
   import_types Queries.KeyResults
+  import_types Queries.People
 
   # Mutations
   import_types Mutations.Projects
@@ -113,12 +114,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :project_queries
     import_fields :objective_queries
     import_fields :key_result_queries
-
-    field :me, :person do
-      resolve fn _, _, %{context: context} ->
-        {:ok, context.current_account.person}
-      end
-    end
+    import_fields :people_queries
 
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
@@ -171,17 +167,6 @@ defmodule OperatelyWeb.Schema do
         tenet = Operately.Tenets.get_tenet!(args.id)
 
         {:ok, tenet}
-      end
-    end
-
-
-    field :search_people, list_of(:person) do
-      arg :query, non_null(:string)
-
-      resolve fn args, _ ->
-        people = Operately.People.search_people(args.query)
-
-        {:ok, people}
       end
     end
 

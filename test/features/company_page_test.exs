@@ -1,4 +1,4 @@
-defmodule MyApp.Features.CompanyPageTest do
+defmodule Operately.Features.CompanyPageTest do
   use Operately.FeatureCase
 
   setup session do
