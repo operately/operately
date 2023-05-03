@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import Icon from "../../components/Icon";
 import { GoalOwner, TargetOwner } from "./Champion";
+import { GoalGroup, TargetGroup } from "./Group";
 
 export async function ObjectiveListPageLoader(apolloClient: any) {
   await listObjectives(apolloClient, {});
@@ -178,7 +179,7 @@ function KeyResultRow({ kr }) {
       </div>
 
       <div className="flex items-center">
-        <Group name={kr.group} />
+        <TargetGroup target={kr} />
 
         <div className="border-r border-dark-8% pr-2 w-24 flex mr-4">
           <KeyResultStatus keyResult={kr} />
@@ -222,19 +223,6 @@ function KeyResultList({ objective, editing, startEditing }) {
   );
 }
 
-function Group({ name }) {
-  return (
-    <div className="border-r border-dark-8% pr-2 w-48 flex flex-row-reverse">
-      <div className="text-dark-2 rounded px-1 py-0.5 gap-0.5 flex items-center">
-        <div className="scale-75">
-          <Icon name="groups" size="small" color="dark-2" />
-        </div>
-        not assigned
-      </div>
-    </div>
-  );
-}
-
 function ObjectiveCard({ objective, editing, startEditing }) {
   return (
     <div
@@ -251,7 +239,7 @@ function ObjectiveCard({ objective, editing, startEditing }) {
         </Link>
 
         <div className="flex items-center">
-          <Group name="marketing" />
+          <GoalGroup goal={objective} />
 
           <KeyResultStatus keyResult={{ status: "pending" }} />
 

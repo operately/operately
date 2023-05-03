@@ -21,6 +21,14 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
         {:ok, key_results}
       end
     end
+
+    field :group, :group do
+      resolve fn objective, _, _ ->
+        group = Operately.Groups.get_group(objective.group_id)
+
+        {:ok, group}
+      end
+    end
   end
 
   input_object :create_objective_input do

@@ -63,6 +63,8 @@ defmodule Operately.Groups do
       ** (Ecto.NoResultsError)
 
   """
+  def get_group(nil), do: nil
+  def get_group(id), do: Repo.get(Group, id)
   def get_group!(id), do: Repo.get!(Group, id)
 
   def get_group_by_name(name) do
