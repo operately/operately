@@ -3,6 +3,7 @@ import React from "react";
 import Avatar, { AvatarSize } from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
+import { useNavigate } from "react-router-dom";
 import { useApolloClient } from "@apollo/client";
 import { setObjectiveOwner, setTargetOwner } from "../../graphql/Objectives";
 import { createProfile, useDebouncedPeopleSearch } from "../../graphql/People";
@@ -11,12 +12,10 @@ import * as Popover from "../../components/Popover";
 
 type Screen = "default" | "setChampion" | "createProfile";
 
-function Profile({
-  person,
-  onSeeProfile,
-  onUnassign,
-  onChangeChampion,
-}): JSX.Element {
+function Profile({ person, onUnassign, onChangeChampion }): JSX.Element {
+  const navigate = useNavigate();
+  const handleSeeProfile = () => navigate(`/people/${person.id}`);
+
   return (
     <div>
       <div className="w-56 p-2 flex flex-col items-center">
@@ -32,7 +31,11 @@ function Profile({
       </div>
 
       <div className="flex flex-col gap-1">
-        <Popover.Button children="See profile" onClick={onSeeProfile} />
+        <Popover.Button
+          data-test-id="viewChampionsProfile"
+          children="See profile"
+          onClick={handleSeeProfile}
+        />
         <Popover.Button
           children="Unassign"
           data-test-id="unassignChampion"
@@ -162,7 +165,6 @@ function Owner({ person, dataTestID, setChampion }): JSX.Element {
     setOpen(false);
   };
 
-  let handleSeeProfile = () => console.log("see profile");
   let handleChangeChampion = () => setScreen("setChampion");
 
   let content: JSX.Element | null = null;
@@ -173,7 +175,6 @@ function Owner({ person, dataTestID, setChampion }): JSX.Element {
         content = (
           <Profile
             person={person}
-            onSeeProfile={handleSeeProfile}
             onUnassign={handleUnassign}
             onChangeChampion={handleChangeChampion}
           />
