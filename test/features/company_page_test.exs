@@ -76,6 +76,16 @@ defmodule MyApp.Features.CompanyPageTest do
     assert_goal_champion(state, "Unassigned")
   end
 
+  feature "see group details", state do
+    group = create_group("Customer Success")
+    create_goal("Increase retention rate", group: group)
+
+    state
+    |> visit_page()
+    |> click_on_the_goal_group()
+    |> UI.assert_text("Customer Success")
+  end
+
   # ===========================================================================
 
   defp create_goal(name) do
@@ -86,18 +96,26 @@ defmodule MyApp.Features.CompanyPageTest do
     Operately.OkrsFixtures.objective_fixture(%{name: name, owner_id: champion.id})
   end
 
+  defp create_goal(name, group: group) do
+    Operately.OkrsFixtures.objective_fixture(%{name: name, group_id: group.id})
+  end
+
+  defp create_target(name, objective_id) do
+    Operately.OkrsFixtures.key_result_fixture(%{name: name, objective_id: objective_id})
+  end
+
   defp create_goal_with_targets(name, targets) do
     goal = create_goal(name)
-
-    Enum.each(targets, fn target ->
-      Operately.OkrsFixtures.key_result_fixture(%{name: target, objective_id: goal.id})
-    end)
-
+    Enum.each(targets, fn t -> create_target(t, goal.id) end)
     goal
   end
 
   defp create_person(name) do
     Operately.PeopleFixtures.person_fixture(%{full_name: name})
+  end
+
+  defp create_group(name) do
+    Operately.GroupsFixtures.group_fixture(%{name: name})
   end
 
   defp visit_page(state) do
@@ -126,6 +144,10 @@ defmodule MyApp.Features.CompanyPageTest do
 
   defp click_on_the_target_champion(state) do
     state |> UI.click(testid: "targetChampion")
+  end
+
+  defp click_on_the_goal_group(state) do
+    state |> UI.click(testid: "goalGroup")
   end
 
   defp choose_champion(state, name) do
