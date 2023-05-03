@@ -104,7 +104,7 @@ defmodule Operately.Features.CompanyPageTest do
   feature "see target group details", state do
     group = create_group("Marketing")
     goal = create_goal("Increase retention rate")
-    target = create_target("Increase retention rate", goal.id, group: group)
+    create_target("Increase retention rate", goal.id, group: group)
 
     state
     |> visit_page()
@@ -192,6 +192,10 @@ defmodule Operately.Features.CompanyPageTest do
 
   defp click_on_the_goal_group(state) do
     state |> UI.click(testid: "goalGroup")
+  end
+
+  defp click_on_the_target_group(state) do
+    state |> UI.click(testid: "targetGroup")
   end
 
   defp click_on_go_to_group(state) do

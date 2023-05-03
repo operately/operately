@@ -29,17 +29,17 @@ const LIST_OBJECTIVES = gql`
         stepsTotal
         updatedAt
 
+        group {
+          id
+          name
+          mission
+        }
+
         owner {
           id
           fullName
           avatarUrl
           title
-        }
-
-        group {
-          id
-          name
-          mission
         }
       }
     }
