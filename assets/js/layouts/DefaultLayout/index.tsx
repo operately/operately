@@ -1,21 +1,36 @@
-import React from 'react';
+import React from "react";
 
-import { Outlet } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
 
-import SideNavigation from '../../components/SideNavigation';
-import User from './User';
+import SideNavigation from "../../components/SideNavigation";
+import User from "./User";
 
 export default function DefaultLayout() {
   return (
     <div>
-      <SideNavigation />
-      <div className="ml-72">
-        <div className="m-11">
-          <Outlet />
+      <div className="flex justify-between fixed top-0 left-0 right-0 text-new-dark-3 px-4 py-4">
+        <div className="flex items-center gap-4">
+          <div className="font-semibold">Operately</div>
+          <div className="bg-new-dark-2 rounded w-64 px-4 py-1.5 text-sm flex justify-between text-gray-500">
+            <span>Search&hellip;</span>
+            <span className="text-gray-500">⌘ K</span>
+          </div>
+          <div className="font-bold">Company</div>
+          <div className="font-bold text-gray-500">Timeline</div>
+          <div className="font-bold text-gray-500">People & Groups</div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="font-bold text-gray-500">My Assignments</div>
+          <User />
         </div>
       </div>
 
-      <User />
+      <div className="max-w-7xl mx-auto text-new-dark-3">
+        <div className="m-11 mt-24">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }

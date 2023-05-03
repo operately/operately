@@ -76,7 +76,7 @@ function AddKeyResultForm({ onSubmit, onCancel }) {
     <div className="truncate px-2 py-2 flex justify-between items-center flex-1">
       <div className="flex items-center gap-2 flex-1">
         <div className="scale-75">
-          <Icon name="flag" size="small" color="dark" />
+          <Icon name="flag" size="small" color="light" />
         </div>
 
         <input
@@ -159,7 +159,7 @@ function KeyResultStatus({ keyResult }) {
   return (
     <div className="w-24 flex mr-4">
       <div
-        className={`bg-white flex items-center justify-between px-2 py-0.5 rounded gap-1`}
+        className={`flex items-center justify-between px-2 py-0.5 rounded gap-1`}
       >
         <div className={`rounded-full w-3 h-3 ${bgColor} border-2`} />
         {keyResult.status}
@@ -173,7 +173,7 @@ function KeyResultRow({ kr }) {
     <div className="truncate px-2 py-2 flex justify-between items-center">
       <div className="flex items-center gap-2">
         <div className="scale-75">
-          <Icon name="flag" size="small" color="dark" />
+          <Icon name="flag" size="small" color="light" />
         </div>
         {kr.name}
       </div>
@@ -226,7 +226,7 @@ function KeyResultList({ objective, editing, startEditing }) {
 function ObjectiveCard({ objective, editing, startEditing }) {
   return (
     <div
-      className="border border-stone-100 shadow rounded bg-white"
+      className="border-t border-b border-slate-700"
       data-test-id={objective.name}
     >
       <div className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
@@ -307,13 +307,25 @@ export function ObjectiveListPage() {
 
   return (
     <>
-      <div className="mb-4">
-        <h1 className="font-bold text-2xl">Acme Inc.</h1>
-        <div className="text-dark-1">Sell the best possible boxes</div>
+      <div className="mb-4 text-center flex flex-col items-center">
+        <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8">
+          AI
+        </div>
+
+        <h1 className="font-bold text-5xl">Acme Inc.</h1>
+        <div className="text-new-dark-3 text-xl max-w-xl">
+          Bring the best user experience to customers through innovative
+          hardware, software, and services.
+        </div>
       </div>
 
-      <div className="my-4 py-4">
-        <h1 className="font-bold mb-4">Company goals</h1>
+      <div className="my-16 p-8 rounded-lg bg-new-dark-2">
+        <div className="flex justify-around -mt-12 mb-12">
+          <h1 className="font-semibold text-sm bg-slate-700 uppercase rounded py-1 px-3 prose max-w-xl">
+            Exceptional customer service
+          </h1>
+        </div>
+
         <ListOfObjectives
           objectives={data.objectives}
           editing={editing}

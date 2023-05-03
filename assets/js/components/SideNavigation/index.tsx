@@ -1,6 +1,6 @@
-import React from 'react';
-import Link from './Link';
-import Icon from '../Icon';
+import React from "react";
+import Link from "./Link";
+import Icon from "../Icon";
 import { useTranslation } from "react-i18next";
 
 interface SideNavigationProps {
@@ -22,7 +22,11 @@ function SideNavigation({ isCollapsed }: SideNavigationProps) {
           </div>
         </div>
 
-        <ul className={`flex flex-col gap-2.5 list-none m-0 p-0 ${isCollapsed ? 'hidden' : 'block'}`}>
+        <ul
+          className={`flex flex-col gap-2.5 list-none m-0 p-0 ${
+            isCollapsed ? "hidden" : "block"
+          }`}
+        >
           <Link to="/objectives" title={t("Company")} icon="objectives" />
           <Link to="/projects" title={t("Projects")} icon="my projects" />
           <Link to="/groups" title={t("Groups")} icon="groups" />
