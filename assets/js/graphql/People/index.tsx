@@ -73,3 +73,20 @@ export function useDebouncedPeopleSearch(query: string) {
     setSearchQuery: debouncedSetSearchQuery,
   };
 }
+
+const GET_PERSON = gql`
+  query GetPerson($id: ID!) {
+    person(id: $id) {
+      id
+      fullName
+      title
+      avatarUrl
+    }
+  }
+`;
+
+export function usePerson(id: string) {
+  return useQuery(GET_PERSON, {
+    variables: { id },
+  });
+}
