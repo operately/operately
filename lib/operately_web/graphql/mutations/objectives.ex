@@ -18,5 +18,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Objectives do
         Operately.Okrs.set_objective_owner(args.id, args.owner_id)
       end
     end
+
+    field :set_goal_group, :objective do
+      arg :id, non_null(:id)
+      arg :group_id, :id
+
+      resolve fn args, _ ->
+        Operately.Okrs.set_goal_group(args.id, args.group_id)
+      end
+    end
   end
 end
