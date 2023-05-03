@@ -18,11 +18,12 @@ export default function ProfilePage() {
   const person = data.person;
 
   return (
-    <div className="w-56 p-2 flex flex-col items-center">
-      <div className="my-2 flex flex-col items-center">
-        <Avatar person={person} size={AvatarSize.XXLarge} />
+    <div className="p-2 flex gap-2 items-center">
+      <div className="my-2 flex flex-col">
+        <Avatar person={person} size={AvatarSize.Large} />
       </div>
-      <div className="text-center">
+
+      <div>
         <div className="font-semibold">{person.fullName}</div>
         <div className="text-sm text-dark-2">
           {person.title} at Acme Incorporated
