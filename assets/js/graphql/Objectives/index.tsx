@@ -35,6 +35,12 @@ const LIST_OBJECTIVES = gql`
           avatarUrl
           title
         }
+
+        group {
+          id
+          name
+          mission
+        }
       }
     }
   }
