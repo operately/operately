@@ -117,7 +117,13 @@ defmodule Operately.FeatureCase do
     end
 
     def assert_page(state, path) do
-      session(state) |> Browser.assert_path(path)
+      require ExUnit.Assertions
+
+      wait_for_page_to_load(state, path)
+
+      ExUnit.Assertions.assert Browser.current_path(session(state)) == path
+
+      state
     end
 
     def visit(state, path) do

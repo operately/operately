@@ -1,14 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import * as Popover from "../../components/Popover";
 import Icon from "../../components/Icon";
 
-function Profile({
-  group,
-  onSeeGroup,
-  onUnassign,
-  onChangeGroup,
-}): JSX.Element {
+function Profile({ group, onUnassign, onChangeGroup }): JSX.Element {
+  const navigate = useNavigate();
+  const handleGoToGroup = () => navigate(`/groups/${group.id}`);
+
   return (
     <div>
       <div className="w-56 mb-2 flex flex-col items-center">
@@ -19,23 +18,27 @@ function Profile({
       </div>
 
       <div className="flex flex-col gap-1">
-        <Popover.Button children="Go to Group" onClick={onSeeGroup} />
+        <Popover.Button
+          data-test-id="goToGroup"
+          children="Go to Group"
+          onClick={handleGoToGroup}
+        />
         <Popover.Button
           children="Unassign"
-          data-test-id="unassignChampion"
+          data-test-id="unassignGroup"
           onClick={onUnassign}
         />
-        <Popover.Button children="Change Group" onClick={onChangeGroup} />
+        <Popover.Button
+          data-test-id="changeGroup"
+          children="Change Group"
+          onClick={onChangeGroup}
+        />
       </div>
     </div>
   );
 }
 
 function Group({ group, dataTestID }): JSX.Element {
-  const onSeeGroup = () => {
-    console.log("see group");
-  };
-
   const onUnassign = () => {
     console.log("unassign");
   };
@@ -50,7 +53,6 @@ function Group({ group, dataTestID }): JSX.Element {
     content = (
       <Profile
         group={group}
-        onSeeGroup={onSeeGroup}
         onChangeGroup={onChangeGroup}
         onUnassign={onUnassign}
       />
