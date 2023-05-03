@@ -18,6 +18,16 @@ defmodule OperatelyWeb.GraphQL.Types.KeyResults do
         end
       end
     end
+
+    field :group, :group do
+      resolve fn key_result, _, _ ->
+        if key_result.group_id == nil do
+          {:ok, nil}
+        else
+          {:ok, Operately.Groups.get_group!(key_result.group_id)}
+        end
+      end
+    end
   end
 
   input_object :create_key_result_input do
