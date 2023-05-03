@@ -7,7 +7,6 @@ import {
   listObjectives,
   createObjective,
   createKeyResult,
-  setObjectiveOwner,
 } from "../../graphql/Objectives";
 
 import { Link } from "react-router-dom";
@@ -19,6 +18,44 @@ export async function ObjectiveListPageLoader(apolloClient: any) {
   await listObjectives(apolloClient, {});
 
   return {};
+}
+
+function KPI({ name, lastValue, lastChange }) {
+  return (
+    <div className="flex flex-col border-t border-gray-600">
+      <div className="py-2 flex items-center gap-1 justify-between">
+        <div>
+          <div className="">{name}</div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="w-30 relative h-8 flex gap-1 items-end">
+            <div className="h-1/4  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-1/2  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-1/4  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-1/2  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-1/4  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-1/2  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-1/4  bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            <div className="h-full bg-brand-base w-1.5"></div>
+            <div className="h-3/4  bg-brand-base w-1.5"></div>
+          </div>
+
+          <div className="text-right w-20">
+            <div className="font-semibold">{lastValue}</div>
+            <div className="text-xs">{lastChange}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function AddGoalForm({ onSubmit, onCancel }) {
@@ -325,10 +362,10 @@ export function CompanyPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 my-10">
-        <div className="p-4 rounded bg-new-dark-2">
-          <div className="">
-            <h1 className="uppercase font-bold mb-4">
+      <div className="grid grid-cols-2 gap-6 gap-y-10 my-16">
+        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+          <div className="text-center flex flex-col items-center">
+            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
               Exceptional customer service
             </h1>
             <div className="text-sm">
@@ -337,11 +374,34 @@ export function CompanyPage() {
               continue to return but will also recommend the business to others.
             </div>
           </div>
+
+          <div className="mt-12">
+            <KPI
+              name="Monthly Recurring Revenue"
+              lastValue="$45.2M"
+              lastChange="+$1.2M"
+            />
+            <KPI
+              name="Customer Acquisition Cost"
+              lastValue="$701.2"
+              lastChange="+$8.2"
+            />
+            <KPI
+              name="Customer Lifetime Value"
+              lastValue="$42.001"
+              lastChange="+$8.2"
+            />
+
+            <div className="border-t border-gray-600 pt-10 flex justify-between">
+              <div>2 people contributing</div>
+              <div>3 Goals &middot; 80 Projects</div>
+            </div>
+          </div>
         </div>
 
-        <div className="p-4 rounded bg-new-dark-2">
+        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
           <div className="text-center flex flex-col items-center">
-            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-2 py-1 rounded">
+            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
               Maintain Profitable Growth
             </h1>
             <div className="text-sm">
@@ -352,89 +412,102 @@ export function CompanyPage() {
             </div>
           </div>
 
-          <div className="mt-8 border-t border-new-dark-3">
-            <div className="flex flex-col divide-y divide-new-dark-3">
-              <div className="py-2 flex items-center gap-1 justify-between">
-                <div>
-                  <div className="">Montly Revenue</div>
-                </div>
+          <div className="mt-12">
+            <KPI
+              name="Monthly Recurring Revenue"
+              lastValue="$45.2M"
+              lastChange="+$1.2M"
+            />
+            <KPI
+              name="Customer Acquisition Cost"
+              lastValue="$701.2"
+              lastChange="+$8.2"
+            />
+            <KPI
+              name="Customer Lifetime Value"
+              lastValue="$42.001"
+              lastChange="+$8.2"
+            />
 
-                <div className="flex items-center gap-4">
-                  <div className="w-30 relative h-8 flex gap-1 items-end">
-                    <div className="h-1/4  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-1/2  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-1/4  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-1/2  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-1/4  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-1/2  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-1/4  bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                    <div className="h-full bg-brand-base w-2"></div>
-                    <div className="h-3/4  bg-brand-base w-2"></div>
-                  </div>
+            <div className="border-t border-gray-600 pt-10 flex justify-between">
+              <div>40 people contributing</div>
+              <div>12 Goals &middot; 17 Projects</div>
+            </div>
+          </div>
+        </div>
 
-                  <div className="text-right">
-                    <div className="font-semibold">$43.2M</div>
-                    <div className="text-xs">+$0.2M</div>
-                  </div>
-                </div>
-              </div>
+        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+          <div className="text-center flex flex-col items-center">
+            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
+              Global perspective
+            </h1>
 
-              <div className="px-4 py-2 bg-new-dark-1 flex items-center gap-1 justify-between">
-                <div>Customer Aquisition Cost</div>
-                <div className="flex items-baseline gap-4">
-                  <div className="font-semibold">$921</div>
-                  <div className="w-30 relative h-5 flex gap-0.5 items-end">
-                    <div className="h-3/4 bg-red-700 w-1"></div>
-                    <div className="h-1/2 bg-red-700 w-1"></div>
-                    <div className="h-1/4 bg-red-700 w-1"></div>
-                    <div className="h-3/4 bg-red-700 w-1"></div>
-                    <div className="h-1/4 bg-red-700 w-1"></div>
-                    <div className="h-3/4 bg-red-700 w-1"></div>
-                    <div className="h-1/2 bg-red-700 w-1"></div>
-                    <div className="h-3/4 bg-white w-1"></div>
-                    <div className="h-1/4 bg-white w-1"></div>
-                    <div className="h-3/4 bg-white w-1"></div>
-                    <div className="h-1/2 bg-white w-1"></div>
-                    <div className="h-3/4 bg-white w-1"></div>
-                    <div className="h-1/4 bg-white w-1"></div>
-                    <div className="h-3/4 bg-white w-1"></div>
-                    <div className="h-1/2 bg-white w-1"></div>
-                    <div className="h-3/4 bg-white w-1"></div>
-                  </div>
-                </div>
-              </div>
+            <div className="text-sm">
+              We have a global perspective, recognizing the importance of
+              diversity, cultural awareness, and global collaboration in today's
+              interconnected world. Our product and services are accessible on
+              multiple markets pushing the boundaries of innovation.
+            </div>
+          </div>
 
-              <div className="px-4 py-2 bg-new-dark-1 flex items-center gap-1 justify-between">
-                <div>Customer Lifetime Value</div>
-                <div className="flex items-baseline gap-4">
-                  <div className="font-semibold">$42,091</div>
-                  <div className="w-30 relative h-5 flex gap-0.5 items-end">
-                    <div className="h-3/4 bg-red-700 w-1"></div>
-                    <div className="h-1/2 bg-red-700 w-1"></div>
-                    <div className="h-1/4 bg-red-700 w-1"></div>
-                    <div className="h-3/4 bg-red-700 w-1"></div>
-                    <div className="h-1/4 bg-red-700 w-1"></div>
-                    <div className="h-3/4 bg-red-700 w-1"></div>
-                    <div className="h-1/2 bg-red-700 w-1"></div>
-                    <div className="h-3/4 bg-new-dark-3 w-1"></div>
-                    <div className="h-1/4 bg-new-dark-3 w-1"></div>
-                    <div className="h-3/4 bg-new-dark-3 w-1"></div>
-                    <div className="h-1/2 bg-new-dark-3 w-1"></div>
-                    <div className="h-3/4 bg-new-dark-3 w-1"></div>
-                    <div className="h-1/4 bg-new-dark-3 w-1"></div>
-                    <div className="h-3/4 bg-new-dark-3 w-1"></div>
-                    <div className="h-1/2 bg-new-dark-3 w-1"></div>
-                    <div className="h-3/4 bg-new-dark-3 w-1"></div>
-                  </div>
-                </div>
-              </div>
+          <div className="mt-12">
+            <KPI
+              name="Monthly Recurring Revenue"
+              lastValue="$45.2M"
+              lastChange="+$1.2M"
+            />
+            <KPI
+              name="Customer Acquisition Cost"
+              lastValue="$701.2"
+              lastChange="+$8.2"
+            />
+            <KPI
+              name="Customer Lifetime Value"
+              lastValue="$42.001"
+              lastChange="+$8.2"
+            />
+
+            <div className="border-t border-gray-600 pt-10 flex justify-between">
+              <div>40 people contributing</div>
+              <div>12 Goals &middot; 17 Projects</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+          <div className="text-center flex flex-col items-center">
+            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
+              Hire and Retain the Best
+            </h1>
+
+            <div className="text-sm">
+              We have a global perspective, recognizing the importance of
+              diversity, cultural awareness, and global collaboration in today's
+              interconnected world. Our product and services are accessible on
+              multiple markets pushing the boundaries of innovation.
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <KPI
+              name="Monthly Recurring Revenue"
+              lastValue="$45.2M"
+              lastChange="+$1.2M"
+            />
+            <KPI
+              name="Customer Acquisition Cost"
+              lastValue="$701.2"
+              lastChange="+$8.2"
+            />
+            <KPI
+              name="Customer Lifetime Value"
+              lastValue="$42.001"
+              lastChange="+$8.2"
+            />
+
+            <div className="border-t border-gray-600 pt-10 flex justify-between">
+              <div>40 people contributing</div>
+              <div>12 Goals &middot; 17 Projects</div>
             </div>
           </div>
         </div>
