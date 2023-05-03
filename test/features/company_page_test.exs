@@ -114,7 +114,7 @@ defmodule Operately.Features.CompanyPageTest do
     |> UI.assert_page("/groups/#{group.id}")
   end
 
-  feature "unassigning groups", state do
+  feature "unassigning goal group", state do
     group = create_group("Customer Success")
     create_goal("Increase retention rate", group: group)
 
@@ -124,6 +124,19 @@ defmodule Operately.Features.CompanyPageTest do
     |> click_unassign_group()
 
     assert_goal_group(state, "Unassigned")
+  end
+
+  feature "unassigning target group", state do
+    group = create_group("Customer Success")
+    goal = create_goal("Increase retention rate")
+    create_target("Increase retention rate", goal.id, group: group)
+
+    state
+    |> visit_page()
+    |> click_on_the_target_group()
+    |> click_unassign_group()
+
+    assert_target_group(state, "Unassigned")
   end
 
   # ===========================================================================
@@ -212,6 +225,10 @@ defmodule Operately.Features.CompanyPageTest do
 
   defp assert_goal_group(state, name) do
     UI.assert_has(state, title: name, in: UI.find(state, testid: "goalGroup"))
+  end
+
+  defp assert_target_group(state, name) do
+    UI.assert_has(state, title: name, in: UI.find(state, testid: "targetGroup"))
   end
 
   defp assert_target_champion(state, name) do
