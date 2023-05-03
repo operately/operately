@@ -149,6 +149,14 @@ defmodule Operately.Okrs do
     |> Repo.update()
   end
 
+  def set_key_result_group(id, group_id \\ nil) do
+    key_result = get_key_result!(id)
+
+    key_result
+    |> KeyResult.changeset(%{group_id: group_id})
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a objective.
 

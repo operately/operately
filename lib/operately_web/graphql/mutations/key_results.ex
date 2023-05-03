@@ -18,6 +18,15 @@ defmodule OperatelyWeb.GraphQL.Mutations.KeyResults do
         Operately.Okrs.set_key_result_owner(args.id, args.owner_id)
       end
     end
+
+    field :set_target_group, :key_result do
+      arg :id, non_null(:id)
+      arg :group_id, :id
+
+      resolve fn args, _ ->
+        Operately.Okrs.set_key_result_group(args.id, args.group_id)
+      end
+    end
   end
 
 end
