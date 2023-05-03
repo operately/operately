@@ -1,5 +1,5 @@
 import React from "react";
-import { gql, useQuery, ApolloClient } from "@apollo/client";
+import { gql, useQuery, ApolloClient, useApolloClient } from "@apollo/client";
 
 const LIST_OBJECTIVES = gql`
   query ListObjectives($groupId: ID) {
@@ -166,4 +166,40 @@ export function setTargetOwner(
     variables,
     refetchQueries: [{ query: LIST_OBJECTIVES }, "ListObjectives"],
   });
+}
+
+export function useSetGoalGroup(goalId: string) {
+  const client = useApolloClient();
+
+  return function (groupId: string) {
+    return client.mutate({
+      mutation: gql`
+        mutation SetGoalGroup($id: ID!, $group_id: ID) {
+          setGoalGroup(id: $id, group_id: $group_id) {
+            id
+          }
+        }
+      `,
+      variables: { id: goalId, group_id: groupId },
+      refetchQueries: [{ query: LIST_OBJECTIVES }, "ListObjectives"],
+    });
+  };
+}
+
+export function useSetTargetGroup(targetId: string) {
+  const client = useApolloClient();
+
+  return function (groupId: string) {
+    return client.mutate({
+      mutation: gql`
+        mutation SetTargetGroup($id: ID!, $group_id: ID) {
+          setTargetGroup(id: $id, group_id: $group_id) {
+            id
+          }
+        }
+      `,
+      variables: { id: targetId, group_id: groupId },
+      refetchQueries: [{ query: LIST_OBJECTIVES }, "ListObjectives"],
+    });
+  };
 }

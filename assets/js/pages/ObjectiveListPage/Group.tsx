@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import * as Popover from "../../components/Popover";
 import Icon from "../../components/Icon";
 
+import { useSetGoalGroup, useSetTargetGroup } from "../../graphql/Objectives";
+
 function Profile({ group, onUnassign, onChangeGroup }): JSX.Element {
   const navigate = useNavigate();
   const handleGoToGroup = () => navigate(`/groups/${group.id}`);
@@ -38,9 +40,9 @@ function Profile({ group, onUnassign, onChangeGroup }): JSX.Element {
   );
 }
 
-function Group({ group, dataTestID }): JSX.Element {
-  const onUnassign = () => {
-    console.log("unassign");
+function Group({ group, dataTestID, setGroup }): JSX.Element {
+  const onUnassign = async () => {
+    await setGroup(null);
   };
 
   const onChangeGroup = () => {
@@ -59,11 +61,16 @@ function Group({ group, dataTestID }): JSX.Element {
     );
   }
 
+  const title = group ? group.name : "Unassigned";
+
   return (
     <Popover.Root modal={true}>
       <Popover.Trigger className="outline-0" data-test-id={dataTestID}>
         <div className="pr-2 flex flex-row-reverse">
-          <div className="text-dark-2 rounded px-1 py-0.5 gap-0.5 flex items-center">
+          <div
+            className="text-dark-2 rounded px-1 py-0.5 gap-0.5 flex items-center"
+            title={title}
+          >
             <div className="scale-75">
               <Icon name="groups" size="small" color="dark-2" />
             </div>
@@ -87,9 +94,21 @@ function Group({ group, dataTestID }): JSX.Element {
 }
 
 export function TargetGroup({ target }): JSX.Element {
-  return <Group group={target.group} dataTestID="targetGroup" />;
+  const setTargetGroup = useSetTargetGroup(target.id);
+
+  return (
+    <Group
+      group={target.group}
+      dataTestID="targetGroup"
+      setGroup={setTargetGroup}
+    />
+  );
 }
 
 export function GoalGroup({ goal }): JSX.Element {
-  return <Group group={goal.group} dataTestID="goalGroup" />;
+  const setGoalGroup = useSetGoalGroup(goal.id);
+
+  return (
+    <Group group={goal.group} dataTestID="goalGroup" setGroup={setGoalGroup} />
+  );
 }

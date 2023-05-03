@@ -71,7 +71,7 @@ defmodule MyApp.Features.CompanyPageTest do
     state
     |> visit_page()
     |> click_on_the_goal_champion()
-    |> click_unassign()
+    |> click_unassign_champion()
 
     assert_goal_champion(state, "Unassigned")
   end
@@ -86,6 +86,18 @@ defmodule MyApp.Features.CompanyPageTest do
     |> UI.assert_text("Customer Success")
     |> click_on_go_to_group()
     |> UI.assert_page("/groups/#{group.id}")
+  end
+
+  feature "unassigning groups", state do
+    group = create_group("Customer Success")
+    create_goal("Increase retention rate", group: group)
+
+    state
+    |> visit_page()
+    |> click_on_the_goal_group()
+    |> click_unassign_group()
+
+    assert_goal_group(state, "Unassigned")
   end
 
   # ===========================================================================
@@ -164,6 +176,10 @@ defmodule MyApp.Features.CompanyPageTest do
     UI.assert_has(state, title: name, in: UI.find(state, testid: "goalChampion"))
   end
 
+  defp assert_goal_group(state, name) do
+    UI.assert_has(state, title: name, in: UI.find(state, testid: "goalGroup"))
+  end
+
   defp assert_target_champion(state, name) do
     UI.assert_has(state, title: name, in: UI.find(state, testid: "targetChampion"))
   end
@@ -182,7 +198,11 @@ defmodule MyApp.Features.CompanyPageTest do
     state |> UI.click(testid: "createAndAssign")
   end
 
-  defp click_unassign(state) do
+  defp click_unassign_champion(state) do
     state |> UI.click(testid: "unassignChampion")
+  end
+
+  defp click_unassign_group(state) do
+    state |> UI.click(testid: "unassignGroup")
   end
 end

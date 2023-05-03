@@ -141,6 +141,14 @@ defmodule Operately.Okrs do
     |> Repo.update()
   end
 
+  def set_goal_group(id, group_id \\ nil) do
+    objective = get_objective!(id)
+
+    objective
+    |> Objective.changeset(%{group_id: group_id})
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a objective.
 
