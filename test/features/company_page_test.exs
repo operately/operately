@@ -24,6 +24,19 @@ defmodule Operately.Features.CompanyPageTest do
     |> UI.assert_text(target1)
   end
 
+  feature "viewing details about a goal's champion", state do
+    person = create_person("John Doe", "Head of Customer Success")
+    create_goal("Increase retention rate", champion: person)
+
+    state
+    |> visit_page()
+    |> click_on_the_goal_champion()
+    |> UI.assert_text("John Doe")
+    |> UI.assert_text("Head of Customer Success")
+    |> click_on_view_profile()
+    |> UI.assert_page("/people/#{person.id}")
+  end
+
   feature "assigning goal champions", state do
     create_person("John Doe")
     create_goal("Increase retention rate")
@@ -124,8 +137,8 @@ defmodule Operately.Features.CompanyPageTest do
     goal
   end
 
-  defp create_person(name) do
-    Operately.PeopleFixtures.person_fixture(%{full_name: name})
+  defp create_person(name, title \\ nil) do
+    Operately.PeopleFixtures.person_fixture(%{full_name: name, title: title})
   end
 
   defp create_group(name) do
@@ -186,6 +199,10 @@ defmodule Operately.Features.CompanyPageTest do
 
   defp click_create_new_profile(state) do
     state |> UI.click(testid: "createNewProfile")
+  end
+
+  defp click_on_view_profile(state) do
+    state |> UI.click(testid: "viewChampionsProfile")
   end
 
   defp fill_person_form(state, name, title) do
