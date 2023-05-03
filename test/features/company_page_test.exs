@@ -84,6 +84,8 @@ defmodule MyApp.Features.CompanyPageTest do
     |> visit_page()
     |> click_on_the_goal_group()
     |> UI.assert_text("Customer Success")
+    |> click_on_go_to_group()
+    |> UI.assert_page("/groups/#{group.id}")
   end
 
   # ===========================================================================
@@ -148,6 +150,10 @@ defmodule MyApp.Features.CompanyPageTest do
 
   defp click_on_the_goal_group(state) do
     state |> UI.click(testid: "goalGroup")
+  end
+
+  defp click_on_go_to_group(state) do
+    state |> UI.click(testid: "goToGroup")
   end
 
   defp choose_champion(state, name) do

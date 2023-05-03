@@ -116,6 +116,10 @@ defmodule Operately.FeatureCase do
       end)
     end
 
+    def assert_page(state, path) do
+      session(state) |> Browser.assert_path(path)
+    end
+
     def visit(state, path) do
       session(state) |> Browser.visit(path)
     end
