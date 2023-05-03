@@ -8,6 +8,12 @@ const LIST_OBJECTIVES = gql`
       name
       description
 
+      group {
+        id
+        name
+        mission
+      }
+
       owner {
         id
         fullName

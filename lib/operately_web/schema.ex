@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Objectives
   import_types Types.Person
   import_types Types.KeyResults
+  import_types Types.Groups
 
   # Queries
   import_types Queries.Projects
@@ -77,28 +78,6 @@ defmodule OperatelyWeb.Schema do
     field :name, non_null(:string)
     field :type, non_null(:string)
     field :value, non_null(:string)
-  end
-
-  object :group do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :mission, :string
-
-    field :members, list_of(non_null(:person)) do
-      resolve fn group, _, _ ->
-        people = Operately.Groups.list_members(group)
-
-        {:ok, people}
-      end
-    end
-
-    field :points_of_contact, list_of(non_null(:group_contact)) do
-      resolve fn group, _, _ ->
-        contacts = Operately.Groups.list_contacts(group)
-
-        {:ok, contacts}
-      end
-    end
   end
 
   input_object :create_kpi_input do
