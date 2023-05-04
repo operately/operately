@@ -26,10 +26,8 @@ export default function DefaultLayout() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto text-new-dark-3">
-        <div className="m-11 mt-24">
-          <Outlet />
-        </div>
+      <div className="text-new-dark-3">
+        <Outlet />
       </div>
     </div>
   );

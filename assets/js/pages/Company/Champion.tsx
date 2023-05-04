@@ -212,7 +212,7 @@ function Owner({ person, dataTestID, setChampion }): JSX.Element {
   return (
     <Popover.Root open={open} modal={true} onOpenChange={onOpenChange}>
       <Popover.Trigger className="outline-0" data-test-id={dataTestID}>
-        <Avatar person={person} size={AvatarSize.Tiny} />
+        <Avatar person={person} size={AvatarSize.Small} />
       </Popover.Trigger>
 
       <Popover.Portal>

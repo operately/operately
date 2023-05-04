@@ -21,7 +21,7 @@ export async function ObjectiveListPageLoader(apolloClient: any) {
   return {};
 }
 
-function KPI({ name, lastValue, lastChange }) {
+export function KPI({ name, lastValue, lastChange }) {
   let bars: JSX.Element[] = [];
   for (let i = 0; i < 16; i++) {
     let height = Math.floor(Math.random() * 100);
@@ -350,178 +350,159 @@ export function CompanyPage() {
   };
 
   return (
-    <>
-      <div className="mb-4 text-center flex flex-col items-center">
-        <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8">
-          AI
-        </div>
-
-        <h1 className="font-bold text-5xl">Acme Inc.</h1>
-        <div className="text-new-dark-3 text-xl max-w-xl">
-          Bring the best user experience to customers through innovative
-          hardware, software, and services.
-        </div>
-
-        <div className="mt-4">
-          <button className="border border-gray-600 rounded px-4 py-1">
-            Add Company Tenet
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-6 gap-y-14 my-16">
-        <div
-          className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition cursor-pointer"
-          onClick={() => navigate("/objectives")}
-        >
-          <div className="text-center flex flex-col items-center">
-            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-              Exceptional customer service
-            </h1>
-            <div className="text-sm">
-              By consistently delivering exceptional customer service, our
-              company will foster a loyal customer base that will not only
-              continue to return but will also recommend the business to others.
-            </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="m-11 mt-24">
+        <div className="mb-4 text-center flex flex-col items-center">
+          <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8">
+            AI
           </div>
 
-          <div className="mt-12">
-            <KPI
-              name="Monthly Recurring Revenue"
-              lastValue="$45.2M"
-              lastChange="+$1.2M"
-            />
-            <KPI
-              name="Customer Acquisition Cost"
-              lastValue="$701.2"
-              lastChange="-$16.2"
-            />
-            <KPI
-              name="Customer Lifetime Value"
-              lastValue="$42.001"
-              lastChange="+$8.2"
-            />
+          <h1 className="font-bold text-5xl">Acme Inc.</h1>
+          <div className="text-new-dark-3 text-xl max-w-xl">
+            Bring the best user experience to customers through innovative
+            hardware, software, and services.
+          </div>
 
-            <div className="border-t border-gray-600 pt-10 flex justify-between">
-              <div>2 people contributing</div>
-              <div>3 Goals &middot; 80 Projects</div>
-            </div>
+          <div className="mt-4">
+            <button className="border border-gray-600 rounded px-4 py-1">
+              Add Company Tenet
+            </button>
           </div>
         </div>
 
-        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
-          <div className="text-center flex flex-col items-center">
-            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-              Maintain Profitable Growth
-            </h1>
-            <div className="text-sm">
-              Maintaining profitable growth is essential for the long-term
-              sustainability and survival of a business, ensuring that it can
-              continue to serve customers, employ workers, and contribute to the
-              economy over time.
+        <div className="grid grid-cols-2 gap-6 gap-y-14 my-16">
+          <div
+            className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition cursor-pointer"
+            onClick={() => navigate("/objectives")}
+          >
+            <div className="text-center flex flex-col items-center">
+              <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
+                Exceptional customer service
+              </h1>
+            </div>
+
+            <div className="flex justify-around">
+              <div>
+                12 Goals &middot; 17 Projects &middot; 40 people contributing
+              </div>
+            </div>
+
+            <div className="mt-12 border-b border-gray-600">
+              <KPI
+                name="Monthly Recurring Revenue"
+                lastValue="$45.2M"
+                lastChange="+$1.2M"
+              />
+              <KPI
+                name="Customer Acquisition Cost"
+                lastValue="$701.2"
+                lastChange="-$16.2"
+              />
+              <KPI
+                name="Customer Lifetime Value"
+                lastValue="$42.001"
+                lastChange="+$8.2"
+              />
             </div>
           </div>
 
-          <div className="mt-12">
-            <KPI
-              name="Monthly Recurring Revenue"
-              lastValue="$45.2M"
-              lastChange="+$1.2M"
-            />
-            <KPI
-              name="Customer Acquisition Cost"
-              lastValue="$701.2"
-              lastChange="+$8.2"
-            />
-            <KPI
-              name="Customer Lifetime Value"
-              lastValue="$42.001"
-              lastChange="+$8.2"
-            />
-
-            <div className="border-t border-gray-600 pt-10 flex justify-between">
-              <div>40 people contributing</div>
-              <div>12 Goals &middot; 17 Projects</div>
+          <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+            <div className="text-center flex flex-col items-center">
+              <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
+                Maintain Profitable Growth
+              </h1>
             </div>
-          </div>
-        </div>
 
-        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
-          <div className="text-center flex flex-col items-center">
-            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-              Global perspective
-            </h1>
+            <div className="flex justify-around">
+              <div>
+                12 Goals &middot; 17 Projects &middot; 40 people contributing
+              </div>
+            </div>
 
-            <div className="text-sm">
-              We have a global perspective, recognizing the importance of
-              diversity, cultural awareness, and global collaboration in today's
-              interconnected world. Our product and services are accessible on
-              multiple markets pushing the boundaries of innovation.
+            <div className="mt-12 border-b border-gray-600">
+              <KPI
+                name="Monthly Recurring Revenue"
+                lastValue="$45.2M"
+                lastChange="+$1.2M"
+              />
+              <KPI
+                name="Customer Acquisition Cost"
+                lastValue="$701.2"
+                lastChange="+$8.2"
+              />
+              <KPI
+                name="Customer Lifetime Value"
+                lastValue="$42.001"
+                lastChange="+$8.2"
+              />
             </div>
           </div>
 
-          <div className="mt-12">
-            <KPI
-              name="Monthly Recurring Revenue"
-              lastValue="$45.2M"
-              lastChange="+$1.2M"
-            />
-            <KPI
-              name="Customer Acquisition Cost"
-              lastValue="$701.2"
-              lastChange="+$8.2"
-            />
-            <KPI
-              name="Customer Lifetime Value"
-              lastValue="$42.001"
-              lastChange="+$8.2"
-            />
-
-            <div className="border-t border-gray-600 pt-10 flex justify-between">
-              <div>40 people contributing</div>
-              <div>12 Goals &middot; 17 Projects</div>
+          <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+            <div className="text-center flex flex-col items-center">
+              <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
+                Global perspective
+              </h1>
             </div>
-          </div>
-        </div>
 
-        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
-          <div className="text-center flex flex-col items-center">
-            <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-              Hire and Retain the Best
-            </h1>
+            <div className="flex justify-around">
+              <div>
+                12 Goals &middot; 17 Projects &middot; 40 people contributing
+              </div>
+            </div>
 
-            <div className="text-sm">
-              We have a global perspective, recognizing the importance of
-              diversity, cultural awareness, and global collaboration in today's
-              interconnected world. Our product and services are accessible on
-              multiple markets pushing the boundaries of innovation.
+            <div className="mt-12 border-b border-gray-600">
+              <KPI
+                name="Monthly Recurring Revenue"
+                lastValue="$45.2M"
+                lastChange="+$1.2M"
+              />
+              <KPI
+                name="Customer Acquisition Cost"
+                lastValue="$701.2"
+                lastChange="+$8.2"
+              />
+              <KPI
+                name="Customer Lifetime Value"
+                lastValue="$42.001"
+                lastChange="+$8.2"
+              />
             </div>
           </div>
 
-          <div className="mt-12">
-            <KPI
-              name="Monthly Recurring Revenue"
-              lastValue="$45.2M"
-              lastChange="+$1.2M"
-            />
-            <KPI
-              name="Customer Acquisition Cost"
-              lastValue="$701.2"
-              lastChange="+$8.2"
-            />
-            <KPI
-              name="Customer Lifetime Value"
-              lastValue="$42.001"
-              lastChange="+$8.2"
-            />
+          <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+            <div className="text-center flex flex-col items-center">
+              <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
+                Hire and Retain the Best
+              </h1>
+            </div>
 
-            <div className="border-t border-gray-600 pt-10 flex justify-between">
-              <div>40 people contributing</div>
-              <div>12 Goals &middot; 17 Projects</div>
+            <div className="flex justify-around">
+              <div>
+                12 Goals &middot; 17 Projects &middot; 40 people contributing
+              </div>
+            </div>
+
+            <div className="mt-12 border-b border-gray-600">
+              <KPI
+                name="Monthly Recurring Revenue"
+                lastValue="$45.2M"
+                lastChange="+$1.2M"
+              />
+              <KPI
+                name="Customer Acquisition Cost"
+                lastValue="$701.2"
+                lastChange="+$8.2"
+              />
+              <KPI
+                name="Customer Lifetime Value"
+                lastValue="$42.001"
+                lastChange="+$8.2"
+              />
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -15,6 +15,10 @@ import Icon from "../../components/Icon";
 import { GoalOwner, TargetOwner } from "./Champion";
 import { GoalGroup, TargetGroup } from "./Group";
 
+import { KPI } from "../Company";
+import Avatar, { AvatarSize } from "../../components/Avatar";
+import RelativeTime from "../../components/RelativeTime";
+
 export async function ObjectiveListPageLoader(apolloClient: any) {
   await listObjectives(apolloClient, {});
 
@@ -113,7 +117,7 @@ function AddGoal({ onGoalAdded, onActivation }) {
   const addGoalRow = (
     <div
       data-test-id="addGoalButton"
-      className="bg-white border border-dark-8% shadow-sm rounded flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
+      className="border-t border-b border-gray-700 flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
       onClick={handleActivateForm}
     >
       <Icon name="plus" size="small" color="dark-2" />
@@ -170,22 +174,10 @@ function KeyResultStatus({ keyResult }) {
 
 function KeyResultRow({ kr }) {
   return (
-    <div className="truncate px-2 py-2 flex justify-between items-center">
+    <div className="truncate py-2 border-t border-gray-700">
       <div className="flex items-center gap-2">
-        <div className="scale-75">
-          <Icon name="flag" size="small" color="light" />
-        </div>
+        <Avatar person={kr.owner} size={AvatarSize.Tiny} />
         {kr.name}
-      </div>
-
-      <div className="flex items-center">
-        <TargetGroup target={kr} />
-
-        <div className="border-r border-dark-8% pr-2 w-24 flex mr-4">
-          <KeyResultStatus keyResult={kr} />
-        </div>
-
-        <TargetOwner target={kr} />
       </div>
     </div>
   );
@@ -226,34 +218,57 @@ function KeyResultList({ objective, editing, startEditing }) {
 function ObjectiveCard({ objective, editing, startEditing }) {
   return (
     <div
-      className="border-t border-b border-slate-700"
+      className="border-t border-gray-700 py-2 group"
       data-test-id={objective.name}
     >
-      <div className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
+      <div className="flex items-center gap-2 justify-between">
+        <Icon name="expand" size="base" color="dark-2" />
         <Link
           to={`/objectives/${objective.id}`}
-          className="flex flex-1 items-center gap-2 font-semibold"
+          className="flex flex-1 items-center gap-2"
         >
-          <Icon name="objectives" size="small" color="brand" />
-          {objective.name}
+          <div>
+            <div className="truncate font-bold">{objective.name}</div>
+            <div className="text-sm">
+              Q3 2023 &middot; In Progress for {Math.floor(Math.random() * 60)}{" "}
+              days &middot; 5 ongoing projects
+            </div>
+          </div>
         </Link>
 
-        <div className="flex items-center">
-          <GoalGroup goal={objective} />
-
-          <KeyResultStatus keyResult={{ status: "pending" }} />
-
+        <div className="flex items-center gap-4">
+          {objective.owner && (
+            <div className="text-right">
+              <div className="font-bold">{objective.owner.fullName}</div>
+              <div className="text-xs">{objective.owner.title}</div>
+            </div>
+          )}
           <GoalOwner objective={objective} />
+        </div>
+
+        <div className="group-hover:opacity-100 opacity-0 transition-all w-0 group-hover:w-10">
+          <Icon name="arrow right" size="base" color="dark-2" />
         </div>
       </div>
 
-      <div className="border-t border-dark-8% divide-y divide-dark-8% flex flex-col">
-        <KeyResultList
-          objective={objective}
-          editing={editing}
-          startEditing={startEditing}
-        />
-      </div>
+      {
+        // <div className="">
+        // <KeyResultList
+        //   objective={objective}
+        //   editing={editing}
+        //   startEditing={startEditing}
+        // />
+        // </div>
+        // <div className="flex items-center"></div>
+        // <div className="flex items-center gap-2">
+        //   <GoalOwner objective={objective} />
+        //   {objective.owner && (
+        //     <div>
+        //       <div className="font-bold">{objective.owner.fullName}</div>
+        //     </div>
+        //   )}
+        // </div>
+      }
     </div>
   );
 }
@@ -266,7 +281,7 @@ function ListOfObjectives({
   startEditing,
 }) {
   return (
-    <div className="flex flex-col gap-4" data-test-id="goalList">
+    <div className="gap-4" data-test-id="goalList">
       {objectives.map((objective: any, i: number) => (
         <ObjectiveCard
           editing={objective.id === editing}
@@ -307,32 +322,60 @@ export function ObjectiveListPage() {
 
   return (
     <>
-      <div className="mb-4 text-center flex flex-col items-center">
-        <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8">
-          AI
-        </div>
+      <div className="max-w-7xl mx-auto mb-4">
+        <div className="m-11 mt-24">
+          <Link to="/company" className="font-bold underline mb-4">
+            Acme Inc.
+          </Link>
 
-        <h1 className="font-bold text-5xl">Acme Inc.</h1>
-        <div className="text-new-dark-3 text-xl max-w-xl">
-          Bring the best user experience to customers through innovative
-          hardware, software, and services.
+          <h1 className="font-bold text-3xl my-4">
+            Exceptional customer service
+          </h1>
+
+          <div className="text-new-dark-3 text-xl max-w-xl">
+            By consistently delivering exceptional customer service, our company
+            will foster a loyal customer base that will not only continue to
+            return but will also recommend the business to others.
+          </div>
+
+          <div className="mt-12 border-b border-gray-600">
+            <KPI
+              name="Monthly Recurring Revenue"
+              lastValue="$45.2M"
+              lastChange="+$1.2M"
+            />
+            <KPI
+              name="Customer Acquisition Cost"
+              lastValue="$701.2"
+              lastChange="-$16.2"
+            />
+            <KPI
+              name="Customer Lifetime Value"
+              lastValue="$42.001"
+              lastChange="+$8.2"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="my-16 p-8 rounded-lg bg-new-dark-2">
-        <div className="flex justify-around -mt-12 mb-12">
-          <h1 className="font-semibold text-sm bg-slate-700 uppercase rounded py-1 px-3 prose max-w-xl">
-            Exceptional customer service
-          </h1>
-        </div>
+      <div className="bg-new-dark-1">
+        <div className="max-w-7xl mx-auto bg-new-dark-2">
+          <div className="p-11 mt-20">
+            <div className="flex items-center justify-around relative -mt-14 mb-12">
+              <h1 className="uppercase font-bold bg-slate-700 px-3 py-1 rounded z-50">
+                GOALS INFLUENCING THIS TENET
+              </h1>
+            </div>
 
-        <ListOfObjectives
-          objectives={data.objectives}
-          editing={editing}
-          onGoalAdded={onGoalAdded}
-          onGoalAddingActivation={onGoalAddingActivation}
-          startEditing={startEditing}
-        />
+            <ListOfObjectives
+              objectives={data.objectives}
+              editing={editing}
+              onGoalAdded={onGoalAdded}
+              onGoalAddingActivation={onGoalAddingActivation}
+              startEditing={startEditing}
+            />
+          </div>
+        </div>
       </div>
     </>
   );
