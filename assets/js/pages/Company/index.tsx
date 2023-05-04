@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import { useApolloClient } from "@apollo/client";
 import {
@@ -326,6 +327,8 @@ function ListOfObjectives({
 }
 
 export function CompanyPage() {
+  const navigate = useNavigate();
+
   const { t } = useTranslation();
   const { loading, error, data } = useObjectives({});
 
@@ -367,7 +370,10 @@ export function CompanyPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-6 gap-y-14 my-16">
-        <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
+        <div
+          className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition cursor-pointer"
+          onClick={() => navigate("/objectives")}
+        >
           <div className="text-center flex flex-col items-center">
             <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
               Exceptional customer service
