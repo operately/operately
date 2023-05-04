@@ -21,6 +21,17 @@ export async function ObjectiveListPageLoader(apolloClient: any) {
 }
 
 function KPI({ name, lastValue, lastChange }) {
+  let bars: JSX.Element[] = [];
+  for (let i = 0; i < 16; i++) {
+    let height = Math.floor(Math.random() * 100);
+    bars.push(
+      <div
+        className={"w-1 " + (height > 50 ? "bg-green-500" : "bg-red-500")}
+        style={{ height: height + "%" }}
+      ></div>
+    );
+  }
+
   return (
     <div className="flex flex-col border-t border-gray-600">
       <div className="py-2 flex items-center gap-1 justify-between">
@@ -30,27 +41,20 @@ function KPI({ name, lastValue, lastChange }) {
 
         <div className="flex items-center gap-4">
           <div className="w-30 relative h-8 flex gap-1 items-end">
-            <div className="h-1/4  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-1/2  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-1/4  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-1/2  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-1/4  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-1/2  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-1/4  bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
-            <div className="h-full bg-brand-base w-1.5"></div>
-            <div className="h-3/4  bg-brand-base w-1.5"></div>
+            {bars}
+            <div className="absolute top-1/2 -left-2 -right-2 border-t border-dashed"></div>
           </div>
 
           <div className="text-right w-20">
             <div className="font-semibold">{lastValue}</div>
-            <div className="text-xs">{lastChange}</div>
+            <div
+              className={
+                "text-xs" +
+                (lastChange[0] === "-" ? " text-red-500" : " text-green-500")
+              }
+            >
+              {lastChange}
+            </div>
           </div>
         </div>
       </div>
@@ -362,7 +366,7 @@ export function CompanyPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 gap-y-10 my-16">
+      <div className="grid grid-cols-2 gap-6 gap-y-14 my-16">
         <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
           <div className="text-center flex flex-col items-center">
             <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
@@ -384,7 +388,7 @@ export function CompanyPage() {
             <KPI
               name="Customer Acquisition Cost"
               lastValue="$701.2"
-              lastChange="+$8.2"
+              lastChange="-$16.2"
             />
             <KPI
               name="Customer Lifetime Value"
