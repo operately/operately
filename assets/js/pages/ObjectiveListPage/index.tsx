@@ -358,9 +358,9 @@ export function ObjectiveListPage() {
         </div>
       </div>
 
-      <div className="bg-new-dark-1">
-        <div className="max-w-7xl mx-auto bg-new-dark-2">
-          <div className="p-11 mt-20">
+      <div>
+        <div className="max-w-7xl mx-auto ">
+          <div className="m-11 p-11 mt-20 bg-new-dark-2">
             <div className="flex items-center justify-around relative -mt-14 mb-12">
               <h1 className="uppercase font-bold bg-slate-700 px-3 py-1 rounded z-50">
                 GOALS INFLUENCING THIS TENET

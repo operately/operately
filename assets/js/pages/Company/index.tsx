@@ -41,9 +41,9 @@ export function KPI({ name, lastValue, lastChange }) {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-30 relative h-8 flex gap-1 items-end">
+          <div className="w-30 relative h-8 flex gap-0.5 items-end">
             {bars}
-            <div className="absolute top-1/2 -left-2 -right-2 border-t border-dashed"></div>
+            <div className="absolute top-1/2 -left-1 -right-1 border-t border-green-500 border-dashed"></div>
           </div>
 
           <div className="text-right w-20">
@@ -353,7 +353,7 @@ export function CompanyPage() {
     <div className="max-w-7xl mx-auto">
       <div className="m-11 mt-24">
         <div className="mb-4 text-center flex flex-col items-center">
-          <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8">
+          <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8 border border-gray-700">
             AI
           </div>
 
@@ -364,7 +364,7 @@ export function CompanyPage() {
           </div>
 
           <div className="mt-4">
-            <button className="border border-gray-600 rounded px-4 py-1">
+            <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all hover:px-5">
               Add Company Tenet
             </button>
           </div>

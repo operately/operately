@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 
 import SideNavigation from "../../components/SideNavigation";
 import User from "./User";
+import { Link } from "react-router-dom";
 
 export default function DefaultLayout() {
   return (
@@ -15,7 +16,9 @@ export default function DefaultLayout() {
             <span>Search&hellip;</span>
             <span className="text-gray-500">⌘ K</span>
           </div>
-          <div className="font-bold">Company</div>
+          <Link to="/company" className="font-bold">
+            Company
+          </Link>
           <div className="font-bold text-gray-500">Timeline</div>
           <div className="font-bold text-gray-500">People & Groups</div>
         </div>
