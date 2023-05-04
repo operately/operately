@@ -75,7 +75,12 @@ export default function PostAnUpdate({ objectiveID }): JSX.Element {
       ) : (
         <div className="pb-4 px-4 flex justify-between items-center">
           <div>{t("objectives.write_an_update.cta")}</div>
-          <Button size={ButtonSize.Small} ghost onClick={() => setActive(true)}>
+          <Button
+            size={ButtonSize.Small}
+            ghost
+            onClick={() => setActive(true)}
+            type="secondary"
+          >
             {t("objectives.write_an_update.button")}
           </Button>
         </div>
