@@ -5,6 +5,9 @@ defmodule OperatelyWeb.GraphQL.Types.Kpis do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :description, :string
+    field :unit, :string
+    field :target, :integer
+    field :target_direction, :string
 
     field :metrics, list_of(:kpi_metric) do
       resolve fn kpi, _, _ -> 

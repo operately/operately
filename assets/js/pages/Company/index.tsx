@@ -22,26 +22,71 @@ export async function ObjectiveListPageLoader(apolloClient: any) {
   return {};
 }
 
-export function KPI({ kpi }) {
+type ShowSignOptions = "always" | "onlyNegative";
+
+function formatMetric(value, unit, showSign: ShowSignOptions = "onlyNegative") {
+  let sign = "";
+
+  let v = Math.abs(value).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+  });
+
+  switch (showSign) {
+    case "always":
+      sign = value > 0 ? "+" : "-";
+      break;
+    case "onlyNegative":
+      sign = value > 0 ? "" : "-";
+      break;
+  }
+
+  if (unit === "percentage") {
+    return sign + v + "%";
+  }
+
+  if (unit === "currency") {
+    return sign + "$" + v;
+  }
+
+  return value;
+}
+
+export function KPIValues({ kpi }) {
+  if (kpi.metrics.length === 0) {
+    return <div className="text-center text-gray-500">No Data</div>;
+  }
+
   let values = kpi.metrics.map((m) => m.value / 1000);
-  let min = Math.min(...values);
-  let max = Math.max(...values);
+  let target = kpi.target / 1000;
+  let diffs = values.map((v) => v - target);
+
+  let bottom = Math.min(...diffs);
+  let top = Math.max(...diffs);
+  let range = top - bottom;
 
   let areaHeight = 32;
-  let zeroPos = areaHeight * (max / (max - min));
+  let targetPos = areaHeight * (top / range);
 
   let bars: JSX.Element[] = [];
   for (let i = 0; i < values.length; i++) {
     let value = values[i];
-    let height =
-      value > 0
-        ? zeroPos * (value / max)
-        : ((areaHeight - zeroPos) * value) / min + 1;
-    let margin = value > 0 ? (zeroPos * (max - value)) / max : zeroPos;
+    let diff = diffs[i];
+
+    let height = (areaHeight * Math.abs(diff)) / (top - bottom);
+    let margin = diff < 0 ? targetPos : targetPos - height;
+
+    let color = "bg-green-500";
+    if (kpi.targetDirection === "above" && value < target) {
+      color = "bg-red-500";
+    }
+    if (kpi.targetDirection === "below" && value > target) {
+      color = "bg-red-500";
+    }
 
     bars.push(
       <div
-        className={"w-1 " + (value > 0 ? "bg-green-500" : "bg-red-500")}
+        className={"w-1 " + color}
         style={{
           marginTop: margin + "px",
           height: height + "px",
@@ -54,44 +99,54 @@ export function KPI({ kpi }) {
   let lastChange = "--";
 
   if (values.length > 0) {
-    lastValue = values[0] + "%";
+    lastValue = formatMetric(values[values.length - 1], kpi.unit);
   }
 
   if (values.length > 1) {
-    let change = values[0] - values[1];
-    lastChange = (change > 0 ? "+" : "-") + change.toFixed(2) + "%";
+    let change = values[values.length - 1] - values[values.length - 2];
+    lastChange = formatMetric(change, kpi.unit, "always");
   }
 
+  return (
+    <div className="flex items-center gap-4">
+      <div className="w-30 relative h-8 flex gap-0.5 items-start">
+        {bars}
+        <div
+          className="absolute -left-1 -right-1 border-t border-green-500 text-right"
+          style={{
+            marginTop: targetPos + "px",
+          }}
+        ></div>
+      </div>
+
+      <div className="text-right w-20">
+        <div className="font-semibold">{lastValue}</div>
+        <div
+          className={
+            "text-xs" +
+            (lastChange[0] === "-" ? " text-red-500" : " text-green-500")
+          }
+        >
+          {lastChange}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function KPI({ kpi }) {
   return (
     <div className="flex flex-col border-t border-gray-600">
       <div className="py-2 flex items-center gap-1 justify-between">
         <div>
-          <div className="">{kpi.name}</div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="w-30 relative h-8 flex gap-0.5 items-start">
-            {bars}
-            <div
-              className="absolute -left-1 -right-1 border-t border-green-500 border-dashed"
-              style={{
-                marginTop: zeroPos + "px",
-              }}
-            ></div>
-          </div>
-
-          <div className="text-right w-20">
-            <div className="font-semibold">{lastValue}</div>
-            <div
-              className={
-                "text-xs" +
-                (lastChange[0] === "-" ? " text-red-500" : " text-green-500")
-              }
-            >
-              {lastChange}
-            </div>
+          <div className="font-bold">{kpi.name}</div>
+          <div className="text-sm text-gray-400">
+            target: {kpi.targetDirection}{" "}
+            {formatMetric(kpi.target / 1000, kpi.unit)}
           </div>
         </div>
+
+        <KPIValues kpi={kpi} />
       </div>
     </div>
   );

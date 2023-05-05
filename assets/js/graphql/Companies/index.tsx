@@ -16,6 +16,9 @@ const GET_COMPANY = gql`
           id
           name
           description
+          unit
+          target
+          targetDirection
 
           metrics {
             value
