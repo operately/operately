@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useCompany } from "../../graphql/Companies";
 
 import { useApolloClient } from "@apollo/client";
 import {
@@ -327,34 +328,42 @@ function ListOfObjectives({
 }
 
 export function CompanyPage() {
+  const companyId: string = window.companyID;
+
   const navigate = useNavigate();
+  const { data, loading, error } = useCompany(companyId);
 
-  const { t } = useTranslation();
-  const { loading, error, data } = useObjectives({});
+  // const { t } = useTranslation();
+  // const { loading, error, data } = useObjectives({});
 
-  const [editing, setEditing] = React.useState<string | null>(null);
+  // const [editing, setEditing] = React.useState<string | null>(null);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  const onGoalAdded = (id: string) => {
-    setEditing(id);
-  };
+  const company = data.company;
 
-  const onGoalAddingActivation = () => {
-    setEditing(null);
-  };
+  // const onGoalAdded = (id: string) => {
+  //   setEditing(id);
+  // };
 
-  const startEditing = (goalId: string) => {
-    setEditing(goalId);
-  };
+  // const onGoalAddingActivation = () => {
+  //   setEditing(null);
+  // };
+
+  // const startEditing = (goalId: string) => {
+  //   setEditing(goalId);
+  // };
 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="m-11 mt-24">
         <div className="mb-4 text-center flex flex-col items-center">
           <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8 border border-gray-700">
-            AI
+            {company.name
+              .split(" ")
+              .map((e) => e[0])
+              .join("")}
           </div>
 
           <h1 className="font-bold text-5xl">Acme Inc.</h1>

@@ -20,6 +20,8 @@
           if (!/Download the React DevTools/.test(message)) info.apply(console, arguments)
         }
       })()
+
+      window.companyID = "<%= Operately.Companies.get_company_id() %>";
     </script>
 
     <style>

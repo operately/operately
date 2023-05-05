@@ -8,6 +8,10 @@ defmodule Operately.Companies do
 
   alias Operately.Companies.Company
 
+  def get_company_id() do
+    Repo.one(from c in Company, select: c.id)
+  end
+
   @doc """
   Returns the list of companies.
 
