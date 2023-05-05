@@ -12,7 +12,7 @@ defmodule Operately.Kpis.Kpi do
     field :name, :string
     field :target, :integer
     field :target_direction, Ecto.Enum, values: [:above, :below]
-    field :unit, Ecto.Enum, values: [:currency, :number, :percentage]
+    field :unit, Ecto.Enum, values: [:currency, :number, :percentage, :duration]
     field :warning_direction, Ecto.Enum, values: [:above, :below]
     field :warning_threshold, :integer
 

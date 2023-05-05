@@ -49,6 +49,10 @@ function formatMetric(value, unit, showSign: ShowSignOptions = "onlyNegative") {
     return sign + "$" + v;
   }
 
+  if (unit === "duration") {
+    return v + " mins";
+  }
+
   return value;
 }
 
