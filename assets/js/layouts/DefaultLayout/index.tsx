@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 import SideNavigation from "../../components/SideNavigation";
 import User from "./User";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function DefaultLayout() {
   const [small, setSmall] = React.useState(false);
@@ -17,6 +17,14 @@ export default function DefaultLayout() {
       });
     }
   });
+
+  const classHandler = ({ isActive, isPending }) => {
+    if (isActive || isPending) {
+      return "font-bold";
+    } else {
+      return "font-semibold text-gray-500";
+    }
+  };
 
   return (
     <div>
@@ -34,15 +42,22 @@ export default function DefaultLayout() {
             <span>Search&hellip;</span>
             <span className="text-gray-500">⌘ K</span>
           </div>
-          <Link to="/company" className="font-bold">
-            Company
-          </Link>
-          <div className="font-bold text-gray-500">Timeline</div>
-          <div className="font-bold text-gray-500">People & Groups</div>
+
+          <NavLink to="/company" className={classHandler} children="Company" />
+          <NavLink
+            to="/projects"
+            className={classHandler}
+            children="Timeline"
+          />
+          <NavLink
+            to="/groups"
+            className={classHandler}
+            children="People & Groups"
+          />
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="font-bold text-gray-500">My Assignments</div>
+          <NavLink to="/" className={classHandler} children="My Assingments" />
           <User />
         </div>
       </div>
