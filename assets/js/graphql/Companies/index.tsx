@@ -6,6 +6,12 @@ const GET_COMPANY = gql`
       id
       name
       mission
+
+      tenets {
+        id
+        name
+        description
+      }
     }
   }
 `;

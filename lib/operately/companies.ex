@@ -7,6 +7,7 @@ defmodule Operately.Companies do
   alias Operately.Repo
 
   alias Operately.Companies.Company
+  alias Operately.Tenets.Tenet
 
   def get_company_id() do
     Repo.one(from c in Company, select: c.id)
