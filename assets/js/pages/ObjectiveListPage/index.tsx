@@ -1,5 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import { useTenet } from "../../graphql/Tenets";
 
 import { useApolloClient } from "@apollo/client";
 import {
@@ -301,7 +303,8 @@ function ListOfObjectives({
 
 export function ObjectiveListPage() {
   const { t } = useTranslation();
-  const { loading, error, data } = useObjectives({});
+  const { id } = useParams();
+  const { loading, error, data } = useTenet(id);
 
   const [editing, setEditing] = React.useState<string | null>(null);
 
@@ -320,63 +323,48 @@ export function ObjectiveListPage() {
     setEditing(goalId);
   };
 
+  const tenet = data.tenet;
+
   return (
     <>
-      <div className="max-w-7xl mx-auto mb-4">
+      <div className="max-w-6xl mx-auto mb-4">
         <div className="m-11 mt-24">
           <Link to="/company" className="font-bold underline mb-4">
-            Acme Inc.
+            {tenet.company.name}
           </Link>
 
-          <h1 className="font-bold text-3xl my-4">
-            Exceptional customer service
-          </h1>
+          <h1 className="font-bold text-3xl my-4">{tenet.name}</h1>
 
           <div className="text-new-dark-3 text-xl max-w-xl">
-            By consistently delivering exceptional customer service, our company
-            will foster a loyal customer base that will not only continue to
-            return but will also recommend the business to others.
+            {tenet.description}
           </div>
 
           <div className="mt-12 border-b border-gray-600">
-            <KPI
-              name="Monthly Recurring Revenue"
-              lastValue="$45.2M"
-              lastChange="+$1.2M"
-            />
-            <KPI
-              name="Customer Acquisition Cost"
-              lastValue="$701.2"
-              lastChange="-$16.2"
-            />
-            <KPI
-              name="Customer Lifetime Value"
-              lastValue="$42.001"
-              lastChange="+$8.2"
-            />
+            {tenet.kpis.map((kpi: any) => (
+              <KPI key={kpi.id} kpi={kpi} clickable />
+            ))}
           </div>
         </div>
       </div>
 
       <div>
-        <div className="max-w-7xl mx-auto ">
+        <div className="max-w-6xl mx-auto ">
           <div className="m-11 p-11 mt-20 bg-new-dark-2">
             <div className="flex items-center justify-around relative -mt-14 mb-12">
               <h1 className="uppercase font-bold bg-slate-700 px-3 py-1 rounded z-50">
                 GOALS INFLUENCING THIS TENET
               </h1>
             </div>
-
-            <ListOfObjectives
-              objectives={data.objectives}
-              editing={editing}
-              onGoalAdded={onGoalAdded}
-              onGoalAddingActivation={onGoalAddingActivation}
-              startEditing={startEditing}
-            />
           </div>
         </div>
       </div>
     </>
   );
 }
+// <ListOfObjectives
+//   objectives={data.objectives}
+//   editing={editing}
+//   onGoalAdded={onGoalAdded}
+//   onGoalAddingActivation={onGoalAddingActivation}
+//   startEditing={startEditing}
+// />

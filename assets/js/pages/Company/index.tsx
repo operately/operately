@@ -138,9 +138,23 @@ export function KPIValues({ kpi }) {
   );
 }
 
-export function KPI({ kpi }) {
+export function KPI({ kpi, clickable }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (clickable) {
+      navigate("/kpis/" + kpi.id);
+    }
+  };
+
   return (
-    <div className="flex flex-col border-t border-gray-600">
+    <div
+      className={
+        "flex flex-col border-t border-gray-600 group" +
+        (clickable ? " cursor-pointer" : "")
+      }
+      onClick={handleClick}
+    >
       <div className="py-2 flex items-center gap-1 justify-between">
         <div>
           <div className="font-bold">{kpi.name}</div>
@@ -150,7 +164,15 @@ export function KPI({ kpi }) {
           </div>
         </div>
 
-        <KPIValues kpi={kpi} />
+        <div className="flex items-center">
+          <KPIValues kpi={kpi} />
+
+          {clickable && (
+            <div className="group-hover:opacity-100 opacity-0 transition-all w-0 group-hover:w-10 ml-4">
+              <Icon name="arrow right" size="base" color="dark-2" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

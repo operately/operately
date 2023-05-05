@@ -13,5 +13,13 @@ defmodule OperatelyWeb.GraphQL.Types.Tenets do
         {:ok, kpis}
       end
     end
+
+    field :company, non_null(:company) do
+      resolve fn tenet, _, _ ->
+        company = Operately.Companies.get_company!(tenet.company_id)
+
+        {:ok, company}
+      end
+    end
   end
 end

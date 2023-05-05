@@ -98,8 +98,7 @@ const routes = createBrowserRouter([
       },
       {
         path: "/tenets/:id",
-        loader: loaderWithApollo(TenetPageLoader),
-        element: <TenetPage />,
+        element: <ObjectiveListPage />,
       },
       {
         path: "/kpis",
