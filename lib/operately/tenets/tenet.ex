@@ -7,6 +7,7 @@ defmodule Operately.Tenets.Tenet do
   schema "tenets" do
     belongs_to :company, Operately.Companies.Company
     has_many :kpis, Operately.Kpis.Kpi
+    has_many :objectives, Operately.Okrs.Objective
 
     field :description, :string
     field :name, :string

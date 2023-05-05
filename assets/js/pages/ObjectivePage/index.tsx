@@ -60,7 +60,7 @@ export function ObjectivePage() {
     );
 
   return (
-    <div className="max-w-7xl mx-auto mb-4">
+    <div className="max-w-6xl mx-auto mb-4">
       <div className="m-11 mt-24">
         <div className="flex items-center mb-4 gap-2">
           <Link to="/company" className="font-bold underline">
@@ -93,7 +93,7 @@ export function ObjectivePage() {
         <Projects objectiveID={id} />
       </div>
 
-      <div className="max-w-7xl mx-auto mb-4">
+      <div className="max-w-5xl mx-auto mb-4">
         <div className="m-11 p-11 mt-20 bg-new-dark-2">
           <div className="flex items-center justify-around relative -mt-14 mb-12">
             <h1 className="uppercase font-bold bg-slate-700 px-3 py-1 rounded z-50">

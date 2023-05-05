@@ -21,5 +21,13 @@ defmodule OperatelyWeb.GraphQL.Types.Tenets do
         {:ok, company}
       end
     end
+
+    field :objectives, list_of(:objective) do
+      resolve fn tenet, _, _ ->
+        objectives = Operately.Tenets.list_objectives(tenet)
+
+        {:ok, objectives}
+      end
+    end
   end
 end

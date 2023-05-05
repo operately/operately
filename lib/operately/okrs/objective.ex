@@ -9,6 +9,7 @@ defmodule Operately.Okrs.Objective do
   schema "objectives" do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :owner, Operately.People.Person, foreign_key: :owner_id
+    belongs_to :tenet, Operately.Tenets.Tenet, foreign_key: :tenet_id
 
     has_many :key_results, Operately.Okrs.KeyResult, on_delete: :delete_all
 
@@ -23,7 +24,7 @@ defmodule Operately.Okrs.Objective do
   @doc false
   def changeset(objective, attrs) do
     objective
-    |> cast(attrs, [:name, :description, :group_id, :owner_id])
+    |> cast(attrs, [:name, :description, :group_id, :owner_id, :tenet_id])
     |> validate_required([:name])
   end
 end

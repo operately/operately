@@ -24,6 +24,19 @@ const GET_TENET = gql`
       company {
         name
       }
+
+      objectives {
+        id
+        name
+        description
+
+        owner {
+          id
+          fullName
+          title
+          avatarUrl
+        }
+      }
     }
   }
 `;

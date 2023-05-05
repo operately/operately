@@ -25,6 +25,10 @@ defmodule Operately.Tenets do
     Repo.preload(tenet, :kpis).kpis
   end
 
+  def list_objectives(tenet) do
+    Repo.preload(tenet, :objectives).objectives
+  end
+
   @doc """
   Gets a single tenet.
 

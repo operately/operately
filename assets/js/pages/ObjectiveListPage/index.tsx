@@ -231,9 +231,8 @@ function ObjectiveCard({ objective, editing, startEditing }) {
         >
           <div>
             <div className="truncate font-bold">{objective.name}</div>
-            <div className="text-sm">
-              Q3 2023 &middot; In Progress for {Math.floor(Math.random() * 60)}{" "}
-              days &middot; 5 ongoing projects
+            <div className="text-sm text-gray-400">
+              Q2 2023 &middot; no ongoing projects
             </div>
           </div>
         </Link>
@@ -309,7 +308,7 @@ export function ObjectiveListPage() {
   const [editing, setEditing] = React.useState<string | null>(null);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return <p className="mt-40">Error: {error.message}</p>;
 
   const onGoalAdded = (id: string) => {
     setEditing(id);
@@ -355,16 +354,17 @@ export function ObjectiveListPage() {
                 GOALS INFLUENCING THIS TENET
               </h1>
             </div>
+
+            <ListOfObjectives
+              objectives={tenet.objectives}
+              editing={editing}
+              onGoalAdded={onGoalAdded}
+              onGoalAddingActivation={onGoalAddingActivation}
+              startEditing={startEditing}
+            />
           </div>
         </div>
       </div>
     </>
   );
 }
-// <ListOfObjectives
-//   objectives={data.objectives}
-//   editing={editing}
-//   onGoalAdded={onGoalAdded}
-//   onGoalAddingActivation={onGoalAddingActivation}
-//   startEditing={startEditing}
-// />
