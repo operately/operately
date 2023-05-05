@@ -25,6 +25,10 @@ defmodule Operately.Companies do
     Repo.all(Company)
   end
 
+  def list_tenets(id) do
+    Repo.all(from t in Tenet, where: t.company_id == ^id)
+  end
+
   @doc """
   Gets a single company.
 

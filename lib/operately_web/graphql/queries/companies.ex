@@ -6,7 +6,7 @@ defmodule OperatelyWeb.GraphQL.Queries.Companies do
       arg :id, non_null(:id)
 
       resolve fn _, args, _ ->
-        company = Operately.Companies.list_companies() |> hd()
+        company = Operately.Companies.get_company!(args.id)
 
         {:ok, company}
       end
