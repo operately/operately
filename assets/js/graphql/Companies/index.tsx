@@ -2,7 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 
 const GET_COMPANY = gql`
   query GetCompany($id: ID!) {
-    company {
+    company(id: $id) {
       id
       name
       mission

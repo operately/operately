@@ -339,7 +339,7 @@ export function CompanyPage() {
   // const [editing, setEditing] = React.useState<string | null>(null);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return <p className="mt-24">Error: {error.message}</p>;
 
   const company = data.company;
 
@@ -359,17 +359,16 @@ export function CompanyPage() {
     <div className="max-w-7xl mx-auto">
       <div className="m-11 mt-24">
         <div className="mb-4 text-center flex flex-col items-center">
-          <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center justify-around mb-8 border border-gray-700">
+          <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center text-center justify-around mb-8 border border-gray-700">
             {company.name
               .split(" ")
               .map((e) => e[0])
               .join("")}
           </div>
 
-          <h1 className="font-bold text-5xl">Acme Inc.</h1>
-          <div className="text-new-dark-3 text-xl max-w-xl">
-            Bring the best user experience to customers through innovative
-            hardware, software, and services.
+          <h1 className="font-bold text-5xl">{company.name}</h1>
+          <div className="text-new-dark-3 text-xl max-w-xl mt-2">
+            {company.mission}
           </div>
 
           <div className="mt-4">
