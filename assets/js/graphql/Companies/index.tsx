@@ -11,6 +11,12 @@ const GET_COMPANY = gql`
         id
         name
         description
+
+        kpis {
+          id
+          name
+          description
+        }
       }
     }
   }

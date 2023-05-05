@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Groups
   import_types Types.Companies
   import_types Types.Tenets
+  import_types Types.Kpis
 
   # Queries
   import_types Queries.Projects
@@ -63,12 +64,6 @@ defmodule OperatelyWeb.Schema do
         {:ok, person}
       end
     end
-  end
-
-  object :kpi do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :description, :string
   end
 
   object :group_contact do

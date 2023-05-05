@@ -6,6 +6,7 @@ defmodule Operately.Tenets.Tenet do
   @foreign_key_type :binary_id
   schema "tenets" do
     belongs_to :company, Operately.Companies.Company
+    has_many :kpis, Operately.Kpis.Kpi
 
     field :description, :string
     field :name, :string

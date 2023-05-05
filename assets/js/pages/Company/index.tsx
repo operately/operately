@@ -346,21 +346,14 @@ function Tenet({ tenet }) {
       </div>
 
       <div className="mt-12 border-b border-gray-600">
-        <KPI
-          name="Monthly Recurring Revenue"
-          lastValue="$45.2M"
-          lastChange="+$1.2M"
-        />
-        <KPI
-          name="Customer Acquisition Cost"
-          lastValue="$701.2"
-          lastChange="-$16.2"
-        />
-        <KPI
-          name="Customer Lifetime Value"
-          lastValue="$42.001"
-          lastChange="+$8.2"
-        />
+        {tenet.kpis.map((kpi) => (
+          <KPI
+            key={kpi.id}
+            name={kpi.name}
+            lastValue="$45.2M"
+            lastChange="+$1.2M"
+          />
+        ))}
       </div>
     </div>
   );
