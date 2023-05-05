@@ -37,7 +37,7 @@ export default function DefaultLayout() {
         }
       >
         <div className="flex items-center gap-4">
-          <div className="font-semibold">Operately</div>
+          <NavLink to="/company" className="font-bold" children="Operately" />
           <div className="bg-new-dark-2 rounded w-64 px-4 py-1.5 text-sm flex justify-between text-gray-500">
             <span>Search&hellip;</span>
             <span className="text-gray-500">⌘ K</span>

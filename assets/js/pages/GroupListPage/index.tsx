@@ -1,16 +1,16 @@
 import React from "react";
-import { useQuery, gql } from '@apollo/client';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useQuery, gql } from "@apollo/client";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-import ButtonLink from '../../components/ButtonLink';
-import PageTitle from '../../components/PageTitle';
-import Card from '../../components/Card';
-import CardList from '../../components/CardList';
+import ButtonLink from "../../components/ButtonLink";
+import PageTitle from "../../components/PageTitle";
+import Card from "../../components/Card";
+import CardList from "../../components/CardList";
 
 const GET_GROUPS = gql`
   query GetGroups {
-    groups{
+    groups {
       id
       name
     }
@@ -25,28 +25,31 @@ const GROUP_SUBSCRIPTION = gql`
   }
 `;
 
-export async function GroupsListPageLoader(apolloClient : any) {
+export async function GroupsListPageLoader(apolloClient: any) {
   await apolloClient.query({
     query: GET_GROUPS,
-    fetchPolicy: 'network-only'
+    fetchPolicy: "network-only",
   });
 
   return {};
 }
 
-function ListOfGroups({groups}) {
+function ListOfGroups({ groups }) {
   return (
-      <CardList>
-        {groups.map(({id, name}: any) => (
-          <Link key={name} to={`/groups/${id}`}><Card>{name}</Card></Link>
-        ))}
+    <CardList>
+      {groups.map(({ id, name }: any) => (
+        <Link key={name} to={`/groups/${id}`}>
+          <Card>{name}</Card>
+        </Link>
+      ))}
     </CardList>
   );
 }
 
 export function GroupListPage() {
   const { t } = useTranslation();
-  const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_GROUPS);
+  const { loading, error, data, subscribeToMore, refetch } =
+    useQuery(GET_GROUPS);
 
   React.useEffect(() => {
     subscribeToMore({
@@ -55,23 +58,32 @@ export function GroupListPage() {
         if (!subscriptionData.data) return prev;
         refetch();
         return prev;
-      }
-    })
-  }, [])
+      },
+    });
+  }, []);
 
   if (loading) return <p>{t("loading.loading")}</p>;
-  if (error) return <p>{t("error.error")}: {error.message}</p>;
+  if (error)
+    return (
+      <p>
+        {t("error.error")}: {error.message}
+      </p>
+    );
 
   return (
-    <>
-      <PageTitle
-        title={t("Groups")}
-        buttons={[
-          <ButtonLink key="new" to="/groups/new">{t("actions.add_group")}</ButtonLink>
-        ]}
-      />
+    <div className="max-w-6xl mx-auto mb-4">
+      <div className="m-11 mt-24">
+        <PageTitle
+          title={t("Groups")}
+          buttons={[
+            <ButtonLink key="new" to="/groups/new">
+              {t("actions.add_group")}
+            </ButtonLink>,
+          ]}
+        />
 
-      <ListOfGroups groups={data.groups} />
-    </>
-  )
+        <ListOfGroups groups={data.groups} />
+      </div>
+    </div>
+  );
 }
