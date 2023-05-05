@@ -24,4 +24,19 @@ defmodule Operately.KpisFixtures do
 
     kpi
   end
+
+  @doc """
+  Generate a metric.
+  """
+  def metric_fixture(attrs \\ %{}) do
+    {:ok, metric} =
+      attrs
+      |> Enum.into(%{
+        date: ~N[2023-05-04 10:14:00],
+        value: 42
+      })
+      |> Operately.Kpis.create_metric()
+
+    metric
+  end
 end

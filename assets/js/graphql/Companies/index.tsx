@@ -16,6 +16,11 @@ const GET_COMPANY = gql`
           id
           name
           description
+
+          metrics {
+            value
+            date
+          }
         }
       }
     }

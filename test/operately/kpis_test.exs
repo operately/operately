@@ -70,4 +70,60 @@ defmodule Operately.KpisTest do
       assert %Ecto.Changeset{} = Kpis.change_kpi(kpi)
     end
   end
+
+  describe "kpi_metrics" do
+    alias Operately.Kpis.Metric
+
+    import Operately.KpisFixtures
+
+    @invalid_attrs %{date: nil, value: nil}
+
+    test "list_kpi_metrics/0 returns all kpi_metrics" do
+      metric = metric_fixture()
+      assert Kpis.list_kpi_metrics() == [metric]
+    end
+
+    test "get_metric!/1 returns the metric with given id" do
+      metric = metric_fixture()
+      assert Kpis.get_metric!(metric.id) == metric
+    end
+
+    test "create_metric/1 with valid data creates a metric" do
+      valid_attrs = %{date: ~N[2023-05-04 10:14:00], value: 42}
+
+      assert {:ok, %Metric{} = metric} = Kpis.create_metric(valid_attrs)
+      assert metric.date == ~N[2023-05-04 10:14:00]
+      assert metric.value == 42
+    end
+
+    test "create_metric/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Kpis.create_metric(@invalid_attrs)
+    end
+
+    test "update_metric/2 with valid data updates the metric" do
+      metric = metric_fixture()
+      update_attrs = %{date: ~N[2023-05-05 10:14:00], value: 43}
+
+      assert {:ok, %Metric{} = metric} = Kpis.update_metric(metric, update_attrs)
+      assert metric.date == ~N[2023-05-05 10:14:00]
+      assert metric.value == 43
+    end
+
+    test "update_metric/2 with invalid data returns error changeset" do
+      metric = metric_fixture()
+      assert {:error, %Ecto.Changeset{}} = Kpis.update_metric(metric, @invalid_attrs)
+      assert metric == Kpis.get_metric!(metric.id)
+    end
+
+    test "delete_metric/1 deletes the metric" do
+      metric = metric_fixture()
+      assert {:ok, %Metric{}} = Kpis.delete_metric(metric)
+      assert_raise Ecto.NoResultsError, fn -> Kpis.get_metric!(metric.id) end
+    end
+
+    test "change_metric/1 returns a metric changeset" do
+      metric = metric_fixture()
+      assert %Ecto.Changeset{} = Kpis.change_metric(metric)
+    end
+  end
 end

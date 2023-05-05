@@ -22,29 +22,62 @@ export async function ObjectiveListPageLoader(apolloClient: any) {
   return {};
 }
 
-export function KPI({ name, lastValue, lastChange }) {
+export function KPI({ kpi }) {
+  let values = kpi.metrics.map((m) => m.value / 1000);
+  let min = Math.min(...values);
+  let max = Math.max(...values);
+
+  let areaHeight = 32;
+  let zeroPos = areaHeight * (max / (max - min));
+
   let bars: JSX.Element[] = [];
-  for (let i = 0; i < 16; i++) {
-    let height = Math.floor(Math.random() * 100);
+  for (let i = 0; i < values.length; i++) {
+    let value = values[i];
+    let height =
+      value > 0
+        ? zeroPos * (value / max)
+        : ((areaHeight - zeroPos) * value) / min + 1;
+    let margin = value > 0 ? (zeroPos * (max - value)) / max : zeroPos;
+
     bars.push(
       <div
-        className={"w-1 " + (height > 50 ? "bg-green-500" : "bg-red-500")}
-        style={{ height: height + "%" }}
+        className={"w-1 " + (value > 0 ? "bg-green-500" : "bg-red-500")}
+        style={{
+          marginTop: margin + "px",
+          height: height + "px",
+        }}
       ></div>
     );
+  }
+
+  let lastValue = "--";
+  let lastChange = "--";
+
+  if (values.length > 0) {
+    lastValue = values[0] + "%";
+  }
+
+  if (values.length > 1) {
+    let change = values[0] - values[1];
+    lastChange = (change > 0 ? "+" : "-") + change.toFixed(2) + "%";
   }
 
   return (
     <div className="flex flex-col border-t border-gray-600">
       <div className="py-2 flex items-center gap-1 justify-between">
         <div>
-          <div className="">{name}</div>
+          <div className="">{kpi.name}</div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-30 relative h-8 flex gap-0.5 items-end">
+          <div className="w-30 relative h-8 flex gap-0.5 items-start">
             {bars}
-            <div className="absolute top-1/2 -left-1 -right-1 border-t border-green-500 border-dashed"></div>
+            <div
+              className="absolute -left-1 -right-1 border-t border-green-500 border-dashed"
+              style={{
+                marginTop: zeroPos + "px",
+              }}
+            ></div>
           </div>
 
           <div className="text-right w-20">
@@ -347,12 +380,7 @@ function Tenet({ tenet }) {
 
       <div className="mt-12 border-b border-gray-600">
         {tenet.kpis.map((kpi) => (
-          <KPI
-            key={kpi.id}
-            name={kpi.name}
-            lastValue="$45.2M"
-            lastChange="+$1.2M"
-          />
+          <KPI key={kpi.id} kpi={kpi} />
         ))}
       </div>
     </div>
