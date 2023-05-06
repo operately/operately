@@ -41,7 +41,7 @@ function daysIntoYear() {
 
 const daysAgo = (date: Date, n: number): Date => {
   var d = new Date(date);
-  return new Date(d.setDate(d.getDate() - Math.abs(n)));
+  return new Date(d.setDate(d.getDate() - n));
 };
 
 export function ProjectListPage() {
@@ -99,6 +99,138 @@ export function ProjectListPage() {
     labels.push({ label: calcLabel(date), position: position });
   }
 
+  let projects = [
+    {
+      name: "New website",
+      start: daysAgo(now, 300),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Zendesk Integration",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Extend the engineer team",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -10),
+    },
+    {
+      name: "Launch new product",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -40),
+    },
+    {
+      name: "New website",
+      start: daysAgo(now, 300),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Zendesk Integration",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Extend the engineer team",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -10),
+    },
+    {
+      name: "Launch new product",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -40),
+    },
+    {
+      name: "New website",
+      start: daysAgo(now, 300),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Zendesk Integration",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Extend the engineer team",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -10),
+    },
+    {
+      name: "Launch new product",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -40),
+    },
+    {
+      name: "New website",
+      start: daysAgo(now, 300),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Zendesk Integration",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Extend the engineer team",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -10),
+    },
+    {
+      name: "Launch new product",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -40),
+    },
+    {
+      name: "New website",
+      start: daysAgo(now, 300),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Zendesk Integration",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Extend the engineer team",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -10),
+    },
+    {
+      name: "Launch new product",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -40),
+    },
+    {
+      name: "New website",
+      start: daysAgo(now, 300),
+      deadline: daysAgo(now, -30),
+    },
+    {
+      name: "Zendesk Integration",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -9000),
+    },
+    {
+      name: "Extend the engineer team",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -10),
+    },
+    {
+      name: "Launch new product",
+      start: daysAgo(now, 90),
+      deadline: daysAgo(now, -40),
+    },
+  ];
+
+  var lines: { left: number; width: number; name: string }[] = [];
+  projects.forEach((p) => {
+    lines.push({
+      left: calcPosition(daySize, firstDate, p.start),
+      width: calcPosition(daySize, p.start, p.deadline),
+      name: p.name,
+    });
+  });
+
   return (
     <div className="bottom-0 left-0 right-0 top-20 absolute flex items-center justify-center">
       <div className="absolute bottom-4 left-0 right-0 top-0 text-center">
@@ -115,23 +247,40 @@ export function ProjectListPage() {
             <div className="">{label.label}</div>
           </div>
         ))}
-        <div className="flex flex-col h-full items-center justify-center gap-2 relative z-1">
-          <div className="bg-brand-base text-new-dark-1 rounded px-2 font-semibold">
-            TODAY
+
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            bottom: "32px",
+            left: "0",
+            right: "0",
+            overflowY: "scroll",
+          }}
+        >
+          <div className="relative h-full">
+            <div className="top-0 left-1/2 bottom-0 absolute w-[1px] flex flex-col items-center">
+              <div className="bg-brand-base text-new-dark-1 rounded px-2 font-semibold">
+                TODAY
+              </div>
+              <div
+                className="border-l border-brand-base absolute top-8 left-1/2"
+                style={{ height: lines.length * 40, minHeight: "100%" }}
+              ></div>
+            </div>
+
+            {lines.map((l, i) => (
+              <div
+                className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-0.5 px-3 rounded-lg absolute truncate text-left"
+                style={{
+                  top: 40 + i * 40,
+                  left: l.left + "%",
+                  width: l.width + "%",
+                }}
+                children={l.name}
+              />
+            ))}
           </div>
-          <div className="border-l border-brand-base h-full mb-8"></div>
-        </div>
-
-        <div className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-1 px-4 rounded-lg text-left top-[250px] left-40 w-64 absolute">
-          Zendesk Integration
-        </div>
-
-        <div className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-1 px-4 rounded-lg text-left top-[290px] left-40 w-64 absolute">
-          Okta Support
-        </div>
-
-        <div className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-1 px-4 rounded-lg text-left top-[330px] left-32 w-[800px] absolute">
-          Hire new engineers
         </div>
       </div>
     </div>
