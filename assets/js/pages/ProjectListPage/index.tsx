@@ -39,6 +39,11 @@ function daysIntoYear() {
   );
 }
 
+const daysAgo = (date: Date, n: number): Date => {
+  var d = new Date(date);
+  return new Date(d.setDate(d.getDate() - Math.abs(n)));
+};
+
 export function ProjectListPage() {
   const { t } = useTranslation();
   const { loading, error, data } = useProjects({});
@@ -68,38 +73,31 @@ export function ProjectListPage() {
   //   </div>
   // );
 
+  const calcPosition = (daySize: number, firstDate: Date, date: Date) => {
+    const daysDifference = Math.floor((+date - +firstDate) / 86400000);
+    return daySize * daysDifference;
+  };
+
+  const calcLabel = (date: Date) => {
+    return date.getMonth() > 0
+      ? date.toLocaleString("default", { month: "short" })
+      : date.getFullYear().toString();
+  };
+
   let labels: { label: string; position: number }[] = [];
   let now = new Date();
+  let daySize = 100.0 / 365;
+  let firstDate = daysAgo(now, 366 / 2);
 
-  let position = 50;
-  let date = new Date(now.getFullYear(), now.getMonth(), 1);
+  let position = Number.MAX_SAFE_INTEGER;
+  let date = new Date(now.getFullYear() + 1, now.getMonth(), 1);
+
   while (position > -100) {
-    labels.push({
-      label:
-        date.getMonth() > 0
-          ? date.toLocaleString("default", { month: "short" })
-          : date.getFullYear().toString(),
-      position: position,
-    });
     date = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-    position -= 100 / 12;
-  }
+    position = calcPosition(daySize, firstDate, date);
 
-  position = 50;
-  date = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  while (position > 200) {
-    labels.push({
-      label:
-        date.getMonth() > 0
-          ? date.toLocaleString("default", { month: "short" })
-          : date.getFullYear().toString(),
-      position: position,
-    });
-    date = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-    position += 100 / 12;
+    labels.push({ label: calcLabel(date), position: position });
   }
-
-  // const offset = -50 - 100 * (daysIntoYear(data) / 365);
 
   return (
     <div className="bottom-0 left-0 right-0 top-20 absolute flex items-center justify-center">
