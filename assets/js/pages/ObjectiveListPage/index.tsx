@@ -119,7 +119,7 @@ function AddGoal({ onGoalAdded, onActivation }) {
   const addGoalRow = (
     <div
       data-test-id="addGoalButton"
-      className="border-t border-b border-gray-700 flex items-center text-dark-2 gap-2 px-2 py-2 hover:text-dark-1 cursor-pointer"
+      className="border-t border-b border-gray-700 flex items-center text-dark-2 gap-2 px-1 py-4 cursor-pointer"
       onClick={handleActivateForm}
     >
       <Icon name="plus" size="small" color="dark-2" />
@@ -186,45 +186,42 @@ function KeyResultRow({ kr }) {
 }
 
 function KeyResultList({ objective, editing, startEditing }) {
-  if (!editing && objective.keyResults.length === 0) {
-    return (
-      <div className="flex gap-2 px-4 py-2 text-dark-2">
-        No assigned targets
-        <a
-          data-test-id="addTargetsLink"
-          onClick={() => startEditing(objective.id)}
-          className="underline hover:text-dark-1 cursor-pointer"
-        >
-          add targets
-        </a>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {objective.keyResults.map((kr, i: number) => (
-        <KeyResultRow key={i} kr={kr} />
-      ))}
-
-      {editing && (
-        <AddKeyResult
-          objectiveId={objective.id}
-          onKeyResultAdded={() => null}
-        />
-      )}
-    </>
-  );
+  // if (!editing && objective.keyResults.length === 0) {
+  //   return (
+  //     <div className="flex gap-2 px-4 py-2 text-dark-2">
+  //       No assigned targets
+  //       <a
+  //         data-test-id="addTargetsLink"
+  //         onClick={() => startEditing(objective.id)}
+  //         className="underline hover:text-dark-1 cursor-pointer"
+  //       >
+  //         add targets
+  //       </a>
+  //     </div>
+  //   );
+  // }
+  // return (
+  //   <>
+  //     {objective.keyResults.map((kr, i: number) => (
+  //       <KeyResultRow key={i} kr={kr} />
+  //     ))}
+  //     {editing && (
+  //       <AddKeyResult
+  //         objectiveId={objective.id}
+  //         onKeyResultAdded={() => null}
+  //       />
+  //     )}
+  //   </>
+  // );
 }
 
 function ObjectiveCard({ objective, editing, startEditing }) {
   return (
     <div
-      className="border-t border-gray-700 py-2 group"
+      className="border-t border-gray-700 py-2 group pl-2"
       data-test-id={objective.name}
     >
       <div className="flex items-center gap-2 justify-between">
-        <Icon name="expand" size="base" color="dark-2" />
         <Link
           to={`/objectives/${objective.id}`}
           className="flex flex-1 items-center gap-2"
@@ -236,6 +233,22 @@ function ObjectiveCard({ objective, editing, startEditing }) {
             </div>
           </div>
         </Link>
+
+        <div className="w-36 mr-8 mt-1.5">
+          <div className="text-left">
+            <div className="w-full h-2 bg-gray-700 rounded mb-1 overflow-hidden">
+              <div
+                className="h-2 bg-brand-base"
+                style={{
+                  width: Math.floor(Math.random() * 100) + "%",
+                }}
+              >
+                {" "}
+              </div>
+            </div>
+            <div className="text-sm">1 of 20 steps done</div>
+          </div>
+        </div>
 
         <div className="flex items-center gap-4">
           {objective.owner && (
@@ -254,20 +267,11 @@ function ObjectiveCard({ objective, editing, startEditing }) {
 
       {
         // <div className="">
-        // <KeyResultList
-        //   objective={objective}
-        //   editing={editing}
-        //   startEditing={startEditing}
-        // />
-        // </div>
-        // <div className="flex items-center"></div>
-        // <div className="flex items-center gap-2">
-        //   <GoalOwner objective={objective} />
-        //   {objective.owner && (
-        //     <div>
-        //       <div className="font-bold">{objective.owner.fullName}</div>
-        //     </div>
-        //   )}
+        //   <KeyResultList
+        //     objective={objective}
+        //     editing={editing}
+        //     startEditing={startEditing}
+        //   />
         // </div>
       }
     </div>

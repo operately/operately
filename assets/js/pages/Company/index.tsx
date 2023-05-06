@@ -455,18 +455,33 @@ function Tenet({ tenet }) {
         </h1>
       </div>
 
-      <div className="flex justify-around">
-        <div>12 Goals &middot; 17 Projects &middot; 40 people contributing</div>
-      </div>
-
-      <div className="mt-12 border-b border-gray-600">
+      <div className="mt-4 border-b border-gray-600">
         {tenet.kpis.map((kpi) => (
           <KPI key={kpi.id} kpi={kpi} />
         ))}
       </div>
+
+      <div className="flex gap-4 items-center justify-between mt-4">
+        <div className="flex gap-4 items-center">
+          <div className="py-1 flex gap-2 items-center">
+            <Icon name="objectives" size="small" color="light" />
+            12 Goals
+          </div>
+          <div className="py-1 flex gap-2 items-center">
+            <Icon name="my projects" size="small" color="light" />
+            17 Projects
+          </div>
+        </div>
+        <div className="py-1 flex gap-2 items-center">
+          <Icon name="groups" size="small" color="light" />
+          40 People
+        </div>
+      </div>
     </div>
   );
 }
+
+<div>12 Goals &middot; 17 Projects &middot; 40 people contributing</div>;
 
 export function CompanyPage() {
   const companyId: string = window.companyID;
@@ -529,98 +544,3 @@ export function CompanyPage() {
     </div>
   );
 }
-// <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
-//   <div className="text-center flex flex-col items-center">
-//     <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-//       Maintain Profitable Growth
-//     </h1>
-//   </div>
-
-//   <div className="flex justify-around">
-//     <div>
-//       12 Goals &middot; 17 Projects &middot; 40 people contributing
-//     </div>
-//   </div>
-
-//   <div className="mt-12 border-b border-gray-600">
-//     <KPI
-//       name="Monthly Recurring Revenue"
-//       lastValue="$45.2M"
-//       lastChange="+$1.2M"
-//     />
-//     <KPI
-//       name="Customer Acquisition Cost"
-//       lastValue="$701.2"
-//       lastChange="+$8.2"
-//     />
-//     <KPI
-//       name="Customer Lifetime Value"
-//       lastValue="$42.001"
-//       lastChange="+$8.2"
-//     />
-//   </div>
-// </div>
-
-// <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
-//   <div className="text-center flex flex-col items-center">
-//     <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-//       Global perspective
-//     </h1>
-//   </div>
-
-//   <div className="flex justify-around">
-//     <div>
-//       12 Goals &middot; 17 Projects &middot; 40 people contributing
-//     </div>
-//   </div>
-
-//   <div className="mt-12 border-b border-gray-600">
-//     <KPI
-//       name="Monthly Recurring Revenue"
-//       lastValue="$45.2M"
-//       lastChange="+$1.2M"
-//     />
-//     <KPI
-//       name="Customer Acquisition Cost"
-//       lastValue="$701.2"
-//       lastChange="+$8.2"
-//     />
-//     <KPI
-//       name="Customer Lifetime Value"
-//       lastValue="$42.001"
-//       lastChange="+$8.2"
-//     />
-//   </div>
-// </div>
-
-// <div className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition">
-//   <div className="text-center flex flex-col items-center">
-//     <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-//       Hire and Retain the Best
-//     </h1>
-//   </div>
-
-//   <div className="flex justify-around">
-//     <div>
-//       12 Goals &middot; 17 Projects &middot; 40 people contributing
-//     </div>
-//   </div>
-
-//   <div className="mt-12 border-b border-gray-600">
-//     <KPI
-//       name="Monthly Recurring Revenue"
-//       lastValue="$45.2M"
-//       lastChange="+$1.2M"
-//     />
-//     <KPI
-//       name="Customer Acquisition Cost"
-//       lastValue="$701.2"
-//       lastChange="+$8.2"
-//     />
-//     <KPI
-//       name="Customer Lifetime Value"
-//       lastValue="$42.001"
-//       lastChange="+$8.2"
-//     />
-//   </div>
-// </div>
