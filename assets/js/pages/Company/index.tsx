@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useCompany } from "../../graphql/Companies";
 
+import { DashboardIcon, RowsIcon, GearIcon } from "@radix-ui/react-icons";
+
 import { useApolloClient } from "@apollo/client";
 import {
   useObjectives,
@@ -514,7 +516,7 @@ export function CompanyPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="m-11 mt-24">
+      <div className="m-11 mt-24 relative">
         <div className="mb-4 text-center flex flex-col items-center">
           <div className="rounded-full bg-new-dark-2 text-6xl w-32 h-32 font-bold flex items-center text-center justify-around mb-8 border border-gray-700">
             {company.name
@@ -528,9 +530,13 @@ export function CompanyPage() {
             {company.mission}
           </div>
 
-          <div className="mt-4">
-            <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all hover:px-5">
-              Add Company Tenet
+          <div className="mt-4 flex gap-4 justify-center">
+            <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all">
+              Add Tenets
+            </button>
+
+            <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all">
+              Set Goals
             </button>
           </div>
         </div>
@@ -539,6 +545,12 @@ export function CompanyPage() {
           {company.tenets.map((tenet) => (
             <Tenet key={tenet.id} tenet={tenet} />
           ))}
+        </div>
+
+        <div className="flex gap-2 top-0 right-0 absolute border border-gray-700 px-1 py-1 rounded-full">
+          <button className="bg-new-dark-2 rounded-full px-1 py-1 hover:border-brand-base transition-all">
+            <GearIcon />
+          </button>
         </div>
       </div>
     </div>
