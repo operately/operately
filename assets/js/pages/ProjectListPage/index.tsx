@@ -3,6 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+import {
+  DashboardIcon,
+  RowsIcon,
+  GearIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@radix-ui/react-icons";
+
 import ButtonLink from "../../components/ButtonLink";
 import PageTitle from "../../components/PageTitle";
 import Card from "../../components/Card";
@@ -141,11 +149,9 @@ export function ProjectListPage() {
         >
           <div className="relative h-full">
             <div className="top-0 left-1/2 bottom-0 absolute w-[1px] flex flex-col items-center">
-              <div className="bg-brand-base text-new-dark-1 rounded px-2 font-semibold">
-                TODAY
-              </div>
+              <div className="bg-brand-base text-new-dark-1 rounded px-2 font-semibold"></div>
               <div
-                className="border-l border-brand-base absolute top-8 left-1/2"
+                className="border-l border-brand-base absolute top-0 left-1/2"
                 style={{ height: lines.length * 40, minHeight: "100%" }}
               ></div>
             </div>
@@ -158,7 +164,7 @@ export function ProjectListPage() {
                   navigate(l.link);
                 }}
                 style={{
-                  top: 40 + i * 40,
+                  top: 80 + i * 40,
                   left: l.left + "%",
                   width: l.width + "%",
                   paddingLeft: l.left < 0 ? -l.left + "%" : "10px",
@@ -173,6 +179,16 @@ export function ProjectListPage() {
                 <div className="truncate">{l.name}</div>
               </div>
             ))}
+
+            <div className="absolute left-0 right-0 top-[00px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
+              <ChevronUpIcon />
+              Exceptional customer service
+            </div>
+
+            <div className="absolute left-0 right-0 top-[40px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
+              <ChevronDownIcon />
+              Profitable Growth
+            </div>
           </div>
         </div>
       </div>
