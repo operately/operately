@@ -90,13 +90,18 @@ export function ProjectListPage() {
     date = new Date(date.getFullYear(), date.getMonth() - 1, 1);
     position = calcPosition(daySize, firstDate, date);
 
-    labels.push({ label: calcLabel(date), position: position });
+    labels.push({
+      label: calcLabel(date),
+      position: position,
+    });
   }
 
   let projects = [];
 
   data.projects.forEach((project: any) => {
     if (project.startedAt == null || project.deadline == null) return;
+    console.log(project.startedAt, project.deadline);
+    if (+new Date(project.deadline) < +Date.now()) return;
 
     projects.push({
       id: project.id,
@@ -132,7 +137,7 @@ export function ProjectListPage() {
               top: "0px",
             }}
           >
-            <div className="border-l border-gray-700 h-full"></div>
+            <div className={"border-l h-full border-gray-800"}></div>
             <div className="">{label.label}</div>
           </div>
         ))}
@@ -164,7 +169,7 @@ export function ProjectListPage() {
                   navigate(l.link);
                 }}
                 style={{
-                  top: 80 + i * 40,
+                  top: 120 + i * 40,
                   left: l.left + "%",
                   width: l.width + "%",
                   paddingLeft: l.left < 0 ? -l.left + "%" : "10px",
@@ -186,6 +191,11 @@ export function ProjectListPage() {
             </div>
 
             <div className="absolute left-0 right-0 top-[40px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
+              <ChevronUpIcon />
+              Globally Recognized Brand
+            </div>
+
+            <div className="absolute left-0 right-0 top-[80px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
               <ChevronDownIcon />
               Profitable Growth
             </div>
