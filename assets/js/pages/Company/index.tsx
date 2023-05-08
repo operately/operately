@@ -3,7 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useCompany } from "../../graphql/Companies";
 
-import { DashboardIcon, RowsIcon, GearIcon } from "@radix-ui/react-icons";
+import {
+  DashboardIcon,
+  RowsIcon,
+  GearIcon,
+  ChevronDownIcon,
+} from "@radix-ui/react-icons";
 
 import { useApolloClient } from "@apollo/client";
 import {
@@ -547,8 +552,12 @@ export function CompanyPage() {
           ))}
         </div>
 
-        <div className="flex gap-2 top-0 right-0 absolute border border-gray-700 px-1 py-1 rounded-full">
-          <button className="bg-new-dark-2 rounded-full px-1 py-1 hover:border-brand-base transition-all">
+        <div className="flex gap-2 top-0 right-0 absolute ">
+          <button className="border border-gray-700 p-1 rounded-lg text-sm flex items-center gap-2 px-2.5">
+            Dashboard View <ChevronDownIcon />
+          </button>
+
+          <button className="border border-gray-700 p-1 w-8 h-8 rounded-full flex items-center justify-center">
             <GearIcon />
           </button>
         </div>
