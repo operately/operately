@@ -164,7 +164,7 @@ export function ProjectListPage() {
             {lines.map((l, i) => (
               <div
                 key={i}
-                className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-0.5 px-3 rounded-lg absolute truncate text-left flex gap-1 items-center hover:border-gray-500 transition cursor-pointer"
+                className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-0.5 px-3 rounded-lg absolute truncate text-left flex gap-1 items-center hover:border-gray-500 transition cursor-pointer fadeIn"
                 onClick={() => {
                   navigate(l.link);
                 }}

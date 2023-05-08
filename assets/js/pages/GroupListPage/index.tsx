@@ -49,7 +49,7 @@ function Group({ group }) {
   return (
     <div
       onClick={() => navigate("/groups/" + group.id)}
-      className="rounded-lg bg-new-dark-2 px-8 py-6 mt-4 relative border border-transparent hover:border-brand-base transition cursor-pointer"
+      className="rounded-lg bg-new-dark-2 px-8 py-6 mt-4 relative border border-transparent hover:border-brand-base transition cursor-pointer fadeIn"
     >
       <div className="flex justify-between items-center">
         <div className="font-bold text-xl">{group.name}</div>

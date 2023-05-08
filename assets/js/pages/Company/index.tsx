@@ -453,7 +453,7 @@ function Tenet({ tenet }) {
 
   return (
     <div
-      className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition cursor-pointer"
+      className="p-4 rounded bg-new-dark-2 border border-new-dark-2 hover:border-brand-base transition cursor-pointer fadeIn"
       onClick={() => navigate("/tenets/" + tenet.id)}
     >
       <div className="text-center flex flex-col items-center">
