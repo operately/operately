@@ -7,6 +7,9 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :description, :string
     field :updated_at, non_null(:date)
 
+    field :started_at, :date
+    field :deadline, :date
+
     field :owner, :person do
       resolve fn objective, _, _ ->
         person = Operately.Projects.get_owner!(objective)

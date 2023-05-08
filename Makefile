@@ -122,6 +122,9 @@ dev.db.reset:
 dev.db.seed:
 	$(DEV_CONTAINER) mix run priv/repo/seeds.exs
 
+dev.run.script:
+	$(DEV_CONTAINER) mix run $(FILE)
+
 #
 # Testing tasks
 #

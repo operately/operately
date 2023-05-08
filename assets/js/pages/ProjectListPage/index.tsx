@@ -1,11 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import ButtonLink from "../../components/ButtonLink";
 import PageTitle from "../../components/PageTitle";
 import Card from "../../components/Card";
 import CardList from "../../components/CardList";
+import Icon from "../../components/Icon";
 
 import { listProjects, useProjects } from "../../graphql/Projects";
 
@@ -46,6 +48,7 @@ const daysAgo = (date: Date, n: number): Date => {
 
 export function ProjectListPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { loading, error, data } = useProjects({});
 
   if (loading) return <p>{t("loading.loading")}</p>;
@@ -55,23 +58,6 @@ export function ProjectListPage() {
         {t("error.error")}: {error.message}
       </p>
     );
-
-  // return (
-  //   <div className="max-w-6xl mx-auto mb-4">
-  //     <div className="m-11 mt-24">
-  //       <PageTitle
-  //         title={t("Projects")}
-  //         buttons={[
-  //           <ButtonLink key="new" to="/projects/new">
-  //             {t("actions.add_project")}
-  //           </ButtonLink>,
-  //         ]}
-  //       />
-
-  //       <ListOfProjects projects={data.projects} />
-  //     </div>
-  //   </div>
-  // );
 
   const calcPosition = (daySize: number, firstDate: Date, date: Date) => {
     const daysDifference = Math.floor((+date - +firstDate) / 86400000);
@@ -99,135 +85,30 @@ export function ProjectListPage() {
     labels.push({ label: calcLabel(date), position: position });
   }
 
-  let projects = [
-    {
-      name: "New website",
-      start: daysAgo(now, 300),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Zendesk Integration",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Extend the engineer team",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -10),
-    },
-    {
-      name: "Launch new product",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -40),
-    },
-    {
-      name: "New website",
-      start: daysAgo(now, 300),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Zendesk Integration",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Extend the engineer team",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -10),
-    },
-    {
-      name: "Launch new product",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -40),
-    },
-    {
-      name: "New website",
-      start: daysAgo(now, 300),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Zendesk Integration",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Extend the engineer team",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -10),
-    },
-    {
-      name: "Launch new product",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -40),
-    },
-    {
-      name: "New website",
-      start: daysAgo(now, 300),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Zendesk Integration",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Extend the engineer team",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -10),
-    },
-    {
-      name: "Launch new product",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -40),
-    },
-    {
-      name: "New website",
-      start: daysAgo(now, 300),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Zendesk Integration",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Extend the engineer team",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -10),
-    },
-    {
-      name: "Launch new product",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -40),
-    },
-    {
-      name: "New website",
-      start: daysAgo(now, 300),
-      deadline: daysAgo(now, -30),
-    },
-    {
-      name: "Zendesk Integration",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -9000),
-    },
-    {
-      name: "Extend the engineer team",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -10),
-    },
-    {
-      name: "Launch new product",
-      start: daysAgo(now, 90),
-      deadline: daysAgo(now, -40),
-    },
-  ];
+  let projects = [];
 
-  var lines: { left: number; width: number; name: string }[] = [];
+  data.projects.forEach((project: any) => {
+    if (project.startedAt == null || project.deadline == null) return;
+
+    projects.push({
+      id: project.id,
+      name: project.name,
+      start: new Date(project.startedAt),
+      deadline: new Date(project.deadline),
+    });
+  });
+
+  projects.sort((a, b) => {
+    return -(a.start.getTime() - b.start.getTime());
+  });
+
+  var lines: { left: number; width: number; name: string; link: string }[] = [];
   projects.forEach((p) => {
     lines.push({
       left: calcPosition(daySize, firstDate, p.start),
       width: calcPosition(daySize, p.start, p.deadline),
       name: p.name,
+      link: `/projects/${p.id}`,
     });
   });
 
@@ -271,14 +152,26 @@ export function ProjectListPage() {
 
             {lines.map((l, i) => (
               <div
-                className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-0.5 px-3 rounded-lg absolute truncate text-left"
+                key={i}
+                className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-0.5 px-3 rounded-lg absolute truncate text-left flex gap-1 items-center hover:border-gray-500 transition cursor-pointer"
+                onClick={() => {
+                  navigate(l.link);
+                }}
                 style={{
                   top: 40 + i * 40,
                   left: l.left + "%",
                   width: l.width + "%",
+                  paddingLeft: l.left < 0 ? -l.left + "%" : "10px",
+                  paddingRight: "10px",
                 }}
-                children={l.name}
-              />
+              >
+                {l.left < 0 ? (
+                  <div className="scale-75">
+                    <Icon name="arrow left" size="small" color="dark-2" />
+                  </div>
+                ) : null}
+                <div className="truncate">{l.name}</div>
+              </div>
             ))}
           </div>
         </div>
