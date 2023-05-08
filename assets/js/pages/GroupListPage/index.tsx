@@ -2,12 +2,14 @@ import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import ButtonLink from "../../components/ButtonLink";
 import PageTitle from "../../components/PageTitle";
 import Card from "../../components/Card";
 import CardList from "../../components/CardList";
 import Avatar from "../../components/Avatar";
+import Icon from "../../components/Icon";
 
 const GET_GROUPS = gql`
   query GetGroups {
@@ -43,9 +45,15 @@ export async function GroupsListPageLoader(apolloClient: any) {
 }
 
 function Group({ group }) {
+  const navigate = useNavigate();
   return (
-    <div className="rounded-lg bg-new-dark-2 p-4">
-      <div className="font-bold text-xl">{group.name}</div>
+    <div
+      onClick={() => navigate("/groups/" + group.id)}
+      className="rounded-lg bg-new-dark-2 px-8 py-6 mt-4 relative border border-transparent hover:border-brand-base transition cursor-pointer"
+    >
+      <div className="flex justify-between items-center">
+        <div className="font-bold text-xl">{group.name}</div>
+      </div>
 
       <div className="grid grid-cols-4 gap-4 mt-4">
         {group.members.map((member) => (
@@ -99,14 +107,27 @@ export function GroupListPage() {
   return (
     <div className="max-w-6xl mx-auto mb-4">
       <div className="m-11 mt-24">
-        <PageTitle
-          title={t("Groups")}
-          buttons={[
-            <ButtonLink key="new" to="/groups/new">
-              {t("actions.add_group")}
-            </ButtonLink>,
-          ]}
-        />
+        <div className="my-8 flex justify-between items-start">
+          <div>
+            <h1 className="font-bold text-3xl">People & Groups</h1>
+            <div className="mt-2 text-xl">
+              {data.groups.reduce((acc, group) => {
+                return acc + group.members.length;
+              }, 0)}{" "}
+              people in {data.groups.length} groups
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all">
+              Invite People
+            </button>
+
+            <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all">
+              Add Groups
+            </button>
+          </div>
+        </div>
 
         <ListOfGroups groups={data.groups} />
       </div>

@@ -3,6 +3,13 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useTenet } from "../../graphql/Tenets";
 
+import {
+  DashboardIcon,
+  RowsIcon,
+  GearIcon,
+  ChevronDownIcon,
+} from "@radix-ui/react-icons";
+
 import { useApolloClient } from "@apollo/client";
 import {
   useObjectives,
@@ -331,7 +338,7 @@ export function ObjectiveListPage() {
   return (
     <>
       <div className="max-w-6xl mx-auto mb-4">
-        <div className="m-11 mt-24">
+        <div className="m-11 mt-24 relative">
           <Link to="/company" className="font-bold underline mb-4">
             {tenet.company.name}
           </Link>
@@ -346,6 +353,12 @@ export function ObjectiveListPage() {
             {tenet.kpis.map((kpi: any) => (
               <KPI key={kpi.id} kpi={kpi} clickable />
             ))}
+          </div>
+
+          <div className="flex gap-2 top-0 right-0 absolute">
+            <button className="border border-gray-700 p-1 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-700 transition">
+              <GearIcon />
+            </button>
           </div>
         </div>
       </div>
