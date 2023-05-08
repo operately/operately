@@ -7,12 +7,20 @@ import ButtonLink from "../../components/ButtonLink";
 import PageTitle from "../../components/PageTitle";
 import Card from "../../components/Card";
 import CardList from "../../components/CardList";
+import Avatar from "../../components/Avatar";
 
 const GET_GROUPS = gql`
   query GetGroups {
     groups {
       id
       name
+
+      members {
+        id
+        fullName
+        title
+        avatarUrl
+      }
     }
   }
 `;
@@ -34,13 +42,31 @@ export async function GroupsListPageLoader(apolloClient: any) {
   return {};
 }
 
+function Group({ group }) {
+  return (
+    <div className="rounded-lg bg-new-dark-2 p-4">
+      <div className="font-bold text-xl">{group.name}</div>
+
+      <div className="grid grid-cols-4 gap-4 mt-4">
+        {group.members.map((member) => (
+          <div className="mt-4 flex gap-2 items-center">
+            <Avatar person={member} />
+            <div>
+              <div className="font-bold">{member.fullName}</div>
+              <div className="text-sm">{member.title}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ListOfGroups({ groups }) {
   return (
     <CardList>
-      {groups.map(({ id, name }: any) => (
-        <Link key={name} to={`/groups/${id}`}>
-          <Card>{name}</Card>
-        </Link>
+      {groups.map((group) => (
+        <Group key={group.id} group={group} />
       ))}
     </CardList>
   );
