@@ -20,6 +20,8 @@
           if (!/Download the React DevTools/.test(message)) info.apply(console, arguments)
         }
       })()
+
+      window.companyID = "<%= Operately.Companies.get_company_id() %>";
     </script>
 
     <style>
@@ -34,7 +36,7 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="bg-light-1 antialiased overscroll-none">
+  <body class="bg-new-dark-1 antialiased overscroll-none" style="background: linear-gradient(49deg, rgba(var(--color-new-dark-1)) 0%, rgba(33,33,33,1) 77%, rgba(var(--color-new-dark-1)) 100%); min-height: 100vh;">
     <%= @inner_content %>
   </body>
 </html>

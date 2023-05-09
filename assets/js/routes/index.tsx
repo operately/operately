@@ -31,6 +31,7 @@ import {
 import ProfilePage from "../pages/ProfilePage";
 
 import NotFoundPage from "../pages/NotFoundPage";
+import { CompanyPage } from "../pages/Company";
 
 import { createBrowserRouter } from "react-router-dom";
 import client from "../graphql/client";
@@ -97,8 +98,7 @@ const routes = createBrowserRouter([
       },
       {
         path: "/tenets/:id",
-        loader: loaderWithApollo(TenetPageLoader),
-        element: <TenetPage />,
+        element: <ObjectiveListPage />,
       },
       {
         path: "/kpis",
@@ -131,6 +131,10 @@ const routes = createBrowserRouter([
       {
         path: "/people/:id",
         element: <ProfilePage />,
+      },
+      {
+        path: "/company",
+        element: <CompanyPage />,
       },
       {
         path: "*",

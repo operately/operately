@@ -6,9 +6,29 @@
 
 /* This file is for your main application CSS */
 
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+    margin-top: 20px;
+  }
+  100% {
+    opacity: 1;
+    margin-top: 0px;
+  }
+}
+
+.fadeIn {
+  animation: fadeInAnimation;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
 body {
   font-family: "Inter", sans-serif;
   font-size: 15px;
+
+  --color-new-dark-1: 22, 22, 22, 1;
 }
 
 .card-shadow {

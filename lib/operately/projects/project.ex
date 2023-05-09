@@ -10,6 +10,9 @@ defmodule Operately.Projects.Project do
     field :description, :string
     field :name, :string
 
+    field :started_at, :utc_datetime
+    field :deadline, :utc_datetime
+
     has_one :ownership, Operately.Ownerships.Ownership, foreign_key: :target, on_replace: :update
     has_one :owner, through: [:ownership, :person]
 
@@ -19,7 +22,7 @@ defmodule Operately.Projects.Project do
   @doc false
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:name, :description, :group_id])
+    |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline])
     |> cast_assoc(:ownership)
     |> validate_required([:name])
   end

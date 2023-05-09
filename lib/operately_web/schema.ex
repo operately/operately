@@ -11,12 +11,16 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Person
   import_types Types.KeyResults
   import_types Types.Groups
+  import_types Types.Companies
+  import_types Types.Tenets
+  import_types Types.Kpis
 
   # Queries
   import_types Queries.Projects
   import_types Queries.Objectives
   import_types Queries.KeyResults
   import_types Queries.People
+  import_types Queries.Companies
 
   # Mutations
   import_types Mutations.Projects
@@ -62,18 +66,6 @@ defmodule OperatelyWeb.Schema do
     end
   end
 
-  object :tenet do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :description, :string
-  end
-
-  object :kpi do
-    field :id, non_null(:id)
-    field :name, non_null(:string)
-    field :description, :string
-  end
-
   object :group_contact do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -115,6 +107,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :objective_queries
     import_fields :key_result_queries
     import_fields :people_queries
+    import_fields :company_queries
 
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
