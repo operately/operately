@@ -33,7 +33,7 @@ export default function DefaultLayout() {
           "flex justify-between fixed top-0 left-0 right-0 text-new-dark-3 px-4 backdrop-blur bg-transparent transition-all z-50 border-b border-new-dark-2" +
           (small
             ? " bg-new-dark-1/90 border-b border-new-dark-2 py-2"
-            : " py-4")
+            : " py-4 ")
         }
       >
         <div className="flex items-center gap-4">
