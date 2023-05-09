@@ -6,6 +6,7 @@ defmodule Operately.Projects.Project do
   @foreign_key_type :binary_id
   schema "projects" do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
+    belongs_to :owner, Operately.People.Person, foreign_key: :owner_id
 
     field :description, :string
     field :name, :string
@@ -13,16 +14,13 @@ defmodule Operately.Projects.Project do
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
 
-    has_one :ownership, Operately.Ownerships.Ownership, foreign_key: :target, on_replace: :update
-    has_one :owner, through: [:ownership, :person]
-
     timestamps()
   end
 
   @doc false
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline])
+    |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline, :owner_id])
     |> cast_assoc(:ownership)
     |> validate_required([:name])
   end
