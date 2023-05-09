@@ -21,7 +21,6 @@ defmodule Operately.Projects.Project do
   def changeset(project, attrs) do
     project
     |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline, :owner_id])
-    |> cast_assoc(:ownership)
     |> validate_required([:name])
   end
 end
