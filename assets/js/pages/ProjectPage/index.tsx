@@ -395,12 +395,25 @@ export function ProjectPage() {
           </Link>
         </div>
 
-        <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 fadeIn">
-          <h1 className="font-bold text-5xl text-center">
+        <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 fadeIn relative">
+          <div
+            className="absolute"
+            style={{
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "500px",
+              background:
+                "radial-gradient(circle at top, #ffff0008 0%, #00000000 60%)",
+              pointerEvents: "none",
+            }}
+          ></div>
+
+          <h1 className="font-bold text-5xl text-center relative z-20">
             {data.project.name}
           </h1>
 
-          <div className="text-center mt-4">
+          <div className="text-center mt-4 relative z-20">
             <div>
               In Design Phase &middot; Delivery expected before September 1st,
               2023.
