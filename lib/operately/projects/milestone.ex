@@ -5,9 +5,10 @@ defmodule Operately.Projects.Milestone do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "project_milestones" do
+    belongs_to :project, Operately.Projects.Project
+
     field :deadline_at, :naive_datetime
     field :title, :string
-    field :project_id, :binary_id
 
     timestamps()
   end
@@ -15,7 +16,7 @@ defmodule Operately.Projects.Milestone do
   @doc false
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at])
+    |> cast(attrs, [:title, :deadline_at, :project_id])
     |> validate_required([:title, :deadline_at])
   end
 end

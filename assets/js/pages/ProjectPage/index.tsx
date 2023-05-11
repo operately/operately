@@ -12,8 +12,12 @@ function Milestone({ milestone }) {
     <div className="border-t border-gray-700 flex items-center justify-between">
       <div className="mt-4 flex gap-2 items-center mb-4">
         {milestone.title}
-        <Icon name="double checkmark" color="brand" />{" "}
-        <span className="text-brand-base">Delivered</span>
+        {milestone.status === "done" && (
+          <>
+            <Icon name="double checkmark" color="brand" />{" "}
+            <span className="text-brand-base">Delivered</span>
+          </>
+        )}
       </div>
 
       <div className="text-right">

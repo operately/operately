@@ -76,7 +76,7 @@ const GET_PROJECT = gql`
 
       milestones {
         title
-        deadline_at
+        deadlineAt
       }
     }
   }
