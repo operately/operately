@@ -54,7 +54,7 @@ function About({ data }) {
       </div>
 
       <div className="text-xl mt-8 flex flex-col gap-4">
-        {data.project.description.split("\n\n").map((p, i) => (
+        {(data.project.description || "").split("\n\n").map((p, i) => (
           <p key={i}>{p}</p>
         ))}
       </div>
@@ -453,8 +453,9 @@ export function ProjectPage() {
 
           <div className="text-center mt-4 relative z-20">
             <div>
-              In Design Phase &middot; Delivery expected before September 1st,
-              2023.
+              In <span className="underline cursor-pointer">Design</span> Phase
+              &middot; Delivery expected before{" "}
+              <AbsoluteTime date={data.project.deadline} />
             </div>
             <div>Next milestone: Present GTM strategy.</div>
           </div>

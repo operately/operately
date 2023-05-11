@@ -66,6 +66,7 @@ const GET_PROJECT = gql`
       id
       name
       description
+      deadline
 
       owner {
         id
