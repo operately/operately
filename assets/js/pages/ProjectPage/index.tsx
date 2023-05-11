@@ -13,13 +13,14 @@ function Milestone({ milestone }) {
   return (
     <div className="border-t border-gray-700 flex items-center justify-between">
       <div className="mt-4 flex gap-2 items-center mb-4">
-        {milestone.title}
-        {milestone.status === "done" && (
-          <>
-            <Icon name="double checkmark" color="brand" />{" "}
-            <span className="text-brand-base">Delivered</span>
-          </>
+        {milestone.status === "done" ? (
+          <div className="border-2 border-brand-base h-7 w-7 rounded-full flex items-center justify-center">
+            <Icon name="checkmark" color="brand" size="small" />{" "}
+          </div>
+        ) : (
+          <div className="border-2 border-gray-700 h-7 w-7 rounded-full flex items-center justify-center"></div>
         )}
+        {milestone.title}
       </div>
 
       <div className="text-right">
@@ -547,7 +548,7 @@ export function ProjectPage() {
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const [activeTab, setActiveTab] = React.useState("contributors");
+  const [activeTab, setActiveTab] = React.useState("about");
 
   const { loading, error, data } = useProject(id);
 
