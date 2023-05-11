@@ -1,6 +1,12 @@
 defmodule OperatelyWeb.GraphQL.Types.Projects do
   use Absinthe.Schema.Notation
 
+  object :project_parent do
+    field :id, :string
+    field :title, non_null(:string)
+    field :type, non_null(:string)
+  end
+
   object :project do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -23,6 +29,15 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
         milestones = Operately.Projects.list_project_milestones(project)
 
         {:ok, milestones}
+      end
+    end
+
+    field :parents, list_of(:project_parent) do
+      resolve fn project, _, _ ->
+        parents = Operately.Alignments.list_parents(project)
+        IO.inspect(parents)
+
+        {:ok, parents}
       end
     end
   end

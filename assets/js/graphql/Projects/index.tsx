@@ -81,6 +81,12 @@ const GET_PROJECT = gql`
         deadlineAt
         status
       }
+
+      parents {
+        id
+        title
+        type
+      }
     }
   }
 `;

@@ -7,6 +7,7 @@ defmodule Operately.Projects.Project do
   schema "projects" do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :owner, Operately.People.Person, foreign_key: :owner_id
+    belongs_to :objective, Operately.Okrs.Objective, foreign_key: :objective_id
 
     field :description, :string
     field :name, :string
@@ -20,7 +21,7 @@ defmodule Operately.Projects.Project do
   @doc false
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline, :owner_id])
+    |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline, :owner_id, :objective_id])
     |> validate_required([:name])
   end
 end

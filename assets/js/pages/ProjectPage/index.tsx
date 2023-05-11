@@ -27,6 +27,25 @@ function Milestone({ milestone }) {
   );
 }
 
+function Milestones({ milestones }) {
+  let sortedMilestones = [].concat(milestones).sort((m1, m2) => {
+    let d1 = +new Date(m1.deadlineAt);
+    let d2 = +new Date(m2.deadlineAt);
+
+    return d1 - d2;
+  });
+
+  return (
+    <div className="mt-16">
+      <h1 className="uppercase font-bold mb-4">Milestones</h1>
+
+      {sortedMilestones.map((milestone) => (
+        <Milestone key={milestone.id} milestone={milestone} />
+      ))}
+    </div>
+  );
+}
+
 function About({ data }) {
   return (
     <div className="fadeIn">
@@ -59,13 +78,7 @@ function About({ data }) {
         ))}
       </div>
 
-      <div className="mt-16">
-        <h1 className="uppercase font-bold mb-4">Milestones</h1>
-
-        {data.project.milestones.map((milestone) => (
-          <Milestone key={milestone.id} milestone={milestone} />
-        ))}
-      </div>
+      <Milestones milestones={data.project.milestones} />
     </div>
   );
 }
@@ -351,28 +364,52 @@ function Tabs({ activeTab, setActiveTab }) {
   );
 }
 
-function Navigation() {
+function ChevronRight() {
+  return (
+    <div className="scale-75">
+      <Icon name="chevron right" size="small" color="dark-2"></Icon>
+    </div>
+  );
+}
+
+function NavigationLink({ parent, i }) {
+  let path = "";
+
+  switch (parent.type) {
+    case "tenet":
+      path = "/tenets/" + parent.id;
+      break;
+
+    case "project":
+      path = "/projects/" + parent.id;
+      break;
+
+    case "objective":
+      path = "/objective/" + parent.id;
+      break;
+
+    case "company":
+      path = "/company";
+      break;
+  }
+
+  return (
+    <div key={i} className="flex items-center gap-1">
+      {i > 0 ? <ChevronRight /> : null}
+
+      <Link to={path} className="font-semibold">
+        {parent.title}
+      </Link>
+    </div>
+  );
+}
+
+function Navigation({ parents }) {
   return (
     <div className="flex items-center gap-1 justify-center bg-new-dark-2 mx-8 py-3 text-sm">
-      <Link to="/company" className="font-semibold">
-        Rendered Text
-      </Link>
-
-      <div className="scale-75">
-        <Icon name="chevron right" size="small" color="dark-2"></Icon>
-      </div>
-
-      <Link to="/objectives" className="font-semibold">
-        Profitable Growth
-      </Link>
-
-      <div className="scale-75">
-        <Icon name="chevron right" size="small" color="dark-2"></Icon>
-      </div>
-
-      <Link to="/objectives" className="font-semibold">
-        Expand into the enterprise market
-      </Link>
+      {parents.map((parent, i) => (
+        <NavigationLink i={i} parent={parent} />
+      ))}
     </div>
   );
 }
@@ -441,7 +478,8 @@ export function ProjectPage() {
   return (
     <div className="max-w-6xl mx-auto mb-2">
       <div className="m-11 mt-24 text-gray-400">
-        <Navigation />
+        <Navigation parents={data.project.parents} />
+
         <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 relative border-2 border-new-dark-2">
           <Flare />
           <LeftActions />
