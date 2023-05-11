@@ -98,6 +98,30 @@ const GET_PROJECT = gql`
         }
         responsibility
       }
+
+      updates {
+        id
+        content
+        insertedAt
+        author {
+          id
+          fullName
+          title
+          avatarUrl
+        }
+
+        comments {
+          id
+          content
+          insertedAt
+          author {
+            id
+            fullName
+            title
+            avatarUrl
+          }
+        }
+      }
     }
   }
 `;

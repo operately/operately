@@ -1,13 +1,15 @@
 import React from "react";
 import { useProject } from "../../graphql/Projects";
 import { useParams, Link } from "react-router-dom";
-import Avatar from "../../components/Avatar";
+import Avatar, { AvatarSize } from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
 import { Cross1Icon, ShuffleIcon } from "@radix-ui/react-icons";
 
 import { LightningBoltIcon } from "@radix-ui/react-icons";
 import AbsoluteTime from "../../components/AbsoluteTime";
+import RelativeTime from "../../components/RelativeTime";
+import { useMe } from "../../graphql/Me";
 
 function Milestone({ milestone }) {
   return (
@@ -170,102 +172,84 @@ function Contributors({ data }) {
   );
 }
 
+function UpdateComment({ comment }) {
+  return (
+    <div className="flex items-start gap-4 border-t border-gray-700 p-4 px-7">
+      <div className="mt-1">
+        <Avatar person={comment.author} size={AvatarSize.Small} />
+      </div>
+      <div>
+        <div className="flex gap-1">
+          <div className="font-bold">{comment.author.fullName}</div>
+          &middot;
+          <div className="text-sm">{comment.author.title}</div>
+          &middot;
+          <div>
+            <RelativeTime date={comment.insertedAt} />
+          </div>
+        </div>
+        <div className="">{comment.content}</div>
+      </div>
+    </div>
+  );
+}
+
+function Update({ update }) {
+  const { data, loading, error } = useMe();
+
+  if (loading || error) return "";
+
+  const me = data.me;
+
+  return (
+    <div className="bg-[#303030] rounded-lg mb-8 relative z-30 -mx-6">
+      <div className="mt-8 flex gap-2 items-center mb-4 z-20 relative px-6 pt-6">
+        <div className="absolute right-9">
+          <RelativeTime date={update.insertedAt} />
+        </div>
+
+        <Avatar person={update.author} />
+        <div>
+          <div className="font-bold">{update.author.fullName}</div>
+          <div className="text-sm">{update.author.title}</div>
+        </div>
+      </div>
+
+      <div className="text-xl px-8 pt-4 pb-2">
+        <div className="uppercase text-xs mb-6 font-bold">STATUS UPDATE</div>
+        {update.content}
+      </div>
+
+      <div className="pb-4 pt-4 px-8 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2"></div>
+
+        <div className="flex rounded-lg border border-gray-700 px-2 py-1 hover:border-brand-base cursor-pointer transition">
+          <Icon name="double checkmark" color="light" hoverColor="light" /> Ack
+        </div>
+      </div>
+
+      {update.comments.map((c, i) => (
+        <UpdateComment key={i} comment={c} />
+      ))}
+
+      <div className="flex items-center gap-4 border-t border-gray-700 p-4 px-7">
+        <div className="mt-1">
+          <Avatar person={me} size={AvatarSize.Small} />
+        </div>
+        <div className="text-gray-300">Leave a comment &hellip;</div>
+      </div>
+    </div>
+  );
+}
+
 function Activity({ data }) {
   return (
     <div className="relative fadeIn">
       <div className="absolute top-1 bottom-1 left-5 border-l border-gray-700"></div>
 
-      <div className="bg-[#303030] rounded-lg mb-8 relative z-30 -mx-6">
-        <div className="mt-8 flex gap-2 items-center mb-4 z-20 relative px-6 pt-6">
-          <div className="absolute right-9">May 10th</div>
-
-          <Avatar person={data.project.owner} />
-          <div>
-            <div className="font-bold">{data.project.owner.fullName}</div>
-            <div className="text-sm">{data.project.owner.title}</div>
-          </div>
-        </div>
-        <div className="text-xl px-8 pt-4 pb-2">
-          <div className="uppercase text-xs mb-6 font-bold">STATUS UPDATE</div>
-          We have hit a roadblock in the development of the "Superpace", which
-          has been preventing us from moving forward with the development and
-          testing phase. Our team is working diligently to identify the root
-          cause of the issue, and we are exploring all possible solutions. We
-          understand the importance of delivering a high-quality software tool
-          on time and within budget and are committed to doing so. We will keep
-          you informed of our progress and provide regular updates on the status
-          of the project.
-        </div>
-
-        <div className="pb-4 pt-4 px-8 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Icon name="double checkmark" color="brand" />
-            <div className="mt-[2px]">
-              Status update acknowlegded by Matyas Kiraly, Petar Petrov, and 3
-              others
-            </div>
-          </div>
-
-          <div className="flex rounded-lg border border-gray-700 px-2 py-1 hover:border-brand-base cursor-pointer transition">
-            <Icon name="double checkmark" color="light" hoverColor="light" />{" "}
-            Ack
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-start gap-4 border-t border-gray-700 p-4 px-7">
-            <div className="mt-1">
-              <Avatar
-                person={{ fullName: "Franc Fasbender", id: 1 }}
-                size="small"
-              />
-            </div>
-            <div>
-              <div className="flex gap-1">
-                <div className="font-bold">Franc Fasbender</div>
-                &middot;
-                <div className="text-sm">Head of Business Development</div>
-                &middot;
-                <div>May 1st</div>
-              </div>
-              <div className="">
-                Bravo! Great to see that the development of Superpace is
-                on-track. Where can I take a peak at the UI design?
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 border-t border-gray-700 p-4 px-7">
-            <div className="mt-1">
-              <Avatar
-                person={{ fullName: "Darko Fabijan", id: 1 }}
-                size="small"
-              />
-            </div>
-            <div>
-              <div className="flex gap-1">
-                <div className="font-bold">Darko Fabijan</div>
-                &middot;
-                <div className="text-sm">Co-Founder</div>
-                &middot;
-                <div>May 1st</div>
-              </div>
-              <div className="">
-                Visit https://you-mama.ass to see the UI design.
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 border-t border-gray-700 p-4 px-7">
-            <div className="mt-1">
-              <Avatar
-                person={{ fullName: "Darko Fabijan", id: 1 }}
-                size="small"
-              />
-            </div>
-            <div className="text-gray-500">Leave a comment &hellip;</div>
-          </div>
-        </div>
-      </div>
+      {data.project.updates.map((u, i) => (
+        <Update key={i} update={u} />
+      ))}
 
       <div className="mt-4 flex gap-2 items-center mb-4 z-20 relative">
         <div className="absolute right-2">Apr 15th</div>

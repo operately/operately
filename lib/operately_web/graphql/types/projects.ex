@@ -58,5 +58,13 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
         {:ok, contributors}
       end
     end
+
+    field :updates, list_of(:update) do
+      resolve fn project, _, _ ->
+        updates = Operately.Updates.list_updates(project.id, :project)
+
+        {:ok, updates}
+      end
+    end
   end
 end
