@@ -29,7 +29,7 @@ function Milestone({ milestone }) {
 
 function About({ data }) {
   return (
-    <>
+    <div className="fadeIn">
       <div className="mt-12">
         <div className="border-t border-b border-gray-700 flex items-center justify-between">
           <div className="mt-4 flex gap-2 items-center mb-4">
@@ -82,7 +82,7 @@ function About({ data }) {
           <Milestone key={milestone.id} milestone={milestone} />
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -327,6 +327,121 @@ function Activity({ data }) {
   );
 }
 
+function Tab({ active, title, onClick }) {
+  const activeClass = active
+    ? "bg-gray-700 cursor-default"
+    : "hover:bg-gray-700 cursor-pointer";
+
+  return (
+    <div
+      className={
+        "border rounded-full border-gray-700 px-3 py-1 transition-colors" +
+        " " +
+        activeClass
+      }
+      onClick={onClick}
+      children={title}
+    />
+  );
+}
+
+function Tabs({ activeTab, setActiveTab }) {
+  return (
+    <div className="flex items-center justify-center mb-8 gap-2 mt-4">
+      <Tab
+        active={activeTab === "about"}
+        title="About"
+        onClick={() => setActiveTab("about")}
+      />
+      <Tab
+        active={activeTab === "timeline"}
+        title="Timeline"
+        onClick={() => setActiveTab("timeline")}
+      />
+      <Tab
+        active={activeTab === "activity"}
+        title="Activity"
+        onClick={() => setActiveTab("activity")}
+      />
+    </div>
+  );
+}
+
+function Navigation() {
+  return (
+    <div className="flex items-center gap-1 justify-center bg-new-dark-2 mx-8 py-3 text-sm">
+      <Link to="/company" className="font-semibold">
+        Rendered Text
+      </Link>
+
+      <div className="scale-75">
+        <Icon name="chevron right" size="small" color="dark-2"></Icon>
+      </div>
+
+      <Link to="/objectives" className="font-semibold">
+        Profitable Growth
+      </Link>
+
+      <div className="scale-75">
+        <Icon name="chevron right" size="small" color="dark-2"></Icon>
+      </div>
+
+      <Link to="/objectives" className="font-semibold">
+        Expand into the enterprise market
+      </Link>
+    </div>
+  );
+}
+
+function Flare() {
+  return (
+    <div
+      className="absolute"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "500px",
+        background:
+          "radial-gradient(circle at top, #ffff0008 0%, #00000000 60%)",
+        pointerEvents: "none",
+      }}
+    ></div>
+  );
+}
+
+function LeftActions() {
+  return (
+    <div className="absolute top-4 left-4">
+      <div className="group flex gap-2 items-center cursor-pointer">
+        <div>
+          <Icon name="star" size="base" color="dark-2"></Icon>
+        </div>
+
+        <div className="opacity-0 group-hover:opacity-100 transition pointer-events-none mt-1 text-sm font-bold">
+          Follow this project
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RightActions() {
+  return (
+    <div className="absolute top-4 right-4">
+      <div className="group flex gap-2 items-center cursor-pointer">
+        <div className="opacity-0 group-hover:opacity-100 transition pointer-events-none mt-1 text-sm font-bold">
+          Edit project
+        </div>
+
+        <div>
+          <Icon name="edit" size="base" color="dark-2"></Icon>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ProjectPage() {
   const { id } = useParams();
 
@@ -342,41 +457,11 @@ export function ProjectPage() {
   return (
     <div className="max-w-6xl mx-auto mb-2">
       <div className="m-11 mt-24 text-gray-400">
-        <div className="flex items-center gap-1 mb-2">
-          <Link to="/company" className="font-semibold">
-            Rendered Text
-          </Link>
-
-          <div className="scale-75">
-            <Icon name="chevron right" size="small" color="dark-2"></Icon>
-          </div>
-
-          <Link to="/objectives" className="font-semibold">
-            Profitable Growth
-          </Link>
-
-          <div className="scale-75">
-            <Icon name="chevron right" size="small" color="dark-2"></Icon>
-          </div>
-
-          <Link to="/objectives" className="font-semibold">
-            Expand into the enterprise market
-          </Link>
-        </div>
-
-        <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 fadeIn relative">
-          <div
-            className="absolute"
-            style={{
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "500px",
-              background:
-                "radial-gradient(circle at top, #ffff0008 0%, #00000000 60%)",
-              pointerEvents: "none",
-            }}
-          ></div>
+        <Navigation />
+        <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 relative border-2 border-new-dark-2">
+          <Flare />
+          <LeftActions />
+          <RightActions />
 
           <h1 className="font-bold text-5xl text-center relative z-20">
             {data.project.name}
@@ -390,34 +475,7 @@ export function ProjectPage() {
             <div>Next milestone: Present GTM strategy.</div>
           </div>
 
-          <div className="flex items-center justify-center mb-8 gap-2 mt-4">
-            <div
-              className={
-                "border rounded-full border-gray-700 px-3 py-1 " +
-                (activeTab === "about" ? "bg-gray-700" : "")
-              }
-              onClick={() => setActiveTab("about")}
-              children="About"
-            />
-
-            <div
-              className={
-                "border rounded-full border-gray-700 px-3 py-1 " +
-                (activeTab === "timeline" ? "bg-gray-700" : "")
-              }
-              onClick={() => setActiveTab("timeline")}
-              children="Timeline"
-            />
-
-            <div
-              className={
-                "border rounded-full border-gray-700 px-3 py-1 " +
-                (activeTab === "activity" ? "bg-gray-700" : "")
-              }
-              onClick={() => setActiveTab("activity")}
-              children="Activity"
-            />
-          </div>
+          <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {activeTab === "about" && <About data={data} />}
           {activeTab === "timeline" && <Timeline data={data} />}
