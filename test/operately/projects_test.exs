@@ -114,4 +114,58 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_milestone(milestone)
     end
   end
+
+  describe "project_contributors" do
+    alias Operately.Projects.Contributor
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{responsibility: nil}
+
+    test "list_project_contributors/0 returns all project_contributors" do
+      contributor = contributor_fixture()
+      assert Projects.list_project_contributors() == [contributor]
+    end
+
+    test "get_contributor!/1 returns the contributor with given id" do
+      contributor = contributor_fixture()
+      assert Projects.get_contributor!(contributor.id) == contributor
+    end
+
+    test "create_contributor/1 with valid data creates a contributor" do
+      valid_attrs = %{responsibility: "some responsibility"}
+
+      assert {:ok, %Contributor{} = contributor} = Projects.create_contributor(valid_attrs)
+      assert contributor.responsibility == "some responsibility"
+    end
+
+    test "create_contributor/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_contributor(@invalid_attrs)
+    end
+
+    test "update_contributor/2 with valid data updates the contributor" do
+      contributor = contributor_fixture()
+      update_attrs = %{responsibility: "some updated responsibility"}
+
+      assert {:ok, %Contributor{} = contributor} = Projects.update_contributor(contributor, update_attrs)
+      assert contributor.responsibility == "some updated responsibility"
+    end
+
+    test "update_contributor/2 with invalid data returns error changeset" do
+      contributor = contributor_fixture()
+      assert {:error, %Ecto.Changeset{}} = Projects.update_contributor(contributor, @invalid_attrs)
+      assert contributor == Projects.get_contributor!(contributor.id)
+    end
+
+    test "delete_contributor/1 deletes the contributor" do
+      contributor = contributor_fixture()
+      assert {:ok, %Contributor{}} = Projects.delete_contributor(contributor)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_contributor!(contributor.id) end
+    end
+
+    test "change_contributor/1 returns a contributor changeset" do
+      contributor = contributor_fixture()
+      assert %Ecto.Changeset{} = Projects.change_contributor(contributor)
+    end
+  end
 end

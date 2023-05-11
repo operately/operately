@@ -9,6 +9,8 @@ defmodule Operately.Projects.Project do
     belongs_to :owner, Operately.People.Person, foreign_key: :owner_id
     belongs_to :objective, Operately.Okrs.Objective, foreign_key: :objective_id
 
+    has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
+
     field :description, :string
     field :name, :string
 

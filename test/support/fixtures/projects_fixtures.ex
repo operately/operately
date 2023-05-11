@@ -33,4 +33,18 @@ defmodule Operately.ProjectsFixtures do
 
     milestone
   end
+
+  @doc """
+  Generate a contributor.
+  """
+  def contributor_fixture(attrs \\ %{}) do
+    {:ok, contributor} =
+      attrs
+      |> Enum.into(%{
+        responsibility: "some responsibility"
+      })
+      |> Operately.Projects.create_contributor()
+
+    contributor
+  end
 end

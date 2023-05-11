@@ -7,6 +7,17 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :type, non_null(:string)
   end
 
+  object :project_contributor do
+    field :id, non_null(:id)
+    field :responsibility, :string
+
+    field :person, non_null(:person) do
+      resolve fn contributor, _, _ ->
+        {:ok, contributor.person}
+      end
+    end
+  end
+
   object :project do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -35,9 +46,16 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :parents, list_of(:project_parent) do
       resolve fn project, _, _ ->
         parents = Operately.Alignments.list_parents(project)
-        IO.inspect(parents)
 
         {:ok, parents}
+      end
+    end
+
+    field :contributors, list_of(:project_contributor) do
+      resolve fn project, _, _ ->
+        contributors = Operately.Projects.list_project_contributors(project)
+
+        {:ok, contributors}
       end
     end
   end

@@ -86,7 +86,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 }
 
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
-  const baseClass = "rounded-full overflow-hidden bg-brand-base";
+  const baseClass = "rounded-full overflow-hidden bg-white";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
 

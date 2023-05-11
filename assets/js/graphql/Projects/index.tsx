@@ -87,6 +87,17 @@ const GET_PROJECT = gql`
         title
         type
       }
+
+      contributors {
+        id
+        person {
+          id
+          fullName
+          title
+          avatarUrl
+        }
+        responsibility
+      }
     }
   }
 `;
