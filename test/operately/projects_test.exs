@@ -58,4 +58,60 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_project(project)
     end
   end
+
+  describe "project_milestones" do
+    alias Operately.Projects.Milestone
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{deadline_at: nil, title: nil}
+
+    test "list_project_milestones/0 returns all project_milestones" do
+      milestone = milestone_fixture()
+      assert Projects.list_project_milestones() == [milestone]
+    end
+
+    test "get_milestone!/1 returns the milestone with given id" do
+      milestone = milestone_fixture()
+      assert Projects.get_milestone!(milestone.id) == milestone
+    end
+
+    test "create_milestone/1 with valid data creates a milestone" do
+      valid_attrs = %{deadline_at: ~N[2023-05-10 08:16:00], title: "some title"}
+
+      assert {:ok, %Milestone{} = milestone} = Projects.create_milestone(valid_attrs)
+      assert milestone.deadline_at == ~N[2023-05-10 08:16:00]
+      assert milestone.title == "some title"
+    end
+
+    test "create_milestone/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_milestone(@invalid_attrs)
+    end
+
+    test "update_milestone/2 with valid data updates the milestone" do
+      milestone = milestone_fixture()
+      update_attrs = %{deadline_at: ~N[2023-05-11 08:16:00], title: "some updated title"}
+
+      assert {:ok, %Milestone{} = milestone} = Projects.update_milestone(milestone, update_attrs)
+      assert milestone.deadline_at == ~N[2023-05-11 08:16:00]
+      assert milestone.title == "some updated title"
+    end
+
+    test "update_milestone/2 with invalid data returns error changeset" do
+      milestone = milestone_fixture()
+      assert {:error, %Ecto.Changeset{}} = Projects.update_milestone(milestone, @invalid_attrs)
+      assert milestone == Projects.get_milestone!(milestone.id)
+    end
+
+    test "delete_milestone/1 deletes the milestone" do
+      milestone = milestone_fixture()
+      assert {:ok, %Milestone{}} = Projects.delete_milestone(milestone)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(milestone.id) end
+    end
+
+    test "change_milestone/1 returns a milestone changeset" do
+      milestone = milestone_fixture()
+      assert %Ecto.Changeset{} = Projects.change_milestone(milestone)
+    end
+  end
 end

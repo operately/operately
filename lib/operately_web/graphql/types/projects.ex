@@ -11,10 +11,18 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :deadline, :date
 
     field :owner, :person do
-      resolve fn objective, _, _ ->
-        person = Operately.Projects.get_owner!(objective)
+      resolve fn project, _, _ ->
+        person = Operately.Projects.get_owner!(project)
 
         {:ok, person}
+      end
+    end
+
+    field :milestones, list_of(:milestone) do
+      resolve fn project, _, _ ->
+        milestones = Operately.Projects.get_milestones(project)
+
+        {:ok, milestones}
       end
     end
   end

@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Companies
   import_types Types.Tenets
   import_types Types.Kpis
+  import_types Types.Milestones
 
   # Queries
   import_types Queries.Projects
