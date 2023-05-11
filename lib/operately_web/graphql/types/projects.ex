@@ -20,7 +20,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
 
     field :milestones, list_of(:milestone) do
       resolve fn project, _, _ ->
-        milestones = Operately.Projects.get_milestones(project)
+        milestones = Operately.Projects.list_project_milestones(project)
 
         {:ok, milestones}
       end

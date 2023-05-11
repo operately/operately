@@ -5,6 +5,23 @@ import Avatar from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
 import { LightningBoltIcon } from "@radix-ui/react-icons";
+import AbsoluteTime from "../../components/AbsoluteTime";
+
+function Milestone({ milestone }) {
+  return (
+    <div className="border-t border-gray-700 flex items-center justify-between">
+      <div className="mt-4 flex gap-2 items-center mb-4">
+        {milestone.title}
+        <Icon name="double checkmark" color="brand" />{" "}
+        <span className="text-brand-base">Delivered</span>
+      </div>
+
+      <div className="text-right">
+        <AbsoluteTime date={milestone.deadlineAt} />
+      </div>
+    </div>
+  );
+}
 
 function About({ data }) {
   return (
@@ -56,29 +73,10 @@ function About({ data }) {
 
       <div className="mt-16">
         <h1 className="uppercase font-bold mb-4">Milestones</h1>
-        <div className="border-t border-gray-700 flex items-center justify-between">
-          <div className="mt-4 flex gap-2 items-center mb-4">
-            Present GTM Strategy
-            <Icon name="double checkmark" color="brand" />{" "}
-            <span className="text-brand-base">Delivered</span>
-          </div>
 
-          <div className="text-right">May 20st, 2023</div>
-        </div>
-
-        <div className="border-t border-gray-700 flex items-center justify-between">
-          <div className="mt-4 flex gap-2 items-center mb-4">Deliver MVP</div>
-
-          <div className="text-right">June 1st, 2023</div>
-        </div>
-
-        <div className="border-t border-gray-700 flex items-center justify-between">
-          <div className="mt-4 flex gap-2 items-center mb-4">
-            Launch Website
-          </div>
-
-          <div className="text-right">August 15st, 2023</div>
-        </div>
+        {data.project.milestones.map((milestone) => (
+          <Milestone key={milestone.id} milestone={milestone} />
+        ))}
       </div>
     </>
   );
@@ -330,7 +328,7 @@ export function ProjectPage() {
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const [activeTab, setActiveTab] = React.useState("activity");
+  const [activeTab, setActiveTab] = React.useState("about");
 
   const { loading, error, data } = useProject(id);
 
