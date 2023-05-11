@@ -63,7 +63,15 @@ function About({ data }) {
               </div>
             </div>
           ) : (
-            <div></div>
+            <div className="flex gap-2 items-center">
+              <Icon name="user" size="large" color="dark-2" />
+              <div>
+                <div className="font-bold">No Champion</div>
+                <a className="underline" href="#">
+                  Assing Now
+                </a>
+              </div>
+            </div>
           )}
 
           <div className="text-right">
