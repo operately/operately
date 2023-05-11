@@ -75,8 +75,10 @@ const GET_PROJECT = gql`
       }
 
       milestones {
+        id
         title
         deadlineAt
+        status
       }
     }
   }

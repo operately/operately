@@ -9,6 +9,7 @@ defmodule Operately.Projects.Milestone do
 
     field :deadline_at, :naive_datetime
     field :title, :string
+    field :status, Ecto.Enum, values: [:pending, :done], default: :pending
 
     timestamps()
   end
@@ -16,7 +17,7 @@ defmodule Operately.Projects.Milestone do
   @doc false
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at, :project_id])
+    |> cast(attrs, [:title, :deadline_at, :project_id, :status])
     |> validate_required([:title, :deadline_at])
   end
 end
