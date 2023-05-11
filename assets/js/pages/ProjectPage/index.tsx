@@ -1,40 +1,10 @@
 import React from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useProject } from "../../graphql/Projects";
 import { useParams, Link } from "react-router-dom";
 import Avatar from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
 import { LightningBoltIcon } from "@radix-ui/react-icons";
-
-import PageTitle from "../../components/PageTitle";
-
-const GET_PROJECT = gql`
-  query GetProject($id: ID!) {
-    project(id: $id) {
-      id
-      name
-      description
-
-      owner {
-        id
-        fullName
-        title
-        avatarUrl
-      }
-    }
-  }
-`;
-
-export async function ProjectPageLoader(apolloClient: any, { params }) {
-  const { id } = params;
-
-  await apolloClient.query({
-    query: GET_PROJECT,
-    variables: { id },
-  });
-
-  return {};
-}
 
 function About({ data }) {
   return (
@@ -358,14 +328,11 @@ function Activity({ data }) {
 export function ProjectPage() {
   const { id } = useParams();
 
-  const [activeTab, setActiveTab] = React.useState("activity");
-
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const { loading, error, data } = useQuery(GET_PROJECT, {
-    variables: { id },
-    fetchPolicy: "cache-only",
-  });
+  const [activeTab, setActiveTab] = React.useState("activity");
+
+  const { loading, error, data } = useProject(id);
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
@@ -458,31 +425,3 @@ export function ProjectPage() {
     </div>
   );
 }
-// <div className="mt-16">
-//   <h1 className="uppercase font-bold mb-4">Phases</h1>
-//   <div className="border-t border-gray-700 flex items-center justify-between">
-//     <div className="mt-4 flex gap-2 items-center mb-4">
-//       Draft
-//       <Icon name="double checkmark" color="brand" />{" "}
-//       <span className="text-brand-base">Completed</span>
-//     </div>
-
-//     <div className="text-right">May 20st, 2023</div>
-//   </div>
-
-//   <div className="border-t border-gray-700 flex items-center justify-between">
-//     <div className="mt-4 flex gap-2 items-center mb-4">
-//       Deliver MVP
-//     </div>
-
-//     <div className="text-right">June 1st, 2023</div>
-//   </div>
-
-//   <div className="border-t border-gray-700 flex items-center justify-between">
-//     <div className="mt-4 flex gap-2 items-center mb-4">
-//       Launch Website
-//     </div>
-
-//     <div className="text-right">August 15st, 2023</div>
-//   </div>
-// </div>

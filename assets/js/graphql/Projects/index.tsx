@@ -59,3 +59,29 @@ export function listProjects(
     fetchPolicy: "network-only",
   });
 }
+
+const GET_PROJECT = gql`
+  query GetProject($id: ID!) {
+    project(id: $id) {
+      id
+      name
+      description
+
+      owner {
+        id
+        fullName
+        title
+        avatarUrl
+      }
+
+      milestones {
+        title
+        deadline_at
+      }
+    }
+  }
+`;
+
+export function useProject(id: string) {
+  return useQuery(GET_PROJECT, { variables: { id } });
+}
