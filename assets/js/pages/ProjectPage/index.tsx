@@ -399,13 +399,21 @@ function Tab({ active, title, onClick }) {
   return (
     <div
       className={
-        "border rounded-full border-gray-700 px-3 py-1 transition-colors" +
+        "border rounded-full border-gray-700 px-3 py-1 transition-colors relative" +
         " " +
         activeClass
       }
       onClick={onClick}
-      children={title}
-    />
+    >
+      {title}
+
+      {title === "Activity" && (
+        <span className="absolute flex h-[19px] w-[19px] rounded-full -top-[8px] -right-[8px] text-xs bg-brand-base items-center justify-center font-bold text-[#222222]">
+          <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-brand-base animate-notify"></div>
+          <div className="relative z-20">2</div>
+        </span>
+      )}
+    </div>
   );
 }
 
