@@ -49,7 +49,7 @@ export function KPIValues({ kpi }) {
 
   let range = [0, areaHeight];
   let domain = [0, Math.max(...diffs)];
-  let padding = { top: 16, left: 16, right: 16, bottom: 0 };
+  let padding = { top: 16, left: 8, right: 8, bottom: 0 };
 
   let h = (number) => {
     return (number * areaHeight) / domain[1];
@@ -59,21 +59,11 @@ export function KPIValues({ kpi }) {
 
   let bars: JSX.Element[] = [];
   for (let i = 0; i < values.length; i++) {
-    let value = values[i];
     let diff = diffs[i];
 
     let height = h(diff);
     let top = h(domain[1] - diff);
-
-    let color = "bg-green-500";
-    if (kpi.targetDirection === "above" && value < target) {
-      color = "bg-red-500";
-    }
-    if (kpi.targetDirection === "below" && value > target) {
-      color = "bg-red-500";
-    }
-
-    color = "bg-white/70";
+    let color = "bg-white/70";
 
     bars.push(
       <div
@@ -82,11 +72,7 @@ export function KPIValues({ kpi }) {
           top: top + "px",
           height: height + "px",
         }}
-      >
-        <div className="-bottom-4 absolute text-[10px] pl-[2px]">
-          {months[i]}
-        </div>
-      </div>
+      ></div>
     );
   }
 
@@ -135,9 +121,9 @@ export function KPIValues({ kpi }) {
         </div>
       </div>
 
-      <div className="w-full bg-new-dark-2 mb-5">
+      <div className="mx-4">
         <div
-          className="relative flex gap-[7.5px] items-start w-full mt-2"
+          className="relative bg-new-dark-2 flex gap-[7.5px] items-start w-full mt-2 border border-gray-700 rounded"
           style={{
             height: padding.top + padding.bottom + range[1] + "px",
             paddingTop: padding.top + "px",
@@ -147,26 +133,16 @@ export function KPIValues({ kpi }) {
           }}
         >
           <div
-            className="absolute -left-3 -right-3 border-t border-gray-400 text-right "
+            className="absolute left-0 right-0 border-t border-gray-400 text-right "
             style={{
               top: range[1] + padding.top - 1 + "px",
             }}
           ></div>
 
-          {[0, 16, 32, 48, 64, 80, 96].map((v, i) => (
+          {[25, 50, 75, 100].map((v, i) => (
             <div
               key={i}
-              className="absolute top-0 bottom-0 border-r border-gray-700 text-right "
-              style={{
-                width: v + "%",
-              }}
-            ></div>
-          ))}
-
-          {[0, 25, 50, 75, 100].map((v, i) => (
-            <div
-              key={i}
-              className="absolute -left-3 -right-3 border-t border-gray-700 text-right "
+              className="absolute left-0 right-0 border-t border-gray-700 text-right "
               style={{
                 top: (v / 100.0) * range[1] + "px",
               }}
@@ -175,6 +151,14 @@ export function KPIValues({ kpi }) {
 
           {bars}
         </div>
+      </div>
+
+      <div className="flex justify-between mx-[26px] text-[9px] mb-1 mt-1">
+        {months.map((m, i) => (
+          <div key={i} className="">
+            {m}
+          </div>
+        ))}
       </div>
     </div>
   );
