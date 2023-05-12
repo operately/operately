@@ -454,7 +454,7 @@ function Tabs({ activeTab, setActiveTab }) {
           <>
             Activity
             <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
-              12
+              3
             </span>
           </>
         }
