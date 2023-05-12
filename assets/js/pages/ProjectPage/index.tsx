@@ -60,7 +60,10 @@ function About({ data }) {
             <div className="flex gap-2 items-center">
               <Avatar person={data.project.owner} />
               <div>
-                <div className="font-bold">{data.project.owner.fullName}</div>
+                <div className="font-bold flex gap-1 items-center">
+                  {data.project.owner.fullName}
+                  <ChampionBadge />
+                </div>
                 <div className="text-sm">{data.project.owner.title}</div>
               </div>
             </div>
@@ -178,17 +181,19 @@ function UpdateComment({ comment }) {
       <div className="mt-1">
         <Avatar person={comment.author} size={AvatarSize.Small} />
       </div>
-      <div>
-        <div className="flex gap-1">
-          <div className="font-bold">{comment.author.fullName}</div>
-          &middot;
-          <div className="text-sm">{comment.author.title}</div>
-          &middot;
-          <div>
+      <div className="w-full">
+        <div className="flex gap-1 justify-between">
+          <div className="flex gap-1 justify-between">
+            <div className="font-bold">{comment.author.fullName}</div>
+            &middot;
+            <div className="text-sm text-gray-400">{comment.author.title}</div>
+          </div>
+
+          <div className="text-gray-300 mr-1">
             <RelativeTime date={comment.insertedAt} />
           </div>
         </div>
-        <div className="">{comment.content}</div>
+        <div className="mt-1">{comment.content}</div>
       </div>
     </div>
   );
@@ -202,8 +207,18 @@ function Update({ update }) {
   const me = data.me;
 
   return (
-    <div className="bg-[#303030] rounded-lg mb-8 relative z-30 -mx-6">
-      <div className="mt-8 flex gap-2 items-center mb-4 z-20 relative px-6 pt-6">
+    <div className="bg-[#303030] rounded-lg mb-8 relative z-30 -mx-6 overflow-hidden">
+      <div className="px-4 py-4 flex items-center justify-between bg-new-dark-2">
+        <div className="text-lg flex gap-2 items-center">
+          {update.author.fullName.split(" ")[0]} is waiting for you to
+          acknowlegde this update.
+        </div>
+        <div className="flex rounded-lg border border-brand-base px-2 py-1 hover:border-brand-base cursor-pointer transition">
+          <Icon name="double checkmark" color="light" hoverColor="light" /> Ack
+        </div>
+      </div>
+
+      <div className="flex gap-2 items-center mb-4 z-20 relative px-6 pt-6">
         <div className="absolute right-9">
           <RelativeTime date={update.insertedAt} />
         </div>
@@ -220,11 +235,9 @@ function Update({ update }) {
         {update.content}
       </div>
 
-      <div className="pb-4 pt-4 px-8 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2"></div>
-
+      <div className="pb-4 pt-4 px-8 flex items-center gap-2">
         <div className="flex rounded-lg border border-gray-700 px-2 py-1 hover:border-brand-base cursor-pointer transition">
-          <Icon name="double checkmark" color="light" hoverColor="light" /> Ack
+          <Icon name="like" color="light" hoverColor="light" />
         </div>
       </div>
 
@@ -391,7 +404,7 @@ function Activity({ data }) {
   );
 }
 
-function Tab({ active, title, onClick }) {
+function Tab({ active, title, onClick, badge }) {
   const activeClass = active
     ? "bg-gray-700 cursor-default"
     : "hover:bg-gray-700 cursor-pointer";
@@ -399,27 +412,20 @@ function Tab({ active, title, onClick }) {
   return (
     <div
       className={
-        "border rounded-full border-gray-700 px-3 py-1 transition-colors relative" +
+        "border rounded-full border-gray-700 px-3 py-1 transition-colors relative flex items-center" +
         " " +
         activeClass
       }
       onClick={onClick}
     >
-      {title}
-
-      {title === "Activity" && (
-        <span className="absolute flex h-[19px] w-[19px] rounded-full -top-[8px] -right-[8px] text-xs bg-brand-base items-center justify-center font-bold text-[#222222]">
-          <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-brand-base animate-notify"></div>
-          <div className="relative z-20">2</div>
-        </span>
-      )}
+      {title} {badge}
     </div>
   );
 }
 
 function Tabs({ activeTab, setActiveTab }) {
   return (
-    <div className="flex items-center justify-center mb-8 gap-2 mt-4">
+    <div className="flex items-center justify-center mb-12 gap-2 mt-4">
       <Tab
         active={activeTab === "about"}
         title="About"
@@ -427,18 +433,37 @@ function Tabs({ activeTab, setActiveTab }) {
       />
       <Tab
         active={activeTab === "contributors"}
-        title="Contributors"
+        title={
+          <>
+            Contributors
+            <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
+              12
+            </span>
+          </>
+        }
         onClick={() => setActiveTab("contributors")}
+      />
+      <Tab
+        active={activeTab === "activity"}
+        badge={
+          <span className="absolute flex h-3 w-3 rounded-full -top-[4px] -right-[4px] text-xs bg-brand-base items-center justify-center font-bold text-[#222222]">
+            <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-brand-base animate-notify"></div>
+          </span>
+        }
+        title={
+          <>
+            Activity
+            <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
+              12
+            </span>
+          </>
+        }
+        onClick={() => setActiveTab("activity")}
       />
       <Tab
         active={activeTab === "timeline"}
         title="Timeline"
         onClick={() => setActiveTab("timeline")}
-      />
-      <Tab
-        active={activeTab === "activity"}
-        title="Activity"
-        onClick={() => setActiveTab("activity")}
       />
     </div>
   );
