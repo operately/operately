@@ -123,7 +123,7 @@ export function KPIValues({ kpi }) {
 
       <div className="mx-4">
         <div
-          className="relative bg-new-dark-2 flex gap-[7.5px] items-start w-full mt-2 border border-gray-700 rounded"
+          className="relative bg-new-dark-2 flex gap-[7.5px] items-start w-full mt-2 border border-gray-700"
           style={{
             height: padding.top + padding.bottom + range[1] + "px",
             paddingTop: padding.top + "px",

@@ -568,6 +568,19 @@ function RightActions() {
   );
 }
 
+function findNextMilestone(project) {
+  let nonDoneMilestones = project.milestones.filter((m) => m.status !== "done");
+
+  let sortedMilestones = nonDoneMilestones.sort((m1, m2) => {
+    let d1 = +new Date(m1.deadlineAt);
+    let d2 = +new Date(m2.deadlineAt);
+
+    return d1 - d2;
+  });
+
+  return sortedMilestones[0];
+}
+
 export function ProjectPage() {
   const { id } = useParams();
 
@@ -579,6 +592,9 @@ export function ProjectPage() {
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
+  if (!data) return <p className="mt-16">Can't find project</p>;
+
+  let nextMilestone = findNextMilestone(data.project);
 
   return (
     <div className="max-w-6xl mx-auto mb-2">
@@ -600,7 +616,7 @@ export function ProjectPage() {
               &middot; Delivery expected before{" "}
               <AbsoluteTime date={data.project.deadline} />
             </div>
-            <div>Next milestone: Present GTM strategy.</div>
+            {nextMilestone && <div>Next milestone: {nextMilestone.title}</div>}
           </div>
 
           <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />

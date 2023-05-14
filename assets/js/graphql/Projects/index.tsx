@@ -1,5 +1,5 @@
 import React from "react";
-import { gql, useQuery, ApolloClient } from "@apollo/client";
+import { gql, useQuery, ApolloClient, QueryResult } from "@apollo/client";
 
 const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
@@ -58,6 +58,59 @@ export function listProjects(
     variables,
     fetchPolicy: "network-only",
   });
+}
+
+interface Person {
+  id: string;
+  fullName: string;
+  title: string;
+  avatarUrl: string;
+}
+
+interface Milestone {
+  id: string;
+  title: string;
+  deadlineAt: string;
+  status: string;
+}
+
+interface Parent {
+  id: string;
+  title: string;
+  type: "objective" | "project" | "tenet" | "company";
+}
+
+interface Contributor {
+  id: string;
+  person: Person;
+  responsibility: string;
+}
+
+interface Comment {
+  id: string;
+  content: string;
+  insertedAt: Date;
+}
+
+interface Update {
+  id: string;
+  content: string;
+  insertedAt: Date;
+
+  comments: Comment[];
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  deadline: Date;
+
+  owner: Person;
+  milestones: Milestone[];
+  parents: Parent[];
+  contributors: Contributor[];
+  updates: Update[];
 }
 
 const GET_PROJECT = gql`
@@ -126,6 +179,8 @@ const GET_PROJECT = gql`
   }
 `;
 
-export function useProject(id: string) {
+type UseProjectResult = QueryResult<{ project: Project }, { id: string }>;
+
+export function useProject(id: string): UseProjectResult {
   return useQuery(GET_PROJECT, { variables: { id } });
 }
