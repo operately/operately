@@ -407,7 +407,9 @@ function Activity({ data }) {
   );
 }
 
-function Tab({ active, title, onClick, badge }) {
+function Tab(props) {
+  let { active, title, onClick } = props;
+
   const activeClass = active
     ? "bg-gray-700 cursor-default"
     : "hover:bg-gray-700 cursor-pointer";
@@ -421,12 +423,12 @@ function Tab({ active, title, onClick, badge }) {
       }
       onClick={onClick}
     >
-      {title} {badge}
+      {title}
     </div>
   );
 }
 
-function Tabs({ activeTab, setActiveTab }) {
+function Tabs({ activityCount, contributorCount, activeTab, setActiveTab }) {
   return (
     <div className="flex items-center justify-center mb-12 gap-2 mt-4">
       <Tab
@@ -440,7 +442,7 @@ function Tabs({ activeTab, setActiveTab }) {
           <>
             Contributors
             <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
-              12
+              {contributorCount}
             </span>
           </>
         }
@@ -448,16 +450,11 @@ function Tabs({ activeTab, setActiveTab }) {
       />
       <Tab
         active={activeTab === "activity"}
-        badge={
-          <span className="absolute flex h-3 w-3 rounded-full -top-[4px] -right-[4px] text-xs bg-brand-base items-center justify-center font-bold text-[#222222]">
-            <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-brand-base animate-notify"></div>
-          </span>
-        }
         title={
           <>
             Activity
             <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
-              3
+              {activityCount}
             </span>
           </>
         }
@@ -625,7 +622,12 @@ export function ProjectPage() {
             {nextMilestone && <div>Next milestone: {nextMilestone.title}</div>}
           </div>
 
-          <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Tabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            contributorCount={data.project.contributors.length}
+            activityCount={data.project.updates.length}
+          />
 
           {activeTab === "about" && <About data={data} />}
           {activeTab === "contributors" && <Contributors data={data} />}
