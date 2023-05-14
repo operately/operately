@@ -120,6 +120,7 @@ const GET_PROJECT = gql`
       name
       description
       deadline
+      nextUpdateScheduledAt
 
       owner {
         id

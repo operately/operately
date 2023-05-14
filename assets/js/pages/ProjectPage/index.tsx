@@ -80,7 +80,10 @@ function About({ data }) {
           )}
 
           <div className="text-right">
-            <div>Next update scheduled for May 20st, 2023.</div>
+            <div>
+              Next update scheduled for{" "}
+              <AbsoluteTime date={data.project.nextUpdateScheduledAt} />
+            </div>
             <a className="underline" href="#">
               Request an earlier status update
             </a>

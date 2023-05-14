@@ -26,6 +26,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
 
     field :started_at, :date
     field :deadline, :date
+    field :next_update_scheduled_at, :date
 
     field :owner, :person do
       resolve fn project, _, _ ->
