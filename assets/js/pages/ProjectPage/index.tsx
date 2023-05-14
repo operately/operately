@@ -615,8 +615,11 @@ export function ProjectPage() {
 
           <div className="text-center mt-4 relative z-20">
             <div>
-              In <span className="underline cursor-pointer">Design</span> Phase
-              &middot; Delivery expected before{" "}
+              In{" "}
+              <span className="underline cursor-pointer capitalize">
+                {data.project.phase}
+              </span>{" "}
+              Phase &middot; Delivery expected before{" "}
               <AbsoluteTime date={data.project.deadline} />
             </div>
             {nextMilestone && <div>Next milestone: {nextMilestone.title}</div>}

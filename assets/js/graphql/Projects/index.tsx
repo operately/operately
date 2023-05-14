@@ -105,6 +105,7 @@ interface Project {
   name: string;
   description: string;
   deadline: Date;
+  phase: "draft" | "planning" | "execution" | "closing" | "closed";
 
   owner: Person;
   milestones: Milestone[];
@@ -121,6 +122,7 @@ const GET_PROJECT = gql`
       description
       deadline
       nextUpdateScheduledAt
+      phase
 
       owner {
         id

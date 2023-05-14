@@ -17,6 +17,7 @@ defmodule Operately.Projects.Project do
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
     field :next_update_scheduled_at, :utc_datetime
+    field :phase, Ecto.Enum, values: [:draft, :planning, :design, :execution, :closing, :closed], default: :draft
 
     timestamps()
   end
@@ -24,7 +25,17 @@ defmodule Operately.Projects.Project do
   @doc false
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:name, :description, :group_id, :started_at, :deadline, :owner_id, :objective_id, :next_update_scheduled_at])
+    |> cast(attrs, [
+      :name,
+      :description,
+      :group_id,
+      :started_at,
+      :deadline,
+      :owner_id,
+      :objective_id,
+      :next_update_scheduled_at,
+      :phase
+    ])
     |> validate_required([:name])
   end
 end
