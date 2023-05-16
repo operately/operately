@@ -155,10 +155,11 @@ const GET_PROJECT = gql`
         responsibility
       }
 
-      updates {
+      activity {
+        __typename
         id
-        content
         insertedAt
+
         author {
           id
           fullName
@@ -166,16 +167,40 @@ const GET_PROJECT = gql`
           avatarUrl
         }
 
-        comments {
-          id
+        ... on ActivityStatusUpdate {
           content
-          insertedAt
-          author {
+
+          comments {
             id
-            fullName
-            title
-            avatarUrl
+            content
+            insertedAt
+            author {
+              id
+              fullName
+              title
+              avatarUrl
+            }
           }
+        }
+
+        ... on ActivityDeadlineChanged {
+          oldDeadline
+          newDeadline
+        }
+
+        ... on ActivityMilestoneAdded {
+          milestoneId
+          title
+        }
+
+        ... on ActivityMilestoneRemoved {
+          milestoneId
+          title
+        }
+
+        ... on ActivityNameChanged {
+          oldName
+          newName
         }
       }
     }
