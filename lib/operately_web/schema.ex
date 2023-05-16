@@ -160,19 +160,6 @@ defmodule OperatelyWeb.Schema do
         {:ok, people}
       end
     end
-
-    field :updates, list_of(:update) do
-      arg :updatable_id, non_null(:id)
-      arg :updatable_type, non_null(:string)
-
-      resolve fn args, _ ->
-        updatable_id = args.updatable_id
-        updatable_type = args.updatable_type
-        updates = Operately.Updates.list_updates(updatable_id, updatable_type)
-
-        {:ok, updates}
-      end
-    end
   end
 
   mutation do
@@ -241,7 +228,7 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :create_update, :update do
+    field :create_update, :activity do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, %{context: context} ->
@@ -298,7 +285,7 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :update_added, :update do
+    field :update_added, :activity do
       arg :updatable_id, non_null(:id)
       arg :updatable_type, non_null(:string)
 

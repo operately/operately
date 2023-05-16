@@ -92,7 +92,7 @@ interface Comment {
   insertedAt: Date;
 }
 
-interface Update {
+interface Activity {
   id: string;
   content: string;
   insertedAt: Date;
@@ -111,7 +111,7 @@ interface Project {
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
-  updates: Update[];
+  activities: Activity[];
 }
 
 const GET_PROJECT = gql`
@@ -155,7 +155,7 @@ const GET_PROJECT = gql`
         responsibility
       }
 
-      activity {
+      activities {
         __typename
         id
         insertedAt
@@ -168,7 +168,7 @@ const GET_PROJECT = gql`
         }
 
         ... on ActivityStatusUpdate {
-          content
+          message
 
           comments {
             id
@@ -181,26 +181,6 @@ const GET_PROJECT = gql`
               avatarUrl
             }
           }
-        }
-
-        ... on ActivityDeadlineChanged {
-          oldDeadline
-          newDeadline
-        }
-
-        ... on ActivityMilestoneAdded {
-          milestoneId
-          title
-        }
-
-        ... on ActivityMilestoneRemoved {
-          milestoneId
-          title
-        }
-
-        ... on ActivityNameChanged {
-          oldName
-          newName
         }
       }
     }

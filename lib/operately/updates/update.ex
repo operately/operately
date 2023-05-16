@@ -2,6 +2,10 @@ defmodule Operately.Updates.Update do
   use Ecto.Schema
   import Ecto.Changeset
 
+  #
+  # The content of the update is polymorphic, and can be one of the following
+  # types. Each type has its own schema, and is validated separately.
+  #
   @content_types [
     %{
       type: :created,
@@ -34,8 +38,16 @@ defmodule Operately.Updates.Update do
     |> validate_content_format(attrs[:type])
   end
 
+  #
+  # Validation of the content field
+  #
+  # First, we validate that the type is one of the known types.
+  # Then, we validate the content against the schema for that type.
+  # If the type is unknown, or the content is invalid, we return an error.
+  # Otherwise, we return an empty list.
+  #
   defp validate_content_format(changeset, type) do
-    validate_change(changeset, :content, fn field, value ->
+    validate_change(changeset, :content, fn _field, value ->
       case find_schema(type) do
         nil -> 
           [content: "unknown update type #{type}"]
@@ -49,13 +61,15 @@ defmodule Operately.Updates.Update do
     end)
   end
 
+  #
+  # Utility function to find the schema for a given type
+  #
   defp find_schema(type) do
     case Enum.find(@content_types, & &1[:type] == type) do
       nil -> nil
       content_type -> content_type[:schema]
     end
   end
-
 
   #
   # Content Types (embedded schemas)

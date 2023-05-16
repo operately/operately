@@ -263,7 +263,7 @@ function Activity({ data }) {
     <div className="relative fadeIn">
       <div className="absolute top-1 bottom-1 left-5 border-l border-gray-700"></div>
 
-      {data.project.updates.map((u, i) => (
+      {data.project.activities.map((u, i) => (
         <Update key={i} update={u} />
       ))}
 
@@ -626,7 +626,7 @@ export function ProjectPage() {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             contributorCount={data.project.contributors.length}
-            activityCount={data.project.updates.length}
+            activityCount={data.project.activities.length}
           />
 
           {activeTab === "about" && <About data={data} />}

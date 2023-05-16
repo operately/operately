@@ -1,17 +1,26 @@
 defmodule OperatelyWeb.GraphQL.Types.Updates do
   use Absinthe.Schema.Notation
 
-  object :update do
+  interface :activity do
     field :id, non_null(:id)
-    field :content, non_null(:string)
+    field :updateable_id, non_null(:id)
+    field :inserted_at, non_null(:naive_datetime)
+    field :author, :person
+
+    resolve_type fn
+      %{type: :status_update}, _ -> :activity_status_update
+    end
+
+  end
+
+  object :activity_status_update do
+    field :id, non_null(:id)
     field :updateable_id, non_null(:id)
     field :inserted_at, non_null(:naive_datetime)
 
-    field :author, :person do
+    field :message, non_null(:string) do
       resolve fn update, _, _ ->
-        person = Operately.People.get_person!(update.author_id)
-
-        {:ok, person}
+        {:ok, update.content["message"]}
       end
     end
 
@@ -22,5 +31,15 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
         {:ok, comments}
       end
     end
+
+    field :author, :person do
+      resolve fn update, _, _ ->
+        person = Operately.People.get_person!(update.author_id)
+
+        {:ok, person}
+      end
+    end
+
+    interface :activity
   end
 end
