@@ -14,6 +14,8 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Companies
   import_types Types.Tenets
   import_types Types.Kpis
+  import_types Types.Milestones
+  import_types Types.Updates
 
   # Queries
   import_types Queries.Projects
@@ -29,28 +31,6 @@ defmodule OperatelyWeb.Schema do
   import_types Mutations.KeyResults
   import_types Mutations.People
 
-  object :update do
-    field :id, non_null(:id)
-    field :content, non_null(:string)
-    field :updateable_id, non_null(:id)
-    field :inserted_at, non_null(:naive_datetime)
-
-    field :author, :person do
-      resolve fn update, _, _ ->
-        person = Operately.People.get_person!(update.author_id)
-
-        {:ok, person}
-      end
-    end
-
-    field :comments, list_of(:comment) do
-      resolve fn update, _, _ ->
-        comments = Operately.Updates.list_comments(update.id)
-
-        {:ok, comments}
-      end
-    end
-  end
 
   object :comment do
     field :id, non_null(:id)
@@ -180,19 +160,6 @@ defmodule OperatelyWeb.Schema do
         {:ok, people}
       end
     end
-
-    field :updates, list_of(:update) do
-      arg :updatable_id, non_null(:id)
-      arg :updatable_type, non_null(:string)
-
-      resolve fn args, _ ->
-        updatable_id = args.updatable_id
-        updatable_type = args.updatable_type
-        updates = Operately.Updates.list_updates(updatable_id, updatable_type)
-
-        {:ok, updates}
-      end
-    end
   end
 
   mutation do
@@ -261,7 +228,7 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :create_update, :update do
+    field :create_update, :activity do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, %{context: context} ->
@@ -318,7 +285,7 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :update_added, :update do
+    field :update_added, :activity do
       arg :updatable_id, non_null(:id)
       arg :updatable_type, non_null(:string)
 

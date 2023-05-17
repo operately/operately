@@ -8,6 +8,24 @@ defmodule Operately.Alignments do
 
   alias Operately.Alignments.Alignment
 
+  def list_parents(project = %Operately.Projects.Project{}) do
+    objective = Repo.preload(project, [:objective]).objective
+
+    list_parents(objective) ++ [%{title: objective.name, type: :objective, id: objective.id}]
+  end
+
+  def list_parents(objective = %Operately.Okrs.Objective{}) do
+    tenet = Repo.preload(objective, [:tenet]).tenet
+
+    list_parents(tenet) ++ [%{title: tenet.name, type: :tenet, id: tenet.id}]
+  end
+
+  def list_parents(tenet = %Operately.Tenets.Tenet{}) do
+    company = Repo.preload(tenet, [:company]).company
+
+    [%{title: company.name, type: :company, id: company.id }]
+  end
+
   @doc """
   Returns the list of alignments.
 

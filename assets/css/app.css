@@ -17,11 +17,32 @@
   }
 }
 
+@keyframes ping {
+  10% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  20% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
 .fadeIn {
   animation: fadeInAnimation;
   animation-duration: 0.5s;
   animation-fill-mode: forwards;
   animation-iteration-count: 1;
+}
+
+.animate-notify {
+  animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 body {

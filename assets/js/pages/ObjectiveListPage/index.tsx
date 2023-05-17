@@ -24,7 +24,7 @@ import Icon from "../../components/Icon";
 import { GoalOwner, TargetOwner } from "./Champion";
 import { GoalGroup, TargetGroup } from "./Group";
 
-import { KPI } from "../Company";
+import { KPI } from "./Kpi";
 import Avatar, { AvatarSize } from "../../components/Avatar";
 import RelativeTime from "../../components/RelativeTime";
 
@@ -349,7 +349,7 @@ export function ObjectiveListPage() {
             {tenet.description}
           </div>
 
-          <div className="mt-12 border-b border-gray-600">
+          <div className="mt-12 grid grid-cols-4 gap-4">
             {tenet.kpis.map((kpi: any) => (
               <KPI key={kpi.id} kpi={kpi} clickable />
             ))}

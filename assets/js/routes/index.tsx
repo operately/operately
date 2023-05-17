@@ -7,7 +7,7 @@ import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
 import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
 import ProjectAddPage from "../pages/ProjectAddPage";
-import { ProjectPage, ProjectPageLoader } from "../pages/ProjectPage";
+import { ProjectPage } from "../pages/ProjectPage";
 import {
   ProjectListPage,
   ProjectListPageLoader,
@@ -84,7 +84,6 @@ const routes = createBrowserRouter([
       },
       {
         path: "/projects/:id",
-        loader: loaderWithApollo(ProjectPageLoader),
         element: <ProjectPage />,
       },
       {
