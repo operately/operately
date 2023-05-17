@@ -50,13 +50,27 @@ defmodule Operately.Projects do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_project(attrs \\ %{}) do
+  def create_project(attrs \\ %{}, creator_id) do
     next_update_scheduled_at = attrs[:next_update_scheduled_at] || DateTime.add(DateTime.utc_now(), 7, :day)
     attrs = Map.put(attrs, :next_update_scheduled_at, next_update_scheduled_at)
 
-    %Project{}
-    |> Project.changeset(attrs)
-    |> Repo.insert()
+    Operately.Repo.transaction(fn ->
+      {:ok, project} = 
+        %Project{}
+        |> Project.changeset(attrs)
+        |> Repo.insert()
+
+      {:ok, _} = 
+        Operately.Updates.create_update(%{
+          updatable_id: project.id,
+          updatable_type: :project,
+          author_id: creator_id,
+          type: :created,
+          content: %{}
+        })
+
+      project
+    end)
   end
 
   @doc """

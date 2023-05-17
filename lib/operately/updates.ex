@@ -24,7 +24,8 @@ defmodule Operately.Updates do
   def list_updates(updatable_id, updatable_type) do
     query = from u in Update,
       where: u.updatable_id == ^updatable_id,
-      where: u.updatable_type == ^updatable_type
+      where: u.updatable_type == ^updatable_type,
+      order_by: [desc: u.inserted_at]
 
     Repo.all(query)
   end
