@@ -7,6 +7,7 @@ defmodule Operately.People.Person do
 
   schema "people" do
     belongs_to(:account, Operately.Accounts.Account)
+    belongs_to(:company, Operately.Companies.Company)
 
     field :full_name, :string
     field :handle, :string
@@ -20,8 +21,8 @@ defmodule Operately.People.Person do
   @doc false
   def changeset(person, attrs) do
     person
-    |> cast(attrs, [:full_name, :handle, :title, :avatar_url, :email, :account_id])
-    |> validate_required([:full_name])
+    |> cast(attrs, [:full_name, :handle, :title, :avatar_url, :email, :account_id, :company_id])
+    |> validate_required([:full_name, :company_id])
     |> unique_constraint(:handle)
   end
 end
