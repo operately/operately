@@ -11,7 +11,7 @@ import AbsoluteTime from "../../components/AbsoluteTime";
 import RelativeTime from "../../components/RelativeTime";
 import { useMe } from "../../graphql/Me";
 
-import PaperContainer from "../../components/PaperContainer";
+import * as PaperContainer from "../../components/PaperContainer";
 
 function Milestone({ milestone }) {
   return (
@@ -404,6 +404,7 @@ function NavigationLink({ parent, i }) {
 }
 
 function Navigation({ parents }) {
+  projectpage;
   return (
     <div className="flex items-center gap-1 justify-center bg-new-dark-2 mx-8 py-3 text-sm">
       {parents.map((parent, i) => (
@@ -494,19 +495,19 @@ export function ProjectPage() {
   let parentName = parents[parents.length - 1].title;
 
   let navigation = (
-    <div className="flex items-center gap-2 text-dark-2">
+    <div className="flex items-center gap-2.5 text-dark-2">
       <Icon size="base" name="objectives" color="dark-2" hoverColor="dark-2" />
       {parentName}
     </div>
   );
 
   return (
-    <PaperContainer navigation={navigation}>
-      <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 relative border-2 border-new-dark-2">
-        <Flare />
-        <LeftActions />
-        <RightActions />
+    <PaperContainer.Root>
+      <PaperContainer.Navigation>
+        <PaperContainer.NavigationItem icon="objectives" title={parentName} />
+      </PaperContainer.Navigation>
 
+      <PaperContainer.Body>
         <h1 className="font-bold text-5xl text-center relative z-20">
           {data.project.name}
         </h1>
@@ -534,7 +535,7 @@ export function ProjectPage() {
         {activeTab === "contributors" && <Contributors data={data} />}
         {activeTab === "timeline" && <Timeline data={data} />}
         {activeTab === "activity" && <Activity data={data} />}
-      </div>
-    </PaperContainer>
+      </PaperContainer.Body>
+    </PaperContainer.Root>
   );
 }
