@@ -15,6 +15,8 @@ import * as PaperContainer from "../../components/PaperContainer";
 import * as PhasePills from "../../components/PhasePills";
 import * as Tabs from "../../components/Tabs";
 
+import Overview from "./Overview";
+
 function Milestone({ milestone }) {
   return (
     <div className="border-t border-gray-700 flex items-center justify-between">
@@ -51,57 +53,6 @@ function Milestones({ milestones }) {
       {sortedMilestones.map((milestone) => (
         <Milestone key={milestone.id} milestone={milestone} />
       ))}
-    </div>
-  );
-}
-
-function About({ data }) {
-  return (
-    <div className="fadeIn">
-      <div className="mt-12">
-        <div className="border-t border-b border-gray-700 flex items-center justify-between py-4">
-          {data.project.owner ? (
-            <div className="flex gap-2 items-center">
-              <Avatar person={data.project.owner} />
-              <div>
-                <div className="font-bold flex gap-1 items-center">
-                  {data.project.owner.fullName}
-                  <ChampionBadge />
-                </div>
-                <div className="text-sm">{data.project.owner.title}</div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex gap-2 items-center">
-              <Icon name="user" size="large" color="dark-2" />
-              <div>
-                <div className="font-bold">No Champion</div>
-                <a className="underline" href="#">
-                  Assing Now
-                </a>
-              </div>
-            </div>
-          )}
-
-          <div className="text-right">
-            <div>
-              Next update scheduled for{" "}
-              <AbsoluteTime date={data.project.nextUpdateScheduledAt} />
-            </div>
-            <a className="underline" href="#">
-              Request an earlier status update
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div className="text-xl mt-8 flex flex-col gap-4">
-        {(data.project.description || "").split("\n\n").map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </div>
-
-      <Milestones milestones={data.project.milestones} />
     </div>
   );
 }
@@ -424,12 +375,31 @@ function ContributorList({ owner, contributors }): JSX.Element {
   );
 }
 
+function ActiveTabContent({ data, activeTab }): JSX.Element {
+  switch (activeTab) {
+    case "overview":
+      return <Overview data={data} />;
+
+    case "timeline":
+      return <Timeline data={data} />;
+
+    case "activity":
+      return <Activity data={data} />;
+
+    case "contributors":
+      return <Contributors data={data} />;
+
+    default:
+      throw "Unknown tab " + activeTab;
+  }
+}
+
 export function ProjectPage() {
   const { id } = useParams();
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const [activeTab, setActiveTab] = React.useState("about");
+  const [activeTab, setActiveTab] = React.useState("overview");
 
   const { loading, error, data } = useProject(id);
 
@@ -437,7 +407,8 @@ export function ProjectPage() {
   if (error) return <p className="mt-16">Error : {error.message}</p>;
   if (!data) return <p className="mt-16">Can't find project</p>;
 
-  let parents = data.project.parents;
+  let project = data.project;
+  let parents = project.parents;
   let parentName = parents[parents.length - 1].title;
 
   return (
@@ -448,26 +419,23 @@ export function ProjectPage() {
 
       <PaperContainer.Body>
         <ProjectPhases />
-        <ProjectHeader name={data.project.name} />
+        <ProjectHeader name={project.name} />
         <ContributorList
-          owner={data.project.owner}
-          contributors={data.project.contributors}
+          owner={project.owner}
+          contributors={project.contributors}
         />
 
         <Tabs.Container
           active={activeTab}
           onTabChange={(id) => setActiveTab(id)}
         >
-          <Tabs.Tab id="about" title="Overview" icon="groups" />
+          <Tabs.Tab id="overview" title="Overview" icon="groups" />
           <Tabs.Tab id="timeline" title="Timeline" icon="groups" />
           <Tabs.Tab id="activity" title="Activity" icon="groups" />
           <Tabs.Tab id="contributors" title="Contributors" icon="groups" />
         </Tabs.Container>
 
-        {activeTab === "about" && <About data={data} />}
-        {activeTab === "contributors" && <Contributors data={data} />}
-        {activeTab === "timeline" && <Timeline data={data} />}
-        {activeTab === "activity" && <Activity data={data} />}
+        <ActiveTabContent data={data} activeTab={activeTab} />
       </PaperContainer.Body>
     </PaperContainer.Root>
   );

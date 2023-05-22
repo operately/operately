@@ -11,7 +11,7 @@ defmodule Operately.Projects.Project do
 
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
 
-    field :description, :string
+    field :description, :map
     field :name, :string
 
     field :started_at, :utc_datetime

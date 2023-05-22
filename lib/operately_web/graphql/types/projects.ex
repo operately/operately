@@ -22,12 +22,17 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :phase, non_null(:string)
-    field :description, :string
     field :updated_at, non_null(:date)
 
     field :started_at, :date
     field :deadline, :date
     field :next_update_scheduled_at, :date
+
+    field :description, :string do
+      resolve fn project, _, _ ->
+        {:ok, Jason.encode!(project.description)}
+      end
+    end
 
     field :owner, :person do
       resolve fn project, _, _ ->

@@ -35,4 +35,5 @@ export default function Tab(props: TabProps) {
 
 Tab.defaultProps = {
   active: false,
+  onClick: () => {},
 };
