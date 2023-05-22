@@ -27,7 +27,7 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Tiny:
       return "w-5 h-5";
     case AvatarSize.Small:
-      return "w-8 h-8";
+      return "w-[30px] h-[30px]";
     case AvatarSize.Normal:
       return "w-10 h-10";
     case AvatarSize.Large:
