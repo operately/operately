@@ -11,6 +11,8 @@ import AbsoluteTime from "../../components/AbsoluteTime";
 import RelativeTime from "../../components/RelativeTime";
 import { useMe } from "../../graphql/Me";
 
+import PaperContainer from "../../components/PaperContainer";
+
 function Milestone({ milestone }) {
   return (
     <div className="border-t border-gray-700 flex items-center justify-between">
@@ -488,45 +490,51 @@ export function ProjectPage() {
 
   let nextMilestone = findNextMilestone(data.project);
 
-  return (
-    <div className="max-w-6xl mx-auto mb-2">
-      <div className="m-11 mt-24 text-gray-400">
-        <Navigation parents={data.project.parents} />
+  let parents = data.project.parents;
+  let parentName = parents[parents.length - 1].title;
 
-        <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 relative border-2 border-new-dark-2">
-          <Flare />
-          <LeftActions />
-          <RightActions />
-
-          <h1 className="font-bold text-5xl text-center relative z-20">
-            {data.project.name}
-          </h1>
-
-          <div className="text-center mt-4 relative z-20">
-            <div>
-              In{" "}
-              <span className="underline cursor-pointer capitalize">
-                {data.project.phase}
-              </span>{" "}
-              Phase &middot; Delivery expected before{" "}
-              <AbsoluteTime date={data.project.deadline} />
-            </div>
-            {nextMilestone && <div>Next milestone: {nextMilestone.title}</div>}
-          </div>
-
-          <Tabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            contributorCount={data.project.contributors.length}
-            activityCount={data.project.activities.length}
-          />
-
-          {activeTab === "about" && <About data={data} />}
-          {activeTab === "contributors" && <Contributors data={data} />}
-          {activeTab === "timeline" && <Timeline data={data} />}
-          {activeTab === "activity" && <Activity data={data} />}
-        </div>
-      </div>
+  let navigation = (
+    <div className="flex items-center gap-2 text-dark-2">
+      <Icon size="base" name="objectives" color="dark-2" hoverColor="dark-2" />
+      {parentName}
     </div>
+  );
+
+  return (
+    <PaperContainer navigation={navigation}>
+      <div className="text-new-dark-3 bg-new-dark-2 rounded px-32 pb-16 pt-16 relative border-2 border-new-dark-2">
+        <Flare />
+        <LeftActions />
+        <RightActions />
+
+        <h1 className="font-bold text-5xl text-center relative z-20">
+          {data.project.name}
+        </h1>
+
+        <div className="text-center mt-4 relative z-20">
+          <div>
+            In{" "}
+            <span className="underline cursor-pointer capitalize">
+              {data.project.phase}
+            </span>{" "}
+            Phase &middot; Delivery expected before{" "}
+            <AbsoluteTime date={data.project.deadline} />
+          </div>
+          {nextMilestone && <div>Next milestone: {nextMilestone.title}</div>}
+        </div>
+
+        <Tabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          contributorCount={data.project.contributors.length}
+          activityCount={data.project.activities.length}
+        />
+
+        {activeTab === "about" && <About data={data} />}
+        {activeTab === "contributors" && <Contributors data={data} />}
+        {activeTab === "timeline" && <Timeline data={data} />}
+        {activeTab === "activity" && <Activity data={data} />}
+      </div>
+    </PaperContainer>
   );
 }
