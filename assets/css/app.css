@@ -51,12 +51,7 @@ body {
 
   --color-new-dark-1: 22, 22, 22, 1;
 
-  background: linear-gradient(
-    49deg,
-    rgba(var(--color-new-dark-1)) 0%,
-    rgba(33, 33, 33, 1) 77%,
-    rgba(var(--color-new-dark-1)) 100%
-  );
+  background: #fafafa;
 
   min-height: 100vh;
 }
