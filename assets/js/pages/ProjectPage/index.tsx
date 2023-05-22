@@ -13,6 +13,7 @@ import { useMe } from "../../graphql/Me";
 
 import * as PaperContainer from "../../components/PaperContainer";
 import * as PhasePills from "../../components/PhasePills";
+import * as Tabs from "../../components/Tabs";
 
 function Milestone({ milestone }) {
   return (
@@ -323,160 +324,6 @@ function Tab(props) {
   );
 }
 
-function Tabs({ activityCount, contributorCount, activeTab, setActiveTab }) {
-  return (
-    <div className="flex items-center justify-center mb-12 gap-2 mt-4">
-      <Tab
-        active={activeTab === "about"}
-        title="About"
-        onClick={() => setActiveTab("about")}
-      />
-      <Tab
-        active={activeTab === "contributors"}
-        title={
-          <>
-            Contributors
-            <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
-              {contributorCount}
-            </span>
-          </>
-        }
-        onClick={() => setActiveTab("contributors")}
-      />
-      <Tab
-        active={activeTab === "activity"}
-        title={
-          <>
-            Activity
-            <span className="rounded-full bg-gray-600 text-xs ml-2 px-1.5 py-0.5">
-              {activityCount}
-            </span>
-          </>
-        }
-        onClick={() => setActiveTab("activity")}
-      />
-      <Tab
-        active={activeTab === "timeline"}
-        title="Timeline"
-        onClick={() => setActiveTab("timeline")}
-      />
-    </div>
-  );
-}
-
-function ChevronRight() {
-  return (
-    <div className="scale-75">
-      <Icon name="chevron right" size="small" color="dark-2"></Icon>
-    </div>
-  );
-}
-
-function NavigationLink({ parent, i }) {
-  let path = "";
-
-  switch (parent.type) {
-    case "tenet":
-      path = "/tenets/" + parent.id;
-      break;
-
-    case "project":
-      path = "/projects/" + parent.id;
-      break;
-
-    case "objective":
-      path = "/objective/" + parent.id;
-      break;
-
-    case "company":
-      path = "/company";
-      break;
-  }
-
-  return (
-    <div key={i} className="flex items-center gap-1">
-      {i > 0 ? <ChevronRight /> : null}
-
-      <Link to={path} className="font-semibold">
-        {parent.title}
-      </Link>
-    </div>
-  );
-}
-
-function Navigation({ parents }) {
-  projectpage;
-  return (
-    <div className="flex items-center gap-1 justify-center bg-new-dark-2 mx-8 py-3 text-sm">
-      {parents.map((parent, i) => (
-        <NavigationLink i={i} parent={parent} />
-      ))}
-    </div>
-  );
-}
-
-function Flare() {
-  return (
-    <div
-      className="absolute"
-      style={{
-        top: 0,
-        left: 0,
-        right: 0,
-        height: "500px",
-        background:
-          "radial-gradient(circle at top, #ffff0008 0%, #00000000 60%)",
-        pointerEvents: "none",
-      }}
-    ></div>
-  );
-}
-
-function LeftActions() {
-  return (
-    <div className="absolute top-4 left-4">
-      <div className="group flex gap-2 items-center cursor-pointer">
-        <div>
-          <Icon name="star" size="base" color="dark-2"></Icon>
-        </div>
-
-        <div className="opacity-0 group-hover:opacity-100 transition pointer-events-none mt-1 text-sm font-bold">
-          Follow this project
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function RightActions() {
-  return (
-    <div className="absolute top-4 right-4">
-      <div className="group flex gap-2 items-center cursor-pointer">
-        <div className="opacity-0 group-hover:opacity-100 transition pointer-events-none mt-1 text-sm font-bold">
-          Edit project
-        </div>
-
-        <div>
-          <Icon name="edit" size="base" color="dark-2"></Icon>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function findNextMilestone(project) {
-  let nonDoneMilestones = project.milestones.filter((m) => m.status !== "done");
-
-  let sortedMilestones = nonDoneMilestones.sort((m1, m2) => {
-    let d1 = +new Date(m1.deadlineAt);
-    let d2 = +new Date(m2.deadlineAt);
-
-    return d1 - d2;
-  });
-
-  return sortedMilestones[0];
-}
-
 function Badge({ title, className }): JSX.Element {
   return (
     <div
@@ -607,12 +454,15 @@ export function ProjectPage() {
           contributors={data.project.contributors}
         />
 
-        <Tabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          contributorCount={data.project.contributors.length}
-          activityCount={data.project.activities.length}
-        />
+        <Tabs.Container
+          active={activeTab}
+          onTabChange={(id) => setActiveTab(id)}
+        >
+          <Tabs.Tab id="about" title="Overview" icon="groups" />
+          <Tabs.Tab id="timeline" title="Timeline" icon="groups" />
+          <Tabs.Tab id="activity" title="Activity" icon="groups" />
+          <Tabs.Tab id="contributors" title="Contributors" icon="groups" />
+        </Tabs.Container>
 
         {activeTab === "about" && <About data={data} />}
         {activeTab === "contributors" && <Contributors data={data} />}
