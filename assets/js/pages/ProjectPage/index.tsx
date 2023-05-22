@@ -12,6 +12,7 @@ import RelativeTime from "../../components/RelativeTime";
 import { useMe } from "../../graphql/Me";
 
 import * as PaperContainer from "../../components/PaperContainer";
+import * as PhasePills from "../../components/PhasePills";
 
 function Milestone({ milestone }) {
   return (
@@ -508,6 +509,14 @@ export function ProjectPage() {
       </PaperContainer.Navigation>
 
       <PaperContainer.Body>
+        <PhasePills.Container>
+          <PhasePills.Item name="Concept" state="done" />
+          <PhasePills.Item name="Planning" state="done" />
+          <PhasePills.Item name="Execution" state="inProgress" />
+          <PhasePills.Item name="Control" state="pending" />
+          <PhasePills.Item name="Closing" state="pending" />
+        </PhasePills.Container>
+
         <h1 className="font-bold text-5xl text-center relative z-20">
           {data.project.name}
         </h1>

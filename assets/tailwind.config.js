@@ -15,6 +15,7 @@ module.exports = {
       colors: {
         brand: {
           base: "#3185FF",
+          1: "#3185FF",
           2: "#E3F2FF",
         },
         light: {

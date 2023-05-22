@@ -62,7 +62,7 @@ export default function DefaultLayout() {
         </div>
       </div>
 
-      <div className="text-new-dark-3">
+      <div className="text-black">
         <Outlet />
       </div>
     </div>
