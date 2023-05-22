@@ -33,6 +33,7 @@ module.exports = {
         },
         success: {
           base: "#548B53",
+          1: "#548B53",
           2: "#D7ECD7",
         },
 

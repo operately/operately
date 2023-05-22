@@ -477,6 +477,55 @@ function findNextMilestone(project) {
   return sortedMilestones[0];
 }
 
+function Badge({ title, className }): JSX.Element {
+  return (
+    <div
+      className={className + " font-bold uppercase flex items-center"}
+      style={{
+        padding: "4px 10px 2px",
+        borderRadius: "25px",
+        fontSize: "12.5px",
+        lineHeight: "20px",
+        height: "24px",
+        letterSpacing: "0.03em",
+        display: "flex",
+        gap: "10",
+        marginTop: "2px",
+      }}
+    >
+      {title}
+    </div>
+  );
+}
+
+function ProjectHeader({ name }): JSX.Element {
+  return (
+    <div className="flex items-center justify-between mt-[23px] ">
+      <div className="flex gap-3.5 items-center">
+        <Icon name="my projects" color="dark-2" size="large" />
+
+        <h1 className="font-bold text-[31.1px]" style={{ lineHeight: "40px" }}>
+          {name}
+        </h1>
+      </div>
+
+      <Badge title="On Track" className="bg-success-2 text-success-1" />
+    </div>
+  );
+}
+
+function ProjectPhases(): JSX.Element {
+  return (
+    <PhasePills.Container>
+      <PhasePills.Item name="Concept" state="done" />
+      <PhasePills.Item name="Planning" state="done" />
+      <PhasePills.Item name="Execution" state="inProgress" />
+      <PhasePills.Item name="Control" state="pending" />
+      <PhasePills.Item name="Closing" state="pending" />
+    </PhasePills.Container>
+  );
+}
+
 export function ProjectPage() {
   const { id } = useParams();
 
@@ -495,13 +544,6 @@ export function ProjectPage() {
   let parents = data.project.parents;
   let parentName = parents[parents.length - 1].title;
 
-  let navigation = (
-    <div className="flex items-center gap-2.5 text-dark-2">
-      <Icon size="base" name="objectives" color="dark-2" hoverColor="dark-2" />
-      {parentName}
-    </div>
-  );
-
   return (
     <PaperContainer.Root>
       <PaperContainer.Navigation>
@@ -509,29 +551,8 @@ export function ProjectPage() {
       </PaperContainer.Navigation>
 
       <PaperContainer.Body>
-        <PhasePills.Container>
-          <PhasePills.Item name="Concept" state="done" />
-          <PhasePills.Item name="Planning" state="done" />
-          <PhasePills.Item name="Execution" state="inProgress" />
-          <PhasePills.Item name="Control" state="pending" />
-          <PhasePills.Item name="Closing" state="pending" />
-        </PhasePills.Container>
-
-        <h1 className="font-bold text-5xl text-center relative z-20">
-          {data.project.name}
-        </h1>
-
-        <div className="text-center mt-4 relative z-20">
-          <div>
-            In{" "}
-            <span className="underline cursor-pointer capitalize">
-              {data.project.phase}
-            </span>{" "}
-            Phase &middot; Delivery expected before{" "}
-            <AbsoluteTime date={data.project.deadline} />
-          </div>
-          {nextMilestone && <div>Next milestone: {nextMilestone.title}</div>}
-        </div>
+        <ProjectPhases />
+        <ProjectHeader name={data.project.name} />
 
         <Tabs
           activeTab={activeTab}
