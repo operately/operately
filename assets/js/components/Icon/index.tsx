@@ -80,7 +80,7 @@ export default function Icon({
       xmlnsXlink="http://www.w3.org/1999/xlink"
       className={`${TextColor(color)} ${HoverTextColor(hoverColor)}`}
     >
-      <use xlinkHref={"/assets/images/icons.svg#" + id} />
+      <use xlinkHref={"/images/icons.svg#" + id} />
     </svg>
   );
 }
