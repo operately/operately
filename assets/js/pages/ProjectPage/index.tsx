@@ -351,7 +351,7 @@ function ContributorList({ owner, contributors }): JSX.Element {
         marginLeft: "54px",
       }}
     >
-      <div className="relative" style={{ marginRight: "16px" }}>
+      <div className="relative" style={{ marginRight: "10px" }}>
         <Avatar person={owner} size={AvatarSize.Small} />
 
         <div className="absolute top-[-6px] left-[21px]">
@@ -359,18 +359,20 @@ function ContributorList({ owner, contributors }): JSX.Element {
         </div>
       </div>
 
-      {contributors.map((c, index: number) => (
-        <div className="border-2 border-white rounded-full -ml-2.5">
-          <div
-            className="rounded-full"
-            style={{
-              background: "#fafafa",
-            }}
-          >
-            <Avatar key={index} person={c.person} size={AvatarSize.Small} />
+      <div className="flex items-center">
+        {contributors.map((c, index: number) => (
+          <div className="border-2 border-white rounded-full -ml-[6px]">
+            <div
+              className="rounded-full"
+              style={{
+                background: "#fafafa",
+              }}
+            >
+              <Avatar key={index} person={c.person} size={AvatarSize.Small} />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
