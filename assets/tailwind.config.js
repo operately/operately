@@ -12,6 +12,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        sm: ["12.5px", "20px"],
+        base: ["15px", "24px"],
+      },
       colors: {
         brand: {
           base: "#3185FF",
@@ -35,6 +39,10 @@ module.exports = {
           base: "#548B53",
           1: "#548B53",
           2: "#D7ECD7",
+        },
+
+        danger: {
+          base: "#D25034",
         },
 
         new: {
