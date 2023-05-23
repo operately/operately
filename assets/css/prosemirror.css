@@ -65,3 +65,7 @@
 .ProseMirror p {
   margin-top: 2px;
 }
+
+.ProseMirror p + p {
+  margin-top: 22px;
+}
