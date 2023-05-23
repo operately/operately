@@ -9,14 +9,6 @@ interface IconsProps {
   hoverColor: "light" | "dark" | "dark-2" | "brand";
 }
 
-export function Sprite() {
-  return (
-    <div>
-      <object type="image/svg+xml" data="/assets/images/icons.svg" />
-    </div>
-  );
-}
-
 function SizeToNumber(size: IconSize) {
   switch (size) {
     case "tiny":

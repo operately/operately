@@ -25,7 +25,7 @@ config :operately, OperatelyWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "NG6Cid5T5WyqaUYvwzHzGFvW60jJkZcqybaP3O0p8H8cj42PsBULkelzFZFhY7oj",
   watchers: [
-    node: ["build.js", "--watch", cd: Path.expand("../assets", __DIR__)],
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
