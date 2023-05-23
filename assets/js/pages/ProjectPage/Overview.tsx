@@ -90,22 +90,30 @@ function KPI({ name, current, change, status }) {
 
   return (
     <KPIBox>
-      <div className="flex flex-col justify-between h-full">
-        <div className="flex flex-col gap-[4px]">
-          <div className="text-sm font-medium w-[127px] text-black">{name}</div>
-          <div
-            className={"font-bold " + color}
-            style={{ fontSize: "21.6px", lineHeight: "32px" }}
-          >
-            {current}
+      <div className="flex justify-between items-start h-full">
+        <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col gap-[4px] h-full">
+            <div className="text-sm font-medium w-[127px] text-black">
+              {name}
+            </div>
+            <div
+              className={"font-bold " + color}
+              style={{ fontSize: "21.6px", lineHeight: "32px" }}
+            >
+              {current}
+            </div>
+          </div>
+
+          <div className="text-sm flex items-center -mb-[2px] gap-[5px]">
+            Last month:
+            <span className="flex items-center">
+              {chevron} <span className={color + " font-medium"}>{change}</span>
+            </span>
           </div>
         </div>
 
-        <div className="text-sm flex items-center -mb-[2px] gap-[5px]">
-          Last month:
-          <span className="flex items-center">
-            {chevron} <span className={color + " font-medium"}>{change}</span>
-          </span>
+        <div>
+          <Icon name="menu dots" size="small" color="dark-2" />
         </div>
       </div>
     </KPIBox>
