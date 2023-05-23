@@ -76,7 +76,8 @@ export default function Item({
       )}
 
       <div className={className} style={{ lineHeight: "11px" }}>
-        <StatusIcon state={state} /> <span className="ml-1">{name}</span>
+        <StatusIcon state={state} />{" "}
+        <span className="-mt-[2px] ml-[7px]">{name}</span>
       </div>
 
       {last ? null : (
