@@ -1,11 +1,20 @@
 .ProseMirror > * + * {
-  margin-top: 0.75em;
+  margin-top: 2px;
+  line-height: 24px;
 }
-.ProseMirror ul, .ProseMirror ol {
-  padding: 0 1rem;
-  list-style: square;
+.ProseMirror ul,
+.ProseMirror ol {
+  padding: 0 23px;
+  list-style: unset;
+  margin-top: 0px;
+  margin-bottom: 22px;
 }
-.ProseMirror h1, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4, .ProseMirror h5, .ProseMirror h6 {
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
   line-height: 1.1;
 }
 .ProseMirror code {
@@ -15,7 +24,7 @@
 .ProseMirror pre {
   background: #0d0d0d;
   color: #fff;
-  font-family: 'JetBrainsMono', monospace;
+  font-family: "JetBrainsMono", monospace;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
 }
@@ -39,11 +48,20 @@
   margin: 2rem 0;
 }
 
-
 .ProseMirror p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+.ProseMirror h3 {
+  font-size: 12.5px;
+  line-height: 20px;
+  color: var(--color-dark-2);
+}
+
+.ProseMirror p {
+  margin-top: 2px;
 }

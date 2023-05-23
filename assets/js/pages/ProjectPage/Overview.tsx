@@ -22,10 +22,10 @@ function DescriptionTitle() {
 
 function Description({ data }) {
   return (
-    <div>
+    <div className="border-b border-dark-8% pb-[22px]">
       <DescriptionTitle />
 
-      <div className="mt-[10px]">
+      <div className="mt-[10px] pr-[62px]">
         <RichContent jsonContent={data.project.description} />
       </div>
     </div>
