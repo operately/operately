@@ -55,7 +55,7 @@ defmodule Operately.Updates.Update do
         schema -> 
           case apply(schema, :changeset, [value]) do
             %Ecto.Changeset{valid?: true} -> []
-            _ -> [content: "invalid update content"]
+            e -> [content: "invalid update content for type #{type} #{inspect(e)}}"]
           end
       end
     end)
@@ -93,7 +93,7 @@ defmodule Operately.Updates.Update do
     use Ecto.Schema
 
     embedded_schema do
-      field :message, :string
+      field :message, :map
     end
 
     def changeset(params) do

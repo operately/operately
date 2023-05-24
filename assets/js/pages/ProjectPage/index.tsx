@@ -16,6 +16,7 @@ import * as PhasePills from "../../components/PhasePills";
 import * as Tabs from "../../components/Tabs";
 
 import Overview from "./Overview";
+import Activity from "./Activity";
 
 function Milestone({ milestone }) {
   return (
@@ -129,148 +130,6 @@ function Contributors({ data }) {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function UpdateComment({ comment }) {
-  return (
-    <div className="flex items-start gap-4 border-t border-gray-700 p-4 px-7">
-      <div className="mt-1">
-        <Avatar person={comment.author} size={AvatarSize.Small} />
-      </div>
-      <div className="w-full">
-        <div className="flex gap-1 justify-between">
-          <div className="flex gap-1 justify-between">
-            <div className="font-bold">{comment.author.fullName}</div>
-            &middot;
-            <div className="text-sm text-gray-400">{comment.author.title}</div>
-          </div>
-
-          <div className="text-gray-300 mr-1">
-            <RelativeTime date={comment.insertedAt} />
-          </div>
-        </div>
-        <div className="mt-1">{comment.content}</div>
-      </div>
-    </div>
-  );
-}
-
-function Update({ update }) {
-  const { data, loading, error } = useMe();
-
-  if (loading || error) return "";
-
-  const me = data.me;
-
-  return (
-    <div className="bg-[#303030] rounded-lg mb-8 relative z-30 -mx-6 overflow-hidden">
-      <div className="px-4 py-4 flex items-center justify-between bg-new-dark-2">
-        <div className="text-lg flex gap-2 items-center">
-          {update.author.fullName.split(" ")[0]} is waiting for you to
-          acknowlegde this update.
-        </div>
-        <div className="flex rounded-lg border border-brand-base px-2 py-1 hover:border-brand-base cursor-pointer transition">
-          <Icon name="double checkmark" color="light" hoverColor="light" /> Ack
-        </div>
-      </div>
-
-      <div className="flex gap-2 items-center mb-4 z-20 relative px-6 pt-6">
-        <div className="absolute right-9">
-          <RelativeTime date={update.insertedAt} />
-        </div>
-
-        <Avatar person={update.author} />
-        <div>
-          <div className="font-bold">{update.author.fullName}</div>
-          <div className="text-sm">{update.author.title}</div>
-        </div>
-      </div>
-
-      <div className="text-xl px-8 pt-4 pb-2">
-        <div className="uppercase text-xs mb-6 font-bold">STATUS UPDATE</div>
-        {update.message}
-      </div>
-
-      <div className="pb-4 pt-4 px-8 flex items-center gap-2">
-        <div className="flex rounded-lg border border-gray-700 px-2 py-1 hover:border-brand-base cursor-pointer transition">
-          <Icon name="like" color="light" hoverColor="light" />
-        </div>
-      </div>
-
-      {update.comments.map((c, i) => (
-        <UpdateComment key={i} comment={c} />
-      ))}
-
-      <div className="flex items-center gap-4 border-t border-gray-700 p-4 px-7">
-        <div className="mt-1">
-          <Avatar person={me} size={AvatarSize.Small} />
-        </div>
-        <div className="text-gray-300">Leave a comment &hellip;</div>
-      </div>
-    </div>
-  );
-}
-
-function ProjectCreatedActivity({ authorFullName, date }) {
-  return (
-    <div className="mt-4 flex gap-2 items-center mb-4 z-20 relative">
-      <div className="absolute right-2">
-        <RelativeTime date={date} />
-      </div>
-      <div className="border border-gray-700 p-2 rounded-full bg-gray-700 ml-1">
-        <LightningBoltIcon />
-      </div>
-      Project Created by {authorFullName}
-    </div>
-  );
-}
-
-function Event({ eventData }) {
-  switch (eventData.__typename) {
-    case "ActivityStatusUpdate":
-      return <Update update={eventData} />;
-
-    case "ActivityCreated":
-      return (
-        <ProjectCreatedActivity
-          date={eventData.insertedAt}
-          authorFullName={eventData.author.fullName}
-        />
-      );
-  }
-}
-
-function Activity({ data }) {
-  return (
-    <div className="relative fadeIn">
-      <div className="absolute top-1 bottom-1 left-5 border-l border-gray-700"></div>
-
-      {data.project.activities.map((u, i) => (
-        <Event key={i} project={data.project} eventData={u} />
-      ))}
-    </div>
-  );
-}
-
-function Tab(props) {
-  let { active, title, onClick } = props;
-
-  const activeClass = active
-    ? "bg-gray-700 cursor-default"
-    : "hover:bg-gray-700 cursor-pointer";
-
-  return (
-    <div
-      className={
-        "border rounded-full border-gray-700 px-3 py-1 transition-colors relative flex items-center" +
-        " " +
-        activeClass
-      }
-      onClick={onClick}
-    >
-      {title}
     </div>
   );
 }
@@ -401,7 +260,7 @@ export function ProjectPage() {
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const [activeTab, setActiveTab] = React.useState("overview");
+  const [activeTab, setActiveTab] = React.useState("activity");
 
   const { loading, error, data } = useProject(id);
 

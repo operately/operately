@@ -21,7 +21,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
     field :message, non_null(:string) do
       resolve fn update, _, _ ->
-        {:ok, update.content["message"]}
+        {:ok, Jason.encode!(update.content["message"])}
       end
     end
 
