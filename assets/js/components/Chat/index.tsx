@@ -13,11 +13,7 @@ import Avatar, { AvatarSize } from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
 function Container({ children }) {
-  return (
-    <div className="border border-dark-8% rounded-[10px] p-[1px]">
-      {children}
-    </div>
-  );
+  return <div className="border border-dark-8% rounded-[10px]">{children}</div>;
 }
 
 function Header({ author, acknowlegment, time }) {
@@ -33,7 +29,19 @@ function Header({ author, acknowlegment, time }) {
 }
 
 function Message({ children }) {
-  return <div>{children}</div>;
+  return (
+    <div className="px-[20px]">
+      <div className="text-sm tracking-[0.03] text-dark-2 upercase mt-[21px]">
+        PROGRESS
+      </div>
+
+      <div className="text-dark-1 font-bold mt-[5px] mb-[6px]">
+        What has the team accomplished since the last update?
+      </div>
+
+      <div className="leading-[24px]">{children}</div>
+    </div>
+  );
 }
 
 export { Container, Header, Message };
