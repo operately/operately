@@ -1,33 +1,7 @@
 import React from "react";
 
-import Avatar, { AvatarSize } from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
-import { useMe } from "@/graphql/Me";
 import * as Chat from "@/components/Chat";
-
-function UpdateComment({ comment }) {
-  return (
-    <div className="flex items-start gap-4 border-t border-gray-700 p-4 px-7">
-      <div className="mt-1">
-        <Avatar person={comment.author} size={AvatarSize.Small} />
-      </div>
-      <div className="w-full">
-        <div className="flex gap-1 justify-between">
-          <div className="flex gap-1 justify-between">
-            <div className="font-bold">{comment.author.fullName}</div>
-            &middot;
-            <div className="text-sm text-gray-400">{comment.author.title}</div>
-          </div>
-
-          <div className="text-gray-300 mr-1">
-            {/* <FormattedTime format="relative" date={comment.insertedAt} /> */}
-          </div>
-        </div>
-        <div className="mt-1">{comment.content}</div>
-      </div>
-    </div>
-  );
-}
 
 function Update({ update }): JSX.Element {
   return (
@@ -41,6 +15,14 @@ function Update({ update }): JSX.Element {
       <Chat.Message>
         <RichContent jsonContent={update.message} />
       </Chat.Message>
+
+      <Chat.Comments>
+        {update.comments.map((c, i) => (
+          <Chat.Comment key={i} author={c.author} time={c.insertedAt}>
+            <RichContent jsonContent={c.message} />
+          </Chat.Comment>
+        ))}
+      </Chat.Comments>
     </Chat.Container>
   );
 }

@@ -172,7 +172,7 @@ const GET_PROJECT = gql`
 
           comments {
             id
-            content
+            message
             insertedAt
             author {
               id
