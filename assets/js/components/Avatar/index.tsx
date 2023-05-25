@@ -25,7 +25,7 @@ interface AvatarProps {
 function SizeClasses({ size }: { size: AvatarSize }): string {
   switch (size) {
     case AvatarSize.Tiny:
-      return "w-5 h-5";
+      return "w-[24px] h-[24px]";
     case AvatarSize.Small:
       return "w-[30px] h-[30px]";
     case AvatarSize.Normal:

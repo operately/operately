@@ -12,6 +12,7 @@ import React from "react";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import Icon from "@/components/Icon";
+import RichContent from "@/components/RichContent";
 
 function Container({ children }) {
   return <div className="border border-dark-8% rounded-[10px]">{children}</div>;
@@ -89,6 +90,63 @@ function Message({ children }) {
   );
 }
 
+function groupReactionsByType(reactions) {
+  return reactions.reduce((acc, reaction) => {
+    if (!acc[reaction.reactionType]) {
+      acc[reaction.reactionType] = [];
+    }
+
+    acc[reaction.reactionType].push(reaction);
+
+    return acc;
+  }, {});
+}
+
+function ReactionIcon({ reactionType }): JSX.Element {
+  switch (reactionType) {
+    case "thumbs_up":
+      return <Icon name="like" size="base" />;
+    case "celebration":
+      return <Icon name="celebrate" size="base" />;
+    case "heart":
+      return <Icon name="heart" size="base" />;
+    default:
+      throw "Unknown reaction type " + reactionType;
+  }
+}
+
+function Reactions({ reactions }) {
+  const reactionsByType = groupReactionsByType(reactions);
+
+  return (
+    <div className="mx-[20px] mt-[21px] flex gap-[3px] h-[32px]">
+      {Object.keys(reactionsByType).map((reactionType, index) => (
+        <div className="flex items-center bg-light-2 rounded-[20px] pr-[4px] pl-[6px] gap-[4px]">
+          <ReactionIcon reactionType={reactionType} />
+
+          {reactionsByType[reactionType].map((reaction, index) => (
+            <div
+              className="border-[2px] border-light-2 rounded-full overflow-hidden flex items-center"
+              style={{
+                marginLeft: index === 0 ? "-2px" : "-12px",
+                marginTop: index === 0 ? "0px" : "-2px",
+                marginBottom: index === 0 ? "0px" : "-2px",
+                marginRight: index === 0 ? "0px" : "-2px",
+              }}
+            >
+              <Avatar
+                key={index}
+                person={reaction.person}
+                size={AvatarSize.Tiny}
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Comments({ children }) {
   return <div className="border-t border-dark-8% m-[20px]">{children}</div>;
 }
@@ -107,9 +165,35 @@ function Comment({ author, time, children }) {
         </div>
       </div>
 
-      <div className="ml-[40px]">{children}</div>
+      <div className="ml-[41px] mt-[8px]">{children}</div>
     </div>
   );
 }
 
-export { Container, Header, Message, Comments, Comment };
+function Post({ update }): JSX.Element {
+  return (
+    <Container>
+      <Header
+        author={update.author}
+        acknowledgingPerson={update.acknowledgingPerson}
+        time={update.insertedAt}
+      />
+
+      <Message>
+        <RichContent jsonContent={update.message} />
+      </Message>
+
+      <Reactions reactions={update.reactions} />
+
+      <Comments>
+        {update.comments.map((c, i) => (
+          <Comment key={i} author={c.author} time={c.insertedAt}>
+            <RichContent jsonContent={c.message} />
+          </Comment>
+        ))}
+      </Comments>
+    </Container>
+  );
+}
+
+export { Post };
