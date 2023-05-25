@@ -26,7 +26,7 @@ function AckBadge({ person }): JSX.Element {
         borderRadius: "20px",
       }}
     >
-      <div className="ml-[12px] mr-[6px]">
+      <div className="ml-[12px] mr-[3px]">
         <svg
           width="18"
           height="19"
@@ -44,7 +44,7 @@ function AckBadge({ person }): JSX.Element {
         </svg>
       </div>
 
-      <div className="border border-success-1 rounded-full overflow-hidden -mr-[1px]">
+      <div className="border border-success-1 rounded-full overflow-hidden -m-[1px]">
         <Avatar person={person} size={AvatarSize.Small} />
       </div>
     </div>
@@ -53,18 +53,21 @@ function AckBadge({ person }): JSX.Element {
 
 function Header({ author, acknowledgingPerson, time }) {
   return (
-    <div className="flex items-center justify-between m-[20px] pb-[20px] border-b border-dark-8%">
+    <div className="flex items-center justify-between m-[20px] pb-[19px] border-b border-dark-8%">
       <div className="flex items-center gap-[10px]">
         <Avatar person={author} size={AvatarSize.Small} />
-        <div className="font-bold">{author.fullName}</div>
-        <span className="text-dark-2">
-          posted an update on <FormattedTime time={time} format="short-date" />
-        </span>
+        <div className="flex items-center gap-[4px]">
+          <div className="font-bold">{author.fullName}</div>
+          <span className="text-dark-2">
+            posted an update on{" "}
+            <FormattedTime time={time} format="short-date" />
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-[10px]">
         {acknowledgingPerson && <AckBadge person={acknowledgingPerson} />}
-        <Icon name="menu dots" size="small" />
+        <Icon name="menu dots" size="base" />
       </div>
     </div>
   );
@@ -73,7 +76,7 @@ function Header({ author, acknowledgingPerson, time }) {
 function Message({ children }) {
   return (
     <div className="px-[20px]">
-      <div className="text-sm tracking-[0.03] text-dark-2 upercase mt-[21px]">
+      <div className="text-sm tracking-[0.3px] text-dark-2 upercase mt-[20px]">
         PROGRESS
       </div>
 
@@ -93,13 +96,18 @@ function Comments({ children }) {
 function Comment({ author, time, children }) {
   return (
     <div className="my-[20px]">
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-[11px]">
         <Avatar person={author} size={AvatarSize.Small} />
-        <div className="font-bold">{author.fullName}</div>
-        <FormattedTime time={time} format="relative" />
+
+        <div className="flex items-center gap-[5px]">
+          <div className="font-bold">{author.fullName}</div>
+          <span className="text-dark-2">
+            posted a comment <FormattedTime time={time} format="relative" />
+          </span>
+        </div>
       </div>
 
-      <div className="ml-[50px]">{children}</div>
+      <div className="ml-[40px]">{children}</div>
     </div>
   );
 }
