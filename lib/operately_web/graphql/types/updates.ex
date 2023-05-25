@@ -11,13 +11,26 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       %{type: :status_update}, _ -> :activity_status_update
       %{type: :created}, _ -> :activity_created
     end
-
   end
 
   object :activity_status_update do
     field :id, non_null(:id)
     field :updateable_id, non_null(:id)
     field :inserted_at, non_null(:naive_datetime)
+
+    field :acknowledged, non_null(:boolean)
+    field :acknowledged_at, :naive_datetime
+
+    field :acknowledging_person, :person do
+      resolve fn update, _, _ ->
+        if update.acknowledging_person_id == nil do
+          {:ok, nil}
+        else
+          person = Operately.People.get_person!(update.acknowledging_person_id)
+          {:ok, person}
+        end
+      end
+    end
 
     field :message, non_null(:string) do
       resolve fn update, _, _ ->

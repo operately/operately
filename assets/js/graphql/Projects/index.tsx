@@ -170,6 +170,15 @@ const GET_PROJECT = gql`
         ... on ActivityStatusUpdate {
           message
 
+          acknowledged
+          acknowledgedAt
+          acknowledgingPerson {
+            id
+            fullName
+            title
+            avatarUrl
+          }
+
           comments {
             id
             message

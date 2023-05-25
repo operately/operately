@@ -8,7 +8,7 @@ function Update({ update }): JSX.Element {
     <Chat.Container>
       <Chat.Header
         author={update.author}
-        acknowlegment={null}
+        acknowledgingPerson={update.acknowledgingPerson}
         time={update.insertedAt}
       />
 

@@ -11,12 +11,47 @@
 import React from "react";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
+import Icon from "@/components/Icon";
 
 function Container({ children }) {
   return <div className="border border-dark-8% rounded-[10px]">{children}</div>;
 }
 
-function Header({ author, acknowlegment, time }) {
+function AckBadge({ person }): JSX.Element {
+  return (
+    <div
+      className="bg-success-2 border border-success-1 flex items-center"
+      style={{
+        gap: "4px",
+        borderRadius: "20px",
+      }}
+    >
+      <div className="ml-[12px] mr-[6px]">
+        <svg
+          width="18"
+          height="19"
+          viewBox="0 0 18 19"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5.25 9.31836L9 13.0684L16.5 5.56836M1.5 9.31836L5.25 13.0684M9 9.31836L12.75 5.56836"
+            stroke="#548B53"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+
+      <div className="border border-success-1 rounded-full overflow-hidden -mr-[1px]">
+        <Avatar person={person} size={AvatarSize.Small} />
+      </div>
+    </div>
+  );
+}
+
+function Header({ author, acknowledgingPerson, time }) {
   return (
     <div className="flex items-center justify-between m-[20px] pb-[20px] border-b border-dark-8%">
       <div className="flex items-center gap-[10px]">
@@ -27,8 +62,9 @@ function Header({ author, acknowlegment, time }) {
         </span>
       </div>
 
-      <div>
-        <Icon name="menu dots" size={IconSize.Small} />
+      <div className="flex items-center gap-[10px]">
+        {acknowledgingPerson && <AckBadge person={acknowledgingPerson} />}
+        <Icon name="menu dots" size="small" />
       </div>
     </div>
   );
