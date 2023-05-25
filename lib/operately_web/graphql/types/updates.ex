@@ -54,6 +54,14 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       end
     end
 
+    field :reactions, list_of(:reaction) do
+      resolve fn update, _, _ ->
+        reactions = Operately.Updates.list_reactions(update.id, :update)
+
+        {:ok, reactions}
+      end
+    end
+
     interface :activity
   end
 

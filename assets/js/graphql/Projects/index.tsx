@@ -179,6 +179,16 @@ const GET_PROJECT = gql`
             avatarUrl
           }
 
+          reactions {
+            reactionType
+            person {
+              id
+              fullName
+              title
+              avatarUrl
+            }
+          }
+
           comments {
             id
             message

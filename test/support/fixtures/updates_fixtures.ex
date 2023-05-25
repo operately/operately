@@ -45,4 +45,20 @@ defmodule Operately.UpdatesFixtures do
 
     comment
   end
+
+  @doc """
+  Generate a reaction.
+  """
+  def reaction_fixture(attrs \\ %{}) do
+    {:ok, reaction} =
+      attrs
+      |> Enum.into(%{
+        entity_id: "7488a646-e31f-11e4-aace-600308960662",
+        entity_type: :update,
+        reaction_type: :thumbs_up
+      })
+      |> Operately.Updates.create_reaction()
+
+    reaction
+  end
 end

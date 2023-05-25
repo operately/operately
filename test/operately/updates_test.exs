@@ -130,4 +130,62 @@ defmodule Operately.UpdatesTest do
       assert %Ecto.Changeset{} = Updates.change_comment(comment)
     end
   end
+
+  describe "reactions" do
+    alias Operately.Updates.Reaction
+
+    import Operately.UpdatesFixtures
+
+    @invalid_attrs %{entity_id: nil, entity_type: nil, reaction_type: nil}
+
+    test "list_reactions/0 returns all reactions" do
+      reaction = reaction_fixture()
+      assert Updates.list_reactions() == [reaction]
+    end
+
+    test "get_reaction!/1 returns the reaction with given id" do
+      reaction = reaction_fixture()
+      assert Updates.get_reaction!(reaction.id) == reaction
+    end
+
+    test "create_reaction/1 with valid data creates a reaction" do
+      valid_attrs = %{entity_id: "7488a646-e31f-11e4-aace-600308960662", entity_type: :update, reaction_type: :thumbs_up}
+
+      assert {:ok, %Reaction{} = reaction} = Updates.create_reaction(valid_attrs)
+      assert reaction.entity_id == "7488a646-e31f-11e4-aace-600308960662"
+      assert reaction.entity_type == :update
+      assert reaction.reaction_type == :thumbs_up
+    end
+
+    test "create_reaction/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Updates.create_reaction(@invalid_attrs)
+    end
+
+    test "update_reaction/2 with valid data updates the reaction" do
+      reaction = reaction_fixture()
+      update_attrs = %{entity_id: "7488a646-e31f-11e4-aace-600308960668", entity_type: :comment, reaction_type: :celebration}
+
+      assert {:ok, %Reaction{} = reaction} = Updates.update_reaction(reaction, update_attrs)
+      assert reaction.entity_id == "7488a646-e31f-11e4-aace-600308960668"
+      assert reaction.entity_type == :comment
+      assert reaction.reaction_type == :celebration
+    end
+
+    test "update_reaction/2 with invalid data returns error changeset" do
+      reaction = reaction_fixture()
+      assert {:error, %Ecto.Changeset{}} = Updates.update_reaction(reaction, @invalid_attrs)
+      assert reaction == Updates.get_reaction!(reaction.id)
+    end
+
+    test "delete_reaction/1 deletes the reaction" do
+      reaction = reaction_fixture()
+      assert {:ok, %Reaction{}} = Updates.delete_reaction(reaction)
+      assert_raise Ecto.NoResultsError, fn -> Updates.get_reaction!(reaction.id) end
+    end
+
+    test "change_reaction/1 returns a reaction changeset" do
+      reaction = reaction_fixture()
+      assert %Ecto.Changeset{} = Updates.change_reaction(reaction)
+    end
+  end
 end

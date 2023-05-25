@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Kpis
   import_types Types.Milestones
   import_types Types.Updates
+  import_types Types.Reactions
   import_types Types.Comments
 
   # Queries
