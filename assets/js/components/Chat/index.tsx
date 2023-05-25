@@ -119,7 +119,7 @@ function Reactions({ reactions }) {
   const reactionsByType = groupReactionsByType(reactions);
 
   return (
-    <div className="mx-[20px] mt-[21px] flex gap-[3px] h-[32px]">
+    <>
       {Object.keys(reactionsByType).map((reactionType, index) => (
         <div className="flex items-center bg-light-2 rounded-[20px] pr-[4px] pl-[6px] gap-[4px]">
           <ReactionIcon reactionType={reactionType} />
@@ -143,15 +143,37 @@ function Reactions({ reactions }) {
           ))}
         </div>
       ))}
+    </>
+  );
+}
+
+function PostReactions({ reactions }) {
+  return (
+    <div className="mx-[20px] mt-[21px] flex gap-[3px] h-[32px]">
+      <Reactions reactions={reactions} />
+    </div>
+  );
+}
+
+function CommentReactions({ reactions }) {
+  return (
+    <div className="ml-[40px] mr-[20px] mt-[8px] flex gap-[3px] h-[32px]">
+      <Reactions reactions={reactions} />
     </div>
   );
 }
 
 function Comments({ children }) {
-  return <div className="border-t border-dark-8% m-[20px]">{children}</div>;
+  return (
+    <div className="border-t border-dark-8% ml-[20px] mt-[20px] relative">
+      <div className="relative z-20">{children}</div>
+
+      <div className="absolute border-l border-dark-8% top-0 bottom-0 left-[14px]"></div>
+    </div>
+  );
 }
 
-function Comment({ author, time, children }) {
+function Comment({ author, time, children, reactions }) {
   return (
     <div className="my-[20px]">
       <div className="flex items-center gap-[11px]">
@@ -166,6 +188,8 @@ function Comment({ author, time, children }) {
       </div>
 
       <div className="ml-[41px] mt-[8px]">{children}</div>
+
+      <CommentReactions reactions={reactions} />
     </div>
   );
 }
@@ -183,11 +207,16 @@ function Post({ update }): JSX.Element {
         <RichContent jsonContent={update.message} />
       </Message>
 
-      <Reactions reactions={update.reactions} />
+      <PostReactions reactions={update.reactions} />
 
       <Comments>
         {update.comments.map((c, i) => (
-          <Comment key={i} author={c.author} time={c.insertedAt}>
+          <Comment
+            key={i}
+            author={c.author}
+            time={c.insertedAt}
+            reactions={c.reactions}
+          >
             <RichContent jsonContent={c.message} />
           </Comment>
         ))}

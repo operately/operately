@@ -2,13 +2,20 @@
   margin-top: 2px;
   line-height: 24px;
 }
-.ProseMirror ul,
-.ProseMirror ol {
+.ProseMirror ul {
   padding: 0 23px;
   list-style: unset;
   margin-top: 0px;
   margin-bottom: 22px;
 }
+
+.ProseMirror ol {
+  padding: 0 23px;
+  list-style: auto;
+  margin-top: 0px;
+  margin-bottom: 22px;
+}
+
 .ProseMirror h1,
 .ProseMirror h2,
 .ProseMirror h3,
@@ -68,4 +75,9 @@
 
 .ProseMirror p + p {
   margin-top: 22px;
+}
+
+.ProseMirror [data-type="mention"] {
+  color: var(--color-brand-1);
+  font-weight: 700;
 }

@@ -18,5 +18,13 @@ defmodule OperatelyWeb.GraphQL.Types.Comments do
         {:ok, person}
       end
     end
+
+    field :reactions, list_of(:reaction) do
+      resolve fn comment, _, _ ->
+        reactions = Operately.Updates.list_reactions(comment.id, :comment)
+
+        {:ok, reactions}
+      end
+    end
   end
 end

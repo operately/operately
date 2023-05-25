@@ -7,6 +7,7 @@ import Text from "@tiptap/extension-text";
 import Mention from "@tiptap/extension-mention";
 import ListItem from "@tiptap/extension-list-item";
 import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
 import HardBreak from "@tiptap/extension-hard-break";
 import Heading from "@tiptap/extension-heading";
 import { generateHTML } from "@tiptap/html";
@@ -35,6 +36,7 @@ export default function RichContent({
     Mention,
     ListItem,
     BulletList,
+    OrderedList,
     HardBreak,
     Heading,
   ]);

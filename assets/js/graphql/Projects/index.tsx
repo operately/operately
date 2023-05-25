@@ -193,11 +193,22 @@ const GET_PROJECT = gql`
             id
             message
             insertedAt
+
             author {
               id
               fullName
               title
               avatarUrl
+            }
+
+            reactions {
+              reactionType
+              person {
+                id
+                fullName
+                title
+                avatarUrl
+              }
             }
           }
         }
