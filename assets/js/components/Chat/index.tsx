@@ -165,7 +165,7 @@ function CommentReactions({ reactions }) {
 
 function Comments({ children }) {
   return (
-    <div className="border-t border-dark-8% ml-[20px] mt-[20px] relative">
+    <div className="border-t border-dark-8% mx-[20px] mt-[20px] pb-[20px]  relative">
       <div className="relative z-20">{children}</div>
 
       <div className="absolute border-l border-dark-8% top-0 bottom-0 left-[14px]"></div>
@@ -175,15 +175,20 @@ function Comments({ children }) {
 
 function Comment({ author, time, children, reactions }) {
   return (
-    <div className="my-[20px]">
-      <div className="flex items-center gap-[11px]">
-        <Avatar person={author} size={AvatarSize.Small} />
+    <div className="my-[20px] mb-[0px]">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[11px]">
+          <Avatar person={author} size={AvatarSize.Small} />
 
-        <div className="flex items-center gap-[5px]">
-          <div className="font-bold">{author.fullName}</div>
-          <span className="text-dark-2">
-            posted a comment <FormattedTime time={time} format="relative" />
-          </span>
+          <div className="flex items-center gap-[5px]">
+            <div className="font-bold">{author.fullName}</div>
+            <span className="text-dark-2">
+              posted a comment <FormattedTime time={time} format="relative" />
+            </span>
+          </div>
+        </div>
+        <div>
+          <Icon name="menu dots" size="base" />
         </div>
       </div>
 
@@ -194,7 +199,77 @@ function Comment({ author, time, children, reactions }) {
   );
 }
 
-function Post({ update }): JSX.Element {
+function LeaveComment({ currentUser }) {
+  return (
+    <div className="bg-light-1 px-[20px] py-[16px] rounded-b-[10px] mb-[0px] border-t border-dark-8%">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[11px]">
+          <Avatar person={currentUser} size={AvatarSize.Small} />
+          <span className="text-dark-2">Leave a comment</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function splitCommentsBeforeAndAfterAck(update) {
+  const allComments = update.comments;
+  const ackTime = update.acknowledgedAt;
+
+  if (update.acknowledged) {
+    return {
+      beforeAck: allComments.filter((c) => c.insertedAt < ackTime),
+      afterAck: allComments.filter((c) => c.insertedAt >= ackTime),
+    };
+  } else {
+    return { beforeAck: update.comments, afterAck: [] };
+  }
+}
+
+function Ack({ author, time }) {
+  return (
+    <div className="my-[20px] bg-success-2 p-[20px] -mx-[20px]">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[11px]">
+          <Avatar person={author} size={AvatarSize.Small} />
+          <span className="text-success-1 font-bold">
+            {author.fullName} has acknowledged this update.
+          </span>
+        </div>
+        <div className="flex items-center gap-[6px]">
+          <span className="text-success-1">
+            <FormattedTime time={time} format="relative" />
+          </span>
+          <IconAck />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IconAck() {
+  return (
+    <svg
+      width="30"
+      height="31"
+      viewBox="0 0 30 31"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8.75 15.3184L15 21.5684L27.5 9.06836M2.5 15.3184L8.75 21.5684M15 15.3184L21.25 9.06836"
+        stroke="#548B53"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Post({ update, currentUser }): JSX.Element {
+  const comments = splitCommentsBeforeAndAfterAck(update);
+
   return (
     <Container>
       <Header
@@ -210,7 +285,20 @@ function Post({ update }): JSX.Element {
       <PostReactions reactions={update.reactions} />
 
       <Comments>
-        {update.comments.map((c, i) => (
+        {comments.beforeAck.map((c, i) => (
+          <Comment
+            key={i}
+            author={c.author}
+            time={c.insertedAt}
+            reactions={c.reactions}
+          >
+            <RichContent jsonContent={c.message} />
+          </Comment>
+        ))}
+
+        <Ack author={update.acknowledgingPerson} time={update.acknowledgedAt} />
+
+        {comments.afterAck.map((c, i) => (
           <Comment
             key={i}
             author={c.author}
@@ -221,6 +309,8 @@ function Post({ update }): JSX.Element {
           </Comment>
         ))}
       </Comments>
+
+      <LeaveComment currentUser={currentUser} />
     </Container>
   );
 }
