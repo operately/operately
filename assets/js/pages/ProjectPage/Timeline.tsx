@@ -116,7 +116,7 @@ function Milestones({ milestones }) {
     GraphQlProjects.splitMilestonesByCompletion(milestones);
 
   return (
-    <div className="mt-16">
+    <div className="mt-[24px]">
       <div className="flex items-center gap-[10px]">
         <Icon name="milestone" color="brand" size="base" />
         <SectionHeader title="Milestones" />
@@ -139,6 +139,37 @@ function Milestones({ milestones }) {
   );
 }
 
+function FinishPhase() {
+  return (
+    <div className="mt-[25px] flex relative z-10">
+      <a
+        href="#"
+        className="text-brand-1 flex items-center text-sm gap-[5px] underline underline-offset-2 font-bold bg-brand-2"
+        style={{
+          paddingTop: "11px",
+          paddingBottom: "20px",
+          paddingLeft: "19px",
+          paddingRight: "19px",
+          marginBottom: "-10px",
+          borderRadius: "8px 8px 0px 0px",
+        }}
+      >
+        <Icon name="checkmark" color="brand" size="small" />
+        Finish Execution Phase
+      </a>
+    </div>
+  );
+}
+
+function TimelineWidget() {
+  return (
+    <div className="">
+      <FinishPhase />
+      <div className="h-[236px] border border-light-2 rounded-[6px] relative z-20 bg-white"></div>
+    </div>
+  );
+}
+
 export default function Timeline({ data }) {
   const milestones = GraphQlProjects.sortMilestonesByDeadline(
     data.project.milestones
@@ -146,7 +177,7 @@ export default function Timeline({ data }) {
 
   return (
     <>
-      <div className="mt-[326px]"></div>
+      <TimelineWidget />
       <Milestones milestones={milestones} />
     </>
   );
