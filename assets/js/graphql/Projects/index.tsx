@@ -67,7 +67,7 @@ interface Person {
   avatarUrl: string;
 }
 
-interface Milestone {
+export interface Milestone {
   id: string;
   title: string;
   deadlineAt: string;

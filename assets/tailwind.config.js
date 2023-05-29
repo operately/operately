@@ -43,6 +43,7 @@ module.exports = {
 
         danger: {
           base: "#D25034",
+          1: "#D25034",
         },
 
         new: {
