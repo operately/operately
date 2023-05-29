@@ -83,7 +83,7 @@ const routes = createBrowserRouter([
         element: <ProjectAddPage />,
       },
       {
-        path: "/projects/:id",
+        path: "/projects/:id/*",
         element: <ProjectPage />,
       },
       {

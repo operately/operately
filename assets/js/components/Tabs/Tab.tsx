@@ -1,11 +1,12 @@
 import React from "react";
 import Icon from "../Icon";
 
-interface TabProps {
+export interface TabProps {
   title: string;
-  id: string;
+  path: string;
   active: boolean;
   icon: string;
+  element: React.ReactElement;
   onClick: (id: string) => void;
 }
 
@@ -22,7 +23,7 @@ export default function Tab(props: TabProps) {
   ].join(" ");
 
   return (
-    <div className={className} onClick={() => props.onClick(props.id)}>
+    <div className={className} onClick={() => props.onClick(props.path)}>
       <Icon
         size="small"
         name={props.icon}

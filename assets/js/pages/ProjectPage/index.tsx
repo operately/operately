@@ -1,15 +1,12 @@
 import React from "react";
 import { useProject } from "../../graphql/Projects";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Avatar, { AvatarSize } from "../../components/Avatar";
 import Icon from "../../components/Icon";
 
 import { Cross1Icon, ShuffleIcon } from "@radix-ui/react-icons";
 
-import { LightningBoltIcon } from "@radix-ui/react-icons";
 import AbsoluteTime from "../../components/AbsoluteTime";
-import RelativeTime from "../../components/RelativeTime";
-import { useMe } from "../../graphql/Me";
 
 import * as PaperContainer from "../../components/PaperContainer";
 import * as PhasePills from "../../components/PhasePills";
@@ -99,8 +96,11 @@ function Contributors({ data }) {
           </div>
         </div>
 
-        {data.project.contributors.map((c) => (
-          <div className="border-t border-b border-gray-700 flex items-center justify-between py-4">
+        {data.project.contributors.map((c, i) => (
+          <div
+            key={i}
+            className="border-t border-b border-gray-700 flex items-center justify-between py-4"
+          >
             <div className="flex gap-2 items-center">
               <Avatar person={c.person} />
 
@@ -220,14 +220,17 @@ function ContributorList({ owner, contributors }): JSX.Element {
 
       <div className="flex items-center">
         {contributors.map((c, index: number) => (
-          <div className="border-2 border-white rounded-full -ml-[6px]">
+          <div
+            key={index}
+            className="border-2 border-white rounded-full -ml-[6px]"
+          >
             <div
               className="rounded-full"
               style={{
                 background: "#fafafa",
               }}
             >
-              <Avatar key={index} person={c.person} size={AvatarSize.Small} />
+              <Avatar person={c.person} size={AvatarSize.Small} />
             </div>
           </div>
         ))}
@@ -236,31 +239,13 @@ function ContributorList({ owner, contributors }): JSX.Element {
   );
 }
 
-function ActiveTabContent({ data, activeTab }): JSX.Element {
-  switch (activeTab) {
-    case "overview":
-      return <Overview data={data} />;
-
-    case "timeline":
-      return <Timeline data={data} />;
-
-    case "activity":
-      return <Activity data={data} />;
-
-    case "contributors":
-      return <Contributors data={data} />;
-
-    default:
-      throw "Unknown tab " + activeTab;
-  }
-}
-
 export function ProjectPage() {
-  const { id } = useParams();
+  const params = useParams();
+
+  const id = params["id"];
+  const tab = params["*"] || "";
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
-
-  const [activeTab, setActiveTab] = React.useState("activity");
 
   const { loading, error, data } = useProject(id);
 
@@ -270,7 +255,7 @@ export function ProjectPage() {
 
   let project = data.project;
   let parents = project.parents;
-  let parentName = parents[parents.length - 1].title;
+  let parentName = parents[parents.length - 1]!.title;
 
   return (
     <PaperContainer.Root>
@@ -280,23 +265,40 @@ export function ProjectPage() {
 
       <PaperContainer.Body>
         <ProjectPhases />
+
         <ProjectHeader name={project.name} />
+
         <ContributorList
           owner={project.owner}
           contributors={project.contributors}
         />
 
-        <Tabs.Container
-          active={activeTab}
-          onTabChange={(id) => setActiveTab(id)}
-        >
-          <Tabs.Tab id="overview" title="Overview" icon="groups" />
-          <Tabs.Tab id="timeline" title="Timeline" icon="groups" />
-          <Tabs.Tab id="activity" title="Activity" icon="groups" />
-          <Tabs.Tab id="contributors" title="Contributors" icon="groups" />
+        <Tabs.Container basePath={`/projects/${id}`} active={tab}>
+          <Tabs.Tab
+            path="/"
+            title="Overview"
+            icon="groups"
+            element={<Overview data={data} />}
+          />
+          <Tabs.Tab
+            path="/timeline"
+            title="Timeline"
+            icon="groups"
+            element={<Timeline data={data} />}
+          />
+          <Tabs.Tab
+            path="/activity"
+            title="Activity"
+            icon="groups"
+            element={<Activity data={data} />}
+          />
+          <Tabs.Tab
+            path="/contributors"
+            title="Contributors"
+            icon="groups"
+            element={<Contributors data={data} />}
+          />
         </Tabs.Container>
-
-        <ActiveTabContent data={data} activeTab={activeTab} />
       </PaperContainer.Body>
     </PaperContainer.Root>
   );
