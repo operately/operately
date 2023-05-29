@@ -3,7 +3,7 @@ import React from "react";
 import Icon from "@/components/Icon";
 import FormattedTime from "@/components/FormattedTime";
 
-import * as Types from "@/graphql/Projects";
+import * as GraphQlProjects from "@/graphql/Projects";
 
 function MilestoneStatus({ status, deadlineAt }) {
   if (status === "done") {
@@ -97,8 +97,23 @@ SectionHeader.defaultProps = {
   className: "",
 };
 
+function AddMilestone() {
+  return (
+    <div className="mt-[18px]">
+      <a
+        href="#"
+        className="text-brand-1 flex items-center text-sm gap-[5px] underline underline-offset-2 font-bold"
+      >
+        <Icon name="plus" color="brand" size="small" />
+        Add milestone
+      </a>
+    </div>
+  );
+}
+
 function Milestones({ milestones }) {
-  const { completed, pending } = splitMilestonesByCompletion(milestones);
+  const { completed, pending } =
+    GraphQlProjects.splitMilestonesByCompletion(milestones);
 
   return (
     <div className="mt-16">
@@ -118,12 +133,16 @@ function Milestones({ milestones }) {
       {completed.map((milestone) => (
         <Milestone key={milestone.id} milestone={milestone} />
       ))}
+
+      <AddMilestone />
     </div>
   );
 }
 
 export default function Timeline({ data }) {
-  const milestones = sortMilestonesByDeadline(data.project.milestones);
+  const milestones = GraphQlProjects.sortMilestonesByDeadline(
+    data.project.milestones
+  );
 
   return (
     <>
@@ -131,30 +150,4 @@ export default function Timeline({ data }) {
       <Milestones milestones={milestones} />
     </>
   );
-}
-
-function sortMilestonesByDeadline(milestones: Types.Milestone[]) {
-  let result: Types.Milestone[] = [];
-
-  return result.concat(milestones).sort((m1, m2) => {
-    let d1 = +new Date(m1.deadlineAt);
-    let d2 = +new Date(m2.deadlineAt);
-
-    return d1 - d2;
-  });
-}
-
-function splitMilestonesByCompletion(milestones: Types.Milestone[]) {
-  let completed: Types.Milestone[] = [];
-  let pending: Types.Milestone[] = [];
-
-  milestones.forEach((milestone) => {
-    if (milestone.status === "done") {
-      completed.push(milestone);
-    } else {
-      pending.push(milestone);
-    }
-  });
-
-  return { completed, pending };
 }
