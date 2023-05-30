@@ -4,14 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useQuery, gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
 
-import PageTitle from "../../components/PageTitle";
-
-import KeyResults from "./KeyResults";
-import Projects from "./Projects";
-import PostAnUpdate from "./PostAnUpdate";
-import Feed from "./Feed";
-import Champion from "./Champion";
-import { Link } from "react-router-dom";
+import * as PaperContainer from "../../components/PaperContainer";
+import Icon from "@/components/Icon";
+import Avatar, { AvatarSize } from "@/components/Avatar";
 
 const GET_OBJECTIVE = gql`
   query GetObjective($id: ID!) {
@@ -40,6 +35,83 @@ export async function ObjectivePageLoader(apolloClient: any, { params }) {
   return {};
 }
 
+function Badge({ title, className }): JSX.Element {
+  return (
+    <div
+      className="inline-block"
+      style={{
+        verticalAlign: "middle",
+      }}
+    >
+      <div
+        className={className + " font-bold uppercase flex items-center"}
+        style={{
+          padding: "4px 10px 2px",
+          borderRadius: "25px",
+          fontSize: "12.5px",
+          lineHeight: "20px",
+          height: "24px",
+          letterSpacing: "0.03em",
+          display: "flex",
+          gap: "10",
+          marginTop: "2px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
+
+function Champion({ person }): JSX.Element {
+  return (
+    <div
+      className="relative inline-block"
+      style={{ marginRight: "10px", verticalAlign: "middle" }}
+    >
+      <Avatar person={person} size={AvatarSize.Small} />
+
+      <div className="absolute top-[-6px] left-[21px]">
+        <ChampionCrown />
+      </div>
+    </div>
+  );
+}
+
+function ObjectiveHeader({ name, owner }): JSX.Element {
+  return (
+    <div className="flex items-center justify-between mt-[23px] ">
+      <div className="flex gap-3.5 items-center">
+        <Icon name="objectives" color="dark-2" size="large" />
+
+        <h1 className="font-bold text-[31.1px]" style={{ lineHeight: "40px" }}>
+          {name} <Champion person={owner} />{" "}
+          <Badge title="On Track" className="bg-success-2 text-success-1" />
+        </h1>
+      </div>
+    </div>
+  );
+}
+
+function ChampionCrown() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="14" height="14" rx="3" fill="#3185FF" />
+      <path
+        d="M7 3.5L9.33333 7L12.25 4.66667L11.0833 10.5H2.91667L1.75 4.66667L4.66667 7L7 3.5Z"
+        fill="#FFE600"
+      />
+    </svg>
+  );
+}
+
 export function ObjectivePage() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -60,51 +132,21 @@ export function ObjectivePage() {
     );
 
   return (
-    <div className="max-w-6xl mx-auto mb-4">
-      <div className="m-11 mt-24">
-        <div className="flex items-center mb-4 gap-2">
-          <Link to="/company" className="font-bold underline">
-            Acme Inc.
-          </Link>
+    <PaperContainer.Root>
+      <PaperContainer.Navigation>
+        <PaperContainer.NavigationItem
+          icon="objectives"
+          title={"Increase sales"}
+          to={`/objectives/${id}`}
+        />
+      </PaperContainer.Navigation>
 
-          <div className="font-bold">/</div>
-
-          <Link to="/objectives" className="font-bold underline">
-            Exceptional customer service
-          </Link>
-        </div>
-
-        <div className="flex items-start justify-between my-4">
-          <div>
-            <h1 className="font-bold text-3xl my-4">{data.objective.name}</h1>
-
-            <div className="text-new-dark-3 text-xl max-w-xl">
-              Recent surveys show that the general public is not aware of the
-              services we offer, especially outside of Europe.
-            </div>
-          </div>
-
-          <div className="text-right">
-            {data.objective.owner && <Champion person={data.objective.owner} />}
-          </div>
-        </div>
-
-        <KeyResults objectiveID={id} />
-        <Projects objectiveID={id} />
-      </div>
-
-      <div className="max-w-5xl mx-auto mb-4">
-        <div className="m-11 p-11 mt-20 bg-new-dark-2">
-          <div className="flex items-center justify-around relative -mt-14 mb-12">
-            <h1 className="uppercase font-bold bg-slate-700 px-3 py-1 rounded z-50">
-              Status updates and activity
-            </h1>
-          </div>
-
-          <PostAnUpdate objectiveID={id} />
-          <Feed objectiveID={id} />
-        </div>
-      </div>
-    </div>
+      <PaperContainer.Body>
+        <ObjectiveHeader
+          name={data.objective.name}
+          owner={data.objective.owner}
+        />
+      </PaperContainer.Body>
+    </PaperContainer.Root>
   );
 }

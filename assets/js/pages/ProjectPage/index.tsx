@@ -79,7 +79,6 @@ function ChampionCrown() {
     </svg>
   );
 }
-
 function ContributorList({ owner, contributors }): JSX.Element {
   return (
     <div
