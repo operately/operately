@@ -2,6 +2,7 @@ import React from "react";
 
 import Icon from "@/components/Icon";
 import FormattedTime from "@/components/FormattedTime";
+import * as TL from "@/components/Timeline";
 
 import * as Milestones from "@/graphql/Projects/milestones";
 
@@ -158,11 +159,213 @@ function FinishPhase() {
   );
 }
 
-function TimelineWidget() {
+function TodayMarker({ leftPos }) {
+  return (
+    <div
+      className="absolute overflow-hidden inset-0 -top-[36px] w-[100px] flex flex-col items-center h-[116px]"
+      style={{
+        marginLeft: "-50px",
+        left: leftPos,
+      }}
+    >
+      <span className="text-[9px] text-brand-1 leading-[20px] tracking-[2%] mt-2">
+        Today
+      </span>
+      <div className="border-l border-brand-1 flex-1 mt-0.5"></div>
+    </div>
+  );
+}
+
+function SmallMarker({ leftPos }) {
+  return (
+    <div
+      style={{
+        left: leftPos,
+        borderLeft: "1px solid var(--color-dark-8p)",
+        position: "absolute",
+        top: "35px",
+        bottom: "3px",
+      }}
+    />
+  );
+}
+
+function BigMarker({ leftPos, title }) {
+  return (
+    <div
+      style={{
+        left: leftPos,
+        borderLeft: "1px solid var(--color-dark-8p)",
+        position: "absolute",
+        top: "0px",
+        bottom: "0px",
+      }}
+    >
+      <span
+        className="text-[9px] text-dark-2 leading-[20px]"
+        style={{
+          whiteSpace: "nowrap",
+          position: "absolute",
+          left: leftPos,
+          marginLeft: "5px",
+        }}
+      >
+        {title}
+      </span>
+    </div>
+  );
+}
+
+function MilestoneMarker({ leftPos, milestone }) {
+  let color = "";
+
+  if (milestone.status === "done") {
+    color = "var(--color-brand-1)";
+  } else {
+    if (Milestones.isOverdue(milestone)) {
+      color = "var(--color-danger-1)";
+    } else {
+      color = "var(--color-dark-2)";
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        background: color,
+        left: leftPos,
+        borderRadius: "100%",
+        width: "14px",
+        height: "14px",
+        top: "49px",
+        marginLeft: "-6px",
+      }}
+    ></div>
+  );
+}
+
+function Ticks({ leftPos, days, resolution }) {
+  switch (resolution) {
+    case "day-and-weeks":
+      return (
+        <>
+          {days.map((day) =>
+            day.getDay() === 0 ? (
+              <BigMarker
+                leftPos={leftPos(day)}
+                title={
+                  <FormattedTime time={day.toString()} format="short-date" />
+                }
+              />
+            ) : (
+              <SmallMarker leftPos={leftPos(day)} />
+            )
+          )}
+        </>
+      );
+    case "day-and-months":
+      return (
+        <>
+          {days.map((day) =>
+            day.getDate() === 1 ? (
+              <BigMarker
+                leftPos={leftPos(day)}
+                title={day.toLocaleString("default", { month: "short" })}
+              />
+            ) : (
+              <SmallMarker leftPos={leftPos(day)} />
+            )
+          )}
+        </>
+      );
+    case "weeks-and-months":
+      return (
+        <>
+          {days.map((day) =>
+            day.getDate() === 1 ? (
+              <BigMarker
+                leftPos={leftPos(day)}
+                title={day.toLocaleString("default", { month: "short" })}
+              />
+            ) : day.getDay() === 0 ? (
+              <SmallMarker leftPos={leftPos(day)} />
+            ) : null
+          )}
+        </>
+      );
+
+    default:
+      throw new Error("Invalid resolution " + resolution);
+  }
+}
+
+function DayMarkers({ startDate, endDate, milestones }) {
+  const dayInMs = 86400000;
+
+  let today = +Date.now();
+  let start = Date.parse(startDate);
+  let end = Date.parse(endDate);
+
+  if (Date.now() > end) {
+    end = Date.now() + 7 * dayInMs;
+  }
+
+  let days: Date[] = [];
+  for (let i = start; i <= end; i += dayInMs) {
+    days.push(new Date(i));
+  }
+
+  let dayWidth = 100.0 / days.length;
+
+  let leftPos = (date: Date | number) => {
+    let start = +Date.parse(startDate);
+
+    return dayWidth * ((+date - start) / dayInMs) + "%";
+  };
+
+  let resolution = "day-and-weeks";
+  if (end - start > 90 * dayInMs) {
+    resolution = "day-and-months";
+  }
+  if (end - start > 180 * dayInMs) {
+    resolution = "weeks-and-months";
+  }
+
+  return (
+    <div
+      className="relative border-t border-b border-dark-8p mt-[36px]"
+      style={{ height: "80px" }}
+    >
+      <div className="absolute overflow-hidden inset-0">
+        <Ticks leftPos={leftPos} days={days} resolution={resolution} />
+      </div>
+
+      <div className="absolute inset-0 overflow-hidden">
+        {milestones.map((milestone) => (
+          <MilestoneMarker
+            leftPos={leftPos(Date.parse(milestone.deadlineAt))}
+            milestone={milestone}
+          />
+        ))}
+      </div>
+
+      <TodayMarker leftPos={leftPos(today)} />
+    </div>
+  );
+}
+
+function TimelineWidget({ milestones }) {
   return (
     <div className="">
       <FinishPhase />
-      <div className="h-[236px] border border-light-2 rounded-[6px] relative z-20 bg-white"></div>
+      <div className="h-[236px] border border-light-2 rounded-[6px] relative z-20 bg-white">
+        <DayMarkers
+          startDate="2023-02-01"
+          endDate="2023-04-30"
+          milestones={milestones}
+        />
+      </div>
     </div>
   );
 }
@@ -172,7 +375,7 @@ export default function Timeline({ data }) {
 
   return (
     <>
-      <TimelineWidget />
+      <TimelineWidget milestones={milestones} />
       <MilestoneList milestones={milestones} />
     </>
   );

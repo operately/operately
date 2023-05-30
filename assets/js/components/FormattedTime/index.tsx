@@ -68,7 +68,7 @@ function ShortDate({ time }: { time: Date }): JSX.Element {
     val: time,
     formatParams: {
       val: {
-        month: "long",
+        month: "short",
         day: "numeric",
       },
     },
