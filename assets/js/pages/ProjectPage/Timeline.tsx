@@ -2,7 +2,6 @@ import React from "react";
 
 import Icon from "@/components/Icon";
 import FormattedTime from "@/components/FormattedTime";
-import * as TL from "@/components/Timeline";
 
 import * as Milestones from "@/graphql/Projects/milestones";
 
@@ -300,7 +299,24 @@ function Ticks({ leftPos, days, resolution }) {
   }
 }
 
-function DayMarkers({ startDate, endDate, milestones }) {
+function PhaseMarker({ title, subtitle, leftPos }) {
+  return (
+    <div
+      className="text-sm"
+      style={{
+        position: "absolute",
+        left: leftPos,
+        whiteSpace: "nowrap",
+        background: "white",
+      }}
+    >
+      <div className="font-bold">{title}</div>
+      <div>{subtitle}</div>
+    </div>
+  );
+}
+
+function DayMarkers({ startDate, endDate, milestones, project }) {
   const dayInMs = 86400000;
 
   let today = +Date.now();
@@ -351,19 +367,48 @@ function DayMarkers({ startDate, endDate, milestones }) {
       </div>
 
       <TodayMarker leftPos={leftPos(today)} />
+
+      <div className="absolute top-[88px] h-[40px] left-0 right-0">
+        <PhaseMarker
+          title="Start"
+          subtitle="Kicked off by Mihailo"
+          leftPos={leftPos(project.staredAt)}
+        />
+        <PhaseMarker
+          title="Concept"
+          subtitle="Completed"
+          leftPos={leftPos(Date.parse("2023-02-15"))}
+        />
+        <PhaseMarker
+          title="Execution"
+          subtitle="Delayed by 9 days"
+          leftPos={leftPos(Date.parse("2023-02-22"))}
+        />
+        <PhaseMarker
+          title="Control"
+          subtitle=""
+          leftPos={leftPos(Date.parse("2023-05-15"))}
+        />
+        <PhaseMarker
+          title="Done"
+          subtitle=""
+          leftPos={leftPos(Date.parse("2023-06-01"))}
+        />
+      </div>
     </div>
   );
 }
 
-function TimelineWidget({ milestones }) {
+function TimelineWidget({ project, milestones }) {
   return (
     <div className="">
       <FinishPhase />
-      <div className="h-[236px] border border-light-2 rounded-[6px] relative z-20 bg-white">
+      <div className="h-[236px] border border-light-2 rounded-[6px] relative z-20 bg-white pt-[52px]">
         <DayMarkers
           startDate="2023-02-01"
           endDate="2023-04-30"
           milestones={milestones}
+          project={project}
         />
       </div>
     </div>
@@ -375,7 +420,7 @@ export default function Timeline({ data }) {
 
   return (
     <>
-      <TimelineWidget milestones={milestones} />
+      <TimelineWidget milestones={milestones} project={data.project} />
       <MilestoneList milestones={milestones} />
     </>
   );
