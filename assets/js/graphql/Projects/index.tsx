@@ -1,6 +1,8 @@
 import React from "react";
 import { gql, useQuery, ApolloClient, QueryResult } from "@apollo/client";
 
+import { Milestone } from "./milestones";
+
 const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
     projects(groupId: $groupId, objectiveId: $objectiveId) {
@@ -65,13 +67,6 @@ interface Person {
   fullName: string;
   title: string;
   avatarUrl: string;
-}
-
-export interface Milestone {
-  id: string;
-  title: string;
-  deadlineAt: string;
-  status: string;
 }
 
 interface Parent {
@@ -221,30 +216,4 @@ type UseProjectResult = QueryResult<{ project: Project }, { id: string }>;
 
 export function useProject(id: string): UseProjectResult {
   return useQuery(GET_PROJECT, { variables: { id } });
-}
-
-export function sortMilestonesByDeadline(milestones: Milestone[]) {
-  let result: Milestone[] = [];
-
-  return result.concat(milestones).sort((m1, m2) => {
-    let d1 = +new Date(m1.deadlineAt);
-    let d2 = +new Date(m2.deadlineAt);
-
-    return d1 - d2;
-  });
-}
-
-export function splitMilestonesByCompletion(milestones: Milestone[]) {
-  let completed: Milestone[] = [];
-  let pending: Milestone[] = [];
-
-  milestones.forEach((milestone) => {
-    if (milestone.status === "done") {
-      completed.push(milestone);
-    } else {
-      pending.push(milestone);
-    }
-  });
-
-  return { completed, pending };
 }

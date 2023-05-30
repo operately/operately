@@ -3,79 +3,77 @@ import React from "react";
 import Icon from "@/components/Icon";
 import FormattedTime from "@/components/FormattedTime";
 
-import * as GraphQlProjects from "@/graphql/Projects";
+import * as Milestones from "@/graphql/Projects/milestones";
 
-function MilestoneStatus({ status, deadlineAt }) {
-  if (status === "done") {
+function MilestoneStatus({ milestone }) {
+  if (milestone.status === "done") {
     return <span className="text-brand-1 text-sm">Completed</span>;
-  } else {
-    if (+new Date(deadlineAt) < +new Date()) {
-      return <span className="text-danger-1 text-sm">Overdue</span>;
-    } else {
-      return <></>;
-    }
   }
+
+  if (Milestones.isOverdue(milestone)) {
+    return <span className="text-danger-1 text-sm">Overdue</span>;
+  }
+
+  return <></>;
 }
 
-function MilestoneIcon({ status, deadlineAt }) {
-  if (status === "done") {
+function RedMilestoneIcon() {
+  return (
+    <svg
+      width="24"
+      height="25"
+      viewBox="0 0 24 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 21.3184H10"
+        stroke="#D25034"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8 21.3184V3.31836"
+        stroke="#D25034"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8 4.31836L17 8.31836L8 12.3184"
+        stroke="#D25034"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
+function MilestoneIcon({ milestone }) {
+  if (milestone.status === "done") {
     return <Icon name="milestone" color="brand" size="base" />;
-  } else {
-    if (+new Date(deadlineAt) < +new Date()) {
-      return (
-        <svg
-          width="24"
-          height="25"
-          viewBox="0 0 24 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M6 21.3184H10"
-            stroke="#D25034"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M8 21.3184V3.31836"
-            stroke="#D25034"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M8 4.31836L17 8.31836L8 12.3184"
-            stroke="#D25034"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      );
-    } else {
-      return <Icon name="milestone" color="dark" size="base" />;
-    }
   }
+
+  if (Milestones.isOverdue(milestone)) {
+    return <RedMilestoneIcon />;
+  }
+
+  return <Icon name="milestone" color="dark" size="base" />;
 }
 
 function Milestone({ milestone }) {
   return (
     <div className="flex items-center justify-between m-[10px] group">
       <div className="flex items-center gap-[10px]">
-        <MilestoneIcon
-          status={milestone.status}
-          deadlineAt={milestone.deadlineAt}
-        />
+        <MilestoneIcon milestone={milestone} />
 
         <span className="text-dark-1">{milestone.title}</span>
         <span className="text-dark-2 text-sm">
           <FormattedTime time={milestone.deadlineAt} format="short-date" />
         </span>
-        <MilestoneStatus
-          status={milestone.status}
-          deadlineAt={milestone.deadlineAt}
-        />
+        <MilestoneStatus milestone={milestone} />
       </div>
 
       <div className="opacity-0 group-hover:opacity-100">
@@ -111,9 +109,8 @@ function AddMilestone() {
   );
 }
 
-function Milestones({ milestones }) {
-  const { completed, pending } =
-    GraphQlProjects.splitMilestonesByCompletion(milestones);
+function MilestoneList({ milestones }) {
+  const { completed, pending } = Milestones.splitByCompletion(milestones);
 
   return (
     <div className="mt-[24px]">
@@ -171,14 +168,12 @@ function TimelineWidget() {
 }
 
 export default function Timeline({ data }) {
-  const milestones = GraphQlProjects.sortMilestonesByDeadline(
-    data.project.milestones
-  );
+  const milestones = Milestones.sortByDeadline(data.project.milestones);
 
   return (
     <>
       <TimelineWidget />
-      <Milestones milestones={milestones} />
+      <MilestoneList milestones={milestones} />
     </>
   );
 }
