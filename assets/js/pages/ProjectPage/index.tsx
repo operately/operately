@@ -134,12 +134,16 @@ export function ProjectPage() {
 
   let project = data.project;
   let parents = project.parents;
-  let parentName = parents[parents.length - 1]!.title;
+  let parent = parents[parents.length - 1]!;
 
   return (
     <PaperContainer.Root>
       <PaperContainer.Navigation>
-        <PaperContainer.NavigationItem icon="objectives" title={parentName} />
+        <PaperContainer.NavigationItem
+          icon="objectives"
+          title={parent.title}
+          to={`/objectives/${parent.id}`}
+        />
       </PaperContainer.Navigation>
 
       <PaperContainer.Body>
