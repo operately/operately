@@ -1,117 +1,112 @@
 import React from "react";
 
-import { useTranslation } from "react-i18next";
-import { useQuery, gql } from "@apollo/client";
+import { KeyResult } from "@/graphql/Objectives";
 
-import Table from "./Table";
-import StatusBadge from "./StatusBadge";
-import Avatar from "../../components/Avatar";
-import RelativeTime from "../../components/RelativeTime";
-
-const GET_KEY_RESULTS = gql`
-  query GetKeyResults($objectiveID: ID!) {
-    keyResults(objectiveID: $objectiveID) {
-      id
-      name
-      status
-      updatedAt
-      stepsCompleted
-      stepsTotal
-
-      owner {
-        id
-        fullName
-        title
-        avatarUrl
-      }
-    }
-  }
-`;
-
-interface KeyResult {
-  id: string;
-  name: string;
-  status: string;
-  updatedAt: string;
-  stepsCompleted: number;
-  stepsTotal: number;
-  owner: any;
+interface KeyResultItemProps {
+  keyResult: KeyResult;
 }
 
-export default function KeyResults({ objectiveID }: { objectiveID: string }) {
-  const { t } = useTranslation();
-  const { loading, error, data } = useQuery(GET_KEY_RESULTS, {
-    variables: { objectiveID: objectiveID },
-  });
+function Badge({ title, className }): JSX.Element {
+  return (
+    <div
+      className="inline-block"
+      style={{
+        verticalAlign: "middle",
+      }}
+    >
+      <div
+        className={className + " font-bold uppercase flex items-center"}
+        style={{
+          padding: "4px 10px 2px",
+          borderRadius: "25px",
+          fontSize: "12.5px",
+          lineHeight: "20px",
+          height: "24px",
+          letterSpacing: "0.03em",
+          display: "flex",
+          gap: "10",
+          marginTop: "2px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
 
-  if (loading) return <p>{t("loading.loading")}</p>;
-  if (error)
-    return (
-      <p>
-        {t("error.error")}: {error.message}
-      </p>
-    );
+const stepColors = {
+  on_track: "text-success-1",
+  lagging: "text-warning-1",
+  poor: "text-danger-1",
+  pending: "text-dark-1",
+};
 
-  const headers = [
-    { id: "keyResult", label: t("keyResults.keyResult") },
-    { id: "status", label: t("keyResults.status") },
-    { id: "completion", label: t("keyResults.completion") },
-    { id: "lastUpdated", label: t("keyResults.lastUpdated") },
-    { id: "champion", label: t("keyResults.lastUpdated") },
-  ];
+const badgeBgColor = {
+  on_track: "bg-success-2",
+  lagging: "bg-warning-2",
+  poor: "bg-danger-2",
+  pending: "bg-light-2",
+};
 
-  const columnClasses = {
-    keyResult: "flex-1",
-    status: "w-32",
-    completion: "w-48",
-    champion: "w-48 flex flex-row-reverse",
-  };
+const badgeTextColor = {
+  on_track: "text-success-1",
+  lagging: "text-warning-1",
+  poor: "text-danger-1",
+  pending: "text-dark-2",
+};
 
-  const rows = data.keyResults.map((keyResult: KeyResult) => {
-    return {
-      completion: (
-        <div className="text-right">
-          <div className="w-full h-2 bg-gray-700 rounded mb-1 overflow-hidden">
-            <div
-              className="h-2 bg-brand-base"
-              style={{
-                width: Math.floor(Math.random() * 100) + "%",
-              }}
-            >
-              {" "}
-            </div>
-          </div>
-          <div className="font-bold">
-            <span>9</span> of 12 steps completed
-          </div>
-        </div>
-      ),
-      keyResult: (
-        <div>
-          <div className="font-bold">{keyResult.name}</div>
-          <div className="text-sm">
-            In Progress &middot; Last update{" "}
-            <RelativeTime date={keyResult.updatedAt} />
-          </div>
-        </div>
-      ),
-      champion: (
-        <div className="flex items-center gap-4">
-          {keyResult.owner && (
-            <div className="text-right">
-              <div className="font-bold">{keyResult.owner.fullName}</div>
-              <div className="text-xs">{keyResult.owner.title}</div>
-            </div>
-          )}
-          <Avatar person={keyResult.owner} size="small" />
-        </div>
-      ),
-    };
-  });
+function KeyResultItem({ keyResult }: KeyResultItemProps): JSX.Element {
+  const status = keyResult.status;
+  let stepColor = stepColors[status];
+  let badgeColor = badgeBgColor[status] + " " + badgeTextColor[status];
 
   return (
-    <div className="my-12">
-      <Table headers={headers} columnClasses={columnClasses} rows={rows} />
+    <div className="rounded bg-light-1 p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="font-bold text-[10px] text-dark-2 mr-[25px]">KR</div>
+          <div className="text-[18px] leading-[27px] font-medium text-dark-base">
+            {keyResult.name}
+          </div>
+        </div>
+
+        <div
+          className="border-l border-dark-8p shrink-0"
+          style={{ width: "152px", paddingLeft: "23px", marginLeft: "23px" }}
+        >
+          <div className="-mt-[6px] -ml-[4px]">
+            <Badge
+              title={keyResult.status.replace("_", " ")}
+              className={badgeColor}
+            />
+          </div>
+
+          <div className="font-medium mt-[6px]">
+            <span className={stepColor}>{keyResult.stepsCompleted}</span>/
+            {keyResult.stepsTotal} completed
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface KeyResultListProps {
+  keyResults: KeyResult[];
+}
+
+export default function KeyResultList({
+  keyResults,
+}: KeyResultListProps): JSX.Element {
+  return (
+    <div className="relative mt-[18px] border-b border-dark-8p pb-[18px]">
+      <div className="relative border-l border-dark-8p z-10"></div>
+      <div className="relative z-20 flex flex-col gap-[15px]">
+        {keyResults.map((keyResult) => (
+          <KeyResultItem key={keyResult.id} keyResult={keyResult} />
+        ))}
+      </div>
     </div>
   );
 }

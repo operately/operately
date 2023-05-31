@@ -1,6 +1,24 @@
 import React from "react";
 import { gql, useQuery, ApolloClient, useApolloClient } from "@apollo/client";
 
+interface Person {
+  id: string;
+  fullName: string;
+  avatarUrl: string;
+  title: string;
+}
+
+export interface KeyResult {
+  id: string;
+  name: string;
+  status: string;
+  stepsCompleted: number;
+  stepsTotal: number;
+  updatedAt: string;
+
+  owner: Person;
+}
+
 const LIST_OBJECTIVES = gql`
   query ListObjectives($groupId: ID) {
     objectives(groupId: $groupId) {
@@ -19,6 +37,44 @@ const LIST_OBJECTIVES = gql`
         fullName
         avatarUrl
         title
+      }
+
+      keyResults {
+        id
+        name
+        status
+        stepsCompleted
+        stepsTotal
+        updatedAt
+
+        group {
+          id
+          name
+          mission
+        }
+
+        owner {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+    }
+  }
+`;
+
+const GET_OBJECTIVE = gql`
+  query GetObjective($id: ID!) {
+    objective(id: $id) {
+      id
+      name
+      description
+
+      owner {
+        fullName
+        title
+        avatarUrl
       }
 
       keyResults {
@@ -89,6 +145,10 @@ export function useObjectives(variables: ListObjectivesVariables) {
   }, []);
 
   return query;
+}
+
+export function useObjective(id: string) {
+  return useQuery(GET_OBJECTIVE, { variables: { id } });
 }
 
 export function listObjectives(

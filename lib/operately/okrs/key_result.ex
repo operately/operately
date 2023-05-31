@@ -10,7 +10,7 @@ defmodule Operately.Okrs.KeyResult do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
 
     field :name, :string
-    field :status, Ecto.Enum, values: [:pending, :on_track, :at_risk, :off_track, :completed, :cancelled], default: :pending
+    field :status, Ecto.Enum, values: [:pending, :on_track, :poor, :lagging, :completed, :cancelled], default: :pending
 
     field :target, :integer
     field :unit, Ecto.Enum, values: [:percentage, :number]

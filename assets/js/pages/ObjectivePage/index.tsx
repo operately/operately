@@ -1,39 +1,13 @@
 import React from "react";
 
 import { useTranslation } from "react-i18next";
-import { useQuery, gql } from "@apollo/client";
+import { useObjective } from "@/graphql/Objectives";
 import { useParams } from "react-router-dom";
 
 import * as PaperContainer from "../../components/PaperContainer";
 import Icon from "@/components/Icon";
 import Avatar, { AvatarSize } from "@/components/Avatar";
-
-const GET_OBJECTIVE = gql`
-  query GetObjective($id: ID!) {
-    objective(id: $id) {
-      id
-      name
-      description
-
-      owner {
-        fullName
-        title
-        avatarUrl
-      }
-    }
-  }
-`;
-
-export async function ObjectivePageLoader(apolloClient: any, { params }) {
-  const { id } = params;
-
-  await apolloClient.query({
-    query: GET_OBJECTIVE,
-    variables: { id },
-  });
-
-  return {};
-}
+import KeyResults from "./KeyResults";
 
 function Badge({ title, className }): JSX.Element {
   return (
@@ -68,7 +42,11 @@ function Champion({ person }): JSX.Element {
   return (
     <div
       className="relative inline-block"
-      style={{ marginRight: "10px", verticalAlign: "middle" }}
+      style={{
+        marginLeft: "18px",
+        marginRight: "10px",
+        verticalAlign: "middle",
+      }}
     >
       <Avatar person={person} size={AvatarSize.Small} />
 
@@ -81,9 +59,11 @@ function Champion({ person }): JSX.Element {
 
 function ObjectiveHeader({ name, owner }): JSX.Element {
   return (
-    <div className="flex items-center justify-between mt-[23px] ">
+    <div className="flex items-center justify-between">
       <div className="flex gap-3.5 items-center">
-        <Icon name="objectives" color="dark-2" size="large" />
+        <div className="shrink-0">
+          <Icon name="objectives" size="large" />
+        </div>
 
         <h1 className="font-bold text-[31.1px]" style={{ lineHeight: "40px" }}>
           {name} <Champion person={owner} />{" "}
@@ -118,10 +98,7 @@ export function ObjectivePage() {
 
   if (!id) return <p>Unable to find objective</p>;
 
-  const { loading, error, data } = useQuery(GET_OBJECTIVE, {
-    variables: { id },
-    fetchPolicy: "cache-only",
-  });
+  const { loading, error, data } = useObjective(id);
 
   if (loading) return <p>{t("loading.loading")}</p>;
   if (error)
@@ -146,6 +123,8 @@ export function ObjectivePage() {
           name={data.objective.name}
           owner={data.objective.owner}
         />
+
+        <KeyResults keyResults={data.objective.keyResults} />
       </PaperContainer.Body>
     </PaperContainer.Root>
   );
