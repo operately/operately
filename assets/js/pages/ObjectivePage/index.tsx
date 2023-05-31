@@ -5,9 +5,10 @@ import { useObjective } from "@/graphql/Objectives";
 import { useParams } from "react-router-dom";
 
 import * as PaperContainer from "../../components/PaperContainer";
-import Icon from "@/components/Icon";
+import Icon, { IconSize } from "@/components/Icon";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import KeyResults from "./KeyResults";
+import RichContent from "@/components/RichContent";
 
 function Badge({ title, className }): JSX.Element {
   return (
@@ -92,6 +93,34 @@ function ChampionCrown() {
   );
 }
 
+function SectionTitle({ title, icon, iconSize = "small" }) {
+  return (
+    <div className="flex items-center gap-[9px] mt-[24px]">
+      <Icon name={icon} size={iconSize as IconSize} color="brand" />
+      <div
+        className="uppercase text-dark-base text-sm"
+        style={{
+          letterSpacing: "0.03em",
+        }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
+
+function Description({ description }): JSX.Element {
+  return (
+    <div className="border-b border-dark-8% pb-[22px]">
+      <SectionTitle title="Description" icon="description" />
+
+      <div className="mt-[10px] pr-[62px]">
+        <RichContent jsonContent={description} />
+      </div>
+    </div>
+  );
+}
+
 export function ObjectivePage() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -125,6 +154,8 @@ export function ObjectivePage() {
         />
 
         <KeyResults keyResults={data.objective.keyResults} />
+
+        <Description description={data.objective.description} />
       </PaperContainer.Body>
     </PaperContainer.Root>
   );

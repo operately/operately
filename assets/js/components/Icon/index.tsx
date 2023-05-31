@@ -1,6 +1,6 @@
 import React from "react";
 
-type IconSize = "tiny" | "small" | "base" | "medium" | "large";
+export type IconSize = "tiny" | "small" | "base" | "medium" | "large";
 
 interface IconsProps {
   name: string;

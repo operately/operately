@@ -4,7 +4,12 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
   object :objective do
     field :id, non_null(:id)
     field :name, non_null(:string)
-    field :description, :string
+
+    field :description, :string do
+      resolve fn objective, _, _ ->
+        {:ok, Jason.encode!(objective.description)}
+      end
+    end
 
     field :owner, :person do
       resolve fn objective, _, _ ->
