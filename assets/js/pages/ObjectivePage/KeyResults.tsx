@@ -62,7 +62,7 @@ function KeyResultItem({ keyResult }: KeyResultItemProps): JSX.Element {
   let badgeColor = badgeBgColor[status] + " " + badgeTextColor[status];
 
   return (
-    <div className="rounded bg-light-1 p-4">
+    <div className="rounded bg-light-1 px-4 py-[10px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div className="font-bold text-[10px] text-dark-2 mr-[25px]">KR</div>
@@ -75,7 +75,7 @@ function KeyResultItem({ keyResult }: KeyResultItemProps): JSX.Element {
           className="border-l border-dark-8p shrink-0"
           style={{ width: "152px", paddingLeft: "23px", marginLeft: "23px" }}
         >
-          <div className="-mt-[6px] -ml-[4px]">
+          <div className="-mt-[4px] -ml-[4px]">
             <Badge
               title={keyResult.status.replace("_", " ")}
               className={badgeColor}
@@ -100,9 +100,17 @@ export default function KeyResultList({
   keyResults,
 }: KeyResultListProps): JSX.Element {
   return (
-    <div className="relative mt-[18px] border-b border-dark-8p pb-[18px]">
-      <div className="relative border-l border-dark-8p z-10"></div>
-      <div className="relative z-20 flex flex-col gap-[15px]">
+    <div className="relative mt-[23px] border-b border-dark-8p pb-[23px]">
+      <div
+        className="border-l border-dark-8p z-10"
+        style={{
+          top: "-23px",
+          bottom: "23px",
+          position: "absolute",
+          left: "20px",
+        }}
+      ></div>
+      <div className="relative z-20 flex flex-col gap-[26px]">
         {keyResults.map((keyResult) => (
           <KeyResultItem key={keyResult.id} keyResult={keyResult} />
         ))}
