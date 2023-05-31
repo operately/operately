@@ -32,9 +32,7 @@ defmodule Operately.Projects.ListQuery do
   end
 
   defp apply_objective_filter(query, objective_id) do
-    from p in query,
-      join: a in Alignment, on: p.id == a.child and a.child_type == :project,
-      where: a.parent == ^objective_id and a.parent_type == :objective
+    from p in query, where: p.objective_id == ^objective_id
   end
 
 end

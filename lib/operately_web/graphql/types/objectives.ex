@@ -34,6 +34,24 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
         {:ok, group}
       end
     end
+
+    field :activities, list_of(:activity) do
+      resolve fn objective, _, _ ->
+        updates = Operately.Updates.list_updates(objective.id, :objective)
+
+        {:ok, updates}
+      end
+    end
+
+    field :projects, list_of(:project) do
+      resolve fn objective, _, _ ->
+        projects = Operately.Projects.list_projects(%{
+          objective_id: objective.id
+        })
+
+        {:ok, projects}
+      end
+    end
   end
 
   input_object :create_objective_input do

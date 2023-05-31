@@ -2,13 +2,15 @@ import React from "react";
 
 import { useTranslation } from "react-i18next";
 import { useObjective } from "@/graphql/Objectives";
-import { useParams } from "react-router-dom";
+import { useMe } from "@/graphql/Me";
+import { Link, useParams } from "react-router-dom";
 
 import * as PaperContainer from "../../components/PaperContainer";
 import Icon, { IconSize } from "@/components/Icon";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import KeyResults from "./KeyResults";
 import RichContent from "@/components/RichContent";
+import * as Chat from "@/components/Chat";
 
 function Badge({ title, className }): JSX.Element {
   return (
@@ -121,6 +123,49 @@ function Description({ description }): JSX.Element {
   );
 }
 
+function Feed({ updates }): JSX.Element {
+  const { data } = useMe();
+
+  return (
+    <div className="border-b border-dark-8% pb-[22px]">
+      <SectionTitle title="Activity" icon="description" />
+
+      <div className="mt-[10px]">
+        {updates.map((u, i: number) => (
+          <Chat.Post key={i} update={u} currentUser={data.me} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Project({ project }): JSX.Element {
+  return (
+    <div className="rounded-[10px] border border-dark-8p p-[20px]">
+      <Link
+        to={`/projects/${project.id}`}
+        className="font-bold text-[18px] leading-[27px] underline text-brand-1"
+      >
+        {project.name}
+      </Link>
+    </div>
+  );
+}
+
+function Projects({ projects }): JSX.Element {
+  return (
+    <div className="border-b border-dark-8% pb-[22px]">
+      <SectionTitle title="PROJECTS IN PROGRESS" icon="my projects" />
+
+      <div className="mt-[10px] flex flex-col gap-[10px]">
+        {projects.map((p) => (
+          <Project key={p.id} project={p} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ObjectivePage() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -137,6 +182,8 @@ export function ObjectivePage() {
       </p>
     );
 
+  const objective = data.objective;
+
   return (
     <PaperContainer.Root>
       <PaperContainer.Navigation>
@@ -148,14 +195,11 @@ export function ObjectivePage() {
       </PaperContainer.Navigation>
 
       <PaperContainer.Body>
-        <ObjectiveHeader
-          name={data.objective.name}
-          owner={data.objective.owner}
-        />
-
-        <KeyResults keyResults={data.objective.keyResults} />
-
-        <Description description={data.objective.description} />
+        <ObjectiveHeader name={objective.name} owner={objective.owner} />
+        <KeyResults keyResults={objective.keyResults} />
+        <Description description={objective.description} />
+        <Projects projects={objective.projects} />
+        <Feed updates={objective.activities} />
       </PaperContainer.Body>
     </PaperContainer.Root>
   );

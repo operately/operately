@@ -1,6 +1,8 @@
 import React from "react";
 import { gql, useQuery, ApolloClient, useApolloClient } from "@apollo/client";
 
+import * as fragments from "@/graphql/Fragments";
+
 interface Person {
   id: string;
   fullName: string;
@@ -26,40 +28,10 @@ const LIST_OBJECTIVES = gql`
       name
       description
 
-      group {
-        id
-        name
-        mission
-      }
+      group ${fragments.GROUP}
+      owner ${fragments.PERSON}
 
-      owner {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-
-      keyResults {
-        id
-        name
-        status
-        stepsCompleted
-        stepsTotal
-        updatedAt
-
-        group {
-          id
-          name
-          mission
-        }
-
-        owner {
-          id
-          fullName
-          avatarUrl
-          title
-        }
-      }
+      keyResults ${fragments.KEY_RESULT}
     }
   }
 `;
@@ -71,32 +43,14 @@ const GET_OBJECTIVE = gql`
       name
       description
 
-      owner {
-        fullName
-        title
-        avatarUrl
-      }
+      owner ${fragments.PERSON}
 
-      keyResults {
+      keyResults ${fragments.KEY_RESULT}
+      activities ${fragments.ACTIVITY}
+
+      projects {
         id
         name
-        status
-        stepsCompleted
-        stepsTotal
-        updatedAt
-
-        group {
-          id
-          name
-          mission
-        }
-
-        owner {
-          id
-          fullName
-          avatarUrl
-          title
-        }
       }
     }
   }
