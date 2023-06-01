@@ -67,7 +67,7 @@ function Logo() {
 
 function NavigationContainer({ children }) {
   return (
-    <div className="flex justify-between fixed top-0 left-0 right-0 backdrop-blur transition-all z-50 border-b border-dark-8% bg-white h-[64px] px-[40px] py-[12px]">
+    <div className="flex justify-between fixed top-0 left-0 right-0 backdrop-blur transition-all z-50">
       {children}
     </div>
   );
@@ -85,8 +85,8 @@ function NavigationItem({ to, title, icon }) {
 
   return (
     <NavLink to={to} className={classHandler}>
-      <Icon name={icon} size="base" color="dark-2" />
-      <span className="mt-[1px]">{title}</span>
+      <Icon name={icon} size="small" color="light" />
+      <span>{title}</span>
     </NavLink>
   );
 }
@@ -99,7 +99,7 @@ function Navigation() {
           <Logo />
         </div>
 
-        <div className="flex items-center gap-[36px]">
+        <div className="flex items-center gap-4">
           <NavigationItem to="/" title="Home" icon="home" />
           <NavigationItem to="/company" title="Company" icon="company" />
           <NavigationItem
@@ -114,10 +114,8 @@ function Navigation() {
       <div className="flex items-center gap-4">
         <div className="border border-[#E1E1E1] rounded-lg w-[300px] px-[20px] py-[8px] flex justify-between mr-[8px]">
           <div className="flex items-center gap-[10px] text-base">
-            <Icon name="search" size="base" color="dark-2" />
-            <span className="text-[#878787]">
-              Search or jump to&hellip; - ⌘K
-            </span>
+            <Icon name="search" size="small" color="dark-2" />
+            <span className="text-white">Search or jump to&hellip; - ⌘K</span>
           </div>
         </div>
 
@@ -134,8 +132,7 @@ export default function DefaultLayout() {
   return (
     <div>
       <Navigation />
-
-      <div className="text-black">
+      <div>
         <Outlet />
       </div>
     </div>

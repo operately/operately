@@ -1,7 +1,3 @@
-.ProseMirror > * + * {
-  margin-top: 2px;
-  line-height: 24px;
-}
 .ProseMirror ul {
   padding: 0 23px;
   list-style: unset;
@@ -21,8 +17,8 @@
 .ProseMirror h4,
 .ProseMirror h5,
 .ProseMirror h6 {
-  line-height: 1.1;
 }
+
 .ProseMirror code {
   background-color: rgba(97, 97, 97, 0.1);
   color: #616161;
@@ -63,17 +59,18 @@
 }
 
 .ProseMirror h3 {
-  font-size: 12.5px;
-  line-height: 20px;
-  color: var(--color-dark-2);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-brand-1);
 }
 
 .ProseMirror p {
-  margin-top: 2px;
 }
 
 .ProseMirror p + p {
-  margin-top: 22px;
+  margin-top: 1rem;
 }
 
 .ProseMirror [data-type="mention"] {

@@ -37,10 +37,8 @@ const KeyResourcesTitle = () => (
 
 function Description({ data }) {
   return (
-    <div className="border-b border-dark-8% pb-[22px]">
-      <DescriptionTitle />
-
-      <div className="mt-[10px] pr-[62px]">
+    <div>
+      <div className="text-lg">
         <RichContent jsonContent={data.project.description} />
       </div>
     </div>
@@ -199,11 +197,5 @@ function KeyResources({ data }) {
 }
 
 export default function Overview({ data }) {
-  return (
-    <div className="mt-[26px]">
-      <Description data={data} />
-      <Kpis data={data} />
-      <KeyResources data={data} />
-    </div>
-  );
+  return <Description data={data} />;
 }

@@ -73,7 +73,7 @@ function initials(fullName: string): string {
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass =
-    "flex items-center justify-center text-white rounded-full bg-brand-base";
+    "flex items-center justify-center text-white rounded-full bg-blue-400";
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
   const className = baseClass + " " + sizeClass + " " + textClass;

@@ -36,16 +36,17 @@ function Badge({ title, className }): JSX.Element {
 
 function ProjectHeader({ name }): JSX.Element {
   return (
-    <div className="flex items-center justify-between mt-[23px] ">
-      <div className="flex gap-3.5 items-center">
-        <Icon name="my projects" color="dark-2" size="large" />
-
-        <h1 className="font-bold text-[31.1px]" style={{ lineHeight: "40px" }}>
-          {name}
-        </h1>
+    <div className="">
+      <div className="mb-2 flex items-center gap-2">
+        RenderedText
+        <Icon name="chevron right" size="tiny" color="dark-2" />
+        Increase Revenue
+        <Icon name="chevron right" size="tiny" color="dark-2" />
+        Optimize operations in order to increase revenue
       </div>
-
-      <Badge title="On Track" className="bg-success-2 text-success-1" />
+      <div className="flex gap-3.5 items-center mt-4">
+        <h1 className="font-bold text-5xl">{name}</h1>
+      </div>
     </div>
   );
 }
@@ -81,37 +82,101 @@ function ChampionCrown() {
 }
 function ContributorList({ owner, contributors }): JSX.Element {
   return (
-    <div
-      className="flex items-center"
-      style={{
-        marginTop: "22px",
-        marginLeft: "54px",
-      }}
-    >
-      <div className="relative" style={{ marginRight: "10px" }}>
-        <Avatar person={owner} size={AvatarSize.Small} />
-
-        <div className="absolute top-[-6px] left-[21px]">
-          <ChampionCrown />
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+          People
+        </div>
+        <div>
+          <Icon name="plus" size="small" color="dark-2" />
         </div>
       </div>
 
-      <div className="flex items-center">
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-2 font-medium items-center">
+          <div className="shrink-0">
+            <Avatar person={owner} size={AvatarSize.Tiny} />{" "}
+          </div>
+          <div className="flex-1">
+            <div>
+              <span className="">{owner.fullName}</span> &middot;{" "}
+              <span className="text-sm text-blue-400">Champion</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 font-medium items-center">
+          <div className="shrink-0">
+            <Avatar person={contributors[2].person} size={AvatarSize.Tiny} />{" "}
+          </div>
+          <div className="flex-1">
+            <div>
+              <span className="">{contributors[2].person.fullName}</span>{" "}
+              &middot; <span className="text-sm text-red-400">Reviewer</span>
+            </div>
+          </div>
+        </div>
+
         {contributors.map((c, index: number) => (
-          <div
-            key={index}
-            className="border-2 border-white rounded-full -ml-[6px]"
-          >
-            <div
-              className="rounded-full"
-              style={{
-                background: "#fafafa",
-              }}
-            >
-              <Avatar person={c.person} size={AvatarSize.Small} />
+          <div className="flex gap-2 font-medium items-center">
+            <div className="shrink-0">
+              <Avatar person={c.person} size={AvatarSize.Tiny} />{" "}
+            </div>
+            <div className="flex-1">
+              <div>
+                <span className="">{c.person.fullName}</span> &middot;{" "}
+                <span className="text-sm text-gray-400">
+                  {c.responsibility}
+                </span>
+              </div>
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function Champion({ person }): JSX.Element {
+  return (
+    <div>
+      <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide mb-4">
+        Champion
+      </div>
+
+      <div className="flex items-center gap-2 font-medium">
+        <Avatar person={person} size={AvatarSize.Normal} />{" "}
+        <div>
+          <div className="font-bold">{person.fullName}</div>
+          <div className="text-sm">{person.title}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KeyResources(): JSX.Element {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+          Key Resources
+        </div>
+        <div>
+          <Icon name="plus" size="small" color="dark-2" />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div className="bg-shade-1 px-2 py-2 flex items-center gap-2 rounded">
+          <Icon name="git" size="small" color="light" />
+          GitHub Repository
+        </div>
+
+        <div className="bg-shade-1 px-2 py-2 flex items-center gap-2 rounded">
+          <Icon name="slack" size="small" color="light" />
+          Slack Channel
+        </div>
       </div>
     </div>
   );
@@ -146,41 +211,42 @@ export function ProjectPage() {
       </PaperContainer.Navigation>
 
       <PaperContainer.Body>
-        <ProjectPhases />
+        <div className="rounded-lg">
+          <div className="p-8 rounded-t border-b bg-dark-2 border-shade-1 -mx-64 px-64 -mb-12 pb-32 pt-32">
+            <div className="flex items-start justify-between">
+              <ProjectHeader name={project.name} />
+              <div className="border border-emerald-400 text-emerald-400 rounded px-4 py-1">
+                On Track
+              </div>
+            </div>
+          </div>
 
-        <ProjectHeader name={project.name} />
+          <div className="flex rounded-lg bg-dark-2 border-2 border-shade-1 min-h-[1000px] fadeIn">
+            <div className="w-2/3 shrink-0 px-8 py-4 pr-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+                  DESCRIPTION
+                </div>
+                <div>
+                  <Icon name="edit" size="small" color="dark-2" />
+                </div>
+              </div>
 
-        <ContributorList
-          owner={project.owner}
-          contributors={project.contributors}
-        />
+              <div className="-ml-8 px-8 bg-shade-1 py-8 -mr-4">
+                <Overview data={data} />
+              </div>
+            </div>
 
-        <Tabs.Container basePath={`/projects/${id}`} active={tab}>
-          <Tabs.Tab
-            path="/"
-            title="Overview"
-            icon="groups"
-            element={<Overview data={data} />}
-          />
-          <Tabs.Tab
-            path="/timeline"
-            title="Timeline"
-            icon="groups"
-            element={<Timeline data={data} />}
-          />
-          <Tabs.Tab
-            path="/activity"
-            title="Activity"
-            icon="groups"
-            element={<Activity data={data} />}
-          />
-          <Tabs.Tab
-            path="/contributors"
-            title="Contributors"
-            icon="groups"
-            element={<Contributors data={data} />}
-          />
-        </Tabs.Container>
+            <div className="w-1/3 shrink-0 flex flex-col gap-12 bg-dark-3 px-4 py-4 border-l-2 border-shade-1">
+              <ContributorList
+                owner={project.owner}
+                contributors={project.contributors}
+              />
+
+              <KeyResources />
+            </div>
+          </div>
+        </div>
       </PaperContainer.Body>
     </PaperContainer.Root>
   );

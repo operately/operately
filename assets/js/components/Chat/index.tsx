@@ -15,7 +15,7 @@ import Icon from "@/components/Icon";
 import RichContent from "@/components/RichContent";
 
 function Container({ children }) {
-  return <div className="border border-dark-8% rounded-[10px]">{children}</div>;
+  return <div className="bg-dark-2 pt-1">{children}</div>;
 }
 
 function AckBadge({ person }): JSX.Element {
@@ -54,12 +54,12 @@ function AckBadge({ person }): JSX.Element {
 
 function Header({ author, acknowledgingPerson, time }) {
   return (
-    <div className="flex items-center justify-between m-[20px] pb-[19px] border-b border-dark-8%">
+    <div className="flex items-center justify-between m-[20px] pb-[19px] border-b border-shade-1">
       <div className="flex items-center gap-[10px]">
         <Avatar person={author} size={AvatarSize.Small} />
         <div className="flex items-center gap-[4px]">
           <div className="font-bold">{author.fullName}</div>
-          <span className="text-dark-2">
+          <span className="">
             posted an update on{" "}
             <FormattedTime time={time} format="short-date" />
           </span>
@@ -77,11 +77,11 @@ function Header({ author, acknowledgingPerson, time }) {
 function Message({ children }) {
   return (
     <div className="px-[20px]">
-      <div className="text-sm tracking-[0.3px] text-dark-2 upercase mt-[20px]">
+      <div className="text-sm tracking-[0.3px] upercase mt-[20px]">
         PROGRESS
       </div>
 
-      <div className="text-dark-1 font-bold mt-[5px] mb-[6px]">
+      <div className="font-bold mt-[5px] mb-[6px]">
         What has the team accomplished since the last update?
       </div>
 
@@ -165,10 +165,10 @@ function CommentReactions({ reactions }) {
 
 function Comments({ children }) {
   return (
-    <div className="border-t border-dark-8% mx-[20px] mt-[20px] pb-[20px]  relative">
+    <div className="border-t border-shade-1 mx-[20px] mt-[20px] pb-[20px]  relative">
       <div className="relative z-20">{children}</div>
 
-      <div className="absolute border-l border-dark-8% top-0 bottom-0 left-[14px]"></div>
+      <div className="absolute border-l border-shade-1 top-0 bottom-0 left-[14px]"></div>
     </div>
   );
 }
@@ -182,7 +182,7 @@ function Comment({ author, time, children, reactions }) {
 
           <div className="flex items-center gap-[5px]">
             <div className="font-bold">{author.fullName}</div>
-            <span className="text-dark-2">
+            <span className="">
               posted a comment <FormattedTime time={time} format="relative" />
             </span>
           </div>
@@ -201,11 +201,11 @@ function Comment({ author, time, children, reactions }) {
 
 function LeaveComment({ currentUser }) {
   return (
-    <div className="bg-light-1 px-[20px] py-[16px] rounded-b-[10px] mb-[0px] border-t border-dark-8%">
+    <div className="px-[20px] py-[16px] rounded-b-[10px] mb-[0px] border-t border-shade-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-[11px]">
           <Avatar person={currentUser} size={AvatarSize.Small} />
-          <span className="text-dark-2">Leave a comment</span>
+          <span className="">Leave a comment</span>
         </div>
       </div>
     </div>

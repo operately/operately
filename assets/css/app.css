@@ -47,14 +47,11 @@
 
 body {
   font-family: "Inter", sans-serif;
-  font-size: 15px;
-
-  --color-new-dark-1: 22, 22, 22, 1;
-  --color-dark-2: #878787;
-
-  background: #fafafa;
-
+  font-size: 16px;
   min-height: 100vh;
+
+  background: var(--color-dark-1);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .card-shadow {

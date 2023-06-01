@@ -6,7 +6,10 @@ import * as Chat from "@/components/Chat";
 import Select from "react-select";
 
 function Event({ eventData }): JSX.Element {
-  const { data } = useMe();
+  const { data, loading, errror } = useMe();
+
+  if (loading) return <></>;
+  if (errror) throw errror.message;
 
   switch (eventData.__typename) {
     case "ActivityStatusUpdate":

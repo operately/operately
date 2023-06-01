@@ -8,18 +8,18 @@ interface NavigationProps {
 }
 
 export default function Navigation({ children }: NavigationProps): JSX.Element {
-  return (
-    <div className="flex items-center">
-      <div
-        className="bg-white rounded-lg"
-        style={{
-          padding: "8px 40px 24px 40px",
-          marginBottom: "-16px",
-          boxShadow: navigationShadow,
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
+  // return (
+  //   <div className="flex items-center">
+  //     <div
+  //       className="bg-white rounded-lg"
+  //       style={{
+  //         padding: "8px 40px 24px 40px",
+  //         marginBottom: "-16px",
+  //         boxShadow: navigationShadow,
+  //       }}
+  //     >
+  //       {children}
+  //     </div>
+  //   </div>
+  // );
 }
