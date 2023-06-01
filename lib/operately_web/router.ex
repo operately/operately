@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Router do
 
   pipeline :graphql do
     plug OperatelyWeb.GraphQL.Context
+    plug OperatelyWeb.GraphQL.QueryCounter
   end
 
   #
