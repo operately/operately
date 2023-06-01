@@ -61,6 +61,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :contributors, list_of(:project_contributor) do
       resolve fn project, _, _ ->
         contributors = Operately.Projects.list_project_contributors(project)
+        contributors = Operately.Repo.preload(contributors, :person)
 
         {:ok, contributors}
       end

@@ -8,6 +8,7 @@ import { Link, useParams } from "react-router-dom";
 import * as PaperContainer from "../../components/PaperContainer";
 import Icon, { IconSize } from "@/components/Icon";
 import Avatar, { AvatarSize } from "@/components/Avatar";
+import AvatarList from "@/components/AvatarList";
 import KeyResults from "./KeyResults";
 import RichContent from "@/components/RichContent";
 import LinkButton from "@/components/LinkButton";
@@ -148,6 +149,11 @@ function Project({ project }): JSX.Element {
         className="font-bold text-[18px] leading-[27px] underline text-brand-1"
       >
         {project.name}
+
+        <AvatarList
+          champion={project.owner}
+          people={project.contributors.map((c) => c.person)}
+        />
       </Link>
     </div>
   );

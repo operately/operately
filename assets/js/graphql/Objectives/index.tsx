@@ -48,10 +48,7 @@ const GET_OBJECTIVE = gql`
       keyResults ${fragments.KEY_RESULT}
       activities ${fragments.ACTIVITY}
 
-      projects {
-        id
-        name
-      }
+      projects ${fragments.PROJECT}
     }
   }
 `;
