@@ -10,6 +10,7 @@ import Icon, { IconSize } from "@/components/Icon";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import KeyResults from "./KeyResults";
 import RichContent from "@/components/RichContent";
+import LinkButton from "@/components/LinkButton";
 import * as Chat from "@/components/Chat";
 
 function Badge({ title, className }): JSX.Element {
@@ -131,8 +132,8 @@ function Feed({ updates }): JSX.Element {
       <SectionTitle title="Activity" icon="description" />
 
       <div className="mt-[10px]">
-        {updates.map((u, i: number) => (
-          <Chat.Post key={i} update={u} currentUser={data.me} />
+        {updates.map((u) => (
+          <Chat.Post key={u.id} update={u} currentUser={data.me} />
         ))}
       </div>
     </div>
@@ -157,11 +158,13 @@ function Projects({ projects }): JSX.Element {
     <div className="border-b border-dark-8% pb-[22px]">
       <SectionTitle title="PROJECTS IN PROGRESS" icon="my projects" />
 
-      <div className="mt-[10px] flex flex-col gap-[10px]">
+      <div className="mt-[10px] flex flex-col gap-[10px] mb-[10px]">
         {projects.map((p) => (
           <Project key={p.id} project={p} />
         ))}
       </div>
+
+      <LinkButton title="View 2 archived projects" size="small" />
     </div>
   );
 }
