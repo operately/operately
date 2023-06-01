@@ -70,7 +70,7 @@ export const ACTIVITY = `
 export const CONTRIBUTOR = `
   {
     person ${PERSON}
-    role
+    responsibility
   }
 `;
 
@@ -79,12 +79,11 @@ export const PROJECT = `
     id
     name
     description
-    status
     updatedAt
+    startedAt
+    deadline
     
     owner ${PERSON}
-    group ${GROUP}
-
     contributors ${CONTRIBUTOR}
   }
 `;

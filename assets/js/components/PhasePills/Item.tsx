@@ -8,6 +8,8 @@ interface ItemProps {
   state: State;
   first?: boolean;
   last?: boolean;
+  showTitle?: boolean;
+  height?: number;
 }
 
 const bgColors = {
@@ -34,10 +36,13 @@ const endArrowColors = {
   pending: "text-light-2",
 };
 
-function ArrowRight({ className }) {
+function ArrowRight({ className, height }) {
   return (
-    <svg height="20" width="5" className={className}>
-      <polygon points="0,0  0,20 5,10" fill="currentColor" />
+    <svg height={height + "px"} width={height / 4 + "px"} className={className}>
+      <polygon
+        points={`0,0  0,${height} ${height / 4},${height / 2}`}
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -55,13 +60,14 @@ export default function Item({
   state,
   first,
   last,
+  showTitle,
+  height,
 }: ItemProps): JSX.Element {
   const className = [
     bgColors[state],
     fgColors[state],
     "flex items-center justify-center flex-1",
     "text-[9px] uppercase font-medium",
-    "h-[20px]",
   ].join(" ");
 
   const startArrowColor = startArrowColors[state];
@@ -71,18 +77,30 @@ export default function Item({
     <div className="relative">
       {first ? null : (
         <div className="absolute top-0 left-0">
-          <ArrowRight className={startArrowColor} />
+          <ArrowRight height={height} className={startArrowColor} />
         </div>
       )}
 
-      <div className={className} style={{ lineHeight: "11px" }}>
-        <StatusIcon state={state} />{" "}
-        <span className="-mt-[2px] ml-[7px]">{name}</span>
+      <div
+        className={className}
+        style={{ height: height + "px", lineHeight: "11px" }}
+      >
+        {showTitle && (
+          <>
+            <StatusIcon state={state} />{" "}
+            <span className="-mt-[2px] ml-[7px]">{name}</span>
+          </>
+        )}
       </div>
 
       {last ? null : (
-        <div className="absolute top-0 -right-[5px]">
-          <ArrowRight className={endArrowColor} />
+        <div
+          className="absolute top-0"
+          style={{
+            right: -(height / 4) + "px",
+          }}
+        >
+          <ArrowRight height={height} className={endArrowColor} />
         </div>
       )}
     </div>
@@ -92,4 +110,6 @@ export default function Item({
 Item.defaultProps = {
   first: false,
   last: false,
+  showTitle: true,
+  height: 20,
 };

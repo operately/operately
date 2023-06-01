@@ -6,13 +6,16 @@ import { useMe } from "@/graphql/Me";
 import { Link, useParams } from "react-router-dom";
 
 import * as PaperContainer from "../../components/PaperContainer";
+import * as PhasePills from "../../components/PhasePills";
+import * as Chat from "@/components/Chat";
+
 import Icon, { IconSize } from "@/components/Icon";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import AvatarList from "@/components/AvatarList";
 import KeyResults from "./KeyResults";
 import RichContent from "@/components/RichContent";
 import LinkButton from "@/components/LinkButton";
-import * as Chat from "@/components/Chat";
+import FormattedTime from "@/components/FormattedTime";
 
 function Badge({ title, className }): JSX.Element {
   return (
@@ -144,16 +147,65 @@ function Feed({ updates }): JSX.Element {
 function Project({ project }): JSX.Element {
   return (
     <div className="rounded-[10px] border border-dark-8p p-[20px]">
-      <Link
-        to={`/projects/${project.id}`}
-        className="font-bold text-[18px] leading-[27px] underline text-brand-1"
-      >
-        {project.name}
+      <Link to={`/projects/${project.id}`}>
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-[18px] leading-[27px] underline text-brand-1">
+            {project.name}
+          </span>
 
-        <AvatarList
-          champion={project.owner}
-          people={project.contributors.map((c) => c.person)}
-        />
+          <AvatarList
+            champion={project.owner}
+            people={project.contributors.map((c) => c.person)}
+          />
+        </div>
+
+        <div className="flex items-center justify-between mt-[15px]">
+          <div className="w-[332px] shrink-0">
+            <PhasePills.Container>
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Concept"
+                state="done"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Planning"
+                state="done"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Execution"
+                state="inProgress"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Control"
+                state="pending"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Closing"
+                state="pending"
+              />
+            </PhasePills.Container>
+          </div>
+
+          <div className="inline-flex gap-[5px]">
+            <span className="text-dark-2">Timeline:</span>
+            <span>
+              <FormattedTime time={project.startedAt} format="short-date" />
+            </span>
+            <span>-&gt;</span>
+            <span>
+              <FormattedTime time={project.deadline} format="short-date" />
+            </span>
+          </div>
+        </div>
       </Link>
     </div>
   );
@@ -184,12 +236,7 @@ export function ObjectivePage() {
   const { loading, error, data } = useObjective(id);
 
   if (loading) return <p>{t("loading.loading")}</p>;
-  if (error)
-    return (
-      <p>
-        {t("error.error")}: {error.message}
-      </p>
-    );
+  if (error) throw error.message;
 
   const objective = data.objective;
 

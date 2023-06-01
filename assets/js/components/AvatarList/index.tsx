@@ -42,7 +42,10 @@ interface AvatarList {
   people: Person[];
 }
 
-export function AvatarList({ champion, people }: AvatarList): JSX.Element {
+export default function AvatarList({
+  champion,
+  people,
+}: AvatarList): JSX.Element {
   return (
     <div className="flex items-center">
       <Champion person={champion} />
