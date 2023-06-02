@@ -5,5 +5,5 @@ interface RootProps {
 }
 
 export default function Root({ children }: RootProps): JSX.Element {
-  return <div className="mx-auto max-w-7xl" children={children} />;
+  return <div className="mx-auto max-w-5xl" children={children} />;
 }

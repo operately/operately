@@ -3,6 +3,7 @@ import { useProject } from "../../graphql/Projects";
 import { useParams } from "react-router-dom";
 import Avatar, { AvatarSize } from "../../components/Avatar";
 import Icon from "../../components/Icon";
+import * as Icons from "tabler-icons-react";
 
 import * as PaperContainer from "../../components/PaperContainer";
 import * as PhasePills from "../../components/PhasePills";
@@ -82,57 +83,19 @@ function ChampionCrown() {
 }
 function ContributorList({ owner, contributors }): JSX.Element {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
-          People
-        </div>
+    <div className="flex gap-3 flex-wrap">
+      <div>
+        <Avatar person={owner} size={AvatarSize.Small} />
+      </div>
+      <div>
+        <Avatar person={contributors[2].person} size={AvatarSize.Small} />
+      </div>
+
+      {contributors.map((c, index: number) => (
         <div>
-          <Icon name="plus" size="small" color="dark-2" />
+          <Avatar person={c.person} size={AvatarSize.Small} />
         </div>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <div className="flex gap-2 font-medium items-center">
-          <div className="shrink-0">
-            <Avatar person={owner} size={AvatarSize.Tiny} />{" "}
-          </div>
-          <div className="flex-1">
-            <div>
-              <span className="">{owner.fullName}</span> &middot;{" "}
-              <span className="text-sm text-blue-400">Champion</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2 font-medium items-center">
-          <div className="shrink-0">
-            <Avatar person={contributors[2].person} size={AvatarSize.Tiny} />{" "}
-          </div>
-          <div className="flex-1">
-            <div>
-              <span className="">{contributors[2].person.fullName}</span>{" "}
-              &middot; <span className="text-sm text-red-400">Reviewer</span>
-            </div>
-          </div>
-        </div>
-
-        {contributors.map((c, index: number) => (
-          <div className="flex gap-2 font-medium items-center">
-            <div className="shrink-0">
-              <Avatar person={c.person} size={AvatarSize.Tiny} />{" "}
-            </div>
-            <div className="flex-1">
-              <div>
-                <span className="">{c.person.fullName}</span> &middot;{" "}
-                <span className="text-sm text-gray-400">
-                  {c.responsibility}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      ))}
     </div>
   );
 }
@@ -201,53 +164,147 @@ export function ProjectPage() {
   let parent = parents[parents.length - 1]!;
 
   return (
-    <PaperContainer.Root>
-      <PaperContainer.Navigation>
-        <PaperContainer.NavigationItem
-          icon="objectives"
-          title={parent.title}
-          to={`/objectives/${parent.id}`}
-        />
-      </PaperContainer.Navigation>
+    <div className="mt-32 max-w-5xl mx-auto">
+      <div className="flex items-center gap-2 text-2xl font-bold">
+        <Icons.ClipboardList size={24} /> {project.name}
+      </div>
 
-      <PaperContainer.Body>
-        <div className="rounded-lg">
-          <div className="p-8 rounded-t border-b bg-dark-2 border-shade-1 -mx-64 px-64 -mb-12 pb-32 pt-32">
-            <div className="flex items-start justify-between">
-              <ProjectHeader name={project.name} />
-              <div className="border border-emerald-400 text-emerald-400 rounded px-4 py-1">
-                On Track
-              </div>
-            </div>
-          </div>
+      <div className="max-w-3xl mt-8">
+        <Overview data={data} />
+      </div>
 
-          <div className="flex rounded-lg bg-dark-2 border-2 border-shade-1 min-h-[1000px] fadeIn">
-            <div className="w-2/3 shrink-0 px-8 py-4 pr-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
-                  DESCRIPTION
-                </div>
-                <div>
-                  <Icon name="edit" size="small" color="dark-2" />
-                </div>
-              </div>
-
-              <div className="-ml-8 px-8 bg-shade-1 py-8 -mr-4">
-                <Overview data={data} />
-              </div>
-            </div>
-
-            <div className="w-1/3 shrink-0 flex flex-col gap-12 bg-dark-3 px-4 py-4 border-l-2 border-shade-1">
-              <ContributorList
-                owner={project.owner}
-                contributors={project.contributors}
-              />
-
-              <KeyResources />
+      <div className="grid grid-cols-3 gap-4 mt-8">
+        <div className="flex gap-4 items-center">
+          <Avatar person={project.owner} size={AvatarSize.Normal} />
+          <div>
+            <div className="font-bold">{project.owner.fullName}</div>
+            <div className="text-sm text-blue-400 font-bold">
+              Project Champion
             </div>
           </div>
         </div>
-      </PaperContainer.Body>
-    </PaperContainer.Root>
+
+        <div className="flex gap-4 items-center">
+          <div className="shrink-0">
+            <Avatar
+              person={project.contributors[0].person}
+              size={AvatarSize.Normal}
+            />
+          </div>
+          <div>
+            <div className="font-bold">{project.owner.fullName}</div>
+            <div className="text-sm text-orange-400 font-bold">
+              Project Reviewer
+            </div>
+          </div>
+        </div>
+
+        {project.contributors.map((c) => (
+          <div key={c.person.id} className="flex gap-4 items-center">
+            <div className="shrink-0">
+              <Avatar person={c.person} size={AvatarSize.Normal} />
+            </div>
+            <div>
+              <div className="font-bold">{c.person.fullName}</div>
+              <div className="text-sm text-white-2">{c.responsibility}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
+// <div className="w-2/3 shrink-0 px-8 py-4 pr-4">
+//   <div className="flex items-center justify-between mb-4">
+//     <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+//       DESCRIPTION
+//     </div>
+//     <div>
+//       <Icon name="edit" size="small" color="dark-2" />
+//     </div>
+//   </div>
+
+//   <div className="-ml-8 px-8 bg-shade-1 py-8 -mr-4">
+//   </div>
+// </div>
+
+// <div className="w-1/3 shrink-0 flex flex-col gap-12 bg-dark-3 px-4 py-4 border-l-2 border-shade-1">
+
+// </div>
+// <PaperContainer.Root>
+//   <PaperContainer.Navigation>
+//     <PaperContainer.NavigationItem
+//       icon="objectives"
+//       title={parent.title}
+//       to={`/objectives/${parent.id}`}
+//     />
+//   </PaperContainer.Navigation>
+
+//   <PaperContainer.Body>
+//     <div className="bg-dark-2 border-2 border-shade-1 px-32 py-4 rounded-lg">
+//       <div className="mb-8 flex flex-col justify-between gap-8">
+//         <div className="gap-4">
+//           <div className="text-4xl font-bold my-8 text-center">
+//           </div>
+//           <div className="text-center">
+//             In Execution Phase &middot; Delivery expected in 81 days
+//           </div>
+//         </div>
+
+//         <ContributorList
+//           owner={project.owner}
+//           contributors={project.contributors}
+//         />
+
+//         <div className="flex items-center border-b border-white-3">
+//           <div className="flex items-center gap-2 border-b border-white-1 -mb-[1px] pb-2 px-4">
+//             <Icons.LayoutBoard size={16} />
+//             Overview
+//           </div>
+
+//           <div className="flex items-center gap-2 border-b border-transparent -mb-[1px] pb-2 px-4 text-white-2">
+//             <Icons.ArrowBigUpLines size={16} />
+//             Roles
+//           </div>
+
+//           <div className="flex items-center gap-2 border-b border-transparent -mb-[1px] pb-2 px-4 text-white-2">
+//             <Icons.Message size={16} />
+//             Updates{" "}
+//             <div className="w-5 h-5 rounded-full bg-gray-700 text-center text-xs flex items-center justify-center">
+//               12
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="flex items-center justify-between gap-4 shrink-0">
+//           <div className="flex items-center justify-between gap-4">
+//             <div className="flex items-center justify-between gap-4">
+//               <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
+//                 Pending
+//                 <Icons.ChevronDown size={16} />
+//               </button>
+//             </div>
+
+//             <div className="flex items-center justify-between gap-4">
+//               <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
+//                 Apr 19th &nbsp; -&gt; &nbsp; July 31th
+//                 <Icons.ChevronDown size={16} />
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="flex items-start gap-10">
+//           <div className="w-2/3">
+//             <Overview data={data} />
+//           </div>
+
+//           <div className="w-1/3 flex flex-col gap-16">
+//             <KeyResources />
+//             <KeyResources />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   </PaperContainer.Body>
+// </PaperContainer.Root>
