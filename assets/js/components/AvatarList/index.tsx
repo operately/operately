@@ -28,11 +28,7 @@ interface ChampionProps {
 function Champion({ person }: ChampionProps): JSX.Element {
   return (
     <div className="relative" style={{ marginRight: "10px" }}>
-      <Avatar person={person} size={AvatarSize.Small} />
-
-      <div className="absolute top-[-6px] left-[21px]">
-        <ChampionCrown />
-      </div>
+      <Avatar person={person} size={AvatarSize.Tiny} />
     </div>
   );
 }
@@ -48,22 +44,12 @@ export default function AvatarList({
 }: AvatarList): JSX.Element {
   return (
     <div className="flex items-center">
-      <Champion person={champion} />
+      {champion && <Champion person={champion} />}
 
       <div className="flex items-center">
         {people.map((person, index: number) => (
-          <div
-            key={index}
-            className="border-2 border-white rounded-full -ml-[6px]"
-          >
-            <div
-              className="rounded-full"
-              style={{
-                background: "#fafafa",
-              }}
-            >
-              <Avatar person={person} size={AvatarSize.Small} />
-            </div>
+          <div key={index}>
+            <Avatar person={person} size={AvatarSize.Tiny} />
           </div>
         ))}
       </div>

@@ -8,10 +8,7 @@ import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
 import ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectPage } from "../pages/ProjectPage";
-import {
-  ProjectListPage,
-  ProjectListPageLoader,
-} from "../pages/ProjectListPage";
+import { ProjectListPage } from "../pages/ProjectListPage";
 
 import TenetAddPage from "../pages/TenetAddPage";
 import { TenetPage, TenetPageLoader } from "../pages/TenetPage";
@@ -75,7 +72,6 @@ const routes = createBrowserRouter([
       },
       {
         path: "/projects",
-        loader: loaderWithApollo(ProjectListPageLoader),
         element: <ProjectListPage />,
       },
       {

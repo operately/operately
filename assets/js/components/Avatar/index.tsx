@@ -25,7 +25,7 @@ interface AvatarProps {
 function SizeClasses({ size }: { size: AvatarSize }): string {
   switch (size) {
     case AvatarSize.Tiny:
-      return "w-[24px] h-[24px]";
+      return "w-[20px] h-[20px]";
     case AvatarSize.Small:
       return "w-[30px] h-[30px]";
     case AvatarSize.Normal:
@@ -57,17 +57,22 @@ function TextClasses({ size }: { size: AvatarSize }): string {
 }
 
 function initials(fullName: string): string {
-  const firstLeters = fullName
-    .split(" ")
-    .filter((e) => e !== "")
-    .map((n) => n[0]);
+  try {
+    const firstLeters = fullName
+      .split(" ")
+      .filter((e) => e !== "")
+      .map((n) => n[0]);
 
-  if (firstLeters.length === 0) {
+    if (firstLeters.length === 0) {
+      return "";
+    } else if (firstLeters.length === 1) {
+      return firstLeters[0];
+    } else {
+      return firstLeters[0] + firstLeters[firstLeters.length - 1];
+    }
+  } catch (e) {
+    console.error(e);
     return "";
-  } else if (firstLeters.length === 1) {
-    return firstLeters[0];
-  } else {
-    return firstLeters[0] + firstLeters[firstLeters.length - 1];
   }
 }
 

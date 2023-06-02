@@ -2,6 +2,7 @@ import React from "react";
 import { gql, useQuery, ApolloClient, QueryResult } from "@apollo/client";
 
 import { Milestone } from "./milestones";
+import * as fragments from "@/graphql/Fragments";
 
 const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
@@ -17,6 +18,10 @@ const LIST_PROJECTS = gql`
         fullName
         title
       }
+
+      contributors ${fragments.CONTRIBUTOR}
+
+      phase
     }
   }
 `;
