@@ -264,13 +264,77 @@ export function ProjectPage() {
             <Icons.ChevronDown size={16} />
           </button>
 
-          <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
-            Apr 19th &nbsp; -&gt; &nbsp; July 31th
-            <Icons.ChevronDown size={16} />
+          <button className="border-white-3 rounded-lg hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 font-medium flex items-center gap-2">
+            In Execution Phase for 31 days
           </button>
         </div>
 
         <div className="border-l border-shade-1 pl-8 h-full">
+          <div className="mt-16 flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
+              TIMELINE
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between gap-4 py-1">
+              <div className="flex items-center gap-2 text-green-400">
+                <Icons.Flag2 size={16} />
+                Concept
+              </div>
+
+              <div className="flex items-center gap-2 text-green-400">
+                July 21st
+                <span className="">
+                  {" "}
+                  <Icons.Check size={16} />
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 py-1">
+              <div className="flex items-center gap-2 text-green-400">
+                <Icons.Flag2 size={16} />
+                Planning
+              </div>
+
+              <div className="flex items-center gap-2 text-green-400">
+                Aug 1st
+                <span className="">
+                  {" "}
+                  <Icons.Check size={16} />
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 py-1">
+              <div className="flex items-center gap-2 text-green-400">
+                <Icons.Flag2 size={16} />
+                Execution
+              </div>
+
+              <div className="flex items-center gap-2">Due: Aug 1st</div>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 py-1">
+              <div className="flex items-center gap-2">
+                <Icons.Flag2 size={16} />
+                Control
+              </div>
+
+              <div>July 21st</div>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 py-1">
+              <div className="flex items-center gap-2">
+                <Icons.Flag2 size={16} />
+                Closing
+              </div>
+
+              <div className="text-white-2">Not Set</div>
+            </div>
+          </div>
+
           <div className="mt-16 flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
               UPDATES
