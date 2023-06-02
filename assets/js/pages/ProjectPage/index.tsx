@@ -121,15 +121,6 @@ function Champion({ person }): JSX.Element {
 function KeyResources(): JSX.Element {
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
-          Key Resources
-        </div>
-        <div>
-          <Icon name="plus" size="small" color="dark-2" />
-        </div>
-      </div>
-
       <div className="flex flex-col gap-2">
         <div className="bg-shade-1 px-2 py-2 flex items-center gap-2 rounded">
           <Icon name="git" size="small" color="light" />
@@ -164,13 +155,31 @@ export function ProjectPage() {
   let parent = parents[parents.length - 1]!;
 
   return (
-    <div className="mt-32 max-w-5xl mx-auto">
+    <div className="mt-32 max-w-5xl mx-auto bg-shade-1 px-32 py-16 rounded-lg">
       <div className="flex items-center gap-2 text-2xl font-bold">
         <Icons.ClipboardList size={24} /> {project.name}
       </div>
 
+      <div className="mt-16 flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+          Description
+        </div>
+        <div>
+          <Icon name="edit" size="small" color="dark-2" />
+        </div>
+      </div>
+
       <div className="max-w-3xl mt-8">
         <Overview data={data} />
+      </div>
+
+      <div className="mt-16 flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+          Contributors
+        </div>
+        <div>
+          <Icon name="plus" size="small" color="dark-2" />
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mt-8">
@@ -193,9 +202,7 @@ export function ProjectPage() {
           </div>
           <div>
             <div className="font-bold">{project.owner.fullName}</div>
-            <div className="text-sm text-orange-400 font-bold">
-              Project Reviewer
-            </div>
+            <div className="text-sm font-bold">Project Reviewer</div>
           </div>
         </div>
 
@@ -211,6 +218,17 @@ export function ProjectPage() {
           </div>
         ))}
       </div>
+
+      <div className="mt-16 flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
+          Key Resources
+        </div>
+        <div>
+          <Icon name="plus" size="small" color="dark-2" />
+        </div>
+      </div>
+
+      <KeyResources />
     </div>
   );
 }
@@ -300,7 +318,6 @@ export function ProjectPage() {
 //           </div>
 
 //           <div className="w-1/3 flex flex-col gap-16">
-//             <KeyResources />
 //             <KeyResources />
 //           </div>
 //         </div>
