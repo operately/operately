@@ -8,6 +8,7 @@ import * as Icons from "tabler-icons-react";
 import * as PaperContainer from "../../components/PaperContainer";
 import * as PhasePills from "../../components/PhasePills";
 import * as Tabs from "../../components/Tabs";
+import FormattedTime from "@/components/FormattedTime";
 
 import Overview from "./Overview";
 import Timeline from "./Timeline";
@@ -120,17 +121,20 @@ function Champion({ person }): JSX.Element {
 
 function KeyResources(): JSX.Element {
   return (
-    <div>
-      <div className="flex flex-col gap-2">
-        <div className="bg-shade-1 px-2 py-2 flex items-center gap-2 rounded">
-          <Icon name="git" size="small" color="light" />
-          GitHub Repository
-        </div>
+    <div className="grid grid-cols-3 gap-2">
+      <div className="bg-shade-1 px-4 py-3 flex items-center gap-2 rounded-lg">
+        <Icons.BrandGithub size={20} />
+        GitHub Repository
+      </div>
 
-        <div className="bg-shade-1 px-2 py-2 flex items-center gap-2 rounded">
-          <Icon name="slack" size="small" color="light" />
-          Slack Channel
-        </div>
+      <div className="bg-shade-1 px-4 py-3 flex items-center gap-2 rounded-lg">
+        <Icons.BrandSlack size={20} />
+        Slack Channel
+      </div>
+
+      <div className="border border-shade-1 px-4 py-3 flex items-center gap-2 rounded-lg">
+        <Icons.Plus size={20} />
+        Add Resource
       </div>
     </div>
   );
@@ -155,80 +159,182 @@ export function ProjectPage() {
   let parent = parents[parents.length - 1]!;
 
   return (
-    <div className="mt-32 max-w-5xl mx-auto bg-shade-1 px-32 py-16 rounded-lg">
-      <div className="flex items-center gap-2 text-2xl font-bold">
-        <Icons.ClipboardList size={24} /> {project.name}
-      </div>
+    <div className="mt-32 mx-auto bg-shade-1 px-16 py-16 rounded-lg flex gap-10 max-w-7xl">
+      <div className="w-2/3">
+        <div className="text-4xl font-bold">{project.name}</div>
 
-      <div className="mt-16 flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
-          Description
+        <div className="mt-16 flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
+            Description
+          </div>
         </div>
-        <div>
-          <Icon name="edit" size="small" color="dark-2" />
-        </div>
-      </div>
 
-      <div className="max-w-3xl mt-8">
-        <Overview data={data} />
-      </div>
-
-      <div className="mt-16 flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
-          Contributors
+        <div className="max-w-3xl mt-8">
+          <Overview data={data} />
         </div>
-        <div>
-          <Icon name="plus" size="small" color="dark-2" />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-3 gap-4 mt-8">
-        <div className="flex gap-4 items-center">
-          <Avatar person={project.owner} size={AvatarSize.Normal} />
-          <div>
-            <div className="font-bold">{project.owner.fullName}</div>
-            <div className="text-sm text-blue-400 font-bold">
-              Project Champion
+        <div className="mt-16 flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
+            GOALS & KPIs
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <div className="flex items-center gap-2 px-4 py-3 bg-shade-1 rounded-lg">
+            <Icons.Target size={20} /> Increase revenue by 20% by the end of Q3
+          </div>
+
+          <div className="flex items-center gap-2 px-4 py-3 bg-shade-1 rounded-lg">
+            <Icons.Graph size={20} /> User Churn Rate
+          </div>
+
+          <div className="flex items-center gap-2 px-4 py-3 border border-shade-1 rounded-lg">
+            <Icons.Plus size={20} /> Add Goal or KPI
+          </div>
+        </div>
+
+        <div className="mt-16 flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
+            CONTRIBUTORS
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mt-8">
+          <div className="flex gap-4 items-center">
+            <Avatar person={project.owner} size={AvatarSize.Normal} />
+            <div>
+              <div className="font-bold">{project.owner.fullName}</div>
+              <div className="text-sm text-blue-400 font-bold">
+                Project Champion
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex gap-4 items-center">
-          <div className="shrink-0">
-            <Avatar
-              person={project.contributors[0].person}
-              size={AvatarSize.Normal}
-            />
-          </div>
-          <div>
-            <div className="font-bold">{project.owner.fullName}</div>
-            <div className="text-sm font-bold">Project Reviewer</div>
-          </div>
-        </div>
-
-        {project.contributors.map((c) => (
-          <div key={c.person.id} className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center">
             <div className="shrink-0">
-              <Avatar person={c.person} size={AvatarSize.Normal} />
+              <Avatar
+                person={project.contributors[0].person}
+                size={AvatarSize.Normal}
+              />
             </div>
             <div>
-              <div className="font-bold">{c.person.fullName}</div>
-              <div className="text-sm text-white-2">{c.responsibility}</div>
+              <div className="font-bold">{project.owner.fullName}</div>
+              <div className="text-sm font-bold">Project Reviewer</div>
             </div>
           </div>
-        ))}
+
+          {project.contributors.map((c) => (
+            <div key={c.person.id} className="flex gap-4 items-center">
+              <div className="shrink-0">
+                <Avatar person={c.person} size={AvatarSize.Normal} />
+              </div>
+              <div>
+                <div className="font-bold">{c.person.fullName}</div>
+                <div className="text-sm text-white-2">{c.responsibility}</div>
+              </div>
+            </div>
+          ))}
+
+          <div className="flex gap-4 items-center">
+            <div className="shrink-0">
+              <div className="w-10 h-10 rounded-full border border-white-3 border-dashed flex items-center justify-center text-white-2">
+                <Icons.Plus size={20} />
+              </div>
+            </div>
+
+            <div>
+              <div className="">Add Contributor</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-16 flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
+            KEY RESOURCES
+          </div>
+        </div>
+
+        <KeyResources />
       </div>
 
-      <div className="mt-16 flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 uppercase text-sm font-medium tracking-wide">
-          Key Resources
+      <div className="w-1/3">
+        <div className="flex items-center flex-row-reverse gap-4 -ml-48 mt-2">
+          <button className="border border-green-400 rounded-lg hover:border-white-2 text-green-400 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
+            On Track
+            <Icons.ChevronDown size={16} />
+          </button>
+
+          <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
+            Apr 19th &nbsp; -&gt; &nbsp; July 31th
+            <Icons.ChevronDown size={16} />
+          </button>
         </div>
-        <div>
-          <Icon name="plus" size="small" color="dark-2" />
+
+        <div className="border-l border-shade-1 pl-8 h-full">
+          <div className="mt-16 flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
+              UPDATES
+            </div>
+          </div>
+
+          <div className="flex flex-col divide-y divide-white-3">
+            <div className="flex items-center justify-between gap-4 py-2">
+              <div className="flex items-center gap-4">
+                <div className="shrink-0">
+                  <Avatar person={project.owner} size={AvatarSize.Small} />
+                </div>
+
+                <div>
+                  <div className="text-sm">
+                    <span className="font-bold">
+                      Status Update on{" "}
+                      <FormattedTime time={new Date()} format="short-date" />{" "}
+                      <br />
+                    </span>
+                    Project is going good. We have s&hellip;
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-green-400">
+                <Icons.Check />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 py-2">
+              <div className="shrink-0">
+                <Avatar person={project.owner} size={AvatarSize.Small} />
+              </div>
+              <div>
+                <div className="text-sm">
+                  <span className="font-bold">
+                    Status Update on{" "}
+                    <FormattedTime time={new Date()} format="short-date" />{" "}
+                    <br />
+                  </span>
+                  We hit a roadblock with the s&hellip;
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 py-2">
+              <div className="shrink-0">
+                <Avatar person={project.owner} size={AvatarSize.Small} />
+              </div>
+              <div>
+                <div className="text-sm">
+                  <span className="font-bold">
+                    Status Update on{" "}
+                    <FormattedTime time={new Date()} format="short-date" />{" "}
+                    <br />
+                  </span>
+                  Project is going good. We have s&hellip;
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <KeyResources />
     </div>
   );
 }
@@ -296,19 +402,6 @@ export function ProjectPage() {
 
 //         <div className="flex items-center justify-between gap-4 shrink-0">
 //           <div className="flex items-center justify-between gap-4">
-//             <div className="flex items-center justify-between gap-4">
-//               <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
-//                 Pending
-//                 <Icons.ChevronDown size={16} />
-//               </button>
-//             </div>
-
-//             <div className="flex items-center justify-between gap-4">
-//               <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium uppercase flex items-center gap-2">
-//                 Apr 19th &nbsp; -&gt; &nbsp; July 31th
-//                 <Icons.ChevronDown size={16} />
-//               </button>
-//             </div>
 //           </div>
 //         </div>
 

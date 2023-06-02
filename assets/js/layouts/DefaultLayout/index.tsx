@@ -171,7 +171,6 @@ export default function DefaultLayout() {
   return (
     <div>
       <Navigation size={navigationSize} />
-      <Flare />
 
       <div>
         <Outlet />
