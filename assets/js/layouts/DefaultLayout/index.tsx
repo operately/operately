@@ -1,127 +1,135 @@
 import React from "react";
 
 import { Outlet } from "react-router-dom";
-import Icon from "../../components/Icon";
 
 import User from "./User";
 import { NavLink } from "react-router-dom";
 
+import * as Icons from "tabler-icons-react";
+
 function Logo() {
   return (
     <svg
-      width="109"
-      height="20"
-      viewBox="0 0 839 150"
-      fill="none"
+      id="Layer_1"
       xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1000 1000"
+      width="36"
+      height="36"
     >
-      <path
-        d="M231.975 120.353C221.996 120.353 213.278 118.169 205.821 113.793C198.358 109.424 192.515 103.369 188.285 95.6199C184.056 87.8779 181.944 78.9208 181.944 68.7486C181.944 58.5764 184.056 49.626 188.285 41.8773C192.515 34.1353 198.358 28.0731 205.821 23.7041C213.278 19.3352 222.002 17.144 231.975 17.144C241.948 17.144 250.554 19.3285 258.063 23.7041C265.566 28.0731 271.409 34.1353 275.599 41.8773C279.782 49.626 281.867 58.5831 281.867 68.7486C281.867 78.9142 279.775 87.8713 275.599 95.6199C271.416 103.369 265.573 109.424 258.063 113.793C250.554 118.169 241.862 120.353 231.975 120.353ZM231.975 103.96C241.477 103.96 249.06 100.826 254.71 94.5509C260.36 88.2763 263.196 79.6778 263.196 68.7486C263.196 57.8195 260.367 49.2209 254.71 42.9463C249.053 36.6717 241.477 33.5377 231.975 33.5377C222.474 33.5377 214.871 36.6717 209.168 42.9463C203.464 49.2209 200.615 57.8195 200.615 68.7486C200.615 79.6778 203.464 88.2763 209.168 94.5509C214.871 100.826 222.467 103.96 231.975 103.96Z"
-        fill="black"
+      <polygon
+        points="602.32 806.96 397.68 806.96 397.68 602.32 602.32 806.96"
+        fill="rgba(255,255,255,0.5)"
       />
-      <path
-        d="M293.985 150V47.9328H310.232L312.224 58.0519C314.502 54.9179 317.523 52.1624 321.274 49.7853C325.026 47.4149 329.899 46.2197 335.889 46.2197C342.542 46.2197 348.478 47.8399 353.71 51.0668C358.935 54.3004 363.072 58.7159 366.113 64.3265C369.154 69.9371 370.675 76.2981 370.675 83.4292C370.675 90.5604 369.154 96.9014 366.113 102.459C363.072 108.016 358.935 112.392 353.71 115.573C348.484 118.76 342.542 120.347 335.889 120.347C330.563 120.347 325.909 119.351 321.918 117.352C317.928 115.353 314.694 112.551 312.224 108.939V149.993H293.978L293.985 150ZM332.044 104.384C337.841 104.384 342.641 102.439 346.439 98.5415C350.244 94.6439 352.143 89.6109 352.143 83.4292C352.143 77.2476 350.244 72.1681 346.439 68.1776C342.635 64.1871 337.841 62.1885 332.044 62.1885C326.248 62.1885 321.327 64.1605 317.576 68.1046C313.818 72.0486 311.945 77.1082 311.945 83.2832C311.945 89.4582 313.818 94.5244 317.576 98.4684C321.327 102.412 326.148 104.384 332.044 104.384Z"
-        fill="black"
+      <polygon
+        points="397.68 193.04 602.32 193.04 602.32 397.68 397.68 193.04"
+        fill="rgba(255,255,255,0.5)"
       />
-      <path
-        d="M417.717 120.353C410.593 120.353 404.272 118.833 398.761 115.792C393.25 112.751 388.92 108.475 385.786 102.964C382.652 97.4525 381.085 91.0849 381.085 83.8675C381.085 76.65 382.626 70.0367 385.72 64.3398C388.808 58.6362 393.084 54.1941 398.548 51.0137C404.013 47.8332 410.453 46.2396 417.863 46.2396C424.795 46.2396 430.924 47.7602 436.249 50.8012C441.568 53.8422 445.731 57.9987 448.719 63.2774C451.713 68.5494 453.207 74.419 453.207 80.8862C453.207 81.9286 453.181 83.0242 453.134 84.1662C453.081 85.3083 453.015 86.4968 452.922 87.7318H399.179C399.557 93.2429 401.483 97.5654 404.949 100.699C408.415 103.84 412.625 105.407 417.565 105.407C421.27 105.407 424.384 104.577 426.9 102.91C429.417 101.25 431.296 99.0859 432.531 96.4233H451.062C449.734 100.892 447.523 104.955 444.436 108.607C441.348 112.266 437.544 115.141 433.035 117.233C428.52 119.324 423.414 120.373 417.711 120.373L417.717 120.353ZM417.863 61.0531C413.395 61.0531 409.451 62.3146 406.031 64.8311C402.612 67.3476 400.421 71.1721 399.478 76.3047H434.682C434.397 71.6502 432.69 67.9452 429.549 65.183C426.409 62.4275 422.518 61.0464 417.863 61.0464V61.0531Z"
-        fill="black"
+      <polygon
+        points="602.32 193.04 602.32 397.68 602.32 602.32 602.32 806.96 806.96 602.32 806.96 397.68 602.32 193.04"
+        fill="rgba(255,255,255,0.9)"
       />
-      <path
-        d="M465.04 118.64V47.9394H481.287L483 61.1991C485.563 56.6376 489.056 53.0056 493.478 50.2966C497.9 47.5875 503.099 46.233 509.088 46.233V65.4752H503.955C499.965 65.4752 496.399 66.0927 493.265 67.3277C490.131 68.5627 487.681 70.7007 485.922 73.7417C484.162 76.7828 483.286 81.0123 483.286 86.4304V118.647H465.04V118.64Z"
-        fill="black"
-      />
-      <path
-        d="M542.3 120.353C536.218 120.353 531.225 119.377 527.334 117.432C523.436 115.486 520.541 112.897 518.636 109.663C516.737 106.436 515.781 102.871 515.781 98.9731C515.781 92.4129 518.344 87.0944 523.476 83.0043C528.609 78.9208 536.304 76.8758 546.57 76.8758H564.53V75.1627C564.53 70.3156 563.149 66.75 560.394 64.4726C557.631 62.1951 554.212 61.0531 550.128 61.0531C546.423 61.0531 543.19 61.9362 540.434 63.6891C537.672 65.4486 535.966 68.0382 535.302 71.4577H517.487C517.959 66.3251 519.692 61.8565 522.686 58.0585C525.681 54.2606 529.552 51.339 534.306 49.294C539.06 47.2489 544.378 46.2264 550.275 46.2264C560.347 46.2264 568.282 48.7429 574.078 53.7825C579.875 58.8221 582.776 65.9466 582.776 75.1627V118.64H567.239L565.533 107.24C563.441 111.044 560.52 114.178 556.762 116.648C553.004 119.118 548.183 120.353 542.293 120.353H542.3ZM546.437 106.098C551.662 106.098 555.726 104.385 558.621 100.965C561.522 97.5455 563.348 93.3159 564.112 88.2763H548.575C543.728 88.2763 540.255 89.1594 538.17 90.9123C536.079 92.6719 535.03 94.8364 535.03 97.3994C535.03 100.155 536.072 102.293 538.17 103.813C540.255 105.334 543.017 106.091 546.437 106.091V106.098Z"
-        fill="black"
-      />
-      <path
-        d="M627.117 118.64C619.707 118.64 613.764 116.834 609.296 113.222C604.827 109.61 602.596 103.196 602.596 93.9799V63.1911H590.479V47.9395H602.596L604.734 28.9828H620.842V47.9395H639.945V63.1911H620.842V94.126C620.842 97.5455 621.579 99.896 623.053 101.184C624.527 102.466 627.064 103.11 630.676 103.11H639.514V118.647H627.11L627.117 118.64Z"
-        fill="black"
-      />
-      <path
-        d="M684.565 120.353C677.44 120.353 671.119 118.833 665.608 115.792C660.097 112.751 655.768 108.475 652.634 102.964C649.5 97.4525 647.933 91.0849 647.933 83.8675C647.933 76.65 649.474 70.0367 652.568 64.3398C655.655 58.6362 659.931 54.1941 665.396 51.0137C670.86 47.8332 677.301 46.2396 684.711 46.2396C691.643 46.2396 697.772 47.7602 703.097 50.8012C708.415 53.8422 712.578 57.9987 715.566 63.2774C718.554 68.556 720.055 74.419 720.055 80.8862C720.055 81.9286 720.028 83.0242 719.982 84.1662C719.929 85.3083 719.862 86.4968 719.769 87.7318H666.027C666.405 93.2429 668.331 97.5654 671.797 100.699C675.263 103.84 679.472 105.407 684.412 105.407C688.117 105.407 691.231 104.577 693.748 102.91C696.264 101.25 698.143 99.0859 699.378 96.4233H717.91C716.582 100.892 714.371 104.955 711.284 108.607C708.196 112.266 704.392 115.141 699.883 117.233C695.368 119.324 690.262 120.373 684.558 120.373L684.565 120.353ZM684.711 61.0531C680.242 61.0531 676.298 62.3146 672.879 64.8311C669.459 67.3476 667.268 71.1721 666.325 76.3047H701.53C701.244 71.6502 699.538 67.9452 696.397 65.183C693.257 62.4275 689.366 61.0464 684.711 61.0464V61.0531Z"
-        fill="black"
-      />
-      <path d="M731.887 118.64V16.0086H750.133V118.64H731.887Z" fill="black" />
-      <path
-        d="M774.083 150L790.476 113.933H786.2L758.685 47.9328H778.498L798.311 97.6849L818.981 47.9328H838.369L793.471 150H774.083Z"
-        fill="black"
-      />
-      <path
-        d="M90.9056 136.355H45.4561V90.9057L90.9056 136.355Z"
-        fill="#024FAC"
-      />
-      <path d="M45.4561 0H90.9056V45.4495L45.4561 0Z" fill="#024FAC" />
-      <path
-        d="M90.9058 0V45.4495V90.9057V136.355L136.362 90.9057V45.4495L90.9058 0Z"
-        fill="#3185FF"
-      />
-      <path
-        d="M0 45.4495V90.9057L45.4562 136.355V90.9057V45.4495V0L0 45.4495Z"
-        fill="#3185FF"
+      <polygon
+        points="193.04 397.68 193.04 602.32 397.68 806.96 397.68 602.32 397.68 397.68 397.68 193.04 193.04 397.68"
+        fill="rgba(255,255,255,0.9)"
       />
     </svg>
   );
 }
 
-function NavigationContainer({ children }) {
+function NavigationContainer({ size, children }) {
+  const padding = size === "large" ? "py-3 px-4" : "py-1 px-4";
+
   return (
-    <div className="flex justify-between fixed top-0 left-0 right-0 backdrop-blur transition-all z-50">
+    <div
+      className={
+        "fixed top-0 left-0 right-0 backdrop-blur transition-all z-50" +
+        " " +
+        padding
+      }
+    >
       {children}
     </div>
   );
 }
 
 function NavigationItem({ to, title, icon }) {
-  const baseClass = "flex items-center gap-[10px]";
+  const baseClass = "flex items-center px-2 py-1";
+
   const classHandler = ({ isActive, isPending }) => {
     if (isActive || isPending) {
-      return baseClass + " text-brand-1";
+      return baseClass + "  bg-shade-1 rounded-lg text-white-1";
     } else {
-      return baseClass + " ";
+      return baseClass + " text-white-2";
     }
   };
 
   return (
     <NavLink to={to} className={classHandler}>
-      <Icon name={icon} size="small" color="light" />
-      <span>{title}</span>
+      <span className="font-bold flex items-center gap-2">
+        {icon}
+        {title}
+      </span>
     </NavLink>
   );
 }
 
-function Navigation() {
+function Navigation({ size }) {
   return (
-    <NavigationContainer>
-      <div className="flex items-center">
-        <div className="mr-[56px]">
-          <Logo />
-        </div>
+    <NavigationContainer size={size}>
+      <div className="flex justify-between">
+        <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <div className="mr-4">
+              <div className="flex items-center gap-1">
+                <Logo />
+                <span className="text-white-1 font-bold">Operately</span>
+              </div>
+            </div>
 
-        <div className="flex items-center gap-4">
-          <NavigationItem to="/" title="Home" icon="home" />
-          <NavigationItem to="/company" title="Company" icon="company" />
-          <NavigationItem
-            to="/projects"
-            title="My Projects"
-            icon="my projects"
-          />
-          <NavigationItem to="/groups" title="Groups" icon="groups" />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="border border-[#E1E1E1] rounded-lg w-[300px] px-[20px] py-[8px] flex justify-between mr-[8px]">
-          <div className="flex items-center gap-[10px] text-base">
-            <Icon name="search" size="small" color="dark-2" />
-            <span className="text-white">Search or jump to&hellip; - ⌘K</span>
+            <NavigationItem
+              to="/company"
+              title="Company"
+              icon={<Icons.Building size={16} />}
+            />
+            <NavigationItem
+              to="/goals"
+              title="Goals"
+              icon={<Icons.Target size={16} />}
+            />
+            <NavigationItem
+              to="/projects"
+              title="Projects"
+              icon={<Icons.ClipboardText size={16} />}
+            />
+            <NavigationItem
+              to="/groups"
+              title="People"
+              icon={<Icons.User size={16} />}
+            />
           </div>
         </div>
 
-        <div className="gap-[6px] flex items-center">
-          <User />
-          <Icon name="chevron down" size="base" color="dark-2" />
+        <div className="flex items-center gap-4">
+          <div className="relative text-white-2">
+            <div className="top-0 bottom-0 flex items-center absolute left-2">
+              <Icons.Search size={16} />
+            </div>
+            <input
+              type="text"
+              className="bg-shade-1 rounded px-2 py-1 border border-shade-1 focus:w-96 focus:border-blue-400 focus:outline-none transition-all text-sm w-64 pl-8"
+              placeholder="Search or jump to &hellip;"
+            />
+          </div>
+
+          <NavigationItem
+            to="/"
+            title="Inbox"
+            icon={<Icons.Inbox size={16} />}
+          />
+
+          <div className="gap-4 flex items-center">
+            <User />
+          </div>
         </div>
       </div>
     </NavigationContainer>
@@ -129,9 +137,24 @@ function Navigation() {
 }
 
 export default function DefaultLayout() {
+  const [navigationSize, setNavigationSize] = React.useState("large");
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", () => {
+        if (window.pageYOffset > 50) {
+          setNavigationSize("small");
+        } else {
+          setNavigationSize("large");
+        }
+      });
+    }
+  });
+
   return (
     <div>
-      <Navigation />
+      <Navigation size={navigationSize} />
+
       <div>
         <Outlet />
       </div>

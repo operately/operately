@@ -36,6 +36,7 @@
     "react-select": "^5.7.1",
     "remount": "^1.0.0",
     "sort-by": "^0.0.2",
+    "tabler-icons-react": "^1.56.0",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
