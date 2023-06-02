@@ -4,16 +4,28 @@ import { useProjects } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 import AvatarList from "@/components/AvatarList";
 import { Link } from "react-router-dom";
+import * as Icons from "tabler-icons-react";
 
 function DateOrNotSet({ date }) {
   if (date === null) {
-    return <span className="text-white-3">not set</span>;
+    return <span className="text-white-3 uppercase">not set</span>;
   }
   return (
     <div className="uppercase">
       <FormattedTime time={date} format="short-date" />
     </div>
   );
+}
+
+function Phase({ phase }) {
+  switch (phase) {
+    case "draft":
+      return (
+        <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">
+          draft
+        </span>
+      );
+  }
 }
 
 function ProjectListItem({ project }) {
@@ -25,7 +37,7 @@ function ProjectListItem({ project }) {
         </div>
 
         <div className="flex items-center justify-between gap-4 w-1/2">
-          <div className="flex items-center justify-between gap-4 w-1/2">
+          <div className="flex items-center justify-between gap-4 w-1/3">
             <div className="w-1/3 text-sm">
               <AvatarList
                 champion={project.owner}
@@ -34,7 +46,7 @@ function ProjectListItem({ project }) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 w-1/2">
+          <div className="flex items-center justify-between gap-4 w-2/3">
             <div className="w-32 text-sm text-right">
               <DateOrNotSet date={project.startedAt} />
             </div>
@@ -43,7 +55,9 @@ function ProjectListItem({ project }) {
               <DateOrNotSet date={project.deadline} />
             </div>
 
-            <div className="w-20 text-sm text-right">{project.phase}</div>
+            <div className="w-32 text-sm text-right">
+              <Phase phase={project.phase} />
+            </div>
           </div>
         </div>
       </div>
@@ -71,14 +85,56 @@ export function ProjectListPage() {
   const projects = SortProjects(data.projects);
 
   return (
-    <div className="mt-32 flex flex-col gap-[2px] max-w-6xl mx-auto">
-      <div className="flex items-center justify-betweeen px-4 py-2 bg-shade-1 mb-1 rounded-lg text-xs">
+    <div className="mt-20 flex flex-col gap-[2px] max-w-6xl mx-auto">
+      <div className="flex items-center justify-between gap-4 mb-10">
+        <div className="flex items-center justify-between gap-4">
+          <div className="p-2 rounded-full bg-shade-1 text-white-2">
+            <Icons.LayoutList size={16} />
+          </div>
+
+          <div className="p-2 rounded-full text-white-2 hover:bg-shade-1 cursor-pointer">
+            <Icons.Map size={16} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-4">
+          <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            New Project
+          </button>
+        </div>
+      </div>
+
+      <div className="mb-16 flex flex-col items-center justify-between gap-8">
+        <div className="text-5xl font-bold text-center">
+          Projects in Rendered Text
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <button className="border border-orange-800 rounded-full hover:border-orange-800 text-dark-1 hover:text-white-1 px-3 py-1.5 text-sm font-bold bg-shade-1 bg-orange-400">
+            All Projects
+          </button>
+
+          <button className="border border-white-3 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            Only Mine
+          </button>
+
+          <button className="border border-white-3 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            Overdue
+          </button>
+
+          <button className="border border-white-3 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            Drafts
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-betweeen px-4 py-2 mb-1 rounded text-sm font-medium">
         <div className="w-1/2 text-white-2 uppercase">PROJECT NAME</div>
 
         <div className="w-1/2 flex items-center justify-between">
           <div className="text-white-2 uppercase">CONTRIBUTORS </div>
 
-          <div className="w-1/2 flex items-center justify-between gap-4">
+          <div className="w-2/3 flex items-center justify-between gap-4">
             <div className="w-32 text-white-2 uppercase text-right">
               STARTED
             </div>
@@ -87,7 +143,7 @@ export function ProjectListPage() {
               DEADLINE
             </div>
 
-            <div className="w-20 text-white-2 uppercase text-right">PHASE</div>
+            <div className="w-32 text-white-2 uppercase text-right">PHASE</div>
           </div>
         </div>
       </div>

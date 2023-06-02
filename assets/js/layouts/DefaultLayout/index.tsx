@@ -36,6 +36,23 @@ function Logo() {
   );
 }
 
+function Flare() {
+  return (
+    <div
+      className="absolute"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "800px",
+        background:
+          "radial-gradient(circle at top, #ffff0010 0%, #00000000 50%)",
+        pointerEvents: "none",
+      }}
+    ></div>
+  );
+}
+
 function NavigationContainer({ size, children }) {
   const padding = size === "large" ? "py-3 px-4" : "py-1 px-4";
 
@@ -154,6 +171,7 @@ export default function DefaultLayout() {
   return (
     <div>
       <Navigation size={navigationSize} />
+      <Flare />
 
       <div>
         <Outlet />
