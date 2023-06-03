@@ -26,27 +26,35 @@ export default function RichContent({
   jsonContent,
   className,
 }: RichContentProps): JSX.Element {
-  const json = JSON.parse(jsonContent);
+  try {
+    if (jsonContent === "null") {
+      return <div className={"ProseMirror " + className}></div>;
+    }
 
-  const html = generateHTML(json, [
-    Document,
-    Paragraph,
-    Text,
-    Bold,
-    Mention,
-    ListItem,
-    BulletList,
-    OrderedList,
-    HardBreak,
-    Heading,
-  ]);
+    const json = JSON.parse(jsonContent);
 
-  return (
-    <div
-      className={"ProseMirror " + className}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
+    const html = generateHTML(json, [
+      Document,
+      Paragraph,
+      Text,
+      Bold,
+      Mention,
+      ListItem,
+      BulletList,
+      OrderedList,
+      HardBreak,
+      Heading,
+    ]);
+
+    return (
+      <div
+        className={"ProseMirror " + className}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  } catch (e) {
+    throw jsonContent;
+  }
 }
 
 RichContent.defaultProps = {
