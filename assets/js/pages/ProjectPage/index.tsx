@@ -15,39 +15,52 @@ import Timeline from "./Timeline";
 import Activity from "./Activity";
 import Contributors from "./Contributors";
 
-function SmallStatusUpdate({ person, acknowledged, title, message }) {
+function SmallStatusUpdate({
+  person,
+  acknowledged,
+  title,
+  message,
+  comments,
+  time,
+}) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2">
+    <div className="flex items-start justify-between gap-4 py-2 hover:cursor-pointer hover:bg-shade-1 px-2">
       <div className="flex items-start gap-4">
         <div className="shrink-0 mt-2">
           <Avatar person={person} size={AvatarSize.Small} />
         </div>
 
-        <div className="w-72">
+        <div className="w-[330px]">
           <div className="text-sm">
-            <div className="font-bold">{title}</div>
-            <div className="truncate overflow-hidden">{message}</div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <div className="font-bold">{title}</div>
+              </div>
+
+              <div className="flex items-center gap-1 text-xs">{time}</div>
+            </div>
+            <div className="line-clamp-2">{message}</div>
           </div>
 
           <div className="text-xs mt-1 flex items-center gap-3">
             <div className="flex items-center gap-1">
-              <Icons.Calendar size={14} />{" "}
-              <FormattedTime time={new Date()} format="short-date" />
+              <Icons.MessageCircle size={14} /> {comments} comments
             </div>
-
             <div className="flex items-center gap-1">
-              <Icons.MessageCircle size={14} /> 3 comments
+              {acknowledged ? (
+                <div className="flex items-center gap-1">
+                  <Icons.CircleCheck size={14} className="text-green-400 " />{" "}
+                  acknowledged
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <Icons.CircleCheck size={14} className="text-white-2" />
+                  waiting for akcnowledgement
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
-
-      <div>
-        {acknowledged ? (
-          <Icons.CircleCheck size={20} className="text-green-400" />
-        ) : (
-          <Icons.CircleCheck size={20} className="text-white-3" />
-        )}
       </div>
     </div>
   );
@@ -323,43 +336,55 @@ export function ProjectPage() {
           <KeyResources />
         </div>
 
-        <div className="w-1/3 bg-dark-1 px-6 py-4 rounded-lg border border-shade-3">
+        <div className="w-1/3 bg-dark-1 px-4 py-4 rounded-lg border border-shade-3">
           <div className="">
             <div className="flex flex-col divide-y divide-white-3">
               <SmallStatusUpdate
                 person={project.owner}
                 title="Status Update"
                 message="We have completed the first milestone and we are on track to complete the project on time"
+                comments={3}
+                time="Mar 24th"
               />
               <SmallStatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
                 message="The project is going well and we are expecting the finish all the work on time"
+                comments={0}
+                time="Mar 17th"
               />
               <SmallStatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
                 message="The outages are still happening and we are working on a fix. We will keep you updated."
+                comments={10}
+                time="Mar 10th"
               />
               <SmallStatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
                 message="We are currently working on delivering the first milestone which is due next week."
+                comments={0}
+                time="Mar 2nd"
               />
               <SmallStatusUpdate
                 person={project.contributors[0].person}
                 acknowledged
                 title="Request for Project Review"
                 message="I haven't heard any news about the project for a while. Can you please provide an update?"
+                comments={1}
+                time="Mar 1st"
               />
               <SmallStatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
                 message="The project was bootstrapped and the team is working on the first milestone."
+                comments={3}
+                time="Dec 25th, 2022"
               />
             </div>
           </div>
