@@ -218,7 +218,7 @@ function KeyResources(): JSX.Element {
         Slack Channel
       </div>
 
-      <div className="border border-shade-3 px-4 py-3 flex items-center gap-2 rounded-lg">
+      <div className="border border-shade-3 border-dashed px-4 py-3 flex items-center gap-2 rounded-lg">
         <Icons.Plus size={20} />
         Add Resource
       </div>
@@ -284,8 +284,8 @@ export function ProjectPage() {
         </div>
       </div>
 
-      <div className="flex gap-5 ">
-        <div className="w-2/3 bg-shade-1 px-8 rounded-lg border border-shade-3 backdrop-blur">
+      <div className="flex gap-5">
+        <div className="w-2/3 bg-shade-1 pb-8 px-8 rounded-lg border border-shade-3 backdrop-blur">
           <div className="flex items-center -mx-8 border-b border-shade-2">
             <div className="font-bold flex items-center gap-2 border-b-2 border-white-2 -mb-[1px] px-4 py-4">
               <Icons.LayoutCollage size={20} className="text-pink-400" />
@@ -344,12 +344,17 @@ export function ProjectPage() {
 
         <div className="w-1/3 bg-shade-1 backdrop-blur rounded-lg border border-shade-3">
           <div className="">
-            <div className="flex items-center border-b border-shade-3">
-              <div className="font-bold px-4 py-4 flex items-center gap-2">
-                <Icons.Message2 size={20} className="text-violet-400" />
+            <div className="flex items-center border-b border-shade-3 justify-between px-4">
+              <div className="font-bold py-4 flex items-center gap-2">
                 Status Updates
               </div>
+
+              <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
+                <Icons.Message2 size={20} className="text-violet-400" />
+                Post Update
+              </button>
             </div>
+
             <div className="flex flex-col">
               <SmallStatusUpdate
                 person={project.owner}
