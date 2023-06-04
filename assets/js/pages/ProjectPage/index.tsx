@@ -24,40 +24,41 @@ function SmallStatusUpdate({
   time,
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2 hover:cursor-pointer hover:bg-shade-1 px-2">
+    <div className="flex items-start justify-between gap-4 hover:cursor-pointer hover:bg-shade-1 px-4 py-4 border-b border-shade-3">
       <div className="flex items-start gap-4">
         <div className="shrink-0 mt-2">
           <Avatar person={person} size={AvatarSize.Small} />
         </div>
 
-        <div className="w-[330px]">
+        <div className="">
           <div className="text-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <div className="font-bold">{title}</div>
               </div>
 
-              <div className="flex items-center gap-1 text-xs">{time}</div>
+              <div className="flex items-center gap-1 text-sm">{time}</div>
             </div>
             <div className="line-clamp-2">{message}</div>
           </div>
 
-          <div className="text-xs mt-1 flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Icons.MessageCircle size={14} /> {comments} comments
-            </div>
-            <div className="flex items-center gap-1">
+          <div className="text-sm mt-2 flex items-center gap-3">
+            <div className="flex items-center gap-1 font-medium">
               {acknowledged ? (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 text-green-400">
                   <Icons.CircleCheck size={14} className="text-green-400 " />{" "}
                   acknowledged
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
-                  <Icons.CircleCheck size={14} className="text-white-2" />
-                  waiting for akcnowledgement
+                <div className="flex items-center gap-1 text-yellow-400">
+                  <Icons.Clock size={14} className="text-yellow-400" />
+                  waiting
                 </div>
               )}
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Icons.MessageCircle size={14} /> {comments} comments
             </div>
           </div>
         </div>
@@ -78,9 +79,9 @@ function Flare() {
         top: 0,
         left: 0,
         right: 0,
-        height: "800px",
+        height: "500px",
         background:
-          "radial-gradient(circle at top right, #00FF0005 0%, #00000000 50%)",
+          "radial-gradient(circle at top center, #FFFF0008 0%, #00000000 50%)",
         pointerEvents: "none",
       }}
     ></div>
@@ -243,91 +244,96 @@ export function ProjectPage() {
 
   return (
     <div className="mt-32 mx-auto max-w-7xl relative">
-      <div className="text-5xl font-bold py-16 bg-dark-1 pb-20 -mb-8 -mx-96 px-96 -mt-48 pt-48 border-b border-shade-3">
-        {project.name}
-        <div className="text-base font-normal mt-4">
-          In execution phase &middot; 3/10 milestones completed
+      <div className="py-16 bg-dark-1 pb-32 -mb-20 -mx-96 px-96 -mt-48 pt-40 border-b-2 border-shade-3 border-double relative">
+        <Flare />
+
+        <div className="flex items-center mb-4">
+          <div className="text-sm bg-shade-1 rounded-full px-4 py-2 font-medium">
+            &lt;&mdash; All Projects
+          </div>
+        </div>
+
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2">
+            <div className="font-bold text-4xl">{project.name}</div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
+              <Icons.Star size={16} className="text-yellow-400" />
+              Follow
+            </button>
+
+            <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2 text-green-400 border-green-400">
+              On Track
+              <Icons.ChevronDown size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center gap-2">
+          <Avatar person={project.owner} size={AvatarSize.Small} />
+
+          {project.contributors.map((c, index: number) => (
+            <Avatar person={c.person} size={AvatarSize.Small} />
+          ))}
+
+          <div className="border border-white-3 border-dashed rounded-full p-1 text-white-3">
+            <Icons.Plus />
+          </div>
         </div>
       </div>
 
       <div className="flex gap-5 ">
-        <div className="w-2/3 bg-shade-1 px-8 py-8 rounded-lg border border-shade-3 backdrop-blur">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
-              Description
+        <div className="w-2/3 bg-shade-1 px-8 rounded-lg border border-shade-3 backdrop-blur">
+          <div className="flex items-center -mx-8 border-b border-shade-2">
+            <div className="font-bold flex items-center gap-2 border-b-2 border-white-2 -mb-[1px] px-4 py-4">
+              <Icons.LayoutCollage size={20} className="text-pink-400" />
+              Overview
+            </div>
+
+            <div className="font-bold flex items-center gap-2 border-b-2 border-transparent -mb-[1px] px-4 py-4 text-white-2">
+              <Icons.TimelineEvent size={20} />
+              Timeline
             </div>
           </div>
 
-          <div className="max-w-3xl mt-8">
+          <div className="border-b border-shade-2 py-4 -mx-8 px-8 mt-4 pb-10">
             <Overview data={data} />
           </div>
 
-          <div className="mt-16 flex items-center justify-between mb-4">
+          <div className="mt-8 flex items-center justify-between">
             <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
               GOALS & KPIs
             </div>
           </div>
 
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center gap-2 px-4 py-3 bg-shade-2 rounded-lg">
-              <Icons.Target size={20} /> Increase revenue by 20% by the end of
-              Q3
-            </div>
-
-            <div className="flex items-center gap-2 px-4 py-3 bg-shade-2 rounded-lg">
-              <Icons.Graph size={20} /> User Churn Rate
-            </div>
-
-            <div className="flex items-center gap-2 px-4 py-3 border border-shade-3 rounded-lg">
-              <Icons.Plus size={20} /> Add Goal or KPI
-            </div>
-          </div>
-
-          <div className="mt-16 flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
-              CONTRIBUTORS
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4 mt-8">
-            {project.owner && (
-              <div className="flex gap-4 items-center">
-                <Avatar person={project.owner} size={AvatarSize.Normal} />
-                <div>
-                  <div className="font-bold">{project.owner.fullName}</div>
-                  <div className="text-sm text-blue-400 font-bold">
-                    Project Champion
-                  </div>
-                </div>
+          <div className="border-b border-shade-2 py-4 -mx-8 px-8 pb-10">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 px-4 py-3 bg-shade-1 rounded-lg">
+                <Icons.Target size={20} className="text-pink-400" /> Increase
+                revenue by 20% by the end of Q3
               </div>
-            )}
 
-            {project.contributors.map((c) => (
-              <div key={c.person.id} className="flex gap-4 items-center">
-                <div className="shrink-0">
-                  <Avatar person={c.person} size={AvatarSize.Normal} />
+              <div className="flex items-center justify-between px-4 py-3 bg-shade-1 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Icons.Graph size={20} className="text-lime-400" /> Montlhy
+                  Reccuring Revenue
                 </div>
-                <div>
-                  <div className="font-bold">{c.person.fullName}</div>
-                  <div className="text-sm text-white-2">{c.responsibility}</div>
-                </div>
-              </div>
-            ))}
 
-            <div className="flex gap-4 items-center">
-              <div className="shrink-0">
-                <div className="w-10 h-10 rounded-full border border-white-3 border-dashed flex items-center justify-center text-white-2">
-                  <Icons.Plus size={20} />
+                <div className="font-bold flex items-center">
+                  $ 10,451,321
+                  <Icons.TrendingUp size={20} className="text-green-400 ml-2" />
                 </div>
               </div>
 
-              <div>
-                <div className="">Add Contributor</div>
+              <div className="flex items-center gap-2 px-4 py-3 border border-shade-3 rounded-lg border-dashed">
+                <Icons.Plus size={20} /> Add Goal or KPI
               </div>
             </div>
           </div>
 
-          <div className="mt-16 flex items-center justify-between mb-4">
+          <div className="mt-8 flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 uppercase font-bold tracking-wide">
               KEY RESOURCES
             </div>
@@ -336,9 +342,15 @@ export function ProjectPage() {
           <KeyResources />
         </div>
 
-        <div className="w-1/3 bg-dark-1 px-4 py-4 rounded-lg border border-shade-3">
+        <div className="w-1/3 bg-shade-1 backdrop-blur rounded-lg border border-shade-3">
           <div className="">
-            <div className="flex flex-col divide-y divide-white-3">
+            <div className="flex items-center border-b border-shade-3">
+              <div className="font-bold px-4 py-4 flex items-center gap-2">
+                <Icons.Message2 size={20} className="text-violet-400" />
+                Status Updates
+              </div>
+            </div>
+            <div className="flex flex-col">
               <SmallStatusUpdate
                 person={project.owner}
                 title="Status Update"

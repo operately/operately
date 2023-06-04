@@ -1,12 +1,19 @@
 .ProseMirror ul {
-  padding: 0 23px;
+  padding: 0;
+  padding-left: 36px;
   list-style: unset;
   margin-top: 0px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.ProseMirror li {
+  margin-bottom: 6px;
+  margin-top: 6px;
 }
 
 .ProseMirror ol {
-  padding: 0 23px;
+  padding: 0 24px;
   list-style: auto;
   margin-top: 0px;
 }
@@ -17,6 +24,9 @@
 .ProseMirror h4,
 .ProseMirror h5,
 .ProseMirror h6 {
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  font-weight: 800;
 }
 
 .ProseMirror code {
@@ -59,14 +69,10 @@
 }
 
 .ProseMirror h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-  color: var(--color-brand-1);
-}
-
-.ProseMirror p {
+  /* font-size: 1.2rem; */
+  /* font-weight: 700; */
+  /* margin-bottom: 1rem; */
+  /* color: var(--color-brand-1); */
 }
 
 .ProseMirror p + p {

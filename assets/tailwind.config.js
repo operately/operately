@@ -13,6 +13,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        brand: {
+          1: "#3185FF",
+          2: "#E3F2FF",
+        },
         dark: {
           1: "rgba(30,30,34,255)",
           2: "rgba(43,45,49,255)",
