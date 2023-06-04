@@ -272,7 +272,9 @@ export function ProjectPage() {
         </div>
 
         <div className="mt-4 flex items-center gap-2">
-          <Avatar person={project.owner} size={AvatarSize.Small} />
+          <div className="relative border-2 rounded-full border-yellow-400 p-0.5">
+            <Avatar person={project.owner} size={AvatarSize.Small} />
+          </div>
 
           {project.contributors.map((c, index: number) => (
             <Avatar person={c.person} size={AvatarSize.Small} />
