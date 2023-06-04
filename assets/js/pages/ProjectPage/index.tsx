@@ -15,6 +15,48 @@ import Timeline from "./Timeline";
 import Activity from "./Activity";
 import Contributors from "./Contributors";
 
+function SmallStatusUpdate({ person, acknowledged, title, message }) {
+  return (
+    <div className="flex items-start justify-between gap-4 py-2">
+      <div className="flex items-start gap-4">
+        <div className="shrink-0 mt-2">
+          <Avatar person={person} size={AvatarSize.Small} />
+        </div>
+
+        <div className="w-72">
+          <div className="text-sm">
+            <div className="font-bold">{title}</div>
+            <div className="truncate overflow-hidden">{message}</div>
+          </div>
+
+          <div className="text-xs mt-1 flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <Icons.Calendar size={14} />{" "}
+              <FormattedTime time={new Date()} format="short-date" />
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Icons.MessageCircle size={14} /> 3 comments
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        {acknowledged ? (
+          <Icons.CircleCheck size={20} className="text-green-400" />
+        ) : (
+          <Icons.CircleCheck size={20} className="text-white-3" />
+        )}
+      </div>
+    </div>
+  );
+}
+
+SmallStatusUpdate.defaultProps = {
+  acknowledged: false,
+};
+
 function Flare() {
   return (
     <div
@@ -185,8 +227,6 @@ export function ProjectPage() {
   if (!data) return <p className="mt-16">Can't find project</p>;
 
   let project = data.project;
-  let parents = project.parents;
-  let parent = parents[parents.length - 1]!;
 
   return (
     <div className="mt-32 mx-auto max-w-7xl relative">
@@ -286,60 +326,41 @@ export function ProjectPage() {
         <div className="w-1/3 bg-dark-1 px-6 py-4 rounded-lg border border-shade-3">
           <div className="">
             <div className="flex flex-col divide-y divide-white-3">
-              <div className="flex items-center justify-between gap-4 py-2">
-                <div className="flex items-center gap-4">
-                  <div className="shrink-0">
-                    <Avatar person={project.owner} size={AvatarSize.Small} />
-                  </div>
-
-                  <div>
-                    <div className="text-sm">
-                      <span className="font-bold">
-                        Status Update on{" "}
-                        <FormattedTime time={new Date()} format="short-date" />{" "}
-                        <br />
-                      </span>
-                      Project is going good. We have s&hellip;
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-green-400">
-                  <Icons.Check />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 py-2">
-                <div className="shrink-0">
-                  <Avatar person={project.owner} size={AvatarSize.Small} />
-                </div>
-                <div>
-                  <div className="text-sm">
-                    <span className="font-bold">
-                      Status Update on{" "}
-                      <FormattedTime time={new Date()} format="short-date" />{" "}
-                      <br />
-                    </span>
-                    We hit a roadblock with the s&hellip;
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 py-2">
-                <div className="shrink-0">
-                  <Avatar person={project.owner} size={AvatarSize.Small} />
-                </div>
-                <div>
-                  <div className="text-sm">
-                    <span className="font-bold">
-                      Status Update on{" "}
-                      <FormattedTime time={new Date()} format="short-date" />{" "}
-                      <br />
-                    </span>
-                    Project is going good. We have s&hellip;
-                  </div>
-                </div>
-              </div>
+              <SmallStatusUpdate
+                person={project.owner}
+                title="Status Update"
+                message="We have completed the first milestone and we are on track to complete the project on time"
+              />
+              <SmallStatusUpdate
+                person={project.owner}
+                acknowledged
+                title="Status Update"
+                message="The project is going well and we are expecting the finish all the work on time"
+              />
+              <SmallStatusUpdate
+                person={project.owner}
+                acknowledged
+                title="Status Update"
+                message="The outages are still happening and we are working on a fix. We will keep you updated."
+              />
+              <SmallStatusUpdate
+                person={project.owner}
+                acknowledged
+                title="Status Update"
+                message="We are currently working on delivering the first milestone which is due next week."
+              />
+              <SmallStatusUpdate
+                person={project.contributors[0].person}
+                acknowledged
+                title="Request for Project Review"
+                message="I haven't heard any news about the project for a while. Can you please provide an update?"
+              />
+              <SmallStatusUpdate
+                person={project.owner}
+                acknowledged
+                title="Status Update"
+                message="The project was bootstrapped and the team is working on the first milestone."
+              />
             </div>
           </div>
         </div>

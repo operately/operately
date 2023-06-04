@@ -138,12 +138,6 @@ const GET_PROJECT = gql`
         status
       }
 
-      parents {
-        id
-        title
-        type
-      }
-
       contributors {
         id
         person {
