@@ -261,13 +261,19 @@ export function ProjectPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
+            <button className="rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
               <Icons.Star size={16} className="text-yellow-400" />
               Follow
             </button>
 
             <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2 text-green-400 border-green-400">
               On Track
+              <Icons.ChevronDown size={16} />
+            </button>
+
+            <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2 text-pink-400 border-pink-400">
+              <Icons.Hammer size={16} />
+              Execution Phase
               <Icons.ChevronDown size={16} />
             </button>
           </div>
