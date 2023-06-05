@@ -14,11 +14,11 @@ export default function PostUpdate() {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-dark-1/80 backdrop-blur data-[state=open]:animate-overlayShow fixed inset-0" />
-        <Dialog.Content className="bg-dark-2 border border-shade-2 fixed left-1/2 top-32 transform -translate-x-1/2 max-w-5xl w-full rounded-lg px-32 py-16">
-          <div className="uppercase text-white-1 tracking-wide text-center w-full mb-2">
+        <Dialog.Content className="bg-dark-2 border border-shade-2 fixed left-1/2 top-32 transform -translate-x-1/2 max-w-4xl w-full rounded-lg px-16 py-16">
+          <div className="uppercase text-white-1 tracking-wide w-full mb-2">
             STATUS UPDATE
           </div>
-          <Dialog.Title className="font-bold text-center text-3xl">
+          <Dialog.Title className="font-bold text-3xl">
             What's new since the previous update?
           </Dialog.Title>
           <Dialog.Description className="">
@@ -31,7 +31,7 @@ export default function PostUpdate() {
               <Icons.ListCheck size={20} className="text-white-1" />
             </div>
 
-            <div className="mb-8 py-8 text-white-2">
+            <div className="mb-8 py-8 text-white-2 text-lg">
               Write your update here...
             </div>
 

@@ -61,3 +61,10 @@ body {
 .hover\:card-shadow-blue:hover {
   box-shadow: 0px 0px 12px rgba(49, 133, 255, 0.2);
 }
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

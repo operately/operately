@@ -16,62 +16,7 @@ import Activity from "./Activity";
 import Contributors from "./Contributors";
 
 import PostUpdate from "./PostUpdate";
-
-function SmallStatusUpdate({
-  person,
-  acknowledged,
-  title,
-  message,
-  comments,
-  time,
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4 hover:cursor-pointer hover:bg-shade-1 px-4 py-4 border-b border-shade-3">
-      <div className="flex items-start gap-4">
-        <div className="shrink-0 mt-2">
-          <Avatar person={person} size={AvatarSize.Small} />
-        </div>
-
-        <div className="">
-          <div className="text-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                <div className="font-bold">{title}</div>
-              </div>
-
-              <div className="flex items-center gap-1 text-sm">{time}</div>
-            </div>
-            <div className="line-clamp-2">{message}</div>
-          </div>
-
-          <div className="text-sm mt-2 flex items-center gap-3">
-            <div className="flex items-center gap-1 font-medium">
-              {acknowledged ? (
-                <div className="flex items-center gap-1 text-green-400">
-                  <Icons.CircleCheck size={14} className="text-green-400 " />{" "}
-                  acknowledged
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-yellow-400">
-                  <Icons.Clock size={14} className="text-yellow-400" />
-                  waiting
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1">
-              <Icons.MessageCircle size={14} /> {comments} comments
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-SmallStatusUpdate.defaultProps = {
-  acknowledged: false,
-};
+import StatusUpdate from "./StatusUpdate";
 
 function Flare() {
   return (
@@ -370,14 +315,14 @@ export function ProjectPage() {
             </div>
 
             <div className="flex flex-col">
-              <SmallStatusUpdate
+              <StatusUpdate
                 person={project.owner}
                 title="Status Update"
-                message="We have completed the first milestone and we are on track to complete the project on time"
+                message="We have completed the first milestone and we are on track to complete the project on time. Last week we reached out to people who have signed up via the newsletter. In total we had around 800 singups, from which around 550 responded to the survey."
                 comments={3}
                 time="Mar 24th"
               />
-              <SmallStatusUpdate
+              <StatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
@@ -385,7 +330,7 @@ export function ProjectPage() {
                 comments={0}
                 time="Mar 17th"
               />
-              <SmallStatusUpdate
+              <StatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
@@ -393,7 +338,7 @@ export function ProjectPage() {
                 comments={10}
                 time="Mar 10th"
               />
-              <SmallStatusUpdate
+              <StatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
@@ -401,7 +346,7 @@ export function ProjectPage() {
                 comments={0}
                 time="Mar 2nd"
               />
-              <SmallStatusUpdate
+              <StatusUpdate
                 person={project.contributors[0].person}
                 acknowledged
                 title="Request for Project Review"
@@ -409,7 +354,7 @@ export function ProjectPage() {
                 comments={1}
                 time="Mar 1st"
               />
-              <SmallStatusUpdate
+              <StatusUpdate
                 person={project.owner}
                 acknowledged
                 title="Status Update"
