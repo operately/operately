@@ -15,6 +15,8 @@ import Timeline from "./Timeline";
 import Activity from "./Activity";
 import Contributors from "./Contributors";
 
+import PostUpdate from "./PostUpdate";
+
 function SmallStatusUpdate({
   person,
   acknowledged,
@@ -364,10 +366,7 @@ export function ProjectPage() {
                 Status Updates
               </div>
 
-              <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
-                <Icons.Message2 size={20} className="text-violet-400" />
-                Post Update
-              </button>
+              <PostUpdate />
             </div>
 
             <div className="flex flex-col">
