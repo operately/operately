@@ -28,6 +28,23 @@ function Phase({ phase }) {
   }
 }
 
+function Flare() {
+  return (
+    <div
+      className="absolute"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "500px",
+        background:
+          "radial-gradient(circle at top center, #FFFF0008 0%, #00000000 50%)",
+        pointerEvents: "none",
+      }}
+    ></div>
+  );
+}
+
 function ProjectListItem({ project }) {
   return (
     <Link to={`/projects/${project.id}`}>
@@ -86,19 +103,21 @@ export function ProjectListPage() {
 
   return (
     <div className="mt-20 flex flex-col gap-[2px] max-w-6xl mx-auto">
+      <Flare />
       <div className="flex items-center justify-between gap-4 mb-10">
         <div className="flex items-center justify-between gap-4">
-          <div className="p-2 rounded-full bg-shade-1 text-white-2">
-            <Icons.LayoutList size={16} />
+          <div className="p-2 rounded-full bg-pink-400/20 text-white-2 border border-pink-400">
+            <Icons.LayoutList size={16} className="text-pink-400" />
           </div>
 
-          <div className="p-2 rounded-full text-white-2 hover:bg-shade-1 cursor-pointer">
+          <div className="p-2 rounded-full border border-white-3 text-white-2 hover:bg-shade-1 cursor-pointer">
             <Icons.Map size={16} />
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-4">
-          <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+          <button className="border border-white-2 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 font-medium flex items-center gap-2">
+            <Icons.ClipboardList size={16} className="text-green-400" />
             New Project
           </button>
         </div>
@@ -110,19 +129,19 @@ export function ProjectListPage() {
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <button className="border border-orange-800 rounded-full hover:border-orange-800 text-dark-1 hover:text-white-1 px-3 py-1.5 text-sm font-bold bg-shade-1 bg-orange-400">
+          <button className="border border-orange-400 text-orange-400 bg-orange-400/20 rounded-full hover:border-orange-800 text-dark-1 hover:text-white-1 px-3 py-1.5 text-sm font-bold">
             All Projects
           </button>
 
-          <button className="border border-white-3 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
             Only Mine
           </button>
 
-          <button className="border border-white-3 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
             Overdue
           </button>
 
-          <button className="border border-white-3 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
             Drafts
           </button>
         </div>
