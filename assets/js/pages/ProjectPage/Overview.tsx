@@ -19,7 +19,7 @@ function Description({ project }) {
 export default function Overview({ project }) {
   return (
     <div className="fadeIn">
-      <div className="border-b border-shade-2 py-4 -mx-8 px-8 mt-4 pb-10 fadeIn">
+      <div className="border-b border-shade-2 -mx-8 px-8 mt-4 py-8 fadeIn">
         <Description project={project} />
       </div>
 
