@@ -4,15 +4,20 @@ import * as Icons from "tabler-icons-react";
 import Flare from "./Flare";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 
+import { Link } from "react-router-dom";
+
 export default function Header({ project }): JSX.Element {
   return (
     <div className="py-16 bg-dark-1 relative">
       <Flare />
 
       <div className="flex items-center mb-4">
-        <div className="text-sm bg-shade-1 rounded-full px-4 py-2 font-medium">
+        <Link
+          className="text-sm bg-shade-1 rounded-full px-4 py-2 font-medium hover:border-white-2 border border-transparent transition duration-100"
+          to="/projects"
+        >
           &lt;&mdash; All Projects
-        </div>
+        </Link>
       </div>
 
       <div className="flex justify-between">
