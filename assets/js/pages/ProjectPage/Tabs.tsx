@@ -4,6 +4,7 @@ import * as Icons from "tabler-icons-react";
 import { Container, Tab } from "@/components/Tabs";
 
 import Overview from "./Overview";
+import Contributors from "./Contributors";
 
 export default function Tabs({ activeTab, project }) {
   const basePath = `/projects/${project.id}`;
@@ -37,7 +38,7 @@ export default function Tabs({ activeTab, project }) {
         )}
         title="Contributors"
         path="/contributors"
-        element={<div></div>}
+        element={<Contributors project={project} />}
       />
     </Container>
   );

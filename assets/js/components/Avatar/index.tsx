@@ -29,7 +29,7 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Small:
       return "w-[30px] h-[30px]";
     case AvatarSize.Normal:
-      return "w-10 h-10";
+      return "w-9 h-9";
     case AvatarSize.Large:
       return "w-12 h-12";
     case AvatarSize.XLarge:
@@ -46,7 +46,7 @@ function TextClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Small:
       return "text-xs font-semibold";
     case AvatarSize.Normal:
-      return "text-lg font-bold";
+      return "text font-bold";
     case AvatarSize.Large:
       return "text-2xl font-bold";
     case AvatarSize.XLarge:
