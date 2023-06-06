@@ -5,6 +5,7 @@ import { Container, Tab } from "@/components/Tabs";
 
 import Overview from "./Overview";
 import Contributors from "./Contributors";
+import Timeline from "./Timeline";
 
 export default function Tabs({ activeTab, project }) {
   const basePath = `/projects/${project.id}`;
@@ -29,7 +30,7 @@ export default function Tabs({ activeTab, project }) {
         )}
         title="Timeline"
         path="/timeline"
-        element={<div></div>}
+        element={<Timeline project={project} />}
       />
 
       <Tab

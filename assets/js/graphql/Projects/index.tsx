@@ -120,6 +120,7 @@ const GET_PROJECT = gql`
       id
       name
       description
+      startedAt
       deadline
       nextUpdateScheduledAt
       phase
