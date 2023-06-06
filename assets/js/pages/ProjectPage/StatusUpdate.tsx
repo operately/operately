@@ -55,10 +55,6 @@ function StatusUpdatePreview(props) {
   );
 }
 
-StatusUpdatePreview.defaultProps = {
-  acknowledged: false,
-};
-
 export default function StatusUpdate({
   person,
   acknowledged,
@@ -130,3 +126,7 @@ export default function StatusUpdate({
     </Dialog.Root>
   );
 }
+
+StatusUpdate.defaultProps = {
+  acknowledged: false,
+};
