@@ -1,8 +1,10 @@
 import React from "react";
 
+import RichContent from "@//components/RichContent";
+
 import KeyResources from "./KeyResources";
 import GoalsAndKpis from "./GoalsAndKpis";
-import RichContent from "../../components/RichContent";
+import Milestones from "./Milestones";
 
 function Description({ project }) {
   return (
@@ -22,6 +24,7 @@ export default function Overview({ project }) {
       </div>
 
       <GoalsAndKpis />
+      <Milestones project={project} />
       <KeyResources />
     </div>
   );
