@@ -17,6 +17,17 @@
   }
 }
 
+@keyframes zoomOutAnimation {
+  0% {
+    opacity: 0;
+    scale: 1.1;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 @keyframes ping {
   10% {
     transform: scale(1);
@@ -37,6 +48,13 @@
 .fadeIn {
   animation: fadeInAnimation;
   animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
+.zoomOut {
+  animation: zoomOutAnimation;
+  animation-duration: 0.2s;
   animation-fill-mode: forwards;
   animation-iteration-count: 1;
 }

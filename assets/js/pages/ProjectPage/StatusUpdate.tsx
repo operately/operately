@@ -73,7 +73,7 @@ export default function StatusUpdate({
 
       <Dialog.Portal>
         <Dialog.Overlay className="bg-dark-1/80 backdrop-blur data-[state=open]:animate-overlayShow fixed inset-0" />
-        <Dialog.Content className="bg-dark-2 border border-shade-2 fixed left-1/2 top-32 transform -translate-x-1/2 max-w-4xl w-full rounded-lg px-16 py-16">
+        <Dialog.Content className="bg-dark-2 border border-shade-2 fixed left-1/2 top-32 transform -translate-x-1/2 max-w-4xl w-full rounded-lg px-16 py-16 zoomOut">
           <Dialog.Title className="font-bold text-3xl">
             Status Update
           </Dialog.Title>

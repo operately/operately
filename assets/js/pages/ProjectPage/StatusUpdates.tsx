@@ -15,7 +15,7 @@ export default function StatusUpdates({ project }) {
           <PostUpdate />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col fadeIn">
           <StatusUpdate
             person={project.owner}
             title="Status Update"
