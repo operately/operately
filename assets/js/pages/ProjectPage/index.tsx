@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
 import StatusUpdates from "./StatusUpdates";
-import Overview from "./Overview";
 import Tabs from "./Tabs";
 import Header from "./Header";
 
@@ -35,9 +34,7 @@ export function ProjectPage() {
       <div className="mx-auto max-w-7xl relative px-6">
         <div className="flex gap-5">
           <div className="w-2/3 bg-shade-1 pb-8 px-8 rounded-lg border border-shade-3 backdrop-blur">
-            <Tabs />
-
-            <Overview project={project} />
+            <Tabs activeTab={tab} project={project} />
           </div>
 
           <StatusUpdates project={project} />

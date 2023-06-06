@@ -7,14 +7,9 @@ interface HeaderProps {
   onTabChange: (path: string) => void;
 }
 
-function Header({ tabs, onTabChange, active }: HeaderProps) {
+function TabList({ tabs, onTabChange, active }: HeaderProps) {
   return (
-    <div
-      className="flex items-center gap-[24px] bg-white mt-[26px]"
-      style={{
-        boxShadow: "inset 0px -1px 0px #EEEEEE",
-      }}
-    >
+    <div className="flex items-center -mx-8 border-b border-shade-2">
       {tabs.map((tab, index) =>
         React.cloneElement(tab, {
           key: index,
@@ -58,7 +53,7 @@ export default function Container(props: ContainerProps) {
 
   return (
     <>
-      <Header onTabChange={onTabChange} active={active} tabs={tabs} />
+      <TabList onTabChange={onTabChange} active={active} tabs={tabs} />
       <ActiveTabContent active={active} tabs={tabs} />
     </>
   );

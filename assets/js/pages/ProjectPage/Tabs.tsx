@@ -1,23 +1,44 @@
 import React from "react";
 import * as Icons from "tabler-icons-react";
 
-export default function Tabs() {
+import { Container, Tab } from "@/components/Tabs";
+
+import Overview from "./Overview";
+
+export default function Tabs({ activeTab, project }) {
+  const basePath = `/projects/${project.id}`;
+
   return (
-    <div className="flex items-center -mx-8 border-b border-shade-2">
-      <div className="font-bold flex items-center gap-2 border-b-2 border-white-2 -mb-[1px] px-4 py-4">
-        <Icons.LayoutCollage size={20} className="text-pink-400" />
-        Overview
-      </div>
+    <Container active={activeTab} basePath={basePath}>
+      <Tab
+        icon={(active) => (
+          <Icons.LayoutCollage
+            size={20}
+            className={active ? "text-pink-400" : ""}
+          />
+        )}
+        title="Overview"
+        path="/"
+        element={<Overview project={project} />}
+      />
 
-      <div className="font-bold flex items-center gap-2 border-b-2 border-transparent -mb-[1px] px-4 py-4 text-white-2">
-        <Icons.Map2 size={20} />
-        Timeline
-      </div>
+      <Tab
+        icon={(active) => (
+          <Icons.Map2 size={20} className={active ? "text-pink-400" : ""} />
+        )}
+        title="Timeline"
+        path="/timeline"
+        element={<div></div>}
+      />
 
-      <div className="font-bold flex items-center gap-2 border-b-2 border-transparent -mb-[1px] px-4 py-4 text-white-2">
-        <Icons.Users size={20} />
-        Contributors
-      </div>
-    </div>
+      <Tab
+        icon={(active) => (
+          <Icons.Users size={20} className={active ? "text-pink-400" : ""} />
+        )}
+        title="Contributors"
+        path="/contributors"
+        element={<div></div>}
+      />
+    </Container>
   );
 }
