@@ -5,17 +5,19 @@ import StatusUpdate from "./StatusUpdate";
 
 export default function StatusUpdates({ project }) {
   return (
-    <div className="w-1/3 bg-shade-1 backdrop-blur rounded-lg border border-shade-3">
+    <div className="bg-shade-1 px-16 rounded-b-[30px] py-8">
       <div className="">
-        <div className="flex items-center border-b border-shade-3 justify-between px-4">
-          <div className="font-bold py-4 flex items-center gap-2">
+        <div className="flex items-center justify-between gap-4">
+          <div className="font-bold py-4 flex items-center gap-2 uppercase">
             Status Updates
           </div>
+
+          <div className="border-b border-pink-400 flex-1"></div>
 
           <PostUpdate />
         </div>
 
-        <div className="flex flex-col fadeIn">
+        <div className="fadeIn">
           <StatusUpdate
             person={project.owner}
             title="Status Update"

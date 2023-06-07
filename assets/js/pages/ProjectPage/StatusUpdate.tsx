@@ -9,51 +9,43 @@ function StatusUpdatePreview(props) {
   const { person, acknowledged, title, message, comments, time } = props;
 
   return (
-    <div
-      {...props}
-      className="flex items-start justify-between gap-4 hover:cursor-pointer hover:bg-shade-1 px-4 py-4 border-b border-shade-3"
-    >
-      <div className="flex items-start gap-4">
-        <div className="shrink-0 mt-2">
-          <Avatar person={person} size={AvatarSize.Small} />
+    <div className="flex items-center justify-between my-3">
+      <div className="flex items-center gap-4">
+        <div className="shrink-0">
+          <Avatar person={person} />
         </div>
 
         <div className="">
-          <div className="text-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                <div className="font-bold">{title}</div>
-              </div>
-
-              <div className="flex items-center gap-1 text-sm">{time}</div>
-            </div>
-            <div className="line-clamp-2">{message}</div>
+          <div className="flex items-center justify-between font-bold">
+            {title}
           </div>
-
-          <div className="text-sm mt-2 flex items-center gap-3">
-            <div className="flex items-center gap-1 font-medium">
-              {acknowledged ? (
-                <div className="flex items-center gap-1 text-green-400">
-                  <Icons.CircleCheck size={14} className="text-green-400 " />{" "}
-                  acknowledged
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-yellow-400">
-                  <Icons.Clock size={14} className="text-yellow-400" />
-                  waiting
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1">
-              <Icons.MessageCircle size={14} /> {comments} comments
-            </div>
-          </div>
+          <div className="truncate max-w-[600px]">{message}</div>
         </div>
       </div>
+
+      <div className="text-right w-32">{time}</div>
     </div>
   );
 }
+// <div className="mt-2 flex items-center gap-3">
+//   <div className="flex items-center gap-1 font-medium">
+//     {acknowledged ? (
+//       <div className="flex items-center gap-1 text-green-400">
+//         <Icons.CircleCheck size={14} className="text-green-400 " />{" "}
+//         acknowledged
+//       </div>
+//     ) : (
+//       <div className="flex items-center gap-1 text-yellow-400">
+//         <Icons.Clock size={14} className="text-yellow-400" />
+//         waiting
+//       </div>
+//     )}
+//   </div>
+
+//   <div className="flex items-center gap-1">
+//     <Icons.MessageCircle size={14} /> {comments} comments
+//   </div>
+// </div>
 
 export default function StatusUpdate({
   person,
@@ -66,9 +58,11 @@ export default function StatusUpdate({
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <StatusUpdatePreview
-          {...{ person, acknowledged, title, message, comments, time }}
-        />
+        <div>
+          <StatusUpdatePreview
+            {...{ person, acknowledged, title, message, comments, time }}
+          />
+        </div>
       </Dialog.Trigger>
 
       <Dialog.Portal>

@@ -3,14 +3,20 @@ import React from "react";
 import * as Icons from "tabler-icons-react";
 import * as Dialog from "@radix-ui/react-dialog";
 
+function Button(props) {
+  return (
+    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2">
+      <Icons.Message2 size={20} />
+      Post Update
+    </button>
+  );
+}
+
 export default function PostUpdate() {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
-          <Icons.Message2 size={20} className="text-violet-400" />
-          Post Update
-        </button>
+        <Button />
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-dark-1/80 backdrop-blur data-[state=open]:animate-overlayShow fixed inset-0" />

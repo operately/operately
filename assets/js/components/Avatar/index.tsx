@@ -27,7 +27,7 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Tiny:
       return "w-[20px] h-[20px]";
     case AvatarSize.Small:
-      return "w-[30px] h-[30px]";
+      return "w-9 h-9";
     case AvatarSize.Normal:
       return "w-9 h-9";
     case AvatarSize.Large:
@@ -44,7 +44,7 @@ function TextClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Tiny:
       return "text-[10px] font-semibold";
     case AvatarSize.Small:
-      return "text-xs font-semibold";
+      return "text font-extrabold";
     case AvatarSize.Normal:
       return "text font-bold";
     case AvatarSize.Large:
@@ -77,8 +77,13 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const baseClass =
-    "flex items-center justify-center text-white rounded-full bg-blue-400";
+  const baseClass = [
+    "flex items-center justify-center",
+    "text-dark-1",
+    "bg-pink-300",
+    "rounded-full",
+  ].join(" ");
+
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
   const className = baseClass + " " + sizeClass + " " + textClass;

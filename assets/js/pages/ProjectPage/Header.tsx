@@ -8,43 +8,12 @@ import { Link } from "react-router-dom";
 
 export default function Header({ project }): JSX.Element {
   return (
-    <div className="py-16 bg-dark-1 relative">
-      <Flare />
-
-      <div className="flex items-center mb-4">
-        <Link
-          className="text-sm bg-shade-1 rounded-full px-4 py-2 font-medium hover:border-white-2 border border-transparent transition duration-100"
-          to="/projects"
-        >
-          &lt;&mdash; All Projects
-        </Link>
+    <div className="py-12 relative">
+      <div className="text-center text-5xl font-bold max-w-2xl mx-auto">
+        {project.name}
       </div>
 
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-4xl">{project.name}</div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button className="rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2">
-            <Icons.Star size={16} className="text-yellow-400" />
-            Follow
-          </button>
-
-          <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2 text-green-400 border-green-400">
-            On Track
-            <Icons.ChevronDown size={16} />
-          </button>
-
-          <button className="border border-white-3 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium flex items-center gap-2 text-pink-400 border-pink-400">
-            <Icons.Hammer size={16} />
-            Execution Phase
-            <Icons.ChevronDown size={16} />
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-4 flex items-center justify-center gap-2 cursor-pointer">
         <div className="relative border-2 rounded-full border-yellow-400 p-0.5">
           <Avatar person={project.owner} size={AvatarSize.Small} />
         </div>
