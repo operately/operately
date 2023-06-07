@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 export default function Header({ project }): JSX.Element {
   return (
-    <div className="py-12 relative">
+    <div className="pt-12 pb-8 relative">
       <div className="text-center text-5xl font-bold max-w-2xl mx-auto">
         {project.name}
       </div>

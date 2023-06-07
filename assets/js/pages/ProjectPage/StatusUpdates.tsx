@@ -3,12 +3,15 @@ import React from "react";
 import PostUpdate from "./PostUpdate";
 import StatusUpdate from "./StatusUpdate";
 
+import * as Icons from "tabler-icons-react";
+
 export default function StatusUpdates({ project }) {
   return (
-    <div className="bg-shade-1 px-16 rounded-b-[30px] py-8">
+    <div className="px-16 rounded-b-[30px] pb-8">
       <div className="">
         <div className="flex items-center justify-between gap-4">
           <div className="font-bold py-4 flex items-center gap-2 uppercase">
+            <Icons.Direction size={20} />
             Status Updates
           </div>
 
