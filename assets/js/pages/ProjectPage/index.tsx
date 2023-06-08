@@ -28,13 +28,13 @@ export function ProjectPage() {
 
   return (
     <div className="mt-24">
-      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-lg">
+      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
+        <Phases project={project} />
         <Header project={project} />
         <Description project={project} />
 
         <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
           <Milestones project={project} />
-          <Timeline project={project} />
           <KeyResults project={project} />
         </div>
 
@@ -48,7 +48,7 @@ export function ProjectPage() {
 
 function Milestones({ project }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg">
+    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
       <div className="">
         <div className="flex items-center justify-center gap-4 mb-4">
           <div className="font-bold flex items-center uppercase">
@@ -75,7 +75,7 @@ function Milestones({ project }) {
 
 function Timeline({ project }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg">
+    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
       <div className="">
         <div className="flex items-center justify-center gap-4 mb-4">
           <div className="font-bold flex items-center uppercase">Timeline</div>
@@ -99,7 +99,7 @@ function Timeline({ project }) {
 
 function KeyResults({ project }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg">
+    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
       <div className="">
         <div className="flex items-center justify-center gap-4 mb-4">
           <div className="font-bold flex items-center uppercase">
@@ -161,4 +161,43 @@ function Description({ project }) {
   );
 }
 
-function KeyResources({ project }) {}
+function Phases({ project }) {
+  const phases = [
+    { name: "Concept", status: "complete" },
+    { name: "Planning", status: "complete" },
+    { name: "Execution", status: "active" },
+    { name: "Control", status: "pending" },
+    { name: "Closing", status: "pending" },
+  ];
+
+  return (
+    <div className="py-3 cursor-pointer grid grid-cols-5 bg-dark-3 border-b border-shade-2 px-16 rounded-t-[20px]">
+      {phases.map((phase) => (
+        <div className="text-center">
+          <div className="font-bold flex items-center justify-center gap-2">
+            <PhaseIcon status={phase.status} />
+            {phase.name}
+          </div>
+
+          <div className="text-sm">Jan 21 -&gt; Mar 31</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PhaseIcon({ status }) {
+  switch (status) {
+    case "complete":
+      return <Icons.CircleCheck size={16} className="text-green-400" />;
+
+    case "active":
+      return <Icons.CircleDot size={16} className="text-yellow-400" />;
+
+    case "pending":
+      return <Icons.Circle size={16} />;
+
+    default:
+      throw new Error("Invalid status");
+  }
+}
