@@ -29,12 +29,14 @@ export function ProjectPage() {
   return (
     <div className="mt-24">
       <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
-        <Phases project={project} />
         <Header project={project} />
         <Description project={project} />
 
-        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
+        <Phases project={project} />
+
+        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8 mt-8">
           <Milestones project={project} />
+          <KeyResults project={project} />
           <KeyResults project={project} />
         </div>
 
@@ -162,32 +164,49 @@ function Description({ project }) {
 }
 
 function Phases({ project }) {
-  const phases = [
-    { name: "Concept", status: "complete" },
-    { name: "Planning", status: "complete" },
-    { name: "Execution", status: "active" },
-    { name: "Control", status: "pending" },
-    { name: "Closing", status: "pending" },
+  const times = [
+    { name: "Concept", time: "Apr 1st", status: "complete" },
+    { name: "Planning", time: "May 5th", status: "complete" },
+    { name: "Execution", time: "Jul 1st", status: "active" },
+    { name: "Control", time: "Aug 10th", status: "pending" },
+    { name: "Closing", time: "Aug 21th", status: "pending" },
   ];
 
   return (
-    <div className="py-3 cursor-pointer grid grid-cols-5 bg-dark-3 border-b border-shade-2 px-16 rounded-t-[20px]">
-      {phases.map((phase) => (
-        <div className="text-center">
-          <div className="font-bold flex items-center justify-center gap-2">
-            <PhaseIcon status={phase.status} />
-            {phase.name}
+    <div className="relative">
+      <div className="py-3 cursor-pointer grid grid-cols-6 bg-dark-3 border-b border-t border-shade-2 px-8">
+        <div className="flex flex-col items-center">
+          <div className="font-bold flex items-center gap-2">
+            <Icons.Rocket size={16} className="text-green-400" />
+            Created On
           </div>
-
-          <div className="text-sm">Jan 21 -&gt; Mar 31</div>
+          <div className="text-sm">Jan 31st</div>
         </div>
-      ))}
+
+        {times.map((phase, i) => (
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2">
+              <PhaseIcon status={phase.status} />
+              <span className="font-bold">{phase.name}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              {phase.status === "active" && (
+                <span className="">Due:&nbsp;</span>
+              )}
+              <div className="text-sm">{phase.time}</div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 function PhaseIcon({ status }) {
   switch (status) {
+    case "start":
+      return <Icons.CircleDot size={16} className="text-green-400" />;
+
     case "complete":
       return <Icons.CircleCheck size={16} className="text-green-400" />;
 
