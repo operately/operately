@@ -34,7 +34,7 @@ export function ProjectPage() {
 
         <Phases project={project} />
 
-        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8 mt-8">
+        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8 mt-4">
           <Milestones project={project} />
           <KeyResults project={project} />
           <KeyResults project={project} />
@@ -174,7 +174,7 @@ function Phases({ project }) {
 
   return (
     <div className="relative">
-      <div className="py-3 cursor-pointer grid grid-cols-6 bg-dark-3 border-b border-t border-shade-2 px-8">
+      <div className="py-3 cursor-pointer grid grid-cols-6 bg-dark-3 border-b border border-shade-2 rounded shadow-lg px-4 mx-16">
         <div className="flex flex-col items-center">
           <div className="font-bold flex items-center gap-2">
             <Icons.Rocket size={16} className="text-green-400" />
