@@ -67,6 +67,31 @@ export const ACTIVITY = `
   }
 `;
 
+export const ACTIVITY_WITH_PROJECT = `
+  {
+    __typename
+    id
+    insertedAt
+
+    author ${PERSON}
+
+    project {
+      id
+      name
+    }
+
+    ... on ActivityStatusUpdate {
+      message
+      acknowledged
+      acknowledgedAt
+
+      acknowledgingPerson ${PERSON}
+      reactions ${REACTION}
+      comments ${COMMENT}
+    }
+  }
+`;
+
 export const CONTRIBUTOR = `
   {
     person ${PERSON}

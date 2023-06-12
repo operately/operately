@@ -260,7 +260,7 @@ export function usePostUpdateMutation(projectId: string) {
 
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
-    update(id: $id) ${fragments.ACTIVITY}
+    update(id: $id) ${fragments.ACTIVITY_WITH_PROJECT}
   }
 `;
 

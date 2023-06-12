@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-type Format = "relative" | "short-date";
+type Format = "relative" | "short-date" | "short-date-with-time";
 
 function utcDate(): number {
   var now = new Date();
@@ -81,6 +81,28 @@ function ShortDate({ time }: { time: Date }): JSX.Element {
   return <>{t("intlDateTime", params)}</>;
 }
 
+function ShortDateWithTime({ time }: { time: Date }): JSX.Element {
+  const { t } = useTranslation();
+
+  let params = {
+    val: time,
+    formatParams: {
+      val: {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      },
+    },
+  };
+
+  if (!isCurrentYear(time)) {
+    params["formatParams"]["val"]["year"] = "numeric";
+  }
+
+  return <>{t("intlDateTime", params)}</>;
+}
+
 export default function FormattedTime({
   time,
   format,
@@ -96,6 +118,10 @@ export default function FormattedTime({
 
   if (format === "short-date") {
     return <ShortDate time={parsedTime} />;
+  }
+
+  if (format === "short-date-with-time") {
+    return <ShortDateWithTime time={parsedTime} />;
   }
 
   throw "Unknown format " + format;
