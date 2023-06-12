@@ -1,5 +1,11 @@
 import React from "react";
-import { gql, useQuery, ApolloClient, QueryResult } from "@apollo/client";
+import {
+  gql,
+  useQuery,
+  useMutation,
+  ApolloClient,
+  QueryResult,
+} from "@apollo/client";
 
 import { Milestone } from "./milestones";
 import * as fragments from "@/graphql/Fragments";
@@ -216,4 +222,28 @@ type UseProjectResult = QueryResult<{ project: Project }, { id: string }>;
 
 export function useProject(id: string): UseProjectResult {
   return useQuery(GET_PROJECT, { variables: { id } });
+}
+
+export function usePostUpdateMutation(projectId: string) {
+  const [fun, status] = useMutation(gql`
+    mutation CreateUpdate($input: CreateUpdateInput!) {
+      createUpdate(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const createUpdate = (content: any) => {
+    return fun({
+      variables: {
+        input: {
+          updatableId: projectId,
+          updatableType: "project",
+          content: JSON.stringify(content),
+        },
+      },
+    });
+  };
+
+  return [createUpdate, status] as const;
 }

@@ -5,6 +5,8 @@ import * as TipTapEditor from "@/components/Editor";
 
 import { Link } from "react-router-dom";
 
+import { usePostUpdateMutation } from "@/graphql/Projects";
+
 function NewUpdateHeader() {
   return (
     <div>
@@ -20,9 +22,18 @@ function NewUpdateHeader() {
 }
 
 function Editor({ project }) {
+  const [postUpdate, { loading }] = usePostUpdateMutation(project.id);
+
   const editor = TipTapEditor.useEditor({
     placeholder: "Write your update here...",
   });
+
+  const handlePost = async () => {
+    if (!editor) return;
+    if (loading) return;
+
+    postUpdate(editor.getJSON());
+  };
 
   return (
     <div>
@@ -35,16 +46,22 @@ function Editor({ project }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <PostButton project={project} />
+        <PostButton onClick={handlePost} active={handlePost} />
         <CancelButton linkTo={`/projects/${project.id}`} />
       </div>
     </div>
   );
 }
 
-function PostButton({ project }) {
+function PostButton({ onClick, active }) {
+  const activeClass =
+    "text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4";
+  const className = active
+    ? activeClass
+    : activeClass + " opacity-50 cursor-not-allowed";
+
   return (
-    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4">
+    <button onClick={onClick} className={className}>
       <Icons.Mail size={20} />
       Post Update
     </button>

@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import routes from './routes';
+import routes from "./routes";
 
-import { ApolloProvider } from '@apollo/client';
-import client from './graphql/client';
+import { ApolloProvider } from "@apollo/client";
+import client from "./graphql/client";
 import "./i18n";
 
-const rootElement : HTMLElement | null = document.getElementById('root');
+const rootElement: HTMLElement | null = document.getElementById("root");
 
-const App : JSX.Element = (
+const App: JSX.Element = (
   <React.StrictMode>
     <ApolloProvider client={client}>
       <RouterProvider router={routes} />
@@ -17,8 +17,8 @@ const App : JSX.Element = (
   </React.StrictMode>
 );
 
-if(rootElement !== null) {
-  createRoot(rootElement).render(App)
+if (rootElement !== null) {
+  createRoot(rootElement).render(App);
 } else {
-  throw new Error('Root element not found');
+  throw new Error("Root element not found");
 }

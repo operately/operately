@@ -62,7 +62,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
       }),
       Mention.configure({
         HTMLAttributes: {
-          class: "text-sky-500",
+          class: "text-pink-400",
         },
         suggestion: {
           render: () => new MentionPopup(),
@@ -87,34 +87,3 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
 const EditorContent = TipTap.EditorContent;
 
 export { useEditor, EditorContent, Toolbar };
-
-// export function Editor({
-//   placeholder,
-//   peopleSearch,
-//   onSave,
-//   onBlur,
-// }: EditorProps): JSX.Element {
-//   const handleSave = () => {
-//     if (!editor) return;
-//     if (!onSave) return;
-
-//     onSave({
-//       json: editor.getJSON(),
-//       html: editor.getHTML(),
-//     });
-//   };
-
-//   React.useEffect(() => {
-//     if (!editor) return;
-
-//     editor.commands.focus();
-//   }, [editor]);
-
-//   return (
-//     <>
-//       <MenuBar editor={editor} />
-//       <EditorContent editor={editor} />
-//       <Footer onSave={handleSave} submitDisabled={!submitActive} />
-//     </>
-//   );
-// }
