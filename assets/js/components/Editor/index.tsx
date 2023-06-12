@@ -1,14 +1,13 @@
 import React from "react";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import * as TipTap from "@tiptap/react";
 
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Mention from "@tiptap/extension-mention";
 
-import MenuBar from "./MenuBar";
+import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
-import Footer from "./Footer";
 
 export type EditorMentionSearchFunc = ({
   query,
@@ -31,24 +30,20 @@ interface OnBlurData {
   html: string;
 }
 
-interface EditorProps {
-  placeholder: string;
-  peopleSearch: EditorMentionSearchFunc;
+interface UseEditorProps {
+  peopleSearch?: EditorMentionSearchFunc;
+  placeholder?: string;
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
 }
 
-export function Editor({
-  placeholder,
-  peopleSearch,
-  onSave,
-  onBlur,
-}: EditorProps): JSX.Element {
-  const editor = useEditor({
+function useEditor(props: UseEditorProps): TipTap.Editor | null {
+  const [_submitActive, setSubmitActive] = React.useState(false);
+
+  return TipTap.useEditor({
     editorProps: {
       attributes: {
-        class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none",
+        class: "focus:outline-none",
       },
     },
     extensions: [
@@ -63,7 +58,7 @@ export function Editor({
         },
       }),
       Placeholder.configure({
-        placeholder: placeholder,
+        placeholder: props.placeholder,
       }),
       Mention.configure({
         HTMLAttributes: {
@@ -71,14 +66,14 @@ export function Editor({
         },
         suggestion: {
           render: () => new MentionPopup(),
-          items: peopleSearch,
+          items: props.peopleSearch,
         },
       }),
     ],
     onBlur: ({ editor }) => {
-      if (!onBlur) return;
+      if (!props.onBlur) return;
 
-      onBlur({
+      props.onBlur({
         json: editor.getJSON(),
         html: editor.getHTML(),
       });
@@ -87,28 +82,39 @@ export function Editor({
       setSubmitActive(editor.state.doc.textContent.length > 0);
     },
   });
-
-  const [submitActive, setSubmitActive] = React.useState(false);
-
-  const handleSave = () => {
-    if (!editor) return;
-    if (!onSave) return;
-
-    onSave({
-      json: editor.getJSON(),
-      html: editor.getHTML(),
-    });
-  };
-
-  React.useEffect(() => {
-    if (!editor) return;
-
-    editor.commands.focus();
-  }, [editor]);
-
-  return (
-    <>
-      <EditorContent editor={editor} />
-    </>
-  );
 }
+
+const EditorContent = TipTap.EditorContent;
+
+export { useEditor, EditorContent, Toolbar };
+
+// export function Editor({
+//   placeholder,
+//   peopleSearch,
+//   onSave,
+//   onBlur,
+// }: EditorProps): JSX.Element {
+//   const handleSave = () => {
+//     if (!editor) return;
+//     if (!onSave) return;
+
+//     onSave({
+//       json: editor.getJSON(),
+//       html: editor.getHTML(),
+//     });
+//   };
+
+//   React.useEffect(() => {
+//     if (!editor) return;
+
+//     editor.commands.focus();
+//   }, [editor]);
+
+//   return (
+//     <>
+//       <MenuBar editor={editor} />
+//       <EditorContent editor={editor} />
+//       <Footer onSave={handleSave} submitDisabled={!submitActive} />
+//     </>
+//   );
+// }

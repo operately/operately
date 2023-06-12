@@ -81,7 +81,7 @@ function PostUpdateButton({ link_to }) {
 }
 
 function SeparatorLine() {
-  return <div className="border-b border-pink-400 flex-1"></div>;
+  return <div className="border-b border-white-2 flex-1"></div>;
 }
 
 function SectionTitle({ title }) {

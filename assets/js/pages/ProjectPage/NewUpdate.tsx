@@ -20,18 +20,18 @@ function NewUpdateHeader() {
 }
 
 function Editor({ project }) {
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Write your update here...",
+  });
+
   return (
     <div>
-      <div className="flex items-center gap-2 border-y border-shade-2 py-2 mt-8">
-        <Icons.Bold size={20} className="text-white-1" />
-        <Icons.Italic size={20} className="text-white-1" />
-        <Icons.Link size={20} className="text-white-1" />
-        <Icons.ListNumbers size={20} className="text-white-1" />
-        <Icons.ListCheck size={20} className="text-white-1" />
+      <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">
+        <TipTapEditor.Toolbar editor={editor} />
       </div>
 
       <div className="mb-8 py-4 text-white-1 text-lg">
-        <TipTapEditor.Editor placeholder="Write your update&hellip;" />
+        <TipTapEditor.EditorContent editor={editor} />
       </div>
 
       <div className="flex items-center gap-2">
@@ -42,11 +42,13 @@ function Editor({ project }) {
   );
 }
 
-function PostButton({project}}) {
-  return <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4">
-    <Icons.Mail size={20} />
-    Post Update
-  </button>
+function PostButton({ project }) {
+  return (
+    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4">
+      <Icons.Mail size={20} />
+      Post Update
+    </button>
+  );
 }
 
 function CancelButton({ linkTo }) {
