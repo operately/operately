@@ -3,7 +3,7 @@ import React from "react";
 import * as Icons from "tabler-icons-react";
 import * as TipTapEditor from "@/components/Editor";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { usePostUpdateMutation } from "@/graphql/Projects";
 
@@ -22,6 +22,7 @@ function NewUpdateHeader() {
 }
 
 function Editor({ project }) {
+  const navigate = useNavigate();
   const [postUpdate, { loading }] = usePostUpdateMutation(project.id);
 
   const editor = TipTapEditor.useEditor({
@@ -32,7 +33,9 @@ function Editor({ project }) {
     if (!editor) return;
     if (loading) return;
 
-    postUpdate(editor.getJSON());
+    await postUpdate(editor.getJSON());
+
+    navigate(`/projects/${project.id}`);
   };
 
   return (
@@ -46,7 +49,7 @@ function Editor({ project }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <PostButton onClick={handlePost} active={handlePost} />
+        <PostButton onClick={handlePost} active={!loading} />
         <CancelButton linkTo={`/projects/${project.id}`} />
       </div>
     </div>

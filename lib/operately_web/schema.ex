@@ -32,6 +32,7 @@ defmodule OperatelyWeb.Schema do
   import_types Mutations.Groups
   import_types Mutations.KeyResults
   import_types Mutations.People
+  import_types Mutations.Updates
 
   object :group_contact do
     field :id, non_null(:id)
@@ -50,12 +51,6 @@ defmodule OperatelyWeb.Schema do
     field :warning_direction, non_null(:string)
     field :danger_threshold, non_null(:integer)
     field :danger_direction, non_null(:string)
-  end
-
-  input_object :create_update_input do
-    field :content, non_null(:string)
-    field :updatable_id, non_null(:id)
-    field :updatable_type, non_null(:string)
   end
 
   input_object :create_comment_input do
@@ -155,6 +150,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :group_mutations
     import_fields :key_result_mutations
     import_fields :people_mutations
+    import_fields :update_mutations
 
     field :create_tenet, :tenet do
       arg :name, non_null(:string)
@@ -215,18 +211,6 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :create_update, :activity do
-      arg :input, non_null(:create_update_input)
-
-      resolve fn args, %{context: context} ->
-        Operately.Updates.create_update(%{
-          author_id: context.current_account.person.id,
-          updatable_type: args.input.updatable_type,
-          updatable_id: args.input.updatable_id,
-          content: args.input.content
-        })
-      end
-    end
 
     field :create_comment, :comment do
       arg :input, non_null(:create_comment_input)
