@@ -1,14 +1,44 @@
 import React from "react";
 
 import * as Icons from "tabler-icons-react";
-import StatusUpdate from "./StatusUpdate";
 import { Link } from "react-router-dom";
 import RichContent from "@/components/RichContent";
+import Avatar, { AvatarSize } from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
 
 import * as ProjectQueries from "@/graphql/Projects";
 
 interface StatusUpdatesProps {
   project: ProjectQueries.Project;
+}
+
+function StatusUpdate(props) {
+  const { linkTo, person, acknowledged, title, message, comments, time } =
+    props;
+
+  return (
+    <Link
+      to={linkTo}
+      className="flex items-center justify-between my-3 hover:bg-shade-1"
+    >
+      <div className="flex items-center gap-4">
+        <div className="shrink-0">
+          <Avatar person={person} />
+        </div>
+
+        <div className="">
+          <div className="flex items-center justify-between font-bold">
+            {title}
+          </div>
+          <div className="truncate max-w-[600px]">{message}</div>
+        </div>
+      </div>
+
+      <div className="text-right w-32">
+        <FormattedTime time={time} format="short-date" />
+      </div>
+    </Link>
+  );
 }
 
 export default function StatusUpdates({
@@ -26,6 +56,7 @@ export default function StatusUpdates({
         <div className="fadeIn">
           {project.activities.map((activity) => (
             <StatusUpdate
+              linkTo={`/projects/${project.id}/updates/${activity.id}`}
               person={activity.author}
               title="Status Update"
               message={<RichContent jsonContent={activity.message} />}

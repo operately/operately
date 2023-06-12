@@ -257,3 +257,13 @@ export function usePostUpdateMutation(projectId: string) {
 
   return [createUpdate, status] as const;
 }
+
+const GET_STATUS_UPDATE = gql`
+  query GetStatusUpdate($id: ID!) {
+    update(id: $id) ${fragments.ACTIVITY}
+  }
+`;
+
+export function useProjectStatusUpdate(id: string) {
+  return useQuery(GET_STATUS_UPDATE, { variables: { id: id } });
+}

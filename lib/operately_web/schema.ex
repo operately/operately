@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Schema do
   import_types Queries.KeyResults
   import_types Queries.People
   import_types Queries.Companies
+  import_types Queries.Updates
 
   # Mutations
   import_types Mutations.Projects
@@ -70,6 +71,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :key_result_queries
     import_fields :people_queries
     import_fields :company_queries
+    import_fields :update_queries
 
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
