@@ -3,6 +3,7 @@ import React from "react";
 import * as Icons from "tabler-icons-react";
 import StatusUpdate from "./StatusUpdate";
 import { Link } from "react-router-dom";
+import RichContent from "@/components/RichContent";
 
 export default function StatusUpdates({ project }) {
   return (
@@ -15,12 +16,22 @@ export default function StatusUpdates({ project }) {
         </div>
 
         <div className="fadeIn">
+          {project.activities.map((activity) => (
+            <StatusUpdate
+              person={project.owner}
+              title="Status Update"
+              message={<RichContent jsonContent={activity.message} />}
+              comments={3}
+              time={activity.insertedAt}
+            />
+          ))}
+
           <StatusUpdate
             person={project.owner}
             title="Status Update"
             message="We have completed the first milestone and we are on track to complete the project on time. Last week we reached out to people who have signed up via the newsletter. In total we had around 800 singups, from which around 550 responded to the survey."
             comments={3}
-            time="Mar 24th"
+            time={Date.parse("2023-05-23")}
           />
           <StatusUpdate
             person={project.owner}
@@ -28,7 +39,7 @@ export default function StatusUpdates({ project }) {
             title="Status Update"
             message="The project is going well and we are expecting the finish all the work on time"
             comments={0}
-            time="Mar 17th"
+            time={Date.parse("2023-05-17")}
           />
           <StatusUpdate
             person={project.owner}
@@ -36,7 +47,7 @@ export default function StatusUpdates({ project }) {
             title="Status Update"
             message="The outages are still happening and we are working on a fix. We will keep you updated."
             comments={10}
-            time="Mar 10th"
+            time={Date.parse("2023-03-10")}
           />
           <StatusUpdate
             person={project.owner}
@@ -44,7 +55,7 @@ export default function StatusUpdates({ project }) {
             title="Status Update"
             message="We are currently working on delivering the first milestone which is due next week."
             comments={0}
-            time="Mar 2nd"
+            time={Date.parse("2023-03-02")}
           />
           <StatusUpdate
             person={project.contributors[0].person}
@@ -52,7 +63,7 @@ export default function StatusUpdates({ project }) {
             title="Request for Project Review"
             message="I haven't heard any news about the project for a while. Can you please provide an update?"
             comments={1}
-            time="Mar 1st"
+            time={Date.parse("2023-03-01")}
           />
           <StatusUpdate
             person={project.owner}
@@ -60,7 +71,7 @@ export default function StatusUpdates({ project }) {
             title="Status Update"
             message="The project was bootstrapped and the team is working on the first milestone."
             comments={3}
-            time="Dec 25th, 2022"
+            time={Date.parse("2022-12-25")}
           />
         </div>
       </div>

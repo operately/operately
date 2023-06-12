@@ -4,6 +4,7 @@ import * as Icons from "tabler-icons-react";
 import * as Dialog from "@radix-ui/react-dialog";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
 
 function StatusUpdatePreview(props) {
   const { person, acknowledged, title, message, comments, time } = props;
@@ -23,7 +24,9 @@ function StatusUpdatePreview(props) {
         </div>
       </div>
 
-      <div className="text-right w-32">{time}</div>
+      <div className="text-right w-32">
+        <FormattedTime time={time} format="short-date" />
+      </div>
     </div>
   );
 }
