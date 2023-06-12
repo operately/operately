@@ -295,9 +295,8 @@ function Post({ update, currentUser }): JSX.Element {
             <RichContent jsonContent={c.message} />
           </Comment>
         ))}
-
         <Ack author={update.acknowledgingPerson} time={update.acknowledgedAt} />
-
+        chat
         {comments.afterAck.map((c, i) => (
           <Comment
             key={i}
