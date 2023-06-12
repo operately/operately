@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Icons from "tabler-icons-react";
 import StatusUpdate from "./StatusUpdate";
+import { Link } from "react-router-dom";
 
 export default function StatusUpdates({ project }) {
   return (
@@ -10,7 +11,7 @@ export default function StatusUpdates({ project }) {
         <div className="flex items-center justify-between gap-4">
           <SectionTitle title="Status Updates" />
           <SeparatorLine />
-          <PostUpdateButton />
+          <PostUpdateButton link_to={`/projects/${project.id}/new_update`} />
         </div>
 
         <div className="fadeIn">
@@ -67,12 +68,15 @@ export default function StatusUpdates({ project }) {
   );
 }
 
-function PostUpdateButton() {
+function PostUpdateButton({ link_to }) {
   return (
-    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2">
+    <Link
+      to={link_to}
+      className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2"
+    >
       <Icons.Message2 size={20} />
       Post Update
-    </button>
+    </Link>
   );
 }
 

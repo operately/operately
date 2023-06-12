@@ -38,7 +38,7 @@ interface EditorProps {
   onBlur?: (data: OnBlurData) => void;
 }
 
-export default function Editor({
+export function Editor({
   placeholder,
   peopleSearch,
   onSave,
@@ -48,7 +48,7 @@ export default function Editor({
     editorProps: {
       attributes: {
         class:
-          "p-4 prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none",
       },
     },
     extensions: [
@@ -108,9 +108,7 @@ export default function Editor({
 
   return (
     <>
-      <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-      <Footer onSave={handleSave} submitDisabled={!submitActive} />
     </>
   );
 }

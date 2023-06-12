@@ -3,18 +3,19 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
-import StatusUpdates from "./StatusUpdates";
-import Tabs from "./Tabs";
-import Header from "./Header";
 import * as Icons from "tabler-icons-react";
-import RichContent from "@//components/RichContent";
-import Avatar, { AvatarSize } from "@/components/Avatar";
+
+import StatusUpdates from "./StatusUpdates";
+import Header from "./Header";
+import NewUpdate from "./NewUpdate";
+
+import RichContent from "@/components/RichContent";
 
 export function ProjectPage() {
   const params = useParams();
 
   const id = params["id"];
-  const tab = params["*"] || "";
+  const tab = "/" + (params["*"] || "");
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
@@ -26,6 +27,16 @@ export function ProjectPage() {
 
   let project = data.project;
 
+  switch (tab) {
+    case "/":
+      return <Overview project={project} />;
+
+    case "/new_update":
+      return <NewUpdate project={project} />;
+  }
+}
+
+function Overview({ project }) {
   return (
     <div className="mt-24">
       <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
@@ -45,8 +56,6 @@ export function ProjectPage() {
     </div>
   );
 }
-
-// <Tabs activeTab={tab} project={project} />
 
 function Milestones({ project }) {
   return (
