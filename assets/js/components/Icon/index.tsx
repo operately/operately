@@ -1,20 +1,18 @@
-import React from 'react';
+import React from "react";
+
+export type IconSize = "tiny" | "small" | "base" | "medium" | "large";
 
 interface IconsProps {
   name: string;
-  size: "small" | "base" | "medium" | "large";
+  size: IconSize;
   color: "light" | "dark" | "dark-2" | "brand";
   hoverColor: "light" | "dark" | "dark-2" | "brand";
 }
 
-export function Sprite() {
-  return <div>
-    <object type="image/svg+xml" data="/assets/images/icons.svg" />
-  </div>;
-}
-
-function SizeToNumber(size: "small" | "base" | "medium" | "large") {
+function SizeToNumber(size: IconSize) {
   switch (size) {
+    case "tiny":
+      return 14;
     case "small":
       return 18;
     case "base":
@@ -26,7 +24,7 @@ function SizeToNumber(size: "small" | "base" | "medium" | "large") {
   }
 }
 
-function TextColor(color: "light" | "dark" | "dark-2" | "brand") : string {
+function TextColor(color: "light" | "dark" | "dark-2" | "brand"): string {
   switch (color) {
     case "light":
       return "text-light-1";
@@ -39,7 +37,7 @@ function TextColor(color: "light" | "dark" | "dark-2" | "brand") : string {
   }
 }
 
-function HoverTextColor(color: "light" | "dark" | "dark-2" | "brand") : string {
+function HoverTextColor(color: "light" | "dark" | "dark-2" | "brand"): string {
   switch (color) {
     case "light":
       return "hover:text-light-1";
@@ -52,25 +50,39 @@ function HoverTextColor(color: "light" | "dark" | "dark-2" | "brand") : string {
   }
 }
 
-export default function Icon({name, size, color, hoverColor} : IconsProps) : JSX.Element {
+const sizeName = {
+  tiny: "small",
+  small: "small",
+  base: "base",
+  large: "large",
+};
+
+export default function Icon({
+  name,
+  size,
+  color,
+  hoverColor,
+}: IconsProps): JSX.Element {
   var idColor = color;
-  if(color === "dark-2") {
+  if (color === "dark-2") {
     idColor = "dark";
   }
 
-  const id = `icon name=${name}, size=${size}, color=${idColor}`;
+  const id = `icon name=${name}, size=${sizeName[size]}, color=${idColor}`;
   const s = SizeToNumber(size);
 
-  return <svg
-    viewBox={`0 0 ${s} ${s}`}
-    width={`${s}px`}
-    height={`${s}px`}
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    className={`${TextColor(color)} ${HoverTextColor(hoverColor)}`}
-  >
-    <use xlinkHref={"/assets/images/icons.svg#" + id} />
-  </svg>;
+  return (
+    <svg
+      viewBox={`0 0 ${s} ${s}`}
+      width={`${s}px`}
+      height={`${s}px`}
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      className={`${TextColor(color)} ${HoverTextColor(hoverColor)}`}
+    >
+      <use xlinkHref={"/images/icons.svg#" + id} />
+    </svg>
+  );
 }
 
 Icon.defaultProps = {

@@ -1,207 +1,175 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+
+import { useProjects } from "@/graphql/Projects";
+import FormattedTime from "@/components/FormattedTime";
+import AvatarList from "@/components/AvatarList";
 import { Link } from "react-router-dom";
+import * as Icons from "tabler-icons-react";
 
-import {
-  DashboardIcon,
-  RowsIcon,
-  GearIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@radix-ui/react-icons";
-
-import ButtonLink from "../../components/ButtonLink";
-import PageTitle from "../../components/PageTitle";
-import Card from "../../components/Card";
-import CardList from "../../components/CardList";
-import Icon from "../../components/Icon";
-
-import { listProjects, useProjects } from "../../graphql/Projects";
-
-export async function ProjectListPageLoader(apolloClient: any) {
-  await listProjects(apolloClient, {});
-  return {};
-}
-
-function ListOfProjects({ projects }) {
-  return (
-    <CardList>
-      {projects.map(({ id, name, description }: any) => (
-        <Link key={name} to={`/projects/${id}`}>
-          <Card>
-            {name} {description ? " - " + description : ""}
-          </Card>
-        </Link>
-      ))}
-    </CardList>
-  );
-}
-
-function daysIntoYear() {
-  return (
-    (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) -
-      Date.UTC(date.getFullYear(), 0, 0)) /
-    24 /
-    60 /
-    60 /
-    1000
-  );
-}
-
-const daysAgo = (date: Date, n: number): Date => {
-  var d = new Date(date);
-  return new Date(d.setDate(d.getDate() - n));
-};
-
-export function ProjectListPage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { loading, error, data } = useProjects({});
-
-  if (loading) return <p>{t("loading.loading")}</p>;
-  if (error)
-    return (
-      <p>
-        {t("error.error")}: {error.message}
-      </p>
-    );
-
-  const calcPosition = (daySize: number, firstDate: Date, date: Date) => {
-    const daysDifference = Math.floor((+date - +firstDate) / 86400000);
-    return daySize * daysDifference;
-  };
-
-  const calcLabel = (date: Date) => {
-    return date.getMonth() > 0
-      ? date.toLocaleString("default", { month: "short" })
-      : date.getFullYear().toString();
-  };
-
-  let labels: { label: string; position: number }[] = [];
-  let now = new Date();
-  let daySize = 100.0 / 365;
-  let firstDate = daysAgo(now, 366 / 2);
-
-  let position = Number.MAX_SAFE_INTEGER;
-  let date = new Date(now.getFullYear() + 1, now.getMonth(), 1);
-
-  while (position > -100) {
-    date = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-    position = calcPosition(daySize, firstDate, date);
-
-    labels.push({
-      label: calcLabel(date),
-      position: position,
-    });
+function DateOrNotSet({ date }) {
+  if (date === null) {
+    return <span className="text-white-3 uppercase">not set</span>;
   }
-
-  let projects = [];
-
-  data.projects.forEach((project: any) => {
-    if (project.startedAt == null || project.deadline == null) return;
-    console.log(project.startedAt, project.deadline);
-    if (+new Date(project.deadline) < +Date.now()) return;
-
-    projects.push({
-      id: project.id,
-      name: project.name,
-      start: new Date(project.startedAt),
-      deadline: new Date(project.deadline),
-    });
-  });
-
-  projects.sort((a, b) => {
-    return -(a.start.getTime() - b.start.getTime());
-  });
-
-  var lines: { left: number; width: number; name: string; link: string }[] = [];
-  projects.forEach((p) => {
-    lines.push({
-      left: calcPosition(daySize, firstDate, p.start),
-      width: calcPosition(daySize, p.start, p.deadline),
-      name: p.name,
-      link: `/projects/${p.id}`,
-    });
-  });
-
   return (
-    <div className="bottom-0 left-0 right-0 top-20 absolute flex items-center justify-center">
-      <div className="absolute bottom-4 left-0 right-0 top-0 text-center">
-        {labels.map((label) => (
-          <div
-            className="flex flex-col h-full items-center justify-center gap-2 w-[1px]"
-            style={{
-              position: "absolute",
-              left: `${label.position}%`,
-              top: "0px",
-            }}
-          >
-            <div className={"border-l h-full border-gray-800"}></div>
-            <div className="">{label.label}</div>
+    <div className="uppercase">
+      <FormattedTime time={date} format="short-date" />
+    </div>
+  );
+}
+
+function Phase({ phase }) {
+  switch (phase) {
+    case "draft":
+      return (
+        <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">
+          draft
+        </span>
+      );
+  }
+}
+
+function Flare() {
+  return (
+    <div
+      className="absolute"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "500px",
+        background:
+          "radial-gradient(circle at top center, #FFFF0008 0%, #00000000 50%)",
+        pointerEvents: "none",
+      }}
+    ></div>
+  );
+}
+
+function ProjectListItem({ project }) {
+  return (
+    <Link to={`/projects/${project.id}`}>
+      <div className="flex items-center justify-between gap-4 bg-shade-1 py-2 px-4 rounded border border-transparent hover:border-white-1">
+        <div className="font-medium text-white-1 flex items-center w-1/3">
+          {project.name}
+        </div>
+
+        <div className="flex items-center justify-between gap-4 w-1/2">
+          <div className="flex items-center justify-between gap-4 w-1/3">
+            <div className="w-1/3 text-sm">
+              <AvatarList
+                champion={project.owner}
+                people={project.contributors.map((c) => c.person)}
+              />
+            </div>
           </div>
-        ))}
 
-        <div
-          style={{
-            position: "absolute",
-            top: "0",
-            bottom: "32px",
-            left: "0",
-            right: "0",
-            overflowY: "scroll",
-          }}
-        >
-          <div className="relative h-full">
-            <div className="top-0 left-1/2 bottom-0 absolute w-[1px] flex flex-col items-center">
-              <div className="bg-brand-base text-new-dark-1 rounded px-2 font-semibold"></div>
-              <div
-                className="border-l border-brand-base absolute top-0 left-1/2"
-                style={{ height: lines.length * 40, minHeight: "100%" }}
-              ></div>
+          <div className="flex items-center justify-between gap-4 w-2/3">
+            <div className="w-32 text-sm text-right">
+              <DateOrNotSet date={project.startedAt} />
             </div>
 
-            {lines.map((l, i) => (
-              <div
-                key={i}
-                className="bg-new-dark-2 backdrop-blur-sm border border-gray-700 py-0.5 px-3 rounded-lg absolute truncate text-left flex gap-1 items-center hover:border-gray-500 transition cursor-pointer fadeIn"
-                onClick={() => {
-                  navigate(l.link);
-                }}
-                style={{
-                  top: 120 + i * 40,
-                  left: l.left + "%",
-                  width: l.width + "%",
-                  paddingLeft: l.left < 0 ? -l.left + "%" : "10px",
-                  paddingRight: "10px",
-                }}
-              >
-                {l.left < 0 ? (
-                  <div className="scale-75">
-                    <Icon name="arrow left" size="small" color="dark-2" />
-                  </div>
-                ) : null}
-                <div className="truncate">{l.name}</div>
-              </div>
-            ))}
-
-            <div className="absolute left-0 right-0 top-[00px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
-              <ChevronUpIcon />
-              Exceptional customer service
+            <div className="w-32 text-sm text-right">
+              <DateOrNotSet date={project.deadline} />
             </div>
 
-            <div className="absolute left-0 right-0 top-[40px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
-              <ChevronUpIcon />
-              Globally Recognized Brand
-            </div>
-
-            <div className="absolute left-0 right-0 top-[80px] text-left border-t border-gray-700 p-2 flex items-center gap-2">
-              <ChevronDownIcon />
-              Profitable Growth
+            <div className="w-32 text-sm text-right">
+              <Phase phase={project.phase} />
             </div>
           </div>
         </div>
       </div>
+    </Link>
+  );
+}
+
+function SortProjects(projects) {
+  return [].concat(projects).sort((a, b) => {
+    let aStart = a.startedAt || 0;
+    let bStart = b.startedAt || 0;
+
+    if (aStart > bStart) return -1;
+    if (aStart < bStart) return 1;
+    return 0;
+  });
+}
+
+export function ProjectListPage() {
+  const { loading, error, data } = useProjects({});
+
+  if (loading) return <p>Loading...</p>;
+  if (error) throw new Error(error.message);
+
+  const projects = SortProjects(data.projects);
+
+  return (
+    <div className="mt-20 flex flex-col gap-[2px] max-w-6xl mx-auto">
+      <Flare />
+      <div className="flex items-center justify-between gap-4 mb-10">
+        <div className="flex items-center justify-between gap-4">
+          <div className="p-2 rounded-full bg-pink-400/20 text-white-2 border border-pink-400">
+            <Icons.LayoutList size={16} className="text-pink-400" />
+          </div>
+
+          <div className="p-2 rounded-full border border-white-3 text-white-2 hover:bg-shade-1 cursor-pointer">
+            <Icons.Map size={16} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-4">
+          <button className="border border-white-2 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 font-medium flex items-center gap-2">
+            <Icons.ClipboardList size={16} className="text-green-400" />
+            New Project
+          </button>
+        </div>
+      </div>
+
+      <div className="mb-16 flex flex-col items-center justify-between gap-8">
+        <div className="text-5xl font-bold text-center">
+          Projects in Rendered Text
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <button className="border border-orange-400 text-orange-400 bg-orange-400/20 rounded-full hover:border-orange-800 text-dark-1 hover:text-white-1 px-3 py-1.5 text-sm font-bold">
+            All Projects
+          </button>
+
+          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            Only Mine
+          </button>
+
+          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            Overdue
+          </button>
+
+          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
+            Drafts
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-betweeen px-4 py-2 mb-1 rounded text-sm font-medium">
+        <div className="w-1/2 text-white-2 uppercase">PROJECT NAME</div>
+
+        <div className="w-1/2 flex items-center justify-between">
+          <div className="text-white-2 uppercase">CONTRIBUTORS </div>
+
+          <div className="w-2/3 flex items-center justify-between gap-4">
+            <div className="w-32 text-white-2 uppercase text-right">
+              STARTED
+            </div>
+
+            <div className="w-32 text-white-2 uppercase text-right">
+              DEADLINE
+            </div>
+
+            <div className="w-32 text-white-2 uppercase text-right">PHASE</div>
+          </div>
+        </div>
+      </div>
+
+      {projects.map((project) => (
+        <ProjectListItem project={project} key={project.id} />
+      ))}
     </div>
   );
 }

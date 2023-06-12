@@ -480,6 +480,13 @@ defmodule Operately.People do
       {:ok, %Account{}}
   """
   def fetch_or_create_account(attrs) do
+    allowed = String.split(System.get_env("ALLOWED_EMAILS"), ",")
+    IO.inspect(allowed)
+
+    if attrs.email not in allowed do
+      raise "Not allowed"
+    end
+
     get_account_by_email(attrs.email)
     |> case do
       %Account{} = account -> {:ok, account}

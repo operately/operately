@@ -5,9 +5,10 @@ defmodule Operately.Updates.Comment do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "comments" do
-    field :content, :string
-    field :update_id, :binary_id
-    field :author_id, :binary_id
+    belongs_to :update, Operately.Updates.Update
+    belongs_to :author, Operately.Accounts.User
+
+    field :content, :map
 
     timestamps()
   end
@@ -15,7 +16,7 @@ defmodule Operately.Updates.Comment do
   @doc false
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:content, :update_id, :author_id])
+    |> cast(attrs, __schema__(:fields))
     |> validate_required([:content, :update_id, :author_id])
   end
 end

@@ -1,43 +1,230 @@
 import React from "react";
 
 import { useTranslation } from "react-i18next";
-import { useQuery, gql } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { useObjective } from "@/graphql/Objectives";
+import { useMe } from "@/graphql/Me";
+import { Link, useParams } from "react-router-dom";
 
-import PageTitle from "../../components/PageTitle";
+import * as PaperContainer from "../../components/PaperContainer";
+import * as PhasePills from "../../components/PhasePills";
+import * as Chat from "@/components/Chat";
 
+import Icon, { IconSize } from "@/components/Icon";
+import Avatar, { AvatarSize } from "@/components/Avatar";
+import AvatarList from "@/components/AvatarList";
 import KeyResults from "./KeyResults";
-import Projects from "./Projects";
-import PostAnUpdate from "./PostAnUpdate";
-import Feed from "./Feed";
-import Champion from "./Champion";
-import { Link } from "react-router-dom";
+import RichContent from "@/components/RichContent";
+import LinkButton from "@/components/LinkButton";
+import FormattedTime from "@/components/FormattedTime";
 
-const GET_OBJECTIVE = gql`
-  query GetObjective($id: ID!) {
-    objective(id: $id) {
-      id
-      name
-      description
+function Badge({ title, className }): JSX.Element {
+  return (
+    <div
+      className="inline-block"
+      style={{
+        verticalAlign: "middle",
+      }}
+    >
+      <div
+        className={className + " font-bold uppercase flex items-center"}
+        style={{
+          padding: "4px 10px 2px",
+          borderRadius: "25px",
+          fontSize: "12.5px",
+          lineHeight: "20px",
+          height: "24px",
+          letterSpacing: "0.03em",
+          display: "flex",
+          gap: "10",
+          marginTop: "2px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
 
-      owner {
-        fullName
-        title
-        avatarUrl
-      }
-    }
-  }
-`;
+function Champion({ person }): JSX.Element {
+  return (
+    <div
+      className="relative inline-block"
+      style={{
+        marginLeft: "18px",
+        marginRight: "10px",
+        verticalAlign: "middle",
+      }}
+    >
+      <Avatar person={person} size={AvatarSize.Small} />
 
-export async function ObjectivePageLoader(apolloClient: any, { params }) {
-  const { id } = params;
+      <div className="absolute top-[-6px] left-[21px]">
+        <ChampionCrown />
+      </div>
+    </div>
+  );
+}
 
-  await apolloClient.query({
-    query: GET_OBJECTIVE,
-    variables: { id },
-  });
+function ObjectiveHeader({ name, owner }): JSX.Element {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex gap-3.5 items-center">
+        <div className="shrink-0">
+          <Icon name="objectives" size="large" />
+        </div>
 
-  return {};
+        <h1 className="font-bold text-[31.1px]" style={{ lineHeight: "40px" }}>
+          {name} <Champion person={owner} />{" "}
+          <Badge title="On Track" className="bg-success-2 text-success-1" />
+        </h1>
+      </div>
+    </div>
+  );
+}
+
+function ChampionCrown() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="14" height="14" rx="3" fill="#3185FF" />
+      <path
+        d="M7 3.5L9.33333 7L12.25 4.66667L11.0833 10.5H2.91667L1.75 4.66667L4.66667 7L7 3.5Z"
+        fill="#FFE600"
+      />
+    </svg>
+  );
+}
+
+function SectionTitle({ title, icon, iconSize = "small" }) {
+  return (
+    <div className="flex items-center gap-[9px] mt-[24px]">
+      <Icon name={icon} size={iconSize as IconSize} color="brand" />
+      <div
+        className="uppercase text-dark-base text-sm"
+        style={{
+          letterSpacing: "0.03em",
+        }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
+
+function Description({ description }): JSX.Element {
+  return (
+    <div className="border-b border-dark-8% pb-[22px]">
+      <SectionTitle title="Description" icon="description" />
+
+      <div className="mt-[10px] pr-[62px]">
+        <RichContent jsonContent={description} />
+      </div>
+    </div>
+  );
+}
+
+function Feed({ updates }): JSX.Element {
+  const { data } = useMe();
+
+  return (
+    <div className="border-b border-dark-8% pb-[22px]">
+      <SectionTitle title="Activity" icon="description" />
+
+      <div className="mt-[10px]">
+        {updates.map((u) => (
+          <Chat.Post key={u.id} update={u} currentUser={data.me} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Project({ project }): JSX.Element {
+  return (
+    <div className="rounded-[10px] border border-dark-8p p-[20px]">
+      <Link to={`/projects/${project.id}`}>
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-[18px] leading-[27px] underline text-brand-1">
+            {project.name}
+          </span>
+
+          <AvatarList
+            champion={project.owner}
+            people={project.contributors.map((c) => c.person)}
+          />
+        </div>
+
+        <div className="flex items-center justify-between mt-[15px]">
+          <div className="w-[332px] shrink-0">
+            <PhasePills.Container>
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Concept"
+                state="done"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Planning"
+                state="done"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Execution"
+                state="inProgress"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Control"
+                state="pending"
+              />
+              <PhasePills.Item
+                height={16}
+                showTitle={false}
+                name="Closing"
+                state="pending"
+              />
+            </PhasePills.Container>
+          </div>
+
+          <div className="inline-flex gap-[5px]">
+            <span className="text-dark-2">Timeline:</span>
+            <span>
+              <FormattedTime time={project.startedAt} format="short-date" />
+            </span>
+            <span>-&gt;</span>
+            <span>
+              <FormattedTime time={project.deadline} format="short-date" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+function Projects({ projects }): JSX.Element {
+  return (
+    <div className="border-b border-dark-8% pb-[22px]">
+      <SectionTitle title="PROJECTS IN PROGRESS" icon="my projects" />
+
+      <div className="mt-[10px] flex flex-col gap-[10px] mb-[10px]">
+        {projects.map((p) => (
+          <Project key={p.id} project={p} />
+        ))}
+      </div>
+
+      <LinkButton title="View 2 archived projects" size="small" />
+    </div>
+  );
 }
 
 export function ObjectivePage() {
@@ -46,65 +233,30 @@ export function ObjectivePage() {
 
   if (!id) return <p>Unable to find objective</p>;
 
-  const { loading, error, data } = useQuery(GET_OBJECTIVE, {
-    variables: { id },
-    fetchPolicy: "cache-only",
-  });
+  const { loading, error, data } = useObjective(id);
 
   if (loading) return <p>{t("loading.loading")}</p>;
-  if (error)
-    return (
-      <p>
-        {t("error.error")}: {error.message}
-      </p>
-    );
+  if (error) throw error.message;
+
+  const objective = data.objective;
 
   return (
-    <div className="max-w-6xl mx-auto mb-4">
-      <div className="m-11 mt-24">
-        <div className="flex items-center mb-4 gap-2">
-          <Link to="/company" className="font-bold underline">
-            Acme Inc.
-          </Link>
+    <PaperContainer.Root>
+      <PaperContainer.Navigation>
+        <PaperContainer.NavigationItem
+          icon="objectives"
+          title={"Increase sales"}
+          to={`/objectives/${id}`}
+        />
+      </PaperContainer.Navigation>
 
-          <div className="font-bold">/</div>
-
-          <Link to="/objectives" className="font-bold underline">
-            Exceptional customer service
-          </Link>
-        </div>
-
-        <div className="flex items-start justify-between my-4">
-          <div>
-            <h1 className="font-bold text-3xl my-4">{data.objective.name}</h1>
-
-            <div className="text-new-dark-3 text-xl max-w-xl">
-              Recent surveys show that the general public is not aware of the
-              services we offer, especially outside of Europe.
-            </div>
-          </div>
-
-          <div className="text-right">
-            {data.objective.owner && <Champion person={data.objective.owner} />}
-          </div>
-        </div>
-
-        <KeyResults objectiveID={id} />
-        <Projects objectiveID={id} />
-      </div>
-
-      <div className="max-w-5xl mx-auto mb-4">
-        <div className="m-11 p-11 mt-20 bg-new-dark-2">
-          <div className="flex items-center justify-around relative -mt-14 mb-12">
-            <h1 className="uppercase font-bold bg-slate-700 px-3 py-1 rounded z-50">
-              Status updates and activity
-            </h1>
-          </div>
-
-          <PostAnUpdate objectiveID={id} />
-          <Feed objectiveID={id} />
-        </div>
-      </div>
-    </div>
+      <PaperContainer.Body>
+        <ObjectiveHeader name={objective.name} owner={objective.owner} />
+        <KeyResults keyResults={objective.keyResults} />
+        <Description description={objective.description} />
+        <Projects projects={objective.projects} />
+        <Feed updates={objective.activities} />
+      </PaperContainer.Body>
+    </PaperContainer.Root>
   );
 }

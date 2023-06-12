@@ -15,7 +15,7 @@ defmodule Operately.Okrs.Objective do
 
     has_one :parent, Alignment, foreign_key: :child
 
-    field :description, :string
+    field :description, :map
     field :name, :string
 
     timestamps()

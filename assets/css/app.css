@@ -17,6 +17,17 @@
   }
 }
 
+@keyframes zoomOutAnimation {
+  0% {
+    opacity: 0;
+    scale: 1.1;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 @keyframes ping {
   10% {
     transform: scale(1);
@@ -41,24 +52,24 @@
   animation-iteration-count: 1;
 }
 
+.zoomOut {
+  animation: zoomOutAnimation;
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
 .animate-notify {
   animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 body {
   font-family: "Inter", sans-serif;
-  font-size: 15px;
-
-  --color-new-dark-1: 22, 22, 22, 1;
-
-  background: linear-gradient(
-    49deg,
-    rgba(var(--color-new-dark-1)) 0%,
-    rgba(33, 33, 33, 1) 77%,
-    rgba(var(--color-new-dark-1)) 100%
-  );
-
+  font-size: 16px;
   min-height: 100vh;
+
+  background: var(--color-dark-1);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .card-shadow {
@@ -67,4 +78,25 @@ body {
 
 .hover\:card-shadow-blue:hover {
   box-shadow: 0px 0px 12px rgba(49, 133, 255, 0.2);
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.line-clamp-6 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+}
+
+.line-clamp-8 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
 }

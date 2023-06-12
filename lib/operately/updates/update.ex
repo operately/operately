@@ -20,12 +20,17 @@ defmodule Operately.Updates.Update do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "updates" do
+    belongs_to :author, Operately.People.Person
+
     field :updatable_id, Ecto.UUID
     field :updatable_type, Ecto.Enum, values: [:objective, :project]
-    field :author_id, :binary_id
 
     field :type, Ecto.Enum, values: Enum.map(@content_types, & &1[:type])
     field :content, :map
+
+    belongs_to :acknowledging_person, Operately.People.Person
+    field :acknowledged, :boolean, default: false
+    field :acknowledged_at, :utc_datetime
 
     timestamps()
   end
@@ -33,7 +38,7 @@ defmodule Operately.Updates.Update do
   @doc false
   def changeset(update, attrs) do
     update
-    |> cast(attrs, [:content, :updatable_id, :updatable_type, :author_id, :type])
+    |> cast(attrs, __schema__(:fields))
     |> validate_required([:content, :updatable_id, :updatable_type, :author_id, :type])
     |> validate_content_format(attrs[:type])
   end
@@ -55,7 +60,7 @@ defmodule Operately.Updates.Update do
         schema -> 
           case apply(schema, :changeset, [value]) do
             %Ecto.Changeset{valid?: true} -> []
-            _ -> [content: "invalid update content"]
+            e -> [content: "invalid update content for type #{type} #{inspect(e)}}"]
           end
       end
     end)
@@ -93,7 +98,7 @@ defmodule Operately.Updates.Update do
     use Ecto.Schema
 
     embedded_schema do
-      field :message, :string
+      field :message, :map
     end
 
     def changeset(params) do

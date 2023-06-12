@@ -25,11 +25,11 @@ interface AvatarProps {
 function SizeClasses({ size }: { size: AvatarSize }): string {
   switch (size) {
     case AvatarSize.Tiny:
-      return "w-5 h-5";
+      return "w-[20px] h-[20px]";
     case AvatarSize.Small:
-      return "w-8 h-8";
+      return "w-9 h-9";
     case AvatarSize.Normal:
-      return "w-10 h-10";
+      return "w-9 h-9";
     case AvatarSize.Large:
       return "w-12 h-12";
     case AvatarSize.XLarge:
@@ -44,9 +44,9 @@ function TextClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Tiny:
       return "text-[10px] font-semibold";
     case AvatarSize.Small:
-      return "text-xs font-semibold";
+      return "text font-extrabold";
     case AvatarSize.Normal:
-      return "text-lg font-bold";
+      return "text font-bold";
     case AvatarSize.Large:
       return "text-2xl font-bold";
     case AvatarSize.XLarge:
@@ -57,23 +57,33 @@ function TextClasses({ size }: { size: AvatarSize }): string {
 }
 
 function initials(fullName: string): string {
-  const firstLeters = fullName
-    .split(" ")
-    .filter((e) => e !== "")
-    .map((n) => n[0]);
+  try {
+    const firstLeters = fullName
+      .split(" ")
+      .filter((e) => e !== "")
+      .map((n) => n[0]);
 
-  if (firstLeters.length === 0) {
+    if (firstLeters.length === 0) {
+      return "";
+    } else if (firstLeters.length === 1) {
+      return firstLeters[0];
+    } else {
+      return firstLeters[0] + firstLeters[firstLeters.length - 1];
+    }
+  } catch (e) {
+    console.error(e);
     return "";
-  } else if (firstLeters.length === 1) {
-    return firstLeters[0];
-  } else {
-    return firstLeters[0] + firstLeters[firstLeters.length - 1];
   }
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const baseClass =
-    "flex items-center justify-center text-white rounded-full bg-brand-base";
+  const baseClass = [
+    "flex items-center justify-center",
+    "text-dark-1",
+    "bg-pink-300",
+    "rounded-full",
+  ].join(" ");
+
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
   const className = baseClass + " " + sizeClass + " " + textClass;

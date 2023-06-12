@@ -14,32 +14,25 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          base: "#3185FF",
+          1: "#3185FF",
           2: "#E3F2FF",
         },
-        light: {
-          base: "#FFFFFF",
-          1: "#F9FAF7",
-          2: "#F1F2EF",
-          gray: "#F9FAF7",
-        },
         dark: {
-          base: "#000000",
-          1: "#333333",
-          2: "#878787",
-          "7%": "rgba(0, 0, 0, 0.07)",
-          "8%": "rgba(0, 0, 0, 0.08)",
-        },
-        success: {
-          base: "#548B53",
-          2: "#D7ECD7",
+          1: "rgba(30,30,34,255)",
+          2: "rgba(43,45,49,255)",
+          3: "rgba(49,51,56,255)",
         },
 
-        new: {
-          "dark-1": "rgb(22, 22, 22)",
-          // "dark-1": "rgba(20, 30, 35, 1)",
-          "dark-2": "rgba(255, 255, 255, 0.03)",
-          "dark-3": "rgba(255, 255, 255, 0.9)",
+        shade: {
+          1: "rgba(255,255,255,0.05)",
+          2: "rgba(255,255,255,0.1)",
+          3: "rgba(255,255,255,0.2)",
+        },
+
+        white: {
+          1: "rgba(255,255,255,1.00)",
+          2: "rgba(255,255,255,0.50)",
+          3: "rgba(255,255,255,0.25)",
         },
       },
     },
@@ -67,5 +60,23 @@ module.exports = {
         ".phx-change-loading &",
       ])
     ),
+    function ({ addBase, theme }) {
+      function extractColorVars(colorObj, colorGroup = "") {
+        return Object.keys(colorObj).reduce((vars, colorKey) => {
+          const value = colorObj[colorKey];
+
+          const newVars =
+            typeof value === "string"
+              ? { [`--color${colorGroup}-${colorKey}`]: value }
+              : extractColorVars(value, `-${colorKey}`);
+
+          return { ...vars, ...newVars };
+        }, {});
+      }
+
+      addBase({
+        ":root": extractColorVars(theme("colors")),
+      });
+    },
   ],
 };

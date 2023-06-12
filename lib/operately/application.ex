@@ -16,6 +16,8 @@ defmodule Operately.Application do
       {Absinthe.Subscription, OperatelyWeb.Endpoint}
     ]
 
+    children = configure_query_counter(children)
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Operately.Supervisor]
@@ -28,5 +30,16 @@ defmodule Operately.Application do
   def config_change(changed, _new, removed) do
     OperatelyWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def configure_query_counter(children) do
+    if Application.get_env(:operately, :start_query_counter) do
+      handler = &Operately.QueryCounter.handle_event/4
+      :ok = :telemetry.attach("operately-ecto", [:operately, :repo, :query], handler, %{})
+
+      children ++ [{Operately.QueryCounter, []}]
+    else
+      children
+    end
   end
 end

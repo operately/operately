@@ -16,6 +16,8 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Kpis
   import_types Types.Milestones
   import_types Types.Updates
+  import_types Types.Reactions
+  import_types Types.Comments
 
   # Queries
   import_types Queries.Projects
@@ -30,21 +32,6 @@ defmodule OperatelyWeb.Schema do
   import_types Mutations.Groups
   import_types Mutations.KeyResults
   import_types Mutations.People
-
-
-  object :comment do
-    field :id, non_null(:id)
-    field :content, non_null(:string)
-    field :inserted_at, non_null(:naive_datetime)
-
-    field :author, :person do
-      resolve fn comment, _, _ ->
-        person = Operately.People.get_person!(comment.author_id)
-
-        {:ok, person}
-      end
-    end
-  end
 
   object :group_contact do
     field :id, non_null(:id)

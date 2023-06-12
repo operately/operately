@@ -1,6 +1,13 @@
 import React from "react";
 import { gql, ApolloClient, useQuery } from "@apollo/client";
 
+export interface Person {
+  id: string;
+  fullName: string;
+  title: string;
+  avatarUrl: string;
+}
+
 export function createProfile(
   client: ApolloClient<any>,
   fullName: string,

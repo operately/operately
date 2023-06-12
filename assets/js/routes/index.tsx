@@ -8,10 +8,7 @@ import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
 import ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectPage } from "../pages/ProjectPage";
-import {
-  ProjectListPage,
-  ProjectListPageLoader,
-} from "../pages/ProjectListPage";
+import { ProjectListPage } from "../pages/ProjectListPage";
 
 import TenetAddPage from "../pages/TenetAddPage";
 import { TenetPage, TenetPageLoader } from "../pages/TenetPage";
@@ -22,7 +19,7 @@ import { KpiPage, KpiPageLoader } from "../pages/KpiPage";
 import { KpiListPage, KpiListPageLoader } from "../pages/KpiListPage";
 
 import ObjectiveAddPage from "../pages/ObjectiveAddPage";
-import { ObjectivePage, ObjectivePageLoader } from "../pages/ObjectivePage";
+import { ObjectivePage } from "../pages/ObjectivePage";
 import {
   ObjectiveListPage,
   ObjectiveListPageLoader,
@@ -75,7 +72,6 @@ const routes = createBrowserRouter([
       },
       {
         path: "/projects",
-        loader: loaderWithApollo(ProjectListPageLoader),
         element: <ProjectListPage />,
       },
       {
@@ -83,7 +79,7 @@ const routes = createBrowserRouter([
         element: <ProjectAddPage />,
       },
       {
-        path: "/projects/:id",
+        path: "/projects/:id/*",
         element: <ProjectPage />,
       },
       {
@@ -124,7 +120,6 @@ const routes = createBrowserRouter([
       },
       {
         path: "/objectives/:id",
-        loader: loaderWithApollo(ObjectivePageLoader),
         element: <ObjectivePage />,
       },
       {

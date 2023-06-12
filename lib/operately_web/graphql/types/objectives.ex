@@ -4,7 +4,12 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
   object :objective do
     field :id, non_null(:id)
     field :name, non_null(:string)
-    field :description, :string
+
+    field :description, :string do
+      resolve fn objective, _, _ ->
+        {:ok, Jason.encode!(objective.description)}
+      end
+    end
 
     field :owner, :person do
       resolve fn objective, _, _ ->
@@ -27,6 +32,24 @@ defmodule OperatelyWeb.GraphQL.Types.Objectives do
         group = Operately.Groups.get_group(objective.group_id)
 
         {:ok, group}
+      end
+    end
+
+    field :activities, list_of(:activity) do
+      resolve fn objective, _, _ ->
+        updates = Operately.Updates.list_updates(objective.id, :objective)
+
+        {:ok, updates}
+      end
+    end
+
+    field :projects, list_of(:project) do
+      resolve fn objective, _, _ ->
+        projects = Operately.Projects.list_projects(%{
+          objective_id: objective.id
+        })
+
+        {:ok, projects}
       end
     end
   end

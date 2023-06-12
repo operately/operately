@@ -1,6 +1,26 @@
 import React from "react";
 import { gql, useQuery, ApolloClient, useApolloClient } from "@apollo/client";
 
+import * as fragments from "@/graphql/Fragments";
+
+interface Person {
+  id: string;
+  fullName: string;
+  avatarUrl: string;
+  title: string;
+}
+
+export interface KeyResult {
+  id: string;
+  name: string;
+  status: string;
+  stepsCompleted: number;
+  stepsTotal: number;
+  updatedAt: string;
+
+  owner: Person;
+}
+
 const LIST_OBJECTIVES = gql`
   query ListObjectives($groupId: ID) {
     objectives(groupId: $groupId) {
@@ -8,40 +28,27 @@ const LIST_OBJECTIVES = gql`
       name
       description
 
-      group {
-        id
-        name
-        mission
-      }
+      group ${fragments.GROUP}
+      owner ${fragments.PERSON}
 
-      owner {
-        id
-        fullName
-        avatarUrl
-        title
-      }
+      keyResults ${fragments.KEY_RESULT}
+    }
+  }
+`;
 
-      keyResults {
-        id
-        name
-        status
-        stepsCompleted
-        stepsTotal
-        updatedAt
+const GET_OBJECTIVE = gql`
+  query GetObjective($id: ID!) {
+    objective(id: $id) {
+      id
+      name
+      description
 
-        group {
-          id
-          name
-          mission
-        }
+      owner ${fragments.PERSON}
 
-        owner {
-          id
-          fullName
-          avatarUrl
-          title
-        }
-      }
+      keyResults ${fragments.KEY_RESULT}
+      activities ${fragments.ACTIVITY}
+
+      projects ${fragments.PROJECT}
     }
   }
 `;
@@ -89,6 +96,10 @@ export function useObjectives(variables: ListObjectivesVariables) {
   }, []);
 
   return query;
+}
+
+export function useObjective(id: string) {
+  return useQuery(GET_OBJECTIVE, { variables: { id } });
 }
 
 export function listObjectives(

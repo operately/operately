@@ -1,6 +1,9 @@
 import React from "react";
 import { gql, useQuery, ApolloClient, QueryResult } from "@apollo/client";
 
+import { Milestone } from "./milestones";
+import * as fragments from "@/graphql/Fragments";
+
 const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
     projects(groupId: $groupId, objectiveId: $objectiveId) {
@@ -15,6 +18,10 @@ const LIST_PROJECTS = gql`
         fullName
         title
       }
+
+      contributors ${fragments.CONTRIBUTOR}
+
+      phase
     }
   }
 `;
@@ -67,13 +74,6 @@ interface Person {
   avatarUrl: string;
 }
 
-interface Milestone {
-  id: string;
-  title: string;
-  deadlineAt: string;
-  status: string;
-}
-
 interface Parent {
   id: string;
   title: string;
@@ -120,6 +120,7 @@ const GET_PROJECT = gql`
       id
       name
       description
+      startedAt
       deadline
       nextUpdateScheduledAt
       phase
@@ -136,12 +137,6 @@ const GET_PROJECT = gql`
         title
         deadlineAt
         status
-      }
-
-      parents {
-        id
-        title
-        type
       }
 
       contributors {
@@ -170,15 +165,45 @@ const GET_PROJECT = gql`
         ... on ActivityStatusUpdate {
           message
 
+          acknowledged
+          acknowledgedAt
+          acknowledgingPerson {
+            id
+            fullName
+            title
+            avatarUrl
+          }
+
+          reactions {
+            reactionType
+            person {
+              id
+              fullName
+              title
+              avatarUrl
+            }
+          }
+
           comments {
             id
-            content
+            message
             insertedAt
+
             author {
               id
               fullName
               title
               avatarUrl
+            }
+
+            reactions {
+              reactionType
+              person {
+                id
+                fullName
+                title
+                avatarUrl
+              }
             }
           }
         }
