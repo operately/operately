@@ -100,13 +100,13 @@ interface Comment {
 
 interface Activity {
   id: string;
-  content: string;
   insertedAt: Date;
-
+  author: Person;
+  message: string;
   comments: Comment[];
 }
 
-interface Project {
+export interface Project {
   id: string;
   name: string;
   description: string;
@@ -225,13 +225,23 @@ export function useProject(id: string): UseProjectResult {
 }
 
 export function usePostUpdateMutation(projectId: string) {
-  const [fun, status] = useMutation(gql`
-    mutation CreateUpdate($input: CreateUpdateInput!) {
-      createUpdate(input: $input) {
-        id
+  const [fun, status] = useMutation(
+    gql`
+      mutation CreateUpdate($input: CreateUpdateInput!) {
+        createUpdate(input: $input) {
+          id
+        }
       }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECT,
+          variables: { id: projectId },
+        },
+      ],
     }
-  `);
+  );
 
   const createUpdate = (content: any) => {
     return fun({

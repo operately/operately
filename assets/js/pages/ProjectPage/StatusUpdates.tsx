@@ -5,7 +5,15 @@ import StatusUpdate from "./StatusUpdate";
 import { Link } from "react-router-dom";
 import RichContent from "@/components/RichContent";
 
-export default function StatusUpdates({ project }) {
+import * as ProjectQueries from "@/graphql/Projects";
+
+interface StatusUpdatesProps {
+  project: ProjectQueries.Project;
+}
+
+export default function StatusUpdates({
+  project,
+}: StatusUpdatesProps): JSX.Element {
   return (
     <div className="px-16 rounded-b-[30px] pb-8">
       <div className="">
@@ -18,7 +26,7 @@ export default function StatusUpdates({ project }) {
         <div className="fadeIn">
           {project.activities.map((activity) => (
             <StatusUpdate
-              person={project.owner}
+              person={activity.author}
               title="Status Update"
               message={<RichContent jsonContent={activity.message} />}
               comments={3}
