@@ -1,23 +1,16 @@
 import React from "react";
 
-import PostUpdate from "./PostUpdate";
-import StatusUpdate from "./StatusUpdate";
-
 import * as Icons from "tabler-icons-react";
+import StatusUpdate from "./StatusUpdate";
 
 export default function StatusUpdates({ project }) {
   return (
     <div className="px-16 rounded-b-[30px] pb-8">
       <div className="">
         <div className="flex items-center justify-between gap-4">
-          <div className="font-bold py-4 flex items-center gap-2 uppercase">
-            <Icons.Direction size={20} />
-            Status Updates
-          </div>
-
-          <div className="border-b border-pink-400 flex-1"></div>
-
-          <PostUpdate />
+          <SectionTitle title="Status Updates" />
+          <SeparatorLine />
+          <PostUpdateButton />
         </div>
 
         <div className="fadeIn">
@@ -70,6 +63,27 @@ export default function StatusUpdates({ project }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function PostUpdateButton() {
+  return (
+    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2">
+      <Icons.Message2 size={20} />
+      Post Update
+    </button>
+  );
+}
+
+function SeparatorLine() {
+  return <div className="border-b border-pink-400 flex-1"></div>;
+}
+
+function SectionTitle({ title }) {
+  return (
+    <div className="font-bold py-4 flex items-center gap-2 uppercase">
+      {title}
     </div>
   );
 }
