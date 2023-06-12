@@ -33,6 +33,9 @@ export function ProjectPage() {
 
     case "/new_update":
       return <NewUpdate project={project} />;
+
+    default:
+      return <p className="mt-16">Unknown path</p>;
   }
 }
 
@@ -193,7 +196,7 @@ function Phases({ project }) {
         </div>
 
         {times.map((phase, i) => (
-          <div className="flex flex-col items-center">
+          <div key={i} className="flex flex-col items-center">
             <div className="flex items-center gap-2">
               <PhaseIcon status={phase.status} />
               <span className="font-bold">{phase.name}</span>
