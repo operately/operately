@@ -47,7 +47,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
         Operately.Updates.update_update(update, %{
           acknowledged: true,
           acknowledged_at: DateTime.utc_now,
-          acknowledged_person_id: context.current_account.person.id
+          acknowledging_person_id: context.current_account.person.id
         })
       end
     end

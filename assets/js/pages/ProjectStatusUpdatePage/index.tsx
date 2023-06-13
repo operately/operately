@@ -53,7 +53,7 @@ export function ProjectStatusUpdatePage() {
           </div>
 
           <Reactions update={update} />
-          <Comments />
+          <Comments update={update} />
         </div>
       </div>
     </div>
@@ -228,15 +228,30 @@ function Reactions({ update }) {
   );
 }
 
-function Comments() {
+function Comments({ update }) {
   const { data } = useMe();
 
   return (
     <div className="border-t border-white-2 mt-8 pt-8">
+      {update.acknowledged && <AckComment update={update} />}
+
       <div className="flex gap-4 items-center">
         <Avatar person={data.me} size={AvatarSize.Normal} />
 
         <div className="text-white-2">Start the discussion here&hellip;</div>
+      </div>
+    </div>
+  );
+}
+
+function AckComment({ update }) {
+  return (
+    <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-2">
+        <Icons.Check size={20} />
+        <div className="text-white-2">
+          {update.acknowledgingPerson.fullName} acknowledged this update
+        </div>
       </div>
     </div>
   );
