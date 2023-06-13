@@ -41,6 +41,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
   const [_submitActive, setSubmitActive] = React.useState(false);
 
   return TipTap.useEditor({
+    injectCSS: false,
     editorProps: {
       attributes: {
         class: "focus:outline-none",
