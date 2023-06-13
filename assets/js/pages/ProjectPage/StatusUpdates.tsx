@@ -52,7 +52,7 @@ function StatusUpdate(props: StatusUpdateProps) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <div className="font-bold">{props.title}</div>
-            <AckStatus update={props} />
+            <AckStatus update={props.update} />
           </div>
           <div className="line-clamp-1" style={{ maxWidth: "780px" }}>
             {props.message}
@@ -88,6 +88,7 @@ function StatusUpdateList({ project, updates }) {
           message={<RichContent jsonContent={update.message} />}
           comments={update.comments.length}
           time={update.insertedAt}
+          update={update}
         />
       ))}
     </>
