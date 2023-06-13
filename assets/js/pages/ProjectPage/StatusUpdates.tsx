@@ -21,6 +21,24 @@ interface StatusUpdateProps {
   time: Date;
 }
 
+function AckStatus({ update }) {
+  if (update.acknowledged) {
+    return (
+      <div className="flex items-center text-sm text-green-400 gap-1">
+        <Icons.CircleCheck size={16} />
+        Acknowledged
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex items-center text-sm text-yellow-400 gap-1">
+        <Icons.Clock size={16} />
+        Waiting for Acknowledgement
+      </div>
+    );
+  }
+}
+
 function StatusUpdate(props: StatusUpdateProps) {
   return (
     <Link
@@ -33,8 +51,9 @@ function StatusUpdate(props: StatusUpdateProps) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between font-bold">
-            {props.title}
+          <div className="flex items-center gap-2">
+            <div className="font-bold">{props.title}</div>
+            <AckStatus update={props} />
           </div>
           <div className="line-clamp-1" style={{ maxWidth: "780px" }}>
             {props.message}
@@ -66,7 +85,7 @@ function StatusUpdateList({ project, updates }) {
           key={update.id}
           linkTo={`/projects/${project.id}/updates/${update.id}`}
           person={update.author}
-          title="Status Update"
+          title={"Status Update"}
           message={<RichContent jsonContent={update.message} />}
           comments={update.comments.length}
           time={update.insertedAt}
@@ -87,7 +106,7 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
     <div className="px-16 rounded-b-[30px] py-8 bg-dark-3 min-h-[350px] ">
       <div className="">
         <div className="flex items-center justify-between gap-4">
-          <SectionTitle title="Status Updates" />
+          <SectionTitle title="Project Activity" />
           <SeparatorLine />
           <PostUpdateButton link_to={postUpdateLink} />
         </div>
@@ -122,7 +141,7 @@ function SeparatorLine() {
 
 function SectionTitle({ title }) {
   return (
-    <div className="font-bold py-4 flex items-center gap-2 uppercase">
+    <div className="font-bold py-4 flex items-center gap-2 uppercase tracking-wide">
       {title}
     </div>
   );
