@@ -60,9 +60,14 @@ export function ProjectStatusUpdatePage() {
   );
 }
 
-function AckButton({}) {
+function AckButton({ update }) {
+  const [ack, status] = ProjectQueries.useAckMutation(update.id);
+
   return (
-    <button className="text-yellow-400 font-bold uppercase border border-yellow-400 rounded-full hover:bg-yellow-400/10 px-3 py-1.5 text-sm flex items-center gap-2">
+    <button
+      className="text-yellow-400 font-bold uppercase border border-yellow-400 rounded-full hover:bg-yellow-400/10 px-3 py-1.5 text-sm flex items-center gap-2"
+      onClick={() => ack()}
+    >
       <Icons.Check size={20} />
       Acknowledge
     </button>
@@ -79,7 +84,7 @@ function AckBanner({ me, reviewer, update, owner }) {
           <Icons.Clock size={20} />
           {owner.fullName} is waiting for you to acknowledge this update
         </div>
-        <AckButton />
+        <AckButton update={update} />
       </div>
     );
   } else {

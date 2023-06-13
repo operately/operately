@@ -37,5 +37,19 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
         })
       end
     end
+
+    field :acknowledge, :activity do
+      arg :id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        update = Operately.Updates.get_update!(args.id)
+
+        Operately.Updates.update_update(update, %{
+          acknowledged: true,
+          acknowledged_at: DateTime.utc_now,
+          acknowledged_person_id: context.current_account.person.id
+        })
+      end
+    end
   end
 end
