@@ -9,6 +9,54 @@ import { useMe } from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 
+export function ProjectStatusUpdatePage() {
+  const params = useParams();
+
+  const projectId = params.project_id;
+  const id = params.id || "";
+
+  const { data, loading, error } = ProjectQueries.useProjectStatusUpdate(id);
+
+  if (loading) return <p className="mt-16">Loading...</p>;
+  if (error) return <p className="mt-16">Error : {error.message}</p>;
+  if (!data) return <p className="mt-16">Can't find update</p>;
+
+  const update = data?.update;
+
+  return (
+    <div className="mt-24">
+      <div className="flex justify-between items-center mb-4 mx-auto max-w-5xl ">
+        <BackToProject linkTo={`/projects/${projectId}`} />
+
+        <div className="flex gap-4">
+          <Prev />
+          <Next />
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px] px-32 py-16">
+        <AckBanner update={update} reviwer={update.project.reviewer} />
+        <Header update={update} />
+
+        <div className="my-8 text-lg">
+          <RichContent jsonContent={update.message} />
+        </div>
+
+        <Reactions />
+        <Comments />
+      </div>
+    </div>
+  );
+}
+
+function AckBanner({ reviwer, update }) {
+  if (update.acknowledged) {
+    return null;
+  } else {
+    return <div>Waiting for acknowledgement from {reviwer}</div>;
+  }
+}
+
 function BackToProject({ linkTo }) {
   return (
     <Link
@@ -82,45 +130,6 @@ function Comments() {
         <Avatar person={data.me} size={AvatarSize.Normal} />
 
         <div className="text-white-2">Start the discussion here&hellip;</div>
-      </div>
-    </div>
-  );
-}
-
-export function ProjectStatusUpdatePage() {
-  const params = useParams();
-
-  const projectId = params.project_id;
-  const id = params.id || "";
-
-  const { data, loading, error } = ProjectQueries.useProjectStatusUpdate(id);
-
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find update</p>;
-
-  const update = data?.update;
-
-  return (
-    <div className="mt-24">
-      <div className="flex justify-between items-center mb-4 mx-auto max-w-5xl ">
-        <BackToProject linkTo={`/projects/${projectId}`} />
-
-        <div className="flex gap-4">
-          <Prev />
-          <Next />
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px] px-32 py-16">
-        <Header update={update} />
-
-        <div className="my-8 text-lg">
-          <RichContent jsonContent={update.message} />
-        </div>
-
-        <Reactions />
-        <Comments />
       </div>
     </div>
   );

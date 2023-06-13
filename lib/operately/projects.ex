@@ -38,6 +38,11 @@ defmodule Operately.Projects do
     project.owner
   end
 
+  def get_reviewer!(project) do
+    project = Repo.preload(project, [:reviewer])
+    project.reviewer
+  end
+
   @doc """
   Creates a project.
 

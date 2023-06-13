@@ -67,28 +67,21 @@ export const ACTIVITY = `
   }
 `;
 
-export const ACTIVITY_WITH_PROJECT = `
-  {
-    __typename
-    id
-    insertedAt
+export const ACTIVITY_FIELDS = `
+  __typename
+  id
+  insertedAt
 
-    author ${PERSON}
+  author ${PERSON}
 
-    project {
-      id
-      name
-    }
+  ... on ActivityStatusUpdate {
+    message
+    acknowledged
+    acknowledgedAt
 
-    ... on ActivityStatusUpdate {
-      message
-      acknowledged
-      acknowledgedAt
-
-      acknowledgingPerson ${PERSON}
-      reactions ${REACTION}
-      comments ${COMMENT}
-    }
+    acknowledgingPerson ${PERSON}
+    reactions ${REACTION}
+    comments ${COMMENT}
   }
 `;
 
