@@ -15,32 +15,40 @@ export function ProjectStatusUpdatePage() {
   const projectId = params.project_id;
   const id = params.id || "";
 
-  const { data, loading, error } = ProjectQueries.useProjectStatusUpdate(id);
+  const meData = useMe();
+  const updateData = ProjectQueries.useProjectStatusUpdate(id);
 
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find update</p>;
+  if (meData.loading || updateData.loading)
+    return <p className="mt-32">Loading...</p>;
 
-  const update = data?.update;
+  if (meData.error || updateData.error)
+    return (
+      <p className="mt-32">
+        Error : {meData.error?.message} {updateData.error?.message}
+      </p>
+    );
+
+  const update = updateData.data.update;
+  const me = meData.data.me;
 
   return (
     <div className="mt-24">
-      <div className="flex justify-between items-center mb-4 mx-auto max-w-5xl ">
+      <div className="flex justify-between items-center mb-4 mx-auto max-w-4xl">
         <BackToProject linkTo={`/projects/${projectId}`} />
-
-        <div className="flex gap-4">
-          <Prev />
-          <Next />
-        </div>
       </div>
 
-      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
-        <AckBanner update={update} reviewer={update.project.reviewer} />
+      <div className="mx-auto max-w-4xl relative bg-dark-2 rounded-[20px]">
+        <AckBanner
+          me={me}
+          owner={update.project.owner}
+          update={update}
+          reviewer={update.project.reviewer}
+        />
 
-        <div className="px-32 py-16">
+        <div className="px-16 pb-16 pt-8 fadeIn">
           <Header update={update} />
 
-          <div className="my-8 text-lg">
+          <div className="my-4 mb-8 text-lg">
             <RichContent jsonContent={update.message} />
           </div>
 
@@ -52,12 +60,31 @@ export function ProjectStatusUpdatePage() {
   );
 }
 
-function AckBanner({ reviewer, update }) {
-  if (update.acknowledged) {
-    return null;
+function AckButton({}) {
+  return (
+    <button className="text-yellow-400 font-bold uppercase border border-yellow-400 rounded-full hover:bg-yellow-400/10 px-3 py-1.5 text-sm flex items-center gap-2">
+      <Icons.Check size={20} />
+      Acknowledge
+    </button>
+  );
+}
+
+function AckBanner({ me, reviewer, update, owner }) {
+  if (update.acknowledged) return null;
+
+  if (me.id === reviewer.id) {
+    return (
+      <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Icons.Clock size={20} />
+          {owner.fullName} is waiting for you to acknowledge this update
+        </div>
+        <AckButton />
+      </div>
+    );
   } else {
     return (
-      <div className="py-4 px-8 bg-shade-1 rounded-t-[30px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
+      <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
         <Icons.Clock size={20} />
         Waiting for {reviewer.fullName} to acknowledge this update
       </div>
@@ -69,7 +96,7 @@ function BackToProject({ linkTo }) {
   return (
     <Link
       to={linkTo}
-      className="text-emerald-400 font-bold uppercase border border-emerald-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
+      className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
     >
       <Icons.ArrowLeft size={20} />
       Back To Project
@@ -77,42 +104,21 @@ function BackToProject({ linkTo }) {
   );
 }
 
-function Prev() {
-  return (
-    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4">
-      <Icons.ArrowLeft size={20} />
-      Previous Update
-    </button>
-  );
-}
-
-function Next() {
-  return (
-    <button className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4">
-      Next Update
-      <Icons.ArrowRight size={20} />
-    </button>
-  );
-}
-
 function Header({ update }) {
   return (
     <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">
-        <FormattedTime time={update.insertedAt} format="short-date-with-time" />
-      </div>
-      <div className="text-4xl font-bold mx-auto">Status Update</div>
-
-      <div className="flex items-center gap-4 mb-8 py-4">
-        <Avatar person={update.author} size={AvatarSize.Large} />
-
-        <div>
+      <div className="flex items-center mb-4 mt-2">
+        <div className="flex items-center gap-2 py-4">
+          <Avatar person={update.author} size={AvatarSize.Small} />
           <div className="font-bold">{update.author.fullName}</div>
-          <div className="text-white-1">
-            Champion of the {update.project.name} project
+          <div>
+            <span>posted an update on</span>{" "}
+            <FormattedTime time={update.insertedAt} format="short-date" />
           </div>
         </div>
       </div>
+
+      <div className="text-3xl font-bold">Status Update</div>
     </div>
   );
 }
