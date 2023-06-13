@@ -157,7 +157,7 @@ function Reactions({ update }) {
         <div className="flex items-center gap-3 transition-all">
           {!active && (
             <div
-              className="text-pink-400 cursor-pointer"
+              className="text-white-1 cursor-pointer"
               onClick={() => setActive(true)}
             >
               <Icons.ThumbUp size={24} />
@@ -232,27 +232,33 @@ function Comments({ update }) {
   const { data } = useMe();
 
   return (
-    <div className="border-t border-white-2 mt-8 pt-8">
+    <div className="mt-8 flex flex-col gap-2">
       {update.acknowledged && <AckComment update={update} />}
-
-      <div className="flex gap-4 items-center">
-        <Avatar person={data.me} size={AvatarSize.Normal} />
-
-        <div className="text-white-2">Start the discussion here&hellip;</div>
-      </div>
+      <AddComment me={data.me} />
     </div>
   );
 }
 
 function AckComment({ update }) {
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center justify-between p-4 bg-shade-1 font-medium text-green-400 rounded-lg">
       <div className="flex items-center gap-2">
-        <Icons.Check size={20} />
-        <div className="text-white-2">
-          {update.acknowledgingPerson.fullName} acknowledged this update
-        </div>
+        <Avatar person={update.acknowledgingPerson} size={AvatarSize.Normal} />
+        <span>
+          {update.acknowledgingPerson.fullName} has acknowledged this update
+        </span>
       </div>
+      <FormattedTime time={update.acknowledgedAt} format="short-date" />
+    </div>
+  );
+}
+
+function AddComment({ me }) {
+  return (
+    <div className="flex items-center gap-2 p-4 bg-shade-1 text-white-2 rounded-lg">
+      <Avatar person={me} size={AvatarSize.Normal} />
+
+      <div className="text-white-2">Leave a comment&hellip;</div>
     </div>
   );
 }
