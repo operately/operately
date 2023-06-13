@@ -23,5 +23,19 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
         })
       end
     end
+
+    field :add_reaction, :reaction do
+      arg :id, non_null(:id)
+      arg :type, non_null(:string)
+
+      resolve fn args, %{context: context} ->
+        Operately.Updates.create_reaction(%{
+          entity_type: :update,
+          entity_id: args.id,
+          reaction_type: args.type,
+          person_id: context.current_account.person.id
+        })
+      end
+    end
   end
 end

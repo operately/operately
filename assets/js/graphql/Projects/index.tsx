@@ -258,6 +258,37 @@ export function usePostUpdateMutation(projectId: string) {
   return [createUpdate, status] as const;
 }
 
+export function useReactMutation(updateId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation AddReaction($id: ID!, $type: String!) {
+        addReaction(id: $id, type: $type) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_STATUS_UPDATE,
+          variables: { id: updateId },
+        },
+      ],
+    }
+  );
+
+  const addReaction = (type: any) => {
+    return fun({
+      variables: {
+        id: updateId,
+        type: type,
+      },
+    });
+  };
+
+  return [addReaction, status] as const;
+}
+
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
