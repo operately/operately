@@ -18,7 +18,7 @@ interface StatusUpdateProps {
   title: string;
   message: string | JSX.Element;
   comments: number;
-  time: string;
+  time: Date;
 }
 
 function StatusUpdate(props: StatusUpdateProps) {
@@ -72,54 +72,6 @@ export default function StatusUpdates({
               time={activity.insertedAt}
             />
           ))}
-
-          <StatusUpdate
-            person={project.owner}
-            title="Status Update"
-            message="We have completed the first milestone and we are on track to complete the project on time. Last week we reached out to people who have signed up via the newsletter. In total we had around 800 singups, from which around 550 responded to the survey."
-            comments={3}
-            time={Date.parse("2023-05-23")}
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="The project is going well and we are expecting the finish all the work on time"
-            comments={0}
-            time={Date.parse("2023-05-17")}
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="The outages are still happening and we are working on a fix. We will keep you updated."
-            comments={10}
-            time={Date.parse("2023-03-10")}
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="We are currently working on delivering the first milestone which is due next week."
-            comments={0}
-            time={Date.parse("2023-03-02")}
-          />
-          <StatusUpdate
-            person={project.contributors[0].person}
-            acknowledged
-            title="Request for Project Review"
-            message="I haven't heard any news about the project for a while. Can you please provide an update?"
-            comments={1}
-            time={Date.parse("2023-03-01")}
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="The project was bootstrapped and the team is working on the first milestone."
-            comments={3}
-            time={Date.parse("2022-12-25")}
-          />
         </div>
       </div>
     </div>
