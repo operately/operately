@@ -3,7 +3,7 @@ import React from "react";
 import * as Icons from "tabler-icons-react";
 import { Link } from "react-router-dom";
 import RichContent from "@/components/RichContent";
-import Avatar, { AvatarSize } from "@/components/Avatar";
+import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as ProjectQueries from "@/graphql/Projects";
@@ -12,7 +12,16 @@ interface StatusUpdatesProps {
   project: ProjectQueries.Project;
 }
 
-function StatusUpdate(props) {
+interface StatusUpdateProps {
+  linkTo: string;
+  person: ProjectQueries.Person;
+  title: string;
+  message: string | JSX.Element;
+  comments: number;
+  time: string;
+}
+
+function StatusUpdate(props: StatusUpdateProps) {
   return (
     <Link
       to={props.linkTo}

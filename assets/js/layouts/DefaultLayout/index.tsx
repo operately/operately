@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 
 import User from "./User";
-import { NavLink } from "react-router-dom";
+import { useLocation, NavLink } from "react-router-dom";
 
 import * as Icons from "tabler-icons-react";
 
@@ -153,6 +153,20 @@ function Navigation({ size }) {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    // "document.documentElement.scrollTo" is the magic for React Router Dom v6
+    document.documentElement.scrollTo({
+      top: 0,
+      left: 0,
+    });
+  }, [pathname]);
+
+  return null;
+}
+
 export default function DefaultLayout() {
   const [navigationSize, setNavigationSize] = React.useState("large");
 
@@ -170,6 +184,7 @@ export default function DefaultLayout() {
 
   return (
     <div>
+      <ScrollToTop />
       <Navigation size={navigationSize} />
 
       <div>
