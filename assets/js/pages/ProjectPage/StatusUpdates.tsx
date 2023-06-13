@@ -26,7 +26,6 @@ function AckStatus({ update }) {
     return (
       <div className="flex items-center text-sm text-green-400 gap-1">
         <Icons.CircleCheck size={16} />
-        Acknowledged
       </div>
     );
   } else {
@@ -43,7 +42,7 @@ function StatusUpdate(props: StatusUpdateProps) {
   return (
     <Link
       to={props.linkTo}
-      className="flex items-center justify-between my-3 hover:bg-shade-1"
+      className="flex items-center justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2"
     >
       <div className="flex items-center gap-4">
         <div className="shrink-0">
