@@ -49,29 +49,55 @@ function StatusUpdate(props: StatusUpdateProps) {
   );
 }
 
-export default function StatusUpdates({
-  project,
-}: StatusUpdatesProps): JSX.Element {
+function StatusUpdateZeroState() {
   return (
-    <div className="px-16 rounded-b-[30px] pb-8">
+    <div className="flex items-center justify-center text-white-2 gap-2">
+      <Icons.Message2 size={24} />
+      Share the progress of the project with your team.
+    </div>
+  );
+}
+
+function StatusUpdateList({ project, updates }) {
+  return (
+    <>
+      {updates.map((update) => (
+        <StatusUpdate
+          key={update.id}
+          linkTo={`/projects/${project.id}/updates/${update.id}`}
+          person={update.author}
+          title="Status Update"
+          message={<RichContent jsonContent={update.message} />}
+          comments={update.comments.length}
+          time={update.insertedAt}
+        />
+      ))}
+    </>
+  );
+}
+
+export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
+  const project = props.project;
+  const postUpdateLink = `/projects/${project.id}/new_update`;
+  const updates = project.activities;
+
+  const isEmpty = updates.length === 0;
+
+  return (
+    <div className="px-16 rounded-b-[30px] py-8 bg-dark-3 min-h-[350px] ">
       <div className="">
         <div className="flex items-center justify-between gap-4">
           <SectionTitle title="Status Updates" />
           <SeparatorLine />
-          <PostUpdateButton link_to={`/projects/${project.id}/new_update`} />
+          <PostUpdateButton link_to={postUpdateLink} />
         </div>
 
         <div className="fadeIn">
-          {project.activities.map((activity) => (
-            <StatusUpdate
-              linkTo={`/projects/${project.id}/updates/${activity.id}`}
-              person={activity.author}
-              title="Status Update"
-              message={<RichContent jsonContent={activity.message} />}
-              comments={3}
-              time={activity.insertedAt}
-            />
-          ))}
+          {isEmpty ? (
+            <StatusUpdateZeroState />
+          ) : (
+            <StatusUpdateList project={project} updates={updates} />
+          )}
         </div>
       </div>
     </div>
