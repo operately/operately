@@ -58,7 +58,7 @@ function Editor({ project }) {
 
 function PostButton({ onClick, active }) {
   const activeClass =
-    "text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4";
+    "text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4";
   const className = active
     ? activeClass
     : activeClass + " opacity-50 cursor-not-allowed";

@@ -80,6 +80,13 @@ body {
   box-shadow: 0px 0px 12px rgba(49, 133, 255, 0.2);
 }
 
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
 .line-clamp-4 {
   overflow: hidden;
   display: -webkit-box;

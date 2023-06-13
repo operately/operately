@@ -13,29 +13,28 @@ interface StatusUpdatesProps {
 }
 
 function StatusUpdate(props) {
-  const { linkTo, person, acknowledged, title, message, comments, time } =
-    props;
-
   return (
     <Link
-      to={linkTo}
+      to={props.linkTo}
       className="flex items-center justify-between my-3 hover:bg-shade-1"
     >
       <div className="flex items-center gap-4">
         <div className="shrink-0">
-          <Avatar person={person} />
+          <Avatar person={props.person} />
         </div>
 
-        <div className="">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between font-bold">
-            {title}
+            {props.title}
           </div>
-          <div className="truncate max-w-[600px]">{message}</div>
+          <div className="line-clamp-1" style={{ maxWidth: "780px" }}>
+            {props.message}
+          </div>
         </div>
       </div>
 
       <div className="text-right w-32">
-        <FormattedTime time={time} format="short-date" />
+        <FormattedTime time={props.time} format="short-date" />
       </div>
     </Link>
   );
@@ -122,7 +121,7 @@ function PostUpdateButton({ link_to }) {
   return (
     <Link
       to={link_to}
-      className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2"
+      className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2"
     >
       <Icons.Message2 size={20} />
       Post Update
