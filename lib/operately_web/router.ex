@@ -53,6 +53,10 @@ defmodule OperatelyWeb.Router do
       get "/accounts/auth/test_login", AccountOauthController, :test_login
     end
 
+    if Application.compile_env(:operately, :dev_routes) do
+      get "/accounts/auth/dev_login", AccountOauthController, :dev_login
+    end
+
     delete "/accounts/log_out", AccountSessionController, :delete
     get "/accounts/confirm", AccountConfirmationController, :new
     post "/accounts/confirm", AccountConfirmationController, :create
