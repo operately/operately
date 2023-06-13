@@ -34,16 +34,19 @@ export function ProjectStatusUpdatePage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px] px-32 py-16">
+      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
         <AckBanner update={update} reviewer={update.project.reviewer} />
-        <Header update={update} />
 
-        <div className="my-8 text-lg">
-          <RichContent jsonContent={update.message} />
+        <div className="px-32 py-16">
+          <Header update={update} />
+
+          <div className="my-8 text-lg">
+            <RichContent jsonContent={update.message} />
+          </div>
+
+          <Reactions />
+          <Comments />
         </div>
-
-        <Reactions />
-        <Comments />
       </div>
     </div>
   );
@@ -53,7 +56,12 @@ function AckBanner({ reviewer, update }) {
   if (update.acknowledged) {
     return null;
   } else {
-    return <div>Waiting for acknowledgement from {reviewer.fullName}</div>;
+    return (
+      <div className="py-4 px-8 bg-shade-1 rounded-t-[30px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
+        <Icons.Clock size={20} />
+        Waiting for {reviewer.fullName} to acknowledge this update
+      </div>
+    );
   }
 }
 
@@ -90,10 +98,13 @@ function Next() {
 function Header({ update }) {
   return (
     <div>
-      <div className="flex items-center gap-4 mb-8 py-4 border-b border-white-2">
-        <div className="border-2 border-yellow-400 p-1 rounded-full">
-          <Avatar person={update.author} size={AvatarSize.Normal} />
-        </div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">
+        <FormattedTime time={update.insertedAt} format="short-date-with-time" />
+      </div>
+      <div className="text-4xl font-bold mx-auto">Status Update</div>
+
+      <div className="flex items-center gap-4 mb-8 py-4">
+        <Avatar person={update.author} size={AvatarSize.Large} />
 
         <div>
           <div className="font-bold">{update.author.fullName}</div>
@@ -102,11 +113,6 @@ function Header({ update }) {
           </div>
         </div>
       </div>
-
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">
-        <FormattedTime time={update.insertedAt} format="short-date-with-time" />
-      </div>
-      <div className="text-4xl font-bold mx-auto">Status Update</div>
     </div>
   );
 }
