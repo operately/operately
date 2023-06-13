@@ -35,7 +35,7 @@ export function ProjectStatusUpdatePage() {
       </div>
 
       <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px] px-32 py-16">
-        <AckBanner update={update} reviwer={update.project.reviewer} />
+        <AckBanner update={update} reviewer={update.project.reviewer} />
         <Header update={update} />
 
         <div className="my-8 text-lg">
@@ -49,11 +49,11 @@ export function ProjectStatusUpdatePage() {
   );
 }
 
-function AckBanner({ reviwer, update }) {
+function AckBanner({ reviewer, update }) {
   if (update.acknowledged) {
     return null;
   } else {
-    return <div>Waiting for acknowledgement from {reviwer}</div>;
+    return <div>Waiting for acknowledgement from {reviewer.fullName}</div>;
   }
 }
 
