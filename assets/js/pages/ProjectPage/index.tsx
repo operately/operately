@@ -10,6 +10,7 @@ import Header from "./Header";
 import NewUpdate from "./NewUpdate";
 
 import RichContent from "@/components/RichContent";
+import Button from "@/components/Button";
 
 export function ProjectPage() {
   const params = useParams();
@@ -156,7 +157,7 @@ function Description({ project }) {
     <div className="pb-8 px-32">
       <div
         className={
-          "flex flex-col gap-1 text-lg transition" +
+          "flex flex-col gap-1 text-lg transition mb-4" +
           " " +
           (expanded ? "" : "line-clamp-4")
         }
@@ -164,13 +165,10 @@ function Description({ project }) {
         <RichContent jsonContent={project.description} />
       </div>
 
-      <button
-        className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
-        onClick={toggleExpanded}
-      >
+      <Button onClick={toggleExpanded}>
         {expanded ? <Icons.ArrowUp size={20} /> : <Icons.ArrowDown size={20} />}
         {expanded ? "Collapse" : "Expand"}
-      </button>
+      </Button>
     </div>
   );
 }

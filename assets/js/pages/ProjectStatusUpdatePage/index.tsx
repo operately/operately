@@ -8,6 +8,7 @@ import * as ProjectQueries from "@/graphql/Projects";
 import { useMe } from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
 import Avatar, { AvatarSize } from "@/components/Avatar";
+import Button from "@/components/Button";
 
 export function ProjectStatusUpdatePage() {
   const params = useParams();
@@ -64,13 +65,10 @@ function AckButton({ update }) {
   const [ack, status] = ProjectQueries.useAckMutation(update.id);
 
   return (
-    <button
-      className="text-yellow-400 font-bold uppercase border border-yellow-400 rounded-full hover:bg-yellow-400/10 px-3 py-1.5 text-sm flex items-center gap-2"
-      onClick={() => ack()}
-    >
+    <Button variant="attention" onClick={() => ack()}>
       <Icons.Check size={20} />
       Acknowledge
-    </button>
+    </Button>
   );
 }
 

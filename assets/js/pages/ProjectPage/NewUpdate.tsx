@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { usePostUpdateMutation } from "@/graphql/Projects";
 
+import Button from "@/components/Button";
+
 function NewUpdateHeader() {
   return (
     <div>
@@ -49,36 +51,27 @@ function Editor({ project }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <PostButton onClick={handlePost} active={!loading} />
+        <PostButton onClick={handlePost} />
         <CancelButton linkTo={`/projects/${project.id}`} />
       </div>
     </div>
   );
 }
 
-function PostButton({ onClick, active }) {
-  const activeClass =
-    "text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4";
-  const className = active
-    ? activeClass
-    : activeClass + " opacity-50 cursor-not-allowed";
-
+function PostButton({ onClick }) {
   return (
-    <button onClick={onClick} className={className}>
+    <Button onClick={onClick} variant="success">
       <Icons.Mail size={20} />
       Post Update
-    </button>
+    </Button>
   );
 }
 
 function CancelButton({ linkTo }) {
   return (
-    <Link
-      to={linkTo}
-      className="font-bold uppercase border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
-    >
+    <Button variant="secondary" linkTo={linkTo}>
       Cancel
-    </Link>
+    </Button>
   );
 }
 

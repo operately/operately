@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
+import Button from "@/components/Button";
 
 import * as ProjectQueries from "@/graphql/Projects";
 
@@ -108,7 +109,7 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
         <div className="flex items-center justify-between gap-4">
           <SectionTitle title="Project Activity" />
           <SeparatorLine />
-          <PostUpdateButton link_to={postUpdateLink} />
+          <PostUpdateButton linkTo={postUpdateLink} />
         </div>
 
         <div className="fadeIn">
@@ -123,15 +124,12 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
   );
 }
 
-function PostUpdateButton({ link_to }) {
+function PostUpdateButton({ linkTo }) {
   return (
-    <Link
-      to={link_to}
-      className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2"
-    >
+    <Button linkTo={linkTo}>
       <Icons.Message2 size={20} />
       Post Update
-    </Link>
+    </Button>
   );
 }
 
