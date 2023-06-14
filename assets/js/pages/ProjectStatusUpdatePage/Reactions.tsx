@@ -1,22 +1,21 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
-import * as ProjectQueries from "@/graphql/Projects";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";
 
 const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
 
-export default function Reactions({ update, size }) {
-  const [addReaction] = ProjectQueries.useReactMutation(update.id);
+export default function Reactions({ reactions, addReactionMutation, size }) {
+  const [addReaction, _status] = addReactionMutation;
 
   return (
     <div className="flex items-start gap-2 flex-wrap">
-      {update.reactions.map((reaction, index) => (
+      <AddReaction size={size} addReaction={addReaction} />
+
+      {reactions.map((reaction, index) => (
         <Reaction key={index} reaction={reaction} size={size} />
       ))}
-
-      <AddReaction size={size} addReaction={addReaction} />
     </div>
   );
 }

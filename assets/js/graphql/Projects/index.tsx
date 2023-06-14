@@ -291,11 +291,15 @@ export function usePostCommentMutation(updateId: string) {
   return [createComment, status] as const;
 }
 
-export function useReactMutation(updateId: string) {
+export function useReactMutation(entityType: string, entityID: string) {
   const [fun, status] = useMutation(
     gql`
-      mutation AddReaction($id: ID!, $type: String!) {
-        addReaction(id: $id, type: $type) {
+      mutation AddReaction(
+        $entityID: ID!
+        $entityType: String!
+        $type: String!
+      ) {
+        addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
           id
         }
       }
@@ -304,7 +308,7 @@ export function useReactMutation(updateId: string) {
       refetchQueries: [
         {
           query: GET_STATUS_UPDATE,
-          variables: { id: updateId },
+          variables: { id: entityID },
         },
       ],
     }
@@ -313,7 +317,8 @@ export function useReactMutation(updateId: string) {
   const addReaction = (type: any) => {
     return fun({
       variables: {
-        id: updateId,
+        entityType: entityType,
+        entityID: entityID,
         type: type,
       },
     });

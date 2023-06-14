@@ -24,6 +24,7 @@ export function ProjectStatusUpdatePage() {
 
   const meData = useMe();
   const updateData = ProjectQueries.useProjectStatusUpdate(id);
+  const addReactionMutation = ProjectQueries.useReactMutation("update", id);
 
   if (meData.loading || updateData.loading)
     return <p className="mt-32">Loading...</p>;
@@ -59,7 +60,11 @@ export function ProjectStatusUpdatePage() {
             <RichContent jsonContent={update.message} />
           </div>
 
-          <Reactions update={update} size={20} />
+          <Reactions
+            addReactionMutation={addReactionMutation}
+            size={20}
+            reactions={update.reactions}
+          />
           <Comments update={update} />
         </div>
       </div>
@@ -132,79 +137,6 @@ function Header({ update }) {
   );
 }
 
-function ReactionIcon({ size, type }) {
-  switch (type) {
-    case "thumbs_up":
-      return <Icons.IconThumbUpFilled size={size} className="text-blue-500" />;
-    case "heart":
-      return <Icons.IconHeartFilled size={size} className="text-red-500" />;
-    case "thumbs_down":
-      return (
-        <Icons.IconThumbDownFilled size={size} className="text-blue-500" />
-      );
-    case "rocket":
-      return <Icons.IconRocket size={size} className="text-pink-400" />;
-    default:
-      return null;
-  }
-}
-
-const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
-
-function ReactionPallete({ size, handleAddReaction }) {
-  return (
-    <div className="flex gap-2 items-center">
-      {PossibleReactionTypes.map((type) => (
-        <div
-          key={type}
-          className="hover:text-pink-400 cursor-pointer"
-          onClick={() => handleAddReaction(type)}
-        >
-          <ReactionIcon size={size} type={type} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function AddReactionZeroState({ size, onClick }) {
-  return (
-    <div className="text-white-1 cursor-pointer" onClick={onClick}>
-      <Icons.IconMoodPlus size={size} />
-    </div>
-  );
-}
-
-function AddReaction({ size, addReaction }) {
-  const [active, setActive] = React.useState(false);
-
-  const handleAddReaction = (type: string) => {
-    setActive(false);
-    addReaction(type);
-  };
-
-  return (
-    <div className="rounded-lg bg-shade-2 p-1">
-      <div className="flex items-center gap-3 transition-all">
-        {active ? (
-          <ReactionPallete size={size} handleAddReaction={handleAddReaction} />
-        ) : (
-          <AddReactionZeroState size={size} onClick={() => setActive(true)} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Reaction({ reaction, size }) {
-  return (
-    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-lg p-1">
-      <Avatar person={reaction.person} size={AvatarSize.Tiny} />
-      <ReactionIcon size={size} type={reaction.reactionType} />
-    </div>
-  );
-}
-
 function splitCommentsBeforeAndAfterAck(update) {
   const allComments = update.comments;
   const ackTime = update.acknowledgedAt;
@@ -241,6 +173,11 @@ function Comments({ update }) {
 }
 
 function Comment({ comment }) {
+  const addReactionMutation = ProjectQueries.useReactMutation(
+    "comment",
+    comment.id
+  );
+
   return (
     <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">
       <div className="shrink-0">
@@ -256,7 +193,11 @@ function Comment({ comment }) {
         <RichContent jsonContent={JSON.parse(comment.message)} />
 
         <div className="mt-2">
-          <Reactions update={comment} size={16} />
+          <Reactions
+            reactions={comment.reactions}
+            size={16}
+            addReactionMutation={addReactionMutation}
+          />
         </div>
       </div>
     </div>
