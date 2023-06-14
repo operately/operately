@@ -329,7 +329,7 @@ function AddComment({ me, update }) {
 function AddCommentNonActive({ me, onClick }) {
   return (
     <div
-      className="flex items-center gap-2 py-4 border-t border-shade-2 text-white-2 cursor-pointer"
+      className="flex items-center gap-3 py-4 border-t border-shade-2 text-white-2 cursor-pointer"
       onClick={onClick}
     >
       <Avatar person={me} size={AvatarSize.Normal} />
@@ -362,7 +362,12 @@ function AddCommentActive({ update, onBlur, onPost }) {
           <TipTapEditor.Toolbar editor={editor} />
         </div>
 
-        <div className="mb-4 py-2 text-white-1 px-4 h-32">
+        <div
+          className="mb-4 py-2 text-white-1 px-4"
+          style={{
+            minHeight: "200px",
+          }}
+        >
           <TipTapEditor.EditorContent editor={editor} />
         </div>
       </div>
