@@ -303,15 +303,7 @@ export function useReactMutation(entityType: string, entityID: string) {
           id
         }
       }
-    `,
-    {
-      refetchQueries: [
-        {
-          query: GET_STATUS_UPDATE,
-          variables: { id: entityID },
-        },
-      ],
-    }
+    `
   );
 
   const addReaction = (type: any) => {

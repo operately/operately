@@ -6,16 +6,25 @@ import Avatar, { AvatarSize } from "@/components/Avatar";
 
 const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
 
-export default function Reactions({ reactions, addReactionMutation, size }) {
+export default function Reactions({
+  reactions,
+  addReactionMutation,
+  size,
+  onNewReaction,
+}) {
   const [addReaction, _status] = addReactionMutation;
 
   return (
     <div className="flex items-start gap-2 flex-wrap">
-      <AddReaction size={size} addReaction={addReaction} />
-
       {reactions.map((reaction, index) => (
         <Reaction key={index} reaction={reaction} size={size} />
       ))}
+
+      <AddReaction
+        size={size}
+        addReaction={addReaction}
+        onNewReaction={onNewReaction}
+      />
     </div>
   );
 }
@@ -29,12 +38,13 @@ function Reaction({ reaction, size }) {
   );
 }
 
-function AddReaction({ size, addReaction }) {
+function AddReaction({ size, addReaction, onNewReaction }) {
   const [active, setActive] = React.useState(false);
 
   const handleAddReaction = (type: string) => {
     setActive(false);
     addReaction(type);
+    onNewReaction();
   };
 
   return (

@@ -36,6 +36,7 @@ export function ProjectStatusUpdatePage() {
       </p>
     );
 
+  const refetch = updateData.refetch;
   const update = updateData.data.update;
   const me = meData.data.me;
 
@@ -64,8 +65,10 @@ export function ProjectStatusUpdatePage() {
             addReactionMutation={addReactionMutation}
             size={20}
             reactions={update.reactions}
+            onNewReaction={() => refetch()}
           />
-          <Comments update={update} />
+
+          <Comments update={update} onNewReaction={() => refetch()} />
         </div>
       </div>
     </div>
@@ -151,20 +154,20 @@ function splitCommentsBeforeAndAfterAck(update) {
   }
 }
 
-function Comments({ update }) {
+function Comments({ update, onNewReaction }) {
   const { data } = useMe();
   const { beforeAck, afterAck } = splitCommentsBeforeAndAfterAck(update);
 
   return (
     <div className="mt-8 flex flex-col">
       {beforeAck.map((c) => (
-        <Comment key={c.id} comment={c} />
+        <Comment key={c.id} comment={c} onNewReaction={onNewReaction} />
       ))}
 
       {update.acknowledged && <AckComment update={update} />}
 
       {afterAck.map((c) => (
-        <Comment key={c.id} comment={c} />
+        <Comment key={c.id} comment={c} onNewReaction={onNewReaction} />
       ))}
 
       <AddComment me={data.me} update={update} />
@@ -172,7 +175,7 @@ function Comments({ update }) {
   );
 }
 
-function Comment({ comment }) {
+function Comment({ comment, onNewReaction }) {
   const addReactionMutation = ProjectQueries.useReactMutation(
     "comment",
     comment.id
@@ -195,8 +198,9 @@ function Comment({ comment }) {
         <div className="mt-2">
           <Reactions
             reactions={comment.reactions}
-            size={16}
+            size={20}
             addReactionMutation={addReactionMutation}
+            onNewReaction={onNewReaction}
           />
         </div>
       </div>
