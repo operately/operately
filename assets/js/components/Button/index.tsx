@@ -48,19 +48,21 @@ const variants = {
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
-    const size = sizes[props.size || "base"];
-    const variant = variants[props.variant || "default"];
+    const { variant, size, linkTo, ...rest } = props;
+
+    const sizeValue = sizes[size || "base"];
+    const variantValue = variants[variant || "default"];
 
     const className = [
-      size,
-      variant.base,
-      variant.color,
-      variant.text,
-      variant.border,
-      variant.hover,
+      sizeValue,
+      variantValue.base,
+      variantValue.color,
+      variantValue.text,
+      variantValue.border,
+      variantValue.hover,
     ].join(" ");
 
-    const button = <button ref={ref} className={className} {...props} />;
+    const button = <button ref={ref} className={className} {...rest} />;
 
     if (props.linkTo) {
       return <Link to={props.linkTo}>{button}</Link>;

@@ -256,7 +256,7 @@ function AckComment({ update }) {
 }
 
 function AddComment({ me, update }) {
-  const [active, setActive] = React.useState(true);
+  const [active, setActive] = React.useState(false);
 
   const activate = () => setActive(true);
   const deactivate = () => setActive(false);
@@ -277,7 +277,7 @@ function AddComment({ me, update }) {
 function AddCommentNonActive({ me, onClick }) {
   return (
     <div
-      className="flex items-center gap-2 p-4 bg-shade-1 text-white-2 rounded-lg"
+      className="flex items-center gap-2 p-4 bg-shade-1 text-white-2 rounded-lg cursor-pointer"
       onClick={onClick}
     >
       <Avatar person={me} size={AvatarSize.Normal} />
