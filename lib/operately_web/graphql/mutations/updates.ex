@@ -7,6 +7,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
     field :updatable_type, non_null(:string)
   end
 
+  input_object :create_comment_input do
+    field :content, non_null(:string)
+    field :update_id, non_null(:id)
+  end
+
   object :update_mutations do
     field :create_update, :activity do
       arg :input, non_null(:create_update_input)
@@ -48,6 +53,18 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
           acknowledged: true,
           acknowledged_at: DateTime.utc_now,
           acknowledging_person_id: context.current_account.person.id
+        })
+      end
+    end
+
+    field :create_comment, :comment do
+      arg :input, non_null(:create_comment_input)
+
+      resolve fn args, %{context: context} ->
+        Operately.Updates.create_comment(%{
+          author_id: context.current_account.person.id,
+          update_id: args.input.update_id,
+          content: %{"message" => args.input.content}
         })
       end
     end

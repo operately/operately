@@ -5,10 +5,14 @@ import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "tabler-icons-react";
 import * as ProjectQueries from "@/graphql/Projects";
+
 import { useMe } from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import Button from "@/components/Button";
+import * as TipTapEditor from "@/components/Editor";
+
+import { usePostCommentMutation } from "@/graphql/Projects";
 
 export function ProjectStatusUpdatePage() {
   const params = useParams();
@@ -62,7 +66,7 @@ export function ProjectStatusUpdatePage() {
 }
 
 function AckButton({ update }) {
-  const [ack, status] = ProjectQueries.useAckMutation(update.id);
+  const [ack, _status] = ProjectQueries.useAckMutation(update.id);
 
   return (
     <Button variant="attention" onClick={() => ack()}>
@@ -232,7 +236,7 @@ function Comments({ update }) {
   return (
     <div className="mt-8 flex flex-col gap-2">
       {update.acknowledged && <AckComment update={update} />}
-      <AddComment me={data.me} />
+      <AddComment me={data.me} update={update} />
     </div>
   );
 }
@@ -251,12 +255,87 @@ function AckComment({ update }) {
   );
 }
 
-function AddComment({ me }) {
+function AddComment({ me, update }) {
+  const [active, setActive] = React.useState(true);
+
+  const activate = () => setActive(true);
+  const deactivate = () => setActive(false);
+
+  if (active) {
+    return (
+      <AddCommentActive
+        onBlur={deactivate}
+        onPost={deactivate}
+        update={update}
+      />
+    );
+  } else {
+    return <AddCommentNonActive me={me} onClick={activate} />;
+  }
+}
+
+function AddCommentNonActive({ me, onClick }) {
   return (
-    <div className="flex items-center gap-2 p-4 bg-shade-1 text-white-2 rounded-lg">
+    <div
+      className="flex items-center gap-2 p-4 bg-shade-1 text-white-2 rounded-lg"
+      onClick={onClick}
+    >
       <Avatar person={me} size={AvatarSize.Normal} />
 
       <div className="text-white-2">Leave a comment&hellip;</div>
     </div>
+  );
+}
+
+function AddCommentActive({ update, onBlur, onPost }) {
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Write your comment here...",
+  });
+
+  const [postComment, { loading }] = usePostCommentMutation(update.id);
+
+  const handlePost = async () => {
+    if (!editor) return;
+    if (loading) return;
+
+    await postComment(editor.getJSON());
+
+    onPost();
+  };
+
+  return (
+    <div>
+      <div className="bg-shade-1 text-white-1 rounded-lg">
+        <div className="flex items-center gap-1 border-b border-shade-2 px-4 py-1">
+          <TipTapEditor.Toolbar editor={editor} />
+        </div>
+
+        <div className="mb-4 py-2 text-white-1 px-4 h-32">
+          <TipTapEditor.EditorContent editor={editor} />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <PostButton onClick={handlePost} />
+        <CancelButton onClick={onBlur} />
+      </div>
+    </div>
+  );
+}
+
+function PostButton({ onClick }) {
+  return (
+    <Button onClick={onClick} variant="success">
+      <Icons.Mail size={20} />
+      Post Comment
+    </Button>
+  );
+}
+
+function CancelButton({ onClick }) {
+  return (
+    <Button variant="secondary" onClick={onClick}>
+      Cancel
+    </Button>
   );
 }

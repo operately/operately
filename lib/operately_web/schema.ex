@@ -54,11 +54,6 @@ defmodule OperatelyWeb.Schema do
     field :danger_direction, non_null(:string)
   end
 
-  input_object :create_comment_input do
-    field :content, non_null(:string)
-    field :update_id, non_null(:id)
-  end
-
   input_object :contact_input do
     field :name, non_null(:string)
     field :value, non_null(:string)
@@ -210,19 +205,6 @@ defmodule OperatelyWeb.Schema do
         )
 
         {:ok, group}
-      end
-    end
-
-
-    field :create_comment, :comment do
-      arg :input, non_null(:create_comment_input)
-
-      resolve fn args, %{context: context} ->
-        Operately.Updates.create_comment(%{
-          author_id: context.current_account.person.id,
-          update_id: args.input.update_id,
-          content: args.input.content
-        })
       end
     end
   end

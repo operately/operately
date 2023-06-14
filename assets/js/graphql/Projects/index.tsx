@@ -258,6 +258,39 @@ export function usePostUpdateMutation(projectId: string) {
   return [createUpdate, status] as const;
 }
 
+export function usePostCommentMutation(updateId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation CreateComment($input: CreateCommentInput!) {
+        createComment(input: $input) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_STATUS_UPDATE,
+          variables: { id: updateId },
+        },
+      ],
+    }
+  );
+
+  const createComment = (content: any) => {
+    return fun({
+      variables: {
+        input: {
+          updateId: updateId,
+          content: JSON.stringify(content),
+        },
+      },
+    });
+  };
+
+  return [createComment, status] as const;
+}
+
 export function useReactMutation(updateId: string) {
   const [fun, status] = useMutation(
     gql`
