@@ -241,7 +241,11 @@ defmodule Operately.Updates do
 
   """
   def list_reactions(entity_id, entity_type) do
-    query = from r in Reaction, where: r.entity_id == ^entity_id and r.entity_type == ^entity_type
+    query = (
+      from r in Reaction, 
+       where: r.entity_id == ^entity_id and r.entity_type == ^entity_type, 
+       order_by: r.inserted_at
+    )
 
     Repo.all(query)
   end

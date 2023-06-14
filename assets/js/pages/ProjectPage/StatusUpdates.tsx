@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Icons from "tabler-icons-react";
+import * as Icons from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
@@ -26,13 +26,13 @@ function AckStatus({ update }) {
   if (update.acknowledged) {
     return (
       <div className="flex items-center text-sm text-green-400 gap-1">
-        <Icons.CircleCheck size={16} />
+        <Icons.IconCircleCheckFilled size={16} />
       </div>
     );
   } else {
     return (
-      <div className="flex items-center text-sm text-yellow-400 gap-1">
-        <Icons.Clock size={16} />
+      <div className="flex items-center text-sm text-yellow-400 gap-1 font-medium">
+        <Icons.IconClockFilled size={16} />
         Waiting for Acknowledgement
       </div>
     );
@@ -127,7 +127,7 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
 function PostUpdateButton({ linkTo }) {
   return (
     <Button linkTo={linkTo}>
-      <Icons.Message2 size={20} />
+      <Icons.IconMessage2 size={20} />
       Post Update
     </Button>
   );

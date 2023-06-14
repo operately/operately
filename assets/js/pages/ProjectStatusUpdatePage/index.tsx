@@ -130,106 +130,89 @@ function Header({ update }) {
   );
 }
 
-function groupReactionsByType(reactions) {
-  return reactions.reduce((acc, reaction) => {
-    if (!acc[reaction.reactionType]) {
-      acc[reaction.reactionType] = [];
-    }
-
-    acc[reaction.reactionType].push(reaction);
-
-    return acc;
-  }, {});
+function ReactionIcon({ size, type }) {
+  switch (type) {
+    case "thumbs_up":
+      return <Icons.IconThumbUpFilled size={size} className="text-blue-500" />;
+    case "heart":
+      return <Icons.IconHeartFilled size={size} className="text-red-500" />;
+    case "thumbs_down":
+      return (
+        <Icons.IconThumbDownFilled size={size} className="text-blue-500" />
+      );
+    case "rocket":
+      return <Icons.IconRocket size={size} className="text-pink-400" />;
+    default:
+      return null;
+  }
 }
 
-function Reactions({ update, size }) {
+const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
+
+function ReactionPallete({ size, handleAddReaction }) {
+  return (
+    <div className="flex gap-2 items-center">
+      {PossibleReactionTypes.map((type) => (
+        <div
+          key={type}
+          className="hover:text-pink-400 cursor-pointer"
+          onClick={() => handleAddReaction(type)}
+        >
+          <ReactionIcon size={size} type={type} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AddReactionZeroState({ size, onClick }) {
+  return (
+    <div className="text-white-1 cursor-pointer" onClick={onClick}>
+      <Icons.IconMoodPlus size={size} />
+    </div>
+  );
+}
+
+function AddReaction({ size, addReaction }) {
   const [active, setActive] = React.useState(false);
-  const [addReaction] = ProjectQueries.useReactMutation(update.id);
 
   const handleAddReaction = (type: string) => {
     setActive(false);
     addReaction(type);
   };
 
-  const reactionsByType = groupReactionsByType(update.reactions);
+  return (
+    <div className="rounded-lg bg-shade-2 p-1">
+      <div className="flex items-center gap-3 transition-all">
+        {active ? (
+          <ReactionPallete size={size} handleAddReaction={handleAddReaction} />
+        ) : (
+          <AddReactionZeroState size={size} onClick={() => setActive(true)} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Reaction({ reaction, size }) {
+  return (
+    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-lg p-1">
+      <Avatar person={reaction.person} size={AvatarSize.Tiny} />
+      <ReactionIcon size={size} type={reaction.reactionType} />
+    </div>
+  );
+}
+
+function Reactions({ update, size }) {
+  const [addReaction] = ProjectQueries.useReactMutation(update.id);
 
   return (
-    <div className="flex gap-2">
-      <div className="rounded-lg bg-shade-2 p-1.5">
-        <div className="flex items-center gap-3 transition-all">
-          {!active && (
-            <div
-              className="text-white-1 cursor-pointer"
-              onClick={() => setActive(true)}
-            >
-              <Icons.IconMoodPlus size={size} />
-            </div>
-          )}
+    <div className="flex items-start gap-2 flex-wrap">
+      {update.reactions.map((reaction, index) => (
+        <Reaction key={index} reaction={reaction} size={size} />
+      ))}
 
-          {active && (
-            <>
-              <div
-                key="thumbs_up"
-                className="hover:text-pink-400 cursor-pointer"
-                onClick={() => handleAddReaction("thumbs_up")}
-              >
-                <Icons.IconThumbUp size={size} />
-              </div>
-              <div
-                key="heart"
-                className="hover:text-pink-400 cursor-pointer"
-                onClick={() => handleAddReaction("heart")}
-              >
-                <Icons.IconHeart size={size} />
-              </div>
-              <div
-                key="thumbs_down"
-                className="hover:text-pink-400 cursor-pointer"
-                onClick={() => handleAddReaction("thumbs_down")}
-              >
-                <Icons.IconThumbDown size={size} />
-              </div>
-              <div
-                key="rocket"
-                className="hover:text-pink-400 cursor-pointer"
-                onClick={() => handleAddReaction("rocket")}
-              >
-                <Icons.IconRocket size={size} />
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        {Object.keys(reactionsByType).map((reactionType) => (
-          <div
-            className="rounded-lg bg-shade-2 p-1.5 flex items-center"
-            key={reactionType}
-          >
-            <div className="flex items-center gap-2 mr-2">
-              {reactionType === "thumbs_up" && (
-                <Icons.IconThumbUp size={size} />
-              )}
-              {reactionType === "heart" && <Icons.IconHeart size={size} />}
-              {reactionType === "thumbs_down" && (
-                <Icons.IconThumbDown size={size} />
-              )}
-              {reactionType === "rocket" && <Icons.IconRocket size={size} />}
-            </div>
-
-            <div className="flex gap-1 items-center">
-              {reactionsByType[reactionType].map((reaction, index) => (
-                <Avatar
-                  key={index}
-                  person={reaction.person}
-                  size={AvatarSize.Tiny}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <AddReaction size={size} addReaction={addReaction} />
     </div>
   );
 }
