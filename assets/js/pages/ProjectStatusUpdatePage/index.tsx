@@ -3,7 +3,7 @@ import React from "react";
 import { useParams, Link } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 
-import * as Icons from "tabler-icons-react";
+import * as Icons from "@tabler/icons-react";
 import * as ProjectQueries from "@/graphql/Projects";
 
 import { useMe } from "@/graphql/Me";
@@ -57,7 +57,7 @@ export function ProjectStatusUpdatePage() {
             <RichContent jsonContent={update.message} />
           </div>
 
-          <Reactions update={update} />
+          <Reactions update={update} size={20} />
           <Comments update={update} />
         </div>
       </div>
@@ -70,7 +70,7 @@ function AckButton({ update }) {
 
   return (
     <Button variant="attention" onClick={() => ack()}>
-      <Icons.Check size={20} />
+      <Icons.IconCheck size={20} />
       Acknowledge
     </Button>
   );
@@ -83,7 +83,7 @@ function AckBanner({ me, reviewer, update, owner }) {
     return (
       <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Icons.Clock size={20} />
+          <Icons.IconClock size={20} />
           {owner.fullName} is waiting for you to acknowledge this update
         </div>
         <AckButton update={update} />
@@ -92,7 +92,7 @@ function AckBanner({ me, reviewer, update, owner }) {
   } else {
     return (
       <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
-        <Icons.Clock size={20} />
+        <Icons.IconClock size={20} />
         Waiting for {reviewer.fullName} to acknowledge this update
       </div>
     );
@@ -105,7 +105,7 @@ function BackToProject({ linkTo }) {
       to={linkTo}
       className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
     >
-      <Icons.ArrowLeft size={20} />
+      <Icons.IconArrowLeft size={20} />
       Back To Project
     </Link>
   );
@@ -142,7 +142,7 @@ function groupReactionsByType(reactions) {
   }, {});
 }
 
-function Reactions({ update }) {
+function Reactions({ update, size }) {
   const [active, setActive] = React.useState(false);
   const [addReaction] = ProjectQueries.useReactMutation(update.id);
 
@@ -155,14 +155,14 @@ function Reactions({ update }) {
 
   return (
     <div className="flex gap-2">
-      <div className="rounded-[30px] bg-shade-1 p-2">
+      <div className="rounded-lg bg-shade-2 p-1.5">
         <div className="flex items-center gap-3 transition-all">
           {!active && (
             <div
               className="text-white-1 cursor-pointer"
               onClick={() => setActive(true)}
             >
-              <Icons.ThumbUp size={24} />
+              <Icons.IconMoodPlus size={size} />
             </div>
           )}
 
@@ -173,28 +173,28 @@ function Reactions({ update }) {
                 className="hover:text-pink-400 cursor-pointer"
                 onClick={() => handleAddReaction("thumbs_up")}
               >
-                <Icons.ThumbUp size={24} />
+                <Icons.IconThumbUp size={size} />
               </div>
               <div
                 key="heart"
                 className="hover:text-pink-400 cursor-pointer"
                 onClick={() => handleAddReaction("heart")}
               >
-                <Icons.Heart size={24} />
+                <Icons.IconHeart size={size} />
               </div>
               <div
                 key="thumbs_down"
                 className="hover:text-pink-400 cursor-pointer"
                 onClick={() => handleAddReaction("thumbs_down")}
               >
-                <Icons.ThumbDown size={24} />
+                <Icons.IconThumbDown size={size} />
               </div>
               <div
                 key="rocket"
                 className="hover:text-pink-400 cursor-pointer"
                 onClick={() => handleAddReaction("rocket")}
               >
-                <Icons.Rocket size={24} />
+                <Icons.IconRocket size={size} />
               </div>
             </>
           )}
@@ -204,14 +204,18 @@ function Reactions({ update }) {
       <div className="flex items-center gap-2">
         {Object.keys(reactionsByType).map((reactionType) => (
           <div
-            className="rounded-full bg-shade-1 p-2 flex items-center"
+            className="rounded-lg bg-shade-2 p-1.5 flex items-center"
             key={reactionType}
           >
             <div className="flex items-center gap-2 mr-2">
-              {reactionType === "thumbs_up" && <Icons.ThumbUp size={24} />}
-              {reactionType === "heart" && <Icons.Heart size={24} />}
-              {reactionType === "thumbs_down" && <Icons.ThumbDown size={24} />}
-              {reactionType === "rocket" && <Icons.Rocket size={24} />}
+              {reactionType === "thumbs_up" && (
+                <Icons.IconThumbUp size={size} />
+              )}
+              {reactionType === "heart" && <Icons.IconHeart size={size} />}
+              {reactionType === "thumbs_down" && (
+                <Icons.IconThumbDown size={size} />
+              )}
+              {reactionType === "rocket" && <Icons.IconRocket size={size} />}
             </div>
 
             <div className="flex gap-1 items-center">
@@ -230,25 +234,73 @@ function Reactions({ update }) {
   );
 }
 
+function splitCommentsBeforeAndAfterAck(update) {
+  const allComments = update.comments;
+  const ackTime = update.acknowledgedAt;
+
+  if (update.acknowledged) {
+    return {
+      beforeAck: allComments.filter((c) => c.insertedAt < ackTime),
+      afterAck: allComments.filter((c) => c.insertedAt >= ackTime),
+    };
+  } else {
+    return { beforeAck: update.comments, afterAck: [] };
+  }
+}
+
 function Comments({ update }) {
   const { data } = useMe();
+  const { beforeAck, afterAck } = splitCommentsBeforeAndAfterAck(update);
 
   return (
-    <div className="mt-8 flex flex-col gap-2">
+    <div className="mt-8 flex flex-col">
+      {beforeAck.map((c) => (
+        <Comment key={c.id} comment={c} />
+      ))}
+
       {update.acknowledged && <AckComment update={update} />}
+
+      {afterAck.map((c) => (
+        <Comment key={c.id} comment={c} />
+      ))}
+
       <AddComment me={data.me} update={update} />
+    </div>
+  );
+}
+
+function Comment({ comment }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size={AvatarSize.Normal} />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="font-bold">{comment.author.fullName}</div>
+          <FormattedTime time={comment.insertedAt} format="short-date" />
+        </div>
+
+        <RichContent jsonContent={JSON.parse(comment.message)} />
+
+        <div className="mt-2">
+          <Reactions update={comment} size={16} />
+        </div>
+      </div>
     </div>
   );
 }
 
 function AckComment({ update }) {
   return (
-    <div className="flex items-center justify-between p-4 bg-shade-1 font-medium text-green-400 rounded-lg">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between py-4 border-t border-shade-2 font-bold relative">
+      <div className="flex items-center gap-3">
         <Avatar person={update.acknowledgingPerson} size={AvatarSize.Normal} />
         <span>
           {update.acknowledgingPerson.fullName} has acknowledged this update
         </span>
+        <Icons.IconCircleCheckFilled size={24} className="text-green-400" />
       </div>
       <FormattedTime time={update.acknowledgedAt} format="short-date" />
     </div>
@@ -277,7 +329,7 @@ function AddComment({ me, update }) {
 function AddCommentNonActive({ me, onClick }) {
   return (
     <div
-      className="flex items-center gap-2 p-4 bg-shade-1 text-white-2 rounded-lg cursor-pointer"
+      className="flex items-center gap-2 py-4 border-t border-shade-2 text-white-2 cursor-pointer"
       onClick={onClick}
     >
       <Avatar person={me} size={AvatarSize.Normal} />
@@ -326,7 +378,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 function PostButton({ onClick }) {
   return (
     <Button onClick={onClick} variant="success">
-      <Icons.Mail size={20} />
+      <Icons.IconMail size={20} />
       Post Comment
     </Button>
   );
