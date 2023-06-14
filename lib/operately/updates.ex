@@ -129,7 +129,8 @@ defmodule Operately.Updates do
 
   def list_comments(update_id) do
     query = from c in Comment,
-      where: c.update_id == ^update_id
+      where: c.update_id == ^update_id,
+      order_by: [asc: c.inserted_at]
 
     Repo.all(query)
   end
