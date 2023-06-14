@@ -14,6 +14,8 @@ import * as TipTapEditor from "@/components/Editor";
 
 import { usePostCommentMutation } from "@/graphql/Projects";
 
+import Reactions from "./Reactions";
+
 export function ProjectStatusUpdatePage() {
   const params = useParams();
 
@@ -199,20 +201,6 @@ function Reaction({ reaction, size }) {
     <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-lg p-1">
       <Avatar person={reaction.person} size={AvatarSize.Tiny} />
       <ReactionIcon size={size} type={reaction.reactionType} />
-    </div>
-  );
-}
-
-function Reactions({ update, size }) {
-  const [addReaction] = ProjectQueries.useReactMutation(update.id);
-
-  return (
-    <div className="flex items-start gap-2 flex-wrap">
-      {update.reactions.map((reaction, index) => (
-        <Reaction key={index} reaction={reaction} size={size} />
-      ))}
-
-      <AddReaction size={size} addReaction={addReaction} />
     </div>
   );
 }
