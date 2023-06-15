@@ -31,13 +31,15 @@ function Contributors({ project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
 
   return (
-    <Link to={contributorsPath}>
-      <div className="mt-4 flex items-center justify-center gap-2 cursor-pointer">
-        <ChampionAvatar champion={project.owner} />
-        <ContributorList project={project} />
-        <AddContributor />
-      </div>
-    </Link>
+    <div className="mt-4 flex items-center justify-center">
+      <Link to={contributorsPath}>
+        <div className="flex items-center justify-center gap-2 cursor-pointer">
+          <ChampionAvatar champion={project.owner} />
+          <ContributorList project={project} />
+          <AddContributor />
+        </div>
+      </Link>
+    </div>
   );
 }
 

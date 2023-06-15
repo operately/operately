@@ -114,6 +114,7 @@ export interface Project {
   phase: "draft" | "planning" | "execution" | "closing" | "closed";
 
   owner: Person;
+  reviewer: Person;
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
@@ -132,6 +133,13 @@ const GET_PROJECT = gql`
       phase
 
       owner {
+        id
+        fullName
+        title
+        avatarUrl
+      }
+
+      reviewer {
         id
         fullName
         title
