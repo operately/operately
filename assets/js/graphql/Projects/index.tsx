@@ -3,6 +3,7 @@ import {
   gql,
   useQuery,
   useMutation,
+  useApolloClient,
   ApolloClient,
   QueryResult,
 } from "@apollo/client";
@@ -114,6 +115,7 @@ export interface Project {
   phase: "draft" | "planning" | "execution" | "closing" | "closed";
 
   owner: Person;
+  reviewer: Person;
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
@@ -132,6 +134,13 @@ const GET_PROJECT = gql`
       phase
 
       owner {
+        id
+        fullName
+        title
+        avatarUrl
+      }
+
+      reviewer {
         id
         fullName
         title
@@ -349,6 +358,46 @@ export function useAckMutation(updateId: string) {
   return [ack, status] as const;
 }
 
+export function useAddProjectContributorMutation(projectId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation AddProjectContributor(
+        $projectId: ID!
+        $personId: ID!
+        $responsibility: String!
+      ) {
+        addProjectContributor(
+          projectId: $projectId
+          personId: $personId
+          responsibility: $responsibility
+        ) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECT,
+          variables: { id: projectId },
+        },
+      ],
+    }
+  );
+
+  const addColab = (personId, responsibility) => {
+    return fun({
+      variables: {
+        projectId: projectId,
+        personId: personId,
+        responsibility: responsibility,
+      },
+    });
+  };
+
+  return [addColab, status] as const;
+}
+
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
@@ -366,4 +415,29 @@ const GET_STATUS_UPDATE = gql`
 
 export function useProjectStatusUpdate(id: string) {
   return useQuery(GET_STATUS_UPDATE, { variables: { id: id } });
+}
+
+const LIST_PROJECT_CONTRIBUTOR_CANDIDATES = gql`
+  query projectContributorCandidates($projectId: ID!, $query: String!) {
+    projectContributorCandidates(projectId: $projectId, query: $query) ${fragments.PERSON}
+  }
+`;
+
+export function useProjectContributorCandidatesQuery(id: string) {
+  const client = useApolloClient();
+
+  return async (query: string) => {
+    const res = await client.query({
+      query: LIST_PROJECT_CONTRIBUTOR_CANDIDATES,
+      variables: {
+        projectId: id,
+        query: query,
+      },
+    });
+
+    if (!res.data) return [];
+    if (!res.data.projectContributorCandidates) return [];
+
+    return res.data.projectContributorCandidates;
+  };
 }

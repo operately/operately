@@ -25,5 +25,21 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
         {:ok, project}
       end
     end
+
+    field :project_contributor_candidates, list_of(:person) do
+      arg :project_id, non_null(:id)
+      arg :query, non_null(:string)
+
+      resolve fn _, args, _ ->
+        candidates = Operately.Projects.list_project_contributor_candidates(
+          args.project_id,
+          args.query,
+          [],
+          10
+        )
+
+        {:ok, candidates}
+      end
+    end
   end
 end

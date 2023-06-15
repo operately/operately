@@ -11,10 +11,9 @@ defmodule Operately.ProjectsFixtures do
     {:ok, project} =
       attrs
       |> Enum.into(%{
-        description: "some description",
         name: "some name"
       })
-      |> Operately.Projects.create_project()
+      |> Operately.Projects.create_project(nil)
 
     project
   end

@@ -6,6 +6,7 @@ export interface ButtonProps
   variant?: "default" | "attention" | "success" | "secondary";
   size?: "base";
   linkTo?: string;
+  disabled?: boolean;
 }
 
 const sizes = {
@@ -19,6 +20,7 @@ const variants = {
     text: "font-bold uppercase",
     border: "border border-pink-400 rounded-full",
     hover: "hover:bg-pink-400/10",
+    disabled: "opacity-50 cursor-not-allowed",
   },
 
   success: {
@@ -27,6 +29,7 @@ const variants = {
     text: "font-bold uppercase",
     border: "border border-green-400 rounded-full",
     hover: "hover:bg-green-400/10",
+    disabled: "opacity-50 cursor-not-allowed",
   },
 
   secondary: {
@@ -35,6 +38,7 @@ const variants = {
     text: "font-bold uppercase",
     border: "border border-white-2 rounded-full",
     hover: "hover:border-white-2 hover:text-white-1 ",
+    disabled: "opacity-50 cursor-not-allowed",
   },
 
   attention: {
@@ -43,6 +47,7 @@ const variants = {
     text: "font-bold uppercase",
     border: "border border-yellow-400 rounded-full",
     hover: "hover:bg-yellow-400/10",
+    disabled: "opacity-50 cursor-not-allowed",
   },
 };
 
@@ -60,6 +65,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variantValue.text,
       variantValue.border,
       variantValue.hover,
+      props.disabled ? variantValue.disabled : "",
     ].join(" ");
 
     const button = <button ref={ref} className={className} {...rest} />;
