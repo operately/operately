@@ -31,7 +31,7 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
       arg :query, non_null(:string)
 
       resolve fn _, args, _ ->
-        candidates = Operately.Projects. list_project_contributor_candidates(
+        candidates = Operately.Projects.list_project_contributor_candidates(
           args.project_id,
           args.query,
           [],

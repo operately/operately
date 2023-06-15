@@ -358,6 +358,46 @@ export function useAckMutation(updateId: string) {
   return [ack, status] as const;
 }
 
+export function useAddProjectContributorMutation(projectId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation AddProjectContributor(
+        $projectId: ID!
+        $personId: ID!
+        $responsibility: String!
+      ) {
+        addProjectContributor(
+          projectId: $projectId
+          personId: $personId
+          responsibility: $responsibility
+        ) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECT,
+          variables: { id: projectId },
+        },
+      ],
+    }
+  );
+
+  const addColab = (personId, responsibility) => {
+    return fun({
+      variables: {
+        projectId: projectId,
+        personId: personId,
+        responsibility: responsibility,
+      },
+    });
+  };
+
+  return [addColab, status] as const;
+}
+
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {

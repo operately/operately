@@ -72,7 +72,18 @@ function Title({ projectID }) {
 }
 
 function AddColabForm({ close, projectID }) {
+  const [addColab, _s] = Projects.useAddProjectContributorMutation(projectID);
   const loader = Projects.useProjectContributorCandidatesQuery(projectID);
+
+  const [selectedPersonID, setSelectedPersonID] = React.useState<any>(null);
+  const [responsibility, setResponsibility] = React.useState("");
+
+  const disabled = !selectedPersonID || !responsibility;
+
+  const handleSubmit = async () => {
+    await addColab(selectedPersonID, responsibility);
+    close();
+  };
 
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
@@ -80,7 +91,7 @@ function AddColabForm({ close, projectID }) {
         <label className="font-bold mb-1 block">Collaborator</label>
         <div className="flex-1">
           <PersonSearch
-            onSelect={(person) => console.log(person)}
+            onChange={(option) => setSelectedPersonID(option.value)}
             placeholder="Search by name or title..."
             loader={loader}
           />
@@ -92,6 +103,8 @@ function AddColabForm({ close, projectID }) {
         </label>
         <div className="flex-1">
           <input
+            value={responsibility}
+            onChange={(e) => setResponsibility(e.target.value)}
             className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
             type="text"
             placeholder="ex. Responsible for the visual design of the project."
@@ -100,7 +113,7 @@ function AddColabForm({ close, projectID }) {
       </div>
 
       <div className="flex mt-8 gap-2">
-        <Button variant="success">
+        <Button variant="success" disabled={disabled} onClick={handleSubmit}>
           <Icons.IconPlus size={20} />
           Add Contributor
         </Button>

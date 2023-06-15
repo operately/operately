@@ -22,17 +22,17 @@ defmodule Operately.Projects do
   def list_project_contributor_candidates(project_id, query, exclude_ids, limit) do
     ilike_pattern = "%#{query}%"
 
-    candidates_ids = Repo.all(
-      from c in Contributor,
-      select: c.person_id,
-      where: c.project_id == ^project_id
-    )
+    # We do a left join on Contributor and Project to find people who are not
+    # already contributors or owners of the project.
 
     query = (
-      from p in Person,
-      where: p.id not in ^exclude_ids and p.id not in ^candidates_ids,
-      where: ilike(p.full_name, ^ilike_pattern) or 
-             ilike(p.title, ^ilike_pattern),
+      from person in Person,
+      left_join: contrib in Contributor, on: contrib.project_id == ^project_id and contrib.person_id == person.id,
+      left_join: project in Project, on: project.id == ^project_id and (project.owner_id == person.id or project.reviewer_id == person.id),
+      where: is_nil(contrib.project_id) and is_nil(project.id),
+      where: person.id not in ^exclude_ids,
+      where: ilike(person.full_name, ^ilike_pattern) or 
+             ilike(person.title, ^ilike_pattern),
       limit: ^limit
     )
 
