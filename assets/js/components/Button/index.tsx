@@ -1,83 +1,75 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-export enum ButtonSize {
-  Tiny = "tiny",
-  Small = "small",
-  Normal = "normal",
-  Large = "large",
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "attention" | "success" | "secondary";
+  size?: "base";
+  linkTo?: string;
 }
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  size: ButtonSize;
-  ghost?: boolean;
-  disabled: boolean;
-  type?: "primary" | "secondary" | "abort" | "destructive";
-}
+const sizes = {
+  base: "px-3 py-1.5 text-sm gap-2",
+};
 
-function textSize({ size }: ButtonProps): string {
-  switch (size) {
-    case ButtonSize.Tiny:
-      return "text-xs";
-    case ButtonSize.Small:
-      return "text-sm";
-    case ButtonSize.Large:
-      return "text-lg";
-    default:
-      return "text-base";
-  }
-}
+const variants = {
+  default: {
+    base: "flex items-center",
+    color: "text-pink-400",
+    text: "font-bold uppercase",
+    border: "border border-pink-400 rounded-full",
+    hover: "hover:bg-pink-400/10",
+  },
 
-function textColor({ ghost, disabled, type }: ButtonProps): string {
-  if (ghost && disabled) return "text-dark-2";
-  if (ghost) {
-    if (type === "primary") return "text-new-dark-3";
-    if (type === "secondary") return "text-new-dark-3";
-    if (type === "abort") return "text-dark-2";
-    if (type === "destructive") return "text-red-500";
-  }
-  if (disabled) return "text-white";
-  return "text-white";
-}
+  success: {
+    base: "flex items-center",
+    color: "text-green-400",
+    text: "font-bold uppercase",
+    border: "border border-green-400 rounded-full",
+    hover: "hover:bg-green-400/10",
+  },
 
-function backgroundColor({ ghost, disabled }: ButtonProps): string {
-  if (ghost) return "bg-transparent";
-  if (disabled) return "bg-dark-8%";
+  secondary: {
+    base: "flex items-center",
+    color: "text-white-2",
+    text: "font-bold uppercase",
+    border: "border border-white-2 rounded-full",
+    hover: "hover:border-white-2 hover:text-white-1 ",
+  },
 
-  return "bg-brand-base";
-}
+  attention: {
+    base: "flex items-center",
+    color: "text-yellow-400",
+    text: "font-bold uppercase",
+    border: "border border-yellow-400 rounded-full",
+    hover: "hover:bg-yellow-400/10",
+  },
+};
 
-function border({ ghost, disabled, type }: ButtonProps): string {
-  if (ghost) {
-    if (disabled) return "border border-dark-2";
-    if (!disabled) {
-      if (type === "primary") return "border border-brand-base";
-      if (type === "secondary")
-        return "border border-gray-700 hover:border-brand-base transition-all";
-      if (type === "abort") return "";
-      if (type === "destructive") return "border border-red-500";
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (props, ref) => {
+    const { variant, size, linkTo, ...rest } = props;
+
+    const sizeValue = sizes[size || "base"];
+    const variantValue = variants[variant || "default"];
+
+    const className = [
+      sizeValue,
+      variantValue.base,
+      variantValue.color,
+      variantValue.text,
+      variantValue.border,
+      variantValue.hover,
+    ].join(" ");
+
+    const button = <button ref={ref} className={className} {...rest} />;
+
+    if (props.linkTo) {
+      return <Link to={props.linkTo}>{button}</Link>;
+    } else {
+      return button;
     }
   }
+);
 
-  return "";
-}
-
-export default function Button(props: ButtonProps): JSX.Element {
-  const { size, ghost, disabled, type, ...rest } = props;
-
-  const style = [
-    "whitespace-nowrap break-keep py-1.5 px-3 rounded",
-    textSize(props),
-    textColor(props),
-    backgroundColor(props),
-    border(props),
-  ].join(" ");
-
-  return <button {...rest} className={style} />;
-}
-
-Button.defaultProps = {
-  size: ButtonSize.Normal,
-  ghost: false,
-  disabled: false,
-  type: "primary",
-};
+export default Button;

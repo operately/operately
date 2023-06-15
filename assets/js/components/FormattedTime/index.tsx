@@ -1,102 +1,27 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
-type Format = "relative" | "short-date";
+import RelativeTime from "./RelativeTime";
+import ShortDate from "./ShortDate";
+import ShortDateWithTime from "./ShortDateWithTime";
 
-function utcDate(): number {
-  var now = new Date();
+type Format = "relative" | "short-date" | "short-date-with-time";
 
-  return +new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-}
-
-interface RelativeTimeProps {
-  time: Date;
-}
-
-function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
-  const { t } = useTranslation();
-
-  const diff = utcDate() - +time;
-
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(days / 365);
-
-  if (seconds < 10) {
-    return <>{t("intlRelativeDateTimeJustNow")}</>;
-  }
-
-  if (seconds < 60) {
-    return <>{t("intlRelativeDateTime", { val: -seconds, range: "second" })}</>;
-  }
-
-  if (minutes < 60) {
-    return <>{t("intlRelativeDateTime", { val: -minutes, range: "minute" })}</>;
-  }
-
-  if (hours < 24) {
-    return <>{t("intlRelativeDateTime", { val: -hours, range: "hour" })}</>;
-  }
-
-  if (days < 7) {
-    return <>{t("intlRelativeDateTime", { val: -days, range: "day" })}</>;
-  }
-
-  if (weeks < 4) {
-    return <>{t("intlRelativeDateTime", { val: -weeks, range: "week" })}</>;
-  }
-
-  if (months < 12) {
-    return <>{t("intlRelativeDateTime", { val: -months, range: "month" })}</>;
-  }
-
-  return <>{t("intlRelativeDateTime", { val: -years, range: "year" })}</>;
-}
-
-function isCurrentYear(date: Date) {
-  return date.getFullYear() === new Date().getFullYear();
-}
-
-function ShortDate({ time }: { time: Date }): JSX.Element {
-  const { t } = useTranslation();
-
-  let params = {
-    val: time,
-    formatParams: {
-      val: {
-        month: "short",
-        day: "numeric",
-      },
-    },
-  };
-
-  if (!isCurrentYear(time)) {
-    params["formatParams"]["val"]["year"] = "numeric";
-  }
-
-  return <>{t("intlDateTime", params)}</>;
-}
-
-export default function FormattedTime({
-  time,
-  format,
-}: {
-  time: string;
+interface FormattedTimeProps {
+  time: string | Date;
   format: Format;
-}) {
-  const parsedTime = new Date(time);
+}
 
-  if (format === "relative") {
-    return <RelativeTime time={parsedTime} />;
+export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
+  const parsedTime = new Date(props.time);
+
+  switch (props.format) {
+    case "relative":
+      return <RelativeTime time={parsedTime} />;
+    case "short-date":
+      return <ShortDate time={parsedTime} />;
+    case "short-date-with-time":
+      return <ShortDateWithTime time={parsedTime} />;
+    default:
+      throw "Unknown format " + props.format;
   }
-
-  if (format === "short-date") {
-    return <ShortDate time={parsedTime} />;
-  }
-
-  throw "Unknown format " + format;
 }

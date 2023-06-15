@@ -3,30 +3,6 @@ import React from "react";
 import * as Icons from "tabler-icons-react";
 import * as Dialog from "@radix-ui/react-dialog";
 
-import Avatar, { AvatarSize } from "@/components/Avatar";
-
-function StatusUpdatePreview(props) {
-  const { person, acknowledged, title, message, comments, time } = props;
-
-  return (
-    <div className="flex items-center justify-between my-3">
-      <div className="flex items-center gap-4">
-        <div className="shrink-0">
-          <Avatar person={person} />
-        </div>
-
-        <div className="">
-          <div className="flex items-center justify-between font-bold">
-            {title}
-          </div>
-          <div className="truncate max-w-[600px]">{message}</div>
-        </div>
-      </div>
-
-      <div className="text-right w-32">{time}</div>
-    </div>
-  );
-}
 // <div className="mt-2 flex items-center gap-3">
 //   <div className="flex items-center gap-1 font-medium">
 //     {acknowledged ? (
@@ -66,8 +42,8 @@ export default function StatusUpdate({
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-dark-1/80 backdrop-blur data-[state=open]:animate-overlayShow fixed inset-0" />
-        <Dialog.Content className="bg-dark-2 border border-shade-2 fixed left-1/2 top-32 transform -translate-x-1/2 max-w-4xl w-full rounded-lg px-16 py-16 zoomOut">
+        <Dialog.Overlay className="bg-dark-1/80 backdrop-blur fixed inset-0" />
+        <Dialog.Content className="bg-dark-2 border border-shade-2 fixed left-1/2 top-32 transform -translate-x-1/2 max-w-4xl w-full rounded-lg px-16 py-16">
           <Dialog.Title className="font-bold text-3xl">
             Status Update
           </Dialog.Title>

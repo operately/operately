@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Schema do
   import_types Queries.KeyResults
   import_types Queries.People
   import_types Queries.Companies
+  import_types Queries.Updates
 
   # Mutations
   import_types Mutations.Projects
@@ -32,6 +33,7 @@ defmodule OperatelyWeb.Schema do
   import_types Mutations.Groups
   import_types Mutations.KeyResults
   import_types Mutations.People
+  import_types Mutations.Updates
 
   object :group_contact do
     field :id, non_null(:id)
@@ -52,17 +54,6 @@ defmodule OperatelyWeb.Schema do
     field :danger_direction, non_null(:string)
   end
 
-  input_object :create_update_input do
-    field :content, non_null(:string)
-    field :updatable_id, non_null(:id)
-    field :updatable_type, non_null(:string)
-  end
-
-  input_object :create_comment_input do
-    field :content, non_null(:string)
-    field :update_id, non_null(:id)
-  end
-
   input_object :contact_input do
     field :name, non_null(:string)
     field :value, non_null(:string)
@@ -75,6 +66,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :key_result_queries
     import_fields :people_queries
     import_fields :company_queries
+    import_fields :update_queries
 
     field :kpis, list_of(:kpi) do
       resolve fn _, _, _ ->
@@ -155,6 +147,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :group_mutations
     import_fields :key_result_mutations
     import_fields :people_mutations
+    import_fields :update_mutations
 
     field :create_tenet, :tenet do
       arg :name, non_null(:string)
@@ -212,31 +205,6 @@ defmodule OperatelyWeb.Schema do
         )
 
         {:ok, group}
-      end
-    end
-
-    field :create_update, :activity do
-      arg :input, non_null(:create_update_input)
-
-      resolve fn args, %{context: context} ->
-        Operately.Updates.create_update(%{
-          author_id: context.current_account.person.id,
-          updatable_type: args.input.updatable_type,
-          updatable_id: args.input.updatable_id,
-          content: args.input.content
-        })
-      end
-    end
-
-    field :create_comment, :comment do
-      arg :input, non_null(:create_comment_input)
-
-      resolve fn args, %{context: context} ->
-        Operately.Updates.create_comment(%{
-          author_id: context.current_account.person.id,
-          update_id: args.input.update_id,
-          content: args.input.content
-        })
       end
     end
   end

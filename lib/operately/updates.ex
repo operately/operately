@@ -129,7 +129,8 @@ defmodule Operately.Updates do
 
   def list_comments(update_id) do
     query = from c in Comment,
-      where: c.update_id == ^update_id
+      where: c.update_id == ^update_id,
+      order_by: [asc: c.inserted_at]
 
     Repo.all(query)
   end
@@ -241,7 +242,11 @@ defmodule Operately.Updates do
 
   """
   def list_reactions(entity_id, entity_type) do
-    query = from r in Reaction, where: r.entity_id == ^entity_id and r.entity_type == ^entity_type
+    query = (
+      from r in Reaction, 
+       where: r.entity_id == ^entity_id and r.entity_type == ^entity_type, 
+       order_by: r.inserted_at
+    )
 
     Repo.all(query)
   end

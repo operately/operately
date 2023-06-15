@@ -1,27 +1,37 @@
-import React from 'react';
-import Button, { ButtonSize } from '../../components/Button';
-import Modal from './Modal';
+import React from "react";
+import Button from "../../components/Button";
+import Modal from "./Modal";
 
-import Form from '../../components/Form';
-import FormSelect from '../../components/FormSelect';
-import FormTextInput from '../../components/FormTextInput';
-import Icon from '../../components/Icon';
+import Form from "../../components/Form";
+import FormSelect from "../../components/FormSelect";
+import FormTextInput from "../../components/FormTextInput";
+import Icon from "../../components/Icon";
 
-import { useApolloClient } from '@apollo/client';
-import { addContact } from '../../graphql/Groups';
+import { useApolloClient } from "@apollo/client";
+import { addContact } from "../../graphql/Groups";
 
 function SlackInputFields() {
-  return <div>
-    <div className="mt-4 flex flex-col gap-4">
-      <FormTextInput data-test-id="groupPointOfContactValue" id="value" label="URL" />
-      <FormTextInput data-test-id="groupPointOfContactName" id="name" label="Name" />
+  return (
+    <div>
+      <div className="mt-4 flex flex-col gap-4">
+        <FormTextInput
+          data-test-id="groupPointOfContactValue"
+          id="value"
+          label="URL"
+        />
+        <FormTextInput
+          data-test-id="groupPointOfContactName"
+          id="name"
+          label="Name"
+        />
+      </div>
     </div>
-  </div>;
+  );
 }
 
 function InputFieldsForType(type: string) {
   switch (type) {
-    case 'slack':
+    case "slack":
       return <SlackInputFields />;
     default:
       throw "Not implemented";
@@ -36,34 +46,52 @@ interface AddContactModalProps {
   formRef: React.RefObject<HTMLFormElement>;
 }
 
-function AddContactModal(props : AddContactModalProps) : JSX.Element {
-  const [selected, setSelected] = React.useState('slack');
+function AddContactModal(props: AddContactModalProps): JSX.Element {
+  const [selected, setSelected] = React.useState("slack");
 
-  return <Modal title="Add a Point of Contact" hideModal={props.hideModal} isOpen={props.isOpen}>
-    <Form ref={props.formRef} onSubmit={props.onSubmit} onCancel={props.hideModal}>
-      <p className="prose mb-4">Select a third-party platform where the team works together.</p>
+  return (
+    <Modal
+      title="Add a Point of Contact"
+      hideModal={props.hideModal}
+      isOpen={props.isOpen}
+    >
+      <Form
+        ref={props.formRef}
+        onSubmit={props.onSubmit}
+        onCancel={props.hideModal}
+      >
+        <p className="prose mb-4">
+          Select a third-party platform where the team works together.
+        </p>
 
-      <FormSelect data-test-id="groupPointOfContactType" id="contactType" label="Type" value={selected} onChange={(e) => setSelected(e.target.value)}>
-        <option value="slack">Slack Channel</option>
-      </FormSelect>
+        <FormSelect
+          data-test-id="groupPointOfContactType"
+          id="contactType"
+          label="Type"
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+        >
+          <option value="slack">Slack Channel</option>
+        </FormSelect>
 
-      <div className="mt-4">
-        {InputFieldsForType(selected)}
-      </div>
-    </Form>
-  </Modal>;
+        <div className="mt-4">{InputFieldsForType(selected)}</div>
+      </Form>
+    </Modal>
+  );
 }
 
-function SlackContact({name, value} : {name: string, value: string}) {
-  return <div className="flex gap-2 border rounded border-dark-2 px-2 py-1 shadow-sm hover:shadow-lg cursor-pointer">
-    <Icon name="slack" color="brand" hoverColor="brand" />
-    <a href={value}>{name}</a>
-  </div>;
+function SlackContact({ name, value }: { name: string; value: string }) {
+  return (
+    <div className="flex gap-2 border rounded border-dark-2 px-2 py-1 shadow-sm hover:shadow-lg cursor-pointer">
+      <Icon name="slack" color="brand" hoverColor="brand" />
+      <a href={value}>{name}</a>
+    </div>
+  );
 }
 
-function Contact({contact} : {contact: Contact}) {
+function Contact({ contact }: { contact: Contact }) {
   switch (contact.type) {
-    case 'slack':
+    case "slack":
       return SlackContact(contact);
     default:
       throw "Not implemented";
@@ -84,16 +112,25 @@ interface PointsOfContactProps {
   onAddContact: () => void;
 }
 
-export default function PointsOfContact({groupId, groupName, pointsOfContact, onAddContact} : PointsOfContactProps) {
+export default function PointsOfContact({
+  groupId,
+  groupName,
+  pointsOfContact,
+  onAddContact,
+}: PointsOfContactProps) {
   const client = useApolloClient();
   const [showModal, setShowModal] = React.useState(false);
 
   let formRef = React.useRef<HTMLFormElement>(null);
 
   async function handleAddContact() {
-    let typeInput = formRef.current?.querySelector('#contactType') as HTMLSelectElement;
-    let nameInput = formRef.current?.querySelector('#name') as HTMLInputElement;
-    let valueInput = formRef.current?.querySelector('#value') as HTMLInputElement;
+    let typeInput = formRef.current?.querySelector(
+      "#contactType"
+    ) as HTMLSelectElement;
+    let nameInput = formRef.current?.querySelector("#name") as HTMLInputElement;
+    let valueInput = formRef.current?.querySelector(
+      "#value"
+    ) as HTMLInputElement;
 
     await addContact(client, {
       variables: {
@@ -102,8 +139,8 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact, on
           type: typeInput.value,
           name: nameInput.value,
           value: valueInput.value,
-        }
-      }
+        },
+      },
     });
 
     setShowModal(false);
@@ -114,21 +151,28 @@ export default function PointsOfContact({groupId, groupName, pointsOfContact, on
     <div className="mt-4" data-test-id="groupPointsOfContact">
       <h2 className="text-lg font-semibold">Points of Contact</h2>
       <div className="mb-2">
-        Create links that help reach people in the {groupName} group, such as team’s Slack channel.
+        Create links that help reach people in the {groupName} group, such as
+        team’s Slack channel.
       </div>
 
-      {pointsOfContact.length > 0 && <div className="my-4">
-        <div className="flex gap-4">
-          {pointsOfContact.map((contact) => <Contact key={contact.id} contact={contact} />)}
+      {pointsOfContact.length > 0 && (
+        <div className="my-4">
+          <div className="flex gap-4">
+            {pointsOfContact.map((contact) => (
+              <Contact key={contact.id} contact={contact} />
+            ))}
+          </div>
         </div>
-      </div>}
+      )}
 
       <Button
         data-test-id="groupAddPointOfContact"
         ghost
         size={ButtonSize.Small}
         onClick={() => setShowModal(true)}
-      >Add a Point of Contact</Button>
+      >
+        Add a Point of Contact
+      </Button>
 
       <AddContactModal
         isOpen={showModal}

@@ -9,7 +9,7 @@ defmodule Operately.Updates.Reaction do
 
     field :entity_id, Ecto.UUID
     field :entity_type, Ecto.Enum, values: [:update, :comment]
-    field :reaction_type, Ecto.Enum, values: [:thumbs_up, :celebration, :heart]
+    field :reaction_type, Ecto.Enum, values: [:thumbs_up, :thumbs_down, :heart, :rocket]
 
     timestamps()
   end

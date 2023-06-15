@@ -7,6 +7,8 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
     field :inserted_at, non_null(:naive_datetime)
     field :author, :person
 
+    field :project, :project
+
     resolve_type fn
       %{type: :status_update}, _ -> :activity_status_update
       %{type: :created}, _ -> :activity_created
@@ -20,6 +22,14 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
     field :acknowledged, non_null(:boolean)
     field :acknowledged_at, :naive_datetime
+
+    field :project, :project do
+      resolve fn update, _, _ ->
+        project = Operately.Projects.get_project!(update.updatable_id)
+
+        {:ok, project}
+      end
+    end
 
     field :acknowledging_person, :person do
       resolve fn update, _, _ ->
@@ -75,6 +85,14 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
         comments = Operately.Updates.list_comments(update.id)
 
         {:ok, comments}
+      end
+    end
+
+    field :project, :project do
+      resolve fn update, _, _ ->
+        project = Operately.Projects.get_project!(update.updateable_id)
+
+        {:ok, project}
       end
     end
 

@@ -1,75 +1,146 @@
 import React from "react";
 
-import PostUpdate from "./PostUpdate";
-import StatusUpdate from "./StatusUpdate";
+import * as Icons from "@tabler/icons-react";
+import { Link } from "react-router-dom";
+import RichContent from "@/components/RichContent";
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
+import Button from "@/components/Button";
 
-import * as Icons from "tabler-icons-react";
+import * as ProjectQueries from "@/graphql/Projects";
 
-export default function StatusUpdates({ project }) {
+interface StatusUpdatesProps {
+  project: ProjectQueries.Project;
+}
+
+interface StatusUpdateProps {
+  linkTo: string;
+  person: ProjectQueries.Person;
+  title: string;
+  message: string | JSX.Element;
+  comments: number;
+  time: Date;
+}
+
+function AckStatus({ update }) {
+  if (update.acknowledged) {
+    return (
+      <div className="flex items-center text-sm text-green-400 gap-1">
+        <Icons.IconCircleCheckFilled size={16} />
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex items-center text-sm text-yellow-400 gap-1 font-medium">
+        <Icons.IconClockFilled size={16} />
+        Waiting for Acknowledgement
+      </div>
+    );
+  }
+}
+
+function StatusUpdate(props: StatusUpdateProps) {
   return (
-    <div className="px-16 rounded-b-[30px] pb-8">
+    <Link
+      to={props.linkTo}
+      className="flex items-center justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2"
+    >
+      <div className="flex items-center gap-4">
+        <div className="shrink-0">
+          <Avatar person={props.person} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <div className="font-bold">{props.title}</div>
+            <AckStatus update={props.update} />
+          </div>
+          <div className="line-clamp-1" style={{ maxWidth: "780px" }}>
+            {props.message}
+          </div>
+        </div>
+      </div>
+
+      <div className="text-right w-32">
+        <FormattedTime time={props.time} format="short-date" />
+      </div>
+    </Link>
+  );
+}
+
+function StatusUpdateZeroState() {
+  return (
+    <div className="flex items-center justify-center text-white-2 gap-2 py-24">
+      <Icons.Message2 size={24} />
+      Share the progress of the project with your team.
+    </div>
+  );
+}
+
+function StatusUpdateList({ project, updates }) {
+  return (
+    <>
+      {updates.map((update) => (
+        <StatusUpdate
+          key={update.id}
+          linkTo={`/projects/${project.id}/updates/${update.id}`}
+          person={update.author}
+          title={"Status Update"}
+          message={<RichContent jsonContent={update.message} />}
+          comments={update.comments.length}
+          time={update.insertedAt}
+          update={update}
+        />
+      ))}
+    </>
+  );
+}
+
+export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
+  const project = props.project;
+  const postUpdateLink = `/projects/${project.id}/new_update`;
+  const updates = project.activities;
+
+  const isEmpty = updates.length === 0;
+
+  return (
+    <div className="px-16 rounded-b-[30px] py-8 bg-dark-3 min-h-[350px] ">
       <div className="">
         <div className="flex items-center justify-between gap-4">
-          <div className="font-bold py-4 flex items-center gap-2 uppercase">
-            <Icons.Direction size={20} />
-            Status Updates
-          </div>
-
-          <div className="border-b border-pink-400 flex-1"></div>
-
-          <PostUpdate />
+          <SectionTitle title="Project Activity" />
+          <SeparatorLine />
+          <PostUpdateButton linkTo={postUpdateLink} />
         </div>
 
         <div className="fadeIn">
-          <StatusUpdate
-            person={project.owner}
-            title="Status Update"
-            message="We have completed the first milestone and we are on track to complete the project on time. Last week we reached out to people who have signed up via the newsletter. In total we had around 800 singups, from which around 550 responded to the survey."
-            comments={3}
-            time="Mar 24th"
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="The project is going well and we are expecting the finish all the work on time"
-            comments={0}
-            time="Mar 17th"
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="The outages are still happening and we are working on a fix. We will keep you updated."
-            comments={10}
-            time="Mar 10th"
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="We are currently working on delivering the first milestone which is due next week."
-            comments={0}
-            time="Mar 2nd"
-          />
-          <StatusUpdate
-            person={project.contributors[0].person}
-            acknowledged
-            title="Request for Project Review"
-            message="I haven't heard any news about the project for a while. Can you please provide an update?"
-            comments={1}
-            time="Mar 1st"
-          />
-          <StatusUpdate
-            person={project.owner}
-            acknowledged
-            title="Status Update"
-            message="The project was bootstrapped and the team is working on the first milestone."
-            comments={3}
-            time="Dec 25th, 2022"
-          />
+          {isEmpty ? (
+            <StatusUpdateZeroState />
+          ) : (
+            <StatusUpdateList project={project} updates={updates} />
+          )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function PostUpdateButton({ linkTo }) {
+  return (
+    <Button linkTo={linkTo}>
+      <Icons.IconMessage2 size={20} />
+      Post Update
+    </Button>
+  );
+}
+
+function SeparatorLine() {
+  return <div className="border-b border-white-2 flex-1"></div>;
+}
+
+function SectionTitle({ title }) {
+  return (
+    <div className="font-bold py-4 flex items-center gap-2 uppercase tracking-wide">
+      {title}
     </div>
   );
 }

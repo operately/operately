@@ -9,6 +9,7 @@ import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 import ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectListPage } from "../pages/ProjectListPage";
+import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 
 import TenetAddPage from "../pages/TenetAddPage";
 import { TenetPage, TenetPageLoader } from "../pages/TenetPage";
@@ -77,6 +78,10 @@ const routes = createBrowserRouter([
       {
         path: "/projects/new",
         element: <ProjectAddPage />,
+      },
+      {
+        path: "/projects/:project_id/updates/:id",
+        element: <ProjectStatusUpdatePage />,
       },
       {
         path: "/projects/:id/*",

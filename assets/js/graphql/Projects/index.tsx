@@ -1,5 +1,11 @@
 import React from "react";
-import { gql, useQuery, ApolloClient, QueryResult } from "@apollo/client";
+import {
+  gql,
+  useQuery,
+  useMutation,
+  ApolloClient,
+  QueryResult,
+} from "@apollo/client";
 
 import { Milestone } from "./milestones";
 import * as fragments from "@/graphql/Fragments";
@@ -67,7 +73,7 @@ export function listProjects(
   });
 }
 
-interface Person {
+export interface Person {
   id: string;
   fullName: string;
   title: string;
@@ -94,13 +100,13 @@ interface Comment {
 
 interface Activity {
   id: string;
-  content: string;
   insertedAt: Date;
-
+  author: Person;
+  message: string;
   comments: Comment[];
 }
 
-interface Project {
+export interface Project {
   id: string;
   name: string;
   description: string;
@@ -216,4 +222,148 @@ type UseProjectResult = QueryResult<{ project: Project }, { id: string }>;
 
 export function useProject(id: string): UseProjectResult {
   return useQuery(GET_PROJECT, { variables: { id } });
+}
+
+export function usePostUpdateMutation(projectId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation CreateUpdate($input: CreateUpdateInput!) {
+        createUpdate(input: $input) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECT,
+          variables: { id: projectId },
+        },
+      ],
+    }
+  );
+
+  const createUpdate = (content: any) => {
+    return fun({
+      variables: {
+        input: {
+          updatableId: projectId,
+          updatableType: "project",
+          content: JSON.stringify(content),
+        },
+      },
+    });
+  };
+
+  return [createUpdate, status] as const;
+}
+
+export function usePostCommentMutation(updateId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation CreateComment($input: CreateCommentInput!) {
+        createComment(input: $input) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_STATUS_UPDATE,
+          variables: { id: updateId },
+        },
+      ],
+    }
+  );
+
+  const createComment = (content: any) => {
+    return fun({
+      variables: {
+        input: {
+          updateId: updateId,
+          content: JSON.stringify(content),
+        },
+      },
+    });
+  };
+
+  return [createComment, status] as const;
+}
+
+export function useReactMutation(entityType: string, entityID: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation AddReaction(
+        $entityID: ID!
+        $entityType: String!
+        $type: String!
+      ) {
+        addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
+          id
+        }
+      }
+    `
+  );
+
+  const addReaction = (type: any) => {
+    return fun({
+      variables: {
+        entityType: entityType,
+        entityID: entityID,
+        type: type,
+      },
+    });
+  };
+
+  return [addReaction, status] as const;
+}
+
+export function useAckMutation(updateId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation Acknowledge($id: ID!) {
+        acknowledge(id: $id) {
+          id
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: GET_STATUS_UPDATE,
+          variables: { id: updateId },
+        },
+      ],
+    }
+  );
+
+  const ack = () => {
+    return fun({
+      variables: {
+        id: updateId,
+      },
+    });
+  };
+
+  return [ack, status] as const;
+}
+
+const GET_STATUS_UPDATE = gql`
+  query GetStatusUpdate($id: ID!) {
+    update(id: $id) {
+      ${fragments.ACTIVITY_FIELDS}
+
+      project {
+        id
+        name
+        owner ${fragments.PERSON}
+        reviewer ${fragments.PERSON}
+      }
+    }
+  }
+`;
+
+export function useProjectStatusUpdate(id: string) {
+  return useQuery(GET_STATUS_UPDATE, { variables: { id: id } });
 }

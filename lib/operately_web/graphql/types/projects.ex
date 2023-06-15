@@ -42,6 +42,14 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
       end
     end
 
+    field :reviewer, :person do
+      resolve fn project, _, _ ->
+        person = Operately.Projects.get_reviewer!(project)
+
+        {:ok, person}
+      end
+    end
+
     field :milestones, list_of(:milestone) do
       resolve fn project, _, _ ->
         milestones = Operately.Projects.list_project_milestones(project)

@@ -3,18 +3,20 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
-import StatusUpdates from "./StatusUpdates";
-import Tabs from "./Tabs";
-import Header from "./Header";
 import * as Icons from "tabler-icons-react";
-import RichContent from "@//components/RichContent";
-import Avatar, { AvatarSize } from "@/components/Avatar";
+
+import StatusUpdates from "./StatusUpdates";
+import Header from "./Header";
+import NewUpdate from "./NewUpdate";
+
+import RichContent from "@/components/RichContent";
+import Button from "@/components/Button";
 
 export function ProjectPage() {
   const params = useParams();
 
   const id = params["id"];
-  const tab = params["*"] || "";
+  const tab = "/" + (params["*"] || "");
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
@@ -26,6 +28,19 @@ export function ProjectPage() {
 
   let project = data.project;
 
+  switch (tab) {
+    case "/":
+      return <Overview project={project} />;
+
+    case "/new_update":
+      return <NewUpdate project={project} />;
+
+    default:
+      return <p className="mt-16">Unknown path</p>;
+  }
+}
+
+function Overview({ project }) {
   return (
     <div className="mt-24">
       <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
@@ -45,8 +60,6 @@ export function ProjectPage() {
     </div>
   );
 }
-
-// <Tabs activeTab={tab} project={project} />
 
 function Milestones({ project }) {
   return (
@@ -144,7 +157,7 @@ function Description({ project }) {
     <div className="pb-8 px-32">
       <div
         className={
-          "flex flex-col gap-1 text-lg transition" +
+          "flex flex-col gap-1 text-lg transition mb-4" +
           " " +
           (expanded ? "" : "line-clamp-4")
         }
@@ -152,13 +165,10 @@ function Description({ project }) {
         <RichContent jsonContent={project.description} />
       </div>
 
-      <button
-        className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:border-white-2 text-white-1 hover:text-white-1 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
-        onClick={toggleExpanded}
-      >
+      <Button onClick={toggleExpanded}>
         {expanded ? <Icons.ArrowUp size={20} /> : <Icons.ArrowDown size={20} />}
         {expanded ? "Collapse" : "Expand"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -184,7 +194,7 @@ function Phases({ project }) {
         </div>
 
         {times.map((phase, i) => (
-          <div className="flex flex-col items-center">
+          <div key={i} className="flex flex-col items-center">
             <div className="flex items-center gap-2">
               <PhaseIcon status={phase.status} />
               <span className="font-bold">{phase.name}</span>

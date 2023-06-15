@@ -163,6 +163,20 @@ function CommentReactions({ reactions }) {
   );
 }
 
+function splitCommentsBeforeAndAfterAck(update) {
+  const allComments = update.comments;
+  const ackTime = update.acknowledgedAt;
+
+  if (update.acknowledged) {
+    return {
+      beforeAck: allComments.filter((c) => c.insertedAt < ackTime),
+      afterAck: allComments.filter((c) => c.insertedAt >= ackTime),
+    };
+  } else {
+    return { beforeAck: update.comments, afterAck: [] };
+  }
+}
+
 function Comments({ children }) {
   return (
     <div className="border-t border-shade-1 mx-[20px] mt-[20px] pb-[20px]  relative">
@@ -295,9 +309,8 @@ function Post({ update, currentUser }): JSX.Element {
             <RichContent jsonContent={c.message} />
           </Comment>
         ))}
-
         <Ack author={update.acknowledgingPerson} time={update.acknowledgedAt} />
-
+        chat
         {comments.afterAck.map((c, i) => (
           <Comment
             key={i}

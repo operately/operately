@@ -75,6 +75,14 @@ defmodule OperatelyWeb.AccountOauthController do
     end
   end
 
+  if Application.compile_env(:operately, :dev_routes) do
+    def dev_login(conn, params) do
+      account = People.get_account_by_email(params["email"])
+
+      AccountAuth.log_in_account(conn, account)
+    end
+  end
+
   defp random_password do
     :crypto.strong_rand_bytes(@rand_pass_length) |> Base.encode64()
   end

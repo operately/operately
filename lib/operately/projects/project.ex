@@ -7,6 +7,7 @@ defmodule Operately.Projects.Project do
   schema "projects" do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :owner, Operately.People.Person, foreign_key: :owner_id
+    belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
     belongs_to :objective, Operately.Okrs.Objective, foreign_key: :objective_id
 
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
@@ -32,6 +33,7 @@ defmodule Operately.Projects.Project do
       :started_at,
       :deadline,
       :owner_id,
+      :reviewer_id,
       :objective_id,
       :next_update_scheduled_at,
       :phase
