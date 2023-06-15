@@ -182,7 +182,7 @@ function ContributorList({ project }: { project: Project }) {
 
 function ContributorItem({ person, responsibility }) {
   return (
-    <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5">
+    <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn">
       <div className="flex items-center gap-2">
         <div className="shrink-0">
           <Avatar person={person} />
