@@ -44,3 +44,4 @@ config :wallaby, screenshot_on_failure: true
 config :mix_test_watch, extra_extensions: [".feature"]
 
 config :operately, :start_query_counter, true
+config :operately, :restrict_entry, false

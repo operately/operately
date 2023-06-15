@@ -480,12 +480,7 @@ defmodule Operately.People do
       {:ok, %Account{}}
   """
   def fetch_or_create_account(attrs) do
-    allowed = String.split(System.get_env("ALLOWED_EMAILS"), ",")
-    IO.inspect(allowed)
-
-    if attrs.email not in allowed do
-      raise "Not allowed"
-    end
+    restrict_entry!(attrs.email)
 
     get_account_by_email(attrs.email)
     |> case do
@@ -495,6 +490,16 @@ defmodule Operately.People do
     |> case do
       {:ok, account} -> find_or_create_person_for_account(account, attrs)
       {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  defp restrict_entry!(email) do
+    if Application.get_env(:operately, :restrict_entry) do
+      allowed = String.split(System.get_env("ALLOWED_EMAILS"), ",")
+
+      if email not in allowed do
+        raise "Not allowed"
+      end
     end
   end
 
