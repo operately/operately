@@ -7,6 +7,8 @@ defmodule Operately.Projects do
   alias Operately.Repo
 
   alias Operately.Projects.Project
+  alias Operately.Projects.Contributor
+  alias Operately.People.Person
 
   def list_projects(filters \\ %{}) do
     Operately.Projects.ListQuery.build(filters) |> Repo.all()
@@ -15,6 +17,26 @@ defmodule Operately.Projects do
   def list_project_contributors(project) do
     project = Repo.preload(project, [contributors: [:person]])
     project.contributors
+  end
+
+  def list_project_contributor_candidates(project_id, query, exclude_ids, limit) do
+    ilike_pattern = "%#{query}%"
+
+    candidates_ids = Repo.all(
+      from c in Contributor,
+      select: c.person_id,
+      where: c.project_id == ^project_id
+    )
+
+    query = (
+      from p in Person,
+      where: p.id not in ^exclude_ids and p.id not in ^candidates_ids,
+      where: ilike(p.full_name, ^ilike_pattern) or 
+             ilike(p.title, ^ilike_pattern),
+      limit: ^limit
+    )
+
+    Repo.all(query)
   end
 
   @doc """

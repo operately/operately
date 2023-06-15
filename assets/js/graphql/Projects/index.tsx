@@ -3,6 +3,7 @@ import {
   gql,
   useQuery,
   useMutation,
+  useApolloClient,
   ApolloClient,
   QueryResult,
 } from "@apollo/client";
@@ -374,4 +375,29 @@ const GET_STATUS_UPDATE = gql`
 
 export function useProjectStatusUpdate(id: string) {
   return useQuery(GET_STATUS_UPDATE, { variables: { id: id } });
+}
+
+const LIST_PROJECT_CONTRIBUTOR_CANDIDATES = gql`
+  query projectContributorCandidates($id: ID!) {
+    projectContributorCandidates(projectId: $id) ${fragments.PERSON}
+  }
+`;
+
+export function useProjectContributorCandidatesQuery(id: string) {
+  const client = useApolloClient();
+
+  return async (query: string) => {
+    const res = await client.query({
+      query: LIST_PROJECT_CONTRIBUTOR_CANDIDATES,
+      variables: {
+        id: id,
+        query: query,
+      },
+    });
+
+    if (!res.data) return [];
+    if (!res.data.projectContributorCandidates) return [];
+
+    return res.data.projectContributorCandidates;
+  };
 }

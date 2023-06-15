@@ -11,6 +11,7 @@ import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
 
 import PersonSearch from "./PersonSearch";
+import * as Projects from "@/graphql/Projects";
 
 export function ProjectContributorsPage() {
   const params = useParams();
@@ -43,7 +44,7 @@ export function ProjectContributorsPage() {
   );
 }
 
-function Title() {
+function Title({ projectID }) {
   const [addColabActive, setAddColabActive] = React.useState(true);
 
   const activateAddColab = () => setAddColabActive(true);
@@ -63,18 +64,26 @@ function Title() {
         {!addColabActive && <AddButton onClick={activateAddColab} />}
       </div>
 
-      {addColabActive && <AddColabForm close={deactivateAddColab} />}
+      {addColabActive && (
+        <AddColabForm close={deactivateAddColab} projectID={projectID} />
+      )}
     </div>
   );
 }
 
-function AddColabForm({ close }) {
+function AddColabForm({ close, projectID }) {
+  const loader = Projects.useProjectContributorCandidatesQuery(projectID);
+
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
       <div className="mb-6">
         <label className="font-bold mb-1 block">Collaborator</label>
         <div className="flex-1">
-          <PersonSearch placeholder="Search by name or title..." />
+          <PersonSearch
+            onSelect={(person) => console.log(person)}
+            placeholder="Search by name or title..."
+            loader={loader}
+          />
         </div>
       </div>
       <div className="">
