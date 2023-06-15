@@ -45,7 +45,7 @@ export function ProjectContributorsPage() {
 }
 
 function Title({ projectID }) {
-  const [addColabActive, setAddColabActive] = React.useState(true);
+  const [addColabActive, setAddColabActive] = React.useState(false);
 
   const activateAddColab = () => setAddColabActive(true);
   const deactivateAddColab = () => setAddColabActive(false);

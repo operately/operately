@@ -71,7 +71,7 @@ function StatusUpdate(props: StatusUpdateProps) {
 function StatusUpdateZeroState() {
   return (
     <div className="flex items-center justify-center text-white-2 gap-2 py-24">
-      <Icons.Message2 size={24} />
+      <Icons.IconMessage2 size={24} />
       Share the progress of the project with your team.
     </div>
   );
