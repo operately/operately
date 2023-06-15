@@ -33,14 +33,14 @@ export function ProjectContributorsPage() {
         className="mx-auto max-w-4xl relative bg-dark-2 rounded-[20px]"
         style={{ minHeight: "1000px" }}
       >
-        <Title project={project} />
+        <Title />
         <ContributorList project={project} />
       </div>
     </div>
   );
 }
 
-function Title({ project }: { project: Project }) {
+function Title() {
   return (
     <div className="rounded-t-[20px] p-8">
       <div className="text-2xl font-extrabold ">Contributors</div>
@@ -67,12 +67,23 @@ function ContributorList({ project }: { project: Project }) {
     <div className="flex flex-col px-8">
       <ContributorItem
         person={project.owner}
-        responsibility={"Responsible for the success of the project"}
+        responsibility={
+          <>
+            Champion &ndash; Responsible for the success of the project
+            <Icons.IconCrown size={20} className="text-yellow-400" />
+          </>
+        }
       />
 
       <ContributorItem
         person={project.reviewer}
-        responsibility={"Responsible for reviewing and acknowledging progress"}
+        responsibility={
+          <>
+            Reviewer &ndash; Responsible for reviewing and acknowledging
+            progress
+            <Icons.IconEyeCheck size={20} className="text-yellow-400" />
+          </>
+        }
       />
 
       {project.contributors.map((c) => (
@@ -95,9 +106,12 @@ function ContributorItem({ person, responsibility }) {
         </div>
         <div className="flex flex-col flex-1">
           <div className="font-bold">{person.fullName}</div>
-          <div className="text-sm font-medium">{responsibility}</div>
+          <div className="text-sm font-medium flex items-center gap-1">
+            {responsibility}
+          </div>
         </div>
       </div>
+
       <div className="shrink-0">
         <Icons.IconDotsVertical size={20} />
       </div>
