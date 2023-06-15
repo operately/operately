@@ -47,6 +47,7 @@ function Title() {
   const [addColabActive, setAddColabActive] = React.useState(true);
 
   const activateAddColab = () => setAddColabActive(true);
+  const deactivateAddColab = () => setAddColabActive(false);
 
   return (
     <div className="rounded-t-[20px] p-8 pb-12">
@@ -62,15 +63,15 @@ function Title() {
         {!addColabActive && <AddButton onClick={activateAddColab} />}
       </div>
 
-      {addColabActive && <AddColabForm />}
+      {addColabActive && <AddColabForm close={deactivateAddColab} />}
     </div>
   );
 }
 
-function AddColabForm() {
+function AddColabForm({ close }) {
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <label className="font-bold mb-1 block">Collaborator</label>
         <div className="flex-1">
           <PersonSearch placeholder="Search by name or title..." />
@@ -82,7 +83,7 @@ function AddColabForm() {
         </label>
         <div className="flex-1">
           <input
-            className="w-full bg-shade-2 placeholder-white-2 border-none rounded-lg px-3"
+            className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
             type="text"
             placeholder="ex. Responsible for the visual design of the project."
           />
@@ -90,8 +91,13 @@ function AddColabForm() {
       </div>
 
       <div className="flex mt-8 gap-2">
-        <Button variant="success">Add Contributor</Button>
-        <Button variant="secondary">Cancel</Button>
+        <Button variant="success">
+          <Icons.IconPlus size={20} />
+          Add Contributor
+        </Button>
+        <Button variant="secondary" onClick={close}>
+          Cancel
+        </Button>
       </div>
     </div>
   );

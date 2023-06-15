@@ -42,6 +42,8 @@ export default function PersonSearch({
       classNames={{
         control: () =>
           "bg-shade-2 placeholder-white-2 border-none rounded-lg px-3",
+        menu: () => "bg-shade-2 text-white-1 px-3",
+        option: () => "py-2",
       }}
     />
   );
