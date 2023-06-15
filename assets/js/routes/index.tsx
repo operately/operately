@@ -10,9 +10,9 @@ import ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectListPage } from "../pages/ProjectListPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
+import { ProjectContributorsPage } from "@/pages/ProjectCotributorsPage";
 
 import TenetAddPage from "../pages/TenetAddPage";
-import { TenetPage, TenetPageLoader } from "../pages/TenetPage";
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
 
 import KpiAddPage from "../pages/KpiAddPage";
@@ -82,6 +82,10 @@ const routes = createBrowserRouter([
       {
         path: "/projects/:project_id/updates/:id",
         element: <ProjectStatusUpdatePage />,
+      },
+      {
+        path: "/projects/:project_id/contributors",
+        element: <ProjectContributorsPage />,
       },
       {
         path: "/projects/:id/*",
