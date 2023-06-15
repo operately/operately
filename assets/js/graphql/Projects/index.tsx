@@ -378,8 +378,8 @@ export function useProjectStatusUpdate(id: string) {
 }
 
 const LIST_PROJECT_CONTRIBUTOR_CANDIDATES = gql`
-  query projectContributorCandidates($id: ID!) {
-    projectContributorCandidates(projectId: $id) ${fragments.PERSON}
+  query projectContributorCandidates($projectId: ID!, $query: String!) {
+    projectContributorCandidates(projectId: $projectId, query: $query) ${fragments.PERSON}
   }
 `;
 
@@ -390,7 +390,7 @@ export function useProjectContributorCandidatesQuery(id: string) {
     const res = await client.query({
       query: LIST_PROJECT_CONTRIBUTOR_CANDIDATES,
       variables: {
-        id: id,
+        projectId: id,
         query: query,
       },
     });

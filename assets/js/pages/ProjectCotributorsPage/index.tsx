@@ -37,7 +37,7 @@ export function ProjectContributorsPage() {
         className="mx-auto max-w-4xl relative bg-dark-2 rounded-[20px]"
         style={{ minHeight: "1000px" }}
       >
-        <Title />
+        <Title projectID={projectId} />
         <ContributorList project={project} />
       </div>
     </div>

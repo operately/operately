@@ -42,3 +42,5 @@ config :phoenix, :plug_init_mode, :runtime
 config :wallaby, screenshot_on_failure: true
 
 config :mix_test_watch, extra_extensions: [".feature"]
+
+config :operately, :start_query_counter, true
