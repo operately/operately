@@ -7,7 +7,8 @@ import { Project } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 
-import Avatar, { AvatarSize } from "@/components/Avatar";
+import Avatar from "@/components/Avatar";
+import Button from "@/components/Button";
 
 export function ProjectContributorsPage() {
   const params = useParams();
@@ -42,12 +43,28 @@ export function ProjectContributorsPage() {
 
 function Title() {
   return (
-    <div className="rounded-t-[20px] p-8">
-      <div className="text-2xl font-extrabold ">Contributors</div>
-      <div className="text-medium">
-        People who are contributing to this project and their responsibilities.
+    <div className="rounded-t-[20px] p-8 pb-12">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-2xl font-extrabold ">Contributors</div>
+          <div className="text-medium">
+            People who are contributing to this project and their
+            responsibilities.
+          </div>
+        </div>
+
+        <AddButton />
       </div>
     </div>
+  );
+}
+
+function AddButton() {
+  return (
+    <Button variant="success">
+      <Icons.IconPlus size={20} />
+      Add Contributor
+    </Button>
   );
 }
 
