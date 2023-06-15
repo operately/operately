@@ -10,6 +10,8 @@ import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
 
+import PersonSearch from "./PersonSearch";
+
 export function ProjectContributorsPage() {
   const params = useParams();
   const projectId = params["project_id"];
@@ -42,6 +44,10 @@ export function ProjectContributorsPage() {
 }
 
 function Title() {
+  const [addColabActive, setAddColabActive] = React.useState(true);
+
+  const activateAddColab = () => setAddColabActive(true);
+
   return (
     <div className="rounded-t-[20px] p-8 pb-12">
       <div className="flex items-center justify-between">
@@ -53,15 +59,47 @@ function Title() {
           </div>
         </div>
 
-        <AddButton />
+        {!addColabActive && <AddButton onClick={activateAddColab} />}
+      </div>
+
+      {addColabActive && <AddColabForm />}
+    </div>
+  );
+}
+
+function AddColabForm() {
+  return (
+    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
+      <div className="mb-8">
+        <label className="font-bold mb-1 block">Collaborator</label>
+        <div className="flex-1">
+          <PersonSearch placeholder="Search by name or title..." />
+        </div>
+      </div>
+      <div className="">
+        <label className="font-bold mb-1 block">
+          What are the responsibilities of this colaboarator?
+        </label>
+        <div className="flex-1">
+          <input
+            className="w-full bg-shade-2 placeholder-white-2 border-none rounded-lg px-3"
+            type="text"
+            placeholder="ex. Responsible for the visual design of the project."
+          />
+        </div>
+      </div>
+
+      <div className="flex mt-8 gap-2">
+        <Button variant="success">Add Contributor</Button>
+        <Button variant="secondary">Cancel</Button>
       </div>
     </div>
   );
 }
 
-function AddButton() {
+function AddButton({ onClick }) {
   return (
-    <Button variant="success">
+    <Button variant="success" onClick={onClick}>
       <Icons.IconPlus size={20} />
       Add Contributor
     </Button>
