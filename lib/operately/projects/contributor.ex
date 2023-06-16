@@ -9,14 +9,13 @@ defmodule Operately.Projects.Contributor do
     belongs_to :person, Operately.People.Person, foreign_key: :person_id
 
     field :responsibility, :string
+    field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
 
     timestamps()
   end
 
   @doc false
   def changeset(contributor, attrs) do
-    contributor
-    |> cast(attrs, [:responsibility, :project_id, :person_id])
-    |> validate_required([:responsibility])
+    contributor |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
   end
 end
