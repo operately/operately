@@ -41,6 +41,7 @@ export default function PersonSearch(props: PeopleSearchProps) {
       loadOptions={loadOptions}
       defaultValue={defaultValue}
       defaultOptions
+      cacheOptions={false}
       classNames={classNames()}
     />
   );
