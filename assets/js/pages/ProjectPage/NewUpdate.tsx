@@ -1,7 +1,8 @@
 import React from "react";
 
-import * as Icons from "tabler-icons-react";
+import * as Icons from "@tabler/icons-react";
 import * as TipTapEditor from "@/components/Editor";
+import * as Paper from "@/components/PaperContainer";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -46,7 +47,10 @@ function Editor({ project }) {
         <TipTapEditor.Toolbar editor={editor} />
       </div>
 
-      <div className="mb-8 py-4 text-white-1 text-lg">
+      <div
+        className="mb-8 py-4 text-white-1 text-lg"
+        style={{ minHeight: "300px" }}
+      >
         <TipTapEditor.EditorContent editor={editor} />
       </div>
 
@@ -61,7 +65,7 @@ function Editor({ project }) {
 function PostButton({ onClick }) {
   return (
     <Button onClick={onClick} variant="success">
-      <Icons.Mail size={20} />
+      <Icons.IconMail size={20} />
       Post Update
     </Button>
   );
@@ -77,11 +81,20 @@ function CancelButton({ linkTo }) {
 
 export default function NewUpdate({ project }) {
   return (
-    <div className="mt-24">
-      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px] px-32 py-16">
-        <NewUpdateHeader />
-        <Editor project={project} />
-      </div>
-    </div>
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Icons.IconClipboardList size={16} />
+          {project.name}
+        </Paper.NavItem>
+      </Paper.Navigation>
+
+      <Paper.Body>
+        <div className="px-16 py-16">
+          <NewUpdateHeader />
+          <Editor project={project} />
+        </div>
+      </Paper.Body>
+    </Paper.Root>
   );
 }

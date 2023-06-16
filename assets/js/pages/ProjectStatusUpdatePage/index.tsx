@@ -11,6 +11,7 @@ import RichContent from "@/components/RichContent";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
+import * as Paper from "@/components/PaperContainer";
 
 import { usePostCommentMutation } from "@/graphql/Projects";
 
@@ -41,12 +42,15 @@ export function ProjectStatusUpdatePage() {
   const me = meData.data.me;
 
   return (
-    <div className="mt-24">
-      <div className="flex justify-between items-center mb-4 mx-auto max-w-4xl">
-        <BackToProject linkTo={`/projects/${projectId}`} />
-      </div>
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${projectId}`}>
+          <Icons.IconClipboardList size={16} />
+          {update.project.name}
+        </Paper.NavItem>
+      </Paper.Navigation>
 
-      <div className="mx-auto max-w-4xl relative bg-dark-2 rounded-[20px]">
+      <Paper.Body>
         <AckBanner
           me={me}
           update={update}
@@ -70,8 +74,8 @@ export function ProjectStatusUpdatePage() {
 
           <Comments update={update} onNewReaction={() => refetch()} />
         </div>
-      </div>
-    </div>
+      </Paper.Body>
+    </Paper.Root>
   );
 }
 
@@ -107,18 +111,6 @@ function AckBanner({ me, reviewer, update, champion }) {
       </div>
     );
   }
-}
-
-function BackToProject({ linkTo }) {
-  return (
-    <Link
-      to={linkTo}
-      className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4"
-    >
-      <Icons.IconArrowLeft size={20} />
-      Back To Project
-    </Link>
-  );
 }
 
 function Header({ update }) {
