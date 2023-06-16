@@ -88,7 +88,7 @@ function AddColabForm({ close, projectID }) {
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
       <div className="mb-6">
-        <label className="font-bold mb-1 block">Collaborator</label>
+        <label className="font-bold mb-1 block">Contributor</label>
         <div className="flex-1">
           <PersonSearch
             onChange={(option) => setSelectedPersonID(option.value)}
@@ -99,7 +99,7 @@ function AddColabForm({ close, projectID }) {
       </div>
       <div className="">
         <label className="font-bold mb-1 block">
-          What are the responsibilities of this colaboarator?
+          What are the responsibilities of this contributor?
         </label>
         <div className="flex-1">
           <input
