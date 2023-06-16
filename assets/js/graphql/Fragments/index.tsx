@@ -87,6 +87,7 @@ export const ACTIVITY_FIELDS = `
 
 export const CONTRIBUTOR = `
   {
+    id 
     person ${PERSON}
     responsibility
   }

@@ -24,5 +24,30 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
         })
       end
     end
+
+    field :update_project_contributor, non_null(:project_contributor) do
+      arg :contrib_id, non_null(:id)
+      arg :person_id, non_null(:id)
+      arg :responsibility, non_null(:string)
+
+      resolve fn args, _ ->
+        contrib = Operately.Projects.get_contributor!(args.contrib_id)
+
+        Operately.Projects.update_contributor(contrib, %{
+          person_id: args.person_id,
+          responsibility: args.responsibility
+        })
+      end
+    end
+
+    field :remove_project_contributor, :boolean do
+      arg :contrib_id, non_null(:id)
+
+      resolve fn args, _ ->
+        contrib = Operately.Projects.get_contributor!(args.contrib_id)
+
+        Operately.Projects.delete_contributor(contrib)
+      end
+    end
   end
 end

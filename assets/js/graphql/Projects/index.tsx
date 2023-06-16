@@ -398,6 +398,55 @@ export function useAddProjectContributorMutation(projectId: string) {
   return [addColab, status] as const;
 }
 
+const UPDATE_PROJECT_CONTRIBUTOR = gql`
+  mutation UpdateProjectContributor(
+    $contribId: ID!
+    $personId: ID!
+    $responsibility: String!
+  ) {
+    updateProjectContributor(
+      contribId: $contribId
+      personId: $personId
+      responsibility: $responsibility
+    ) {
+      id
+    }
+  }
+`;
+
+export function useUpdateProjectContributorMutation(contribId: string) {
+  const [fun, status] = useMutation(UPDATE_PROJECT_CONTRIBUTOR, {
+    onCompleted: (data) => console.log(data),
+  });
+
+  const updateColab = (personId: string, responsibility: string) => {
+    return fun({
+      variables: {
+        contribId: contribId,
+        personId: personId,
+        responsibility: responsibility,
+      },
+    });
+  };
+
+  return [updateColab, status] as const;
+}
+
+const REMOVE_PROJECT_CONTRIBUTOR = gql`
+  mutation RemoveProjectContributor($contribId: ID!) {
+    removeProjectContributor(contribId: $contribId) {
+      id
+    }
+  }
+`;
+
+export function useRemoveProjectContributorMutation(contribId: string) {
+  return useMutation(REMOVE_PROJECT_CONTRIBUTOR, {
+    variables: { contribId: contribId },
+    onCompleted: (data) => console.log(data),
+  });
+}
+
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
