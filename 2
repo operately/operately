@@ -65,13 +65,13 @@ function Title({ projectID }) {
       </div>
 
       {addColabActive && (
-        <AddContribForm close={deactivateAddColab} projectID={projectID} />
+        <AddColabForm close={deactivateAddColab} projectID={projectID} />
       )}
     </div>
   );
 }
 
-function AddContribForm({ close, projectID }) {
+function AddColabForm({ close, projectID }) {
   const [addColab, _s] = Projects.useAddProjectContributorMutation(projectID);
   const loader = Projects.useProjectContributorCandidatesQuery(projectID);
 
@@ -181,33 +181,8 @@ function ContributorList({ project }: { project: Project }) {
 }
 
 function ContributorItem({ person, responsibility }) {
-  const [state, setState] = React.useState<"view" | "edit">("view");
-
-  const activateEdit = () => setState("edit");
-  const deactivateEdit = () => setState("view");
-
-  if (state === "view") {
-    return (
-      <ContributorItemViewState
-        person={person}
-        responsibility={responsibility}
-        onEdit={activateEdit}
-      />
-    );
-  } else {
-    return (
-      <ContributorItemEditState
-        person={person}
-        responsibility={responsibility}
-        onCancel={deactivateEdit}
-      />
-    );
-  }
-}
-
-function ContributorItemViewState({ person, responsibility, onEdit }) {
   return (
-    <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn group">
+    <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn">
       <div className="flex items-center gap-2">
         <div className="shrink-0">
           <Avatar person={person} />
@@ -221,70 +196,11 @@ function ContributorItemViewState({ person, responsibility, onEdit }) {
       </div>
 
       <div className="shrink-0">
-        <div
-          className="rounded-full p-2 hover:bg-shade-2 transition-colors opacity-0 group-hover:opacity-100"
-          onClick={onEdit}
-        >
+        <div className="rounded-full p-1 hover:bg-shade-2 transition-colors">
           <Icons.IconPencil
             size={20}
             className="cursor-pointer text-white-2 hover:text-white-1 transition-colors"
           />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ContributorItemEditState({ person, responsibility, onCancel }) {
-  const [addColab, _s] = Projects.useAddProjectContributorMutation(null);
-  const loader = Projects.useProjectContributorCandidatesQuery(null);
-
-  const [selectedPersonID, setSelectedPersonID] = React.useState<any>(null);
-  const [newResponsibility, setNewResponsibility] =
-    React.useState(responsibility);
-
-  const disabled = !selectedPersonID || !responsibility;
-
-  const handleSubmit = async () => {
-    await addColab(selectedPersonID, responsibility);
-    close();
-  };
-
-  return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 py-8 -mt-2.5 mb-2.5">
-      <div className="mb-6">
-        <label className="font-bold mb-1 block">Contributor</label>
-        <div className="flex-1">
-          <PersonSearch
-            onChange={(option) => setSelectedPersonID(option.value)}
-            placeholder="Search by name or title..."
-            loader={loader}
-          />
-        </div>
-      </div>
-      <div className="">
-        <label className="font-bold mb-1 block">
-          What are the responsibilities of this contributor?
-        </label>
-        <div className="flex-1">
-          <input
-            value={newResponsibility}
-            onChange={(e) => setNewResponsibility(e.target.value)}
-            className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-            type="text"
-            placeholder="ex. Responsible for the visual design of the project."
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-between mt-8">
-        <div className="flex gap-2">
-          <Button variant="success" disabled={disabled} onClick={handleSubmit}>
-            Save
-          </Button>
-          <Button variant="secondary" onClick={onCancel}>
-            Cancel
-          </Button>
         </div>
       </div>
     </div>
