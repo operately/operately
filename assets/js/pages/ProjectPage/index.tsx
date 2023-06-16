@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
 
 import StatusUpdates from "./StatusUpdates";
 import Header from "./Header";
@@ -43,8 +44,15 @@ export function ProjectPage() {
 
 function Overview({ project }) {
   return (
-    <div className="mt-24">
-      <div className="mx-auto max-w-5xl relative bg-dark-2 rounded-[20px]">
+    <Paper.Root size="large">
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects`}>
+          <Icons.IconClipboardList size={16} />
+          All Projects
+        </Paper.NavItem>
+      </Paper.Navigation>
+
+      <Paper.Body>
         <Header project={project} />
         <Description project={project} />
 
@@ -57,8 +65,8 @@ function Overview({ project }) {
         </div>
 
         <StatusUpdates project={project} />
-      </div>
-    </div>
+      </Paper.Body>
+    </Paper.Root>
   );
 }
 

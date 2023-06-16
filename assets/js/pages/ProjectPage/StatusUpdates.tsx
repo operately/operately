@@ -104,7 +104,7 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
   const isEmpty = updates.length === 0;
 
   return (
-    <div className="px-16 rounded-b-[30px] py-8 bg-dark-3 min-h-[350px] ">
+    <div className="px-16 rounded-b-[20px] py-8 bg-dark-2 min-h-[350px] border-t border-shade-1">
       <div className="">
         <div className="flex items-center justify-between gap-4">
           <SectionTitle title="Project Activity" />

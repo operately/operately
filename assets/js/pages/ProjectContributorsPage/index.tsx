@@ -2,7 +2,6 @@ import React from "react";
 
 import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
-import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
@@ -14,6 +13,8 @@ import PersonSearch from "./PersonSearch";
 import * as Projects from "@/graphql/Projects";
 
 import * as Contributors from "@/graphql/Projects/contributors";
+
+import * as Paper from "@/components/PaperContainer";
 
 export function ProjectContributorsPage() {
   const params = useParams();
@@ -30,19 +31,19 @@ export function ProjectContributorsPage() {
   const project = data.project;
 
   return (
-    <div className="mt-24">
-      <div className="flex justify-between items-center mb-4 mx-auto max-w-4xl">
-        <BackToProject linkTo={`/projects/${projectId}`} />
-      </div>
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${projectId}`}>
+          <Icons.IconClipboardList size={16} />
+          {project.name}
+        </Paper.NavItem>
+      </Paper.Navigation>
 
-      <div
-        className="mx-auto max-w-4xl relative bg-dark-2 rounded-[20px]"
-        style={{ minHeight: "1000px" }}
-      >
+      <Paper.Body>
         <Title projectID={projectId} />
         <ContributorList project={project} refetch={refetch} />
-      </div>
-    </div>
+      </Paper.Body>
+    </Paper.Root>
   );
 }
 
@@ -107,7 +108,7 @@ function AddContribForm({ close, projectID }) {
           <input
             value={responsibility}
             onChange={(e) => setResponsibility(e.target.value)}
-            className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+            className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
             type="text"
             placeholder="ex. Responsible for the visual design of the project."
           />
@@ -136,16 +137,6 @@ function AddButton({ onClick }) {
   );
 }
 
-function BackToProject({ linkTo }) {
-  return (
-    <Link to={linkTo}>
-      <div className="text-pink-400 font-bold uppercase border border-pink-400 rounded-full hover:bg-pink-400/10 px-3 py-1.5 text-sm flex items-center gap-2 mt-4">
-        <Icons.IconArrowLeft size={20} />
-        Back To Project
-      </div>
-    </Link>
-  );
-}
 function ContributorList({
   project,
   refetch,
@@ -275,7 +266,7 @@ function ContributorItemEditState({ contributor, close, projectId, refetch }) {
             <input
               value={newResp}
               onChange={(e) => setNewResp(e.target.value)}
-              className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+              className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
               type="text"
               placeholder="ex. Responsible for the visual design of the project."
             />

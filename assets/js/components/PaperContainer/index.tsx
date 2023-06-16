@@ -5,21 +5,74 @@
  * Example usage:
  *
  * ```tsx
- * <PaperContainer.Root>
- *   <PaperContainer.Navigation>
- *     <PaperContainer.NavigationItem icon="objectives" title="Increase Revenue" />
- *   </PaperContainer.Navigation>
+ * import * as Paper from "@/components/PaperContainer";
  *
- *   <PaperContainer.Body>
+ * <Paper.Root>
+ *   <Paper.Navigation>
+ *     <Paper.NavItem>Projects</Paper.NavItem>
+ *   </Paper.Navigation>
+ *
+ *   <Paper.Body>
  *     <h1 className="text-2xl font-bold">Increase Revenue</h1>
- *   </PaperContainer.Body>
- * </PaperContainer.Root>
+ *   </Paper.Body>
+ * </Paper.Root>
  * ```
  */
 
-import Root from "./Root";
-import Navigation from "./Navigation";
-import NavigationItem from "./NavigationItem";
-import Body from "./Body";
+import React from "react";
+import { Link } from "react-router-dom";
+import classnames from "classnames";
 
-export { Root, Navigation, NavigationItem, Body };
+type Size = "small" | "medium" | "large";
+
+const sizes = {
+  small: "max-w-2xl",
+  medium: "max-w-4xl",
+  large: "max-w-5xl",
+};
+
+export function Root({
+  size,
+  children,
+}: {
+  size: Size;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={classnames("mx-auto mt-20", sizes[size])}>{children}</div>
+  );
+}
+
+Root.defaultProps = {
+  size: "medium",
+};
+
+export function Navigation({ children }) {
+  return (
+    <div className="bg-dark-2 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t-lg border-x border-t border-dark-3">
+      {children}
+    </div>
+  );
+}
+
+export function NavItem({ linkTo, children }) {
+  return (
+    <Link
+      to={linkTo}
+      className="text-sky-400 underline underline-offset-2 flex gap-1.5 items-center"
+    >
+      {children}
+    </Link>
+  );
+}
+
+export function Body({ children }) {
+  return (
+    <div
+      className="relative bg-dark-3/70 rounded-[20px] border border-shade-1 shadow-lg"
+      style={{ minHeight: "1000px" }}
+    >
+      {children}
+    </div>
+  );
+}
