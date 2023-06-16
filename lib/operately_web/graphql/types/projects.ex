@@ -10,6 +10,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
   object :project_contributor do
     field :id, non_null(:id)
     field :responsibility, :string
+    field :role, non_null(:string)
 
     field :person, non_null(:person) do
       resolve fn contributor, _, _ ->
@@ -31,22 +32,6 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :description, :string do
       resolve fn project, _, _ ->
         {:ok, Jason.encode!(project.description)}
-      end
-    end
-
-    field :owner, :person do
-      resolve fn project, _, _ ->
-        person = Operately.Projects.get_owner!(project)
-
-        {:ok, person}
-      end
-    end
-
-    field :reviewer, :person do
-      resolve fn project, _, _ ->
-        person = Operately.Projects.get_reviewer!(project)
-
-        {:ok, person}
       end
     end
 

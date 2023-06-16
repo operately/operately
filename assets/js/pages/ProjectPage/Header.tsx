@@ -1,7 +1,7 @@
 import React from "react";
-import * as Icons from "@tabler/icons-react";
 
-import Avatar, { AvatarSize } from "@/components/Avatar";
+import * as Icons from "@tabler/icons-react";
+import ContributorAvatar from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
@@ -34,7 +34,6 @@ function Contributors({ project }) {
     <div className="mt-4 flex items-center justify-center">
       <Link to={contributorsPath}>
         <div className="flex items-center justify-center gap-2 cursor-pointer">
-          <ChampionAvatar champion={project.owner} />
           <ContributorList project={project} />
           <AddContributor />
         </div>
@@ -43,19 +42,11 @@ function Contributors({ project }) {
   );
 }
 
-function ChampionAvatar({ champion }) {
-  return (
-    <div className="relative border-2 rounded-full border-yellow-400 p-0.5">
-      <Avatar person={champion} size={AvatarSize.Small} />
-    </div>
-  );
-}
-
 function ContributorList({ project }: { project: Project }) {
   return (
     <>
       {project.contributors.map((c) => (
-        <Avatar key={c.person.id} person={c.person} size={AvatarSize.Small} />
+        <ContributorAvatar key={c.id} contributor={c} />
       ))}
     </>
   );

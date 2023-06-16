@@ -21,11 +21,6 @@ const LIST_PROJECTS = gql`
       startedAt
       deadline
 
-      owner {
-        fullName
-        title
-      }
-
       contributors ${fragments.CONTRIBUTOR}
 
       phase
@@ -90,6 +85,7 @@ interface Parent {
 interface Contributor {
   id: string;
   person: Person;
+  role: "champion" | "reviewer" | "contributor";
   responsibility: string;
 }
 
@@ -114,8 +110,6 @@ export interface Project {
   deadline: Date;
   phase: "draft" | "planning" | "execution" | "closing" | "closed";
 
-  owner: Person;
-  reviewer: Person;
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
@@ -133,20 +127,6 @@ const GET_PROJECT = gql`
       nextUpdateScheduledAt
       phase
 
-      owner {
-        id
-        fullName
-        title
-        avatarUrl
-      }
-
-      reviewer {
-        id
-        fullName
-        title
-        avatarUrl
-      }
-
       milestones {
         id
         title
@@ -154,16 +134,7 @@ const GET_PROJECT = gql`
         status
       }
 
-      contributors {
-        id
-        person {
-          id
-          fullName
-          title
-          avatarUrl
-        }
-        responsibility
-      }
+      contributors ${fragments.CONTRIBUTOR}
 
       activities {
         __typename
@@ -455,8 +426,7 @@ const GET_STATUS_UPDATE = gql`
       project {
         id
         name
-        owner ${fragments.PERSON}
-        reviewer ${fragments.PERSON}
+        contributors ${fragments.CONTRIBUTOR}
       }
     }
   }

@@ -7,11 +7,13 @@ import { Project } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 
-import Avatar from "@/components/Avatar";
+import ContributorAvatar from "@/components/ContributorAvatar";
 import Button from "@/components/Button";
 
 import PersonSearch from "./PersonSearch";
 import * as Projects from "@/graphql/Projects";
+
+import * as Contributors from "@/graphql/Projects/contributors";
 
 export function ProjectContributorsPage() {
   const params = useParams();
@@ -144,40 +146,20 @@ function BackToProject({ linkTo }) {
     </Link>
   );
 }
-
-function ContributorList({ project, refetch }: { project: Project }) {
+function ContributorList({
+  project,
+  refetch,
+}: {
+  project: Project;
+  refetch: any;
+}) {
   return (
     <div className="flex flex-col px-8">
-      <ContributorItem
-        person={project.owner}
-        responsibility={
-          <>
-            Champion &ndash; Responsible for the success of the project
-            <Icons.IconCrown size={20} className="text-yellow-400" />
-          </>
-        }
-        refetch={refetch}
-      />
-
-      <ContributorItem
-        person={project.reviewer}
-        responsibility={
-          <>
-            Reviewer &ndash; Responsible for reviewing and acknowledging
-            progress
-            <Icons.IconEyeCheck size={20} className="text-yellow-400" />
-          </>
-        }
-        refetch={refetch}
-      />
-
       {project.contributors.map((c) => (
         <ContributorItem
           key={c.id}
-          person={c.person}
-          responsibility={c.responsibility}
+          contributor={c}
           projectId={project.id}
-          contribId={c.id}
           refetch={refetch}
         />
       ))}
@@ -185,13 +167,7 @@ function ContributorList({ project, refetch }: { project: Project }) {
   );
 }
 
-function ContributorItem({
-  person,
-  responsibility,
-  projectId,
-  contribId,
-  refetch,
-}) {
+function ContributorItem({ contributor, projectId, refetch }) {
   const [state, setState] = React.useState<"view" | "edit">("view");
 
   const activateEdit = () => setState("edit");
@@ -200,36 +176,32 @@ function ContributorItem({
   if (state === "view") {
     return (
       <ContributorItemViewState
-        person={person}
-        responsibility={responsibility}
+        contributor={contributor}
         onEdit={activateEdit}
       />
     );
   } else {
     return (
       <ContributorItemEditState
-        person={person}
-        responsibility={responsibility}
+        contributor={contributor}
         close={deactivateEdit}
         projectId={projectId}
-        contribId={contribId}
         refetch={refetch}
       />
     );
   }
 }
 
-function ContributorItemViewState({ person, responsibility, onEdit }) {
+function ContributorItemViewState({ contributor, onEdit }) {
   return (
     <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn group">
       <div className="flex items-center gap-2">
-        <div className="shrink-0">
-          <Avatar person={person} />
-        </div>
+        <ContributorAvatar contributor={contributor} />
+
         <div className="flex flex-col flex-1">
-          <div className="font-bold">{person.fullName}</div>
+          <div className="font-bold">{contributor.person.fullName}</div>
           <div className="text-sm font-medium flex items-center gap-1">
-            {responsibility}
+            {Contributors.responsibility(contributor)}
           </div>
         </div>
       </div>
@@ -249,21 +221,20 @@ function ContributorItemViewState({ person, responsibility, onEdit }) {
   );
 }
 
-function ContributorItemEditState({
-  person,
-  responsibility,
-  close,
-  projectId,
-  contribId,
-  refetch,
-}) {
+function ContributorItemEditState({ contributor, close, projectId, refetch }) {
   const loader = Projects.useProjectContributorCandidatesQuery(projectId);
 
-  const [update, _us] = Projects.useUpdateProjectContributorMutation(contribId);
-  const [remove, _rs] = Projects.useRemoveProjectContributorMutation(contribId);
+  const [update, _us] = Projects.useUpdateProjectContributorMutation(
+    contributor.id
+  );
+  const [remove, _rs] = Projects.useRemoveProjectContributorMutation(
+    contributor.id
+  );
 
-  const [personID, setPersonID] = React.useState<any>(person.id);
-  const [newResp, setNewResp] = React.useState(responsibility);
+  const [personID, setPersonID] = React.useState<any>(contributor.person.id);
+  const [newResp, setNewResp] = React.useState(
+    contributor.responsibility || " "
+  );
 
   const disabled = !personID || !newResp;
 
@@ -282,30 +253,35 @@ function ContributorItemEditState({
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 py-8 -mt-2.5 mb-2.5">
       <div className="mb-6">
-        <label className="font-bold mb-1 block">Contributor</label>
+        <label className="font-bold mb-1 block capitalize">
+          {contributor.role}
+        </label>
         <div className="flex-1">
           <PersonSearch
             onChange={(option) => setPersonID(option.value)}
             placeholder="Search by name or title..."
             loader={loader}
-            defaultValue={person}
+            defaultValue={contributor.person}
           />
         </div>
       </div>
-      <div className="">
-        <label className="font-bold mb-1 block">
-          What are the responsibilities of this contributor?
-        </label>
-        <div className="flex-1">
-          <input
-            value={newResp}
-            onChange={(e) => setNewResp(e.target.value)}
-            className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-            type="text"
-            placeholder="ex. Responsible for the visual design of the project."
-          />
+
+      {Contributors.isResponsibilityEditable(contributor) && (
+        <div className="">
+          <label className="font-bold mb-1 block">
+            What are the responsibilities of this contributor?
+          </label>
+          <div className="flex-1">
+            <input
+              value={newResp}
+              onChange={(e) => setNewResp(e.target.value)}
+              className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+              type="text"
+              placeholder="ex. Responsible for the visual design of the project."
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex justify-between mt-8">
         <div className="flex gap-2">
@@ -318,12 +294,14 @@ function ContributorItemEditState({
           </Button>
         </div>
 
-        <div className="flex gap-2">
-          <Button variant="danger" onClick={handleRemove}>
-            <Icons.IconX size={20} />
-            Remove
-          </Button>
-        </div>
+        {Contributors.isResponsibilityRemovable(contributor) && (
+          <div className="flex gap-2">
+            <Button variant="danger" onClick={handleRemove}>
+              <Icons.IconX size={20} />
+              Remove
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
