@@ -49,8 +49,8 @@ export function ProjectStatusUpdatePage() {
       <div className="mx-auto max-w-4xl relative bg-dark-2 rounded-[20px]">
         <AckBanner
           me={me}
-          owner={update.project.owner}
           update={update}
+          champion={update.project.champion}
           reviewer={update.project.reviewer}
         />
 
@@ -86,7 +86,7 @@ function AckButton({ update }) {
   );
 }
 
-function AckBanner({ me, reviewer, update, owner }) {
+function AckBanner({ me, reviewer, update, champion }) {
   if (update.acknowledged) return null;
 
   if (me.id === reviewer.id) {
@@ -94,7 +94,7 @@ function AckBanner({ me, reviewer, update, owner }) {
       <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Icons.IconClock size={20} />
-          {owner.fullName} is waiting for you to acknowledge this update
+          {champion.fullName} is waiting for you to acknowledge this update
         </div>
         <AckButton update={update} />
       </div>

@@ -426,7 +426,8 @@ const GET_STATUS_UPDATE = gql`
       project {
         id
         name
-        contributors ${fragments.CONTRIBUTOR}
+        champion ${fragments.PERSON}
+        reviewer ${fragments.PERSON}
       }
     }
   }

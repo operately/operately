@@ -1,5 +1,7 @@
 defmodule OperatelyWeb.GraphQL.Types.Projects do
   use Absinthe.Schema.Notation
+  
+  alias Operately.Projects
 
   object :project_parent do
     field :id, :string
@@ -32,6 +34,18 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :description, :string do
       resolve fn project, _, _ ->
         {:ok, Jason.encode!(project.description)}
+      end
+    end
+
+    field :champion, :person do
+      resolve fn project, _, _ ->
+        {:ok, Projects.get_person_by_role(project, :champion)}
+      end
+    end
+
+    field :reviewer, :person do
+      resolve fn project, _, _ ->
+        {:ok, Projects.get_person_by_role(project, :reviewer)}
       end
     end
 
