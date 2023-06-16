@@ -40,7 +40,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
-    field :remove_project_contributor, :boolean do
+    field :remove_project_contributor, non_null(:project_contributor) do
       arg :contrib_id, non_null(:id)
 
       resolve fn args, _ ->
