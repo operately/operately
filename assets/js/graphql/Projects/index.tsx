@@ -21,11 +21,6 @@ const LIST_PROJECTS = gql`
       startedAt
       deadline
 
-      owner {
-        fullName
-        title
-      }
-
       contributors ${fragments.CONTRIBUTOR}
 
       phase
@@ -90,6 +85,7 @@ interface Parent {
 interface Contributor {
   id: string;
   person: Person;
+  role: "champion" | "reviewer" | "contributor";
   responsibility: string;
 }
 
@@ -114,8 +110,6 @@ export interface Project {
   deadline: Date;
   phase: "draft" | "planning" | "execution" | "closing" | "closed";
 
-  owner: Person;
-  reviewer: Person;
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
@@ -133,20 +127,6 @@ const GET_PROJECT = gql`
       nextUpdateScheduledAt
       phase
 
-      owner {
-        id
-        fullName
-        title
-        avatarUrl
-      }
-
-      reviewer {
-        id
-        fullName
-        title
-        avatarUrl
-      }
-
       milestones {
         id
         title
@@ -154,16 +134,7 @@ const GET_PROJECT = gql`
         status
       }
 
-      contributors {
-        id
-        person {
-          id
-          fullName
-          title
-          avatarUrl
-        }
-        responsibility
-      }
+      contributors ${fragments.CONTRIBUTOR}
 
       activities {
         __typename
@@ -398,6 +369,55 @@ export function useAddProjectContributorMutation(projectId: string) {
   return [addColab, status] as const;
 }
 
+const UPDATE_PROJECT_CONTRIBUTOR = gql`
+  mutation UpdateProjectContributor(
+    $contribId: ID!
+    $personId: ID!
+    $responsibility: String!
+  ) {
+    updateProjectContributor(
+      contribId: $contribId
+      personId: $personId
+      responsibility: $responsibility
+    ) {
+      id
+    }
+  }
+`;
+
+export function useUpdateProjectContributorMutation(contribId: string) {
+  const [fun, status] = useMutation(UPDATE_PROJECT_CONTRIBUTOR, {
+    onCompleted: (data) => console.log(data),
+  });
+
+  const updateColab = (personId: string, responsibility: string) => {
+    return fun({
+      variables: {
+        contribId: contribId,
+        personId: personId,
+        responsibility: responsibility,
+      },
+    });
+  };
+
+  return [updateColab, status] as const;
+}
+
+const REMOVE_PROJECT_CONTRIBUTOR = gql`
+  mutation RemoveProjectContributor($contribId: ID!) {
+    removeProjectContributor(contribId: $contribId) {
+      id
+    }
+  }
+`;
+
+export function useRemoveProjectContributorMutation(contribId: string) {
+  return useMutation(REMOVE_PROJECT_CONTRIBUTOR, {
+    variables: { contribId: contribId },
+    onCompleted: (data) => console.log(data),
+  });
+}
+
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
@@ -406,7 +426,7 @@ const GET_STATUS_UPDATE = gql`
       project {
         id
         name
-        owner ${fragments.PERSON}
+        champion ${fragments.PERSON}
         reviewer ${fragments.PERSON}
       }
     }

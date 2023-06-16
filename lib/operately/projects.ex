@@ -10,73 +10,15 @@ defmodule Operately.Projects do
   alias Operately.Projects.Contributor
   alias Operately.People.Person
 
+
+  def get_project!(id) do
+    Repo.get!(Project, id)
+  end
+
   def list_projects(filters \\ %{}) do
     Operately.Projects.ListQuery.build(filters) |> Repo.all()
   end
 
-  def list_project_contributors(project) do
-    project = Repo.preload(project, [contributors: [:person]])
-    project.contributors
-  end
-
-  def list_project_contributor_candidates(project_id, query, exclude_ids, limit) do
-    ilike_pattern = "%#{query}%"
-
-    # We do a left join on Contributor and Project to find people who are not
-    # already contributors or owners of the project.
-
-    query = (
-      from person in Person,
-      left_join: contrib in Contributor, on: contrib.project_id == ^project_id and contrib.person_id == person.id,
-      left_join: project in Project, on: project.id == ^project_id and (project.owner_id == person.id or project.reviewer_id == person.id),
-      where: is_nil(contrib.project_id) and is_nil(project.id),
-      where: person.id not in ^exclude_ids,
-      where: ilike(person.full_name, ^ilike_pattern) or 
-             ilike(person.title, ^ilike_pattern),
-      limit: ^limit
-    )
-
-    Repo.all(query)
-  end
-
-  @doc """
-  Gets a single project.
-
-  Raises `Ecto.NoResultsError` if the Project does not exist.
-
-  ## Examples
-
-      iex> get_project!(123)
-      %Project{}
-
-      iex> get_project!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_project!(id), do: Repo.get!(Project, id)
-
-  def get_owner!(project) do
-    project = Repo.preload(project, [:owner])
-    project.owner
-  end
-
-  def get_reviewer!(project) do
-    project = Repo.preload(project, [:reviewer])
-    project.reviewer
-  end
-
-  @doc """
-  Creates a project.
-
-  ## Examples
-
-      iex> create_project(%{field: value})
-      {:ok, %Project{}}
-
-      iex> create_project(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_project(attrs \\ %{}, _creator_id) do
     next_update_scheduled_at = attrs[:next_update_scheduled_at] || DateTime.add(DateTime.utc_now(), 7, :day)
     attrs = Map.put(attrs, :next_update_scheduled_at, next_update_scheduled_at)
@@ -86,64 +28,26 @@ defmodule Operately.Projects do
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a project.
-
-  ## Examples
-
-      iex> update_project(project, %{field: new_value})
-      {:ok, %Project{}}
-
-      iex> update_project(project, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_project(%Project{} = project, attrs) do
     project
     |> Project.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a project.
-
-  ## Examples
-
-      iex> delete_project(project)
-      {:ok, %Project{}}
-
-      iex> delete_project(project)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_project(%Project{} = project) do
     Repo.delete(project)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking project changes.
-
-  ## Examples
-
-      iex> change_project(project)
-      %Ecto.Changeset{data: %Project{}}
-
-  """
   def change_project(%Project{} = project, attrs \\ %{}) do
     Project.changeset(project, attrs)
   end
 
   alias Operately.Projects.Milestone
 
-  @doc """
-  Returns the list of project_milestones.
+  def get_milestone!(id) do
+    Repo.get!(Milestone, id)
+  end
 
-  ## Examples
-
-      iex> list_project_milestones()
-      [%Milestone{}, ...]
-
-  """
   def list_project_milestones(project) do
     query = from m in Milestone,
       where: m.project_id == ^project.id,
@@ -152,179 +56,81 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
-  @doc """
-  Gets a single milestone.
-
-  Raises `Ecto.NoResultsError` if the Milestone does not exist.
-
-  ## Examples
-
-      iex> get_milestone!(123)
-      %Milestone{}project.ex
-
-      iex> get_milestone!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_milestone!(id), do: Repo.get!(Milestone, id)
-
-  @doc """
-  Creates a milestone.
-
-  ## Examples
-
-      iex> create_milestone(%{field: value})
-      {:ok, %Milestone{}}
-
-      iex> create_milestone(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_milestone(attrs \\ %{}) do
     %Milestone{}
     |> Milestone.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a milestone.
-
-  ## Examples
-
-      iex> update_milestone(milestone, %{field: new_value})
-      {:ok, %Milestone{}}
-
-      iex> update_milestone(milestone, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_milestone(%Milestone{} = milestone, attrs) do
     milestone
     |> Milestone.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a milestone.
-
-  ## Examples
-
-      iex> delete_milestone(milestone)
-      {:ok, %Milestone{}}
-
-      iex> delete_milestone(milestone)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_milestone(%Milestone{} = milestone) do
     Repo.delete(milestone)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking milestone changes.
-
-  ## Examples
-
-      iex> change_milestone(milestone)
-      %Ecto.Changeset{data: %Milestone{}}
-
-  """
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do
     Milestone.changeset(milestone, attrs)
   end
 
   alias Operately.Projects.Contributor
 
-  @doc """
-  Returns the list of project_contributors.
-
-  ## Examples
-
-      iex> list_project_contributors()
-      [%Contributor{}, ...]
-
-  """
-  def list_project_contributors do
-    Repo.all(Contributor)
+  def get_contributor!(id) do
+    Repo.get!(Contributor, id)
   end
 
-  @doc """
-  Gets a single contributor.
+  def get_person_by_role(project, role) do
+    query = from p in Person,
+      inner_join: c in Contributor, on: c.person_id == p.id,
+      where: c.project_id == ^project.id,
+      where: c.role == ^role,
+      limit: 1
 
-  Raises `Ecto.NoResultsError` if the Contributor does not exist.
+    Repo.one!(query)
+  end
 
-  ## Examples
+  def list_project_contributors(project) do
+    query = (from c in Contributor, where: c.project_id == ^project.id)
+    
+    query
+    |> Contributor.order_by_role_and_insertion_at()
+    |> Repo.all()
+  end
 
-      iex> get_contributor!(123)
-      %Contributor{}
+  def list_project_contributor_candidates(project_id, query, exclude_ids, limit) do
+    ilike_pattern = "%#{query}%"
 
-      iex> get_contributor!(456)
-      ** (Ecto.NoResultsError)
+    query = (
+      from person in Person,
+      left_join: contrib in Contributor, on: contrib.project_id == ^project_id and contrib.person_id == person.id,
+      where: is_nil(contrib.project_id),
+      where: person.id not in ^exclude_ids,
+      where: ilike(person.full_name, ^ilike_pattern) or ilike(person.title, ^ilike_pattern),
+      limit: ^limit
+    )
 
-  """
-  def get_contributor!(id), do: Repo.get!(Contributor, id)
+    Repo.all(query)
+  end
 
-  @doc """
-  Creates a contributor.
-
-  ## Examples
-
-      iex> create_contributor(%{field: value})
-      {:ok, %Contributor{}}
-
-      iex> create_contributor(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_contributor(attrs \\ %{}) do
     %Contributor{}
     |> Contributor.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a contributor.
-
-  ## Examples
-
-      iex> update_contributor(contributor, %{field: new_value})
-      {:ok, %Contributor{}}
-
-      iex> update_contributor(contributor, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_contributor(%Contributor{} = contributor, attrs) do
     contributor
     |> Contributor.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a contributor.
-
-  ## Examples
-
-      iex> delete_contributor(contributor)
-      {:ok, %Contributor{}}
-
-      iex> delete_contributor(contributor)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_contributor(%Contributor{} = contributor) do
     Repo.delete(contributor)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking contributor changes.
-
-  ## Examples
-
-      iex> change_contributor(contributor)
-      %Ecto.Changeset{data: %Contributor{}}
-
-  """
   def change_contributor(%Contributor{} = contributor, attrs \\ %{}) do
     Contributor.changeset(contributor, attrs)
   end

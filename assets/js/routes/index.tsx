@@ -10,7 +10,7 @@ import ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectListPage } from "../pages/ProjectListPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
-import { ProjectContributorsPage } from "@/pages/ProjectCotributorsPage";
+import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 
 import TenetAddPage from "../pages/TenetAddPage";
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";

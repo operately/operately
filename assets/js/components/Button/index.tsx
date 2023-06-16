@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "attention" | "success" | "secondary";
+  variant?: "default" | "attention" | "success" | "secondary" | "danger";
   size?: "base";
   linkTo?: string;
   disabled?: boolean;
@@ -47,6 +47,15 @@ const variants = {
     text: "font-bold uppercase",
     border: "border border-yellow-400 rounded-full",
     hover: "hover:bg-yellow-400/10",
+    disabled: "opacity-50 cursor-not-allowed",
+  },
+
+  danger: {
+    base: "flex items-center",
+    color: "text-red-400",
+    text: "font-bold uppercase",
+    border: "border border-red-400 rounded-full",
+    hover: "hover:bg-red-400/10",
     disabled: "opacity-50 cursor-not-allowed",
   },
 };

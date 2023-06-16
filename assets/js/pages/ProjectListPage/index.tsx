@@ -56,10 +56,7 @@ function ProjectListItem({ project }) {
         <div className="flex items-center justify-between gap-4 w-1/2">
           <div className="flex items-center justify-between gap-4 w-1/3">
             <div className="w-1/3 text-sm">
-              <AvatarList
-                champion={project.owner}
-                people={project.contributors.map((c) => c.person)}
-              />
+              <AvatarList people={project.contributors.map((c) => c.person)} />
             </div>
           </div>
 
