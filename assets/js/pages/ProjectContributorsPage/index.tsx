@@ -174,13 +174,14 @@ function ContributorList({ project }: { project: Project }) {
           key={c.person.id}
           person={c.person}
           responsibility={c.responsibility}
+          projectId={project.id}
         />
       ))}
     </div>
   );
 }
 
-function ContributorItem({ person, responsibility }) {
+function ContributorItem({ person, responsibility, projectId }) {
   const [state, setState] = React.useState<"view" | "edit">("view");
 
   const activateEdit = () => setState("edit");
@@ -200,6 +201,7 @@ function ContributorItem({ person, responsibility }) {
         person={person}
         responsibility={responsibility}
         onCancel={deactivateEdit}
+        projectId={projectId}
       />
     );
   }
@@ -235,9 +237,14 @@ function ContributorItemViewState({ person, responsibility, onEdit }) {
   );
 }
 
-function ContributorItemEditState({ person, responsibility, onCancel }) {
-  const [addColab, _s] = Projects.useAddProjectContributorMutation(null);
-  const loader = Projects.useProjectContributorCandidatesQuery(null);
+function ContributorItemEditState({
+  person,
+  responsibility,
+  onCancel,
+  projectId,
+}) {
+  const [addColab, _s] = Projects.useAddProjectContributorMutation(projectId);
+  const loader = Projects.useProjectContributorCandidatesQuery(projectId);
 
   const [selectedPersonID, setSelectedPersonID] = React.useState<any>(null);
   const [newResponsibility, setNewResponsibility] =
@@ -280,10 +287,18 @@ function ContributorItemEditState({ person, responsibility, onCancel }) {
       <div className="flex justify-between mt-8">
         <div className="flex gap-2">
           <Button variant="success" disabled={disabled} onClick={handleSubmit}>
+            <Icons.IconCheck size={20} />
             Save
           </Button>
           <Button variant="secondary" onClick={onCancel}>
             Cancel
+          </Button>
+        </div>
+
+        <div className="flex gap-2">
+          <Button variant="danger" onClick={onCancel}>
+            <Icons.IconX size={20} />
+            Remove
           </Button>
         </div>
       </div>
