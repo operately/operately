@@ -108,7 +108,7 @@ function AddContribForm({ close, projectID }) {
           <input
             value={responsibility}
             onChange={(e) => setResponsibility(e.target.value)}
-            className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+            className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
             type="text"
             placeholder="ex. Responsible for the visual design of the project."
           />
@@ -266,7 +266,7 @@ function ContributorItemEditState({ contributor, close, projectId, refetch }) {
             <input
               value={newResp}
               onChange={(e) => setNewResp(e.target.value)}
-              className="w-full bg-shade-2 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+              className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
               type="text"
               placeholder="ex. Responsible for the visual design of the project."
             />

@@ -49,8 +49,8 @@ export default function PersonSearch(props: PeopleSearchProps) {
 
 function classNames() {
   return {
-    control: () => "bg-shade-2 placeholder-white-2 border-none rounded-lg px-3",
-    menu: () => "bg-dark-3 text-white-1 border border-white-3 rounded-lg mt-1",
+    control: () => "bg-shade-3 placeholder-white-2 border-none rounded-lg px-3",
+    menu: () => "bg-dark-4 text-white-1 border border-white-3 rounded-lg mt-1",
     option: ({ isFocused }) =>
       classnames({
         "px-3 py-2 hover:bg-shade-1 cursor-pointer": true,
