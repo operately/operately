@@ -1,5 +1,7 @@
 import React from "react";
 
+import classnames from "classnames";
+
 import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
@@ -165,11 +167,10 @@ function Description({ project }) {
   return (
     <div className="pb-8 px-32">
       <div
-        className={
-          "flex flex-col gap-1 text-lg transition mb-4" +
-          " " +
-          (expanded ? "" : "line-clamp-4")
-        }
+        className={classnames({
+          "flex flex-col gap-1 text-lg transition mb-4": true,
+          "line-clamp-4": !expanded,
+        })}
       >
         <RichContent jsonContent={project.description} />
       </div>

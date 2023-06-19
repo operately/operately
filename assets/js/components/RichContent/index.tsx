@@ -27,7 +27,7 @@ export default function RichContent({
   className,
 }: RichContentProps): JSX.Element {
   try {
-    if (jsonContent === null) {
+    if (jsonContent === null || jsonContent === "null") {
       return <div className={"ProseMirror " + className}></div>;
     }
 
