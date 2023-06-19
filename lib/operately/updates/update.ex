@@ -20,7 +20,7 @@ defmodule Operately.Updates.Update do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "updates" do
-    has_many :comments, Operately.Comments.Comment
+    has_many :comments, Operately.Updates.Comment
     belongs_to :author, Operately.People.Person
 
     field :updatable_id, Ecto.UUID
