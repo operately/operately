@@ -58,7 +58,7 @@ export function ProjectStatusUpdatePage() {
           reviewer={update.project.reviewer}
         />
 
-        <div className="px-16 pb-16 pt-8 fadeIn">
+        <div className="px-8 pb-16 fadeIn">
           <Header update={update} />
 
           <div className="my-4 mb-8 text-lg">
