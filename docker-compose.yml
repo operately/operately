@@ -24,6 +24,7 @@ services:
     depends_on:
       - db
       - screenshots-server
+      - pgweb
     environment:
       - DB_HOST=db
       - DB_USERNAME=postgres
@@ -50,6 +51,20 @@ services:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./screenshots:/screenshots
+
+  pgweb:
+    container_name: pgweb
+    restart: always
+    image: sosedoff/pgweb
+    command: ["pgweb", "--bind=0.0.0.0"]
+    ports:
+      - "127.0.0.1:8081:8081"
+    links:
+      - db:db
+    environment:
+      - PGWEB_DATABASE_URL=postgres://postgres:keyboard-cat@db:5432/postgres?sslmode=disable
+    depends_on:
+      - db
 
 volumes:
   postgres-data:
