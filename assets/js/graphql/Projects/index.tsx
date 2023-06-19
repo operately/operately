@@ -461,3 +461,11 @@ export function useProjectContributorCandidatesQuery(id: string) {
     return res.data.projectContributorCandidates;
   };
 }
+
+export function isChampionAssigned(project: Project) {
+  return project.contributors.some((c) => c.role === "champion");
+}
+
+export function isReviwerAssigned(project: Project) {
+  return project.contributors.some((c) => c.role === "reviewer");
+}

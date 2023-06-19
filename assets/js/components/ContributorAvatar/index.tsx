@@ -10,20 +10,16 @@ interface ContributorAvatarProps {
 }
 
 export default function ContributorAvatar(props: ContributorAvatarProps) {
-  let className = "shrink-0 relative";
-
-  className = className + " " + borderClass(props.contributor.role);
-
   return (
-    <div className={className}>
+    <div className={`shrink-0 relative ${borderClass(props.contributor.role)}`}>
       <Avatar person={props.contributor.person} />
-      <Badge contributor={props.contributor} />
+      <Badge role={props.contributor.role} />
     </div>
   );
 }
 
-function Badge({ contributor }) {
-  switch (contributor.role) {
+function Badge({ role }) {
+  switch (role) {
     case "champion":
       return (
         <div className="w-4 h-4 bg-dark-2 absolute -top-0.5 -left-1.5 flex items-center justify-center rounded-full">
@@ -51,4 +47,32 @@ function borderClass(role: string) {
     default:
       return "border border-white-3 rounded-full p-0.5 text-white-3";
   }
+}
+
+export function ChampionPlaceholder() {
+  return (
+    <div className={`shrink-0 relative ${borderClass("")} border-dashed`}>
+      <Avatar person={null} />
+      <Badge role="champion" />
+    </div>
+  );
+}
+
+export function ReviewerPlaceholder() {
+  return (
+    <div className={`shrink-0 relative ${borderClass("")} border-dashed`}>
+      <Avatar person={null} />
+      <Badge role="reviewer" />
+    </div>
+  );
+}
+
+export function ContributorAdd() {
+  return (
+    <div className={`shrink-0 relative ${borderClass("")} border-dashed`}>
+      <div className="w-8 h-8 flex items-center justify-center">
+        <Icons.IconPlus />
+      </div>
+    </div>
+  );
 }

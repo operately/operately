@@ -1,5 +1,5 @@
 import React from "react";
-import Icon from "../../components/Icon";
+import * as Icons from "@tabler/icons-react";
 
 export enum AvatarSize {
   Tiny = "tiny",
@@ -18,7 +18,7 @@ interface Person {
 }
 
 interface AvatarProps {
-  person: Person;
+  person: Person | null;
   size: AvatarSize;
 }
 
@@ -29,7 +29,7 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Small:
       return "w-9 h-9";
     case AvatarSize.Normal:
-      return "w-9 h-9";
+      return "w-8 h-8";
     case AvatarSize.Large:
       return "w-12 h-12";
     case AvatarSize.XLarge:
@@ -108,9 +108,14 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
 }
 
 function UnassingedAvatar({ size }: { size: AvatarSize }): JSX.Element {
+  const baseClass =
+    "rounded-full overflow-hidden bg-shade-1 flex items-center justify-center";
+  const sizeClass = SizeClasses({ size });
+  const className = baseClass + " " + sizeClass;
+
   return (
-    <div title="Unassigned" className="-ml-0.5">
-      <Icon name="user" color="dark-2" />
+    <div title="Unassigned" className={className}>
+      <Icons.IconUserQuestion size={24} />
     </div>
   );
 }

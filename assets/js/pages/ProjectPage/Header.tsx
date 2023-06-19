@@ -1,10 +1,18 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
-import ContributorAvatar from "@/components/ContributorAvatar";
+import ContributorAvatar, {
+  ChampionPlaceholder,
+  ReviewerPlaceholder,
+  ContributorAdd,
+} from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
-import { Project } from "@/graphql/Projects";
+import {
+  Project,
+  isReviwerAssigned,
+  isChampionAssigned,
+} from "@/graphql/Projects";
 
 interface HeaderProps {
   project: Project;
@@ -33,9 +41,9 @@ function Contributors({ project }) {
   return (
     <div className="mt-4 flex items-center justify-center">
       <Link to={contributorsPath}>
-        <div className="flex items-center justify-center gap-2 cursor-pointer">
+        <div className="flex items-center justify-center gap-1.5 cursor-pointer">
           <ContributorList project={project} />
-          <AddContributor />
+          <ContributorAdd />
         </div>
       </Link>
     </div>
@@ -45,17 +53,12 @@ function Contributors({ project }) {
 function ContributorList({ project }: { project: Project }) {
   return (
     <>
+      {!isChampionAssigned(project) && <ChampionPlaceholder />}
+      {!isReviwerAssigned(project) && <ReviewerPlaceholder />}
+
       {project.contributors.map((c) => (
         <ContributorAvatar key={c.id} contributor={c} />
       ))}
     </>
-  );
-}
-
-function AddContributor() {
-  return (
-    <div className="border border-white-3 border-dashed rounded-full p-1 text-white-3">
-      <Icons.IconPlus />
-    </div>
   );
 }
