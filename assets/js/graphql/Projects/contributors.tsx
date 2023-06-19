@@ -12,27 +12,38 @@ export interface Contributor {
   };
 }
 
-const CHAMPION_RESPONSIBILITY =
+export const CHAMPION_RESPONSIBILITY =
   "Champion - Responsible for the success of the project";
 
-const REVIEWER_RESPONSIBILITY =
+export const REVIEWER_RESPONSIBILITY =
   "Reviewer - Responsible for reviewing and acknowledging progress";
 
-export function responsibility(contributor: Contributor) {
-  switch (contributor.role) {
+export function responsibility(
+  contributor: Contributor | undefined,
+  role: ContributorRole
+) {
+  switch (role) {
     case "champion":
       return CHAMPION_RESPONSIBILITY;
     case "reviewer":
       return REVIEWER_RESPONSIBILITY;
     default:
-      return contributor.responsibility;
+      return contributor?.responsibility || "";
   }
 }
 
-export function isResponsibilityEditable(contributor: Contributor) {
-  return contributor.role !== "champion" && contributor.role !== "reviewer";
+export function isResponsibilityEditable(role: ContributorRole) {
+  return role !== "champion" && role !== "reviewer";
 }
 
-export function isResponsibilityRemovable(contributor: Contributor) {
-  return contributor.role !== "champion" && contributor.role !== "reviewer";
+export function isResponsibilityRemovable(role: ContributorRole) {
+  return role !== "champion" && role !== "reviewer";
+}
+
+export function splitByRole(contributors: Contributor[]) {
+  const champion = contributors.find((c) => c.role === "champion");
+  const reviewer = contributors.find((c) => c.role === "reviewer");
+  const rest = contributors.filter((c) => c.role === "contributor");
+
+  return { champion, reviewer, contributors: rest };
 }

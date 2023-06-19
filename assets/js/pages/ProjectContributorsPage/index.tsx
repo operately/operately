@@ -6,14 +6,17 @@ import { Project } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 
-import ContributorAvatar from "@/components/ContributorAvatar";
+import {
+  ContributorSearch,
+  ResponsibilityInput,
+  CancelButton,
+  AddContribButton,
+} from "./FormElements";
+import ContributorItem from "./ContributorItem";
 import Button from "@/components/Button";
 
-import PersonSearch from "./PersonSearch";
 import * as Projects from "@/graphql/Projects";
-
 import * as Contributors from "@/graphql/Projects/contributors";
-
 import * as Paper from "@/components/PaperContainer";
 
 export function ProjectContributorsPage() {
@@ -76,53 +79,33 @@ function Title({ projectID }) {
 
 function AddContribForm({ close, projectID }) {
   const [addColab, _s] = Projects.useAddProjectContributorMutation(projectID);
-  const loader = Projects.useProjectContributorCandidatesQuery(projectID);
 
-  const [selectedPersonID, setSelectedPersonID] = React.useState<any>(null);
+  const [personID, setPersonID] = React.useState<any>(null);
   const [responsibility, setResponsibility] = React.useState("");
 
-  const disabled = !selectedPersonID || !responsibility;
+  const disabled = !personID || !responsibility;
 
   const handleSubmit = async () => {
-    await addColab(selectedPersonID, responsibility);
+    await addColab(personID, responsibility);
     close();
   };
 
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
-      <div className="mb-6">
-        <label className="font-bold mb-1 block">Contributor</label>
-        <div className="flex-1">
-          <PersonSearch
-            onChange={(option) => setSelectedPersonID(option.value)}
-            placeholder="Search by name or title..."
-            loader={loader}
-          />
-        </div>
-      </div>
-      <div className="">
-        <label className="font-bold mb-1 block">
-          What are the responsibilities of this contributor?
-        </label>
-        <div className="flex-1">
-          <input
-            value={responsibility}
-            onChange={(e) => setResponsibility(e.target.value)}
-            className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-            type="text"
-            placeholder="ex. Responsible for the visual design of the project."
-          />
-        </div>
-      </div>
+      <ContributorSearch
+        title="Contributor"
+        projectID={projectID}
+        onSelect={setPersonID}
+      />
+
+      <ResponsibilityInput
+        value={responsibility}
+        onChange={setResponsibility}
+      />
 
       <div className="flex mt-8 gap-2">
-        <Button variant="success" disabled={disabled} onClick={handleSubmit}>
-          <Icons.IconPlus size={20} />
-          Add Contributor
-        </Button>
-        <Button variant="secondary" onClick={close}>
-          Cancel
-        </Button>
+        <AddContribButton onClick={handleSubmit} disabled={disabled} />
+        <CancelButton onClick={close} />
       </div>
     </div>
   );
@@ -144,156 +127,35 @@ function ContributorList({
   project: Project;
   refetch: any;
 }) {
+  const { champion, reviewer, contributors } = Contributors.splitByRole(
+    project.contributors
+  );
+
   return (
     <div className="flex flex-col px-8">
-      {project.contributors.map((c) => (
+      <ContributorItem
+        contributor={champion}
+        role="champion"
+        projectId={project.id}
+        refetch={refetch}
+      />
+
+      <ContributorItem
+        contributor={reviewer}
+        role="reviewer"
+        projectId={project.id}
+        refetch={refetch}
+      />
+
+      {contributors.map((c) => (
         <ContributorItem
           key={c.id}
           contributor={c}
+          role="contributor"
           projectId={project.id}
           refetch={refetch}
         />
       ))}
-    </div>
-  );
-}
-
-function ContributorItem({ contributor, projectId, refetch }) {
-  const [state, setState] = React.useState<"view" | "edit">("view");
-
-  const activateEdit = () => setState("edit");
-  const deactivateEdit = () => setState("view");
-
-  if (state === "view") {
-    return (
-      <ContributorItemViewState
-        contributor={contributor}
-        onEdit={activateEdit}
-      />
-    );
-  } else {
-    return (
-      <ContributorItemEditState
-        contributor={contributor}
-        close={deactivateEdit}
-        projectId={projectId}
-        refetch={refetch}
-      />
-    );
-  }
-}
-
-function ContributorItemViewState({ contributor, onEdit }) {
-  return (
-    <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn group">
-      <div className="flex items-center gap-2">
-        <ContributorAvatar contributor={contributor} />
-
-        <div className="flex flex-col flex-1">
-          <div className="font-bold">{contributor.person.fullName}</div>
-          <div className="text-sm font-medium flex items-center gap-1">
-            {Contributors.responsibility(contributor)}
-          </div>
-        </div>
-      </div>
-
-      <div className="shrink-0">
-        <div
-          className="rounded-full p-2 hover:bg-shade-2 transition-colors opacity-0 group-hover:opacity-100"
-          onClick={onEdit}
-        >
-          <Icons.IconPencil
-            size={20}
-            className="cursor-pointer text-white-2 hover:text-white-1 transition-colors"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ContributorItemEditState({ contributor, close, projectId, refetch }) {
-  const loader = Projects.useProjectContributorCandidatesQuery(projectId);
-
-  const [update, _us] = Projects.useUpdateProjectContributorMutation(
-    contributor.id
-  );
-  const [remove, _rs] = Projects.useRemoveProjectContributorMutation(
-    contributor.id
-  );
-
-  const [personID, setPersonID] = React.useState<any>(contributor.person.id);
-  const [newResp, setNewResp] = React.useState(
-    contributor.responsibility || " "
-  );
-
-  const disabled = !personID || !newResp;
-
-  const handleSave = async () => {
-    await update(personID, newResp);
-    refetch();
-    close();
-  };
-
-  const handleRemove = async () => {
-    await remove();
-    close();
-    refetch();
-  };
-
-  return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 py-8 -mt-2.5 mb-2.5">
-      <div className="mb-6">
-        <label className="font-bold mb-1 block capitalize">
-          {contributor.role}
-        </label>
-        <div className="flex-1">
-          <PersonSearch
-            onChange={(option) => setPersonID(option.value)}
-            placeholder="Search by name or title..."
-            loader={loader}
-            defaultValue={contributor.person}
-          />
-        </div>
-      </div>
-
-      {Contributors.isResponsibilityEditable(contributor) && (
-        <div className="">
-          <label className="font-bold mb-1 block">
-            What are the responsibilities of this contributor?
-          </label>
-          <div className="flex-1">
-            <input
-              value={newResp}
-              onChange={(e) => setNewResp(e.target.value)}
-              className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-              type="text"
-              placeholder="ex. Responsible for the visual design of the project."
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="flex justify-between mt-8">
-        <div className="flex gap-2">
-          <Button variant="success" disabled={disabled} onClick={handleSave}>
-            <Icons.IconCheck size={20} />
-            Save
-          </Button>
-          <Button variant="secondary" onClick={close}>
-            Cancel
-          </Button>
-        </div>
-
-        {Contributors.isResponsibilityRemovable(contributor) && (
-          <div className="flex gap-2">
-            <Button variant="danger" onClick={handleRemove}>
-              <Icons.IconX size={20} />
-              Remove
-            </Button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

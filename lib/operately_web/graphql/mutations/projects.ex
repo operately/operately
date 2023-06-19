@@ -15,12 +15,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :project_id, non_null(:id)
       arg :person_id, non_null(:id)
       arg :responsibility, non_null(:string)
+      arg :role, non_null(:string)
 
       resolve fn args, _ ->
         Operately.Projects.create_contributor(%{
           project_id: args.project_id,
           person_id: args.person_id,
-          responsibility: args.responsibility
+          responsibility: args.responsibility,
+          role: args.role
         })
       end
     end

@@ -336,11 +336,13 @@ export function useAddProjectContributorMutation(projectId: string) {
         $projectId: ID!
         $personId: ID!
         $responsibility: String!
+        $role: String!
       ) {
         addProjectContributor(
           projectId: $projectId
           personId: $personId
           responsibility: $responsibility
+          role: $role
         ) {
           id
         }
@@ -356,12 +358,13 @@ export function useAddProjectContributorMutation(projectId: string) {
     }
   );
 
-  const addColab = (personId, responsibility) => {
+  const addColab = (personId, responsibility, role = "contributor") => {
     return fun({
       variables: {
         projectId: projectId,
         personId: personId,
         responsibility: responsibility,
+        role: role,
       },
     });
   };
