@@ -1,4 +1,4 @@
-defmodule MyAppWeb.SchemaTest do
+defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
   use OperatelyWeb.ConnCase
 
   setup :register_and_log_in_account
