@@ -42,6 +42,10 @@ export function isOverdue(milestone: Milestone) {
   return deadline < now;
 }
 
+export function parseDate(date: string | null | undefined): Date | null {
+  return date ? new Date(Date.parse(date)) : null;
+}
+
 const ADD_MILESTONE = gql`
   mutation AddProjectMilestone(
     $projectId: ID!

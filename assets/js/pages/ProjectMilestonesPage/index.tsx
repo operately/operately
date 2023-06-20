@@ -204,9 +204,7 @@ function MilestoneItemViewState({ milestone, onEdit }) {
 }
 
 function MilestoneItemEditState({ milestone, close }) {
-  const date = milestone.deadline
-    ? new Date(Date.parse(milestone.deadline))
-    : null;
+  const date = Milestones.parseDate(milestone.deadlineAt);
 
   const [value, setValue] = React.useState(milestone.title);
   const [deadline, setDeadline] = React.useState<Date | null>(date);
