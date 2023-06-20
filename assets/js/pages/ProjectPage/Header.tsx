@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
+import classnames from "classnames";
 import ContributorAvatar, {
   ChampionPlaceholder,
   ReviewerPlaceholder,
@@ -29,10 +29,27 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 
 function ProjectName({ project }) {
   return (
-    <div className="text-center text-5xl font-bold max-w-2xl mx-auto">
+    <div
+      className={classnames(
+        "text-center",
+        "font-bold max-w-3xl mx-auto",
+        "break-all",
+        projectNameTextSize(project)
+      )}
+    >
       {project.name}
     </div>
   );
+}
+
+function projectNameTextSize(project: Project) {
+  if (project.name.length > 40) {
+    return "text-3xl";
+  }
+  if (project.name.length > 30) {
+    return "text-4xl";
+  }
+  return "text-5xl";
 }
 
 function Contributors({ project }) {
