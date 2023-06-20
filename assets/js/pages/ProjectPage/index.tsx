@@ -2,7 +2,7 @@ import React from "react";
 
 import classnames from "classnames";
 
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
@@ -14,6 +14,8 @@ import NewUpdate from "./NewUpdate";
 
 import RichContent from "@/components/RichContent";
 import Button from "@/components/Button";
+
+import * as Milestones from "@/graphql/Projects/milestones";
 
 export function ProjectPage() {
   const params = useParams();
@@ -61,7 +63,7 @@ function Overview({ project }) {
         <Phases project={project} />
 
         <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8 mt-4">
-          <Milestones project={project} />
+          <MilestonesCard project={project} />
           <KeyResults project={project} />
           <KeyResults project={project} />
         </div>
@@ -72,38 +74,57 @@ function Overview({ project }) {
   );
 }
 
-function Milestones({ project }) {
+function MilestonesCard({ project }) {
+  const milestones = Milestones.sortByDeadline(project.milestones);
+
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
-      <div className="">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <div className="font-bold flex items-center uppercase">
-            Milestones
+    <Link to={`/projects/${project.id}/milestones`}>
+      <div className="bg-dark-3 rounded-lg text-sm p-4 h-52 shadow cursor-pointer hover:shadow-lg border border-shade-2 hover:border-shade-3">
+        <div className="">
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <div className="font-bold flex items-center uppercase">
+              Milestones
+            </div>
+          </div>
+
+          <div>
+            {milestones.slice(0, 4).map((m) => (
+              <div
+                key={m.id}
+                className="flex items-center gap-2 rounded-lg py-1 truncate"
+              >
+                <div className="shrink-0">
+                  {m.status === "done" ? (
+                    <Icons.IconCircleCheck size={20} />
+                  ) : (
+                    <Icons.IconCircle size={20} />
+                  )}
+                </div>
+
+                <div className="truncate">{m.title}</div>
+              </div>
+            ))}
+
+            {milestones.length > 4 && (
+              <div className="flex items-center gap-2 rounded-lg py-1 ml-0.5 text-white-2">
+                <Icons.IconDotsVertical size={16} />
+                {milestones.length - 4} other,{" "}
+                {milestones.filter((m) => m.status === "pending").length}{" "}
+                pending
+              </div>
+            )}
           </div>
         </div>
-
-        <div>
-          {project.milestones.map((m) => (
-            <div key={m.id} className="flex items-center gap-2 rounded-lg py-1">
-              {m.status === "done" ? (
-                <Icons.IconCircleCheck size={20} />
-              ) : (
-                <Icons.IconCircle size={20} />
-              )}
-              {m.title}
-            </div>
-          ))}
-        </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
 function Timeline({ project }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
+    <div className="bg-dark-3 rounded-lg text-sm p-4 h-52 shadow cursor-pointer hover:shadow-lg border border-shade-2">
       <div className="">
-        <div className="flex items-center justify-center gap-4 mb-4">
+        <div className="flex items-center justify-center gap-4 mb-2">
           <div className="font-bold flex items-center uppercase">Timeline</div>
         </div>
 
@@ -125,9 +146,9 @@ function Timeline({ project }) {
 
 function KeyResults({ project }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
+    <div className="bg-dark-3 rounded-lg text-sm p-4 h-52 shadow cursor-pointer hover:shadow-lg border border-shade-2">
       <div className="">
-        <div className="flex items-center justify-center gap-4 mb-4">
+        <div className="flex items-center justify-center gap-4 mb-2">
           <div className="font-bold flex items-center uppercase">
             Key Resources
           </div>

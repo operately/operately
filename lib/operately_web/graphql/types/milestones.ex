@@ -4,7 +4,7 @@ defmodule OperatelyWeb.GraphQL.Types.Milestones do
   object :milestone do
     field :id, non_null(:id)
     field :title, non_null(:string)
-    field :deadline_at, non_null(:date)
+    field :deadline_at, :date
     field :status, non_null(:string)
   end
 end

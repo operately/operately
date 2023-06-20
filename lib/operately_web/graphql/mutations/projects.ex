@@ -11,6 +11,10 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    #
+    # Contributors
+    #
+
     field :add_project_contributor, non_null(:project_contributor) do
       arg :project_id, non_null(:id)
       arg :person_id, non_null(:id)
@@ -49,6 +53,63 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
         contrib = Operately.Projects.get_contributor!(args.contrib_id)
 
         Operately.Projects.delete_contributor(contrib)
+      end
+    end
+
+    #
+    # Milestones
+    #
+
+    field :add_project_milestone, non_null(:milestone) do
+      arg :project_id, non_null(:id)
+      arg :title, non_null(:string)
+      arg :deadline_at, :date
+
+      resolve fn args, _ ->
+        deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
+
+        Operately.Projects.create_milestone(%{
+          project_id: args.project_id,
+          title: args.title,
+          deadline_at: deadline
+        })
+      end
+    end
+
+    field :set_milestone_status, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+      arg :status, non_null(:string)
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Projects.update_milestone(milestone, %{status: args.status})
+      end
+    end
+
+    field :update_project_milestone, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+      arg :title, non_null(:string)
+      arg :deadline_at, :date
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+        deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
+
+        Operately.Projects.update_milestone(milestone, %{
+          title: args.title,
+          deadline_at: deadline
+        })
+      end
+    end
+
+    field :remove_project_milestone, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Projects.delete_milestone(milestone)
       end
     end
   end
