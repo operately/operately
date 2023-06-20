@@ -2,7 +2,7 @@ import React from "react";
 
 import classnames from "classnames";
 
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
@@ -74,28 +74,33 @@ function Overview({ project }) {
 
 function Milestones({ project }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
-      <div className="">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <div className="font-bold flex items-center uppercase">
-            Milestones
+    <Link to={`/projects/${project.id}/milestones`}>
+      <div className="bg-dark-3 rounded-lg text-sm p-4 h-48 shadow cursor-pointer hover:shadow-lg border border-shade-2">
+        <div className="">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="font-bold flex items-center uppercase">
+              Milestones
+            </div>
+          </div>
+
+          <div>
+            {project.milestones.map((m) => (
+              <div
+                key={m.id}
+                className="flex items-center gap-2 rounded-lg py-1"
+              >
+                {m.status === "done" ? (
+                  <Icons.IconCircleCheck size={20} />
+                ) : (
+                  <Icons.IconCircle size={20} />
+                )}
+                {m.title}
+              </div>
+            ))}
           </div>
         </div>
-
-        <div>
-          {project.milestones.map((m) => (
-            <div key={m.id} className="flex items-center gap-2 rounded-lg py-1">
-              {m.status === "done" ? (
-                <Icons.IconCircleCheck size={20} />
-              ) : (
-                <Icons.IconCircle size={20} />
-              )}
-              {m.title}
-            </div>
-          ))}
-        </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
