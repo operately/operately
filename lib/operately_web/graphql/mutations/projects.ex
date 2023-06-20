@@ -11,6 +11,10 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    #
+    # Contributors
+    #
+
     field :add_project_contributor, non_null(:project_contributor) do
       arg :project_id, non_null(:id)
       arg :person_id, non_null(:id)
@@ -49,6 +53,21 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
         contrib = Operately.Projects.get_contributor!(args.contrib_id)
 
         Operately.Projects.delete_contributor(contrib)
+      end
+    end
+
+    #
+    # Milestones
+    #
+
+    field :set_milestone_status, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+      arg :status, non_null(:string)
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Projects.update_milestone(milestone, %{status: args.status})
       end
     end
   end

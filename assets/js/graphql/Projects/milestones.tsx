@@ -1,3 +1,5 @@
+import { gql, useMutation } from "@apollo/client";
+
 type MilestoneStatus = "pending" | "done";
 
 export interface Milestone {
@@ -38,4 +40,23 @@ export function isOverdue(milestone: Milestone) {
   let now = +new Date();
 
   return deadline < now;
+}
+
+const SET_MILESTONE_STATUS = gql`
+  mutation SetMilestoneStatus($milestoneId: ID!, $status: String!) {
+    setMilestoneStatus(milestoneId: $milestoneId, status: $status) {
+      id
+      status
+    }
+  }
+`;
+
+export function useSetStatus(milestoneId: string) {
+  const [fun, status] = useMutation(SET_MILESTONE_STATUS);
+
+  const setStatus = (status: MilestoneStatus) => {
+    return fun({ variables: { milestoneId, status } });
+  };
+
+  return [setStatus, status];
 }

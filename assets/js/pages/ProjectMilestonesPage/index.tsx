@@ -77,6 +77,16 @@ function MilestoneList({ project }) {
 }
 
 function MilestoneItem({ milestone }) {
+  const [setStatus, _s] = Milestones.useSetStatus(milestone.id);
+
+  const toggleStatus = () => {
+    if (milestone.status === "pending") {
+      setStatus("done");
+    } else {
+      setStatus("pending");
+    }
+  };
+
   return (
     <div className="flex items-center justify-between py-3">
       <div className="flex items-center gap-2">
@@ -87,19 +97,33 @@ function MilestoneItem({ milestone }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <MilestoneIcon milestone={milestone} />
+        <MilestoneIcon milestone={milestone} onClick={toggleStatus} />
       </div>
     </div>
   );
 }
 
-function MilestoneIcon({ milestone }) {
+function MilestoneIcon({ milestone, onClick }) {
+  let icon: React.ReactNode = null;
+  let hoverIcon: React.ReactNode = null;
+
   switch (milestone.status) {
     case "pending":
-      return <Icons.IconCircle size={32} className="text-shade-3" />;
+      icon = <Icons.IconCircle size={32} className="text-shade-3" />;
+      hoverIcon = <Icons.IconCircleCheck size={32} className="text-shade-3" />;
+      break;
     case "done":
-      return <Icons.IconCircleCheck size={32} className="text-green-400" />;
+      icon = <Icons.IconCircleCheck size={32} className="text-green-400" />;
+      hoverIcon = icon;
+      break;
     default:
       throw new Error("unknown milestone status " + milestone.status);
   }
+
+  return (
+    <div className="shrink-0 group cursor-pointer" onClick={onClick}>
+      <div className="block group-hover:hidden">{icon}</div>
+      <div className="hidden group-hover:block">{hoverIcon}</div>
+    </div>
+  );
 }
