@@ -135,6 +135,7 @@ function MilestoneIcon({ milestone, onClick }) {
 }
 
 function MilestoneDueDate({ milestone }) {
+  const [open, setOpen] = React.useState(false);
   const [setDeadline, _s] = Milestones.useSetDeadline(milestone.id);
 
   const DateView = React.forwardRef((props, ref) => (
@@ -147,21 +148,28 @@ function MilestoneDueDate({ milestone }) {
     </div>
   ));
 
-  let selected = "";
+  let selected: Date | string = "";
   if (milestone.deadlineAt) {
     selected = new Date(Date.parse(milestone.deadlineAt));
   }
+
+  const onChange = (date) => {
+    setDeadline(date);
+    setOpen(false);
+  };
 
   return (
     <div className="w-32 pr-4 cursor-pointer">
       <DatePicker
         selected={selected}
-        onChange={(date) => setDeadline(date)}
+        onChange={onChange}
         customInput={<DateView />}
+        open={open}
+        onInputClick={() => setOpen(true)}
       >
         <div
           className="flex items-center gap-1 text-red-400"
-          onClick={() => setDeadline(null)}
+          onClick={onChange}
         >
           <Icons.IconTrash size={16} />
           Clear due date
