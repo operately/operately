@@ -20,6 +20,23 @@ export function sortByDeadline(milestones: Milestone[]) {
   });
 }
 
+export function sortByStatus(milestones: Milestone[]) {
+  let result: Milestone[] = [];
+
+  return result.concat(milestones).sort((m1, m2) => {
+    let s1 = m1.status;
+    let s2 = m2.status;
+
+    if (s1 === "done" && s2 === "pending") {
+      return 1;
+    } else if (s1 === "pending" && s2 === "done") {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+}
+
 export function splitByCompletion(milestones: Milestone[]) {
   let completed: Milestone[] = [];
   let pending: Milestone[] = [];
