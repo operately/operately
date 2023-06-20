@@ -139,7 +139,11 @@ function MilestoneDueDate({ milestone }) {
 
   const DateView = React.forwardRef((props, ref) => (
     <div onClick={props.onClick} ref={ref}>
-      <FormattedTime time={props.value} format="short-date" />
+      {isDueDateSet(props.value) ? (
+        <FormattedTime time={props.value} format="short-date" />
+      ) : (
+        <span className="text-shade-3">Not Set</span>
+      )}
     </div>
   ));
 
@@ -165,4 +169,8 @@ function MilestoneDueDate({ milestone }) {
       </DatePicker>
     </div>
   );
+}
+
+function isDueDateSet(value) {
+  return value !== null && value !== undefined && value !== "";
 }
