@@ -69,3 +69,21 @@
 .react-datepicker__navigation--next {
   top: 8px !important;
 }
+
+.react-datepicker__input-container {
+  display: block;
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  background: var(--color-shade-3);
+  color: var(--color-white-1);
+  border: unset;
+  border-radius: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.react-datepicker__input-container input::placeholder {
+  color: var(--color-white-2);
+}

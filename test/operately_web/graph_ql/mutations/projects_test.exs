@@ -5,20 +5,21 @@ defmodule MyAppWeb.GraphQL.Mutations.ProjectsTest do
 
   import Operately.ProjectsFixtures
 
-  @set_milestone_deadline_query """
-  mutation setMilestoneDeadline($milestoneId: ID!, $deadlineAt: Date) {
-    setMilestoneDeadline(milestoneId: $milestoneId, deadlineAt: $deadlineAt) {
+  @update_project_milestone """
+  mutation updateProjectMilestone($milestoneId: ID!, $title: String!, $deadlineAt: Date) {
+    updateProjectMilestone(milestoneId: $milestoneId, title: $title, deadlineAt: $deadlineAt) {
       id
       deadlineAt
     }
   }
   """
 
-  test "mutation: setMilestoneDeadline", %{conn: conn} do
+  test "mutation: update_project_milestone", %{conn: conn} do
     milestone = milestone_fixture(%{title: "Website Launched"})
 
-    conn = graphql(conn, @set_milestone_deadline_query, %{
+    conn = graphql(conn, @update_project_milestone, %{
       "milestoneId" => milestone.id,
+      "title" => "Website Launched for all customers",
       "deadlineAt" => "2018-01-01"
     })
 

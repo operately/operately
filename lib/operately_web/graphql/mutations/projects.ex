@@ -60,6 +60,22 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     # Milestones
     #
 
+    field :add_project_milestone, non_null(:milestone) do
+      arg :project_id, non_null(:id)
+      arg :title, non_null(:string)
+      arg :deadline_at, :date
+
+      resolve fn args, _ ->
+        deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
+
+        Operately.Projects.create_milestone(%{
+          project_id: args.project_id,
+          title: args.title,
+          deadline_at: deadline
+        })
+      end
+    end
+
     field :set_milestone_status, non_null(:milestone) do
       arg :milestone_id, non_null(:id)
       arg :status, non_null(:string)
@@ -71,15 +87,29 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
-    field :set_milestone_deadline, non_null(:milestone) do
+    field :update_project_milestone, non_null(:milestone) do
       arg :milestone_id, non_null(:id)
+      arg :title, non_null(:string)
       arg :deadline_at, :date
 
       resolve fn args, _ ->
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
         deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
 
-        Operately.Projects.update_milestone(milestone, %{deadline_at: deadline})
+        Operately.Projects.update_milestone(milestone, %{
+          title: args.title,
+          deadline_at: deadline
+        })
+      end
+    end
+
+    field :remove_project_milestone, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Projects.delete_milestone(milestone)
       end
     end
   end

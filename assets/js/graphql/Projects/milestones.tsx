@@ -42,6 +42,43 @@ export function isOverdue(milestone: Milestone) {
   return deadline < now;
 }
 
+const ADD_MILESTONE = gql`
+  mutation AddProjectMilestone(
+    $projectId: ID!
+    $title: String!
+    $deadlineAt: Date
+  ) {
+    addProjectMilestone(
+      projectId: $projectId
+      title: $title
+      deadlineAt: $deadlineAt
+    ) {
+      id
+      title
+      deadlineAt
+      status
+    }
+  }
+`;
+
+type AddMilestoneFun = (title: string, deadlineAt: Date | null) => Promise<any>;
+
+export function useAddMilestone(projectId: string): [AddMilestoneFun, any] {
+  const [fun, status] = useMutation(ADD_MILESTONE);
+
+  const addMilestone = (title: string, deadlineAt: Date | null) => {
+    let date: string | null = null;
+
+    if (deadlineAt) {
+      date = deadlineAt.toISOString().split("T")[0] || null;
+    }
+
+    return fun({ variables: { projectId, title, deadlineAt: date } });
+  };
+
+  return [addMilestone, status];
+}
+
 const SET_MILESTONE_STATUS = gql`
   mutation SetMilestoneStatus($milestoneId: ID!, $status: String!) {
     setMilestoneStatus(milestoneId: $milestoneId, status: $status) {
@@ -63,34 +100,66 @@ export function useSetStatus(milestoneId: string): [SetStatusFun, any] {
   return [setStatus, status];
 }
 
-const SET_DEADLINE = gql`
-  mutation SetMilestoneDeadline($milestoneId: ID!, $deadlineAt: Date) {
-    setMilestoneDeadline(milestoneId: $milestoneId, deadlineAt: $deadlineAt) {
+const UPDATE_MILESTONE = gql`
+  mutation UpdateProjectMilestone(
+    $milestoneId: ID!
+    $title: String!
+    $deadlineAt: Date
+  ) {
+    updateProjectMilestone(
+      milestoneId: $milestoneId
+      title: $title
+      deadlineAt: $deadlineAt
+    ) {
       id
+      title
       deadlineAt
+      status
     }
   }
 `;
 
-type SetDeadlineFun = (deadlineAt: Date | null) => Promise<any>;
+type UpdateMilestoneFun = (
+  title: string,
+  deadlineAt: Date | null
+) => Promise<any>;
 
-export function useSetDeadline(milestoneId: string): [SetDeadlineFun, any] {
-  const [fun, status] = useMutation(SET_DEADLINE);
+export function useUpdateMilestone(
+  milestoneId: string
+): [UpdateMilestoneFun, any] {
+  const [fun, status] = useMutation(UPDATE_MILESTONE);
 
-  const setDeadline = (deadlineAt: Date | null) => {
+  const updateMilestone = (title: string, deadlineAt: Date | null) => {
     let date: string | null = null;
 
     if (deadlineAt) {
       date = deadlineAt.toISOString().split("T")[0] || null;
     }
 
-    return fun({
-      variables: {
-        milestoneId: milestoneId,
-        deadlineAt: date,
-      },
-    });
+    return fun({ variables: { milestoneId, title, deadlineAt: date } });
   };
 
-  return [setDeadline, status];
+  return [updateMilestone, status];
+}
+
+const REMOVE_MILESTONE = gql`
+  mutation RemoveProjectMilestone($milestoneId: ID!) {
+    removeProjectMilestone(milestoneId: $milestoneId) {
+      id
+    }
+  }
+`;
+
+type RemoveMilestoneFun = () => Promise<any>;
+
+export function useRemoveMilestone(
+  milestoneId: string
+): [RemoveMilestoneFun, any] {
+  const [fun, status] = useMutation(REMOVE_MILESTONE);
+
+  const removeMilestone = () => {
+    return fun({ variables: { milestoneId } });
+  };
+
+  return [removeMilestone, status];
 }
