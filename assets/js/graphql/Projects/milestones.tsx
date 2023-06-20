@@ -64,7 +64,7 @@ export function useSetStatus(milestoneId: string): [SetStatusFun, any] {
 }
 
 const SET_DEADLINE = gql`
-  mutation SetMilestoneDeadline($milestoneId: ID!, $deadlineAt: String) {
+  mutation SetMilestoneDeadline($milestoneId: ID!, $deadlineAt: Date) {
     setMilestoneDeadline(milestoneId: $milestoneId, deadlineAt: $deadlineAt) {
       id
       deadlineAt
@@ -75,7 +75,7 @@ const SET_DEADLINE = gql`
 type SetDeadlineFun = (deadlineAt: Date | null) => Promise<any>;
 
 export function useSetDeadline(milestoneId: string): [SetDeadlineFun, any] {
-  const [fun, status] = useMutation(SET_MILESTONE_STATUS);
+  const [fun, status] = useMutation(SET_DEADLINE);
 
   const setDeadline = (deadlineAt: Date | null) => {
     return fun({ variables: { milestoneId, deadlineAt } });

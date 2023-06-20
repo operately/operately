@@ -70,5 +70,16 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
         Operately.Projects.update_milestone(milestone, %{status: args.status})
       end
     end
+
+    field :set_milestone_deadline, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+      arg :deadline_at, :date
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Projects.update_milestone(milestone, %{deadline_at: args.deadline_at})
+      end
+    end
   end
 end
