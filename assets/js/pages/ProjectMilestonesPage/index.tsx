@@ -142,7 +142,7 @@ function MilestoneList({ project, refetch }) {
   );
 
   return (
-    <div className="flex flex-col px-8 divide-y divide-shade-1">
+    <div className="flex flex-col px-8 divide-y divide-shade-1 fadeIn">
       {milestones.map((m) => (
         <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
       ))}
