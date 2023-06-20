@@ -8,6 +8,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Milestones from "@/graphql/Projects/milestones";
 
 import FormattedTime from "@/components/FormattedTime";
+import DatePicker from "react-datepicker";
 
 export function ProjectMilestonesPage() {
   const params = useParams();
@@ -63,15 +64,22 @@ function MilestoneList({ project }) {
 
   return (
     <div className="flex flex-col px-8 divide-y divide-shade-1">
-      <div className="flex items-center justify-between py-3 text-pink-400">
-        <div className="flex items-center gap-2">
-          <div className="w-32 pr-4">DUE DATE</div>
-          MILESTONE
-        </div>
-      </div>
+      <MilestoneTableHeader />
+
       {milestones.map((m) => (
         <MilestoneItem key={m.id} milestone={m} />
       ))}
+    </div>
+  );
+}
+
+function MilestoneTableHeader() {
+  return (
+    <div className="flex items-center justify-between py-3 text-pink-400">
+      <div className="flex items-center gap-2">
+        <div className="w-32 pr-4">DUE DATE</div>
+        MILESTONE
+      </div>
     </div>
   );
 }
@@ -90,9 +98,7 @@ function MilestoneItem({ milestone }) {
   return (
     <div className="flex items-center justify-between py-3">
       <div className="flex items-center gap-2">
-        <div className="w-32 pr-4">
-          <FormattedTime time={milestone.deadlineAt} format="short-date" />
-        </div>
+        <MilestoneDueDate milestone={milestone} />
         {milestone.title}
       </div>
 
@@ -124,6 +130,31 @@ function MilestoneIcon({ milestone, onClick }) {
     <div className="shrink-0 group cursor-pointer" onClick={onClick}>
       <div className="block group-hover:hidden">{icon}</div>
       <div className="hidden group-hover:block">{hoverIcon}</div>
+    </div>
+  );
+}
+
+function MilestoneDueDate({ milestone }) {
+  const [setDeadline, _s] = Milestones.useSetDeadline(milestone.id);
+
+  const DateView = (props) => (
+    <div onClick={props.onClick}>
+      <FormattedTime time={props.value} format="short-date" />
+    </div>
+  );
+
+  return (
+    <div className="w-32 pr-4 cursor-pointer">
+      <DatePicker
+        selected={new Date(Date.parse(milestone.deadlineAt))}
+        onChange={(date) => setDeadline(date)}
+        customInput={<DateView />}
+      >
+        <div className="flex items-center gap-1 text-red-400">
+          <Icons.IconTrash size={16} />
+          Clear due date
+        </div>
+      </DatePicker>
     </div>
   );
 }

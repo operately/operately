@@ -51,7 +51,9 @@ const SET_MILESTONE_STATUS = gql`
   }
 `;
 
-export function useSetStatus(milestoneId: string) {
+type SetStatusFun = (status: MilestoneStatus) => Promise<any>;
+
+export function useSetStatus(milestoneId: string): [SetStatusFun, any] {
   const [fun, status] = useMutation(SET_MILESTONE_STATUS);
 
   const setStatus = (status: MilestoneStatus) => {
@@ -59,4 +61,25 @@ export function useSetStatus(milestoneId: string) {
   };
 
   return [setStatus, status];
+}
+
+const SET_DEADLINE = gql`
+  mutation SetMilestoneDeadline($milestoneId: ID!, $deadlineAt: String) {
+    setMilestoneDeadline(milestoneId: $milestoneId, deadlineAt: $deadlineAt) {
+      id
+      deadlineAt
+    }
+  }
+`;
+
+type SetDeadlineFun = (deadlineAt: Date | null) => Promise<any>;
+
+export function useSetDeadline(milestoneId: string): [SetDeadlineFun, any] {
+  const [fun, status] = useMutation(SET_MILESTONE_STATUS);
+
+  const setDeadline = (deadlineAt: Date | null) => {
+    return fun({ variables: { milestoneId, deadlineAt } });
+  };
+
+  return [setDeadline, status];
 }
