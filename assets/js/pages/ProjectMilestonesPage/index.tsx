@@ -143,14 +143,22 @@ function MilestoneDueDate({ milestone }) {
     </div>
   ));
 
+  let selected = "";
+  if (milestone.deadlineAt) {
+    selected = new Date(Date.parse(milestone.deadlineAt));
+  }
+
   return (
     <div className="w-32 pr-4 cursor-pointer">
       <DatePicker
-        selected={new Date(Date.parse(milestone.deadlineAt))}
+        selected={selected}
         onChange={(date) => setDeadline(date)}
         customInput={<DateView />}
       >
-        <div className="flex items-center gap-1 text-red-400">
+        <div
+          className="flex items-center gap-1 text-red-400"
+          onClick={() => setDeadline(null)}
+        >
           <Icons.IconTrash size={16} />
           Clear due date
         </div>

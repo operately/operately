@@ -77,7 +77,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
       resolve fn args, _ ->
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
-        deadline = NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
+        deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
 
         Operately.Projects.update_milestone(milestone, %{deadline_at: deadline})
       end
