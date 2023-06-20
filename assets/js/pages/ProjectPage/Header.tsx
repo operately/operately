@@ -8,11 +8,8 @@ import ContributorAvatar, {
 } from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
-import {
-  Project,
-  isReviwerAssigned,
-  isChampionAssigned,
-} from "@/graphql/Projects";
+import { Project } from "@/graphql/Projects";
+import * as Contributors from "@/graphql/Projects/contributors";
 
 interface HeaderProps {
   project: Project;
@@ -22,7 +19,7 @@ export default function Header({ project }: HeaderProps): JSX.Element {
   return (
     <div className="pt-12 pb-8 relative">
       <ProjectName project={project} />
-      <Contributors project={project} />
+      <ContributorList project={project} />
     </div>
   );
 }
@@ -52,14 +49,24 @@ function projectNameTextSize(project: Project) {
   return "text-5xl";
 }
 
-function Contributors({ project }) {
+function ContributorList({ project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
+
+  const { champion, reviewer, contributors } = Contributors.splitByRole(
+    project.contributors
+  );
 
   return (
     <div className="mt-4 flex items-center justify-center">
       <Link to={contributorsPath}>
         <div className="flex items-center justify-center gap-1.5 cursor-pointer">
-          <ContributorList project={project} />
+          <Champion champion={champion} />
+          <Reviewer reviewer={reviewer} />
+
+          {contributors.map((c) => (
+            <ContributorAvatar key={c.id} contributor={c} />
+          ))}
+
           <ContributorAdd />
         </div>
       </Link>
@@ -67,15 +74,14 @@ function Contributors({ project }) {
   );
 }
 
-function ContributorList({ project }: { project: Project }) {
-  return (
-    <>
-      {!isChampionAssigned(project) && <ChampionPlaceholder />}
-      {!isReviwerAssigned(project) && <ReviewerPlaceholder />}
+function Champion({ champion }) {
+  if (!champion) return <ChampionPlaceholder />;
 
-      {project.contributors.map((c) => (
-        <ContributorAvatar key={c.id} contributor={c} />
-      ))}
-    </>
-  );
+  return <ContributorAvatar contributor={champion} />;
+}
+
+function Reviewer({ reviewer }) {
+  if (!reviewer) return <ReviewerPlaceholder />;
+
+  return <ContributorAvatar contributor={reviewer} />;
 }
