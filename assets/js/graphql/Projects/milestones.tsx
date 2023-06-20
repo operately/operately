@@ -78,7 +78,18 @@ export function useSetDeadline(milestoneId: string): [SetDeadlineFun, any] {
   const [fun, status] = useMutation(SET_DEADLINE);
 
   const setDeadline = (deadlineAt: Date | null) => {
-    return fun({ variables: { milestoneId, deadlineAt } });
+    let date: string | null = null;
+
+    if (deadlineAt) {
+      date = deadlineAt.toISOString().split("T")[0] || null;
+    }
+
+    return fun({
+      variables: {
+        milestoneId: milestoneId,
+        deadlineAt: date,
+      },
+    });
   };
 
   return [setDeadline, status];

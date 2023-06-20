@@ -137,11 +137,11 @@ function MilestoneIcon({ milestone, onClick }) {
 function MilestoneDueDate({ milestone }) {
   const [setDeadline, _s] = Milestones.useSetDeadline(milestone.id);
 
-  const DateView = (props) => (
-    <div onClick={props.onClick}>
+  const DateView = React.forwardRef((props, ref) => (
+    <div onClick={props.onClick} ref={ref}>
       <FormattedTime time={props.value} format="short-date" />
     </div>
-  );
+  ));
 
   return (
     <div className="w-32 pr-4 cursor-pointer">
