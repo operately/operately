@@ -68,6 +68,29 @@ function Body({ project, path }) {
       </Paper.Root>
     );
   }
+
+  if (path === "plan") {
+    return (
+      <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+            <Icons.IconClipboardList size={16} />
+            {project.name}
+          </Paper.NavItem>
+
+          <Icons.IconSlash size={16} />
+
+          <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
+            Documentation
+          </Paper.NavItem>
+        </Paper.Navigation>
+        <Paper.Body>
+          <DocumentTitle title="Execution Plan" />
+          <DocumentBody content={project.description} />
+        </Paper.Body>
+      </Paper.Root>
+    );
+  }
 }
 
 function ListTitle() {
@@ -123,11 +146,23 @@ function DocList({ project }) {
 }
 
 function Pitch({ project }) {
-  return <Doc project={project} title="Project Pitch" />;
+  return (
+    <Doc
+      project={project}
+      title="Project Pitch"
+      linkTo={`/projects/${project.id}/documentation/pitch`}
+    />
+  );
 }
 
 function ExecutionPlan({ project }) {
-  return <Doc project={project} title="Execution Plan" />;
+  return (
+    <Doc
+      project={project}
+      title="Execution Plan"
+      linkTo={`/projects/${project.id}/documentation/plan`}
+    />
+  );
 }
 
 function ExecutionReview({ project }) {
@@ -160,9 +195,9 @@ function Retrospective({ project }) {
   );
 }
 
-function Doc({ project, title }) {
+function Doc({ project, title, linkTo }) {
   return (
-    <Link to={`/projects/${project.id}/documentation/pitch`}>
+    <Link to={linkTo}>
       <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3">
         <div className="flex justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -184,20 +219,18 @@ function Doc({ project, title }) {
 
 function EmptyDoc({ project, title, message }) {
   return (
-    <Link to={`/projects/${project.id}/documentation/pitch`}>
-      <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3">
-        <div className="flex justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Icons.IconFileDescription size={20} className="text-shade-3" />
-            <div className="text-lg font-bold text-white-2">{title}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Icons.IconCircleCheckFilled size={20} className="text-shade-3" />{" "}
-          </div>
+    <div className="border border-shade-1 p-4 rounded-lg">
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Icons.IconFileDescription size={20} className="text-shade-3" />
+          <div className="text-lg font-bold text-white-2">{title}</div>
         </div>
-
-        <div className="line-clamp-4 text-white-2">{message}</div>
+        <div className="flex items-center gap-2">
+          <Icons.IconCircleCheckFilled size={20} className="text-shade-3" />{" "}
+        </div>
       </div>
-    </Link>
+
+      <div className="line-clamp-4 text-white-2">{message}</div>
+    </div>
   );
 }
