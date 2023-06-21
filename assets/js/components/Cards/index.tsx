@@ -12,7 +12,8 @@ export function Card({ children, linkTo }) {
           "bg-dark-3 rounded-lg text-sm",
           "cursor-pointer",
           "shadow hover:shadow-lg",
-          "border border-shade-2 hover:border-shade-3"
+          "border border-shade-2 hover:border-shade-3",
+          "overflow-hidden"
         )}
       >
         {children}

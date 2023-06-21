@@ -76,30 +76,75 @@ function Overview({ project }) {
 }
 
 function DocumentationCard({ project }) {
-  const [expanded, setExpanded] = React.useState(false);
-
-  const toggleExpanded = () => setExpanded(!expanded);
-
   return (
-    <div className="pb-8 px-32">
-      <div
-        className={classnames({
-          "flex flex-col gap-1 text-lg transition mb-4": true,
-          "line-clamp-4": !expanded,
-        })}
-      >
-        <RichContent jsonContent={project.description} />
-      </div>
+    <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
+      <Cards.Header>
+        <Cards.Title>Documentation</Cards.Title>
+      </Cards.Header>
 
-      <Button onClick={toggleExpanded}>
-        {expanded ? (
-          <Icons.IconArrowUp size={20} />
-        ) : (
-          <Icons.IconArrowDown size={20} />
-        )}
-        {expanded ? "Collapse" : "Expand"}
-      </Button>
-    </div>
+      <Cards.Body>
+        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+          <div className="flex items-center gap-1">
+            <Icons.IconFileText size={16} className="text-pink-400" />
+            <div className="text-sm font-medium">Project Pitch</div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
+          </div>
+        </div>
+
+        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+          <div className="flex items-center gap-1">
+            <Icons.IconFileText size={16} className="text-pink-400" />
+            <div className="text-sm font-medium">Execution Plan</div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
+          </div>
+        </div>
+
+        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+          <div className="flex items-center gap-1">
+            <Icons.IconFileText size={16} className="text-shade-3" />
+            <div className="text-sm font-medium text-shade-3">
+              Execution Review
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Icons.IconCircleCheckFilled size={16} className="text-shade-3" />
+          </div>
+        </div>
+
+        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+          <div className="flex items-center gap-1">
+            <Icons.IconFileText size={16} className="text-shade-3" />
+            <div className="text-sm font-medium text-shade-3">
+              Control Review
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Icons.IconCircleCheckFilled size={16} className="text-shade-3" />
+          </div>
+        </div>
+
+        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+          <div className="flex items-center gap-1">
+            <Icons.IconFileText size={16} className="text-shade-3" />
+            <div className="text-sm font-medium text-shade-3">
+              Retrospective
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Icons.IconCircleCheckFilled size={16} className="text-shade-3" />
+          </div>
+        </div>
+      </Cards.Body>
+    </Cards.Card>
   );
 }
 
