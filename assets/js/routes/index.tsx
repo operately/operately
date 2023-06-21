@@ -94,7 +94,7 @@ const routes = createBrowserRouter([
         element: <ProjectMilestonesPage />,
       },
       {
-        path: "/projects/:project_id/documentation",
+        path: "/projects/:project_id/documentation/*",
         element: <ProjectDocumentationPage />,
       },
       {

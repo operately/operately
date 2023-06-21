@@ -7,10 +7,12 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
 import RichContent from "@/components/RichContent";
+import Avatar from "@/components/Avatar";
 
 export function ProjectDocumentationPage() {
   const params = useParams();
   const projectId = params["project_id"];
+  const star = params["*"] || "";
 
   if (!projectId) return <p className="mt-16">Unable to find project</p>;
 
@@ -22,25 +24,53 @@ export function ProjectDocumentationPage() {
 
   const project = data.project;
 
-  return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${projectId}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-      </Paper.Navigation>
-
-      <Paper.Body>
-        <Title />
-
-        <DocList project={project} />
-      </Paper.Body>
-    </Paper.Root>
-  );
+  return <Body project={project} path={star} />;
 }
 
-function Title() {
+function Body({ project, path }) {
+  if (path === "") {
+    return (
+      <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+            <Icons.IconClipboardList size={16} />
+            {project.name}
+          </Paper.NavItem>
+        </Paper.Navigation>
+        <Paper.Body>
+          <ListTitle />
+
+          <DocList project={project} />
+        </Paper.Body>
+      </Paper.Root>
+    );
+  }
+
+  if (path === "pitch") {
+    return (
+      <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+            <Icons.IconClipboardList size={16} />
+            {project.name}
+          </Paper.NavItem>
+
+          <Icons.IconSlash size={16} />
+
+          <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
+            Documentation
+          </Paper.NavItem>
+        </Paper.Navigation>
+        <Paper.Body>
+          <DocumentTitle title="Project Pitch" />
+          <DocumentBody content={project.description} />
+        </Paper.Body>
+      </Paper.Root>
+    );
+  }
+}
+
+function ListTitle() {
   return (
     <div className="p-8 pb-8">
       <div className="flex items-center justify-between">
@@ -51,6 +81,31 @@ function Title() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DocumentTitle({ title }) {
+  return (
+    <div className="p-16 pb-8">
+      <div className="flex items-center gap-4">
+        <div className="text-center">
+          <Avatar person={{ fullName: "John Doe" }} size="large" />
+        </div>
+
+        <div>
+          <div className="text-2xl font-extrabold">{title}</div>
+          <div>Jan 17th</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DocumentBody({ content }) {
+  return (
+    <div className="text-lg px-16">
+      <RichContent jsonContent={content} />
     </div>
   );
 }
