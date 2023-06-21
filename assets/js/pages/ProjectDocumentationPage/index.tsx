@@ -58,12 +58,50 @@ function Title() {
 function DocList({ project }) {
   return (
     <div className="flex flex-col gap-4 px-8 pb-8">
-      <Doc project={project} title="Project Pitch" />
-      <Doc project={project} title="Execution Plan" />
-      <Doc project={project} title="Execution Review" />
-      <Doc project={project} title="Control Review" />
-      <Doc project={project} title="Retrospective" />
+      <Pitch project={project} />
+      <ExecutionPlan project={project} />
+      <ExecutionReview project={project} />
+      <ControlReview project={project} />
+      <Retrospective project={project} />
     </div>
+  );
+}
+
+function Pitch({ project }) {
+  return <Doc project={project} title="Project Pitch" />;
+}
+
+function ExecutionPlan({ project }) {
+  return <Doc project={project} title="Execution Plan" />;
+}
+
+function ExecutionReview({ project }) {
+  return (
+    <EmptyDoc
+      project={project}
+      title="Execution Review"
+      message="Filled in after the execution phase is complete"
+    />
+  );
+}
+
+function ControlReview({ project }) {
+  return (
+    <EmptyDoc
+      project={project}
+      title="Control Review"
+      message="Filled in after the control phase is complete"
+    />
+  );
+}
+
+function Retrospective({ project }) {
+  return (
+    <EmptyDoc
+      project={project}
+      title="Retrospective"
+      message="Filled in after the project whole project is complete"
+    />
   );
 }
 
@@ -84,6 +122,26 @@ function Doc({ project, title }) {
         <div className="line-clamp-4">
           <RichContent jsonContent={project.description} />
         </div>
+      </div>
+    </Link>
+  );
+}
+
+function EmptyDoc({ project, title, message }) {
+  return (
+    <Link to={`/projects/${project.id}/documentation/pitch`}>
+      <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3">
+        <div className="flex justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Icons.IconFileDescription size={20} className="text-shade-3" />
+            <div className="text-lg font-bold text-white-2">{title}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icons.IconCircleCheckFilled size={20} className="text-shade-3" />{" "}
+          </div>
+        </div>
+
+        <div className="line-clamp-4 text-white-2">{message}</div>
       </div>
     </Link>
   );
