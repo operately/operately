@@ -77,7 +77,7 @@ function Overview({ project }) {
 
 function DocumentationCard({ project }) {
   return (
-    <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
+    <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
       <Cards.Header>
         <Cards.Title>Documentation</Cards.Title>
       </Cards.Header>
