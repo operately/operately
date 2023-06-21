@@ -209,7 +209,7 @@ function Phases({ project }) {
 
   return (
     <div className="relative">
-      <div className="py-3 cursor-pointer grid grid-cols-6 bg-dark-3 border-b border border-shade-2 rounded shadow-lg px-4 mx-16">
+      <div className="py-3 cursor-pointer grid grid-cols-6 bg-dark-3 border-b border border-shade-2 rounded shadow px-4 mx-16">
         <div className="flex flex-col items-center">
           <div className="font-bold flex items-center gap-2">
             <Icons.IconRocket size={16} className="text-green-400" />
