@@ -163,51 +163,61 @@ function DocList({ project }) {
 }
 
 function PitchSummary({ project }) {
-  if (project.pitch) {
-    return (
-      <DocSummary
-        title="Project Pitch"
-        content={project.pitch.content}
-        linkTo={`/projects/${project.id}/documentation/pitch`}
-      />
-    );
-  } else {
-    if (Projects.shouldBeFilledIn(project, "pitch")) {
-      return (
-        <PendingDoc
-          title="Project Pitch"
-          message="Present a pitch to your team, outlining the value proposition of undertaking this project, as well as the potential risks and benefits involved."
-          fillInLink={`/projects/${project.id}/documentation/pitch/new`}
-        />
-      );
-    } else {
-      return (
-        <EmptyDoc
-          title="Project Pitch"
-          message="Filled in as part of the concept phase"
-        />
-      );
-    }
-  }
+  return (
+    <DocSummary
+      project={project}
+      documentType={"pitch"}
+      title={"Project Pitch"}
+      content={project.pitch?.content}
+      viewLink={`/projects/${project.id}/documentation/pitch`}
+      fillInLink={`/projects/${project.id}/documentation/pitch/new`}
+      futureMessage={`Filled in as part of the concept phase.`}
+      pendingMessage={`Present a pitch to your team, outlining the value proposition of undertaking this project, as well as the potential risks and benefits involved.`}
+    />
+  );
+}
+function ExecutionPlanSummary({ project }) {
+  return (
+    <DocSummary
+      project={project}
+      documentType={"plan"}
+      title={"Execution Plan"}
+      content={project.plan?.content}
+      viewLink={`/projects/${project.id}/documentation/plan`}
+      fillInLink={`/projects/${project.id}/documentation/plan/new`}
+      futureMessage={`Filled in as part of the planning phase.`}
+      pendingMessage={`Present a plan to your team, outlining the scope of the project, the resources required, and the timeline for completion.`}
+    />
+  );
 }
 
-function ExecutionPlanSummary({ project }) {
-  if (project.plan) {
+function DocSummary({
+  project,
+  documentType,
+  title,
+  content,
+  viewLink,
+  fillInLink,
+  futureMessage,
+  pendingMessage,
+}) {
+  if (content) {
     return (
-      <DocSummary
-        title="Execution Plan"
-        content={project.plan}
-        linkTo={`/projects/${project.id}/documentation/plan`}
-      />
+      <ExistingDocSummary title={title} content={content} linkTo={viewLink} />
     );
-  } else {
+  }
+
+  if (Projects.shouldBeFilledIn(project, documentType)) {
     return (
-      <EmptyDoc
-        title="Execution Plan"
-        message="Filled in as part of the planning phase"
+      <PendingDoc
+        title={title}
+        message={pendingMessage}
+        fillInLink={fillInLink}
       />
     );
   }
+
+  return <EmptyDoc title={title} message={futureMessage} />;
 }
 
 function ExecutionReviewSummary({ project }) {
@@ -240,10 +250,10 @@ function RetrospectiveSummary({ project }) {
   );
 }
 
-function DocSummary({ title, content, linkTo }) {
+function ExistingDocSummary({ title, content, linkTo }) {
   return (
     <Link to={linkTo}>
-      <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3">
+      <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3 bg-dark-4">
         <div className="flex justify-between mb-4">
           <div className="flex items-center gap-2">
             <Icons.IconFileDescription size={20} className="text-pink-400" />
