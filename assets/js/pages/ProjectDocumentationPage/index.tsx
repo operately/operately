@@ -1,22 +1,25 @@
 import React from "react";
 
-import { useParams, Link } from "react-router-dom";
-import { useProject } from "@/graphql/Projects";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import * as Projects from "@/graphql/Projects";
+import * as Me from "@/graphql/Me";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
+import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
+import Button from "@/components/Button";
 
 export function ProjectDocumentationPage() {
   const params = useParams();
   const projectId = params["project_id"];
-  const star = params["*"] || "";
+  const subpath = "/" + params["*"] || "";
 
   if (!projectId) return <p className="mt-16">Unable to find project</p>;
 
-  const { loading, error, data, refetch } = useProject(projectId);
+  const { loading, error, data, refetch } = Projects.useProject(projectId);
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
@@ -24,9 +27,11 @@ export function ProjectDocumentationPage() {
 
   const project = data.project;
 
-  switch (star) {
-    case "":
+  switch (subpath) {
+    case "/":
       return <DocList project={project} />;
+    case "/pitch/new":
+      return <NewPitch project={project} />;
     case "pitch":
       return <Pitch project={project} />;
     case "plan":
@@ -81,16 +86,21 @@ function ListTitle() {
 }
 
 function DocumentTitle({ title }) {
+  const { data } = Me.useMe();
+
   return (
-    <div className="p-16 pb-8">
+    <div className="p-16 pb-0">
       <div className="flex items-center gap-4">
         <div className="text-center">
-          <Avatar person={{ fullName: "John Doe" }} size="large" />
+          <Avatar person={data.me} size="large" />
         </div>
 
         <div>
           <div className="text-2xl font-extrabold">{title}</div>
-          <div>Jan 17th</div>
+          <div>
+            What is the project about, why is it important, and why should it be
+            persued?
+          </div>
         </div>
       </div>
     </div>
@@ -139,12 +149,22 @@ function PitchSummary({ project }) {
       />
     );
   } else {
-    return (
-      <EmptyDoc
-        title="Project Pitch"
-        message="Filled in as part of the concept phase"
-      />
-    );
+    if (Projects.shouldBeFilledIn(project, "pitch")) {
+      return (
+        <PendingDoc
+          title="Project Pitch"
+          message="Present a pitch to your team, outlining the value proposition of undertaking this project, as well as the potential risks and benefits involved."
+          fillInLink={`/projects/${project.id}/documentation/pitch/new`}
+        />
+      );
+    } else {
+      return (
+        <EmptyDoc
+          title="Project Pitch"
+          message="Filled in as part of the concept phase"
+        />
+      );
+    }
   }
 }
 
@@ -192,7 +212,7 @@ function RetrospectiveSummary({ project }) {
     <EmptyDoc
       project={project}
       title="Retrospective"
-      message="Filled in after the project whole project is complete"
+      message="Filled in after the whole project is complete"
     />
   );
 }
@@ -234,5 +254,100 @@ function EmptyDoc({ title, message }) {
 
       <div className="line-clamp-4 text-white-2">{message}</div>
     </div>
+  );
+}
+
+function PendingDoc({ title, message, fillInLink }) {
+  return (
+    <div className="border border-shade-1 p-4 rounded-lg">
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Icons.IconFileDescription size={20} className="text-pink-400" />
+          <div className="text-lg font-bold text-white-1">{title}</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Icons.IconCircleDashed size={20} className="text-yellow-400" />
+        </div>
+      </div>
+
+      <div className="line-clamp-4 text-white-1 max-w-xl mb-4">{message}</div>
+      <Button variant="success" linkTo={fillInLink}>
+        <Icons.IconPencil size={16} />
+        Fill In
+      </Button>
+    </div>
+  );
+}
+
+function NewPitch({ project }) {
+  const navigate = useNavigate();
+  const [postUpdate, { loading }] = Projects.usePostUpdateMutation(project.id);
+
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Write your pitch here...",
+  });
+
+  const handlePost = async () => {
+    if (!editor) return;
+    if (loading) return;
+
+    await postUpdate(editor.getJSON());
+
+    navigate(`/projects/${project.id}`);
+  };
+
+  return (
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Icons.IconClipboardList size={16} />
+          {project.name}
+        </Paper.NavItem>
+
+        <Icons.IconSlash size={16} />
+
+        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
+          Documentation
+        </Paper.NavItem>
+      </Paper.Navigation>
+      <Paper.Body>
+        <DocumentTitle title={"Project Pitch"} />
+
+        <div className="px-16">
+          <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">
+            <TipTapEditor.Toolbar editor={editor} />
+          </div>
+
+          <div
+            className="mb-8 py-4 text-white-1 text-lg"
+            style={{ minHeight: "300px" }}
+          >
+            <TipTapEditor.EditorContent editor={editor} />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <PostButton onClick={handlePost} />
+            <CancelButton linkTo={`/projects/${project.id}/documentation`} />
+          </div>
+        </div>
+      </Paper.Body>
+    </Paper.Root>
+  );
+}
+
+function PostButton({ onClick }) {
+  return (
+    <Button onClick={onClick} variant="success">
+      <Icons.IconMail size={20} />
+      Post Pitch
+    </Button>
+  );
+}
+
+function CancelButton({ linkTo }) {
+  return (
+    <Button variant="secondary" linkTo={linkTo}>
+      Cancel
+    </Button>
   );
 }

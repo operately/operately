@@ -478,3 +478,31 @@ export function isChampionAssigned(project: Project) {
 export function isReviwerAssigned(project: Project) {
   return project.contributors.some((c) => c.role === "reviewer");
 }
+
+type DocumentType =
+  | "pitch"
+  | "plan"
+  | "execution_review"
+  | "control_review"
+  | "retrospective";
+
+const whatShouldBeFilledIn = {
+  draft: ["pitch"],
+  planning: ["pitch", "plan"],
+  execution: ["pitch", "plan", "execution_review"],
+  control: ["pitch", "plan", "execution_review", "control_review"],
+  retrospective: [
+    "pitch",
+    "plan",
+    "execution_review",
+    "control_review",
+    "retrospective",
+  ],
+};
+
+export function shouldBeFilledIn(
+  project: Project,
+  documentType: DocumentType
+): boolean {
+  return whatShouldBeFilledIn[project.phase].includes(documentType);
+}
