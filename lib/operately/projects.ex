@@ -137,96 +137,48 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Document
 
-  @doc """
-  Returns the list of project_documents.
+  def get_pitch(project) do
+    Repo.preload(project, :pitch).pitch
+  end
 
-  ## Examples
+  def get_plan(project) do
+    Repo.preload(project, :plan).plan
+  end
 
-      iex> list_project_documents()
-      [%Document{}, ...]
+  def get_execution_review(project) do
+    Repo.preload(project, :execution_review).execution_review
+  end
 
-  """
+  def get_control_review(project) do
+    Repo.preload(project, :control_review).control_review
+  end
+
+  def get_retrospective(project) do
+    Repo.preload(project, :retrospective).retrospective
+  end
+
   def list_project_documents do
     Repo.all(Document)
   end
 
-  @doc """
-  Gets a single document.
-
-  Raises `Ecto.NoResultsError` if the Document does not exist.
-
-  ## Examples
-
-      iex> get_document!(123)
-      %Document{}
-
-      iex> get_document!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_document!(id), do: Repo.get!(Document, id)
 
-  @doc """
-  Creates a document.
-
-  ## Examples
-
-      iex> create_document(%{field: value})
-      {:ok, %Document{}}
-
-      iex> create_document(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_document(attrs \\ %{}) do
     %Document{}
     |> Document.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a document.
-
-  ## Examples
-
-      iex> update_document(document, %{field: new_value})
-      {:ok, %Document{}}
-
-      iex> update_document(document, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_document(%Document{} = document, attrs) do
     document
     |> Document.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a document.
-
-  ## Examples
-
-      iex> delete_document(document)
-      {:ok, %Document{}}
-
-      iex> delete_document(document)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_document(%Document{} = document) do
     Repo.delete(document)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking document changes.
-
-  ## Examples
-
-      iex> change_document(document)
-      %Ecto.Changeset{data: %Document{}}
-
-  """
   def change_document(%Document{} = document, attrs \\ %{}) do
     Document.changeset(document, attrs)
   end
