@@ -75,6 +75,27 @@ function Overview({ project }) {
   );
 }
 
+function DocumentationCardListItem({ title, completed }) {
+  const iconColor = completed ? "text-pink-400" : "text-shade-3";
+  const checkColor = completed ? "text-green-400" : "text-shade-3";
+  const titleColor = completed ? "text-white-1" : "text-shade-3";
+
+  return (
+    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+      <div className="flex items-center gap-1">
+        <Icons.IconFileText size={16} className={iconColor} />
+        <div className={classnames("text-sm font-medium", titleColor)}>
+          {title}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-1">
+        <Icons.IconCircleCheckFilled size={16} className={checkColor} />
+      </div>
+    </div>
+  );
+}
+
 function DocumentationCard({ project }) {
   return (
     <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
@@ -83,66 +104,26 @@ function DocumentationCard({ project }) {
       </Cards.Header>
 
       <Cards.Body>
-        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-          <div className="flex items-center gap-1">
-            <Icons.IconFileText size={16} className="text-pink-400" />
-            <div className="text-sm font-medium">Project Pitch</div>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
-          </div>
-        </div>
-
-        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-          <div className="flex items-center gap-1">
-            <Icons.IconFileText size={16} className="text-pink-400" />
-            <div className="text-sm font-medium">Execution Plan</div>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
-          </div>
-        </div>
-
-        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-          <div className="flex items-center gap-1">
-            <Icons.IconFileText size={16} className="text-shade-3" />
-            <div className="text-sm font-medium text-shade-3">
-              Execution Review
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Icons.IconCircleCheckFilled size={16} className="text-shade-3" />
-          </div>
-        </div>
-
-        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-          <div className="flex items-center gap-1">
-            <Icons.IconFileText size={16} className="text-shade-3" />
-            <div className="text-sm font-medium text-shade-3">
-              Control Review
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Icons.IconCircleCheckFilled size={16} className="text-shade-3" />
-          </div>
-        </div>
-
-        <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-          <div className="flex items-center gap-1">
-            <Icons.IconFileText size={16} className="text-shade-3" />
-            <div className="text-sm font-medium text-shade-3">
-              Retrospective
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Icons.IconCircleCheckFilled size={16} className="text-shade-3" />
-          </div>
-        </div>
+        <DocumentationCardListItem
+          title="Project Pitch"
+          completed={project.pitch}
+        />
+        <DocumentationCardListItem
+          title="Execution Plan"
+          completed={project.plan}
+        />
+        <DocumentationCardListItem
+          title="Execution Review"
+          completed={project.executionReview}
+        />
+        <DocumentationCardListItem
+          title="Control Review"
+          completed={project.controlReview}
+        />
+        <DocumentationCardListItem
+          title="Retrospective"
+          completed={project.retrospective}
+        />
       </Cards.Body>
     </Cards.Card>
   );

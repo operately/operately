@@ -24,73 +24,45 @@ export function ProjectDocumentationPage() {
 
   const project = data.project;
 
-  return <Body project={project} path={star} />;
+  switch (star) {
+    case "":
+      return <DocList project={project} />;
+    case "pitch":
+      return <Pitch project={project} />;
+    case "plan":
+      return <ExecutionPlan project={project} />;
+    case "execution":
+      return <ExecutionReview project={project} />;
+    case "control":
+      return <ControlReview project={project} />;
+    case "retrospective":
+      return <Retrospective project={project} />;
+    default:
+      throw new Error(`Unknown document ${star}`);
+  }
 }
 
-function Body({ project, path }) {
-  if (path === "") {
-    return (
-      <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-        </Paper.Navigation>
-        <Paper.Body>
-          <ListTitle />
+function DocView({ project, doc }) {
+  return (
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Icons.IconClipboardList size={16} />
+          {project.name}
+        </Paper.NavItem>
 
-          <DocList project={project} />
-        </Paper.Body>
-      </Paper.Root>
-    );
-  }
+        <Icons.IconSlash size={16} />
 
-  if (path === "pitch") {
-    return (
-      <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-
-          <Icons.IconSlash size={16} />
-
-          <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-            Documentation
-          </Paper.NavItem>
-        </Paper.Navigation>
-        <Paper.Body>
-          <DocumentTitle title="Project Pitch" />
-          <DocumentBody content={project.description} />
-        </Paper.Body>
-      </Paper.Root>
-    );
-  }
-
-  if (path === "plan") {
-    return (
-      <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-
-          <Icons.IconSlash size={16} />
-
-          <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-            Documentation
-          </Paper.NavItem>
-        </Paper.Navigation>
-        <Paper.Body>
-          <DocumentTitle title="Execution Plan" />
-          <DocumentBody content={project.description} />
-        </Paper.Body>
-      </Paper.Root>
-    );
-  }
+        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
+          Documentation
+        </Paper.NavItem>
+      </Paper.Navigation>
+      <Paper.Body>
+        <DocumentTitle title={doc.title} />
+        <DocumentBody content={doc.content} />
+      </Paper.Body>
+    </Paper.Root>
+  );
 }
 
 function ListTitle() {
@@ -135,37 +107,67 @@ function DocumentBody({ content }) {
 
 function DocList({ project }) {
   return (
-    <div className="flex flex-col gap-4 px-8 pb-8">
-      <Pitch project={project} />
-      <ExecutionPlan project={project} />
-      <ExecutionReview project={project} />
-      <ControlReview project={project} />
-      <Retrospective project={project} />
-    </div>
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Icons.IconClipboardList size={16} />
+          {project.name}
+        </Paper.NavItem>
+      </Paper.Navigation>
+      <Paper.Body>
+        <ListTitle />
+
+        <div className="flex flex-col gap-4 px-8 pb-8">
+          <PitchSummary project={project} />
+          <ExecutionPlanSummary project={project} />
+          <ExecutionReviewSummary project={project} />
+          <ControlReviewSummary project={project} />
+          <RetrospectiveSummary project={project} />
+        </div>
+      </Paper.Body>
+    </Paper.Root>
   );
 }
 
-function Pitch({ project }) {
-  return (
-    <Doc
-      project={project}
-      title="Project Pitch"
-      linkTo={`/projects/${project.id}/documentation/pitch`}
-    />
-  );
+function PitchSummary({ project }) {
+  if (project.pitch) {
+    return (
+      <DocSummary
+        title="Project Pitch"
+        content={project.pitch}
+        linkTo={`/projects/${project.id}/documentation/pitch`}
+      />
+    );
+  } else {
+    return (
+      <EmptyDoc
+        title="Project Pitch"
+        message="Filled in as part of the concept phase"
+      />
+    );
+  }
 }
 
-function ExecutionPlan({ project }) {
-  return (
-    <Doc
-      project={project}
-      title="Execution Plan"
-      linkTo={`/projects/${project.id}/documentation/plan`}
-    />
-  );
+function ExecutionPlanSummary({ project }) {
+  if (project.plan) {
+    return (
+      <DocSummary
+        title="Execution Plan"
+        content={project.plan}
+        linkTo={`/projects/${project.id}/documentation/plan`}
+      />
+    );
+  } else {
+    return (
+      <EmptyDoc
+        title="Execution Plan"
+        message="Filled in as part of the planning phase"
+      />
+    );
+  }
 }
 
-function ExecutionReview({ project }) {
+function ExecutionReviewSummary({ project }) {
   return (
     <EmptyDoc
       project={project}
@@ -175,7 +177,7 @@ function ExecutionReview({ project }) {
   );
 }
 
-function ControlReview({ project }) {
+function ControlReviewSummary({ project }) {
   return (
     <EmptyDoc
       project={project}
@@ -185,7 +187,7 @@ function ControlReview({ project }) {
   );
 }
 
-function Retrospective({ project }) {
+function RetrospectiveSummary({ project }) {
   return (
     <EmptyDoc
       project={project}
@@ -195,7 +197,7 @@ function Retrospective({ project }) {
   );
 }
 
-function Doc({ project, title, linkTo }) {
+function DocSummary({ title, content, linkTo }) {
   return (
     <Link to={linkTo}>
       <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3">
@@ -210,14 +212,14 @@ function Doc({ project, title, linkTo }) {
         </div>
 
         <div className="line-clamp-4">
-          <RichContent jsonContent={project.description} />
+          <RichContent jsonContent={content} />
         </div>
       </div>
     </Link>
   );
 }
 
-function EmptyDoc({ project, title, message }) {
+function EmptyDoc({ title, message }) {
   return (
     <div className="border border-shade-1 p-4 rounded-lg">
       <div className="flex justify-between mb-4">
