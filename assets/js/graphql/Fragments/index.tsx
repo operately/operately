@@ -107,3 +107,11 @@ export const PROJECT = `
     contributors ${CONTRIBUTOR}
   }
 `;
+
+export const PROJECT_DOCUMENT = `
+  {
+    id
+    title
+    content
+  }
+`;

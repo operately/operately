@@ -136,6 +136,12 @@ const GET_PROJECT = gql`
 
       contributors ${fragments.CONTRIBUTOR}
 
+      pitch ${fragments.PROJECT_DOCUMENT}
+      plan ${fragments.PROJECT_DOCUMENT}
+      execution_review ${fragments.PROJECT_DOCUMENT}
+      control_review ${fragments.PROJECT_DOCUMENT}
+      retrospective ${fragments.PROJECT_DOCUMENT}
+
       activities {
         __typename
         id
