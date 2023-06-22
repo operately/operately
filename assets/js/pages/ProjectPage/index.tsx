@@ -2,8 +2,8 @@ import React from "react";
 
 import classnames from "classnames";
 
-import { useParams, Link } from "react-router-dom";
-import { useProject } from "@/graphql/Projects";
+import { useParams } from "react-router-dom";
+import * as Projects from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
@@ -12,9 +12,6 @@ import * as Cards from "@/components/Cards";
 import StatusUpdates from "./StatusUpdates";
 import Header from "./Header";
 import NewUpdate from "./NewUpdate";
-
-import RichContent from "@/components/RichContent";
-import Button from "@/components/Button";
 
 import * as Milestones from "@/graphql/Projects/milestones";
 
@@ -27,7 +24,7 @@ export function ProjectPage() {
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const { loading, error, data } = useProject(id);
+  const { loading, error, data } = Projects.useProject(id);
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
@@ -75,23 +72,41 @@ function Overview({ project }) {
   );
 }
 
-function DocumentationCardListItem({ title, completed }) {
-  const iconColor = completed ? "text-pink-400" : "text-shade-3";
-  const checkColor = completed ? "text-green-400" : "text-shade-3";
-  const titleColor = completed ? "text-white-1" : "text-shade-3";
+function DocumentationCardListItem({ title, completed, pending }) {
+  let fileIcon: React.ReactNode | null = null;
+  let statusIcon: React.ReactNode | null = null;
+  let titleColor: string | null = null;
+
+  if (completed) {
+    fileIcon = <Icons.IconFileText size={16} className="text-pink-400" />;
+    statusIcon = (
+      <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
+    );
+    titleColor = "text-white-1";
+  } else if (pending) {
+    fileIcon = <Icons.IconFileDots size={16} className="text-yellow-400/80" />;
+    statusIcon = (
+      <Icons.IconProgressCheck size={16} className="text-yellow-400" />
+    );
+    titleColor = "text-white-1";
+  } else {
+    fileIcon = <Icons.IconFileText size={16} className="text-white-3" />;
+    statusIcon = (
+      <Icons.IconCircleCheckFilled size={16} className="text-white-3" />
+    );
+    titleColor = "text-white-3";
+  }
 
   return (
     <div className="border-t border-b border-shade-1 py-1 flex justify-between">
       <div className="flex items-center gap-1">
-        <Icons.IconFileText size={16} className={iconColor} />
+        <div className="shrink-0">{fileIcon}</div>
         <div className={classnames("text-sm font-medium", titleColor)}>
           {title}
         </div>
       </div>
 
-      <div className="flex items-center gap-1">
-        <Icons.IconCircleCheckFilled size={16} className={checkColor} />
-      </div>
+      <div className="flex items-center gap-1">{statusIcon}</div>
     </div>
   );
 }
@@ -107,22 +122,27 @@ function DocumentationCard({ project }) {
         <DocumentationCardListItem
           title="Project Pitch"
           completed={project.pitch}
+          pending={Projects.shouldBeFilledIn(project, "pitch")}
         />
         <DocumentationCardListItem
           title="Execution Plan"
           completed={project.plan}
+          pending={Projects.shouldBeFilledIn(project, "plan")}
         />
         <DocumentationCardListItem
           title="Execution Review"
           completed={project.executionReview}
+          pending={Projects.shouldBeFilledIn(project, "execution_review")}
         />
         <DocumentationCardListItem
           title="Control Review"
           completed={project.controlReview}
+          pending={Projects.shouldBeFilledIn(project, "control_review")}
         />
         <DocumentationCardListItem
           title="Retrospective"
           completed={project.retrospective}
+          pending={Projects.shouldBeFilledIn(project, "retrospective")}
         />
       </Cards.Body>
     </Cards.Card>
