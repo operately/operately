@@ -168,4 +168,60 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_contributor(contributor)
     end
   end
+
+  describe "project_documents" do
+    alias Operately.Projects.Document
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{content: nil, title: nil}
+
+    test "list_project_documents/0 returns all project_documents" do
+      document = document_fixture()
+      assert Projects.list_project_documents() == [document]
+    end
+
+    test "get_document!/1 returns the document with given id" do
+      document = document_fixture()
+      assert Projects.get_document!(document.id) == document
+    end
+
+    test "create_document/1 with valid data creates a document" do
+      valid_attrs = %{content: %{}, title: "some title"}
+
+      assert {:ok, %Document{} = document} = Projects.create_document(valid_attrs)
+      assert document.content == %{}
+      assert document.title == "some title"
+    end
+
+    test "create_document/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_document(@invalid_attrs)
+    end
+
+    test "update_document/2 with valid data updates the document" do
+      document = document_fixture()
+      update_attrs = %{content: %{}, title: "some updated title"}
+
+      assert {:ok, %Document{} = document} = Projects.update_document(document, update_attrs)
+      assert document.content == %{}
+      assert document.title == "some updated title"
+    end
+
+    test "update_document/2 with invalid data returns error changeset" do
+      document = document_fixture()
+      assert {:error, %Ecto.Changeset{}} = Projects.update_document(document, @invalid_attrs)
+      assert document == Projects.get_document!(document.id)
+    end
+
+    test "delete_document/1 deletes the document" do
+      document = document_fixture()
+      assert {:ok, %Document{}} = Projects.delete_document(document)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_document!(document.id) end
+    end
+
+    test "change_document/1 returns a document changeset" do
+      document = document_fixture()
+      assert %Ecto.Changeset{} = Projects.change_document(document)
+    end
+  end
 end
