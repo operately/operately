@@ -158,7 +158,7 @@ function DocList({ project }) {
       <Paper.Body>
         <ListTitle />
 
-        <div className="flex flex-col gap-4 px-8 pb-8">
+        <div className="flex flex-col gap-4 px-8 pb-8 fadeIn">
           <PitchSummary project={project} />
           {Projects.shouldBeFilledIn(project, "plan") && (
             <div className="mt-12 uppercase tracking-wide font-medium">
