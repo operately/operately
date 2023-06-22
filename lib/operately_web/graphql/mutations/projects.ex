@@ -12,6 +12,34 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     end
 
     #
+    # Documents
+    #
+
+    field :post_project_pitch, non_null(:project_document) do
+      arg :project_id, non_null(:id)
+      arg :content, non_null(:string)
+
+      resolve fn args, %{context: context} ->
+        Operately.Repo.transaction(fn ->
+          project = Operately.Projects.get_project!(args.project_id)
+
+          {:ok, document} = Operately.Projects.create_document(%{
+            project_id: args.project_id,
+            title: "Project Pitch",
+            content: Jason.decode!(args.content),
+            author_id: context.current_account.person.id
+          })
+
+          {:ok, _} = Operately.Projects.update_project(project, %{
+            pitch_document_id: document.id
+          })
+
+          document
+        end)
+      end
+    end
+
+    #
     # Contributors
     #
 

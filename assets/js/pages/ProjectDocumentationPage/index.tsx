@@ -11,6 +11,7 @@ import * as TipTapEditor from "@/components/Editor";
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
+import FormattedTime from "@/components/FormattedTime";
 
 export function ProjectDocumentationPage() {
   const params = useParams();
@@ -32,8 +33,10 @@ export function ProjectDocumentationPage() {
       return <DocList project={project} />;
     case "/pitch/new":
       return <NewPitch project={project} />;
-    case "pitch":
-      return <Pitch project={project} />;
+    case "/pitch":
+      return (
+        <DocView project={project} doc={project.pitch} title="Project Pitch" />
+      );
     case "plan":
       return <ExecutionPlan project={project} />;
     case "execution":
@@ -43,11 +46,11 @@ export function ProjectDocumentationPage() {
     case "retrospective":
       return <Retrospective project={project} />;
     default:
-      throw new Error(`Unknown document ${star}`);
+      throw new Error(`Unknown document ${subpath}`);
   }
 }
 
-function DocView({ project, doc }) {
+function DocView({ project, doc, title }) {
   return (
     <Paper.Root>
       <Paper.Navigation>
@@ -63,7 +66,11 @@ function DocView({ project, doc }) {
         </Paper.NavItem>
       </Paper.Navigation>
       <Paper.Body>
-        <DocumentTitle title={doc.title} />
+        <DocumentTitle
+          title={title}
+          time={doc.insertedAt}
+          author={doc.author}
+        />
         <DocumentBody content={doc.content} />
       </Paper.Body>
     </Paper.Root>
@@ -85,7 +92,7 @@ function ListTitle() {
   );
 }
 
-function DocumentTitle({ title }) {
+function NewDocumentTitle({ title, subtitle }) {
   const { data } = Me.useMe();
 
   return (
@@ -97,9 +104,25 @@ function DocumentTitle({ title }) {
 
         <div>
           <div className="text-2xl font-extrabold">{title}</div>
+          <div>{subtitle}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DocumentTitle({ title, author, time }) {
+  return (
+    <div className="p-16 pb-0">
+      <div className="flex items-center gap-4">
+        <div className="text-center">
+          <Avatar person={author} size="large" />
+        </div>
+
+        <div>
+          <div className="text-2xl font-extrabold">{title}</div>
           <div>
-            What is the project about, why is it important, and why should it be
-            persued?
+            <FormattedTime time={time} format="short-date" />
           </div>
         </div>
       </div>
@@ -109,7 +132,7 @@ function DocumentTitle({ title }) {
 
 function DocumentBody({ content }) {
   return (
-    <div className="text-lg px-16">
+    <div className="text-lg p-16 py-8">
       <RichContent jsonContent={content} />
     </div>
   );
@@ -144,7 +167,7 @@ function PitchSummary({ project }) {
     return (
       <DocSummary
         title="Project Pitch"
-        content={project.pitch}
+        content={project.pitch.content}
         linkTo={`/projects/${project.id}/documentation/pitch`}
       />
     );
@@ -281,7 +304,7 @@ function PendingDoc({ title, message, fillInLink }) {
 
 function NewPitch({ project }) {
   const navigate = useNavigate();
-  const [postUpdate, { loading }] = Projects.usePostUpdateMutation(project.id);
+  const [post, { loading }] = Projects.usePostPitchMutation(project.id);
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Write your pitch here...",
@@ -291,9 +314,9 @@ function NewPitch({ project }) {
     if (!editor) return;
     if (loading) return;
 
-    await postUpdate(editor.getJSON());
+    await post(editor.getJSON());
 
-    navigate(`/projects/${project.id}`);
+    navigate(`/projects/${project.id}/documentation/pitch`);
   };
 
   return (
@@ -311,7 +334,12 @@ function NewPitch({ project }) {
         </Paper.NavItem>
       </Paper.Navigation>
       <Paper.Body>
-        <DocumentTitle title={"Project Pitch"} />
+        <NewDocumentTitle
+          title={"Project Pitch"}
+          subtitle={
+            "What is the project about, why is it important, and why should it be persued?"
+          }
+        />
 
         <div className="px-16">
           <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">

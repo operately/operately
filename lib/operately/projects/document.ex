@@ -5,6 +5,8 @@ defmodule Operately.Projects.Document do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "project_documents" do
+    belongs_to :author, Operately.People.Person
+
     field :content, :map
     field :title, :string
 
@@ -14,7 +16,7 @@ defmodule Operately.Projects.Document do
   @doc false
   def changeset(document, attrs) do
     document
-    |> cast(attrs, [:title, :content])
-    |> validate_required([:title, :content])
+    |> cast(attrs, [:title, :content, :author_id])
+    |> validate_required([:title, :content, :author_id])
   end
 end

@@ -39,7 +39,7 @@ export function Root({
   children: React.ReactNode;
 }) {
   return (
-    <div className={classnames("mx-auto mt-20", sizes[size])}>{children}</div>
+    <div className={classnames("mx-auto my-20", sizes[size])}>{children}</div>
   );
 }
 

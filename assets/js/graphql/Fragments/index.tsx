@@ -113,5 +113,7 @@ export const PROJECT_DOCUMENT = `
     id
     title
     content
+    insertedAt
+    author ${PERSON}
   }
 `;

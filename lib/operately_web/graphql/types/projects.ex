@@ -24,7 +24,20 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
   object :project_document do
     field :id, non_null(:id)
     field :title, non_null(:string)
-    field :content, non_null(:string)
+    field :inserted_at, non_null(:date)
+
+    field :content, non_null(:string) do
+      resolve fn document, _, _ ->
+        {:ok, Jason.encode!(document.content)}
+      end
+    end
+
+    field :author, non_null(:person) do
+      resolve fn document, _, _ ->
+        person = Operately.People.get_person!(document.author_id)
+        {:ok, person}
+      end
+    end
   end
 
   object :project do
