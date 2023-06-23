@@ -21,7 +21,9 @@ defmodule Operately.Projects do
 
   def create_project(attrs \\ %{}, _creator_id) do
     next_update_scheduled_at = attrs[:next_update_scheduled_at] || DateTime.add(DateTime.utc_now(), 7, :day)
-    attrs = Map.put(attrs, :next_update_scheduled_at, next_update_scheduled_at)
+    attrs = Map.merge(attrs, %{
+      :next_update_scheduled_at => next_update_scheduled_at
+    })
 
     %Project{}
     |> Project.changeset(attrs)
@@ -133,5 +135,53 @@ defmodule Operately.Projects do
 
   def change_contributor(%Contributor{} = contributor, attrs \\ %{}) do
     Contributor.changeset(contributor, attrs)
+  end
+
+  alias Operately.Projects.Document
+
+  def get_pitch(project) do
+    Repo.preload(project, :pitch).pitch
+  end
+
+  def get_plan(project) do
+    Repo.preload(project, :plan).plan
+  end
+
+  def get_execution_review(project) do
+    Repo.preload(project, :execution_review).execution_review
+  end
+
+  def get_control_review(project) do
+    Repo.preload(project, :control_review).control_review
+  end
+
+  def get_retrospective(project) do
+    Repo.preload(project, :retrospective).retrospective
+  end
+
+  def list_project_documents do
+    Repo.all(Document)
+  end
+
+  def get_document!(id), do: Repo.get!(Document, id)
+
+  def create_document(attrs \\ %{}) do
+    %Document{}
+    |> Document.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_document(%Document{} = document, attrs) do
+    document
+    |> Document.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_document(%Document{} = document) do
+    Repo.delete(document)
+  end
+
+  def change_document(%Document{} = document, attrs \\ %{}) do
+    Document.changeset(document, attrs)
   end
 end

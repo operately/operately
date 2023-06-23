@@ -1,41 +1,15 @@
 defmodule Operately.OkrsFixtures do
-  @moduledoc """
-  This module defines test helpers for creating
-  entities via the `Operately.Okrs` context.
-  """
-
-  @doc """
-  Generate a objective.
-  """
-  def objective_fixture(:with_owner, attrs) do
-    person = Operately.PeopleFixtures.person_fixture()
-    objective = objective_fixture(Map.merge(attrs, %{
-      owner_id: person.id
-    }))
-
-    {person, objective}
-  end
 
   def objective_fixture(attrs \\ %{}) do
     {:ok, objective} =
       attrs
       |> Enum.into(%{
-        description: "some description",
+        description: %{},
         name: "some name"
       })
       |> Operately.Okrs.create_objective()
 
     objective
-  end
-
-  @doc """
-  Generate a key_result.
-  """
-  def key_result_fixture(:with_objective, attrs) do
-    {_, objective} = objective_fixture(:with_owner, %{})
-    key_result = key_result_fixture(Map.merge(attrs, %{objective_id: objective.id}))
-
-    {objective, key_result}
   end
 
   def key_result_fixture(attrs \\ %{}) do
@@ -53,4 +27,5 @@ defmodule Operately.OkrsFixtures do
 
     key_result
   end
+
 end

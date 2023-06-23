@@ -21,6 +21,25 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     end
   end
 
+  object :project_document do
+    field :id, non_null(:id)
+    field :title, non_null(:string)
+    field :inserted_at, non_null(:date)
+
+    field :content, non_null(:string) do
+      resolve fn document, _, _ ->
+        {:ok, Jason.encode!(document.content)}
+      end
+    end
+
+    field :author, non_null(:person) do
+      resolve fn document, _, _ ->
+        person = Operately.People.get_person!(document.author_id)
+        {:ok, person}
+      end
+    end
+  end
+
   object :project do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -79,6 +98,38 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
         updates = Operately.Updates.list_updates(project.id, :project)
 
         {:ok, updates}
+      end
+    end
+
+    # project documents
+
+    field :pitch, :project_document do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.get_pitch(project)}
+      end
+    end
+
+    field :plan, :project_document do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.get_plan(project)}
+      end
+    end
+
+    field :execution_review, :project_document do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.get_execution_review(project)}
+      end
+    end
+
+    field :control_review, :project_document do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.get_control_review(project)}
+      end
+    end
+
+    field :retrospective, :project_document do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.get_retrospective(project)}
       end
     end
   end

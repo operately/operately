@@ -103,6 +103,13 @@ interface Activity {
   comments: Comment[];
 }
 
+interface Document {
+  id: string;
+  title: string;
+  content: string;
+  author: Person;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -114,6 +121,12 @@ export interface Project {
   parents: Parent[];
   contributors: Contributor[];
   activities: Activity[];
+
+  pitch: Document;
+  plan: Document;
+  execution_review: Document;
+  control_review: Document;
+  retrospective: Document;
 }
 
 const GET_PROJECT = gql`
@@ -135,6 +148,12 @@ const GET_PROJECT = gql`
       }
 
       contributors ${fragments.CONTRIBUTOR}
+
+      pitch ${fragments.PROJECT_DOCUMENT}
+      plan ${fragments.PROJECT_DOCUMENT}
+      execution_review ${fragments.PROJECT_DOCUMENT}
+      control_review ${fragments.PROJECT_DOCUMENT}
+      retrospective ${fragments.PROJECT_DOCUMENT}
 
       activities {
         __typename
@@ -236,6 +255,29 @@ export function usePostUpdateMutation(projectId: string) {
   };
 
   return [createUpdate, status] as const;
+}
+
+export function usePostPitchMutation(projectId: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation PostPitch($projectId: ID!, $content: String!) {
+        postProjectPitch(projectId: $projectId, content: $content) {
+          id
+        }
+      }
+    `
+  );
+
+  const postPitch = (content: any) => {
+    return fun({
+      variables: {
+        projectId: projectId,
+        content: JSON.stringify(content),
+      },
+    });
+  };
+
+  return [postPitch, status] as const;
 }
 
 export function usePostCommentMutation(updateId: string) {
@@ -471,4 +513,32 @@ export function isChampionAssigned(project: Project) {
 
 export function isReviwerAssigned(project: Project) {
   return project.contributors.some((c) => c.role === "reviewer");
+}
+
+type DocumentType =
+  | "pitch"
+  | "plan"
+  | "execution_review"
+  | "control_review"
+  | "retrospective";
+
+const whatShouldBeFilledIn = {
+  draft: ["pitch"],
+  planning: ["pitch", "plan"],
+  execution: ["pitch", "plan", "execution_review"],
+  control: ["pitch", "plan", "execution_review", "control_review"],
+  retrospective: [
+    "pitch",
+    "plan",
+    "execution_review",
+    "control_review",
+    "retrospective",
+  ],
+};
+
+export function shouldBeFilledIn(
+  project: Project,
+  documentType: DocumentType
+): boolean {
+  return whatShouldBeFilledIn[project.phase].includes(documentType);
 }

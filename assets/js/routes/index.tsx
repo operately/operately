@@ -12,6 +12,7 @@ import { ProjectListPage } from "../pages/ProjectListPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 import { ProjectMilestonesPage } from "@/pages/ProjectMilestonesPage";
+import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
 
 import TenetAddPage from "../pages/TenetAddPage";
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
@@ -91,6 +92,10 @@ const routes = createBrowserRouter([
       {
         path: "/projects/:project_id/milestones",
         element: <ProjectMilestonesPage />,
+      },
+      {
+        path: "/projects/:project_id/documentation/*",
+        element: <ProjectDocumentationPage />,
       },
       {
         path: "/projects/:id/*",

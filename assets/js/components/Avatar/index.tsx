@@ -10,6 +10,14 @@ export enum AvatarSize {
   XXLarge = "xxlarge",
 }
 
+type AvatarSizeString =
+  | "tiny"
+  | "small"
+  | "normal"
+  | "large"
+  | "xlarge"
+  | "xxlarge";
+
 interface Person {
   avatarUrl?: string;
   fullName: string;
@@ -19,7 +27,7 @@ interface Person {
 
 interface AvatarProps {
   person: Person | null;
-  size: AvatarSize;
+  size: AvatarSize | AvatarSizeString;
 }
 
 function SizeClasses({ size }: { size: AvatarSize }): string {

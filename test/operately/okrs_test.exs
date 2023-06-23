@@ -3,38 +3,45 @@ defmodule Operately.OkrsTest do
 
   alias Operately.Okrs
 
+  import Operately.PeopleFixtures
+  import Operately.CompaniesFixtures
+  import Operately.OkrsFixtures
+
+  setup do
+    company = company_fixture(name: "Acme")
+    person = person_fixture(company_id: company.id)
+
+    {:ok, %{company: company, person: person}}
+  end
+
   describe "objectives" do
     alias Operately.Okrs.Objective
 
-    import Operately.OkrsFixtures
-
     @invalid_attrs %{description: nil, name: nil}
 
-    test "list_objectives/0 returns all objectives" do
-      {_, objective} = objective_fixture(:with_owner, %{})
+    test "list_objectives/0 returns all objectives", ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
 
       assert same_ids(Okrs.list_objectives(), [objective])
     end
 
-    test "get_objective!/1 returns the objective with given id" do
-      {_, objective} = objective_fixture(:with_owner, %{})
+    test "get_objective!/1 returns the objective with given id", ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
 
       assert same_ids(Okrs.get_objective!(objective.id), objective)
     end
 
-    test "create_objective/1 with valid data creates a objective" do
-      person = Operately.PeopleFixtures.person_fixture()
+    test "create_objective/1 with valid data creates a objective", ctx do
       valid_attrs = %{
         name: "some name",
-        description: "some description",
+        description: %{},
         ownership: %{
-          person_id: person.id,
+          person_id: ctx.person.id,
           target: :objective
         }
       }
 
       assert {:ok, %Objective{} = objective} = Okrs.create_objective(valid_attrs)
-      assert objective.description == "some description"
       assert objective.name == "some name"
     end
 
@@ -42,35 +49,36 @@ defmodule Operately.OkrsTest do
       assert {:error, %Ecto.Changeset{}} = Okrs.create_objective(@invalid_attrs)
     end
 
-    test "update_objective/2 with valid data updates the objective" do
-      {_, objective} = objective_fixture(:with_owner, %{})
+    test "update_objective/2 with valid data updates the objective", ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
 
       update_attrs = %{
-        description: "some updated description",
         name: "some updated name"
       }
 
       assert {:ok, %Objective{} = objective} = Okrs.update_objective(objective, update_attrs)
-      assert objective.description == "some updated description"
+      assert objective.description == %{}
       assert objective.name == "some updated name"
     end
 
-    test "update_objective/2 with invalid data returns error changeset" do
-      {_, objective} = objective_fixture(:with_owner, %{})
+    test "update_objective/2 with invalid data returns error changeset", ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
+
       assert {:error, %Ecto.Changeset{}} = Okrs.update_objective(objective, @invalid_attrs)
 
       assert same_ids(objective, Okrs.get_objective!(objective.id))
     end
 
-    test "delete_objective/1 deletes the objective" do
-      {_, objective} = objective_fixture(:with_owner, %{})
+    test "delete_objective/1 deletes the objective", ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
 
       assert {:ok, %Objective{}} = Okrs.delete_objective(objective)
       assert_raise Ecto.NoResultsError, fn -> Okrs.get_objective!(objective.id) end
     end
 
-    test "change_objective/1 returns a objective changeset" do
-      {_, objective} = objective_fixture(:with_owner, %{})
+    test "change_objective/1 returns a objective changeset", ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
+
       assert %Ecto.Changeset{} = Okrs.change_objective(objective)
     end
   end
@@ -82,17 +90,21 @@ defmodule Operately.OkrsTest do
 
     @invalid_attrs %{direction: nil, name: nil, target: nil, unit: nil}
 
-    test "get_key_result!/1 returns the key_result with given id" do
-      {_, key_result} = key_result_fixture(:with_objective, %{})
+    setup ctx do
+      objective = objective_fixture(%{owner_id: ctx.person.id})
+
+      {:ok, %{objective: objective}}
+    end
+
+    test "get_key_result!/1 returns the key_result with given id", ctx do
+      key_result = key_result_fixture(%{objective_id: ctx.objective.id})
 
       assert Okrs.get_key_result!(key_result.id) == key_result
     end
 
-    test "create_key_result/1 with valid data creates a key_result" do
-      {_, objective} = objective_fixture(:with_owner, %{})
-
+    test "create_key_result/1 with valid data creates a key_result", ctx do
       valid_attrs = %{
-        objective_id: objective.id,
+        objective_id: ctx.objective.id,
         direction: :above,
         name: "some name",
         target: 42,
@@ -112,8 +124,8 @@ defmodule Operately.OkrsTest do
       assert {:error, %Ecto.Changeset{}} = Okrs.create_key_result(@invalid_attrs)
     end
 
-    test "update_key_result/2 with valid data updates the key_result" do
-      {_, key_result} = key_result_fixture(:with_objective, %{})
+    test "update_key_result/2 with valid data updates the key_result", ctx do
+      key_result = key_result_fixture(%{objective_id: ctx.objective.id})
       update_attrs = %{direction: :below, name: "some updated name", target: 43, unit: :number}
 
       assert {:ok, %KeyResult{} = key_result} = Okrs.update_key_result(key_result, update_attrs)
@@ -123,21 +135,23 @@ defmodule Operately.OkrsTest do
       assert key_result.unit == :number
     end
 
-    test "update_key_result/2 with invalid data returns error changeset" do
-      {_, key_result} = key_result_fixture(:with_objective, %{})
+    test "update_key_result/2 with invalid data returns error changeset", ctx do
+      key_result = key_result_fixture(%{objective_id: ctx.objective.id})
 
       assert {:error, %Ecto.Changeset{}} = Okrs.update_key_result(key_result, @invalid_attrs)
       assert key_result == Okrs.get_key_result!(key_result.id)
     end
 
-    test "delete_key_result/1 deletes the key_result" do
-      {_, key_result} = key_result_fixture(:with_objective, %{})
+    test "delete_key_result/1 deletes the key_result", ctx do
+      key_result = key_result_fixture(%{objective_id: ctx.objective.id})
+
       assert {:ok, %KeyResult{}} = Okrs.delete_key_result(key_result)
       assert_raise Ecto.NoResultsError, fn -> Okrs.get_key_result!(key_result.id) end
     end
 
-    test "change_key_result/1 returns a key_result changeset" do
-      {_objective, key_result} = key_result_fixture(:with_objective, %{})
+    test "change_key_result/1 returns a key_result changeset", ctx do
+      key_result = key_result_fixture(%{objective_id: ctx.objective.id})
+
       assert %Ecto.Changeset{} = Okrs.change_key_result(key_result)
     end
   end

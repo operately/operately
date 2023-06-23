@@ -18,6 +18,13 @@ defmodule Operately.Projects.Project do
     field :next_update_scheduled_at, :utc_datetime
     field :phase, Ecto.Enum, values: [:draft, :planning, :design, :execution, :closing, :closed], default: :draft
 
+    # related documents
+    belongs_to :pitch, Operately.Projects.Document, foreign_key: :pitch_document_id
+    belongs_to :plan, Operately.Projects.Document, foreign_key: :plan_document_id
+    belongs_to :execution_review, Operately.Projects.Document, foreign_key: :execution_review_document_id
+    belongs_to :control_review, Operately.Projects.Document, foreign_key: :control_review_document_id
+    belongs_to :retrospective, Operately.Projects.Document, foreign_key: :retrospective_document_id
+
     timestamps()
   end
 
@@ -32,7 +39,12 @@ defmodule Operately.Projects.Project do
       :deadline,
       :objective_id,
       :next_update_scheduled_at,
-      :phase
+      :phase,
+      :pitch_document_id,
+      :plan_document_id,
+      :execution_review_document_id,
+      :control_review_document_id,
+      :retrospective_document_id
     ])
     |> validate_required([:name])
   end

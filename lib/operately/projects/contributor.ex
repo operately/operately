@@ -25,6 +25,8 @@ defmodule Operately.Projects.Contributor do
 
   @doc false
   def changeset(contributor, attrs) do
-    contributor |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
+    contributor 
+    |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
+    |> validate_required([:project_id, :person_id])
   end
 end

@@ -7,21 +7,32 @@ defmodule Operately.PeopleTest do
     alias Operately.People.Person
 
     import Operately.PeopleFixtures
+    import Operately.CompaniesFixtures
 
     @invalid_attrs %{full_name: nil, handle: nil, title: nil}
 
-    test "list_people/0 returns all people" do
-      person = person_fixture()
-      assert People.list_people() == [person]
+    setup do
+      company = company_fixture()
+      person = person_fixture(company_id: company.id)
+
+      {:ok, %{person: person}}
     end
 
-    test "get_person!/1 returns the person with given id" do
-      person = person_fixture()
-      assert People.get_person!(person.id) == person
+    test "list_people/0 returns all people", ctx do
+      assert People.list_people() == [ctx.person]
     end
 
-    test "create_person/1 with valid data creates a person" do
-      valid_attrs = %{full_name: "some full_name", handle: "some handle", title: "some title"}
+    test "get_person!/1 returns the person with given id", ctx do
+      assert People.get_person!(ctx.person.id) == ctx.person
+    end
+
+    test "create_person/1 with valid data creates a person", ctx do
+      valid_attrs = %{
+        full_name: "some full_name", 
+        handle: "some handle",
+        title: "some title",
+        company_id: ctx.person.company_id
+      }
 
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
       assert person.full_name == "some full_name"
@@ -33,31 +44,31 @@ defmodule Operately.PeopleTest do
       assert {:error, %Ecto.Changeset{}} = People.create_person(@invalid_attrs)
     end
 
-    test "update_person/2 with valid data updates the person" do
-      person = person_fixture()
-      update_attrs = %{full_name: "some updated full_name", handle: "some updated handle", title: "some updated title"}
+    test "update_person/2 with valid data updates the person", ctx do
+      update_attrs = %{
+        full_name: "some updated full_name", 
+        handle: "some updated handle", 
+        title: "some updated title"
+      }
 
-      assert {:ok, %Person{} = person} = People.update_person(person, update_attrs)
+      assert {:ok, %Person{} = person} = People.update_person(ctx.person, update_attrs)
       assert person.full_name == "some updated full_name"
       assert person.handle == "some updated handle"
       assert person.title == "some updated title"
     end
 
-    test "update_person/2 with invalid data returns error changeset" do
-      person = person_fixture()
-      assert {:error, %Ecto.Changeset{}} = People.update_person(person, @invalid_attrs)
-      assert person == People.get_person!(person.id)
+    test "update_person/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = People.update_person(ctx.person, @invalid_attrs)
+      assert ctx.person == People.get_person!(ctx.person.id)
     end
 
-    test "delete_person/1 deletes the person" do
-      person = person_fixture()
-      assert {:ok, %Person{}} = People.delete_person(person)
-      assert_raise Ecto.NoResultsError, fn -> People.get_person!(person.id) end
+    test "delete_person/1 deletes the person", ctx do
+      assert {:ok, %Person{}} = People.delete_person(ctx.person)
+      assert_raise Ecto.NoResultsError, fn -> People.get_person!(ctx.person.id) end
     end
 
-    test "change_person/1 returns a person changeset" do
-      person = person_fixture()
-      assert %Ecto.Changeset{} = People.change_person(person)
+    test "change_person/1 returns a person changeset", ctx do
+      assert %Ecto.Changeset{} = People.change_person(ctx.person)
     end
   end
 
