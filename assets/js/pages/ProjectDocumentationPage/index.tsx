@@ -44,6 +44,12 @@ export function ProjectDocumentationPage() {
     case "/execution_review/new":
       return <NewExecutionReview project={project} />;
 
+    case "/control_review/new":
+      return <NewControlReview project={project} />;
+
+    case "/retrospective/new":
+      return <NewRetrospective project={project} />;
+
     case "/pitch":
       return (
         <DocView
@@ -365,7 +371,51 @@ function NewExecutionReview({ project }) {
   return (
     <NewDocument
       project={project}
-      schema={schemas.ExecutionPlanSchema}
+      schema={schemas.ExecutionReviewSchema}
+      onSubmit={onSubmit}
+    />
+  );
+}
+
+function NewControlReview({ project }) {
+  const navigate = useNavigate();
+  const [post, { loading }] = Projects.usePostDocument(
+    project.id,
+    "control_review"
+  );
+
+  const onSubmit = (content) => {
+    post(content).then(() => {
+      navigate(`/projects/${project.id}/documentation/control_review`);
+    });
+  };
+
+  return (
+    <NewDocument
+      project={project}
+      schema={schemas.ControlReviewSchema}
+      onSubmit={onSubmit}
+    />
+  );
+}
+
+function NewRetrospective({ project }) {
+  const navigate = useNavigate();
+  const [post, { loading }] = Projects.usePostDocument(
+    project.id,
+    "retrospective"
+  );
+
+  const onSubmit = (content) => {
+    post(content).then(() => {
+      navigate(`/projects/${project.id}/documentation/retrospective`);
+    });
+  };
+
+  return (
+    <NewDocument
+      project={project}
+      schema={schemas.RetrospectiveSchema}
       onSubmit={onSubmit}
     />
   );
