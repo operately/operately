@@ -36,6 +36,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
             "plan" -> %{plan_document_id: document.id}
             "execution_review" -> %{execution_review_document_id: document.id}
             "control_review" -> %{control_review_document_id: document.id}
+            "retrospective" -> %{retrospective_document_id: document.id}
             type -> raise "Unknown document type #{type}"
           end
 

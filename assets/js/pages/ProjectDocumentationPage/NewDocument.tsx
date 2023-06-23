@@ -8,6 +8,8 @@ import * as Me from "@/graphql/Me";
 
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
+import RichContent from "@/components/RichContent";
+import FormattedTime from "@/components/FormattedTime";
 
 export function NewDocument({ project, schema, onSubmit }) {
   const form = useDocumentForm(schema);
@@ -22,9 +24,7 @@ export function NewDocument({ project, schema, onSubmit }) {
 
         <Icons.IconSlash size={16} />
 
-        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-          Documentation
-        </Paper.NavItem>
+        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>Documentation</Paper.NavItem>
       </Paper.Navigation>
       <Paper.Body>
         <NewDocumentTitle title={schema.title} subtitle={schema.subtitle} />
@@ -34,7 +34,7 @@ export function NewDocument({ project, schema, onSubmit }) {
             itemHandler(item.type).component({
               item,
               inputState: form.inputs[item.name],
-            })
+            }),
           )}
         </div>
 
@@ -50,6 +50,61 @@ export function NewDocument({ project, schema, onSubmit }) {
         </div>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+export function DocView({ project, doc, schema }) {
+  return (
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Icons.IconClipboardList size={16} />
+          {project.name}
+        </Paper.NavItem>
+
+        <Icons.IconSlash size={16} />
+
+        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>Documentation</Paper.NavItem>
+      </Paper.Navigation>
+      <Paper.Body>
+        <DocumentTitle
+          title={schema.title}
+          subtitle={
+            <>
+              {project.pitch.author.fullName}
+              <span className="mx-1">&middot;</span>
+              <FormattedTime time={project.pitch.insertedAt} format="short-date" />
+            </>
+          }
+          author={doc.author}
+        />
+        <div className="flex flex-col gap-6 px-16 p-8">
+          {schema.content.map((item: any) => {
+            return itemHandler(item.type).viewCompoenent({
+              item,
+              content: JSON.parse(doc.content)[item.name],
+            });
+          })}
+        </div>
+      </Paper.Body>
+    </Paper.Root>
+  );
+}
+
+function DocumentTitle({ title, author, subtitle }) {
+  return (
+    <div className="p-16 pb-0">
+      <div className="flex items-center gap-4">
+        <div className="text-center">
+          <Avatar person={author} size="large" />
+        </div>
+
+        <div>
+          <div className="text-2xl font-extrabold">{title}</div>
+          <div>{subtitle}</div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -75,6 +130,10 @@ const NullItem = {
     return null;
   },
 
+  viewCompoenent: ({ content }) => {
+    return null;
+  },
+
   isSubmitable: () => {
     return true;
   },
@@ -97,14 +156,15 @@ const RichText = {
         <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 -mx-2">
           <TipTapEditor.Toolbar editor={editor} />
         </div>
-        <div
-          className="mb-8 py-4 text-white-1 text-lg"
-          style={{ minHeight: "300px" }}
-        >
+        <div className="mb-8 py-4 text-white-1 text-lg" style={{ minHeight: "300px" }}>
           <TipTapEditor.EditorContent editor={editor} />
         </div>
       </div>
     );
+  },
+
+  viewCompoenent: ({ item, content }) => {
+    return <RichContent jsonContent={JSON.stringify(content)} />;
   },
 
   isSubmitable: ({ inputState }) => {
@@ -140,12 +200,21 @@ const ParagraphQuestion = {
           <div className="flex items-center gap-1 border-b border-shade-2 px-2 py-1 -mx-4">
             <TipTapEditor.Toolbar editor={editor} />
           </div>
-          <div
-            className="mb-8 py-4 text-white-1"
-            style={{ minHeight: "100px" }}
-          >
+          <div className="mb-8 py-4 text-white-1" style={{ minHeight: "100px" }}>
             <TipTapEditor.EditorContent editor={editor} />
           </div>
+        </div>
+      </div>
+    );
+  },
+
+  viewCompoenent: ({ item, content }) => {
+    return (
+      <div className="">
+        <label className="font-bold">{item.question}</label>
+
+        <div className="bg-dark-3 border border-shade-2 rounded-lg mt-2 p-2 px-4" style={{ minHeight: "100px" }}>
+          <RichContent jsonContent={JSON.stringify(content)} />
         </div>
       </div>
     );
@@ -190,6 +259,23 @@ const YesNoQuestion = {
                 checked={value === option.value}
                 onChange={(e) => setValue(e.target.value)}
               />
+              <label>{option.label}</label>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  },
+
+  viewCompoenent: ({ item, content }) => {
+    return (
+      <div className="">
+        <p className="font-semibold">{item.question}</p>
+
+        <div className="flex items-center gap-4 mt-2">
+          {item.options.map((option) => (
+            <div key={option.value} className="flex items-center gap-1">
+              <input type="radio" name={item.name} value={option.value} checked={option.value === content} disabled />
               <label>{option.label}</label>
             </div>
           ))}

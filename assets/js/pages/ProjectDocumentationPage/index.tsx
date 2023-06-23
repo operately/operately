@@ -2,18 +2,13 @@ import React from "react";
 
 import { useNavigate, useParams, Link } from "react-router-dom";
 import * as Projects from "@/graphql/Projects";
-import * as Me from "@/graphql/Me";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
-import * as TipTapEditor from "@/components/Editor";
 
-import RichContent from "@/components/RichContent";
-import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
-import FormattedTime from "@/components/FormattedTime";
 
-import { NewDocument } from "./NewDocument";
+import { NewDocument, DocView } from "./NewDocument";
 import * as schemas from "./schemas";
 
 export function ProjectDocumentationPage() {
@@ -51,89 +46,29 @@ export function ProjectDocumentationPage() {
       return <NewRetrospective project={project} />;
 
     case "/pitch":
-      return (
-        <DocView
-          project={project}
-          doc={project.pitch}
-          title={`Project Pitch: ${project.name}`}
-          subtitle={
-            <>
-              {project.pitch.author.fullName}
-              <span className="mx-1">&middot;</span>
-              <FormattedTime
-                time={project.pitch.insertedAt}
-                format="short-date"
-              />
-            </>
-          }
-        />
-      );
+      return <DocView project={project} doc={project.pitch} schema={schemas.ProjectPitchSchema} />;
+
+    case "/plan":
+      return <DocView project={project} doc={project.plan} schema={schemas.ExecutionPlanSchema} />;
 
     case "/execution_review":
-      return <ExecutionReview project={project} />;
-    case "control":
-      return <ControlReview project={project} />;
-    case "retrospective":
-      return <Retrospective project={project} />;
+      return <DocView project={project} doc={project.execution_review} schema={schemas.ExecutionReviewSchema} />;
+
+    case "/control_review":
+      return <DocView project={project} doc={project.control_review} schema={schemas.ExecutionReviewSchema} />;
+
+    case "/retrospective":
+      return <DocView project={project} doc={project.retrospective} schema={schemas.RetrospectiveSchema} />;
+
     default:
       throw new Error(`Unknown document ${subpath}`);
   }
 }
 
-function DocView({ project, doc, title, subtitle }) {
-  return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${project.id}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-
-        <Icons.IconSlash size={16} />
-
-        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-          Documentation
-        </Paper.NavItem>
-      </Paper.Navigation>
-      <Paper.Body>
-        <DocumentTitle title={title} subtitle={subtitle} author={doc.author} />
-        <DocumentBody content={doc.content} />
-      </Paper.Body>
-    </Paper.Root>
-  );
-}
-
 function ListTitle() {
   return (
     <div className="p-8 pb-8">
-      <div className="text-2xl font-extrabold flex justify-center items-center">
-        Documentation
-      </div>
-    </div>
-  );
-}
-
-function DocumentTitle({ title, author, subtitle }) {
-  return (
-    <div className="p-16 pb-0">
-      <div className="flex items-center gap-4">
-        <div className="text-center">
-          <Avatar person={author} size="large" />
-        </div>
-
-        <div>
-          <div className="text-2xl font-extrabold">{title}</div>
-          <div>{subtitle}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DocumentBody({ content }) {
-  return (
-    <div className="text-lg p-16 py-8">
-      <RichContent jsonContent={content} />
+      <div className="text-2xl font-extrabold flex justify-center items-center">Documentation</div>
     </div>
   );
 }
@@ -153,9 +88,7 @@ function DocList({ project }) {
         <div className="flex flex-col gap-4 px-8 pb-8 fadeIn">
           <PitchSummary project={project} />
           {Projects.shouldBeFilledIn(project, "plan") && (
-            <div className="mt-12 uppercase tracking-wide font-medium">
-              Upcomming
-            </div>
+            <div className="mt-12 uppercase tracking-wide font-medium">Upcomming</div>
           )}
           <ExecutionPlanSummary project={project} />
           <ExecutionReviewSummary project={project} />
@@ -196,30 +129,13 @@ function ExecutionPlanSummary({ project }) {
   );
 }
 
-function DocSummary({
-  project,
-  documentType,
-  title,
-  content,
-  viewLink,
-  fillInLink,
-  futureMessage,
-  pendingMessage,
-}) {
+function DocSummary({ project, documentType, title, content, viewLink, fillInLink, futureMessage, pendingMessage }) {
   if (content) {
-    return (
-      <ExistingDocSummary title={title} content={content} linkTo={viewLink} />
-    );
+    return <ExistingDocSummary title={title} content={content} linkTo={viewLink} />;
   }
 
   if (Projects.shouldBeFilledIn(project, documentType)) {
-    return (
-      <PendingDoc
-        title={title}
-        message={pendingMessage}
-        fillInLink={fillInLink}
-      />
-    );
+    return <PendingDoc title={title} message={pendingMessage} fillInLink={fillInLink} />;
   }
 
   return <EmptyDoc title={title} message={futureMessage} />;
@@ -227,32 +143,16 @@ function DocSummary({
 
 function ExecutionReviewSummary({ project }) {
   return (
-    <EmptyDoc
-      project={project}
-      title="Execution Review"
-      message="Filled in after the execution phase is complete"
-    />
+    <EmptyDoc project={project} title="Execution Review" message="Filled in after the execution phase is complete" />
   );
 }
 
 function ControlReviewSummary({ project }) {
-  return (
-    <EmptyDoc
-      project={project}
-      title="Control Review"
-      message="Filled in after the control phase is complete"
-    />
-  );
+  return <EmptyDoc project={project} title="Control Review" message="Filled in after the control phase is complete" />;
 }
 
 function RetrospectiveSummary({ project }) {
-  return (
-    <EmptyDoc
-      project={project}
-      title="Retrospective"
-      message="Filled in after the whole project is complete"
-    />
-  );
+  return <EmptyDoc project={project} title="Retrospective" message="Filled in after the whole project is complete" />;
 }
 
 function ExistingDocSummary({ title, content, linkTo }) {
@@ -327,13 +227,7 @@ function NewPitch({ project }) {
     });
   };
 
-  return (
-    <NewDocument
-      project={project}
-      schema={schemas.ProjectPitchSchema}
-      onSubmit={onSubmit}
-    />
-  );
+  return <NewDocument project={project} schema={schemas.ProjectPitchSchema} onSubmit={onSubmit} />;
 }
 
 function NewExecutionPlan({ project }) {
@@ -346,21 +240,12 @@ function NewExecutionPlan({ project }) {
     });
   };
 
-  return (
-    <NewDocument
-      project={project}
-      schema={schemas.ExecutionPlanSchema}
-      onSubmit={onSubmit}
-    />
-  );
+  return <NewDocument project={project} schema={schemas.ExecutionPlanSchema} onSubmit={onSubmit} />;
 }
 
 function NewExecutionReview({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(
-    project.id,
-    "execution_review"
-  );
+  const [post, { loading }] = Projects.usePostDocument(project.id, "execution_review");
 
   const onSubmit = (content) => {
     post(content).then(() => {
@@ -368,21 +253,12 @@ function NewExecutionReview({ project }) {
     });
   };
 
-  return (
-    <NewDocument
-      project={project}
-      schema={schemas.ExecutionReviewSchema}
-      onSubmit={onSubmit}
-    />
-  );
+  return <NewDocument project={project} schema={schemas.ExecutionReviewSchema} onSubmit={onSubmit} />;
 }
 
 function NewControlReview({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(
-    project.id,
-    "control_review"
-  );
+  const [post, { loading }] = Projects.usePostDocument(project.id, "control_review");
 
   const onSubmit = (content) => {
     post(content).then(() => {
@@ -390,21 +266,12 @@ function NewControlReview({ project }) {
     });
   };
 
-  return (
-    <NewDocument
-      project={project}
-      schema={schemas.ControlReviewSchema}
-      onSubmit={onSubmit}
-    />
-  );
+  return <NewDocument project={project} schema={schemas.ControlReviewSchema} onSubmit={onSubmit} />;
 }
 
 function NewRetrospective({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(
-    project.id,
-    "retrospective"
-  );
+  const [post, { loading }] = Projects.usePostDocument(project.id, "retrospective");
 
   const onSubmit = (content) => {
     post(content).then(() => {
@@ -412,11 +279,5 @@ function NewRetrospective({ project }) {
     });
   };
 
-  return (
-    <NewDocument
-      project={project}
-      schema={schemas.RetrospectiveSchema}
-      onSubmit={onSubmit}
-    />
-  );
+  return <NewDocument project={project} schema={schemas.RetrospectiveSchema} onSubmit={onSubmit} />;
 }
