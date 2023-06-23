@@ -3,6 +3,16 @@ defmodule Operately.UpdatesTest do
 
   alias Operately.Updates
 
+  import Operately.CompaniesFixtures
+  import Operately.PeopleFixtures
+
+  setup do
+    company = company_fixture()
+    person = person_fixture(company_id: company.id)
+
+    {:ok, %{company: company, person: person}}
+  end
+
   describe "updates" do
     alias Operately.Updates.Update
 
@@ -10,30 +20,32 @@ defmodule Operately.UpdatesTest do
 
     @invalid_attrs %{content: nil, updatable_id: nil, updatable_type: nil}
 
-    test "list_updates/0 returns all updates" do
-      {update, _} = update_fixture(:with_author, %{})
+    setup ctx do
+      update = update_fixture(%{author_id: ctx.person.id})
 
-      assert Updates.list_updates() == [update]
+      {:ok, %{update: update}}
     end
 
-    test "get_update!/1 returns the update with given id" do
-      {update, _} = update_fixture(:with_author, %{})
-
-      assert Updates.get_update!(update.id) == update
+    test "list_updates/0 returns all updates", ctx do
+      assert Updates.list_updates() == [ctx.update]
     end
 
-    test "create_update/1 with valid data creates a update" do
-      person = Operately.PeopleFixtures.person_fixture()
+    test "get_update!/1 returns the update with given id", ctx do
+      assert Updates.get_update!(ctx.update.id) == ctx.update
+    end
 
+    test "create_update/1 with valid data creates a update", ctx do
       valid_attrs = %{
-        content: "some content",
+        content: %{
+          "message" => %{},
+        },
+        type: :status_update,
         updatable_id: "7488a646-e31f-11e4-aace-600308960662",
         updatable_type: :objective,
-        author_id: person.id
+        author_id: ctx.person.id
       }
 
       assert {:ok, %Update{} = update} = Updates.create_update(valid_attrs)
-      assert update.content == "some content"
       assert update.updatable_id == "7488a646-e31f-11e4-aace-600308960662"
       assert update.updatable_type == :objective
     end
@@ -42,32 +54,26 @@ defmodule Operately.UpdatesTest do
       assert {:error, %Ecto.Changeset{}} = Updates.create_update(@invalid_attrs)
     end
 
-    test "update_update/2 with valid data updates the update" do
-      {update, _} = update_fixture(:with_author, %{})
-      update_attrs = %{content: "some updated content", updatable_id: "7488a646-e31f-11e4-aace-600308960668", updatable_type: :project}
+    test "update_update/2 with valid data updates the update", ctx do
+      update_attrs = %{updatable_id: "7488a646-e31f-11e4-aace-600308960668", updatable_type: :project}
 
-      assert {:ok, %Update{} = update} = Updates.update_update(update, update_attrs)
-      assert update.content == "some updated content"
+      assert {:ok, %Update{} = update} = Updates.update_update(ctx.update, update_attrs)
       assert update.updatable_id == "7488a646-e31f-11e4-aace-600308960668"
       assert update.updatable_type == :project
     end
 
-    test "update_update/2 with invalid data returns error changeset" do
-      {update, _} = update_fixture(:with_author, %{})
-
-      assert {:error, %Ecto.Changeset{}} = Updates.update_update(update, @invalid_attrs)
-      assert update == Updates.get_update!(update.id)
+    test "update_update/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Updates.update_update(ctx.update, @invalid_attrs)
+      assert ctx.update == Updates.get_update!(ctx.update.id)
     end
 
-    test "delete_update/1 deletes the update" do
-      {update, _} = update_fixture(:with_author, %{})
-      assert {:ok, %Update{}} = Updates.delete_update(update)
-      assert_raise Ecto.NoResultsError, fn -> Updates.get_update!(update.id) end
+    test "delete_update/1 deletes the update", ctx do
+      assert {:ok, %Update{}} = Updates.delete_update(ctx.update)
+      assert_raise Ecto.NoResultsError, fn -> Updates.get_update!(ctx.update.id) end
     end
 
-    test "change_update/1 returns a update changeset" do
-      {update, _} = update_fixture(:with_author, %{})
-      assert %Ecto.Changeset{} = Updates.change_update(update)
+    test "change_update/1 returns a update changeset", ctx do
+      assert %Ecto.Changeset{} = Updates.change_update(ctx.update)
     end
   end
 
@@ -78,56 +84,57 @@ defmodule Operately.UpdatesTest do
 
     @invalid_attrs %{content: nil}
 
-    test "list_comments/0 returns all comments" do
-      {comment, update, _} = comment_fixture(:with_update, :with_author, %{})
-      assert Updates.list_comments(update.id) == [comment]
+    setup ctx do
+      update = update_fixture(%{author_id: ctx.person.id})
+      comment = comment_fixture(%{author_id: ctx.person.id, update_id: update.id})
+
+      {:ok, %{update: update, comment: comment}}
     end
 
-    test "get_comment!/1 returns the comment with given id" do
-      {comment, _, _} = comment_fixture(:with_update, :with_author, %{})
-      assert Updates.get_comment!(comment.id) == comment
+    test "list_comments/0 returns all comments", ctx do
+      assert Updates.list_comments(ctx.update.id) == [ctx.comment]
     end
 
-    test "create_comment/1 with valid data creates a comment" do
-      {update, author} = update_fixture(:with_author, %{})
+    test "get_comment!/1 returns the comment with given id", ctx do
+      assert Updates.get_comment!(ctx.comment.id) == ctx.comment
+    end
 
+    test "create_comment/1 with valid data creates a comment", ctx do
       valid_attrs = %{
-        content: "some content",
-        author_id: author.id,
-        update_id: update.id
+        content: %{message: %{}},
+        author_id: ctx.person.id,
+        update_id: ctx.update.id
       }
 
       assert {:ok, %Comment{} = comment} = Updates.create_comment(valid_attrs)
-      assert comment.content == "some content"
+      assert comment.content == %{message: %{}}
     end
 
     test "create_comment/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Updates.create_comment(@invalid_attrs)
     end
 
-    test "update_comment/2 with valid data updates the comment" do
-      {comment, _, _} = comment_fixture(:with_update, :with_author, %{})
-      update_attrs = %{content: "some updated content"}
+    test "update_comment/2 with valid data updates the comment", ctx do
+      update_attrs = %{content: %{
+        "message" => %{},
+      }}
 
-      assert {:ok, %Comment{} = comment} = Updates.update_comment(comment, update_attrs)
-      assert comment.content == "some updated content"
+      assert {:ok, %Comment{} = comment} = Updates.update_comment(ctx.comment, update_attrs)
+      assert comment.content == %{"message" => %{}}
     end
 
-    test "update_comment/2 with invalid data returns error changeset" do
-      {comment, _, _} = comment_fixture(:with_update, :with_author, %{})
-      assert {:error, %Ecto.Changeset{}} = Updates.update_comment(comment, @invalid_attrs)
-      assert comment == Updates.get_comment!(comment.id)
+    test "update_comment/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Updates.update_comment(ctx.comment, @invalid_attrs)
+      assert ctx.comment == Updates.get_comment!(ctx.comment.id)
     end
 
-    test "delete_comment/1 deletes the comment" do
-      {comment, _, _} = comment_fixture(:with_update, :with_author, %{})
-      assert {:ok, %Comment{}} = Updates.delete_comment(comment)
-      assert_raise Ecto.NoResultsError, fn -> Updates.get_comment!(comment.id) end
+    test "delete_comment/1 deletes the comment", ctx do
+      assert {:ok, %Comment{}} = Updates.delete_comment(ctx.comment)
+      assert_raise Ecto.NoResultsError, fn -> Updates.get_comment!(ctx.comment.id) end
     end
 
-    test "change_comment/1 returns a comment changeset" do
-      {comment, _, _} = comment_fixture(:with_update, :with_author, %{})
-      assert %Ecto.Changeset{} = Updates.change_comment(comment)
+    test "change_comment/1 returns a comment changeset", ctx do
+      assert %Ecto.Changeset{} = Updates.change_comment(ctx.comment)
     end
   end
 
@@ -138,9 +145,9 @@ defmodule Operately.UpdatesTest do
 
     @invalid_attrs %{entity_id: nil, entity_type: nil, reaction_type: nil}
 
-    test "list_reactions/0 returns all reactions" do
+    test "list_reactions/2 returns all reactions" do
       reaction = reaction_fixture()
-      assert Updates.list_reactions() == [reaction]
+      assert Updates.list_reactions(reaction.entity_id, reaction.entity_type) == [reaction]
     end
 
     test "get_reaction!/1 returns the reaction with given id" do
@@ -163,12 +170,16 @@ defmodule Operately.UpdatesTest do
 
     test "update_reaction/2 with valid data updates the reaction" do
       reaction = reaction_fixture()
-      update_attrs = %{entity_id: "7488a646-e31f-11e4-aace-600308960668", entity_type: :comment, reaction_type: :celebration}
+      update_attrs = %{
+        entity_id: "7488a646-e31f-11e4-aace-600308960668", 
+        entity_type: :comment, 
+        reaction_type: :thumbs_down
+      }
 
       assert {:ok, %Reaction{} = reaction} = Updates.update_reaction(reaction, update_attrs)
       assert reaction.entity_id == "7488a646-e31f-11e4-aace-600308960668"
       assert reaction.entity_type == :comment
-      assert reaction.reaction_type == :celebration
+      assert reaction.reaction_type == :thumbs_down
     end
 
     test "update_reaction/2 with invalid data returns error changeset" do

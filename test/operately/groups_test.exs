@@ -8,6 +8,7 @@ defmodule Operately.GroupsTest do
 
     import Operately.GroupsFixtures
     import Operately.PeopleFixtures
+    import Operately.CompaniesFixtures
 
     @invalid_attrs %{name: nil}
 
@@ -17,8 +18,9 @@ defmodule Operately.GroupsTest do
     end
 
     test "list_potential_members returns members that are not in the group" do
-      person1 = person_fixture(full_name: "John Doe", title: "CEO")
-      person2 = person_fixture(full_name: "Mike Smith", title: "CTO")
+      company = company_fixture(name: "Acme")
+      person1 = person_fixture(full_name: "John Doe", title: "CEO", company_id: company.id)
+      person2 = person_fixture(full_name: "Mike Smith", title: "CTO", company_id: company.id)
 
       group = group_fixture()
 

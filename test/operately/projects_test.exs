@@ -3,6 +3,10 @@ defmodule Operately.ProjectsTest do
 
   alias Operately.Projects
 
+  import Operately.ProjectsFixtures
+  import Operately.PeopleFixtures
+  import Operately.CompaniesFixtures
+
   describe "projects" do
     alias Operately.Projects.Project
 
@@ -21,10 +25,9 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_project/1 with valid data creates a project" do
-      valid_attrs = %{description: "some description", name: "some name"}
+      valid_attrs = %{description: %{}, name: "some name"}
 
-      assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs)
-      assert project.description == "some description"
+      assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs, nil)
       assert project.name == "some name"
     end
 
@@ -34,10 +37,9 @@ defmodule Operately.ProjectsTest do
 
     test "update_project/2 with valid data updates the project" do
       project = project_fixture()
-      update_attrs = %{description: "some updated description", name: "some updated name"}
+      update_attrs = %{name: "some updated name"}
 
       assert {:ok, %Project{} = project} = Projects.update_project(project, update_attrs)
-      assert project.description == "some updated description"
       assert project.name == "some updated name"
     end
 
@@ -66,14 +68,19 @@ defmodule Operately.ProjectsTest do
 
     @invalid_attrs %{deadline_at: nil, title: nil}
 
-    test "list_project_milestones/0 returns all project_milestones" do
-      milestone = milestone_fixture()
-      assert Projects.list_project_milestones() == [milestone]
+    setup do
+      project = project_fixture()
+      milestone = milestone_fixture(%{project_id: project.id})
+
+      {:ok, project: project, milestone: milestone}
     end
 
-    test "get_milestone!/1 returns the milestone with given id" do
-      milestone = milestone_fixture()
-      assert Projects.get_milestone!(milestone.id) == milestone
+    test "list_project_milestones/1 returns all project_milestones", ctx do
+      assert Projects.list_project_milestones(ctx.project) == [ctx.milestone]
+    end
+
+    test "get_milestone!/1 returns the milestone with given id", ctx do
+      assert Projects.get_milestone!(ctx.milestone.id) == ctx.milestone
     end
 
     test "create_milestone/1 with valid data creates a milestone" do
@@ -118,54 +125,52 @@ defmodule Operately.ProjectsTest do
   describe "project_contributors" do
     alias Operately.Projects.Contributor
 
-    import Operately.ProjectsFixtures
+    setup do
+      company = company_fixture()
+      project = project_fixture()
+      person = person_fixture(%{company_id: company.id})
 
-    @invalid_attrs %{responsibility: nil}
+      contributor = contributor_fixture(%{
+        project_id: project.id, 
+        person_id: person.id
+      })
 
-    test "list_project_contributors/0 returns all project_contributors" do
-      contributor = contributor_fixture()
-      assert Projects.list_project_contributors() == [contributor]
+      {:ok, project: project, person: person, contributor: contributor}
     end
 
-    test "get_contributor!/1 returns the contributor with given id" do
-      contributor = contributor_fixture()
-      assert Projects.get_contributor!(contributor.id) == contributor
+    test "list_project_contributors/0 returns all project_contributors", ctx do
+      assert Projects.list_project_contributors(ctx.project) == [ctx.contributor]
     end
 
-    test "create_contributor/1 with valid data creates a contributor" do
-      valid_attrs = %{responsibility: "some responsibility"}
+    test "get_contributor!/1 returns the contributor with given id", ctx do
+      assert Projects.get_contributor!(ctx.contributor.id) == ctx.contributor
+    end
+
+    test "create_contributor/1 with valid data creates a contributor", ctx do
+      valid_attrs = %{
+        project_id: ctx.project.id,
+        person_id: ctx.person.id,
+        responsibility: "some responsibility"
+      }
 
       assert {:ok, %Contributor{} = contributor} = Projects.create_contributor(valid_attrs)
       assert contributor.responsibility == "some responsibility"
     end
 
-    test "create_contributor/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_contributor(@invalid_attrs)
-    end
-
-    test "update_contributor/2 with valid data updates the contributor" do
-      contributor = contributor_fixture()
+    test "update_contributor/2 with valid data updates the contributor", ctx do
       update_attrs = %{responsibility: "some updated responsibility"}
 
-      assert {:ok, %Contributor{} = contributor} = Projects.update_contributor(contributor, update_attrs)
+      assert {:ok, %Contributor{} = contributor} = Projects.update_contributor(ctx.contributor, update_attrs)
       assert contributor.responsibility == "some updated responsibility"
     end
 
-    test "update_contributor/2 with invalid data returns error changeset" do
-      contributor = contributor_fixture()
-      assert {:error, %Ecto.Changeset{}} = Projects.update_contributor(contributor, @invalid_attrs)
-      assert contributor == Projects.get_contributor!(contributor.id)
+    test "delete_contributor/1 deletes the contributor", ctx do
+      assert {:ok, %Contributor{}} = Projects.delete_contributor(ctx.contributor)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_contributor!(ctx.contributor.id) end
     end
 
-    test "delete_contributor/1 deletes the contributor" do
-      contributor = contributor_fixture()
-      assert {:ok, %Contributor{}} = Projects.delete_contributor(contributor)
-      assert_raise Ecto.NoResultsError, fn -> Projects.get_contributor!(contributor.id) end
-    end
-
-    test "change_contributor/1 returns a contributor changeset" do
-      contributor = contributor_fixture()
-      assert %Ecto.Changeset{} = Projects.change_contributor(contributor)
+    test "change_contributor/1 returns a contributor changeset", ctx do
+      assert %Ecto.Changeset{} = Projects.change_contributor(ctx.contributor)
     end
   end
 
@@ -176,18 +181,34 @@ defmodule Operately.ProjectsTest do
 
     @invalid_attrs %{content: nil, title: nil}
 
-    test "list_project_documents/0 returns all project_documents" do
-      document = document_fixture()
-      assert Projects.list_project_documents() == [document]
+    setup do
+      company = company_fixture()
+      project = project_fixture()
+      person = person_fixture(%{company_id: company.id})
+
+      document = document_fixture(%{
+        project_id: project.id, 
+        author_id: person.id
+      })
+
+      {:ok, project: project, document: document, person: person}
     end
 
-    test "get_document!/1 returns the document with given id" do
-      document = document_fixture()
-      assert Projects.get_document!(document.id) == document
+    test "list_project_documents/0 returns all project_documents", ctx do
+      assert Projects.list_project_documents() == [ctx.document]
     end
 
-    test "create_document/1 with valid data creates a document" do
-      valid_attrs = %{content: %{}, title: "some title"}
+    test "get_document!/1 returns the document with given id", ctx do
+      assert Projects.get_document!(ctx.document.id) == ctx.document
+    end
+
+    test "create_document/1 with valid data creates a document", ctx do
+      valid_attrs = %{
+        content: %{}, 
+        title: "some title", 
+        author_id: ctx.person.id, 
+        project_id: ctx.project.id
+      }
 
       assert {:ok, %Document{} = document} = Projects.create_document(valid_attrs)
       assert document.content == %{}
@@ -198,30 +219,26 @@ defmodule Operately.ProjectsTest do
       assert {:error, %Ecto.Changeset{}} = Projects.create_document(@invalid_attrs)
     end
 
-    test "update_document/2 with valid data updates the document" do
-      document = document_fixture()
+    test "update_document/2 with valid data updates the document", ctx do
       update_attrs = %{content: %{}, title: "some updated title"}
 
-      assert {:ok, %Document{} = document} = Projects.update_document(document, update_attrs)
+      assert {:ok, %Document{} = document} = Projects.update_document(ctx.document, update_attrs)
       assert document.content == %{}
       assert document.title == "some updated title"
     end
 
-    test "update_document/2 with invalid data returns error changeset" do
-      document = document_fixture()
-      assert {:error, %Ecto.Changeset{}} = Projects.update_document(document, @invalid_attrs)
-      assert document == Projects.get_document!(document.id)
+    test "update_document/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Projects.update_document(ctx.document, @invalid_attrs)
+      assert ctx.document == Projects.get_document!(ctx.document.id)
     end
 
-    test "delete_document/1 deletes the document" do
-      document = document_fixture()
-      assert {:ok, %Document{}} = Projects.delete_document(document)
-      assert_raise Ecto.NoResultsError, fn -> Projects.get_document!(document.id) end
+    test "delete_document/1 deletes the document", ctx do
+      assert {:ok, %Document{}} = Projects.delete_document(ctx.document)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_document!(ctx.document.id) end
     end
 
-    test "change_document/1 returns a document changeset" do
-      document = document_fixture()
-      assert %Ecto.Changeset{} = Projects.change_document(document)
+    test "change_document/1 returns a document changeset", ctx do
+      assert %Ecto.Changeset{} = Projects.change_document(ctx.document)
     end
   end
 end

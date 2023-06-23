@@ -21,7 +21,9 @@ defmodule Operately.Projects do
 
   def create_project(attrs \\ %{}, _creator_id) do
     next_update_scheduled_at = attrs[:next_update_scheduled_at] || DateTime.add(DateTime.utc_now(), 7, :day)
-    attrs = Map.put(attrs, :next_update_scheduled_at, next_update_scheduled_at)
+    attrs = Map.merge(attrs, %{
+      :next_update_scheduled_at => next_update_scheduled_at
+    })
 
     %Project{}
     |> Project.changeset(attrs)
