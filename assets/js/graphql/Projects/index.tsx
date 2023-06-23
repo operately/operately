@@ -257,29 +257,6 @@ export function usePostUpdateMutation(projectId: string) {
   return [createUpdate, status] as const;
 }
 
-export function usePostPitchMutation(projectId: string) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation PostPitch($projectId: ID!, $content: String!) {
-        postProjectPitch(projectId: $projectId, content: $content) {
-          id
-        }
-      }
-    `
-  );
-
-  const postPitch = (content: any) => {
-    return fun({
-      variables: {
-        projectId: projectId,
-        content: JSON.stringify(content),
-      },
-    });
-  };
-
-  return [postPitch, status] as const;
-}
-
 export function usePostCommentMutation(updateId: string) {
   const [fun, status] = useMutation(
     gql`
@@ -311,6 +288,39 @@ export function usePostCommentMutation(updateId: string) {
   };
 
   return [createComment, status] as const;
+  return [post, status] as const;
+}
+
+export function usePostDocument(projectId: string, type: string) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation PostProjectDocument(
+        $projectId: ID!
+        $content: String!
+        $type: String!
+      ) {
+        postProjectDocument(
+          projectId: $projectId
+          content: $content
+          type: $type
+        ) {
+          id
+        }
+      }
+    `
+  );
+
+  const post = (content: any) => {
+    return fun({
+      variables: {
+        projectId: projectId,
+        type: type,
+        content: JSON.stringify(content),
+      },
+    });
+  };
+
+  return [post, status] as const;
 }
 
 export function useReactMutation(entityType: string, entityID: string) {

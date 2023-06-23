@@ -15,8 +15,9 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     # Documents
     #
 
-    field :post_project_pitch, non_null(:project_document) do
+    field :post_project_document, non_null(:project_document) do
       arg :project_id, non_null(:id)
+      arg :type, non_null(:string)
       arg :content, non_null(:string)
 
       resolve fn args, %{context: context} ->
@@ -25,14 +26,20 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
           {:ok, document} = Operately.Projects.create_document(%{
             project_id: args.project_id,
-            title: "Project Pitch",
+            title: "New document",
             content: Jason.decode!(args.content),
             author_id: context.current_account.person.id
           })
 
-          {:ok, _} = Operately.Projects.update_project(project, %{
-            pitch_document_id: document.id
-          })
+          change = case args.type do
+            "pitch" -> %{pitch_document_id: document.id}
+            "plan" -> %{plan_document_id: document.id}
+            "execution_review" -> %{execution_review_document_id: document.id}
+            "control_review" -> %{control_review_document_id: document.id}
+            type -> raise "Unknown document type #{type}"
+          end
+
+          {:ok, _} = Operately.Projects.update_project(project, change)
 
           document
         end)

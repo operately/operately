@@ -34,8 +34,16 @@ export function ProjectDocumentationPage() {
   switch (subpath) {
     case "/":
       return <DocList project={project} />;
+
     case "/pitch/new":
       return <NewPitch project={project} />;
+
+    case "/plan/new":
+      return <NewExecutionPlan project={project} />;
+
+    case "/execution_review/new":
+      return <NewExecutionReview project={project} />;
+
     case "/pitch":
       return (
         <DocView
@@ -54,15 +62,9 @@ export function ProjectDocumentationPage() {
           }
         />
       );
-    case "/plan/new":
-      return <NewExecutionPlan project={project} />;
 
     case "/execution_review":
       return <ExecutionReview project={project} />;
-
-    case "/execution_review/new":
-      return <NewExecutionReview project={project} />;
-
     case "control":
       return <ControlReview project={project} />;
     case "retrospective":
@@ -311,7 +313,7 @@ function PendingDoc({ title, message, fillInLink }) {
 
 function NewPitch({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostPitchMutation(project.id);
+  const [post, { loading }] = Projects.usePostDocument(project.id, "pitch");
 
   const onSubmit = (content) => {
     post(content).then(() => {
@@ -330,7 +332,7 @@ function NewPitch({ project }) {
 
 function NewExecutionPlan({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostPlanMutation(project.id);
+  const [post, { loading }] = Projects.usePostDocument(project.id, "plan");
 
   const onSubmit = (content) => {
     post(content).then(() => {
@@ -349,8 +351,9 @@ function NewExecutionPlan({ project }) {
 
 function NewExecutionReview({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostExecutionReviewMutation(
-    project.id
+  const [post, { loading }] = Projects.usePostDocument(
+    project.id,
+    "execution_review"
   );
 
   const onSubmit = (content) => {
