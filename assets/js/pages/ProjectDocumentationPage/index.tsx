@@ -13,6 +13,9 @@ import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 
+import { NewDocument } from "./NewDocument";
+import * as schemas from "./schemas";
+
 export function ProjectDocumentationPage() {
   const params = useParams();
   const projectId = params["project_id"];
@@ -97,25 +100,6 @@ function ListTitle() {
     <div className="p-8 pb-8">
       <div className="text-2xl font-extrabold flex justify-center items-center">
         Documentation
-      </div>
-    </div>
-  );
-}
-
-function NewDocumentTitle({ title, subtitle }) {
-  const { data } = Me.useMe();
-
-  return (
-    <div className="p-16 pb-0">
-      <div className="flex items-center gap-4">
-        <div className="text-center">
-          <Avatar person={data.me} size="large" />
-        </div>
-
-        <div>
-          <div className="text-2xl font-extrabold">{title}</div>
-          <div>{subtitle}</div>
-        </div>
       </div>
     </div>
   );
@@ -329,244 +313,57 @@ function NewPitch({ project }) {
   const navigate = useNavigate();
   const [post, { loading }] = Projects.usePostPitchMutation(project.id);
 
-  const editor = TipTapEditor.useEditor({
-    placeholder: "Write your pitch here...",
-  });
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (loading) return;
-
-    await post(editor.getJSON());
-
-    navigate(`/projects/${project.id}/documentation/pitch`);
+  const onSubmit = (content) => {
+    post(content).then(() => {
+      navigate(`/projects/${project.id}/documentation/pitch`);
+    });
   };
 
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${project.id}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-
-        <Icons.IconSlash size={16} />
-
-        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-          Documentation
-        </Paper.NavItem>
-      </Paper.Navigation>
-      <Paper.Body>
-        <NewDocumentTitle
-          title={"Project Pitch"}
-          subtitle={
-            "What is the project about, why is it important, and why should it be persued?"
-          }
-        />
-
-        <div className="px-16">
-          <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">
-            <TipTapEditor.Toolbar editor={editor} />
-          </div>
-
-          <div
-            className="mb-8 py-4 text-white-1 text-lg"
-            style={{ minHeight: "300px" }}
-          >
-            <TipTapEditor.EditorContent editor={editor} />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <PostButton onClick={handlePost} title="Post Pitch" />
-            <CancelButton linkTo={`/projects/${project.id}/documentation`} />
-          </div>
-        </div>
-      </Paper.Body>
-    </Paper.Root>
-  );
-}
-
-function PostButton({ onClick, title }) {
-  return (
-    <Button onClick={onClick} variant="success">
-      <Icons.IconMail size={20} />
-      {title}
-    </Button>
-  );
-}
-
-function CancelButton({ linkTo }) {
-  return (
-    <Button variant="secondary" linkTo={linkTo}>
-      Cancel
-    </Button>
-  );
-}
-
-function YesNoQuestion({ name, question }) {
-  return (
-    <div className="my-8">
-      <p className="font-semibold">{question}</p>
-
-      <div className="flex items-center gap-4 mt-2">
-        <div className="flex items-center gap-2">
-          <input type="radio" name={name} value="yes" />
-          <label>Yes</label>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input type="radio" name={name} value="no" />
-          <label>No</label>
-        </div>
-      </div>
-    </div>
+    <NewDocument
+      project={project}
+      schema={schemas.ProjectPitchSchema}
+      onSubmit={onSubmit}
+    />
   );
 }
 
 function NewExecutionPlan({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostPitchMutation(project.id);
+  const [post, { loading }] = Projects.usePostPlanMutation(project.id);
 
-  const editor = TipTapEditor.useEditor({
-    placeholder: "Write your execution plan here...",
-  });
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (loading) return;
-
-    await post(editor.getJSON());
-
-    navigate(`/projects/${project.id}/documentation/plan`);
+  const onSubmit = (content) => {
+    post(content).then(() => {
+      navigate(`/projects/${project.id}/documentation/plan`);
+    });
   };
 
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${project.id}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-
-        <Icons.IconSlash size={16} />
-
-        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-          Documentation
-        </Paper.NavItem>
-      </Paper.Navigation>
-      <Paper.Body>
-        <NewDocumentTitle
-          title={"Execution Plan"}
-          subtitle={
-            "How will the project be executed? What are the risks and how will they be mitigated?"
-          }
-        />
-
-        <div className="px-16">
-          <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">
-            <TipTapEditor.Toolbar editor={editor} />
-          </div>
-
-          <div
-            className="mb-8 py-4 text-white-1 text-lg"
-            style={{ minHeight: "300px" }}
-          >
-            <TipTapEditor.EditorContent editor={editor} />
-          </div>
-
-          <div className="border-t border-shade-1">
-            <YesNoQuestion question="Are the budget, timeline and milestones clear and realistic?" />
-            <YesNoQuestion question="Is the pitch clear to the team and in line with the company's goals?" />
-            <YesNoQuestion question="Is the team staffed with suitable roles for execution?" />
-            <YesNoQuestion question="Are there any outstanding risks for the project?" />
-          </div>
-
-          <div className="flex items-center gap-2 mb-8">
-            <PostButton onClick={handlePost} title={"Post Plan"} />
-            <CancelButton linkTo={`/projects/${project.id}/documentation`} />
-          </div>
-        </div>
-      </Paper.Body>
-    </Paper.Root>
+    <NewDocument
+      project={project}
+      schema={schemas.ExecutionPlanSchema}
+      onSubmit={onSubmit}
+    />
   );
 }
 
 function NewExecutionReview({ project }) {
   const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostPitchMutation(project.id);
+  const [post, { loading }] = Projects.usePostExecutionReviewMutation(
+    project.id
+  );
 
-  const editor = TipTapEditor.useEditor({
-    placeholder: "Write your execution review here...",
-  });
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (loading) return;
-
-    await post(editor.getJSON());
-
-    navigate(`/projects/${project.id}/documentation/plan`);
+  const onSubmit = (content) => {
+    post(content).then(() => {
+      navigate(`/projects/${project.id}/documentation/execution_review`);
+    });
   };
 
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${project.id}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-
-        <Icons.IconSlash size={16} />
-
-        <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>
-          Documentation
-        </Paper.NavItem>
-      </Paper.Navigation>
-      <Paper.Body>
-        <NewDocumentTitle
-          title={"Execution Review"}
-          subtitle={
-            "How did the execution go? Were there any issues? How were they resolved?"
-          }
-        />
-
-        <div className="px-16">
-          <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">
-            <TipTapEditor.Toolbar editor={editor} />
-          </div>
-
-          <div
-            className="mb-8 py-4 text-white-1 text-lg"
-            style={{ minHeight: "300px" }}
-          >
-            <TipTapEditor.EditorContent editor={editor} />
-          </div>
-
-          <div className="border-t border-shade-1">
-            <YesNoQuestion
-              name="schedule"
-              question="Was the execution completed on schedule?"
-            />
-            <YesNoQuestion
-              name="budget"
-              question="Was the execution completed within budget?"
-            />
-            <YesNoQuestion
-              name="roles"
-              question="Was the team staffed with suitable roles for execution?"
-            />
-            <YesNoQuestion
-              name="risks"
-              question="Are there any outstanding risks for the project?"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 mb-8">
-            <PostButton onClick={handlePost} title={"Post Review"} />
-            <CancelButton linkTo={`/projects/${project.id}/documentation`} />
-          </div>
-        </div>
-      </Paper.Body>
-    </Paper.Root>
+    <NewDocument
+      project={project}
+      schema={schemas.ExecutionPlanSchema}
+      onSubmit={onSubmit}
+    />
   );
 }
