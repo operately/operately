@@ -82,12 +82,9 @@ export function DocView({ project, doc, schema }) {
           author={doc.author}
         />
         <div className="flex flex-col gap-6 px-16 p-8">
-          {schema.content.map((item: any) => {
-            return itemHandler(item.type).viewCompoenent({
-              item,
-              content: JSON.parse(doc.content)[item.name],
-            });
-          })}
+          {schema.content.map((item: any) => (
+            <ItemView key={item.name} item={item} content={JSON.parse(doc.content)[item.name]} />
+          ))}
         </div>
       </Paper.Body>
     </Paper.Root>
@@ -109,6 +106,10 @@ function DocumentTitle({ title, author, subtitle }) {
       </div>
     </div>
   );
+}
+
+function ItemView({ item, content }) {
+  return itemHandler(item.type).viewCompoenent({ item, content });
 }
 
 function itemHandler(type) {
@@ -327,9 +328,7 @@ const YesNoQuestion = {
   },
 
   toJSON: ({ item, inputState }) => {
-    const [value] = inputState;
-
-    return { [item.name]: value };
+    return inputState[0];
   },
 };
 

@@ -187,10 +187,10 @@ function NewPitch({ project }) {
   const navigate = useNavigate();
   const [post, { loading }] = Projects.usePostDocument(project.id, "pitch");
 
-  const onSubmit = (content) => {
-    post(content).then(() => {
-      navigate(`/projects/${project.id}/documentation/pitch`);
-    });
+  const onSubmit = async (content) => {
+    await post(content);
+
+    navigate(`/projects/${project.id}/documentation/pitch`);
   };
 
   return <NewDocument project={project} schema={schemas.ProjectPitchSchema} onSubmit={onSubmit} />;
@@ -200,10 +200,10 @@ function NewExecutionPlan({ project }) {
   const navigate = useNavigate();
   const [post, { loading }] = Projects.usePostDocument(project.id, "plan");
 
-  const onSubmit = (content) => {
-    post(content).then(() => {
-      navigate(`/projects/${project.id}/documentation/plan`);
-    });
+  const onSubmit = async (content) => {
+    await post(content);
+
+    navigate(`/projects/${project.id}/documentation/plan`);
   };
 
   return <NewDocument project={project} schema={schemas.ExecutionPlanSchema} onSubmit={onSubmit} />;
@@ -213,10 +213,10 @@ function NewExecutionReview({ project }) {
   const navigate = useNavigate();
   const [post, { loading }] = Projects.usePostDocument(project.id, "execution_review");
 
-  const onSubmit = (content) => {
-    post(content).then(() => {
-      navigate(`/projects/${project.id}/documentation/execution_review`);
-    });
+  const onSubmit = async (content) => {
+    await post(content);
+
+    navigate(`/projects/${project.id}/documentation/execution_review`);
   };
 
   return <NewDocument project={project} schema={schemas.ExecutionReviewSchema} onSubmit={onSubmit} />;
@@ -226,10 +226,10 @@ function NewControlReview({ project }) {
   const navigate = useNavigate();
   const [post, { loading }] = Projects.usePostDocument(project.id, "control_review");
 
-  const onSubmit = (content) => {
-    post(content).then(() => {
-      navigate(`/projects/${project.id}/documentation/control_review`);
-    });
+  const onSubmit = async (content) => {
+    await post(content);
+
+    navigate(`/projects/${project.id}/documentation/control_review`);
   };
 
   return <NewDocument project={project} schema={schemas.ControlReviewSchema} onSubmit={onSubmit} />;
@@ -239,10 +239,10 @@ function NewRetrospective({ project }) {
   const navigate = useNavigate();
   const [post, { loading }] = Projects.usePostDocument(project.id, "retrospective");
 
-  const onSubmit = (content) => {
-    post(content).then(() => {
-      navigate(`/projects/${project.id}/documentation/retrospective`);
-    });
+  const onSubmit = async (content) => {
+    await post(content);
+
+    navigate(`/projects/${project.id}/documentation/retrospective`);
   };
 
   return <NewDocument project={project} schema={schemas.RetrospectiveSchema} onSubmit={onSubmit} />;
