@@ -6,9 +6,7 @@ import * as Projects from "@/graphql/Projects";
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
-import Button from "@/components/Button";
-
-import { NewDocument, DocView } from "./NewDocument";
+import { NewDocument, DocView, DocSummary } from "./NewDocument";
 import * as schemas from "./schemas";
 
 export function ProjectDocumentationPage() {
@@ -104,6 +102,8 @@ function PitchSummary({ project }) {
   return (
     <DocSummary
       project={project}
+      doc={project.pitch}
+      schema={schemas.ProjectPitchSchema}
       documentType={"pitch"}
       title={"Project Pitch"}
       content={project.pitch?.content}
@@ -114,10 +114,13 @@ function PitchSummary({ project }) {
     />
   );
 }
+
 function ExecutionPlanSummary({ project }) {
   return (
     <DocSummary
       project={project}
+      doc={project.plan}
+      schema={schemas.ExecutionPlanSchema}
       documentType={"plan"}
       title={"Execution Plan"}
       content={project.plan?.content}
@@ -129,91 +132,54 @@ function ExecutionPlanSummary({ project }) {
   );
 }
 
-function DocSummary({ project, documentType, title, content, viewLink, fillInLink, futureMessage, pendingMessage }) {
-  if (content) {
-    return <ExistingDocSummary title={title} content={content} linkTo={viewLink} />;
-  }
-
-  if (Projects.shouldBeFilledIn(project, documentType)) {
-    return <PendingDoc title={title} message={pendingMessage} fillInLink={fillInLink} />;
-  }
-
-  return <EmptyDoc title={title} message={futureMessage} />;
-}
-
 function ExecutionReviewSummary({ project }) {
   return (
-    <EmptyDoc project={project} title="Execution Review" message="Filled in after the execution phase is complete" />
+    <DocSummary
+      project={project}
+      doc={project.execution_review}
+      schema={schemas.ExecutionReviewSchema}
+      documentType={"execution_review"}
+      title={"Execution Review"}
+      content={project.execution_review?.content}
+      viewLink={`/projects/${project.id}/documentation/execution_review`}
+      fillInLink={`/projects/${project.id}/documentation/execution_review/new`}
+      futureMessage={`Filled in after the execution phase.`}
+      pendingMessage={`Provide a summary of the project's execution, including the resources used, the timeline followed, and the results achieved.`}
+    />
   );
 }
 
 function ControlReviewSummary({ project }) {
-  return <EmptyDoc project={project} title="Control Review" message="Filled in after the control phase is complete" />;
+  return (
+    <DocSummary
+      project={project}
+      doc={project.control_review}
+      schema={schemas.ControlReviewSchema}
+      documentType={"control_review"}
+      title={"Control Review"}
+      content={project.control_review?.content}
+      viewLink={`/projects/${project.id}/documentation/control_review`}
+      fillInLink={`/projects/${project.id}/documentation/control_review/new`}
+      futureMessage={`Filled in after the control phase.`}
+      pendingMessage={`Provide a summary of the outcomes of the project, including the results achieved, the lessons learned, and the next steps.`}
+    />
+  );
 }
 
 function RetrospectiveSummary({ project }) {
-  return <EmptyDoc project={project} title="Retrospective" message="Filled in after the whole project is complete" />;
-}
-
-function ExistingDocSummary({ title, content, linkTo }) {
   return (
-    <Link to={linkTo}>
-      <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3 bg-dark-4">
-        <div className="flex justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Icons.IconFileDescription size={20} className="text-pink-400" />
-            <div className="text-lg font-bold">{title}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Icons.IconCircleCheckFilled size={20} className="text-green-400" />{" "}
-          </div>
-        </div>
-
-        <div className="line-clamp-4">
-          <RichContent jsonContent={content} />
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function EmptyDoc({ title, message }) {
-  return (
-    <div className="border border-shade-1 p-4 rounded-lg">
-      <div className="flex justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Icons.IconFileDescription size={20} className="text-shade-3" />
-          <div className="text-lg font-bold text-white-2">{title}</div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Icons.IconCircleCheckFilled size={20} className="text-shade-3" />{" "}
-        </div>
-      </div>
-
-      <div className="line-clamp-4 text-white-2">{message}</div>
-    </div>
-  );
-}
-
-function PendingDoc({ title, message, fillInLink }) {
-  return (
-    <div className="border border-shade-1 p-4 rounded-lg">
-      <div className="flex justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Icons.IconFileDots size={20} className="text-yellow-400" />
-          <div className="text-lg font-bold text-white-1">{title}</div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Icons.IconProgressCheck size={20} className="text-yellow-400" />
-        </div>
-      </div>
-
-      <div className="line-clamp-4 text-white-1 max-w-xl mb-4">{message}</div>
-      <Button variant="success" linkTo={fillInLink}>
-        <Icons.IconPencil size={16} />
-        Fill In
-      </Button>
-    </div>
+    <DocSummary
+      project={project}
+      doc={project.retrospective}
+      schema={schemas.ExecutionReviewSchema}
+      documentType={"retrospective"}
+      title={"Retrospective Review"}
+      content={project.control_review?.content}
+      viewLink={`/projects/${project.id}/documentation/retrospective`}
+      fillInLink={`/projects/${project.id}/documentation/retrospective/new`}
+      futureMessage={`Filled in after the whole project is completed.`}
+      pendingMessage={`What went well? What could have gone better? What would you do differently next time?`}
+    />
   );
 }
 

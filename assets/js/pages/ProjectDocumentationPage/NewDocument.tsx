@@ -1,10 +1,13 @@
 import React from "react";
 
+import { Link } from "react-router-dom";
+
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as TipTapEditor from "@/components/Editor";
 
 import * as Me from "@/graphql/Me";
+import * as Projects from "@/graphql/Projects";
 
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
@@ -134,6 +137,10 @@ const NullItem = {
     return null;
   },
 
+  summary: ({ content }) => {
+    return null;
+  },
+
   isSubmitable: () => {
     return true;
   },
@@ -165,6 +172,14 @@ const RichText = {
 
   viewCompoenent: ({ item, content }) => {
     return <RichContent jsonContent={JSON.stringify(content)} />;
+  },
+
+  summary: ({ item, content }) => {
+    return (
+      <div className="line-clamp-2">
+        <RichContent jsonContent={JSON.stringify(content)} />
+      </div>
+    );
   },
 
   isSubmitable: ({ inputState }) => {
@@ -209,6 +224,18 @@ const ParagraphQuestion = {
   },
 
   viewCompoenent: ({ item, content }) => {
+    return (
+      <div className="">
+        <label className="font-bold">{item.question}</label>
+
+        <div className="bg-dark-3 border border-shade-2 rounded-lg mt-2 p-2 px-4" style={{ minHeight: "100px" }}>
+          <RichContent jsonContent={JSON.stringify(content)} />
+        </div>
+      </div>
+    );
+  },
+
+  summary: ({ item, content }) => {
     return (
       <div className="">
         <label className="font-bold">{item.question}</label>
@@ -268,18 +295,27 @@ const YesNoQuestion = {
   },
 
   viewCompoenent: ({ item, content }) => {
-    return (
-      <div className="">
-        <p className="font-semibold">{item.question}</p>
+    let color = content === "yes" ? "text-green-400" : "text-red-400";
 
-        <div className="flex items-center gap-4 mt-2">
-          {item.options.map((option) => (
-            <div key={option.value} className="flex items-center gap-1">
-              <input type="radio" name={item.name} value={option.value} checked={option.value === content} disabled />
-              <label>{option.label}</label>
-            </div>
-          ))}
-        </div>
+    return (
+      <div className="text-lg">
+        <p>
+          <span className="">{item.question}</span>
+          <span className={"uppercase font-bold ml-2" + " " + color}>{content}</span>
+        </p>
+      </div>
+    );
+  },
+
+  summary: ({ item, content }) => {
+    let color = content === "yes" ? "text-green-400" : "text-red-400";
+
+    return (
+      <div className="text-sm">
+        <p>
+          <span className="">{item.question}</span>
+          <span className={"uppercase font-bold ml-2" + " " + color}>{content}</span>
+        </p>
       </div>
     );
   },
@@ -364,5 +400,98 @@ function CancelButton({ linkTo }) {
     <Button variant="secondary" linkTo={linkTo}>
       Cancel
     </Button>
+  );
+}
+
+// ------ doc summary
+
+export function DocSummary({
+  project,
+  documentType,
+  title,
+  content,
+  doc,
+  viewLink,
+  fillInLink,
+  futureMessage,
+  pendingMessage,
+  schema,
+}) {
+  if (content) {
+    return <ExistingDocSummary doc={doc} title={title} linkTo={viewLink} schema={schema} />;
+  }
+
+  if (Projects.shouldBeFilledIn(project, documentType)) {
+    return <PendingDocSummary title={title} message={pendingMessage} fillInLink={fillInLink} />;
+  }
+
+  return <EmptyDocSummary title={title} message={futureMessage} />;
+}
+
+function ExistingDocSummary({ title, doc, schema, linkTo }) {
+  return (
+    <Link to={linkTo}>
+      <div className="border border-shade-1 p-4 rounded-lg hover:border-shade-3 bg-dark-4">
+        <div className="flex justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Icons.IconFileDescription size={20} className="text-pink-400" />
+            <div className="text-lg font-bold">{title}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icons.IconCircleCheckFilled size={20} className="text-green-400" />{" "}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {schema.content.map((item: any) => {
+            return itemHandler(item.type).summary({
+              item,
+              content: JSON.parse(doc.content)[item.name],
+            });
+          })}
+        </div>
+      </div>
+    </Link>
+  );
+}
+// <RichContent jsonContent={content} />
+
+function EmptyDocSummary({ title, message }) {
+  return (
+    <div className="border border-shade-1 p-4 rounded-lg">
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Icons.IconFileDescription size={20} className="text-shade-3" />
+          <div className="text-lg font-bold text-white-2">{title}</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Icons.IconCircleCheckFilled size={20} className="text-shade-3" />{" "}
+        </div>
+      </div>
+
+      <div className="line-clamp-4 text-white-2">{message}</div>
+    </div>
+  );
+}
+
+function PendingDocSummary({ title, message, fillInLink }) {
+  return (
+    <div className="border border-shade-1 p-4 rounded-lg">
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Icons.IconFileDots size={20} className="text-yellow-400" />
+          <div className="text-lg font-bold text-white-1">{title}</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Icons.IconProgressCheck size={20} className="text-yellow-400" />
+        </div>
+      </div>
+
+      <div className="line-clamp-4 text-white-1 max-w-xl mb-4">{message}</div>
+      <Button variant="success" linkTo={fillInLink}>
+        <Icons.IconPencil size={16} />
+        Fill In
+      </Button>
+    </div>
   );
 }
