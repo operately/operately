@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
@@ -16,6 +16,16 @@ import FormattedTime from "@/components/FormattedTime";
 
 export function NewDocument({ project, schema, onSubmit }) {
   const form = useDocumentForm(schema);
+
+  const navigate = useNavigate();
+  const type = schema.name;
+
+  const onCompleted = async () => {
+    await onSubmit();
+    navigate(`/projects/${project.id}/documentation/${type}`);
+  };
+
+  const [post] = Projects.usePostDocument(project.id, type, { onCompleted: onCompleted });
 
   return (
     <Paper.Root>
@@ -44,7 +54,7 @@ export function NewDocument({ project, schema, onSubmit }) {
         <div className="px-16">
           <div className="flex items-center gap-2 mb-8">
             <PostButton
-              onClick={() => onSubmit(form.toJSON())}
+              onClick={() => post(form.toJSON())}
               title={"Post " + schema.title}
               disabled={!form.isSubmitable()}
             />

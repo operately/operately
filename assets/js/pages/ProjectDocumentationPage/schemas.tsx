@@ -2,8 +2,7 @@ export const ProjectPitchSchema = {
   type: "document",
   name: "pitch",
   title: "Project Pitch",
-  subtitle:
-    "What is the project about, why is it important, and why should it be persued?",
+  subtitle: "What is the project about, why is it important, and why should it be persued?",
   content: [
     {
       type: "richtext",
@@ -17,8 +16,7 @@ export const ExecutionPlanSchema = {
   type: "document",
   name: "plan",
   title: "Execution Plan",
-  subtitle:
-    "How will the project be executed? What are the risks and how will they be mitigated?",
+  subtitle: "How will the project be executed? What are the risks and how will they be mitigated?",
   content: [
     {
       type: "richtext",
@@ -41,8 +39,7 @@ export const ExecutionPlanSchema = {
         { value: "yes", label: "Yes" },
         { value: "no", label: "No" },
       ],
-      question:
-        "Is the pitch clear to the team and in line with the company's goals?",
+      question: "Is the pitch clear to the team and in line with the company's goals?",
     },
     {
       type: "yes_no_question",
@@ -69,8 +66,7 @@ export const ExecutionReviewSchema = {
   type: "document",
   name: "execution_review",
   title: "Execution Review",
-  subtitle:
-    "How did the execution go? Were there any issues? How were they resolved?",
+  subtitle: "How did the execution go? Were there any issues? How were they resolved?",
   content: [
     {
       type: "richtext",
@@ -120,8 +116,7 @@ export const ControlReviewSchema = {
   type: "document",
   name: "control_review",
   title: "Control Review",
-  subtitle:
-    "Is the project still in line with the company's goals? Are there any changes that need to be made?",
+  subtitle: "Is the project still in line with the company's goals? Are there any changes that need to be made?",
   content: [
     {
       type: "richtext",
@@ -144,8 +139,7 @@ export const ControlReviewSchema = {
         { value: "yes", label: "Yes" },
         { value: "no", label: "No" },
       ],
-      question:
-        "Is the project meeting the quality standards of the company and the client?",
+      question: "Is the project meeting the quality standards of the company and the client?",
     },
     {
       type: "yes_no_question",

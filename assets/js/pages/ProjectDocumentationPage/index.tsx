@@ -29,19 +29,19 @@ export function ProjectDocumentationPage() {
       return <DocList project={project} />;
 
     case "/pitch/new":
-      return <NewPitch project={project} />;
+      return <NewDocument project={project} schema={schemas.ProjectPitchSchema} onSubmit={refetch} />;
 
     case "/plan/new":
-      return <NewExecutionPlan project={project} />;
+      return <NewDocument project={project} schema={schemas.ExecutionPlanSchema} onSubmit={refetch} />;
 
     case "/execution_review/new":
-      return <NewExecutionReview project={project} />;
+      return <NewDocument project={project} schema={schemas.ExecutionReviewSchema} onSubmit={refetch} />;
 
     case "/control_review/new":
-      return <NewControlReview project={project} />;
+      return <NewDocument project={project} schema={schemas.ControlReviewSchema} onSubmit={refetch} />;
 
     case "/retrospective/new":
-      return <NewRetrospective project={project} />;
+      return <NewDocument project={project} schema={schemas.RetrospectiveSchema} onSubmit={refetch} />;
 
     case "/pitch":
       return <DocView project={project} doc={project.pitch} schema={schemas.ProjectPitchSchema} />;
@@ -181,69 +181,4 @@ function RetrospectiveSummary({ project }) {
       pendingMessage={`What went well? What could have gone better? What would you do differently next time?`}
     />
   );
-}
-
-function NewPitch({ project }) {
-  const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(project.id, "pitch");
-
-  const onSubmit = async (content) => {
-    await post(content);
-
-    navigate(`/projects/${project.id}/documentation/pitch`);
-  };
-
-  return <NewDocument project={project} schema={schemas.ProjectPitchSchema} onSubmit={onSubmit} />;
-}
-
-function NewExecutionPlan({ project }) {
-  const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(project.id, "plan");
-
-  const onSubmit = async (content) => {
-    await post(content);
-
-    navigate(`/projects/${project.id}/documentation/plan`);
-  };
-
-  return <NewDocument project={project} schema={schemas.ExecutionPlanSchema} onSubmit={onSubmit} />;
-}
-
-function NewExecutionReview({ project }) {
-  const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(project.id, "execution_review");
-
-  const onSubmit = async (content) => {
-    await post(content);
-
-    navigate(`/projects/${project.id}/documentation/execution_review`);
-  };
-
-  return <NewDocument project={project} schema={schemas.ExecutionReviewSchema} onSubmit={onSubmit} />;
-}
-
-function NewControlReview({ project }) {
-  const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(project.id, "control_review");
-
-  const onSubmit = async (content) => {
-    await post(content);
-
-    navigate(`/projects/${project.id}/documentation/control_review`);
-  };
-
-  return <NewDocument project={project} schema={schemas.ControlReviewSchema} onSubmit={onSubmit} />;
-}
-
-function NewRetrospective({ project }) {
-  const navigate = useNavigate();
-  const [post, { loading }] = Projects.usePostDocument(project.id, "retrospective");
-
-  const onSubmit = async (content) => {
-    await post(content);
-
-    navigate(`/projects/${project.id}/documentation/retrospective`);
-  };
-
-  return <NewDocument project={project} schema={schemas.RetrospectiveSchema} onSubmit={onSubmit} />;
 }
