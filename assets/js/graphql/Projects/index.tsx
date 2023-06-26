@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  gql,
-  useQuery,
-  useMutation,
-  useApolloClient,
-  ApolloClient,
-  QueryResult,
-} from "@apollo/client";
+import { gql, useQuery, useMutation, useApolloClient, ApolloClient, QueryResult } from "@apollo/client";
 
 import { Milestone } from "./milestones";
 import * as fragments from "@/graphql/Fragments";
@@ -58,10 +51,7 @@ export function useProjects(variables: ListProjectsVariables) {
   return query;
 }
 
-export function listProjects(
-  client: ApolloClient<object>,
-  variables: ListProjectsVariables
-) {
+export function listProjects(client: ApolloClient<object>, variables: ListProjectsVariables) {
   return client.query({
     query: LIST_PROJECTS,
     variables,
@@ -239,7 +229,7 @@ export function usePostUpdateMutation(projectId: string) {
           variables: { id: projectId },
         },
       ],
-    }
+    },
   );
 
   const createUpdate = (content: any) => {
@@ -255,29 +245,6 @@ export function usePostUpdateMutation(projectId: string) {
   };
 
   return [createUpdate, status] as const;
-}
-
-export function usePostPitchMutation(projectId: string) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation PostPitch($projectId: ID!, $content: String!) {
-        postProjectPitch(projectId: $projectId, content: $content) {
-          id
-        }
-      }
-    `
-  );
-
-  const postPitch = (content: any) => {
-    return fun({
-      variables: {
-        projectId: projectId,
-        content: JSON.stringify(content),
-      },
-    });
-  };
-
-  return [postPitch, status] as const;
 }
 
 export function usePostCommentMutation(updateId: string) {
@@ -296,7 +263,7 @@ export function usePostCommentMutation(updateId: string) {
           variables: { id: updateId },
         },
       ],
-    }
+    },
   );
 
   const createComment = (content: any) => {
@@ -311,21 +278,43 @@ export function usePostCommentMutation(updateId: string) {
   };
 
   return [createComment, status] as const;
+  return [post, status] as const;
+}
+
+export function usePostDocument(projectId: string, type: string, options?: any) {
+  const [fun, status] = useMutation(
+    gql`
+      mutation PostProjectDocument($projectId: ID!, $content: String!, $type: String!) {
+        postProjectDocument(projectId: $projectId, content: $content, type: $type) {
+          id
+        }
+      }
+    `,
+    options,
+  );
+
+  const post = (content: any) => {
+    return fun({
+      variables: {
+        projectId: projectId,
+        type: type,
+        content: JSON.stringify(content),
+      },
+    });
+  };
+
+  return [post, status] as const;
 }
 
 export function useReactMutation(entityType: string, entityID: string) {
   const [fun, status] = useMutation(
     gql`
-      mutation AddReaction(
-        $entityID: ID!
-        $entityType: String!
-        $type: String!
-      ) {
+      mutation AddReaction($entityID: ID!, $entityType: String!, $type: String!) {
         addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
           id
         }
       }
-    `
+    `,
   );
 
   const addReaction = (type: any) => {
@@ -357,7 +346,7 @@ export function useAckMutation(updateId: string) {
           variables: { id: updateId },
         },
       ],
-    }
+    },
   );
 
   const ack = () => {
@@ -374,12 +363,7 @@ export function useAckMutation(updateId: string) {
 export function useAddProjectContributorMutation(projectId: string) {
   const [fun, status] = useMutation(
     gql`
-      mutation AddProjectContributor(
-        $projectId: ID!
-        $personId: ID!
-        $responsibility: String!
-        $role: String!
-      ) {
+      mutation AddProjectContributor($projectId: ID!, $personId: ID!, $responsibility: String!, $role: String!) {
         addProjectContributor(
           projectId: $projectId
           personId: $personId
@@ -397,7 +381,7 @@ export function useAddProjectContributorMutation(projectId: string) {
           variables: { id: projectId },
         },
       ],
-    }
+    },
   );
 
   const addColab = (personId, responsibility, role = "contributor") => {
@@ -415,16 +399,8 @@ export function useAddProjectContributorMutation(projectId: string) {
 }
 
 const UPDATE_PROJECT_CONTRIBUTOR = gql`
-  mutation UpdateProjectContributor(
-    $contribId: ID!
-    $personId: ID!
-    $responsibility: String!
-  ) {
-    updateProjectContributor(
-      contribId: $contribId
-      personId: $personId
-      responsibility: $responsibility
-    ) {
+  mutation UpdateProjectContributor($contribId: ID!, $personId: ID!, $responsibility: String!) {
+    updateProjectContributor(contribId: $contribId, personId: $personId, responsibility: $responsibility) {
       id
     }
   }
@@ -515,30 +491,16 @@ export function isReviwerAssigned(project: Project) {
   return project.contributors.some((c) => c.role === "reviewer");
 }
 
-type DocumentType =
-  | "pitch"
-  | "plan"
-  | "execution_review"
-  | "control_review"
-  | "retrospective";
+type DocumentType = "pitch" | "plan" | "execution_review" | "control_review" | "retrospective";
 
 const whatShouldBeFilledIn = {
   draft: ["pitch"],
   planning: ["pitch", "plan"],
   execution: ["pitch", "plan", "execution_review"],
   control: ["pitch", "plan", "execution_review", "control_review"],
-  retrospective: [
-    "pitch",
-    "plan",
-    "execution_review",
-    "control_review",
-    "retrospective",
-  ],
+  retrospective: ["pitch", "plan", "execution_review", "control_review", "retrospective"],
 };
 
-export function shouldBeFilledIn(
-  project: Project,
-  documentType: DocumentType
-): boolean {
+export function shouldBeFilledIn(project: Project, documentType: DocumentType): boolean {
   return whatShouldBeFilledIn[project.phase].includes(documentType);
 }

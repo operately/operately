@@ -55,5 +55,9 @@
     "@types/react-modal": "^3.13.1",
     "esbuild": "^0.14.41",
     "esbuild-plugin-svgr": "^1.1.0"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "trailingComma": "all"
   }
 }
