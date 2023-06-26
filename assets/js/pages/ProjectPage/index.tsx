@@ -15,6 +15,8 @@ import Header from "./Header";
 import NewUpdate from "./NewUpdate";
 
 import * as Milestones from "@/graphql/Projects/milestones";
+import Avatar from "@/components/Avatar";
+import RichContent from "@/components/RichContent";
 
 export function ProjectPage() {
   const params = useParams();
@@ -64,7 +66,7 @@ function Overview({ project }) {
           <PhasesCard project={project} />
           <DocumentationCard project={project} />
           <MilestonesCard project={project} />
-          <KeyResources project={project} />
+          <StatuUpdatesCard project={project} />
           <KeyResources project={project} />
         </div>
 
@@ -254,6 +256,37 @@ function Timeline({ project }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function StatusUpdatesCardItem({ update }) {
+  return (
+    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+      <div className="flex items-start gap-1.5 font-medium">
+        <div className="shrink-0">
+          <Avatar person={update.author} size="tiny" />
+        </div>
+        <div className="line-clamp-1">
+          <RichContent jsonContent={update.message} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatuUpdatesCard({ project }) {
+  return (
+    <Cards.Card linkTo="/">
+      <Cards.Header>
+        <Cards.Title>Status Updates</Cards.Title>
+      </Cards.Header>
+
+      <Cards.Body>
+        {project.activities.map((update) => (
+          <StatusUpdatesCardItem key={update.id} update={update} />
+        ))}
+      </Cards.Body>
+    </Cards.Card>
   );
 }
 

@@ -8,6 +8,7 @@
 @import "./reactdatepicker-custom.css";
 
 @import "./animations.css";
+@import "./lineclamp.css";
 
 body {
   font-family: "Inter", sans-serif;
@@ -15,40 +16,4 @@ body {
 
   background: var(--color-dark-1);
   color: rgba(255, 255, 255, 0.9);
-}
-
-.card-shadow {
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.07);
-}
-
-.hover\:card-shadow-blue:hover {
-  box-shadow: 0px 0px 12px rgba(49, 133, 255, 0.2);
-}
-
-.line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-}
-
-.line-clamp-4 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-}
-
-.line-clamp-6 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 6;
-}
-
-.line-clamp-8 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 8;
 }
