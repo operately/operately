@@ -47,6 +47,10 @@ export function ProjectStatusUpdatePage() {
           <Icons.IconClipboardList size={16} />
           {update.project.name}
         </Paper.NavItem>
+
+        <Paper.NavSeparator />
+
+        <Paper.NavItem linkTo={`/projects/${projectId}/updates`}> Status Updates</Paper.NavItem>
       </Paper.Navigation>
 
       <Paper.Body>

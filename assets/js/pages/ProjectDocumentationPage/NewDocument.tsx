@@ -35,7 +35,7 @@ export function NewDocument({ project, schema, onSubmit }) {
           {project.name}
         </Paper.NavItem>
 
-        <Icons.IconSlash size={16} />
+        <Paper.NavSeparator />
 
         <Paper.NavItem linkTo={`/projects/${project.id}/documentation`}>Documentation</Paper.NavItem>
       </Paper.Navigation>

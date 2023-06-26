@@ -12,7 +12,6 @@ import * as Cards from "@/components/Cards";
 
 import StatusUpdates from "./StatusUpdates";
 import Header from "./Header";
-import NewUpdate from "./NewUpdate";
 
 import * as Milestones from "@/graphql/Projects/milestones";
 import Avatar from "@/components/Avatar";
@@ -22,8 +21,6 @@ export function ProjectPage() {
   const params = useParams();
 
   const id = params["id"];
-  const star = params["*"] || "";
-  const tab = "/" + star;
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
@@ -35,16 +32,7 @@ export function ProjectPage() {
 
   let project = data.project;
 
-  switch (tab) {
-    case "/":
-      return <Overview project={project} />;
-
-    case "/new_update":
-      return <NewUpdate project={project} />;
-
-    default:
-      return <p className="mt-16">Unknown path</p>;
-  }
+  return <Overview project={project} />;
 }
 
 function Overview({ project }) {

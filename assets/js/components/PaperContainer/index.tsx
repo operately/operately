@@ -10,6 +10,8 @@
  * <Paper.Root>
  *   <Paper.Navigation>
  *     <Paper.NavItem>Projects</Paper.NavItem>
+ *     <Paper.NavSeparator />
+ *     <Paper.NavItem>Documentation</Paper.NavItem>
  *   </Paper.Navigation>
  *
  *   <Paper.Body>
@@ -22,6 +24,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import classnames from "classnames";
+import * as Icons from "@tabler/icons-react";
 
 type Size = "small" | "medium" | "large";
 
@@ -31,16 +34,8 @@ const sizes = {
   large: "max-w-5xl",
 };
 
-export function Root({
-  size,
-  children,
-}: {
-  size: Size;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={classnames("mx-auto my-20", sizes[size])}>{children}</div>
-  );
+export function Root({ size, children }: { size: Size; children: React.ReactNode }) {
+  return <div className={classnames("mx-auto my-20", sizes[size])}>{children}</div>;
 }
 
 Root.defaultProps = {
@@ -57,12 +52,17 @@ export function Navigation({ children }) {
 
 export function NavItem({ linkTo, children }) {
   return (
-    <Link
-      to={linkTo}
-      className="text-sky-400 underline underline-offset-2 flex gap-1.5 items-center"
-    >
+    <Link to={linkTo} className="text-sky-400 underline underline-offset-2 flex gap-1.5 items-center">
       {children}
     </Link>
+  );
+}
+
+export function NavSeparator() {
+  return (
+    <div className="shrink-0">
+      <Icons.IconSlash size={16} />
+    </div>
   );
 }
 

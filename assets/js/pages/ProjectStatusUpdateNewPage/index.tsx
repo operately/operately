@@ -59,20 +59,16 @@ function NewUpdateHeader() {
 
 function Editor({ project }) {
   const navigate = useNavigate();
-  const [postUpdate, { loading }] = Projects.usePostUpdateMutation(project.id);
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Write your update here...",
   });
 
-  const handlePost = async () => {
-    if (!editor) return;
-    if (loading) return;
-
-    await postUpdate(editor.getJSON());
-
-    navigate(`/projects/${project.id}`);
-  };
+  const [post] = Projects.usePostUpdate(project.id, {
+    onCompleted: (data) => {
+      navigate(`/projects/${project.id}/updates/${data.createUpdate.id}`);
+    },
+  });
 
   return (
     <div>
@@ -85,7 +81,7 @@ function Editor({ project }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <PostButton onClick={handlePost} />
+        <PostButton onClick={() => post(editor.getJSON())} />
         <CancelButton linkTo={`/projects/${project.id}/updates`} />
       </div>
     </div>

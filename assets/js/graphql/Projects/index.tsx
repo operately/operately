@@ -213,7 +213,7 @@ export function useProject(id: string): UseProjectResult {
   return useQuery(GET_PROJECT, { variables: { id } });
 }
 
-export function usePostUpdateMutation(projectId: string) {
+export function usePostUpdate(projectId: string, options: any) {
   const [fun, status] = useMutation(
     gql`
       mutation CreateUpdate($input: CreateUpdateInput!) {
@@ -222,14 +222,7 @@ export function usePostUpdateMutation(projectId: string) {
         }
       }
     `,
-    {
-      refetchQueries: [
-        {
-          query: GET_PROJECT,
-          variables: { id: projectId },
-        },
-      ],
-    },
+    options,
   );
 
   const createUpdate = (content: any) => {
