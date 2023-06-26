@@ -100,12 +100,14 @@ interface Document {
   author: Person;
 }
 
+type ProjectPhase = "concept" | "planning" | "execution" | "control";
+
 export interface Project {
   id: string;
   name: string;
   description: string;
   deadline: Date;
-  phase: "draft" | "planning" | "execution" | "closing" | "closed";
+  phase: ProjectPhase;
 
   milestones: Milestone[];
   parents: Parent[];

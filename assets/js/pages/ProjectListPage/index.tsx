@@ -19,10 +19,7 @@ function DateOrNotSet({ date }) {
 }
 
 function Phase({ phase }) {
-  switch (phase) {
-    case "draft":
-      return <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">draft</span>;
-  }
+  return <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">{phase}</span>;
 }
 
 function Flare() {

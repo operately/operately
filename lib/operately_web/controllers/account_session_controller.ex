@@ -1,7 +1,6 @@
 defmodule OperatelyWeb.AccountSessionController do
   use OperatelyWeb, :controller
 
-  alias Operately.People
   alias OperatelyWeb.AccountAuth
 
   def new(conn, _params) do

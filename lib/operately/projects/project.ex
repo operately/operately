@@ -16,7 +16,7 @@ defmodule Operately.Projects.Project do
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
     field :next_update_scheduled_at, :utc_datetime
-    field :phase, Ecto.Enum, values: [:draft, :planning, :design, :execution, :closing, :closed], default: :draft
+    field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control], default: :concept
 
     # related documents
     belongs_to :pitch, Operately.Projects.Document, foreign_key: :pitch_document_id
