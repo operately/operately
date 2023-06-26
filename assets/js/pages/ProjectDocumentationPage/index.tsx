@@ -37,9 +37,6 @@ export function ProjectDocumentationPage() {
     case "/execution_review/new":
       return <NewDocument project={project} schema={schemas.ExecutionReviewSchema} onSubmit={refetch} />;
 
-    case "/control_review/new":
-      return <NewDocument project={project} schema={schemas.ControlReviewSchema} onSubmit={refetch} />;
-
     case "/retrospective/new":
       return <NewDocument project={project} schema={schemas.RetrospectiveSchema} onSubmit={refetch} />;
 
@@ -51,9 +48,6 @@ export function ProjectDocumentationPage() {
 
     case "/execution_review":
       return <DocView project={project} doc={project.execution_review} schema={schemas.ExecutionReviewSchema} />;
-
-    case "/control_review":
-      return <DocView project={project} doc={project.control_review} schema={schemas.ExecutionReviewSchema} />;
 
     case "/retrospective":
       return <DocView project={project} doc={project.retrospective} schema={schemas.RetrospectiveSchema} />;
@@ -90,7 +84,6 @@ function DocList({ project }) {
           )}
           <ExecutionPlanSummary project={project} />
           <ExecutionReviewSummary project={project} />
-          <ControlReviewSummary project={project} />
           <RetrospectiveSummary project={project} />
         </div>
       </Paper.Body>
@@ -145,23 +138,6 @@ function ExecutionReviewSummary({ project }) {
       fillInLink={`/projects/${project.id}/documentation/execution_review/new`}
       futureMessage={`Filled in after the execution phase.`}
       pendingMessage={`Provide a summary of the project's execution, including the resources used, the timeline followed, and the results achieved.`}
-    />
-  );
-}
-
-function ControlReviewSummary({ project }) {
-  return (
-    <DocSummary
-      project={project}
-      doc={project.control_review}
-      schema={schemas.ControlReviewSchema}
-      documentType={"control_review"}
-      title={"Control Review"}
-      content={project.control_review?.content}
-      viewLink={`/projects/${project.id}/documentation/control_review`}
-      fillInLink={`/projects/${project.id}/documentation/control_review/new`}
-      futureMessage={`Filled in after the control phase.`}
-      pendingMessage={`Provide a summary of the outcomes of the project, including the results achieved, the lessons learned, and the next steps.`}
     />
   );
 }

@@ -60,9 +60,8 @@ function Overview({ project }) {
       <Paper.Body>
         <Header project={project} />
 
-        <Phases project={project} />
-
-        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8 mt-4">
+        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
+          <PhasesCard project={project} />
           <DocumentationCard project={project} />
           <MilestonesCard project={project} />
           <KeyResources project={project} />
@@ -81,16 +80,16 @@ function DocumentationCardListItem({ title, completed, pending }) {
   let titleColor: string | null = null;
 
   if (completed) {
-    fileIcon = <Icons.IconFileText size={16} className="text-pink-400" />;
-    statusIcon = <Icons.IconCircleCheckFilled size={16} className="text-green-400" />;
+    fileIcon = <Icons.IconFileText size={20} className="text-pink-400" />;
+    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-green-400" />;
     titleColor = "text-white-1";
   } else if (pending) {
-    fileIcon = <Icons.IconFileDots size={16} className="text-yellow-400/80" />;
-    statusIcon = <Icons.IconProgressCheck size={16} className="text-yellow-400" />;
+    fileIcon = <Icons.IconFileDots size={20} className="text-yellow-400/80" />;
+    statusIcon = <Icons.IconProgressCheck size={20} className="text-yellow-400" />;
     titleColor = "text-white-1";
   } else {
-    fileIcon = <Icons.IconFileText size={16} className="text-white-3" />;
-    statusIcon = <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
+    fileIcon = <Icons.IconFileText size={20} className="text-white-3" />;
+    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-white-3" />;
     titleColor = "text-white-3";
   }
 
@@ -98,10 +97,68 @@ function DocumentationCardListItem({ title, completed, pending }) {
     <div className="border-t border-b border-shade-1 py-1 flex justify-between">
       <div className="flex items-center gap-1">
         <div className="shrink-0">{fileIcon}</div>
-        <div className={classnames("text-sm font-medium", titleColor)}>{title}</div>
+        <div className={classnames("font-medium", titleColor)}>{title}</div>
       </div>
 
       <div className="flex items-center gap-1">{statusIcon}</div>
+    </div>
+  );
+}
+
+function PhasesCard({ project }) {
+  return (
+    <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
+      <Cards.Header>
+        <Cards.Title>Project Phases</Cards.Title>
+      </Cards.Header>
+
+      <Cards.Body>
+        <ProjectPhasesCardListItem
+          title="Concept"
+          completed={Projects.isPhaseCompleted(project, "concept")}
+          pending={project.phase === "concept"}
+        />
+        <ProjectPhasesCardListItem
+          title="Planning"
+          completed={Projects.isPhaseCompleted(project, "concept")}
+          pending={project.phase === "planning"}
+        />
+        <ProjectPhasesCardListItem
+          title="Execution"
+          completed={Projects.isPhaseCompleted(project, "concept")}
+          pending={project.phase === "execution"}
+        />
+        <ProjectPhasesCardListItem
+          title="Control"
+          completed={Projects.isPhaseCompleted(project, "concept")}
+          pending={project.phase === "control"}
+        />
+      </Cards.Body>
+    </Cards.Card>
+  );
+}
+
+function ProjectPhasesCardListItem({ title, completed, pending }) {
+  let statusIcon: React.ReactNode | null = null;
+  let titleColor: string | null = null;
+
+  if (completed) {
+    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-green-400" />;
+    titleColor = "text-white-1";
+  } else if (pending) {
+    statusIcon = <Icons.IconProgressCheck size={20} className="text-yellow-400" />;
+    titleColor = "text-white-1";
+  } else {
+    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-white-3" />;
+    titleColor = "text-white-3";
+  }
+
+  return (
+    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+      <div className="flex items-center gap-1">
+        <div className="shrink-0">{statusIcon}</div>
+        <div className={classnames("font-medium", titleColor)}>{title}</div>
+      </div>
     </div>
   );
 }
@@ -128,11 +185,6 @@ function DocumentationCard({ project }) {
           title="Execution Review"
           completed={project.executionReview}
           pending={Projects.shouldBeFilledIn(project, "execution_review")}
-        />
-        <DocumentationCardListItem
-          title="Control Review"
-          completed={project.controlReview}
-          pending={Projects.shouldBeFilledIn(project, "control_review")}
         />
         <DocumentationCardListItem
           title="Retrospective"
