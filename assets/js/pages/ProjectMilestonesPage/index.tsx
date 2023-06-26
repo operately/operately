@@ -57,9 +57,7 @@ function Title({ projectId, refetch }) {
       <div className="flex items-center justify-between">
         <div>
           <div className="text-2xl font-extrabold ">Milestones</div>
-          <div className="text-medium">
-            Set milestones for your project and track progress
-          </div>
+          <div className="text-medium">Set milestones for your project and track progress</div>
         </div>
 
         <div>
@@ -105,10 +103,7 @@ function AddMilestoneForm({ projectId, close }) {
         <div className="shrink-0">
           <label className="font-bold mb-1 block">Due date</label>
           <div className="flex-1">
-            <MilestoneDueDateEdit
-              selected={deadline}
-              setSelected={setDeadline}
-            />
+            <MilestoneDueDateEdit selected={deadline} setSelected={setDeadline} />
           </div>
         </div>
       </div>
@@ -137,9 +132,7 @@ function AddMilestoneButton({ onClick }) {
 }
 
 function MilestoneList({ project, refetch }) {
-  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(
-    project.milestones
-  );
+  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(project.milestones);
 
   return (
     <div className="flex flex-col px-8 divide-y divide-shade-1 fadeIn">
@@ -244,10 +237,7 @@ function MilestoneItemEditState({ milestone, close }) {
         <div className="shrink-0">
           <label className="font-bold mb-1 block">Due date</label>
           <div className="flex-1">
-            <MilestoneDueDateEdit
-              selected={deadline}
-              setSelected={setDeadline}
-            />
+            <MilestoneDueDateEdit selected={deadline} setSelected={setDeadline} />
           </div>
         </div>
       </div>
@@ -278,15 +268,12 @@ function OverdueIndicator({ milestone }) {
   if (milestone.status === "done") return null;
   if (!milestone.deadlineAt) return null;
 
-  const days = Math.floor(
-    (new Date().getTime() - new Date(milestone.deadlineAt).getTime()) /
-      (1000 * 60 * 60 * 24)
-  );
+  const days = Math.floor((new Date().getTime() - new Date(milestone.deadlineAt).getTime()) / (1000 * 60 * 60 * 24));
 
   if (days <= 0) return null;
 
   return (
-    <div className="flex items-center gap-1 text-red-400 text-sm">
+    <div className="flex items-center gap-1 text-red-400 text-sm font-medium">
       overdue {days} {days === 1 ? "day" : "days"}
     </div>
   );
@@ -358,10 +345,7 @@ function MilestoneDueDate2({ milestone }) {
         open={open}
         onInputClick={() => setOpen(true)}
       >
-        <div
-          className="flex items-center gap-1 text-red-400"
-          onClick={onChange}
-        >
+        <div className="flex items-center gap-1 text-red-400" onClick={onChange}>
           <Icons.IconTrash size={16} />
           Clear due date
         </div>
