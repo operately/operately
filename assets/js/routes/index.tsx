@@ -13,6 +13,7 @@ import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 import { ProjectMilestonesPage } from "@/pages/ProjectMilestonesPage";
 import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
+import { ProjectStatusUpdateListPage } from "@/pages/ProjectStatusUpdateListPage";
 
 import TenetAddPage from "../pages/TenetAddPage";
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
@@ -23,10 +24,7 @@ import { KpiListPage, KpiListPageLoader } from "../pages/KpiListPage";
 
 import ObjectiveAddPage from "../pages/ObjectiveAddPage";
 import { ObjectivePage } from "../pages/ObjectivePage";
-import {
-  ObjectiveListPage,
-  ObjectiveListPageLoader,
-} from "../pages/ObjectiveListPage";
+import { ObjectiveListPage, ObjectiveListPageLoader } from "../pages/ObjectiveListPage";
 
 import ProfilePage from "../pages/ProfilePage";
 
@@ -80,6 +78,10 @@ const routes = createBrowserRouter([
       {
         path: "/projects/new",
         element: <ProjectAddPage />,
+      },
+      {
+        path: "/projects/:project_id/updates",
+        element: <ProjectStatusUpdateListPage />,
       },
       {
         path: "/projects/:project_id/updates/:id",

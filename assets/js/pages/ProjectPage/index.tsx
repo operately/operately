@@ -4,7 +4,9 @@ import classnames from "classnames";
 
 import { useDocumentTitle } from "@/layouts/header";
 import { useParams } from "react-router-dom";
+
 import * as Projects from "@/graphql/Projects";
+import * as Milestones from "@/graphql/Projects/milestones";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
@@ -14,7 +16,6 @@ import StatusUpdates from "./StatusUpdates";
 import Header from "./Header";
 import NewUpdate from "./NewUpdate";
 
-import * as Milestones from "@/graphql/Projects/milestones";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
@@ -276,7 +277,7 @@ function StatusUpdatesCardItem({ update }) {
 
 function StatuUpdatesCard({ project }) {
   return (
-    <Cards.Card linkTo="/">
+    <Cards.Card linkTo={`/projects/${project.id}/updates`}>
       <Cards.Header>
         <Cards.Title>Status Updates</Cards.Title>
       </Cards.Header>

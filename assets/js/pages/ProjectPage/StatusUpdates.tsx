@@ -41,10 +41,7 @@ function AckStatus({ update }) {
 
 function StatusUpdate(props: StatusUpdateProps) {
   return (
-    <Link
-      to={props.linkTo}
-      className="flex items-center justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2"
-    >
+    <Link to={props.linkTo} className="flex items-center justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2">
       <div className="flex items-center gap-4">
         <div className="shrink-0">
           <Avatar person={props.person} />
@@ -113,11 +110,7 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
         </div>
 
         <div className="fadeIn">
-          {isEmpty ? (
-            <StatusUpdateZeroState />
-          ) : (
-            <StatusUpdateList project={project} updates={updates} />
-          )}
+          {isEmpty ? <StatusUpdateZeroState /> : <StatusUpdateList project={project} updates={updates} />}
         </div>
       </div>
     </div>
@@ -138,9 +131,5 @@ function SeparatorLine() {
 }
 
 function SectionTitle({ title }) {
-  return (
-    <div className="font-bold py-4 flex items-center gap-2 uppercase tracking-wide">
-      {title}
-    </div>
-  );
+  return <div className="font-bold py-4 flex items-center gap-2 uppercase tracking-wide">{title}</div>;
 }
