@@ -207,12 +207,18 @@ function MilestonesCard({ project }) {
 
       <Cards.Body>
         {milestones.slice(0, 4).map((m) => (
-          <div key={m.id} className="flex items-center gap-2 rounded-lg py-1 truncate">
-            <div className="shrink-0">
-              {m.status === "done" ? <Icons.IconCircleCheck size={20} /> : <Icons.IconCircle size={20} />}
-            </div>
+          <div key={m.id} className="border-t border-b border-shade-1 py-1 flex justify-between">
+            <div className="flex items-center gap-1 font-medium truncate">
+              <div className="shrink-0">
+                {m.status === "done" ? (
+                  <Icons.IconCircleCheck size={20} className="text-green-400" />
+                ) : (
+                  <Icons.IconCircle size={20} className="text-yellow-400" />
+                )}
+              </div>
 
-            <div className="truncate">{m.title}</div>
+              <div className="truncate">{m.title}</div>
+            </div>
           </div>
         ))}
 
