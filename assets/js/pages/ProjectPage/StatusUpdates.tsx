@@ -41,18 +41,20 @@ function AckStatus({ update }) {
 
 function StatusUpdate(props: StatusUpdateProps) {
   return (
-    <Link to={props.linkTo} className="flex items-center justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2">
-      <div className="flex items-center gap-4">
+    <Link to={props.linkTo} className="flex items-start justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2">
+      <div className="flex items-start gap-4">
         <div className="shrink-0">
           <Avatar person={props.person} />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <div className="font-bold">{props.title}</div>
+            <div className="font-bold">
+              {props.person.fullName} shared a {props.title}
+            </div>
             <AckStatus update={props.update} />
           </div>
-          <div className="line-clamp-1" style={{ maxWidth: "780px" }}>
+          <div className="line-clamp-4" style={{ maxWidth: "780px" }}>
             {props.message}
           </div>
         </div>
@@ -104,9 +106,9 @@ export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
     <div className="px-16 rounded-b-[20px] py-8 bg-dark-2 min-h-[350px] border-t border-shade-1">
       <div className="">
         <div className="flex items-center justify-between gap-4">
+          <SeparatorLine />
           <SectionTitle title="Project Activity" />
           <SeparatorLine />
-          <PostUpdateButton linkTo={postUpdateLink} />
         </div>
 
         <div className="fadeIn">
