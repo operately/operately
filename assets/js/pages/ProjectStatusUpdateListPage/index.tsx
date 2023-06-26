@@ -73,7 +73,7 @@ function PostUpdateButton({ linkTo }) {
 
 function UpdateList({ project, refetch }) {
   return (
-    <div className="flex flex-col px-8 fadeIn">
+    <div className="flex flex-col px-8 pb-8 fadeIn">
       {project.activities.map((update) => (
         <StatusUpdateItem key={update.id} linkTo={`/projects/${project.id}/updates/${update.id}`} update={update} />
       ))}
