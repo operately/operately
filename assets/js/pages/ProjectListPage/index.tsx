@@ -1,5 +1,6 @@
 import React from "react";
 
+import { useDocumentTitle } from "@/layouts/header";
 import { useProjects } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 import AvatarList from "@/components/AvatarList";
@@ -20,11 +21,7 @@ function DateOrNotSet({ date }) {
 function Phase({ phase }) {
   switch (phase) {
     case "draft":
-      return (
-        <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">
-          draft
-        </span>
-      );
+      return <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">draft</span>;
   }
 }
 
@@ -37,8 +34,7 @@ function Flare() {
         left: 0,
         right: 0,
         height: "500px",
-        background:
-          "radial-gradient(circle at top center, #FFFF0008 0%, #00000000 50%)",
+        background: "radial-gradient(circle at top center, #FFFF0008 0%, #00000000 50%)",
         pointerEvents: "none",
       }}
     ></div>
@@ -49,9 +45,7 @@ function ProjectListItem({ project }) {
   return (
     <Link to={`/projects/${project.id}`}>
       <div className="flex items-center justify-between gap-4 bg-shade-1 py-2 px-4 rounded border border-transparent hover:border-white-1">
-        <div className="font-medium text-white-1 flex items-center w-1/3">
-          {project.name}
-        </div>
+        <div className="font-medium text-white-1 flex items-center w-1/3">{project.name}</div>
 
         <div className="flex items-center justify-between gap-4 w-1/2">
           <div className="flex items-center justify-between gap-4 w-1/3">
@@ -91,6 +85,8 @@ function SortProjects(projects) {
 }
 
 export function ProjectListPage() {
+  useDocumentTitle("Projects");
+
   const { loading, error, data } = useProjects({});
 
   if (loading) return <p>Loading...</p>;
@@ -121,9 +117,7 @@ export function ProjectListPage() {
       </div>
 
       <div className="mb-16 flex flex-col items-center justify-between gap-8">
-        <div className="text-5xl font-bold text-center">
-          Projects in Rendered Text
-        </div>
+        <div className="text-5xl font-bold text-center">Projects in Rendered Text</div>
 
         <div className="flex items-center justify-between gap-3">
           <button className="border border-orange-400 text-orange-400 bg-orange-400/20 rounded-full hover:border-orange-800 text-dark-1 hover:text-white-1 px-3 py-1.5 text-sm font-bold">
@@ -151,13 +145,9 @@ export function ProjectListPage() {
           <div className="text-white-2 uppercase">CONTRIBUTORS </div>
 
           <div className="w-2/3 flex items-center justify-between gap-4">
-            <div className="w-32 text-white-2 uppercase text-right">
-              STARTED
-            </div>
+            <div className="w-32 text-white-2 uppercase text-right">STARTED</div>
 
-            <div className="w-32 text-white-2 uppercase text-right">
-              DEADLINE
-            </div>
+            <div className="w-32 text-white-2 uppercase text-right">DEADLINE</div>
 
             <div className="w-32 text-white-2 uppercase text-right">PHASE</div>
           </div>

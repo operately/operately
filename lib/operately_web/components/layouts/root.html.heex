@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · Operately">
-      <%= assigns[:page_title] %>
-    </.live_title>
+
+    <title>Operately</title>
+
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
 
     <script>
@@ -32,6 +32,8 @@
         font-family: 'Inter', sans-serif;
       }
     </style>
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
