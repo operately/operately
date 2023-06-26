@@ -2,6 +2,7 @@ import React from "react";
 
 import classnames from "classnames";
 
+import { useDocumentTitle } from "@/layouts/header";
 import { useParams } from "react-router-dom";
 import * as Projects from "@/graphql/Projects";
 
@@ -45,6 +46,8 @@ export function ProjectPage() {
 }
 
 function Overview({ project }) {
+  useDocumentTitle(project.name);
+
   return (
     <Paper.Root size="large">
       <Paper.Navigation>
@@ -79,21 +82,15 @@ function DocumentationCardListItem({ title, completed, pending }) {
 
   if (completed) {
     fileIcon = <Icons.IconFileText size={16} className="text-pink-400" />;
-    statusIcon = (
-      <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
-    );
+    statusIcon = <Icons.IconCircleCheckFilled size={16} className="text-green-400" />;
     titleColor = "text-white-1";
   } else if (pending) {
     fileIcon = <Icons.IconFileDots size={16} className="text-yellow-400/80" />;
-    statusIcon = (
-      <Icons.IconProgressCheck size={16} className="text-yellow-400" />
-    );
+    statusIcon = <Icons.IconProgressCheck size={16} className="text-yellow-400" />;
     titleColor = "text-white-1";
   } else {
     fileIcon = <Icons.IconFileText size={16} className="text-white-3" />;
-    statusIcon = (
-      <Icons.IconCircleCheckFilled size={16} className="text-white-3" />
-    );
+    statusIcon = <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
     titleColor = "text-white-3";
   }
 
@@ -101,9 +98,7 @@ function DocumentationCardListItem({ title, completed, pending }) {
     <div className="border-t border-b border-shade-1 py-1 flex justify-between">
       <div className="flex items-center gap-1">
         <div className="shrink-0">{fileIcon}</div>
-        <div className={classnames("text-sm font-medium", titleColor)}>
-          {title}
-        </div>
+        <div className={classnames("text-sm font-medium", titleColor)}>{title}</div>
       </div>
 
       <div className="flex items-center gap-1">{statusIcon}</div>
@@ -160,16 +155,9 @@ function MilestonesCard({ project }) {
 
       <Cards.Body>
         {milestones.slice(0, 4).map((m) => (
-          <div
-            key={m.id}
-            className="flex items-center gap-2 rounded-lg py-1 truncate"
-          >
+          <div key={m.id} className="flex items-center gap-2 rounded-lg py-1 truncate">
             <div className="shrink-0">
-              {m.status === "done" ? (
-                <Icons.IconCircleCheck size={20} />
-              ) : (
-                <Icons.IconCircle size={20} />
-              )}
+              {m.status === "done" ? <Icons.IconCircleCheck size={20} /> : <Icons.IconCircle size={20} />}
             </div>
 
             <div className="truncate">{m.title}</div>
@@ -179,8 +167,7 @@ function MilestonesCard({ project }) {
         {milestones.length > 4 && (
           <div className="flex items-center gap-2 rounded-lg py-1 ml-0.5 text-white-2">
             <Icons.IconDotsVertical size={16} />
-            {milestones.length - 4} other,{" "}
-            {milestones.filter((m) => m.status === "pending").length} pending
+            {milestones.length - 4} other, {milestones.filter((m) => m.status === "pending").length} pending
           </div>
         )}
       </Cards.Body>
@@ -271,9 +258,7 @@ function Phases({ project }) {
               <span className="font-bold">{phase.name}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              {phase.status === "active" && (
-                <span className="">Due:&nbsp;</span>
-              )}
+              {phase.status === "active" && <span className="">Due:&nbsp;</span>}
               <div className="text-sm">{phase.time}</div>
             </div>
           </div>
