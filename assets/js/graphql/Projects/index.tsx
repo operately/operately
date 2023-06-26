@@ -117,7 +117,6 @@ export interface Project {
   pitch: Document;
   plan: Document;
   execution_review: Document;
-  control_review: Document;
   retrospective: Document;
 }
 
@@ -144,7 +143,6 @@ const GET_PROJECT = gql`
       pitch ${fragments.PROJECT_DOCUMENT}
       plan ${fragments.PROJECT_DOCUMENT}
       execution_review ${fragments.PROJECT_DOCUMENT}
-      control_review ${fragments.PROJECT_DOCUMENT}
       retrospective ${fragments.PROJECT_DOCUMENT}
 
       activities {
@@ -493,16 +491,24 @@ export function isReviwerAssigned(project: Project) {
   return project.contributors.some((c) => c.role === "reviewer");
 }
 
-type DocumentType = "pitch" | "plan" | "execution_review" | "control_review" | "retrospective";
+type DocumentType = "pitch" | "plan" | "execution_review" | "retrospective";
 
 const whatShouldBeFilledIn = {
-  draft: ["pitch"],
+  concept: ["pitch"],
   planning: ["pitch", "plan"],
   execution: ["pitch", "plan", "execution_review"],
-  control: ["pitch", "plan", "execution_review", "control_review"],
-  retrospective: ["pitch", "plan", "execution_review", "control_review", "retrospective"],
+  control: ["pitch", "plan", "execution_review", "retrospective"],
 };
 
 export function shouldBeFilledIn(project: Project, documentType: DocumentType): boolean {
   return whatShouldBeFilledIn[project.phase].includes(documentType);
+}
+
+export function isPhaseCompleted(project: Project, phase: string): boolean {
+  const phases = ["concept", "planning", "execution", "control"];
+
+  const phaseIndex = phases.indexOf(phase);
+  const projectPhaseIndex = phases.indexOf(project.phase);
+
+  return phaseIndex < projectPhaseIndex;
 }

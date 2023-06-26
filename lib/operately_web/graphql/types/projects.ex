@@ -121,12 +121,6 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
       end
     end
 
-    field :control_review, :project_document do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.get_control_review(project)}
-      end
-    end
-
     field :retrospective, :project_document do
       resolve fn project, _, _ ->
         {:ok, Operately.Projects.get_retrospective(project)}

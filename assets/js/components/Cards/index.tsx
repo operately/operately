@@ -13,7 +13,7 @@ export function Card({ children, linkTo }) {
           "cursor-pointer",
           "shadow hover:shadow-lg",
           "border border-shade-2 hover:border-shade-3",
-          "overflow-hidden"
+          "overflow-hidden",
         )}
       >
         {children}
@@ -23,17 +23,11 @@ export function Card({ children, linkTo }) {
 }
 
 export function Header({ children }) {
-  return (
-    <div className="flex items-center justify-center gap-4 mb-2">
-      {children}
-    </div>
-  );
+  return <div className="flex items-center justify-center gap-4 mb-2">{children}</div>;
 }
 
 export function Title({ children }) {
-  return (
-    <div className="font-bold flex items-center uppercase">{children}</div>
-  );
+  return <div className="font-bold flex items-center uppercase mb-2 -mt-1">{children}</div>;
 }
 
 export function Body({ children }) {

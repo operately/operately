@@ -22,7 +22,6 @@ defmodule Operately.Projects.Project do
     belongs_to :pitch, Operately.Projects.Document, foreign_key: :pitch_document_id
     belongs_to :plan, Operately.Projects.Document, foreign_key: :plan_document_id
     belongs_to :execution_review, Operately.Projects.Document, foreign_key: :execution_review_document_id
-    belongs_to :control_review, Operately.Projects.Document, foreign_key: :control_review_document_id
     belongs_to :retrospective, Operately.Projects.Document, foreign_key: :retrospective_document_id
 
     timestamps()
@@ -43,7 +42,6 @@ defmodule Operately.Projects.Project do
       :pitch_document_id,
       :plan_document_id,
       :execution_review_document_id,
-      :control_review_document_id,
       :retrospective_document_id
     ])
     |> validate_required([:name])
