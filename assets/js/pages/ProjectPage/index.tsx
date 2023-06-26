@@ -67,7 +67,7 @@ function Overview({ project }) {
           <DocumentationCard project={project} />
           <MilestonesCard project={project} />
           <StatuUpdatesCard project={project} />
-          <KeyResources project={project} />
+          <KeyResourcesCard project={project} />
         </div>
 
         <StatusUpdates project={project} />
@@ -290,7 +290,16 @@ function StatuUpdatesCard({ project }) {
   );
 }
 
-function KeyResources({ project }) {
+function KeyResourcesCardItem({ icon, title }) {
+  return (
+    <div className="border-t border-b border-shade-1 flex items-center gap-1.5 rounded-lg py-1">
+      <div className="shrink-0">{icon}</div>
+      <div className="truncate">{title}</div>
+    </div>
+  );
+}
+
+function KeyResourcesCard({ project }) {
   return (
     <Cards.Card linkTo="/">
       <Cards.Header>
@@ -298,25 +307,13 @@ function KeyResources({ project }) {
       </Cards.Header>
 
       <Cards.Body>
-        <div className="flex items-center gap-2 rounded-lg py-1">
-          <Icons.IconBrandGithub size={20} />
-          GitHub Repository
-        </div>
-
-        <div className="flex items-center gap-2 rounded-lg py-1">
-          <Icons.IconBrandFigma size={20} />
-          Figma Design
-        </div>
-
-        <div className="flex items-center gap-2 rounded-lg py-1">
-          <Icons.IconFile size={20} />
-          Architecture Diagram
-        </div>
-
-        <div className="flex items-center gap-2 rounded-lg py-1">
-          <Icons.IconBrandSlack size={20} />
-          Slack Channel
-        </div>
+        <KeyResourcesCardItem
+          icon={<Icons.IconBrandGithub size={20} />}
+          title="GitHub Repository for the Operately repository"
+        />
+        <KeyResourcesCardItem icon={<Icons.IconBrandFigma size={20} />} title="Figma Design" />
+        <KeyResourcesCardItem icon={<Icons.IconFileDescription size={20} />} title="Architecture Diagram" />
+        <KeyResourcesCardItem icon={<Icons.IconBrandSlack size={20} />} title="Slack Channel" />
       </Cards.Body>
     </Cards.Card>
   );

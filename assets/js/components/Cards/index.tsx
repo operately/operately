@@ -27,7 +27,7 @@ export function Header({ children }) {
 }
 
 export function Title({ children }) {
-  return <div className="font-bold flex items-center uppercase mb-2 -mt-1">{children}</div>;
+  return <div className="font-bold flex items-center uppercase mb-0.5 -mt-1">{children}</div>;
 }
 
 export function Body({ children }) {
