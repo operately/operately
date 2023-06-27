@@ -1,24 +1,19 @@
 import React from "react";
-import PersonSearch from "./PersonSearch";
 
 import * as Projects from "@/graphql/Projects";
 import * as Icons from "@tabler/icons-react";
 
 import Button from "@/components/Button";
+import PeopleSearch from "@/components/PeopleSearch";
 
-export function ContributorSearch({
-  projectID,
-  title,
-  onSelect,
-  defaultValue = undefined,
-}) {
+export function ContributorSearch({ projectID, title, onSelect, defaultValue = undefined }) {
   const loader = Projects.useProjectContributorCandidatesQuery(projectID);
 
   return (
     <div className="mb-6">
       <label className="font-bold mb-1 block capitalize">{title}</label>
       <div className="flex-1">
-        <PersonSearch
+        <PeopleSearch
           onChange={(option) => onSelect(option.value)}
           placeholder="Search by name or title..."
           loader={loader}
@@ -32,9 +27,7 @@ export function ContributorSearch({
 export function ResponsibilityInput({ value, onChange }) {
   return (
     <div className="">
-      <label className="font-bold mb-1 block">
-        What are the responsibilities of this contributor?
-      </label>
+      <label className="font-bold mb-1 block">What are the responsibilities of this contributor?</label>
       <div className="flex-1">
         <input
           value={value}

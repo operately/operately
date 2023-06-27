@@ -6,8 +6,8 @@ import GroupAddPage from "../pages/GroupAddPage";
 import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
 import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
-import ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectPage } from "../pages/ProjectPage";
+import { ProjectAddPage } from "../pages/ProjectAddPage";
 import { ProjectListPage } from "../pages/ProjectListPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";

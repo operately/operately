@@ -2,12 +2,29 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
   use Absinthe.Schema.Notation
 
   object :project_mutations do
-    field :create_project, :project do
+    field :create_project, non_null(:project) do
       arg :name, non_null(:string)
-      arg :description, :string
+      arg :champion_id, non_null(:id)
 
-      resolve fn args, _ ->
-        Operately.Projects.create_project(%{name: args.name, description: args[:description] || "-"})
+      resolve fn args, %{context: context} ->
+        Operately.Repo.transaction(fn -> 
+          person = context.current_account.person
+
+          {:ok, project} = Operately.Projects.create_project(%{
+            company_id: person.company_id,
+            creator_id: person.id,
+            name: args.name
+          })
+
+          Operately.Projects.create_contributor(%{
+            project_id: project.id,
+            person_id: args.champion_id,
+            responsibility: " ",
+            role: "champion"
+          })
+
+          project
+        end)
       end
     end
 

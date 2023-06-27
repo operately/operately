@@ -24,7 +24,7 @@ interface PeopleSearchProps {
   defaultValue?: Person;
 }
 
-export default function PersonSearch(props: PeopleSearchProps) {
+export default function PeopleSearch(props: PeopleSearchProps) {
   const defaultValue = props.defaultValue && personAsOption(props.defaultValue);
 
   const loadOptions = async (input: string) => {

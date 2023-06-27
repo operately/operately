@@ -5,6 +5,8 @@ defmodule Operately.Projects.Project do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "projects" do
+    belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
+    belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :objective, Operately.Okrs.Objective, foreign_key: :objective_id
 
@@ -42,8 +44,14 @@ defmodule Operately.Projects.Project do
       :pitch_document_id,
       :plan_document_id,
       :execution_review_document_id,
-      :retrospective_document_id
+      :retrospective_document_id,
+      :company_id,
+      :creator_id,
     ])
-    |> validate_required([:name])
+    |> validate_required([
+      :name,
+      :company_id,
+      :creator_id,
+    ])
   end
 end

@@ -66,11 +66,11 @@ export function NavSeparator() {
   );
 }
 
-export function Body({ children }) {
+export function Body({ children, minHeight = "1000px" }) {
   return (
     <div
       className="relative bg-dark-3/70 rounded-[20px] border border-shade-1 shadow-lg"
-      style={{ minHeight: "1000px" }}
+      style={{ minHeight: minHeight }}
     >
       {children}
     </div>

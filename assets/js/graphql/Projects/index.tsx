@@ -353,6 +353,19 @@ export function useAckMutation(updateId: string) {
   return [ack, status] as const;
 }
 
+export function useAddProject(options) {
+  return useMutation(
+    gql`
+      mutation CreateProject($name: String!, $championId: ID!) {
+        createProject(name: $name, championId: $championId) {
+          id
+        }
+      }
+    `,
+    options,
+  );
+}
+
 export function useAddProjectContributorMutation(projectId: string) {
   const [fun, status] = useMutation(
     gql`

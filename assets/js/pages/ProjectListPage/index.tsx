@@ -7,6 +7,8 @@ import AvatarList from "@/components/AvatarList";
 import { Link } from "react-router-dom";
 import * as Icons from "tabler-icons-react";
 
+import Button from "@/components/Button";
+
 function DateOrNotSet({ date }) {
   if (date === null) {
     return <span className="text-white-3 uppercase">not set</span>;
@@ -106,10 +108,10 @@ export function ProjectListPage() {
         </div>
 
         <div className="flex items-center justify-between gap-4">
-          <button className="border border-white-2 rounded-lg hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 font-medium flex items-center gap-2">
-            <Icons.ClipboardList size={16} className="text-green-400" />
+          <Button linkTo="/projects/new" variant="success">
+            <Icons.ClipboardList size={20} />
             New Project
-          </button>
+          </Button>
         </div>
       </div>
 
