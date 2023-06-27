@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
@@ -10,8 +10,10 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import Button from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
+import Avatar from "@/components/Avatar";
+import RichContent from "@/components/RichContent";
 
-export function ProjectMilestonesPage() {
+export function ProjectStatusUpdateListPage() {
   const params = useParams();
   const projectId = params["project_id"];
 
@@ -35,112 +37,99 @@ export function ProjectMilestonesPage() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <Title projectId={projectId} refetch={refetch} />
+        <Title projectId={projectId} />
 
-        <MilestoneList project={project} refetch={refetch} />
+        <UpdateList project={project} refetch={refetch} />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Title({ projectId, refetch }) {
-  const [showAdd, setShowAdd] = React.useState(false);
-
-  const onAddClick = () => setShowAdd(true);
-  const close = async () => {
-    await refetch();
-    setShowAdd(false);
-  };
-
+function Title({ projectId }) {
   return (
     <div className="p-8 pb-8">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-2xl font-extrabold ">Milestones</div>
-          <div className="text-medium">Set milestones for your project and track progress</div>
+          <div className="text-2xl font-extrabold ">Status Update</div>
+          <div className="text-medium">Asking the project champion for a status update every Friday at 3pm.</div>
         </div>
 
         <div>
-          <AddMilestoneButton onClick={onAddClick} />
+          <PostUpdateButton linkTo={`/projects/${projectId}/updates/new`} />
         </div>
-      </div>
-
-      {showAdd && <AddMilestoneForm close={close} projectId={projectId} />}
-    </div>
-  );
-}
-
-function AddMilestoneForm({ projectId, close }) {
-  const [value, setValue] = React.useState("");
-  const [deadline, setDeadline] = React.useState(null);
-  const disabled = value.length === 0 && !deadline;
-
-  const [add, _s] = Milestones.useAddMilestone(projectId);
-
-  const save = async () => {
-    if (disabled) return;
-
-    await add(value, deadline);
-    close();
-  };
-
-  return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <label className="font-bold mb-1 block">Desribes the milestone</label>
-          <div className="flex-1">
-            <input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-              type="text"
-              placeholder="ex. Contract signed with client"
-            />
-          </div>
-        </div>
-
-        <div className="shrink-0">
-          <label className="font-bold mb-1 block">Due date</label>
-          <div className="flex-1">
-            <MilestoneDueDateEdit selected={deadline} setSelected={setDeadline} />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex mt-8 gap-2">
-        <Button variant="success" disabled={disabled} onClick={save}>
-          <Icons.IconPlus size={20} />
-          Add Milestone
-        </Button>
-
-        <Button variant="secondary" onClick={close}>
-          Cancel
-        </Button>
       </div>
     </div>
   );
 }
 
-function AddMilestoneButton({ onClick }) {
+function PostUpdateButton({ linkTo }) {
   return (
-    <Button variant="success" onClick={onClick}>
-      <Icons.IconPlus size={20} />
-      Add Milestone
+    <Button variant="success" linkTo={linkTo}>
+      <Icons.IconMessage2 size={20} />
+      Post Update
     </Button>
   );
 }
 
-function MilestoneList({ project, refetch }) {
-  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(project.milestones);
-
+function UpdateList({ project, refetch }) {
   return (
-    <div className="flex flex-col px-8 divide-y divide-shade-1 fadeIn">
-      {milestones.map((m) => (
-        <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
+    <div className="flex flex-col px-8 pb-8 fadeIn">
+      {project.activities.map((update) => (
+        <StatusUpdateItem key={update.id} linkTo={`/projects/${project.id}/updates/${update.id}`} update={update} />
       ))}
     </div>
   );
+}
+
+interface StatusUpdateProps {
+  linkTo: string;
+  update: any;
+}
+
+function StatusUpdateItem({ linkTo, update }: StatusUpdateProps) {
+  return (
+    <Link
+      to={linkTo}
+      className="border-t border-shade-2 flex items-start justify-between hover:bg-shade-1 px-2 py-4 rounded -ml-2"
+    >
+      <div className="flex items-start gap-4">
+        <div className="shrink-0 mt-1 ml-1">
+          <Avatar person={update.author} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <div className="font-bold">{update.author.fullName}</div>
+            <AckStatus update={update} />
+          </div>
+          <div className="line-clamp-4">
+            <RichContent jsonContent={update.message} />
+          </div>
+        </div>
+      </div>
+
+      <div className="text-right w-32 shrink-0">
+        <FormattedTime time={update.insertedAt} format="short-date" />
+      </div>
+    </Link>
+  );
+}
+
+function AckStatus({ update }) {
+  if (update.acknowledged) {
+    return (
+      <div className="flex items-center text-sm text-green-400 gap-1">
+        <Icons.IconCircleCheckFilled size={16} />
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex items-center text-sm text-yellow-400 gap-1 font-medium">
+        <Icons.IconClockFilled size={16} />
+        Waiting for Acknowledgement
+      </div>
+    );
+  }
 }
 
 function MilestoneItem({ milestone, refetch }) {
@@ -273,7 +262,7 @@ function OverdueIndicator({ milestone }) {
   if (days <= 0) return null;
 
   return (
-    <div className="flex items-center gap-1 text-red-400 text-sm font-medium">
+    <div className="flex items-center gap-1 text-red-400 text-sm">
       overdue {days} {days === 1 ? "day" : "days"}
     </div>
   );

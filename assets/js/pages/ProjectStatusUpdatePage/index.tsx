@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
@@ -27,8 +27,7 @@ export function ProjectStatusUpdatePage() {
   const updateData = ProjectQueries.useProjectStatusUpdate(id);
   const addReactionMutation = ProjectQueries.useReactMutation("update", id);
 
-  if (meData.loading || updateData.loading)
-    return <p className="mt-32">Loading...</p>;
+  if (meData.loading || updateData.loading) return <p className="mt-32">Loading...</p>;
 
   if (meData.error || updateData.error)
     return (
@@ -48,15 +47,14 @@ export function ProjectStatusUpdatePage() {
           <Icons.IconClipboardList size={16} />
           {update.project.name}
         </Paper.NavItem>
+
+        <Paper.NavSeparator />
+
+        <Paper.NavItem linkTo={`/projects/${projectId}/updates`}> Status Updates</Paper.NavItem>
       </Paper.Navigation>
 
       <Paper.Body>
-        <AckBanner
-          me={me}
-          update={update}
-          champion={update.project.champion}
-          reviewer={update.project.reviewer}
-        />
+        <AckBanner me={me} update={update} champion={update.project.champion} reviewer={update.project.reviewer} />
 
         <div className="px-8 pb-16 fadeIn">
           <Header update={update} />
@@ -121,8 +119,7 @@ function Header({ update }) {
           <Avatar person={update.author} size={AvatarSize.Small} />
           <div className="font-bold">{update.author.fullName}</div>
           <div>
-            <span>posted an update on</span>{" "}
-            <FormattedTime time={update.insertedAt} format="short-date" />
+            <span>posted an update on</span> <FormattedTime time={update.insertedAt} format="short-date" />
           </div>
         </div>
       </div>
@@ -168,10 +165,7 @@ function Comments({ update, onNewReaction }) {
 }
 
 function Comment({ comment, onNewReaction }) {
-  const addReactionMutation = ProjectQueries.useReactMutation(
-    "comment",
-    comment.id
-  );
+  const addReactionMutation = ProjectQueries.useReactMutation("comment", comment.id);
 
   return (
     <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">
@@ -205,9 +199,7 @@ function AckComment({ update }) {
     <div className="flex items-center justify-between py-4 border-t border-shade-2 font-bold relative">
       <div className="flex items-center gap-3">
         <Avatar person={update.acknowledgingPerson} size={AvatarSize.Normal} />
-        <span>
-          {update.acknowledgingPerson.fullName} has acknowledged this update
-        </span>
+        <span>{update.acknowledgingPerson.fullName} has acknowledged this update</span>
         <Icons.IconCircleCheckFilled size={24} className="text-green-400" />
       </div>
       <FormattedTime time={update.acknowledgedAt} format="short-date" />
@@ -222,13 +214,7 @@ function AddComment({ me, update }) {
   const deactivate = () => setActive(false);
 
   if (active) {
-    return (
-      <AddCommentActive
-        onBlur={deactivate}
-        onPost={deactivate}
-        update={update}
-      />
-    );
+    return <AddCommentActive onBlur={deactivate} onPost={deactivate} update={update} />;
   } else {
     return <AddCommentNonActive me={me} onClick={activate} />;
   }
@@ -236,10 +222,7 @@ function AddComment({ me, update }) {
 
 function AddCommentNonActive({ me, onClick }) {
   return (
-    <div
-      className="flex items-center gap-3 py-4 border-t border-shade-2 text-white-2 cursor-pointer"
-      onClick={onClick}
-    >
+    <div className="flex items-center gap-3 py-4 border-t border-shade-2 text-white-2 cursor-pointer" onClick={onClick}>
       <Avatar person={me} size={AvatarSize.Normal} />
 
       <div className="text-white-2">Leave a comment&hellip;</div>
