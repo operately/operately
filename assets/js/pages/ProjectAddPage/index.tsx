@@ -74,7 +74,9 @@ function Form() {
         <Button variant="success" onClick={handleSubmit} disabled={isDisabled()}>
           Create Project
         </Button>
-        <Button variant="secondary">Cancel</Button>
+        <Button variant="secondary" linkTo="/projects">
+          Cancel
+        </Button>
       </div>
     </>
   );
