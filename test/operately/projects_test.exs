@@ -7,6 +7,18 @@ defmodule Operately.ProjectsTest do
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
 
+  setup do
+    company = company_fixture()
+    person = person_fixture(%{company_id: company.id})
+
+    project = project_fixture(%{
+      company_id: company.id,
+      creator_id: person.id
+    })
+
+    {:ok, company: company, project: project, person: person}
+  end
+
   describe "projects" do
     alias Operately.Projects.Project
 
@@ -14,20 +26,22 @@ defmodule Operately.ProjectsTest do
 
     @invalid_attrs %{description: nil, name: nil}
 
-    test "list_projects/0 returns all projects" do
-      project = project_fixture()
-      assert Projects.list_projects() == [project]
+    test "list_projects/0 returns all projects", ctx do
+      assert Projects.list_projects() == [ctx.project]
     end
 
-    test "get_project!/1 returns the project with given id" do
-      project = project_fixture()
-      assert Projects.get_project!(project.id) == project
+    test "get_project!/1 returns the project with given id", ctx do
+      assert Projects.get_project!(ctx.project.id) == ctx.project
     end
 
-    test "create_project/1 with valid data creates a project" do
-      valid_attrs = %{description: %{}, name: "some name"}
+    test "create_project/1 with valid data creates a project", ctx do
+      valid_attrs = %{
+        name: "some name",
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id
+      }
 
-      assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs, nil)
+      assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs)
       assert project.name == "some name"
     end
 
@@ -35,29 +49,25 @@ defmodule Operately.ProjectsTest do
       assert {:error, %Ecto.Changeset{}} = Projects.create_project(@invalid_attrs)
     end
 
-    test "update_project/2 with valid data updates the project" do
-      project = project_fixture()
+    test "update_project/2 with valid data updates the project", ctx do
       update_attrs = %{name: "some updated name"}
 
-      assert {:ok, %Project{} = project} = Projects.update_project(project, update_attrs)
+      assert {:ok, %Project{} = project} = Projects.update_project(ctx.project, update_attrs)
       assert project.name == "some updated name"
     end
 
-    test "update_project/2 with invalid data returns error changeset" do
-      project = project_fixture()
-      assert {:error, %Ecto.Changeset{}} = Projects.update_project(project, @invalid_attrs)
-      assert project == Projects.get_project!(project.id)
+    test "update_project/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Projects.update_project(ctx.project, @invalid_attrs)
+      assert ctx.project == Projects.get_project!(ctx.project.id)
     end
 
-    test "delete_project/1 deletes the project" do
-      project = project_fixture()
-      assert {:ok, %Project{}} = Projects.delete_project(project)
-      assert_raise Ecto.NoResultsError, fn -> Projects.get_project!(project.id) end
+    test "delete_project/1 deletes the project", ctx do
+      assert {:ok, %Project{}} = Projects.delete_project(ctx.project)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_project!(ctx.project.id) end
     end
 
-    test "change_project/1 returns a project changeset" do
-      project = project_fixture()
-      assert %Ecto.Changeset{} = Projects.change_project(project)
+    test "change_project/1 returns a project changeset", ctx do
+      assert %Ecto.Changeset{} = Projects.change_project(ctx.project)
     end
   end
 
@@ -68,11 +78,10 @@ defmodule Operately.ProjectsTest do
 
     @invalid_attrs %{deadline_at: nil, title: nil}
 
-    setup do
-      project = project_fixture()
-      milestone = milestone_fixture(%{project_id: project.id})
+    setup ctx do
+      milestone = milestone_fixture(%{project_id: ctx.project.id})
 
-      {:ok, project: project, milestone: milestone}
+      {:ok, milestone: milestone}
     end
 
     test "list_project_milestones/1 returns all project_milestones", ctx do
@@ -125,17 +134,13 @@ defmodule Operately.ProjectsTest do
   describe "project_contributors" do
     alias Operately.Projects.Contributor
 
-    setup do
-      company = company_fixture()
-      project = project_fixture()
-      person = person_fixture(%{company_id: company.id})
-
+    setup ctx do
       contributor = contributor_fixture(%{
-        project_id: project.id, 
-        person_id: person.id
+        project_id: ctx.project.id,
+        person_id: ctx.person.id
       })
 
-      {:ok, project: project, person: person, contributor: contributor}
+      {:ok, contributor: contributor}
     end
 
     test "list_project_contributors/0 returns all project_contributors", ctx do
@@ -181,17 +186,13 @@ defmodule Operately.ProjectsTest do
 
     @invalid_attrs %{content: nil, title: nil}
 
-    setup do
-      company = company_fixture()
-      project = project_fixture()
-      person = person_fixture(%{company_id: company.id})
-
+    setup ctx do
       document = document_fixture(%{
-        project_id: project.id, 
-        author_id: person.id
+        project_id: ctx.project.id, 
+        author_id: ctx.person.id
       })
 
-      {:ok, project: project, document: document, person: person}
+      {:ok, document: document}
     end
 
     test "list_project_documents/0 returns all project_documents", ctx do
