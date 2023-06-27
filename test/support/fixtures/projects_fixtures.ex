@@ -13,7 +13,7 @@ defmodule Operately.ProjectsFixtures do
       |> Enum.into(%{
         name: "some name"
       })
-      |> Operately.Projects.create_project(nil)
+      |> Operately.Projects.create_project()
 
     project
   end

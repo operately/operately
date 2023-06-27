@@ -1,5 +1,5 @@
 import React from "react";
-import { gql, ApolloClient, useQuery } from "@apollo/client";
+import { gql, ApolloClient, useQuery, useApolloClient } from "@apollo/client";
 
 export interface Person {
   id: string;
@@ -8,11 +8,7 @@ export interface Person {
   avatarUrl: string;
 }
 
-export function createProfile(
-  client: ApolloClient<any>,
-  fullName: string,
-  title: string
-) {
+export function createProfile(client: ApolloClient<any>, fullName: string, title: string) {
   return client.mutate({
     mutation: gql`
       mutation CreateProfile($fullName: String!, $title: String!) {
@@ -39,15 +35,21 @@ const SEARCH_PEOPLE = gql`
   }
 `;
 
-export function usePeopleSearch(query: string) {
-  const { data, loading, error } = useQuery(SEARCH_PEOPLE, {
-    variables: { query },
-  });
+export function usePeopleSearch() {
+  const client = useApolloClient();
 
-  return {
-    data,
-    loading,
-    error,
+  return async (query: string) => {
+    const res = await client.query({
+      query: SEARCH_PEOPLE,
+      variables: {
+        query: query,
+      },
+    });
+
+    if (!res.data) return [];
+    if (!res.data.searchPeople) return [];
+
+    return res.data.searchPeople as Person[];
   };
 }
 

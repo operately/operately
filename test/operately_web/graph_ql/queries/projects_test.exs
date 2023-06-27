@@ -3,7 +3,17 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
 
   setup :register_and_log_in_account
 
-  alias Operately.{CompaniesFixtures, PeopleFixtures, ProjectsFixtures}
+  import Operately.CompaniesFixtures
+  import Operately.PeopleFixtures
+  import Operately.ProjectsFixtures
+
+  setup do
+    company = company_fixture(%{name: "Acme"})
+    person = person_fixture(%{full_name: "Bob Smith", company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id})
+
+    {:ok, %{company: company, person: person, project: project}}
+  end
 
   @project_contributor_candidates_query """
   query projectContributorCandidates($projectId: ID!, $query: String!) {
@@ -16,21 +26,9 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
   }
   """
 
-  test "query: projectContributorCandidates", %{conn: conn} do
-    company = CompaniesFixtures.company_fixture(%{name: "Acme"})
-
-    person = PeopleFixtures.person_fixture(%{
-      full_name: "Bob Smith",
-      title: "Developer",
-      company_id: company.id
-    })
-
-    project = ProjectsFixtures.project_fixture(%{
-      name: "Example"
-    })
-
-    conn = graphql(conn, @project_contributor_candidates_query, %{
-      "projectId" => project.id,
+  test "query: projectContributorCandidates", ctx do
+    conn = graphql(ctx.conn, @project_contributor_candidates_query, %{
+      "projectId" => ctx.project.id,
       "query" => "bob"
     })
 
@@ -38,10 +36,10 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
       "data" => %{
         "projectContributorCandidates" => [
           %{ 
-            "avatarUrl" => person.avatar_url,
-            "fullName" => person.full_name,
-            "id" => person.id,
-            "title" => person.title
+            "avatarUrl" => ctx.person.avatar_url,
+            "fullName" => ctx.person.full_name,
+            "id" => ctx.person.id,
+            "title" => ctx.person.title
           }
         ]
       }

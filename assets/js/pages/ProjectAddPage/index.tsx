@@ -1,67 +1,115 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
-import { useMutation, gql } from "@apollo/client";
 
-import Form from "../../components/Form";
-import FormTextInput from "../../components/FormTextInput";
-import FormTextArea from "../../components/FormTextArea";
+import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
 
-const CREATE_PROJECT = gql`
-  mutation CreateProject($name: String!, $description: String) {
-    createProject(name: $name, description: $description) {
-      id
-      name
-    }
-  }
-`;
+import PeopleSearch from "@/components/PeopleSearch";
+import Button from "@/components/Button";
 
-export default function ProjectAddPage() {
-  const { t } = useTranslation();
+import * as Companines from "@/graphql/Companies";
+import * as People from "@/graphql/People";
+import * as Projects from "@/graphql/Projects";
 
-  let navigate = useNavigate();
-  let nameInput = React.useRef<HTMLInputElement>(null);
-  let descriptionInput = React.useRef<HTMLTextAreaElement>(null);
+export function ProjectAddPage() {
+  const { data, loading, error } = Companines.useCompany(window.companyID);
 
-  const [createProject] = useMutation(CREATE_PROJECT);
+  if (loading) return <p>Loading...</p>;
+  if (error) throw new Error(error.message);
 
-  const onSubmit = async () => {
-    await createProject({
+  const company = data?.company;
+
+  return (
+    <Paper.Root size="small">
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/projects`}>
+          <Icons.IconClipboardList size={16} />
+          All Projects
+        </Paper.NavItem>
+      </Paper.Navigation>
+
+      <Paper.Body minHeight="300px">
+        <div className="px-16 py-12">
+          <h1 className="mb-8 font-bold text-2xl">New Project in {company.name}</h1>
+
+          <Form />
+        </div>
+      </Paper.Body>
+    </Paper.Root>
+  );
+}
+
+function Form() {
+  const navigate = useNavigate();
+
+  const [projectName, setProjectName] = React.useState("");
+  const [projectChampion, setProjectChampion] = React.useState(null);
+
+  const [add] = Projects.useAddProject({
+    onCompleted: (data: any) => navigate(`/projects/${data?.createProject?.id}`),
+  });
+
+  const handleSubmit = () => {
+    add({
       variables: {
-        name: nameInput.current?.value,
-        description: descriptionInput.current?.value
-      }
+        name: projectName,
+        championId: projectChampion,
+      },
     });
-
-    navigate("/projects");
   };
 
-  const onCancel = () => {
-    navigate("/projects");
+  const isDisabled = () => {
+    return !projectName || !projectChampion;
   };
 
   return (
     <>
-      <Form onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">{t("forms.project_add_title")}</h1>
+      <div className="flex flex-col gap-6">
+        <ProjectNameInput value={projectName} onChange={setProjectName} />
+        <ContributorSearch title="Choose a Project Champion" onSelect={setProjectChampion} />
+      </div>
 
-        <div className="flex flex-col gap-4">
-          <FormTextInput
-            ref={nameInput}
-            id="name"
-            label={t("forms.project_name_label")}
-            placeholder={t("forms.project_name_placeholder")!}
-          />
-
-          <FormTextArea
-            ref={descriptionInput}
-            id="description"
-            label={t("forms.project_description_label")}
-            placeholder={t("forms.project_description_placeholder")!}
-          />
-        </div>
-      </Form>
+      <div className="flex items-center gap-3 mt-12">
+        <Button variant="success" onClick={handleSubmit} disabled={isDisabled()}>
+          Create Project
+        </Button>
+        <Button variant="secondary">Cancel</Button>
+      </div>
     </>
-  )
+  );
+}
+
+function ProjectNameInput({ value, onChange }) {
+  return (
+    <div>
+      <label className="font-bold mb-1 block">Project Name</label>
+      <div className="flex-1">
+        <input
+          className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+          type="text"
+          placeholder="ex. HR System Update"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ContributorSearch({ title, onSelect }) {
+  const loader = People.usePeopleSearch();
+
+  return (
+    <div>
+      <label className="font-bold mb-1 block">{title}</label>
+      <div className="flex-1">
+        <PeopleSearch
+          onChange={(option) => onSelect(option.value)}
+          placeholder="Search by name or title..."
+          loader={loader}
+        />
+      </div>
+    </div>
+  );
 }
