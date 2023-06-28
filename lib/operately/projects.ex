@@ -29,7 +29,10 @@ defmodule Operately.Projects do
         :resource_type => "project",
         :action_type => :create,
         :scope_type => :project,
-        :scope_id => project.id
+        :scope_id => project.id,
+        :event_data => %{
+          :champion_id => attrs[:champion_id],
+        }
       })
 
       project

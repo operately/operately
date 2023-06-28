@@ -20,6 +20,12 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
         {:ok, activity.person}
       end
     end
+
+    field :event_data, non_null(:activity_data_union) do
+      resolve fn activity, _, _ ->
+        {:ok, activity.event_data}
+      end
+    end
   end
 
   union :activity_resource_union do
@@ -28,6 +34,15 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
     resolve_type fn
       %Operately.Projects.Project{}, _ -> :project
       %Operately.Updates.Update{}, _ -> :update
+    end
+  end
+
+  union :activity_data_union do
+    types [:project_data, :update_data]
+
+    resolve_type fn
+      %Operately.Projects.Project{}, _ -> :project_data
+      %Operately.Updates.Update{}, _ -> :update_data
     end
   end
 

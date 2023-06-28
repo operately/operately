@@ -24,6 +24,8 @@ defmodule Operately.Activities.Activity do
     field :scope_type, Ecto.Enum, values: [:project]
     field :scope_id, Ecto.UUID
 
+    field :event_data, :map
+
     timestamps()
   end
 

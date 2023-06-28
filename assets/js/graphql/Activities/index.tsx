@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import { Person } from "@/graphql/People";
 
 export type Activity = {
   id: string;
@@ -6,6 +7,12 @@ export type Activity = {
   actionType: string;
   resourceType: string;
   resource: any;
+  person: Person;
+  eventData: ProjectCreateEventData;
+};
+
+type ProjectCreateEventData = {
+  champion: Person;
 };
 
 const LIST_ACTIVITIES = gql`
@@ -16,6 +23,12 @@ const LIST_ACTIVITIES = gql`
 
       actionType
       resourceType
+
+      person {
+        id
+        fullName
+        avatarUrl
+      }
 
       resource {
         __typename
@@ -28,6 +41,16 @@ const LIST_ACTIVITIES = gql`
         ... on Update {
           id
           content
+        }
+      }
+
+      eventData {
+        ... on ProjectCreateEventData {
+          champion {
+            id
+            fullName
+            avatarUrl
+          }
         }
       }
     }
