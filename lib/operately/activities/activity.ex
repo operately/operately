@@ -5,9 +5,9 @@ defmodule Operately.Activities.Activity do
   # Action Types
 
   @project_actions [:create]
-  @status_update_actions [:post, :update, :comment]
+  @update_actions [:post, :update, :comment]
 
-  @action_types @project_actions ++ @status_update_actions
+  @action_types @project_actions ++ @update_actions
 
   # Resource Types
   @resource_types [:project, :status_update]
@@ -40,7 +40,8 @@ defmodule Operately.Activities.Activity do
 
     posible_actions = case resource_type do
       :project -> @project_actions
-      :status_update -> @status_update_actions
+      :update -> @update_actions
+      nil -> []
     end
 
     if action_type in posible_actions do

@@ -9,14 +9,14 @@ defmodule Operately.Activities do
     activities = Repo.all(Activity)
     activities = ResourceLoader.load_resources(activities)
 
-    {:ok, activities}
+    activities
   end
 
   def get_activity!(id) do
     activity = Repo.get!(Activity, id)
     activity = ResourceLoader.load_resources([activity])
 
-    {:ok, hd(activity)}
+    hd(activity)
   end
 
   def create_activity(attrs \\ %{}) do

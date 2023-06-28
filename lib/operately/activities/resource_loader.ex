@@ -3,12 +3,13 @@ defmodule Operately.Activities.ResourceLoader do
   import Ecto.Query, warn: false
 
   def load_resources(activities) do
-    project_ids = get_resource_ids(activities, "project")
-    status_update_ids = get_resource_ids(activities, "status_update")
+
+    project_ids = get_resource_ids(activities, :project)
+    update_ids = get_resource_ids(activities, :update)
 
     resources = %{
-      "project" => load_associated_resources(Operately.Projects.Project, project_ids),
-      "status_update" => load_associated_resources(Operately.Updates.Update, status_update_ids)
+      :project => load_associated_resources(Operately.Projects.Project, project_ids),
+      :update => load_associated_resources(Operately.Updates.Update, update_ids)
     }
 
     Enum.map(activities, fn activity ->

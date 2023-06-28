@@ -2,6 +2,7 @@ defmodule Operately.ActivitiesTest do
   use Operately.DataCase
 
   alias Operately.Activities
+  alias Operately.Activities.Activity
 
   import Operately.CompaniesFixtures
   import Operately.ActivitiesFixtures
@@ -24,10 +25,6 @@ defmodule Operately.ActivitiesTest do
   end
 
   describe "activities" do
-    alias Operately.Activities.Activity
-
-    @invalid_attrs %{action_type: nil, resource_id: nil, resource_type: nil}
-
     test "list_activities/0 returns all activities", ctx do
       activities = Activities.list_activities()
 
@@ -35,8 +32,8 @@ defmodule Operately.ActivitiesTest do
 
       activity = hd(activities)
 
-      assert activity.action_type == "create"
-      assert activity.resource_type == "project"
+      assert activity.action_type == :create
+      assert activity.resource_type == :project
       assert activity.resource_id == ctx.project.id
       assert activity.person_id == ctx.person.id
 
@@ -46,8 +43,8 @@ defmodule Operately.ActivitiesTest do
     test "get_activity!/1 returns the activity with given id", ctx do
       activity = Activities.get_activity!(ctx.activity.id)
 
-      assert activity.action_type == "create"
-      assert activity.resource_type == "project"
+      assert activity.action_type == :create
+      assert activity.resource_type == :project
       assert activity.resource_id == ctx.project.id
       assert activity.person_id == ctx.person.id
 
@@ -58,17 +55,19 @@ defmodule Operately.ActivitiesTest do
       valid_attrs = %{
         action_type: "create", 
         resource_id: ctx.project.id,
-        resource_type: "project"
+        resource_type: "project",
+        person_id: ctx.person.id
       }
 
       assert {:ok, %Activity{} = activity} = Activities.create_activity(valid_attrs)
-      assert activity.action_type == "create"
+      assert activity.action_type == :create
+      assert activity.resource_type == :project
       assert activity.resource_id == ctx.project.id
-      assert activity.resource_type == "project"
     end
 
-    test "create_activity/1 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Activities.create_activity(@invalid_attrs)
+    test "create_activity/1 with invalid data returns error changeset" do
+      attr = %{action_type: nil, resource_id: nil, resource_type: nil}
+      assert {:error, %Ecto.Changeset{}} = Activities.create_activity(attr)
     end
 
     test "delete_activity/1 deletes the activity", ctx do
