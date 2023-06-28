@@ -15,6 +15,8 @@ defmodule Operately.ActivitiesTest do
     project = project_fixture(company_id: company.id, creator_id: person.id)
 
     activity = activity_fixture(
+      scope_type: "project",
+      scope_id: project.id,
       person_id: person.id,
       resource_id: project.id, 
       resource_type: "project",
@@ -25,8 +27,8 @@ defmodule Operately.ActivitiesTest do
   end
 
   describe "activities" do
-    test "list_activities/0 returns all activities", ctx do
-      activities = Activities.list_activities()
+    test "list_activities/2 returns all activities", ctx do
+      activities = Activities.list_activities(ctx.activity.scope_type, ctx.activity.scope_id)
 
       assert length(activities) == 1
 
@@ -53,6 +55,8 @@ defmodule Operately.ActivitiesTest do
 
     test "create_activity/1 with valid data creates a activity", ctx do
       valid_attrs = %{
+        scope_type: "project",
+        scope_id: ctx.project.id,
         action_type: "create", 
         resource_id: ctx.project.id,
         resource_type: "project",

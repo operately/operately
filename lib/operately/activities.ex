@@ -5,8 +5,9 @@ defmodule Operately.Activities do
   alias Operately.Activities.Activity
   alias Operately.Activities.ResourceLoader
 
-  def list_activities do
+  def list_activities(scope_type, scope_id) do
     query = from a in Activity,
+      where: a.scope_type == ^scope_type and a.scope_id == ^scope_id,
       order_by: [desc: a.inserted_at],
       preload: [:person]
 
