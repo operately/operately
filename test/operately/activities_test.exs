@@ -20,7 +20,11 @@ defmodule Operately.ActivitiesTest do
       person_id: person.id,
       resource_id: project.id, 
       resource_type: "project",
-      action_type: "create"
+      action_type: "create",
+      event_data: %{
+        type: "project_create",
+        champion_id: person.id
+      }
     )
 
     {:ok, %{company: company, person: person, project: project, activity: activity}}
@@ -30,7 +34,7 @@ defmodule Operately.ActivitiesTest do
     test "list_activities/2 returns all activities", ctx do
       activities = Activities.list_activities(ctx.activity.scope_type, ctx.activity.scope_id)
 
-      assert length(activities) == 1
+      assert length(activities) == 2
 
       activity = hd(activities)
 
@@ -60,7 +64,11 @@ defmodule Operately.ActivitiesTest do
         action_type: "create", 
         resource_id: ctx.project.id,
         resource_type: "project",
-        person_id: ctx.person.id
+        person_id: ctx.person.id,
+        event_data: %{
+          type: "project_create",
+          champion_id: ctx.person.id
+        }
       }
 
       assert {:ok, %Activity{} = activity} = Activities.create_activity(valid_attrs)
@@ -70,7 +78,7 @@ defmodule Operately.ActivitiesTest do
     end
 
     test "create_activity/1 with invalid data returns error changeset" do
-      attr = %{action_type: nil, resource_id: nil, resource_type: nil}
+      attr = %{action_type: :create, resource_id: nil, resource_type: :project, event_data: %{}}
       assert {:error, %Ecto.Changeset{}} = Activities.create_activity(attr)
     end
 

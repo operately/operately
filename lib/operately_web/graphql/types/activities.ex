@@ -3,6 +3,8 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
 
   object :activity do
     field :id, non_null(:id)
+    field :scope_type, non_null(:string)
+    field :scope_id, non_null(:id)
     field :resource_id, non_null(:id)
     field :resource_type, non_null(:string)
     field :action_type, non_null(:string)
@@ -33,6 +35,7 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
 
     resolve_type fn
       %Operately.Projects.Project{}, _ -> :project
+      %Operately.Projects.Milestone{}, _ -> :milestone
       %Operately.Updates.Update{}, _ -> :update
     end
   end
@@ -40,6 +43,7 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
   union :activity_data_union do
     types [
       :activity_event_data_project_create,
+      :activity_event_data_milestone_create,
     ]
 
     resolve_type fn %{"type" => type}, _ -> String.to_atom("activity_event_data_#{type}") end
@@ -55,6 +59,14 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
         else 
           {:ok, nil}
         end
+      end
+    end
+  end
+
+  object :activity_event_data_milestone_create do
+    field :title, non_null(:string) do
+      resolve fn data, _, _ ->
+        {:ok, data["title"]}
       end
     end
   end

@@ -68,10 +68,19 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
-  def create_milestone(attrs \\ %{}) do
-    %Milestone{}
-    |> Milestone.changeset(attrs)
-    |> Repo.insert()
+  def create_milestone(creator, attrs) do
+    Repo.transaction(fn ->
+      result = %Milestone{} |> Milestone.changeset(attrs) |> Repo.insert()
+
+      case result do
+        {:ok, milestone} ->
+          {:ok, _} = Activities.submit_milestone_created(creator.id, milestone)
+          milestone
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
   end
 
   def update_milestone(%Milestone{} = milestone, attrs) do

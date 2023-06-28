@@ -2,24 +2,31 @@ defmodule Operately.Activities.Activity do
   use Ecto.Schema
   import Ecto.Changeset
 
-  # Action Types
-
-  @project_actions [:create]
-  @update_actions [:post, :update, :comment]
-  @action_types @project_actions ++ @update_actions
-
-  @resource_types [:project, :status_update]
   @scope_types [:project]
+
+  @actions [
+    {:project, [:create]},
+    {:update, [:post, :update, :comment]},
+    {:milestone, [:create]}
+  ]
+
+  @action_types Enum.map(@actions, fn {_, actions} -> actions end) |> List.flatten() |> Enum.uniq()
+  @resource_types Enum.map(@actions, fn {resource, _} -> resource end) |> Enum.uniq()
+
+  @resource_schemas [
+    {:project, Operately.Projects.Project},
+    {:update, Operately.Updates.Update},
+    {:milestone, Operately.Projects.Milestone},
+  ]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "activities" do
-    field :action_type, Ecto.Enum, values: @action_types
+    belongs_to :person, Operately.People.Person, foreign_key: :person_id
 
+    field :action_type, Ecto.Enum, values: @action_types
     field :resource_type, Ecto.Enum, values: @resource_types
     field :resource_id, Ecto.UUID
-
-    belongs_to :person, Operately.People.Person, foreign_key: :person_id
 
     field :scope_type, Ecto.Enum, values: [:project]
     field :scope_id, Ecto.UUID
@@ -43,12 +50,7 @@ defmodule Operately.Activities.Activity do
   defp validate_action_type(changeset) do
     action_type = get_field(changeset, :action_type)
     resource_type = get_field(changeset, :resource_type)
-
-    posible_actions = case resource_type do
-      :project -> @project_actions
-      :update -> @update_actions
-      nil -> []
-    end
+    posible_actions = Keyword.get(@actions, resource_type)
 
     if action_type in posible_actions do
       changeset
@@ -56,4 +58,13 @@ defmodule Operately.Activities.Activity do
       add_error(changeset, :action_type, "must be a #{resource_type} action #{Enum.join(posible_actions, ", ")}")
     end
   end
+
+  def resource_types do
+    @resource_types
+  end
+
+  def resource_schema(resource_type) do
+    @resource_schemas |> Keyword.get(resource_type)
+  end
+
 end

@@ -122,10 +122,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :title, non_null(:string)
       arg :deadline_at, :date
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        creator = context.current_account.person
         deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
 
-        Operately.Projects.create_milestone(%{
+        Operately.Projects.create_milestone(creator, %{
           project_id: args.project_id,
           title: args.title,
           deadline_at: deadline

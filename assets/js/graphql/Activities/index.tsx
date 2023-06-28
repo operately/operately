@@ -4,15 +4,21 @@ import { Person } from "@/graphql/People";
 export type Activity = {
   id: string;
   insertedAt: string;
+  scopeType: string;
+  scopeId: string;
   actionType: string;
   resourceType: string;
   resource: any;
   person: Person;
-  eventData: ProjectCreateEventData;
+  eventData: ProjectCreateEventData | MilestoneCreateEventData;
 };
 
-type ProjectCreateEventData = {
+export type ProjectCreateEventData = {
   champion: Person;
+};
+
+export type MilestoneCreateEventData = {
+  title: string;
 };
 
 const LIST_ACTIVITIES = gql`
@@ -20,6 +26,9 @@ const LIST_ACTIVITIES = gql`
     activities(scope_type: $scope_type, scope_id: $scope_id) {
       id
       insertedAt
+
+      scopeType
+      scopeId
 
       actionType
       resourceType
@@ -51,6 +60,10 @@ const LIST_ACTIVITIES = gql`
             fullName
             avatarUrl
           }
+        }
+
+        ... on ActivityEventDataMilestoneCreate {
+          title
         }
       }
     }

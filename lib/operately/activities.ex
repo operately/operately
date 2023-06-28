@@ -56,4 +56,20 @@ defmodule Operately.Activities do
       }
     })
   end
+
+  def submit_milestone_created(creator_id, milestone) do
+    create_activity(%{
+      :person_id => creator_id,
+      :resource_id => milestone.id,
+      :resource_type => "milestone",
+      :action_type => :create,
+      :scope_type => :project,
+      :scope_id => milestone.project_id,
+      :event_data => %{
+        :type => "milestone_create",
+        :title => milestone.title,
+        :deadline_at => milestone.deadline_at
+      }
+    })
+  end
 end

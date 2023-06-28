@@ -84,7 +84,7 @@ defmodule Operately.ProjectsTest do
     @invalid_attrs %{deadline_at: nil, title: nil}
 
     setup ctx do
-      milestone = milestone_fixture(%{project_id: ctx.project.id})
+      milestone = milestone_fixture(ctx.person, %{project_id: ctx.project.id})
 
       {:ok, milestone: milestone}
     end
@@ -97,42 +97,42 @@ defmodule Operately.ProjectsTest do
       assert Projects.get_milestone!(ctx.milestone.id) == ctx.milestone
     end
 
-    test "create_milestone/1 with valid data creates a milestone" do
-      valid_attrs = %{deadline_at: ~N[2023-05-10 08:16:00], title: "some title"}
+    test "create_milestone/1 with valid data creates a milestone", ctx do
+      valid_attrs = %{
+        project_id: ctx.project.id,
+        deadline_at: ~N[2023-05-10 08:16:00], 
+        title: "some title"
+      }
 
-      assert {:ok, %Milestone{} = milestone} = Projects.create_milestone(valid_attrs)
+      assert {:ok, %Milestone{} = milestone} = Projects.create_milestone(ctx.person, valid_attrs)
       assert milestone.deadline_at == ~N[2023-05-10 08:16:00]
       assert milestone.title == "some title"
     end
 
-    test "create_milestone/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_milestone(@invalid_attrs)
+    test "create_milestone/1 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_milestone(ctx.person, @invalid_attrs)
     end
 
-    test "update_milestone/2 with valid data updates the milestone" do
-      milestone = milestone_fixture()
+    test "update_milestone/2 with valid data updates the milestone", ctx do
       update_attrs = %{deadline_at: ~N[2023-05-11 08:16:00], title: "some updated title"}
 
-      assert {:ok, %Milestone{} = milestone} = Projects.update_milestone(milestone, update_attrs)
+      assert {:ok, %Milestone{} = milestone} = Projects.update_milestone(ctx.milestone, update_attrs)
       assert milestone.deadline_at == ~N[2023-05-11 08:16:00]
       assert milestone.title == "some updated title"
     end
 
-    test "update_milestone/2 with invalid data returns error changeset" do
-      milestone = milestone_fixture()
-      assert {:error, %Ecto.Changeset{}} = Projects.update_milestone(milestone, @invalid_attrs)
-      assert milestone == Projects.get_milestone!(milestone.id)
+    test "update_milestone/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Projects.update_milestone(ctx.milestone, @invalid_attrs)
+      assert ctx.milestone == Projects.get_milestone!(ctx.milestone.id)
     end
 
-    test "delete_milestone/1 deletes the milestone" do
-      milestone = milestone_fixture()
-      assert {:ok, %Milestone{}} = Projects.delete_milestone(milestone)
-      assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(milestone.id) end
+    test "delete_milestone/1 deletes the milestone", ctx do
+      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.milestone)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(ctx.milestone.id) end
     end
 
-    test "change_milestone/1 returns a milestone changeset" do
-      milestone = milestone_fixture()
-      assert %Ecto.Changeset{} = Projects.change_milestone(milestone)
+    test "change_milestone/1 returns a milestone changeset", ctx do
+      assert %Ecto.Changeset{} = Projects.change_milestone(ctx.milestone)
     end
   end
 

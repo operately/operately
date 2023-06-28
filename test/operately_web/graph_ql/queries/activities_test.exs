@@ -18,7 +18,11 @@ defmodule MyAppWeb.GraphQL.Queries.ActivitiesTest do
       resource_id: project.id, 
       person_id: person.id,
       scope_type: "project",
-      scope_id: project.id
+      scope_id: project.id,
+      event_data: %{
+        type: "project_create",
+        champion_id: person.id
+      }
     })
 
     {:ok, %{company: company, person: person, project: project, activity: activity}}

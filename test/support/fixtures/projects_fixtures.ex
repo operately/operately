@@ -21,14 +21,14 @@ defmodule Operately.ProjectsFixtures do
   @doc """
   Generate a milestone.
   """
-  def milestone_fixture(attrs \\ %{}) do
-    {:ok, milestone} =
-      attrs
+  def milestone_fixture(creator, attrs) do
+    attrs = attrs
       |> Enum.into(%{
         deadline_at: ~N[2023-05-10 08:16:00],
         title: "some title"
       })
-      |> Operately.Projects.create_milestone()
+
+    {:ok, milestone} = Operately.Projects.create_milestone(creator, attrs)
 
     milestone
   end
