@@ -38,11 +38,24 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
   end
 
   union :activity_data_union do
-    types [:project_data, :update_data]
+    types [
+      :activity_event_data_project_create,
+    ]
 
-    resolve_type fn
-      %Operately.Projects.Project{}, _ -> :project_data
-      %Operately.Updates.Update{}, _ -> :update_data
+    resolve_type fn %{"type" => type}, _ -> String.to_atom("activity_event_data_#{type}") end
+  end
+
+  object :activity_event_data_project_create do
+    field :champion, :person do
+      resolve fn data, _, _ ->
+        champion_id = data["champion_id"]
+
+        if champion_id do
+          {:ok, Operately.People.get_person!(data["champion_id"])}
+        else 
+          {:ok, nil}
+        end
+      end
     end
   end
 

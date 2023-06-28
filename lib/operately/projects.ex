@@ -20,22 +20,23 @@ defmodule Operately.Projects do
   end
 
   def create_project(attrs) do
+    create_project(attrs, nil)
+  end
+
+  def create_project(project_attrs, champion_attrs) do
     Repo.transaction(fn ->
-      {:ok, project} = %Project{} |> Project.changeset(attrs) |> Repo.insert()
+      result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
 
-      {:ok, _activity} = Activities.create_activity(%{
-        :person_id => attrs[:creator_id],
-        :resource_id => project.id,
-        :resource_type => "project",
-        :action_type => :create,
-        :scope_type => :project,
-        :scope_id => project.id,
-        :event_data => %{
-          :champion_id => attrs[:champion_id],
-        }
-      })
+      case result do
+        {:ok, project} -> 
+          {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
+          {:ok, _} = Activities.submit_project_created(project, champion)
 
-      project
+          project
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
     end)
   end
 
@@ -130,6 +131,14 @@ defmodule Operately.Projects do
     %Contributor{}
     |> Contributor.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_contributor_if_provided(nil, _project_id) do
+    {:ok, nil}
+  end
+
+  def create_contributor_if_provided(attrs, project_id) do
+    create_contributor(Map.merge(attrs, %{project_id: project_id}))
   end
 
   def update_contributor(%Contributor{} = contributor, attrs) do

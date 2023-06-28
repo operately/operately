@@ -32,10 +32,11 @@ defmodule Operately.Activities.Activity do
   @doc false
   def changeset(activity, attrs) do
     activity
-    |> cast(attrs, [:action_type, :resource_type, :resource_id, :person_id, :scope_type, :scope_id])
-    |> validate_required([:action_type, :resource_type, :resource_id, :person_id, :scope_type, :scope_id])
+    |> cast(attrs, [:action_type, :resource_type, :resource_id, :person_id, :scope_type, :scope_id, :event_data])
+    |> validate_required([:action_type, :resource_type, :resource_id, :person_id, :scope_type, :scope_id, :event_data])
     |> validate_inclusion(:action_type, @action_types)
     |> validate_inclusion(:resource_type, @resource_types)
+    |> validate_inclusion(:scope_type, @scope_types)
     |> validate_action_type()
   end
 

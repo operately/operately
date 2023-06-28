@@ -34,18 +34,23 @@ defmodule Operately.ProjectsTest do
       assert Projects.get_project!(ctx.project.id) == ctx.project
     end
 
-    test "create_project/1 with valid data creates a project", ctx do
-      valid_attrs = %{
+    test "create_project/2 with valid data creates a project", ctx do
+      project_attrs = %{
         name: "some name",
         company_id: ctx.company.id,
         creator_id: ctx.person.id
       }
 
-      assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs)
+      champion_attrs = %{
+        person_id: ctx.person.id,
+        role: "champion",
+      }
+
+      assert {:ok, %Project{} = project} = Projects.create_project(project_attrs, champion_attrs)
       assert project.name == "some name"
     end
 
-    test "create_project/1 with invalid data returns error changeset" do
+    test "create_project/2 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Projects.create_project(@invalid_attrs)
     end
 

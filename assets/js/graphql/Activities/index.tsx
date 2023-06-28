@@ -45,7 +45,7 @@ const LIST_ACTIVITIES = gql`
       }
 
       eventData {
-        ... on ProjectCreateEventData {
+        ... on ActivityEventDataProjectCreate {
           champion {
             id
             fullName

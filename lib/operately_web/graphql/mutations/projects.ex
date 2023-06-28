@@ -9,19 +9,23 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       resolve fn args, %{context: context} ->
         Operately.Repo.transaction(fn -> 
           person = context.current_account.person
-
-          {:ok, project} = Operately.Projects.create_project(%{
+          
+          project_attrs = %{
             company_id: person.company_id,
             creator_id: person.id,
             name: args.name
-          })
+          }
 
-          Operately.Projects.create_contributor(%{
-            project_id: project.id,
+          champion_attrs = %{
             person_id: args.champion_id,
             responsibility: " ",
             role: "champion"
-          })
+          }
+
+          {:ok, project} = Operately.Projects.create_project(
+            project_attrs, 
+            champion_attrs
+          )
 
           project
         end)

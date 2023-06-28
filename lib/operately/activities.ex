@@ -37,4 +37,23 @@ defmodule Operately.Activities do
   def change_activity(%Activity{} = activity, attrs \\ %{}) do
     Activity.changeset(activity, attrs)
   end
+
+  # Activity Types
+
+  def submit_project_created(project, champion \\ nil) do
+    champion_id = if champion, do: champion.person_id, else: nil
+
+    create_activity(%{
+      :person_id => project.creator_id,
+      :resource_id => project.id,
+      :resource_type => "project",
+      :action_type => :create,
+      :scope_type => :project,
+      :scope_id => project.id,
+      :event_data => %{
+        :type => "project_create",
+        :champion_id => champion_id
+      }
+    })
+  end
 end

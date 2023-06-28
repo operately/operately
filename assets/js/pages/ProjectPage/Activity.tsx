@@ -37,14 +37,14 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
   switch (activity.resourceType + "-" + activity.actionType) {
     case "project-create":
       return <ActivityItemProjectCreated activity={activity} />;
-    case "project-assigded-champion":
-      return <ActivityItemProjectAssignedChampion activity={activity} />;
     default:
       return null;
   }
 }
 
 function ActivityItemProjectCreated({ activity }: { activity: Activities.Activity }) {
+  const champion = activity.eventData.champion;
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -55,8 +55,8 @@ function ActivityItemProjectCreated({ activity }: { activity: Activities.Activit
         <div className="min-w-0 flex-1">
           <div className="flex items-center">
             <div className="font-medium">
-              {activity.person.fullName} created this project and assigned {activity.eventData.champion.fullName} as the
-              champion.
+              {activity.person.fullName} created this project{" "}
+              {champion && <>and assigned {champion.fullName} as the champion.</>}
             </div>
           </div>
         </div>
