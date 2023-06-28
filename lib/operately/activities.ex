@@ -6,7 +6,11 @@ defmodule Operately.Activities do
   alias Operately.Activities.ResourceLoader
 
   def list_activities do
-    activities = Repo.all(Activity)
+    query = from a in Activity,
+      order_by: [desc: a.inserted_at],
+      preload: [:person]
+
+    activities = Repo.all(query)
     activities = ResourceLoader.load_resources(activities)
 
     activities

@@ -6,20 +6,23 @@ defmodule Operately.Activities.Activity do
 
   @project_actions [:create]
   @update_actions [:post, :update, :comment]
-
   @action_types @project_actions ++ @update_actions
 
-  # Resource Types
   @resource_types [:project, :status_update]
+  @scope_types [:project]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "activities" do
     field :action_type, Ecto.Enum, values: @action_types
-    field :resource_type, Ecto.Enum, values: @resource_types
 
+    field :resource_type, Ecto.Enum, values: @resource_types
     field :resource_id, Ecto.UUID
-    field :person_id, Ecto.UUID
+
+    belongs_to :person, Operately.People.Person, foreign_key: :person_id
+
+    field :scope_type, Ecto.Enum, values: [:project]
+    field :scope_id, Ecto.UUID
 
     timestamps()
   end
@@ -27,8 +30,8 @@ defmodule Operately.Activities.Activity do
   @doc false
   def changeset(activity, attrs) do
     activity
-    |> cast(attrs, [:action_type, :resource_type, :resource_id, :person_id])
-    |> validate_required([:action_type, :resource_type, :resource_id, :person_id])
+    |> cast(attrs, [:action_type, :resource_type, :resource_id, :person_id, :scope_type, :scope_id])
+    |> validate_required([:action_type, :resource_type, :resource_id, :person_id, :scope_type, :scope_id])
     |> validate_inclusion(:action_type, @action_types)
     |> validate_inclusion(:resource_type, @resource_types)
     |> validate_action_type()
