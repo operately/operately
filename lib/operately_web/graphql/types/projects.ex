@@ -56,6 +56,13 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
       end
     end
 
+    field :updates, list_of(:update) do
+      resolve fn project, _, _ ->
+        updates = Operately.Updates.list_updates(project.id, :project)
+        {:ok, updates}
+      end
+    end
+
     field :champion, :person do
       resolve fn project, _, _ ->
         {:ok, Projects.get_person_by_role(project, :champion)}

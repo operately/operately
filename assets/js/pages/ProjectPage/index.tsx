@@ -54,7 +54,7 @@ function Overview({ project }) {
           <PhasesCard project={project} />
           <DocumentationCard project={project} />
           <MilestonesCard project={project} />
-          {/* <StatuUpdatesCard project={project} /> */}
+          <StatuUpdatesCard project={project} />
           <KeyResourcesCard project={project} />
         </div>
 
@@ -67,6 +67,7 @@ function Overview({ project }) {
 function DocumentationCardListItem({ title, completed, pending }) {
   let fileIcon: React.ReactNode | null = null;
   let statusIcon: React.ReactNode | null = null;
+
   let titleColor: string | null = null;
 
   if (completed) {
@@ -247,7 +248,7 @@ function Timeline({ project }) {
   );
 }
 
-function StatusUpdatesCardItem({ update }) {
+function StatusUpdatesCardItem({ update }: { update: Projects.Update }) {
   return (
     <div className="border-t border-b border-shade-1 py-1 flex justify-between">
       <div className="flex items-start gap-1.5 font-medium">
@@ -262,7 +263,7 @@ function StatusUpdatesCardItem({ update }) {
   );
 }
 
-function StatuUpdatesCard({ project }) {
+function StatuUpdatesCard({ project }: { project: Projects.Project }) {
   return (
     <Cards.Card linkTo={`/projects/${project.id}/updates`}>
       <Cards.Header>
@@ -270,7 +271,7 @@ function StatuUpdatesCard({ project }) {
       </Cards.Header>
 
       <Cards.Body>
-        {project.activities.map((update) => (
+        {project.updates.map((update) => (
           <StatusUpdatesCardItem key={update.id} update={update} />
         ))}
       </Cards.Body>

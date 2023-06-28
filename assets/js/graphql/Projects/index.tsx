@@ -86,6 +86,37 @@ interface Document {
   author: Person;
 }
 
+interface Reaction {
+  id: string;
+  reactionType: string;
+  person: Person;
+}
+
+interface Comment {
+  id: string;
+  message: string;
+  insertedAt: Date;
+  updatedAt: Date;
+
+  reactions: Reaction[];
+}
+
+export interface Update {
+  id: string;
+  message: string;
+  insertedAt: Date;
+  updatedAt: Date;
+
+  author: Person;
+
+  acknowledgingPerson: Person;
+  acknowledged: boolean;
+  acknowledgedAt: Date;
+
+  reactions: Reaction[];
+  comments: Comment[];
+}
+
 type ProjectPhase = "concept" | "planning" | "execution" | "control";
 
 export interface Project {
@@ -103,6 +134,8 @@ export interface Project {
   plan: Document;
   execution_review: Document;
   retrospective: Document;
+
+  updates: Update[];
 }
 
 const GET_PROJECT = gql`
@@ -129,6 +162,39 @@ const GET_PROJECT = gql`
       plan ${fragments.PROJECT_DOCUMENT}
       execution_review ${fragments.PROJECT_DOCUMENT}
       retrospective ${fragments.PROJECT_DOCUMENT}
+
+      updates {
+        id
+        message
+
+        insertedAt
+        updatedAt
+
+        author ${fragments.PERSON}
+
+        comments {
+          id
+          message
+          insertedAt
+          author ${fragments.PERSON}
+
+          reactions {
+            id
+            reactionType
+            person ${fragments.PERSON}
+          }
+        }
+
+        acknowledging_person ${fragments.PERSON}
+        acknowledged
+        acknowledgedAt
+
+        reactions {
+          id
+          reactionType
+          person ${fragments.PERSON}
+        }
+      }
     }
   }
 `;
@@ -374,6 +440,37 @@ export function useRemoveProjectContributorMutation(contribId: string) {
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
+      id
+      message
+
+      insertedAt
+      updatedAt
+
+      author ${fragments.PERSON}
+
+      comments {
+        id
+        message
+        insertedAt
+        author ${fragments.PERSON}
+
+        reactions {
+          id
+          reactionType
+          person ${fragments.PERSON}
+        }
+      }
+
+      acknowledging_person ${fragments.PERSON}
+      acknowledged
+      acknowledgedAt
+
+      reactions {
+        id
+        reactionType
+        person ${fragments.PERSON}
+      }
+
       project {
         id
         name

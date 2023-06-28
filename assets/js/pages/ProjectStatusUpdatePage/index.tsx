@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
-import * as ProjectQueries from "@/graphql/Projects";
+import * as Projects from "@/graphql/Projects";
 
 import { useMe } from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
@@ -24,8 +24,8 @@ export function ProjectStatusUpdatePage() {
   const id = params.id || "";
 
   const meData = useMe();
-  const updateData = ProjectQueries.useProjectStatusUpdate(id);
-  const addReactionMutation = ProjectQueries.useReactMutation("update", id);
+  const updateData = Projects.useProjectStatusUpdate(id);
+  const addReactionMutation = Projects.useReactMutation("update", id);
 
   if (meData.loading || updateData.loading) return <p className="mt-32">Loading...</p>;
 
@@ -78,7 +78,7 @@ export function ProjectStatusUpdatePage() {
 }
 
 function AckButton({ update }) {
-  const [ack, _status] = ProjectQueries.useAckMutation(update.id);
+  const [ack, _status] = Projects.useAckMutation(update.id);
 
   return (
     <Button variant="attention" onClick={() => ack()}>
@@ -165,7 +165,7 @@ function Comments({ update, onNewReaction }) {
 }
 
 function Comment({ comment, onNewReaction }) {
-  const addReactionMutation = ProjectQueries.useReactMutation("comment", comment.id);
+  const addReactionMutation = Projects.useReactMutation("comment", comment.id);
 
   return (
     <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">

@@ -2,7 +2,7 @@ defmodule OperatelyWeb.GraphQL.Queries.Updates do
   use Absinthe.Schema.Notation
 
   object :update_queries do
-    field :update, non_null(:activity) do
+    field :update, non_null(:update) do
       arg :id, non_null(:id)
 
       resolve fn args, _ ->
