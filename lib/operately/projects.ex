@@ -10,7 +10,6 @@ defmodule Operately.Projects do
   alias Operately.Projects.Contributor
   alias Operately.People.Person
 
-
   def get_project!(id) do
     Repo.get!(Project, id)
   end
