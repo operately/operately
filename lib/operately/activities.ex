@@ -104,4 +104,18 @@ defmodule Operately.Activities do
       }
     })
   end
+
+  def submit_update_posted(update) do
+    Operately.Activities.create_activity(%{
+      action_type: :post,
+      resource_type: :update,
+      resource_id: update.id,
+      person_id: update.author_id,
+      scope_type: :project,
+      scope_id: update.updatable_id,
+      event_data: %{
+        type: "update_post"
+      }
+    })
+  end
 end

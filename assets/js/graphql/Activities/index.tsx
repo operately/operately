@@ -49,7 +49,7 @@ const LIST_ACTIVITIES = gql`
 
         ... on Update {
           id
-          content
+          message
         }
 
         ... on Milestone {
@@ -81,5 +81,6 @@ export function useListActivities(scope_type: string, scope_id: string) {
       scope_type,
       scope_id,
     },
+    fetchPolicy: "network-only",
   });
 }

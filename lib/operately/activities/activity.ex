@@ -6,7 +6,7 @@ defmodule Operately.Activities.Activity do
 
   @actions [
     {:project, [:create]},
-    {:update, [:post, :update, :comment]},
+    {:update, [:post, :comment]},
     {:milestone, [:create, :complete, :uncomplete]}
   ]
 

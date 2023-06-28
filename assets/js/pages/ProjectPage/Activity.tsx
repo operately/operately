@@ -4,6 +4,7 @@ import * as Activities from "@/graphql/Activities";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
+import RichContent from "@/components/RichContent";
 import { Link } from "react-router-dom";
 
 export default function Activity({ projectId }): JSX.Element {
@@ -44,9 +45,29 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
       return <ActivityItemMilestoneCompleted activity={activity} />;
     case "milestone-uncomplete":
       return <ActivityItemMilestoneUnCompleted activity={activity} />;
+    case "update-post":
+      return <ActivityItemUpdatePost activity={activity} />;
     default:
       return null;
   }
+}
+
+function ActivityItemContainer({ person, time, children }) {
+  return (
+    <div className="flex items-start justify-between border-b border-shade-1 pb-4 mb-2">
+      <div className="flex items-start gap-4">
+        <div className="shrink-0 -mt-1">
+          <Avatar person={person} />
+        </div>
+
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+
+      <div className="text-right w-32 shrink-0">
+        <FormattedTime time={time} format="short-date" />
+      </div>
+    </div>
+  );
 }
 
 function ActivityItemProjectCreated({ activity }: { activity: Activities.Activity }) {
@@ -54,26 +75,14 @@ function ActivityItemProjectCreated({ activity }: { activity: Activities.Activit
   const champion = eventData.champion;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="shrink-0">
-          <Avatar person={activity.person} />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center">
-            <div className="font-medium">
-              {activity.person.fullName} created this project{" "}
-              {champion && <>and assigned {champion.fullName} as the champion.</>}
-            </div>
-          </div>
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-medium">
+          {activity.person.fullName} created this project{" "}
+          {champion && <>and assigned {champion.fullName} as the champion.</>}
         </div>
       </div>
-
-      <div className="text-right w-32">
-        <FormattedTime time={activity.insertedAt} format="short-date" />
-      </div>
-    </div>
+    </ActivityItemContainer>
   );
 }
 
@@ -83,29 +92,17 @@ function ActivityItemMilestoneCreated({ activity }: { activity: Activities.Activ
   const title = eventData.title;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="shrink-0">
-          <Avatar person={activity.person} />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center">
-            <div className="font-medium">
-              {activity.person.fullName} added the{" "}
-              <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
-                {title}
-              </Link>{" "}
-              milestone to this project
-            </div>
-          </div>
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-bold">
+          {activity.person.fullName} added the{" "}
+          <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+            {title}
+          </Link>{" "}
+          milestone to this project
         </div>
       </div>
-
-      <div className="text-right w-32">
-        <FormattedTime time={activity.insertedAt} format="short-date" />
-      </div>
-    </div>
+    </ActivityItemContainer>
   );
 }
 
@@ -114,29 +111,38 @@ function ActivityItemMilestoneCompleted({ activity }: { activity: Activities.Act
   const title = activity.resource.title;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="shrink-0">
-          <Avatar person={activity.person} />
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-bold">
+          {activity.person.fullName} marked the{" "}
+          <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+            {title}
+          </Link>{" "}
+          as completed
         </div>
+      </div>
+    </ActivityItemContainer>
+  );
+}
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center">
-            <div className="font-medium">
-              {activity.person.fullName} marked the{" "}
-              <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
-                {title}
-              </Link>{" "}
-              as completed
-            </div>
-          </div>
+function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity }) {
+  const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
+
+  return (
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-bold">
+          {activity.person.fullName} posted a{" "}
+          <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+            Status Update
+          </Link>
         </div>
       </div>
 
-      <div className="text-right w-32">
-        <FormattedTime time={activity.insertedAt} format="short-date" />
+      <div className="mt-1 line-clamp-4">
+        <RichContent jsonContent={activity.resource.message} />
       </div>
-    </div>
+    </ActivityItemContainer>
   );
 }
 
@@ -145,29 +151,17 @@ function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.A
   const title = activity.resource.title;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="shrink-0">
-          <Avatar person={activity.person} />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center">
-            <div className="font-medium">
-              {activity.person.fullName} marked the{" "}
-              <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
-                {title}
-              </Link>{" "}
-              as pending
-            </div>
-          </div>
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-bold">
+          {activity.person.fullName} marked the{" "}
+          <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+            {title}
+          </Link>{" "}
+          as pending
         </div>
       </div>
-
-      <div className="text-right w-32">
-        <FormattedTime time={activity.insertedAt} format="short-date" />
-      </div>
-    </div>
+    </ActivityItemContainer>
   );
 }
 

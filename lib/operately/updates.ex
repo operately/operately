@@ -24,23 +24,26 @@ defmodule Operately.Updates do
   def get_update!(id), do: Repo.get!(Update, id)
 
   def create_update(attrs \\ %{}) do
-    %Update{}
-    |> Update.changeset(attrs)
-    |> Repo.insert()
-    |> publish_update_added()
+    Repo.transaction(fn ->
+      result = %Update{} |> Update.changeset(attrs) |> Repo.insert()
+
+      case result do
+        {:ok, update} ->
+          {:ok, _} = Operately.Activities.submit_update_posted(update)
+          :ok = publish_update_added(update)
+
+          update
+        e ->
+          e
+      end
+    end)
   end
 
-  def publish_update_added({:ok, update}) do
+  def publish_update_added(update) do
     Absinthe.Subscription.publish(
       OperatelyWeb.Endpoint,
       update,
       update_added: "*")
-
-    {:ok, update}
-  end
-
-  def publish_update_added(e) do
-    e
   end
 
   def update_update(%Update{} = update, attrs) do
