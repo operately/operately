@@ -93,14 +93,6 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
       end
     end
 
-    field :activities, list_of(:activity) do
-      resolve fn project, _, _ ->
-        updates = Operately.Updates.list_updates(project.id, :project)
-
-        {:ok, updates}
-      end
-    end
-
     # project documents
 
     field :pitch, :project_document do

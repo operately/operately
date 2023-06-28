@@ -47,44 +47,6 @@ export const KEY_RESULT = `
   }
 `;
 
-export const ACTIVITY = `
-  {
-    __typename
-    id
-    insertedAt
-
-    author ${PERSON}
-
-    ... on ActivityStatusUpdate {
-      message
-      acknowledged
-      acknowledgedAt
-
-      acknowledgingPerson ${PERSON}
-      reactions ${REACTION}
-      comments ${COMMENT}
-    }
-  }
-`;
-
-export const ACTIVITY_FIELDS = `
-  __typename
-  id
-  insertedAt
-
-  author ${PERSON}
-
-  ... on ActivityStatusUpdate {
-    message
-    acknowledged
-    acknowledgedAt
-
-    acknowledgingPerson ${PERSON}
-    reactions ${REACTION}
-    comments ${COMMENT}
-  }
-`;
-
 export const CONTRIBUTOR = `
   {
     id 

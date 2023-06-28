@@ -10,7 +10,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Cards from "@/components/Cards";
 
-import StatusUpdates from "./StatusUpdates";
+import Activity from "./Activity";
 import Header from "./Header";
 
 import * as Milestones from "@/graphql/Projects/milestones";
@@ -54,11 +54,11 @@ function Overview({ project }) {
           <PhasesCard project={project} />
           <DocumentationCard project={project} />
           <MilestonesCard project={project} />
-          <StatuUpdatesCard project={project} />
+          {/* <StatuUpdatesCard project={project} /> */}
           <KeyResourcesCard project={project} />
         </div>
 
-        <StatusUpdates project={project} />
+        <Activity projectId={project.id} />
       </Paper.Body>
     </Paper.Root>
   );

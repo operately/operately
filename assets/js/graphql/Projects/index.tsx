@@ -79,20 +79,6 @@ interface Contributor {
   responsibility: string;
 }
 
-interface Comment {
-  id: string;
-  content: string;
-  insertedAt: Date;
-}
-
-interface Activity {
-  id: string;
-  insertedAt: Date;
-  author: Person;
-  message: string;
-  comments: Comment[];
-}
-
 interface Document {
   id: string;
   title: string;
@@ -112,7 +98,6 @@ export interface Project {
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
-  activities: Activity[];
 
   pitch: Document;
   plan: Document;
@@ -144,65 +129,6 @@ const GET_PROJECT = gql`
       plan ${fragments.PROJECT_DOCUMENT}
       execution_review ${fragments.PROJECT_DOCUMENT}
       retrospective ${fragments.PROJECT_DOCUMENT}
-
-      activities {
-        __typename
-        id
-        insertedAt
-
-        author {
-          id
-          fullName
-          title
-          avatarUrl
-        }
-
-        ... on ActivityStatusUpdate {
-          message
-
-          acknowledged
-          acknowledgedAt
-          acknowledgingPerson {
-            id
-            fullName
-            title
-            avatarUrl
-          }
-
-          reactions {
-            reactionType
-            person {
-              id
-              fullName
-              title
-              avatarUrl
-            }
-          }
-
-          comments {
-            id
-            message
-            insertedAt
-
-            author {
-              id
-              fullName
-              title
-              avatarUrl
-            }
-
-            reactions {
-              reactionType
-              person {
-                id
-                fullName
-                title
-                avatarUrl
-              }
-            }
-          }
-        }
-      }
     }
   }
 `;
@@ -448,8 +374,6 @@ export function useRemoveProjectContributorMutation(contribId: string) {
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
-      ${fragments.ACTIVITY_FIELDS}
-
       project {
         id
         name
