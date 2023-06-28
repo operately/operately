@@ -26,8 +26,8 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
     types [:project, :update]
 
     resolve_type fn
-      %Operately.Projects.Project{} -> :project
-      %Operately.Updates.Update{} -> :update
+      %Operately.Projects.Project{}, _ -> :project
+      %Operately.Updates.Update{}, _ -> :update
     end
   end
 

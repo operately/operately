@@ -9,6 +9,7 @@ defmodule Operately.Projects do
   alias Operately.Projects.Project
   alias Operately.Projects.Contributor
   alias Operately.People.Person
+  alias Operately.Activities
 
   def get_project!(id) do
     Repo.get!(Project, id)
@@ -19,9 +20,20 @@ defmodule Operately.Projects do
   end
 
   def create_project(attrs) do
-    %Project{}
-    |> Project.changeset(attrs)
-    |> Repo.insert()
+    Repo.transaction(fn ->
+      {:ok, project} = %Project{} |> Project.changeset(attrs) |> Repo.insert()
+
+      {:ok, _activity} = Activities.create_activity(%{
+        :person_id => attrs[:creator_id],
+        :resource_id => project.id,
+        :resource_type => "project",
+        :action_type => :create,
+        :scope_type => :project,
+        :scope_id => project.id
+      })
+
+      project
+    end)
   end
 
   def update_project(%Project{} = project, attrs) do
