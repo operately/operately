@@ -54,7 +54,7 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
 
 function ActivityItemContainer({ person, time, children }) {
   return (
-    <div className="flex items-start justify-between border-b border-shade-1 pb-4 mb-2">
+    <div className="flex items-start justify-between border-b border-shade-1 pb-4 pt-2">
       <div className="flex items-start gap-4">
         <div className="shrink-0 -mt-1">
           <Avatar person={person} />
