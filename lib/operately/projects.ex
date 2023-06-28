@@ -83,6 +83,24 @@ defmodule Operately.Projects do
     end)
   end
 
+  def complete_milestone(person, milestone) do
+    Repo.transaction(fn ->
+      {:ok, milestone} = update_milestone(milestone, %{status: :done})
+      {:ok, _} = Activities.submit_milestone_completed(person.id, milestone)
+
+      milestone
+    end)
+  end
+
+  def uncomplete_milestone(person, milestone) do
+    Repo.transaction(fn ->
+      {:ok, milestone} = update_milestone(milestone, %{status: :pending})
+      {:ok, _} = Activities.submit_milestone_uncompleted(person.id, milestone)
+
+      milestone
+    end)
+  end
+
   def update_milestone(%Milestone{} = milestone, attrs) do
     milestone
     |> Milestone.changeset(attrs)

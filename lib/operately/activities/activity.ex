@@ -7,7 +7,7 @@ defmodule Operately.Activities.Activity do
   @actions [
     {:project, [:create]},
     {:update, [:post, :update, :comment]},
-    {:milestone, [:create]}
+    {:milestone, [:create, :complete, :uncomplete]}
   ]
 
   @action_types Enum.map(@actions, fn {_, actions} -> actions end) |> List.flatten() |> Enum.uniq()

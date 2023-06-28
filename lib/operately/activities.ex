@@ -72,4 +72,36 @@ defmodule Operately.Activities do
       }
     })
   end
+
+  def submit_milestone_completed(person_id, milestone) do
+    create_activity(%{
+      :person_id => person_id,
+      :resource_id => milestone.id,
+      :resource_type => "milestone",
+      :action_type => :complete,
+      :scope_type => :project,
+      :scope_id => milestone.project_id,
+      :event_data => %{
+        :type => "milestone_uncomplete",
+        :title => milestone.title,
+        :deadline_at => milestone.deadline_at
+      }
+    })
+  end
+
+  def submit_milestone_uncompleted(person_id, milestone) do
+    create_activity(%{
+      :person_id => person_id,
+      :resource_id => milestone.id,
+      :resource_type => "milestone",
+      :action_type => :uncomplete,
+      :scope_type => :project,
+      :scope_id => milestone.project_id,
+      :event_data => %{
+        :type => "milestone_uncomplete",
+        :title => milestone.title,
+        :deadline_at => milestone.deadline_at
+      }
+    })
+  end
 end

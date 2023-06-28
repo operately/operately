@@ -51,6 +51,11 @@ const LIST_ACTIVITIES = gql`
           id
           content
         }
+
+        ... on Milestone {
+          id
+          title
+        }
       }
 
       eventData {

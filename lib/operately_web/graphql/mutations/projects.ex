@@ -138,10 +138,15 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :milestone_id, non_null(:id)
       arg :status, non_null(:string)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
 
-        Operately.Projects.update_milestone(milestone, %{status: args.status})
+        if args.status == "done" do
+          Operately.Projects.complete_milestone(person, milestone)
+        else
+          Operately.Projects.uncomplete_milestone(person, milestone)
+        end
       end
     end
 

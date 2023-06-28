@@ -31,7 +31,7 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
   end
 
   union :activity_resource_union do
-    types [:project, :update]
+    types [:project, :update, :milestone]
 
     resolve_type fn
       %Operately.Projects.Project{}, _ -> :project

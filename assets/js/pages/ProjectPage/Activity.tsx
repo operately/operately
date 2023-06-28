@@ -21,7 +21,7 @@ export default function Activity({ projectId }): JSX.Element {
         {loading && <div>Loading...</div>}
         {error && <div>{error.message}</div>}
         {data && (
-          <div>
+          <div className="flex flex-col gap-4">
             {data.activities.map((activity: Activities.Activity) => (
               <ActivityItem key={activity.id} activity={activity} />
             ))}
@@ -40,6 +40,10 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
       return <ActivityItemProjectCreated activity={activity} />;
     case "milestone-create":
       return <ActivityItemMilestoneCreated activity={activity} />;
+    case "milestone-complete":
+      return <ActivityItemMilestoneCompleted activity={activity} />;
+    case "milestone-uncomplete":
+      return <ActivityItemMilestoneUnCompleted activity={activity} />;
     default:
       return null;
   }
@@ -89,10 +93,72 @@ function ActivityItemMilestoneCreated({ activity }: { activity: Activities.Activ
           <div className="flex items-center">
             <div className="font-medium">
               {activity.person.fullName} added the{" "}
-              <Link to={link} className="font-bold text-blue-400 underline underline-offset-2">
+              <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
                 {title}
               </Link>{" "}
               milestone to this project
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-right w-32">
+        <FormattedTime time={activity.insertedAt} format="short-date" />
+      </div>
+    </div>
+  );
+}
+
+function ActivityItemMilestoneCompleted({ activity }: { activity: Activities.Activity }) {
+  const link = `/projects/${activity.scopeId}/milestones`;
+  const title = activity.resource.title;
+
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="shrink-0">
+          <Avatar person={activity.person} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center">
+            <div className="font-medium">
+              {activity.person.fullName} marked the{" "}
+              <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+                {title}
+              </Link>{" "}
+              as completed
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-right w-32">
+        <FormattedTime time={activity.insertedAt} format="short-date" />
+      </div>
+    </div>
+  );
+}
+
+function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.Activity }) {
+  const link = `/projects/${activity.scopeId}/milestones`;
+  const title = activity.resource.title;
+
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="shrink-0">
+          <Avatar person={activity.person} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center">
+            <div className="font-medium">
+              {activity.person.fullName} marked the{" "}
+              <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+                {title}
+              </Link>{" "}
+              as pending
             </div>
           </div>
         </div>
