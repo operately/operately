@@ -45,6 +45,20 @@ defmodule Operately.Updates do
       update,
       update_added: "*")
   end
+  
+  def acknowledge_update(person, update) do
+    Repo.transaction(fn ->
+      {:ok, update} = update_update(update, %{
+        acknowledged: true,
+        acknowledged_at: DateTime.utc_now,
+        acknowledging_person_id: person.id
+      })
+
+      {:ok, _} = Operately.Activities.submit_update_acknowledged(update)
+
+      update
+    end)
+  end
 
   def update_update(%Update{} = update, attrs) do
     update
@@ -72,24 +86,27 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
-  def create_comment(attrs \\ %{}) do
-    %Comment{}
-    |> Comment.changeset(attrs)
-    |> Repo.insert()
-    |> publish_comment_added()
+  def create_comment(update, attrs) do
+    Repo.transaction(fn ->
+      result = %Comment{} |> Comment.changeset(attrs) |> Repo.insert()
+
+      case result do
+        {:ok, comment} ->
+          {:ok, _} = Operately.Activities.submit_comment_posted(comment, update)
+          :ok = publish_comment_added(comment)
+
+          comment
+        e ->
+          e
+      end
+    end)
   end
 
-  def publish_comment_added({:ok, comment}) do
+  def publish_comment_added(comment) do
     Absinthe.Subscription.publish(
       OperatelyWeb.Endpoint,
       comment,
       comment_added: "*")
-
-    {:ok, comment}
-  end
-
-  def publish_comment_added(e) do
-    e
   end
 
   def update_comment(%Comment{} = comment, attrs) do

@@ -10,7 +10,7 @@ export type Activity = {
   resourceType: string;
   resource: any;
   person: Person;
-  eventData: ProjectCreateEventData | MilestoneCreateEventData;
+  eventData: ProjectCreateEventData | MilestoneCreateEventData | CommentPostEventData;
 };
 
 export type ProjectCreateEventData = {
@@ -19,6 +19,10 @@ export type ProjectCreateEventData = {
 
 export type MilestoneCreateEventData = {
   title: string;
+};
+
+export type CommentPostEventData = {
+  updateId: string;
 };
 
 const LIST_ACTIVITIES = gql`
@@ -56,6 +60,11 @@ const LIST_ACTIVITIES = gql`
           id
           title
         }
+
+        ... on Comment {
+          id
+          message
+        }
       }
 
       eventData {
@@ -69,6 +78,10 @@ const LIST_ACTIVITIES = gql`
 
         ... on ActivityEventDataMilestoneCreate {
           title
+        }
+
+        ... on ActivityEventDataCommentPost {
+          updateId
         }
       }
     }

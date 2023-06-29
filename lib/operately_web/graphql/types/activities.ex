@@ -31,12 +31,14 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
   end
 
   union :activity_resource_union do
-    types [:project, :update, :milestone]
+    types [:project, :update, :milestone, :comment]
 
     resolve_type fn
       %Operately.Projects.Project{}, _ -> :project
       %Operately.Projects.Milestone{}, _ -> :milestone
       %Operately.Updates.Update{}, _ -> :update
+      %Operately.Updates.Comment{}, _ -> :comment
+      e, _ -> raise "Unknown activity resource: #{inspect(e)}"
     end
   end
 
@@ -44,6 +46,7 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
     types [
       :activity_event_data_project_create,
       :activity_event_data_milestone_create,
+      :activity_event_data_comment_post,
     ]
 
     resolve_type fn %{"type" => type}, _ -> String.to_atom("activity_event_data_#{type}") end
@@ -67,6 +70,14 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
     field :title, non_null(:string) do
       resolve fn data, _, _ ->
         {:ok, data["title"]}
+      end
+    end
+  end
+
+  object :activity_event_data_comment_post do
+    field :update_id, non_null(:string) do
+      resolve fn data, _, _ ->
+        {:ok, data["update_id"]}
       end
     end
   end

@@ -44,17 +44,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
       end
     end
 
-    field :acknowledge, :activity do
+    field :acknowledge, :update do
       arg :id, non_null(:id)
 
       resolve fn args, %{context: context} ->
+        person = context.current_account.person
         update = Operately.Updates.get_update!(args.id)
 
-        Operately.Updates.update_update(update, %{
-          acknowledged: true,
-          acknowledged_at: DateTime.utc_now,
-          acknowledging_person_id: context.current_account.person.id
-        })
+        Operately.Updates.acknowledge_update(person, update)
       end
     end
 
@@ -62,7 +59,9 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
       arg :input, non_null(:create_comment_input)
 
       resolve fn args, %{context: context} ->
-        Operately.Updates.create_comment(%{
+        update = Operately.Updates.get_update!(args.input.update_id)
+
+        Operately.Updates.create_comment(update, %{
           author_id: context.current_account.person.id,
           update_id: args.input.update_id,
           content: %{"message" => args.input.content}

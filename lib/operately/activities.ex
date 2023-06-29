@@ -118,4 +118,33 @@ defmodule Operately.Activities do
       }
     })
   end
+
+  def submit_update_acknowledged(update) do
+    Operately.Activities.create_activity(%{
+      action_type: :acknowledge,
+      resource_type: :update,
+      resource_id: update.id,
+      person_id: update.acknowledging_person_id,
+      scope_type: :project,
+      scope_id: update.updatable_id,
+      event_data: %{
+        type: "update_acknowledge"
+      }
+    })
+  end
+
+  def submit_comment_posted(comment, update) do
+    Operately.Activities.create_activity(%{
+      action_type: :post,
+      resource_type: :comment,
+      resource_id: comment.id,
+      person_id: comment.author_id,
+      scope_type: :project,
+      scope_id: update.updatable_id,
+      event_data: %{
+        type: "comment_post",
+        update_id: update.id,
+      }
+    })
+  end
 end

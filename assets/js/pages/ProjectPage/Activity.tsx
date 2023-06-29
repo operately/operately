@@ -47,7 +47,12 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
       return <ActivityItemMilestoneUnCompleted activity={activity} />;
     case "update-post":
       return <ActivityItemUpdatePost activity={activity} />;
+    case "update-acknowledge":
+      return <ActivityItemUpdateAcknowledged activity={activity} />;
+    case "comment-post":
+      return <ActivityItemCommentPost activity={activity} />;
     default:
+      console.log("Unknown activity type: " + activity.resourceType + "-" + activity.actionType);
       return null;
   }
 }
@@ -125,6 +130,25 @@ function ActivityItemMilestoneCompleted({ activity }: { activity: Activities.Act
   );
 }
 
+function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.Activity }) {
+  const link = `/projects/${activity.scopeId}/milestones`;
+  const title = activity.resource.title;
+
+  return (
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-bold">
+          {activity.person.fullName} marked the{" "}
+          <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+            {title}
+          </Link>{" "}
+          as pending
+        </div>
+      </div>
+    </ActivityItemContainer>
+  );
+}
+
 function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity }) {
   const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
 
@@ -146,20 +170,40 @@ function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity })
   );
 }
 
-function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.Activity }) {
-  const link = `/projects/${activity.scopeId}/milestones`;
-  const title = activity.resource.title;
+function ActivityItemUpdateAcknowledged({ activity }: { activity: Activities.Activity }) {
+  const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
 
   return (
     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
       <div className="flex items-center">
         <div className="font-bold">
-          {activity.person.fullName} marked the{" "}
+          {activity.person.fullName} acknowledged the{" "}
           <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
-            {title}
-          </Link>{" "}
-          as pending
+            Status Update
+          </Link>
         </div>
+      </div>
+    </ActivityItemContainer>
+  );
+}
+
+function ActivityItemCommentPost({ activity }: { activity: Activities.Activity }) {
+  const eventData = activity.eventData as Activities.CommentPostEventData;
+  const link = `/projects/${activity.scopeId}/updates/${eventData.updateId}`;
+
+  return (
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      <div className="flex items-center">
+        <div className="font-bold">
+          {activity.person.fullName} posted a comment on a{" "}
+          <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
+            Status Update
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-1 line-clamp-4">
+        <RichContent jsonContent={JSON.parse(activity.resource.message)} />
       </div>
     </ActivityItemContainer>
   );

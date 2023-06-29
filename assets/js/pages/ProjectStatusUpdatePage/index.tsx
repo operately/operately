@@ -195,6 +195,7 @@ function Comment({ comment, onNewReaction }) {
 }
 
 function AckComment({ update }) {
+  console.log(update);
   return (
     <div className="flex items-center justify-between py-4 border-t border-shade-2 font-bold relative">
       <div className="flex items-center gap-3">

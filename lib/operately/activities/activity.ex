@@ -6,7 +6,8 @@ defmodule Operately.Activities.Activity do
 
   @actions [
     {:project, [:create]},
-    {:update, [:post, :comment]},
+    {:update, [:post, :acknowledge]},
+    {:comment, [:post]},
     {:milestone, [:create, :complete, :uncomplete]}
   ]
 
@@ -16,6 +17,7 @@ defmodule Operately.Activities.Activity do
   @resource_schemas [
     {:project, Operately.Projects.Project},
     {:update, Operately.Updates.Update},
+    {:comment, Operately.Updates.Comment},
     {:milestone, Operately.Projects.Milestone},
   ]
 

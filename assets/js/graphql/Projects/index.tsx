@@ -185,7 +185,7 @@ const GET_PROJECT = gql`
           }
         }
 
-        acknowledging_person ${fragments.PERSON}
+        acknowledgingPerson ${fragments.PERSON}
         acknowledged
         acknowledgedAt
 
@@ -461,7 +461,7 @@ const GET_STATUS_UPDATE = gql`
         }
       }
 
-      acknowledging_person ${fragments.PERSON}
+      acknowledgingPerson ${fragments.PERSON}
       acknowledged
       acknowledgedAt
 
