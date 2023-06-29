@@ -15,13 +15,14 @@ defmodule Operately.UpdatesFixtures do
     update
   end
 
-  def comment_fixture(attrs \\ %{}) do
-    {:ok, comment} =
+  def comment_fixture(update, attrs) do
+    attrs =
       attrs
       |> Enum.into(%{
         content: %{},
       })
-      |> Operately.Updates.create_comment()
+      
+    {:ok, comment} = Operately.Updates.create_comment(update, attrs)
 
     comment
   end

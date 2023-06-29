@@ -86,7 +86,7 @@ defmodule Operately.UpdatesTest do
 
     setup ctx do
       update = update_fixture(%{author_id: ctx.person.id})
-      comment = comment_fixture(%{author_id: ctx.person.id, update_id: update.id})
+      comment = comment_fixture(update, %{author_id: ctx.person.id, update_id: update.id})
 
       {:ok, %{update: update, comment: comment}}
     end
@@ -106,12 +106,12 @@ defmodule Operately.UpdatesTest do
         update_id: ctx.update.id
       }
 
-      assert {:ok, %Comment{} = comment} = Updates.create_comment(valid_attrs)
+      assert {:ok, %Comment{} = comment} = Updates.create_comment(ctx.update, valid_attrs)
       assert comment.content == %{message: %{}}
     end
 
-    test "create_comment/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Updates.create_comment(@invalid_attrs)
+    test "create_comment/1 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Updates.create_comment(ctx.update, @invalid_attrs)
     end
 
     test "update_comment/2 with valid data updates the comment", ctx do

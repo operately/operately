@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Schema do
   import_types Absinthe.Type.Custom
 
   # Types
+  import_types Types.Activities
   import_types Types.Projects
   import_types Types.Objectives
   import_types Types.Person
@@ -20,6 +21,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Comments
 
   # Queries
+  import_types Queries.Activities
   import_types Queries.Projects
   import_types Queries.Objectives
   import_types Queries.KeyResults
@@ -61,6 +63,7 @@ defmodule OperatelyWeb.Schema do
   end
 
   query do
+    import_fields :activity_queries
     import_fields :project_queries
     import_fields :objective_queries
     import_fields :key_result_queries

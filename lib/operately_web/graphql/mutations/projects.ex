@@ -9,19 +9,23 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       resolve fn args, %{context: context} ->
         Operately.Repo.transaction(fn -> 
           person = context.current_account.person
-
-          {:ok, project} = Operately.Projects.create_project(%{
+          
+          project_attrs = %{
             company_id: person.company_id,
             creator_id: person.id,
             name: args.name
-          })
+          }
 
-          Operately.Projects.create_contributor(%{
-            project_id: project.id,
+          champion_attrs = %{
             person_id: args.champion_id,
             responsibility: " ",
             role: "champion"
-          })
+          }
+
+          {:ok, project} = Operately.Projects.create_project(
+            project_attrs, 
+            champion_attrs
+          )
 
           project
         end)
@@ -118,10 +122,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :title, non_null(:string)
       arg :deadline_at, :date
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        creator = context.current_account.person
         deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
 
-        Operately.Projects.create_milestone(%{
+        Operately.Projects.create_milestone(creator, %{
           project_id: args.project_id,
           title: args.title,
           deadline_at: deadline
@@ -133,10 +138,15 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :milestone_id, non_null(:id)
       arg :status, non_null(:string)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
 
-        Operately.Projects.update_milestone(milestone, %{status: args.status})
+        if args.status == "done" do
+          Operately.Projects.complete_milestone(person, milestone)
+        else
+          Operately.Projects.uncomplete_milestone(person, milestone)
+        end
       end
     end
 

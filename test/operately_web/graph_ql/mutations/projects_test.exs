@@ -4,6 +4,8 @@ defmodule MyAppWeb.GraphQL.Mutations.ProjectsTest do
   setup :register_and_log_in_account
 
   import Operately.ProjectsFixtures
+  import Operately.PeopleFixtures
+  import Operately.CompaniesFixtures
 
   @update_project_milestone """
   mutation updateProjectMilestone($milestoneId: ID!, $title: String!, $deadlineAt: Date) {
@@ -15,7 +17,13 @@ defmodule MyAppWeb.GraphQL.Mutations.ProjectsTest do
   """
 
   test "mutation: update_project_milestone", %{conn: conn} do
-    milestone = milestone_fixture(%{title: "Website Launched"})
+    company = company_fixture()
+    creator = person_fixture(%{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: creator.id})
+    milestone = milestone_fixture(creator, %{
+      project_id: project.id, 
+      title: "Website Launched"
+    })
 
     conn = graphql(conn, @update_project_milestone, %{
       "milestoneId" => milestone.id,

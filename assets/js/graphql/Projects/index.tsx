@@ -79,25 +79,42 @@ interface Contributor {
   responsibility: string;
 }
 
-interface Comment {
-  id: string;
-  content: string;
-  insertedAt: Date;
-}
-
-interface Activity {
-  id: string;
-  insertedAt: Date;
-  author: Person;
-  message: string;
-  comments: Comment[];
-}
-
 interface Document {
   id: string;
   title: string;
   content: string;
   author: Person;
+}
+
+interface Reaction {
+  id: string;
+  reactionType: string;
+  person: Person;
+}
+
+interface Comment {
+  id: string;
+  message: string;
+  insertedAt: Date;
+  updatedAt: Date;
+
+  reactions: Reaction[];
+}
+
+export interface Update {
+  id: string;
+  message: string;
+  insertedAt: Date;
+  updatedAt: Date;
+
+  author: Person;
+
+  acknowledgingPerson: Person;
+  acknowledged: boolean;
+  acknowledgedAt: Date;
+
+  reactions: Reaction[];
+  comments: Comment[];
 }
 
 type ProjectPhase = "concept" | "planning" | "execution" | "control";
@@ -112,12 +129,13 @@ export interface Project {
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
-  activities: Activity[];
 
   pitch: Document;
   plan: Document;
   execution_review: Document;
   retrospective: Document;
+
+  updates: Update[];
 }
 
 const GET_PROJECT = gql`
@@ -145,62 +163,36 @@ const GET_PROJECT = gql`
       execution_review ${fragments.PROJECT_DOCUMENT}
       retrospective ${fragments.PROJECT_DOCUMENT}
 
-      activities {
-        __typename
+      updates {
         id
+        message
+
         insertedAt
+        updatedAt
 
-        author {
+        author ${fragments.PERSON}
+
+        comments {
           id
-          fullName
-          title
-          avatarUrl
-        }
-
-        ... on ActivityStatusUpdate {
           message
-
-          acknowledged
-          acknowledgedAt
-          acknowledgingPerson {
-            id
-            fullName
-            title
-            avatarUrl
-          }
+          insertedAt
+          author ${fragments.PERSON}
 
           reactions {
-            reactionType
-            person {
-              id
-              fullName
-              title
-              avatarUrl
-            }
-          }
-
-          comments {
             id
-            message
-            insertedAt
-
-            author {
-              id
-              fullName
-              title
-              avatarUrl
-            }
-
-            reactions {
-              reactionType
-              person {
-                id
-                fullName
-                title
-                avatarUrl
-              }
-            }
+            reactionType
+            person ${fragments.PERSON}
           }
+        }
+
+        acknowledgingPerson ${fragments.PERSON}
+        acknowledged
+        acknowledgedAt
+
+        reactions {
+          id
+          reactionType
+          person ${fragments.PERSON}
         }
       }
     }
@@ -448,7 +440,36 @@ export function useRemoveProjectContributorMutation(contribId: string) {
 const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
-      ${fragments.ACTIVITY_FIELDS}
+      id
+      message
+
+      insertedAt
+      updatedAt
+
+      author ${fragments.PERSON}
+
+      comments {
+        id
+        message
+        insertedAt
+        author ${fragments.PERSON}
+
+        reactions {
+          id
+          reactionType
+          person ${fragments.PERSON}
+        }
+      }
+
+      acknowledgingPerson ${fragments.PERSON}
+      acknowledged
+      acknowledgedAt
+
+      reactions {
+        id
+        reactionType
+        person ${fragments.PERSON}
+      }
 
       project {
         id

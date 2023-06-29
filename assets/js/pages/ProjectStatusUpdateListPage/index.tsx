@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Link, useParams } from "react-router-dom";
-import { useProject } from "@/graphql/Projects";
+import * as Projects from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
@@ -19,7 +19,7 @@ export function ProjectStatusUpdateListPage() {
 
   if (!projectId) return <p className="mt-16">Unable to find project</p>;
 
-  const { loading, error, data, refetch } = useProject(projectId);
+  const { loading, error, data, refetch } = Projects.useProject(projectId);
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
@@ -71,10 +71,10 @@ function PostUpdateButton({ linkTo }) {
   );
 }
 
-function UpdateList({ project, refetch }) {
+function UpdateList({ project }: { project: Projects.Project }) {
   return (
     <div className="flex flex-col px-8 pb-8 fadeIn">
-      {project.activities.map((update) => (
+      {project.updates.map((update) => (
         <StatusUpdateItem key={update.id} linkTo={`/projects/${project.id}/updates/${update.id}`} update={update} />
       ))}
     </div>

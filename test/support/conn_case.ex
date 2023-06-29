@@ -45,7 +45,14 @@ defmodule OperatelyWeb.ConnCase do
   test context.
   """
   def register_and_log_in_account(%{conn: conn}) do
+    company = Operately.CompaniesFixtures.company_fixture()
     account = Operately.PeopleFixtures.account_fixture()
+
+    Operately.PeopleFixtures.person_fixture(%{
+      account_id: account.id,
+      company_id: company.id
+    })
+
     %{conn: log_in_account(conn, account), account: account}
   end
 

@@ -9,7 +9,7 @@ defmodule Operately.Projects do
   alias Operately.Projects.Project
   alias Operately.Projects.Contributor
   alias Operately.People.Person
-
+  alias Operately.Activities
 
   def get_project!(id) do
     Repo.get!(Project, id)
@@ -20,9 +20,24 @@ defmodule Operately.Projects do
   end
 
   def create_project(attrs) do
-    %Project{}
-    |> Project.changeset(attrs)
-    |> Repo.insert()
+    create_project(attrs, nil)
+  end
+
+  def create_project(project_attrs, champion_attrs) do
+    Repo.transaction(fn ->
+      result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
+
+      case result do
+        {:ok, project} -> 
+          {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
+          {:ok, _} = Activities.submit_project_created(project, champion)
+
+          project
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
   end
 
   def update_project(%Project{} = project, attrs) do
@@ -53,10 +68,37 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
-  def create_milestone(attrs \\ %{}) do
-    %Milestone{}
-    |> Milestone.changeset(attrs)
-    |> Repo.insert()
+  def create_milestone(creator, attrs) do
+    Repo.transaction(fn ->
+      result = %Milestone{} |> Milestone.changeset(attrs) |> Repo.insert()
+
+      case result do
+        {:ok, milestone} ->
+          {:ok, _} = Activities.submit_milestone_created(creator.id, milestone)
+          milestone
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  def complete_milestone(person, milestone) do
+    Repo.transaction(fn ->
+      {:ok, milestone} = update_milestone(milestone, %{status: :done})
+      {:ok, _} = Activities.submit_milestone_completed(person.id, milestone)
+
+      milestone
+    end)
+  end
+
+  def uncomplete_milestone(person, milestone) do
+    Repo.transaction(fn ->
+      {:ok, milestone} = update_milestone(milestone, %{status: :pending})
+      {:ok, _} = Activities.submit_milestone_uncompleted(person.id, milestone)
+
+      milestone
+    end)
   end
 
   def update_milestone(%Milestone{} = milestone, attrs) do
@@ -116,6 +158,14 @@ defmodule Operately.Projects do
     %Contributor{}
     |> Contributor.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_contributor_if_provided(nil, _project_id) do
+    {:ok, nil}
+  end
+
+  def create_contributor_if_provided(attrs, project_id) do
+    create_contributor(Map.merge(attrs, %{project_id: project_id}))
   end
 
   def update_contributor(%Contributor{} = contributor, attrs) do
