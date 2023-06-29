@@ -33,7 +33,8 @@ defmodule Operately.Updates do
           :ok = publish_update_added(update)
 
           update
-        e ->
+        {:error, e} ->
+          Repo.rollback(e)
           e
       end
     end)
@@ -96,7 +97,9 @@ defmodule Operately.Updates do
           :ok = publish_comment_added(comment)
 
           comment
-        e ->
+
+        {:error, e} ->
+          Repo.rollback(e)
           e
       end
     end)
