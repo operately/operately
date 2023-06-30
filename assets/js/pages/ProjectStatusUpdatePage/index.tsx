@@ -90,6 +90,7 @@ function AckButton({ update }) {
 
 function AckBanner({ me, reviewer, update, champion }) {
   if (update.acknowledged) return null;
+  if (!reviewer) return null;
 
   if (me.id === reviewer.id) {
     return (

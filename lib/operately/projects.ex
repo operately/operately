@@ -128,7 +128,7 @@ defmodule Operately.Projects do
       where: c.role == ^role,
       limit: 1
 
-    Repo.one!(query)
+    Repo.one(query)
   end
 
   def list_project_contributors(project) do
