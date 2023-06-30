@@ -18,7 +18,9 @@ export default function Activity({ projectId }): JSX.Element {
       {error && <div>{error.message}</div>}
       {data && (
         <div className="flex flex-col relative">
-          <div className="absolute top-4 bottom-4 left-20 border-l border-shade-2 z-10" />
+          <div className="absolute top-10 bottom-4 border-l border-shade-2 z-10" style={{ left: "175px" }} />
+
+          <div className="border-b border-shade-1 font-bold mx-16 py-2 text-sm">Today, 30th June</div>
 
           <div className="relative z-20">
             {data.activities.map((activity: Activities.Activity) => (
@@ -56,15 +58,15 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
 function ActivityItemContainer({ person, time, children }) {
   return (
     <div className="flex items-start justify-between p-4 px-16 gap-4">
+      <div className="shrink-0 mt-1 w-20 text-sm">
+        <FormattedTime time={time} format="short-date" />
+      </div>
+
       <div className="shrink-0">
         <Avatar person={person} />
       </div>
 
       <div className="flex-1 mt-1">{children}</div>
-
-      <div className="shrink-0 mt-1">
-        at <FormattedTime time={time} format="short-date" />
-      </div>
     </div>
   );
 }
@@ -158,8 +160,10 @@ function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity })
         </Link>
       </div>
 
-      <div className="line-clamp-4 mt-2">
-        <RichContent jsonContent={activity.resource.message} />
+      <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
+        <div className="line-clamp-4">
+          <RichContent jsonContent={activity.resource.message} />
+        </div>
       </div>
     </ActivityItemContainer>
   );
@@ -197,8 +201,10 @@ function ActivityItemCommentPost({ activity }: { activity: Activities.Activity }
         </div>
       </div>
 
-      <div className="mt-1 line-clamp-4">
-        <RichContent jsonContent={JSON.parse(activity.resource.message)} />
+      <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
+        <div className="line-clamp-4">
+          <RichContent jsonContent={JSON.parse(activity.resource.message)} />
+        </div>
       </div>
     </ActivityItemContainer>
   );
