@@ -73,11 +73,22 @@ function ActivityItemProjectCreated({ activity }: { activity: Activities.Activit
   const eventData = activity.eventData as Activities.ProjectCreateEventData;
   const champion = eventData.champion;
 
+  const creatorIsChampion = activity.person.id === champion.id;
+
+  const who = creatorIsChampion ? (
+    <>
+      <span>themself</span>
+    </>
+  ) : (
+    <>
+      <Avatar person={champion} size="tiny" /> {champion.fullName}
+    </>
+  );
+
   return (
     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
       <div className="flex items-center gap-1.5 font-bold">
-        {activity.person.fullName} created this project and assigned <Avatar person={champion} size="tiny" />{" "}
-        {champion.fullName} as the champion.
+        {activity.person.fullName} created this project and assigned {who} as the champion.
       </div>
     </ActivityItemContainer>
   );
