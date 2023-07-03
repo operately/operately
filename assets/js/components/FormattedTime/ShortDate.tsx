@@ -1,21 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-function isCurrentYear(date: Date) {
-  return date.getFullYear() === new Date().getFullYear();
-}
-
-function isToday(date: Date) {
-  const today = new Date();
-
-  return (
-    date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear()
-  );
-}
-
-export default function ShortDate({ time }: { time: Date }): JSX.Element {
+export default function ShortDate({ time, weekday }: { time: Date; weekday: boolean }): JSX.Element {
   const { t } = useTranslation();
 
   let params = {
@@ -25,7 +11,7 @@ export default function ShortDate({ time }: { time: Date }): JSX.Element {
     },
   };
 
-  if (isToday(time)) {
+  if (isToday(time) && !weekday) {
     params["formatParams"]["val"]["hour"] = "numeric";
     params["formatParams"]["val"]["minute"] = "numeric";
   } else {
@@ -37,5 +23,41 @@ export default function ShortDate({ time }: { time: Date }): JSX.Element {
     }
   }
 
-  return <>{t("intlDateTime", params)}</>;
+  let prefix = "";
+
+  if (weekday) {
+    if (isToday(time)) {
+      prefix = "Today, ";
+    } else if (isYesterday(time)) {
+      prefix = "Yesterday, ";
+    } else {
+      params["formatParams"]["val"]["weekday"] = "long";
+    }
+  }
+
+  return <>{prefix + t("intlDateTime", params)}</>;
+}
+
+function isCurrentYear(date: Date) {
+  return date.getFullYear() === new Date().getFullYear();
+}
+
+function isSameDay(date: Date, other: Date) {
+  return (
+    date.getDate() === other.getDate() &&
+    date.getMonth() === other.getMonth() &&
+    date.getFullYear() === other.getFullYear()
+  );
+}
+
+function isToday(date: Date) {
+  const today = new Date();
+
+  return isSameDay(date, today);
+}
+
+function isYesterday(date: Date) {
+  const yesteday = new Date(new Date() - 86400000);
+
+  return isSameDay(date, yesteday);
 }
