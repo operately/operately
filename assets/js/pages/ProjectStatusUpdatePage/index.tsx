@@ -56,7 +56,7 @@ export function ProjectStatusUpdatePage() {
       <Paper.Body>
         <AckBanner me={me} update={update} champion={update.project.champion} reviewer={update.project.reviewer} />
 
-        <div className="px-8 pb-16 fadeIn">
+        <div className="px-16 py-8 pb-16 fadeIn">
           <Header update={update} />
 
           <div className="my-4 mb-8 text-lg">

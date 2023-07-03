@@ -10,6 +10,10 @@ import { Link } from "react-router-dom";
 export default function Activity({ projectId }): JSX.Element {
   const { data, loading, error } = Activities.useListActivities("project", projectId);
 
+  if (loading) return <div>Loading...</div>;
+
+  const activityGroups = Activities.groupByDate(data?.activities);
+
   return (
     <div className="rounded-b-[20px] bg-dark-2 min-h-[350px] border-t border-shade-1 py-8">
       <SectionTitle title="Project Activity" />
@@ -17,16 +21,29 @@ export default function Activity({ projectId }): JSX.Element {
       {loading && <div>Loading...</div>}
       {error && <div>{error.message}</div>}
       {data && (
-        <div className="flex flex-col relative">
-          <div className="absolute top-4 bottom-4 left-20 border-l border-shade-2 z-10" />
-
-          <div className="relative z-20">
-            {data.activities.map((activity: Activities.Activity) => (
-              <ActivityItem key={activity.id} activity={activity} />
-            ))}
-          </div>
+        <div className="flex flex-col gap-16">
+          {activityGroups.map((group) => (
+            <ActivityGroup key={group.date} date={group.date} activities={group.activities} />
+          ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ActivityGroup({ date, activities }) {
+  return (
+    <div className="flex flex-col relative">
+      <div className="absolute top-9 bottom-4 border-l border-shade-2 z-10" style={{ left: "145px" }} />
+      <div className="border-b border-shade-2 font-bold mx-16 py-2 text-sm">
+        <FormattedTime time={date} format="short-date-with-weekday-relative" />
+      </div>
+
+      <div className="relative z-20">
+        {activities.map((activity: Activities.Activity) => (
+          <ActivityItem key={activity.id} activity={activity} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -56,15 +73,15 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
 function ActivityItemContainer({ person, time, children }) {
   return (
     <div className="flex items-start justify-between p-4 px-16 gap-4">
+      <div className="shrink-0 mt-1 text-sm" style={{ width: "50px" }}>
+        <FormattedTime time={time} format="time-only" />
+      </div>
+
       <div className="shrink-0">
         <Avatar person={person} />
       </div>
 
       <div className="flex-1 mt-1">{children}</div>
-
-      <div className="shrink-0 mt-1">
-        at <FormattedTime time={time} format="short-date" />
-      </div>
     </div>
   );
 }
@@ -101,9 +118,9 @@ function ActivityItemMilestoneCreated({ activity }: { activity: Activities.Activ
 
   return (
     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-      <div className="flex items-center gap-1.5 font-semibold">
+      <div className="font-semibold">
         {activity.person.fullName} added a milestone:
-        <Link to={link} className="font-semibold text-sky-400 underline underline-offset-2">
+        <Link to={link} className="ml-1.5 font-semibold text-sky-400 underline underline-offset-2">
           {title}
         </Link>
       </div>
@@ -158,8 +175,10 @@ function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity })
         </Link>
       </div>
 
-      <div className="line-clamp-4 mt-2">
-        <RichContent jsonContent={activity.resource.message} />
+      <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
+        <div className="line-clamp-4">
+          <RichContent jsonContent={activity.resource.message} />
+        </div>
       </div>
     </ActivityItemContainer>
   );
@@ -197,8 +216,10 @@ function ActivityItemCommentPost({ activity }: { activity: Activities.Activity }
         </div>
       </div>
 
-      <div className="mt-1 line-clamp-4">
-        <RichContent jsonContent={JSON.parse(activity.resource.message)} />
+      <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
+        <div className="line-clamp-4">
+          <RichContent jsonContent={JSON.parse(activity.resource.message)} />
+        </div>
       </div>
     </ActivityItemContainer>
   );
