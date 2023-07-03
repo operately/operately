@@ -16,6 +16,7 @@ import Header from "./Header";
 import * as Milestones from "@/graphql/Projects/milestones";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
+import FormattedTime from "@/components/FormattedTime";
 
 export function ProjectPage() {
   const params = useParams();
@@ -51,9 +52,8 @@ function Overview({ project }) {
         <Header project={project} />
 
         <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
-          <PhasesCard project={project} />
-          <DocumentationCard project={project} />
           <MilestonesCard project={project} />
+          <DocumentationCard project={project} />
           <StatuUpdatesCard project={project} />
           <KeyResourcesCard project={project} />
         </div>
@@ -96,64 +96,6 @@ function DocumentationCardListItem({ title, completed, pending }) {
   );
 }
 
-function PhasesCard({ project }) {
-  return (
-    <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
-      <Cards.Header>
-        <Cards.Title>Project Phases</Cards.Title>
-      </Cards.Header>
-
-      <Cards.Body>
-        <ProjectPhasesCardListItem
-          title="Concept"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "concept"}
-        />
-        <ProjectPhasesCardListItem
-          title="Planning"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "planning"}
-        />
-        <ProjectPhasesCardListItem
-          title="Execution"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "execution"}
-        />
-        <ProjectPhasesCardListItem
-          title="Control"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "control"}
-        />
-      </Cards.Body>
-    </Cards.Card>
-  );
-}
-
-function ProjectPhasesCardListItem({ title, completed, pending }) {
-  let statusIcon: React.ReactNode | null = null;
-  let titleColor: string | null = null;
-
-  if (completed) {
-    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-green-400" />;
-    titleColor = "text-white-1";
-  } else if (pending) {
-    statusIcon = <Icons.IconProgressCheck size={20} className="text-yellow-400" />;
-    titleColor = "text-white-1";
-  } else {
-    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-white-3" />;
-    titleColor = "text-white-3";
-  }
-
-  return (
-    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-      <div className="flex items-center gap-1">
-        <div className="shrink-0">{statusIcon}</div>
-        <div className={classnames("font-medium", titleColor)}>{title}</div>
-      </div>
-    </div>
-  );
-}
-
 function DocumentationCard({ project }) {
   return (
     <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
@@ -188,65 +130,85 @@ function DocumentationCard({ project }) {
 }
 
 function MilestonesCard({ project }) {
-  const milestones = Milestones.sortByDeadline(project.milestones);
+  const milestones = Milestones.sortByDeadline(project.milestones).filter((m) => m.status !== "done");
 
   return (
     <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
       <Cards.Header>
-        <Cards.Title>Milestones</Cards.Title>
+        <Cards.Title>Timeline</Cards.Title>
       </Cards.Header>
 
       <Cards.Body>
-        {milestones.slice(0, 4).map((m) => (
-          <div key={m.id} className="border-t border-b border-shade-1 py-1 flex justify-between">
-            <div className="flex items-center gap-1 font-medium truncate">
-              <div className="shrink-0">
-                {m.status === "done" ? (
-                  <Icons.IconCircleCheck size={20} className="text-green-400" />
-                ) : (
-                  <Icons.IconCircle size={20} className="text-yellow-400" />
-                )}
+        <div className="">
+          <div className="font-medium text-xs uppercase mb-2 pt-2">Concept PHASE</div>
+
+          {milestones.map((m) => (
+            <div className="flex items-start gap-1 border-y border-shade-2 py-1">
+              <div className="shrink-0 mt-0.5">
+                <Icons.IconFlag2 size={16} className="text-yellow-400" />
               </div>
 
-              <div className="truncate">{m.title}</div>
-            </div>
-          </div>
-        ))}
+              <div className="flex-1">
+                <div className="font-bold">{milestones[0]?.title}</div>
 
-        {milestones.length > 4 && (
-          <div className="flex items-center gap-2 rounded-lg py-1 ml-0.5 text-white-2">
-            <Icons.IconDotsVertical size={16} />
-            {milestones.length - 4} other, {milestones.filter((m) => m.status === "pending").length} pending
-          </div>
-        )}
+                {m.deadlineAt && (
+                  <div className="text-xs text-white-2">
+                    <FormattedTime time={m.deadlineAt} format="short-date-with-weekday-relative" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4">
+          <div className="font-medium text-xs uppercase mb-2 pt-2">PLANNING PHASE</div>
+
+          {milestones.map((m) => (
+            <div className="flex items-start gap-1 border-y border-shade-2 py-1">
+              <div className="shrink-0 mt-0.5">
+                <Icons.IconFlag2 size={16} className="text-yellow-400" />
+              </div>
+
+              <div className="flex-1">
+                <div className="font-bold">{milestones[0]?.title}</div>
+
+                {m.deadlineAt && (
+                  <div className="font-sm text-white-2">
+                    <FormattedTime time={m.deadlineAt} format="short-date-with-weekday-relative" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </Cards.Body>
     </Cards.Card>
   );
 }
 
-function Timeline({ project }) {
-  return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-52 shadow cursor-pointer hover:shadow-lg border border-shade-2">
-      <div className="">
-        <div className="flex items-center justify-center gap-4 mb-2">
-          <div className="font-bold flex items-center uppercase">Timeline</div>
-        </div>
+// {milestones.slice(0, 4).map((m) => (
+//   <div key={m.id} className="border-t border-b border-shade-1 py-1 flex justify-between">
+//     <div className="flex items-center gap-1 font-medium truncate">
+//       <div className="shrink-0">
+//         {m.status === "done" ? (
+//           <Icons.IconCircleCheck size={20} className="text-green-400" />
+//         ) : (
+//           <Icons.IconCircle size={20} className="text-yellow-400" />
+//         )}
+//       </div>
 
-        <div>
-          <div className="flex items-center gap-2 rounded-lg py-1">
-            <Icons.IconClock size={20} />
-            Feb 22 -&gt; Jul 22
-          </div>
+//       <div className="truncate">{m.title}</div>
+//     </div>
+//   </div>
+// ))}
 
-          <div className="flex items-center gap-2 rounded-lg py-1">
-            <Icons.IconHammer size={20} />
-            Execution Phase
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// {milestones.length > 4 && (
+//   <div className="flex items-center gap-2 rounded-lg py-1 ml-0.5 text-white-2">
+//     <Icons.IconDotsVertical size={16} />
+//     {milestones.length - 4} other, {milestones.filter((m) => m.status === "pending").length} pending
+//   </div>
+// )}
 
 function StatusUpdatesCardItem({ update }: { update: Projects.Update }) {
   return (
