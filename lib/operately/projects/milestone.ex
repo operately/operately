@@ -10,6 +10,7 @@ defmodule Operately.Projects.Milestone do
     field :deadline_at, :naive_datetime
     field :title, :string
     field :status, Ecto.Enum, values: [:pending, :done], default: :pending
+    field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control], default: :concept
 
     timestamps()
   end
