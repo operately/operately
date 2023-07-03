@@ -20,7 +20,7 @@ export default function Activity({ projectId }): JSX.Element {
         <div className="flex flex-col relative">
           <div className="absolute top-10 bottom-4 border-l border-shade-2 z-10" style={{ left: "175px" }} />
 
-          <div className="border-b border-shade-1 font-bold mx-16 py-2 text-sm">Today, 30th June</div>
+          <div className="border-b border-shade-1 font-bold mx-16 py-2 text-sm">Today, 3rd July</div>
 
           <div className="relative z-20">
             {data.activities.map((activity: Activities.Activity) => (
@@ -103,9 +103,9 @@ function ActivityItemMilestoneCreated({ activity }: { activity: Activities.Activ
 
   return (
     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-      <div className="flex items-center gap-1.5 font-semibold">
+      <div className="font-semibold">
         {activity.person.fullName} added a milestone:
-        <Link to={link} className="font-semibold text-sky-400 underline underline-offset-2">
+        <Link to={link} className="ml-1.5 font-semibold text-sky-400 underline underline-offset-2">
           {title}
         </Link>
       </div>
