@@ -91,8 +91,7 @@ defmodule Operately.Projects do
 
       {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Invite contributors", phase: :planning})
       {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Define execution milestones and schedule", phase: :planning})
-
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Propose the Execution Plan", phase: :execution})
+      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Propose the Execution Plan", phase: :planning})
 
       {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Submit Execution Review", phase: :execution})
       {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Submit Retrospective", phase: :control})
