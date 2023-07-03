@@ -53,6 +53,27 @@ export function splitByCompletion(milestones: Milestone[]) {
   return { completed, pending };
 }
 
+export function groupByPhase(milestones: Milestone[]) {
+  let phases = ["concept", "planning", "execution", "control"];
+
+  let results: [{ phase: string; milestones: Milestone[] }] = [
+    { phase: "concept", milestones: [] as Milestone[] },
+    { phase: "planning", milestones: [] as Milestone[] },
+    { phase: "execution", milestones: [] as Milestone[] },
+    { phase: "control", milestones: [] as Milestone[] },
+  ];
+
+  milestones.forEach((milestone) => {
+    let index = phases.indexOf(milestone.phase);
+
+    if (index >= 0) {
+      results[index]!.milestones.push(milestone);
+    }
+  });
+
+  return results;
+}
+
 export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
   let now = +new Date();

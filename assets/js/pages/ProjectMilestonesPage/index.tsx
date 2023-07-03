@@ -25,6 +25,8 @@ export function ProjectMilestonesPage() {
 
   const project = data.project;
 
+  const milestoneGroups = Milestones.groupByPhase(project.milestones);
+
   return (
     <Paper.Root>
       <Paper.Navigation>
@@ -37,9 +39,41 @@ export function ProjectMilestonesPage() {
       <Paper.Body>
         <Title projectId={projectId} refetch={refetch} />
 
-        <MilestoneList project={project} refetch={refetch} />
+        <div className="flex flex-col gap-12">
+          {milestoneGroups.map((group) => (
+            <PhaseMilestoneList project={project} refetch={refetch} phase={group.phase} milestones={group.milestones} />
+          ))}
+        </div>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function PhaseMilestoneList({ project, refetch, phase, milestones }) {
+  return (
+    <div className="relative">
+      <div className="relative z-20">
+        <div className="px-8 border-b border-shade-1 pb-2 flex items-center">
+          <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />
+          <div className="font-extrabold text-lg capitalize">{phase} Phase</div>
+          <Icons.IconCirclePlus size={20} className="ml-2 text-white-2 cursor-pointer" />
+        </div>
+        <div className="flex flex-col divide-y divide-shade-1 fadeIn">
+          {milestones.map((m) => (
+            <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
+          ))}
+        </div>
+      </div>
+
+      <div
+        className="absolute border-l border-shade-3 z-10"
+        style={{
+          top: "23px",
+          left: "43px",
+          bottom: "16px",
+        }}
+      ></div>
+    </div>
   );
 }
 
@@ -128,10 +162,6 @@ function AddMilestoneButton({ onClick }) {
 }
 
 function MilestoneList({ project, refetch }) {
-  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(project.milestones).filter(
-    (m) => m.phase === "concept",
-  );
-
   return (
     <div className="relative">
       <div className="relative z-20">
