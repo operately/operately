@@ -71,6 +71,10 @@ export function groupByPhase(milestones: Milestone[]) {
     }
   });
 
+  results.forEach((result) => {
+    result.milestones = sortByDeadline(result.milestones);
+  });
+
   return results;
 }
 
@@ -86,29 +90,30 @@ export function parseDate(date: string | null | undefined): Date | null {
 }
 
 const ADD_MILESTONE = gql`
-  mutation AddProjectMilestone($projectId: ID!, $title: String!, $deadlineAt: Date) {
-    addProjectMilestone(projectId: $projectId, title: $title, deadlineAt: $deadlineAt) {
+  mutation AddProjectMilestone($projectId: ID!, $title: String!, $deadlineAt: Date, $phase: String!) {
+    addProjectMilestone(projectId: $projectId, title: $title, deadlineAt: $deadlineAt, phase: $phase) {
       id
       title
       deadlineAt
       status
+      phase
     }
   }
 `;
 
-type AddMilestoneFun = (title: string, deadlineAt: Date | null) => Promise<any>;
+type AddMilestoneFun = (title: string, deadlineAt: Date | null, phase: string) => Promise<any>;
 
 export function useAddMilestone(projectId: string): [AddMilestoneFun, any] {
   const [fun, status] = useMutation(ADD_MILESTONE);
 
-  const addMilestone = (title: string, deadlineAt: Date | null) => {
+  const addMilestone = (title: string, deadlineAt: Date | null, phase: string) => {
     let date: string | null = null;
 
     if (deadlineAt) {
       date = deadlineAt.toISOString().split("T")[0] || null;
     }
 
-    return fun({ variables: { projectId, title, deadlineAt: date } });
+    return fun({ variables: { projectId, title, deadlineAt: date, phase } });
   };
 
   return [addMilestone, status];

@@ -37,9 +37,9 @@ export function ProjectMilestonesPage() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <Title projectId={projectId} refetch={refetch} />
+        <Title />
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-12 mb-8">
           {milestoneGroups.map((group) => (
             <PhaseMilestoneList project={project} refetch={refetch} phase={group.phase} milestones={group.milestones} />
           ))}
@@ -50,19 +50,38 @@ export function ProjectMilestonesPage() {
 }
 
 function PhaseMilestoneList({ project, refetch, phase, milestones }) {
+  const [showAdd, setShowAdd] = React.useState(false);
+
+  const close = async () => {
+    await refetch();
+    setShowAdd(false);
+  };
+
   return (
     <div className="relative">
-      <div className="relative z-20">
+      <div className="relative">
         <div className="px-8 border-b border-shade-1 pb-2 flex items-center">
           <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />
           <div className="font-extrabold text-lg capitalize">{phase} Phase</div>
-          <Icons.IconCirclePlus size={20} className="ml-2 text-white-2 cursor-pointer" />
         </div>
-        <div className="flex flex-col divide-y divide-shade-1 fadeIn">
+        <div className="flex flex-col z-20 relative">
           {milestones.map((m) => (
             <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
           ))}
         </div>
+        {showAdd ? (
+          <AddMilestoneForm close={close} projectId={project.id} phase={phase} />
+        ) : (
+          <div
+            className="px-8 flex items-center py-4 border-b border-shade-1 cursor-pointer z-20 relative"
+            onClick={() => setShowAdd(true)}
+          >
+            <div className="bg-dark-3 rounded-full">
+              <Icons.IconCirclePlus size={24} className="text-white-3 cursor-pointer" />
+            </div>
+            <div className="ml-2 text-white-2">Add Milestone</div>
+          </div>
+        )}
       </div>
 
       <div
@@ -77,15 +96,7 @@ function PhaseMilestoneList({ project, refetch, phase, milestones }) {
   );
 }
 
-function Title({ projectId, refetch }) {
-  const [showAdd, setShowAdd] = React.useState(false);
-
-  const onAddClick = () => setShowAdd(true);
-  const close = async () => {
-    await refetch();
-    setShowAdd(false);
-  };
-
+function Title() {
   return (
     <div className="p-8 pb-8">
       <div className="flex items-center justify-center">
@@ -94,13 +105,11 @@ function Title({ projectId, refetch }) {
           <div className="text-medium">Set milestones for your project and track progress</div>
         </div>
       </div>
-
-      {showAdd && <AddMilestoneForm close={close} projectId={projectId} />}
     </div>
   );
 }
 
-function AddMilestoneForm({ projectId, close }) {
+function AddMilestoneForm({ projectId, close, phase }) {
   const [value, setValue] = React.useState("");
   const [deadline, setDeadline] = React.useState(null);
   const disabled = value.length === 0 && !deadline;
@@ -110,12 +119,12 @@ function AddMilestoneForm({ projectId, close }) {
   const save = async () => {
     if (disabled) return;
 
-    await add(value, deadline);
+    await add(value, deadline, phase);
     close();
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
+    <div className="bg-dark-3 border-y border-shade-1 px-8 py-8 relative z-40">
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <label className="font-bold mb-1 block">Desribes the milestone</label>
@@ -152,43 +161,6 @@ function AddMilestoneForm({ projectId, close }) {
   );
 }
 
-function AddMilestoneButton({ onClick }) {
-  return (
-    <Button variant="success" onClick={onClick}>
-      <Icons.IconPlus size={20} />
-      Add Milestone
-    </Button>
-  );
-}
-
-function MilestoneList({ project, refetch }) {
-  return (
-    <div className="relative">
-      <div className="relative z-20">
-        <div className="px-8 border-b border-shade-1 pb-2 flex items-center">
-          <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />
-          <div className="font-extrabold text-lg">Concept Phase</div>
-          <Icons.IconCirclePlus size={20} className="ml-2 text-white-2 cursor-pointer" />
-        </div>
-        <div className="flex flex-col divide-y divide-shade-1 fadeIn">
-          {milestones.map((m) => (
-            <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
-          ))}
-        </div>
-      </div>
-
-      <div
-        className="absolute border-l border-shade-3 z-10"
-        style={{
-          top: "23px",
-          left: "43px",
-          bottom: "16px",
-        }}
-      ></div>
-    </div>
-  );
-}
-
 function MilestoneItem({ milestone, refetch }) {
   const [state, setState] = React.useState<"view" | "edit">("view");
 
@@ -221,7 +193,7 @@ function MilestoneItemViewState({ milestone, onEdit }) {
   };
 
   return (
-    <div className="flex items-center justify-between py-3 group px-8">
+    <div className="flex items-center justify-between py-3 group px-8 border-b border-shade-1">
       <div className="flex items-center gap-2">
         <MilestoneIcon milestone={milestone} onClick={toggleStatus} />
         <div>{milestone.title}</div>
@@ -231,8 +203,11 @@ function MilestoneItemViewState({ milestone, onEdit }) {
         <OverdueIndicator milestone={milestone} />
         <MilestoneDueDate milestone={milestone} />
 
-        <div className="w-6 cursor-pointer" onClick={onEdit}>
-          <Icons.IconPencil size={16} className="text-white-3" />
+        <div
+          className="shrink-0 cursor-pointer rounded-full bg-shade-1 p-1.5 ml-2 group/edit hover:bg-shade-2 transition-colors"
+          onClick={onEdit}
+        >
+          <Icons.IconPencil size={14} className="text-white-2 group-hover/edit:text-pink-400" />
         </div>
       </div>
     </div>

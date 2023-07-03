@@ -18,7 +18,7 @@ defmodule Operately.Projects.Milestone do
   @doc false
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at, :project_id, :status])
-    |> validate_required([:title])
+    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :phase])
+    |> validate_required([:title, :phase])
   end
 end
