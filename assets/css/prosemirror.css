@@ -1,3 +1,7 @@
+.ProseMirror {
+  word-break: break-all;
+}
+
 .ProseMirror ul {
   padding: 0;
   padding-left: 36px;

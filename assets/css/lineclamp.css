@@ -3,6 +3,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+  word-break: break-all;
 }
 
 .line-clamp-2 {
@@ -10,6 +11,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  word-break: break-all;
 }
 
 .line-clamp-4 {
@@ -17,6 +19,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
+  word-break: break-all;
 }
 
 .line-clamp-6 {
@@ -24,6 +27,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 6;
+  word-break: break-all;
 }
 
 .line-clamp-8 {
@@ -31,4 +35,5 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 8;
+  word-break: break-all;
 }
