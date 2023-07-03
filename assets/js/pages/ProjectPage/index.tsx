@@ -250,14 +250,22 @@ function Timeline({ project }) {
 
 function StatusUpdatesCardItem({ update }: { update: Projects.Update }) {
   return (
-    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-      <div className="flex items-start gap-1.5 font-medium">
+    <div className="border-t border-b border-shade-1 py-1 flex justify-between items-center">
+      <div className="flex items-center gap-1.5 font-medium flex-1 pl-1">
         <div className="shrink-0">
           <Avatar person={update.author} size="tiny" />
         </div>
         <div className="line-clamp-1">
           <RichContent jsonContent={update.message} />
         </div>
+      </div>
+
+      <div className="shrink-0">
+        {update.acknowledged ? (
+          <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
+        ) : (
+          <Icons.IconClockFilled size={16} className="text-yellow-400" />
+        )}
       </div>
     </div>
   );
