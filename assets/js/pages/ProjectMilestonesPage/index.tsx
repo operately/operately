@@ -1,5 +1,7 @@
 import React from "react";
 
+import classnames from "classnames";
+
 import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
@@ -51,6 +53,7 @@ export function ProjectMilestonesPage() {
 
 function PhaseMilestoneList({ project, refetch, phase, milestones }) {
   const [showAdd, setShowAdd] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const close = async () => {
     await refetch();
@@ -58,29 +61,50 @@ function PhaseMilestoneList({ project, refetch, phase, milestones }) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative mt-4">
       <div className="relative">
-        <div className="px-8 border-b border-shade-1 pb-2 flex items-center">
-          <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />
-          <div className="font-extrabold text-lg capitalize">{phase} Phase</div>
-        </div>
-        <div className="flex flex-col z-20 relative">
-          {milestones.map((m) => (
-            <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
-          ))}
-        </div>
-        {showAdd ? (
-          <AddMilestoneForm close={close} projectId={project.id} phase={phase} />
-        ) : (
-          <div
-            className="px-8 flex items-center py-4 border-b border-shade-1 cursor-pointer z-20 relative"
-            onClick={() => setShowAdd(true)}
-          >
-            <div className="bg-dark-3 rounded-full">
-              <Icons.IconCirclePlus size={24} className="text-white-3 cursor-pointer" />
-            </div>
-            <div className="ml-2 text-white-2">Add Milestone</div>
+        <div className="px-8 border-b border-shade-1 pb-2 flex items-center justify-between">
+          <div className="flex items-center">
+            {open && <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />}
+            <div className="font-extrabold text-lg capitalize">{phase} Phase</div>
           </div>
+          <div className="flex items-center gap-2">
+            {project.phase === phase && (
+              <div className="text-green-400 flex items-center gap-1 border border-green-400 text-xs font-bold py-1 px-2 rounded-lg ml-2">
+                <Icons.IconCheck size={12} stroke={4} />
+                Complete Phase
+              </div>
+            )}
+            <div className="cursor-pointer" onClick={() => setOpen(!open)}>
+              {open ? (
+                <Icons.IconChevronDown size={20} className="text-white-2" />
+              ) : (
+                <Icons.IconChevronRight size={20} className="text-white-2" />
+              )}
+            </div>
+          </div>
+        </div>
+        {open && (
+          <React.Fragment>
+            <div className="flex flex-col z-20 relative">
+              {milestones.map((m) => (
+                <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
+              ))}
+            </div>
+            {showAdd ? (
+              <AddMilestoneForm close={close} projectId={project.id} phase={phase} />
+            ) : (
+              <div
+                className="px-8 flex items-center py-4 border-b border-shade-1 cursor-pointer z-20 relative"
+                onClick={() => setShowAdd(true)}
+              >
+                <div className="bg-dark-3 rounded-full">
+                  <Icons.IconCirclePlus size={24} className="text-white-3 cursor-pointer" />
+                </div>
+                <div className="ml-2 text-white-2">Add Milestone</div>
+              </div>
+            )}
+          </React.Fragment>
         )}
       </div>
 
@@ -326,50 +350,8 @@ function MilestoneDueDate({ milestone }) {
   if (isDueDateSet(milestone.deadlineAt)) {
     return <FormattedTime time={milestone.deadlineAt} format="short-date" />;
   } else {
-    return <span className="text-shade-3">Not Set</span>;
+    return <span className="text-shade-3">No Due Date</span>;
   }
-}
-
-function MilestoneDueDate2({ milestone }) {
-  const [open, setOpen] = React.useState(false);
-  const [setDeadline, _s] = Milestones.useSetDeadline(milestone.id);
-
-  const DateView = React.forwardRef((props, ref) => (
-    <div onClick={props.onClick} ref={ref}>
-      {isDueDateSet(props.value) ? (
-        <FormattedTime time={props.value} format="short-date" />
-      ) : (
-        <span className="text-shade-3">Not Set</span>
-      )}
-    </div>
-  ));
-
-  let selected: Date | string = "";
-  if (milestone.deadlineAt) {
-    selected = new Date(Date.parse(milestone.deadlineAt));
-  }
-
-  const onChange = (date) => {
-    setDeadline(date);
-    setOpen(false);
-  };
-
-  return (
-    <div className="cursor-pointer">
-      <DatePicker
-        selected={selected}
-        onChange={onChange}
-        customInput={<DateView />}
-        open={open}
-        onInputClick={() => setOpen(true)}
-      >
-        <div className="flex items-center gap-1 text-red-400" onClick={onChange}>
-          <Icons.IconTrash size={16} />
-          Clear due date
-        </div>
-      </DatePicker>
-    </div>
-  );
 }
 
 function isDueDateSet(value) {
