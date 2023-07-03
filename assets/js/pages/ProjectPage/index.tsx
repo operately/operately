@@ -130,7 +130,7 @@ function DocumentationCard({ project }) {
 }
 
 function MilestonesCard({ project }) {
-  const milestones = Milestones.sortByDeadline(project.milestones).filter((m) => m.status !== "done");
+  const milestoneGroups = Milestones.groupByPhase(project.milestones);
 
   return (
     <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
@@ -139,51 +139,39 @@ function MilestonesCard({ project }) {
       </Cards.Header>
 
       <Cards.Body>
-        <div className="">
-          <div className="font-medium text-xs uppercase mb-2 pt-2">Concept PHASE</div>
-
-          {milestones.map((m) => (
-            <div className="flex items-start gap-1 border-y border-shade-2 py-1">
-              <div className="shrink-0 mt-0.5">
-                <Icons.IconFlag2 size={16} className="text-yellow-400" />
-              </div>
-
-              <div className="flex-1">
-                <div className="font-bold">{milestones[0]?.title}</div>
-
-                {m.deadlineAt && (
-                  <div className="text-xs text-white-2">
-                    <FormattedTime time={m.deadlineAt} format="short-date-with-weekday-relative" />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4">
-          <div className="font-medium text-xs uppercase mb-2 pt-2">PLANNING PHASE</div>
-
-          {milestones.map((m) => (
-            <div className="flex items-start gap-1 border-y border-shade-2 py-1">
-              <div className="shrink-0 mt-0.5">
-                <Icons.IconFlag2 size={16} className="text-yellow-400" />
-              </div>
-
-              <div className="flex-1">
-                <div className="font-bold">{milestones[0]?.title}</div>
-
-                {m.deadlineAt && (
-                  <div className="font-sm text-white-2">
-                    <FormattedTime time={m.deadlineAt} format="short-date-with-weekday-relative" />
-                  </div>
-                )}
-              </div>
-            </div>
+        <div className="flex flex-col gap-4">
+          {milestoneGroups.map((group) => (
+            <MilestoneList key={group.phase} phase={group.phase} milestones={group.milestones} />
           ))}
         </div>
       </Cards.Body>
     </Cards.Card>
+  );
+}
+
+function MilestoneList({ phase, milestones }) {
+  return (
+    <div>
+      <div className="font-medium text-xs uppercase mb-2 pt-2">{phase} phase</div>
+
+      {milestones.map((m) => (
+        <div className="flex items-start gap-1 border-y border-shade-2 py-1">
+          <div className="shrink-0 mt-0.5">
+            <Icons.IconFlag2 size={16} className="text-yellow-400" />
+          </div>
+
+          <div className="flex-1">
+            <div className="font-bold">{m.title}</div>
+
+            {m.deadlineAt && (
+              <div className="text-xs text-white-2">
+                <FormattedTime time={m.deadlineAt} format="short-date-with-weekday-relative" />
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
