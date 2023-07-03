@@ -54,14 +54,10 @@ function Title({ projectId, refetch }) {
 
   return (
     <div className="p-8 pb-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-center">
         <div>
-          <div className="text-2xl font-extrabold ">Milestones</div>
+          <div className="text-3xl font-extrabold text-center">Timeline</div>
           <div className="text-medium">Set milestones for your project and track progress</div>
-        </div>
-
-        <div>
-          <AddMilestoneButton onClick={onAddClick} />
         </div>
       </div>
 
@@ -132,13 +128,33 @@ function AddMilestoneButton({ onClick }) {
 }
 
 function MilestoneList({ project, refetch }) {
-  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(project.milestones);
+  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(project.milestones).filter(
+    (m) => m.phase === "concept",
+  );
 
   return (
-    <div className="flex flex-col px-8 divide-y divide-shade-1 fadeIn">
-      {milestones.map((m) => (
-        <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
-      ))}
+    <div className="relative">
+      <div className="relative z-20">
+        <div className="px-8 border-b border-shade-1 pb-2 flex items-center">
+          <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />
+          <div className="font-extrabold text-lg">Concept Phase</div>
+          <Icons.IconCirclePlus size={20} className="ml-2 text-white-2 cursor-pointer" />
+        </div>
+        <div className="flex flex-col divide-y divide-shade-1 fadeIn">
+          {milestones.map((m) => (
+            <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
+          ))}
+        </div>
+      </div>
+
+      <div
+        className="absolute border-l border-shade-3 z-10"
+        style={{
+          top: "23px",
+          left: "43px",
+          bottom: "16px",
+        }}
+      ></div>
     </div>
   );
 }
@@ -175,7 +191,7 @@ function MilestoneItemViewState({ milestone, onEdit }) {
   };
 
   return (
-    <div className="flex items-center justify-between py-3 group">
+    <div className="flex items-center justify-between py-3 group px-8">
       <div className="flex items-center gap-2">
         <MilestoneIcon milestone={milestone} onClick={toggleStatus} />
         <div>{milestone.title}</div>
@@ -185,11 +201,8 @@ function MilestoneItemViewState({ milestone, onEdit }) {
         <OverdueIndicator milestone={milestone} />
         <MilestoneDueDate milestone={milestone} />
 
-        <div
-          className="w-0 group-hover:w-6 group-hover:opacity-100 opacity-0 transition-all duration-200 cursor-pointer"
-          onClick={onEdit}
-        >
-          <Icons.IconPencil size={20} className="text-white-3" />
+        <div className="w-6 cursor-pointer" onClick={onEdit}>
+          <Icons.IconPencil size={16} className="text-white-3" />
         </div>
       </div>
     </div>
@@ -219,7 +232,7 @@ function MilestoneItemEditState({ milestone, close }) {
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 py-8">
+    <div className="bg-dark-3 border-y border-shade-1 px-8 py-8">
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <label className="font-bold mb-1 block">Desribes the milestone</label>
@@ -285,11 +298,11 @@ function MilestoneIcon({ milestone, onClick }) {
 
   switch (milestone.status) {
     case "pending":
-      icon = <Icons.IconCircle size={32} className="text-shade-3" />;
-      hoverIcon = <Icons.IconCircleCheck size={32} className="text-shade-3" />;
+      icon = <Icons.IconCircle size={24} className="text-shade-3" />;
+      hoverIcon = <Icons.IconCircleCheck size={24} className="text-shade-3" />;
       break;
     case "done":
-      icon = <Icons.IconCircleCheck size={32} className="text-green-400" />;
+      icon = <Icons.IconCircleCheck size={24} className="text-green-400" />;
       hoverIcon = icon;
       break;
     default:
@@ -297,7 +310,7 @@ function MilestoneIcon({ milestone, onClick }) {
   }
 
   return (
-    <div className="shrink-0 group cursor-pointer" onClick={onClick}>
+    <div className="shrink-0 group cursor-pointer bg-dark-3" onClick={onClick}>
       <div className="block group-hover:hidden">{icon}</div>
       <div className="hidden group-hover:block">{hoverIcon}</div>
     </div>

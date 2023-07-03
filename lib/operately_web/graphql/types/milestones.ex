@@ -6,5 +6,6 @@ defmodule OperatelyWeb.GraphQL.Types.Milestones do
     field :title, non_null(:string)
     field :deadline_at, :date
     field :status, non_null(:string)
+    field :phase, non_null(:string)
   end
 end

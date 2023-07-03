@@ -154,6 +154,7 @@ const GET_PROJECT = gql`
         title
         deadlineAt
         status
+        phase
       }
 
       contributors ${fragments.CONTRIBUTOR}

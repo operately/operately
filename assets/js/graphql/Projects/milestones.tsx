@@ -7,6 +7,7 @@ export interface Milestone {
   title: string;
   deadlineAt: string;
   status: MilestoneStatus;
+  phase: "concept" | "planning" | "execution" | "control";
 }
 
 export function sortByDeadline(milestones: Milestone[]) {
@@ -64,16 +65,8 @@ export function parseDate(date: string | null | undefined): Date | null {
 }
 
 const ADD_MILESTONE = gql`
-  mutation AddProjectMilestone(
-    $projectId: ID!
-    $title: String!
-    $deadlineAt: Date
-  ) {
-    addProjectMilestone(
-      projectId: $projectId
-      title: $title
-      deadlineAt: $deadlineAt
-    ) {
+  mutation AddProjectMilestone($projectId: ID!, $title: String!, $deadlineAt: Date) {
+    addProjectMilestone(projectId: $projectId, title: $title, deadlineAt: $deadlineAt) {
       id
       title
       deadlineAt
@@ -122,16 +115,8 @@ export function useSetStatus(milestoneId: string): [SetStatusFun, any] {
 }
 
 const UPDATE_MILESTONE = gql`
-  mutation UpdateProjectMilestone(
-    $milestoneId: ID!
-    $title: String!
-    $deadlineAt: Date
-  ) {
-    updateProjectMilestone(
-      milestoneId: $milestoneId
-      title: $title
-      deadlineAt: $deadlineAt
-    ) {
+  mutation UpdateProjectMilestone($milestoneId: ID!, $title: String!, $deadlineAt: Date) {
+    updateProjectMilestone(milestoneId: $milestoneId, title: $title, deadlineAt: $deadlineAt) {
       id
       title
       deadlineAt
@@ -140,14 +125,9 @@ const UPDATE_MILESTONE = gql`
   }
 `;
 
-type UpdateMilestoneFun = (
-  title: string,
-  deadlineAt: Date | null
-) => Promise<any>;
+type UpdateMilestoneFun = (title: string, deadlineAt: Date | null) => Promise<any>;
 
-export function useUpdateMilestone(
-  milestoneId: string
-): [UpdateMilestoneFun, any] {
+export function useUpdateMilestone(milestoneId: string): [UpdateMilestoneFun, any] {
   const [fun, status] = useMutation(UPDATE_MILESTONE);
 
   const updateMilestone = (title: string, deadlineAt: Date | null) => {
@@ -173,9 +153,7 @@ const REMOVE_MILESTONE = gql`
 
 type RemoveMilestoneFun = () => Promise<any>;
 
-export function useRemoveMilestone(
-  milestoneId: string
-): [RemoveMilestoneFun, any] {
+export function useRemoveMilestone(milestoneId: string): [RemoveMilestoneFun, any] {
   const [fun, status] = useMutation(REMOVE_MILESTONE);
 
   const removeMilestone = () => {
