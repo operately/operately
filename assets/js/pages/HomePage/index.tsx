@@ -21,7 +21,7 @@ export function HomePage() {
         <Tabs.List>
           <Tabs.Tab active>
             Assignments
-            <div className="bg-orange-400 rounded-full h-4 w-4 text-[10px] text-dark-1 flex items-center justify-center">
+            <div className="bg-red-400 rounded-full h-4 w-4 text-[10px] text-dark-1 flex items-center justify-center">
               5
             </div>
           </Tabs.Tab>
