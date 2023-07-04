@@ -44,7 +44,7 @@ Root.defaultProps = {
 
 export function Navigation({ children }) {
   return (
-    <div className="bg-dark-2/30 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t-lg border-x border-t border-dark-3">
+    <div className="bg-dark-2/30 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t-lg border-x border-t border-dark-4">
       {children}
     </div>
   );
