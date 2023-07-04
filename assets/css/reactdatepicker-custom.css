@@ -2,6 +2,10 @@
   display: block;
 }
 
+.react-datepicker-popper {
+  z-index: 1000 !important;
+}
+
 .react-datepicker {
   font-family: unset;
   color: var(--color-white-1);

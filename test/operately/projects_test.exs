@@ -84,6 +84,10 @@ defmodule Operately.ProjectsTest do
     @invalid_attrs %{deadline_at: nil, title: nil}
 
     setup ctx do
+      # Projects are automatically assigned some milestones. I clean them up here
+      # so that I can test the create_milestone/1 function
+      Operately.Repo.delete_all(Milestone)
+
       milestone = milestone_fixture(ctx.person, %{project_id: ctx.project.id})
 
       {:ok, milestone: milestone}

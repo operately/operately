@@ -1,5 +1,7 @@
 import React from "react";
 
+import classnames from "classnames";
+
 import { useParams } from "react-router-dom";
 import { useProject } from "@/graphql/Projects";
 
@@ -25,6 +27,8 @@ export function ProjectMilestonesPage() {
 
   const project = data.project;
 
+  const milestoneGroups = Milestones.groupByPhase(project.milestones);
+
   return (
     <Paper.Root>
       <Paper.Navigation>
@@ -35,42 +39,101 @@ export function ProjectMilestonesPage() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <Title projectId={projectId} refetch={refetch} />
+        <Title />
 
-        <MilestoneList project={project} refetch={refetch} />
+        <div className="flex flex-col gap-12 mb-8">
+          {milestoneGroups.map((group) => (
+            <PhaseMilestoneList project={project} refetch={refetch} phase={group.phase} milestones={group.milestones} />
+          ))}
+        </div>
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Title({ projectId, refetch }) {
+function PhaseMilestoneList({ project, refetch, phase, milestones }) {
   const [showAdd, setShowAdd] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
-  const onAddClick = () => setShowAdd(true);
   const close = async () => {
     await refetch();
     setShowAdd(false);
   };
 
   return (
-    <div className="p-8 pb-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-2xl font-extrabold ">Milestones</div>
-          <div className="text-medium">Set milestones for your project and track progress</div>
+    <div className="relative mt-4">
+      <div className="relative">
+        <div className="px-8 border-b border-shade-1 pb-2 flex items-center justify-between">
+          <div className="flex items-center">
+            {open && <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />}
+            <div className="font-extrabold text-lg capitalize">{phase} Phase</div>
+          </div>
+          <div className="flex items-center gap-2">
+            {project.phase === phase && (
+              <div className="text-green-400 flex items-center gap-1 border border-green-400 text-xs font-bold py-1 px-2 rounded-lg ml-2">
+                <Icons.IconCheck size={12} stroke={4} />
+                Complete Phase
+              </div>
+            )}
+            <div className="cursor-pointer" onClick={() => setOpen(!open)}>
+              {open ? (
+                <Icons.IconChevronDown size={20} className="text-white-2" />
+              ) : (
+                <Icons.IconChevronRight size={20} className="text-white-2" />
+              )}
+            </div>
+          </div>
         </div>
-
-        <div>
-          <AddMilestoneButton onClick={onAddClick} />
-        </div>
+        {open && (
+          <React.Fragment>
+            <div className="flex flex-col z-20 relative">
+              {milestones.map((m) => (
+                <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
+              ))}
+            </div>
+            {showAdd ? (
+              <AddMilestoneForm close={close} projectId={project.id} phase={phase} />
+            ) : (
+              <div
+                className="px-8 flex items-center py-4 border-b border-shade-1 cursor-pointer z-20 relative"
+                onClick={() => setShowAdd(true)}
+              >
+                <div className="bg-dark-3 rounded-full">
+                  <Icons.IconCirclePlus size={24} className="text-white-3 cursor-pointer" />
+                </div>
+                <div className="ml-2 text-white-2">Add Milestone</div>
+              </div>
+            )}
+          </React.Fragment>
+        )}
       </div>
 
-      {showAdd && <AddMilestoneForm close={close} projectId={projectId} />}
+      <div
+        className="absolute border-l border-shade-3 z-10"
+        style={{
+          top: "23px",
+          left: "43px",
+          bottom: "16px",
+        }}
+      ></div>
     </div>
   );
 }
 
-function AddMilestoneForm({ projectId, close }) {
+function Title() {
+  return (
+    <div className="p-8 pb-8">
+      <div className="flex items-center justify-center">
+        <div>
+          <div className="text-3xl font-extrabold text-center">Timeline</div>
+          <div className="text-medium">Set milestones for your project and track progress</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddMilestoneForm({ projectId, close, phase }) {
   const [value, setValue] = React.useState("");
   const [deadline, setDeadline] = React.useState(null);
   const disabled = value.length === 0 && !deadline;
@@ -80,12 +143,12 @@ function AddMilestoneForm({ projectId, close }) {
   const save = async () => {
     if (disabled) return;
 
-    await add(value, deadline);
+    await add(value, deadline, phase);
     close();
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
+    <div className="bg-dark-3 border-y border-shade-1 px-8 py-8 relative z-40">
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <label className="font-bold mb-1 block">Desribes the milestone</label>
@@ -122,27 +185,6 @@ function AddMilestoneForm({ projectId, close }) {
   );
 }
 
-function AddMilestoneButton({ onClick }) {
-  return (
-    <Button variant="success" onClick={onClick}>
-      <Icons.IconPlus size={20} />
-      Add Milestone
-    </Button>
-  );
-}
-
-function MilestoneList({ project, refetch }) {
-  const milestones: Milestones.Milestone[] = Milestones.sortByDeadline(project.milestones);
-
-  return (
-    <div className="flex flex-col px-8 divide-y divide-shade-1 fadeIn">
-      {milestones.map((m) => (
-        <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
-      ))}
-    </div>
-  );
-}
-
 function MilestoneItem({ milestone, refetch }) {
   const [state, setState] = React.useState<"view" | "edit">("view");
 
@@ -175,7 +217,7 @@ function MilestoneItemViewState({ milestone, onEdit }) {
   };
 
   return (
-    <div className="flex items-center justify-between py-3 group">
+    <div className="flex items-center justify-between py-3 group px-8 border-b border-shade-1">
       <div className="flex items-center gap-2">
         <MilestoneIcon milestone={milestone} onClick={toggleStatus} />
         <div>{milestone.title}</div>
@@ -186,10 +228,10 @@ function MilestoneItemViewState({ milestone, onEdit }) {
         <MilestoneDueDate milestone={milestone} />
 
         <div
-          className="w-0 group-hover:w-6 group-hover:opacity-100 opacity-0 transition-all duration-200 cursor-pointer"
+          className="shrink-0 cursor-pointer rounded-full bg-shade-1 p-1.5 ml-2 group/edit hover:bg-shade-2 transition-colors"
           onClick={onEdit}
         >
-          <Icons.IconPencil size={20} className="text-white-3" />
+          <Icons.IconPencil size={14} className="text-white-2 group-hover/edit:text-pink-400" />
         </div>
       </div>
     </div>
@@ -219,7 +261,7 @@ function MilestoneItemEditState({ milestone, close }) {
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 py-8">
+    <div className="bg-dark-3 border-y border-shade-1 px-8 py-8">
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <label className="font-bold mb-1 block">Desribes the milestone</label>
@@ -285,11 +327,11 @@ function MilestoneIcon({ milestone, onClick }) {
 
   switch (milestone.status) {
     case "pending":
-      icon = <Icons.IconCircle size={32} className="text-shade-3" />;
-      hoverIcon = <Icons.IconCircleCheck size={32} className="text-shade-3" />;
+      icon = <Icons.IconCircle size={24} className="text-shade-3" />;
+      hoverIcon = <Icons.IconCircleCheck size={24} className="text-shade-3" />;
       break;
     case "done":
-      icon = <Icons.IconCircleCheck size={32} className="text-green-400" />;
+      icon = <Icons.IconCircleCheck size={24} className="text-green-400" />;
       hoverIcon = icon;
       break;
     default:
@@ -297,7 +339,7 @@ function MilestoneIcon({ milestone, onClick }) {
   }
 
   return (
-    <div className="shrink-0 group cursor-pointer" onClick={onClick}>
+    <div className="shrink-0 group cursor-pointer bg-dark-3" onClick={onClick}>
       <div className="block group-hover:hidden">{icon}</div>
       <div className="hidden group-hover:block">{hoverIcon}</div>
     </div>
@@ -308,50 +350,8 @@ function MilestoneDueDate({ milestone }) {
   if (isDueDateSet(milestone.deadlineAt)) {
     return <FormattedTime time={milestone.deadlineAt} format="short-date" />;
   } else {
-    return <span className="text-shade-3">Not Set</span>;
+    return <span className="text-shade-3">No Due Date</span>;
   }
-}
-
-function MilestoneDueDate2({ milestone }) {
-  const [open, setOpen] = React.useState(false);
-  const [setDeadline, _s] = Milestones.useSetDeadline(milestone.id);
-
-  const DateView = React.forwardRef((props, ref) => (
-    <div onClick={props.onClick} ref={ref}>
-      {isDueDateSet(props.value) ? (
-        <FormattedTime time={props.value} format="short-date" />
-      ) : (
-        <span className="text-shade-3">Not Set</span>
-      )}
-    </div>
-  ));
-
-  let selected: Date | string = "";
-  if (milestone.deadlineAt) {
-    selected = new Date(Date.parse(milestone.deadlineAt));
-  }
-
-  const onChange = (date) => {
-    setDeadline(date);
-    setOpen(false);
-  };
-
-  return (
-    <div className="cursor-pointer">
-      <DatePicker
-        selected={selected}
-        onChange={onChange}
-        customInput={<DateView />}
-        open={open}
-        onInputClick={() => setOpen(true)}
-      >
-        <div className="flex items-center gap-1 text-red-400" onClick={onChange}>
-          <Icons.IconTrash size={16} />
-          Clear due date
-        </div>
-      </DatePicker>
-    </div>
-  );
 }
 
 function isDueDateSet(value) {

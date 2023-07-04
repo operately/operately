@@ -16,6 +16,7 @@ import Header from "./Header";
 import * as Milestones from "@/graphql/Projects/milestones";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
+import FormattedTime from "@/components/FormattedTime";
 
 export function ProjectPage() {
   const params = useParams();
@@ -47,15 +48,13 @@ function Overview({ project }) {
         </Paper.NavItem>
       </Paper.Navigation>
 
-      <Paper.Body>
+      <Paper.Body minHeight="600px">
         <Header project={project} />
 
         <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
-          <PhasesCard project={project} />
-          <DocumentationCard project={project} />
           <MilestonesCard project={project} />
+          <DocumentationCard project={project} />
           <StatuUpdatesCard project={project} />
-          <KeyResourcesCard project={project} />
         </div>
 
         <Activity projectId={project.id} />
@@ -76,79 +75,18 @@ function DocumentationCardListItem({ title, completed, pending }) {
     titleColor = "text-white-1";
   } else if (pending) {
     fileIcon = <Icons.IconFileDots size={20} className="text-yellow-400/80" />;
-    statusIcon = <Icons.IconProgressCheck size={20} className="text-yellow-400" />;
+    statusIcon = <Icons.IconCircleDot size={20} className="text-yellow-400" />;
     titleColor = "text-white-1";
   } else {
     fileIcon = <Icons.IconFileText size={20} className="text-white-3" />;
-    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-white-3" />;
+    statusIcon = <Icons.IconCircle size={20} className="text-white-3" />;
     titleColor = "text-white-3";
   }
 
   return (
-    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
+    <div className="flex justify-between mb-1.5">
       <div className="flex items-center gap-1">
-        <div className="shrink-0">{fileIcon}</div>
-        <div className={classnames("font-medium", titleColor)}>{title}</div>
-      </div>
-
-      <div className="flex items-center gap-1">{statusIcon}</div>
-    </div>
-  );
-}
-
-function PhasesCard({ project }) {
-  return (
-    <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
-      <Cards.Header>
-        <Cards.Title>Project Phases</Cards.Title>
-      </Cards.Header>
-
-      <Cards.Body>
-        <ProjectPhasesCardListItem
-          title="Concept"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "concept"}
-        />
-        <ProjectPhasesCardListItem
-          title="Planning"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "planning"}
-        />
-        <ProjectPhasesCardListItem
-          title="Execution"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "execution"}
-        />
-        <ProjectPhasesCardListItem
-          title="Control"
-          completed={Projects.isPhaseCompleted(project, "concept")}
-          pending={project.phase === "control"}
-        />
-      </Cards.Body>
-    </Cards.Card>
-  );
-}
-
-function ProjectPhasesCardListItem({ title, completed, pending }) {
-  let statusIcon: React.ReactNode | null = null;
-  let titleColor: string | null = null;
-
-  if (completed) {
-    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-green-400" />;
-    titleColor = "text-white-1";
-  } else if (pending) {
-    statusIcon = <Icons.IconProgressCheck size={20} className="text-yellow-400" />;
-    titleColor = "text-white-1";
-  } else {
-    statusIcon = <Icons.IconCircleCheckFilled size={20} className="text-white-3" />;
-    titleColor = "text-white-3";
-  }
-
-  return (
-    <div className="border-t border-b border-shade-1 py-1 flex justify-between">
-      <div className="flex items-center gap-1">
-        <div className="shrink-0">{statusIcon}</div>
-        <div className={classnames("font-medium", titleColor)}>{title}</div>
+        <div className={classnames("font-bold", titleColor)}>{title}</div>
       </div>
     </div>
   );
@@ -158,113 +96,127 @@ function DocumentationCard({ project }) {
   return (
     <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
       <Cards.Header>
-        <Cards.Title>Documentation</Cards.Title>
+        <div className="flex items-center gap-2">
+          <Icons.IconFileStack size={20} />
+          <Cards.Title>Documentation</Cards.Title>
+        </div>
       </Cards.Header>
 
       <Cards.Body>
-        <DocumentationCardListItem
-          title="Project Pitch"
-          completed={project.pitch}
-          pending={Projects.shouldBeFilledIn(project, "pitch")}
-        />
-        <DocumentationCardListItem
-          title="Execution Plan"
-          completed={project.plan}
-          pending={Projects.shouldBeFilledIn(project, "plan")}
-        />
-        <DocumentationCardListItem
-          title="Execution Review"
-          completed={project.executionReview}
-          pending={Projects.shouldBeFilledIn(project, "execution_review")}
-        />
-        <DocumentationCardListItem
-          title="Retrospective"
-          completed={project.retrospective}
-          pending={Projects.shouldBeFilledIn(project, "retrospective")}
-        />
+        <div className="mt-4">
+          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Next in line</div>
+          <DocumentationCardListItem
+            title="Project Pitch"
+            completed={project.pitch}
+            pending={Projects.shouldBeFilledIn(project, "pitch")}
+          />
+        </div>
+
+        <div className="mt-4">
+          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Last Submitted</div>
+          <div className="text-white-2">No documenation yet. Asking for submission on the end of each phase.</div>
+        </div>
       </Cards.Body>
     </Cards.Card>
   );
 }
 
 function MilestonesCard({ project }) {
-  const milestones = Milestones.sortByDeadline(project.milestones);
+  const milestoneGroups = Milestones.groupByPhase(project.milestones);
 
   return (
     <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
       <Cards.Header>
-        <Cards.Title>Milestones</Cards.Title>
+        <div className="flex items-center gap-2">
+          <Icons.IconCalendarEvent size={20} className="text-white-1" />
+          <Cards.Title>Timeline</Cards.Title>
+        </div>
       </Cards.Header>
 
       <Cards.Body>
-        {milestones.slice(0, 4).map((m) => (
-          <div key={m.id} className="border-t border-b border-shade-1 py-1 flex justify-between">
-            <div className="flex items-center gap-1 font-medium truncate">
-              <div className="shrink-0">
-                {m.status === "done" ? (
-                  <Icons.IconCircleCheck size={20} className="text-green-400" />
-                ) : (
-                  <Icons.IconCircle size={20} className="text-yellow-400" />
-                )}
-              </div>
+        <div className="mt-6">
+          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Project Phase</div>
+          <div className="font-bold capitalize">{project.phase}</div>
+        </div>
 
-              <div className="truncate">{m.title}</div>
-            </div>
-          </div>
-        ))}
-
-        {milestones.length > 4 && (
-          <div className="flex items-center gap-2 rounded-lg py-1 ml-0.5 text-white-2">
-            <Icons.IconDotsVertical size={16} />
-            {milestones.length - 4} other, {milestones.filter((m) => m.status === "pending").length} pending
-          </div>
-        )}
+        <div className="mt-4">
+          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Upcomming Milestone</div>
+          <div className="font-bold">Write Project Pitch</div>
+        </div>
       </Cards.Body>
     </Cards.Card>
   );
 }
 
-function Timeline({ project }) {
+function MilestoneList({ phase, milestones }) {
   return (
-    <div className="bg-dark-3 rounded-lg text-sm p-4 h-52 shadow cursor-pointer hover:shadow-lg border border-shade-2">
-      <div className="">
-        <div className="flex items-center justify-center gap-4 mb-2">
-          <div className="font-bold flex items-center uppercase">Timeline</div>
-        </div>
+    <div>
+      <div className="font-medium text-xs uppercase mb-2 pt-2">{phase} phase</div>
 
-        <div>
-          <div className="flex items-center gap-2 rounded-lg py-1">
-            <Icons.IconClock size={20} />
-            Feb 22 -&gt; Jul 22
+      {milestones.map((m) => (
+        <div className="flex items-start gap-1 border-y border-shade-2 py-1">
+          <div className="shrink-0 mt-0.5">
+            <Icons.IconFlag2 size={16} className="text-yellow-400" />
           </div>
 
-          <div className="flex items-center gap-2 rounded-lg py-1">
-            <Icons.IconHammer size={20} />
-            Execution Phase
+          <div className="flex-1">
+            <div className="font-bold">{m.title}</div>
+
+            {m.deadlineAt && (
+              <div className="text-xs text-white-2">
+                <FormattedTime time={m.deadlineAt} format="short-date-with-weekday-relative" />
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
 
+// {milestones.slice(0, 4).map((m) => (
+//   <div key={m.id} className="border-t border-b border-shade-1 py-1 flex justify-between">
+//     <div className="flex items-center gap-1 font-medium truncate">
+//       <div className="shrink-0">
+//         {m.status === "done" ? (
+//           <Icons.IconCircleCheck size={20} className="text-green-400" />
+//         ) : (
+//           <Icons.IconCircle size={20} className="text-yellow-400" />
+//         )}
+//       </div>
+
+//       <div className="truncate">{m.title}</div>
+//     </div>
+//   </div>
+// ))}
+
+// {milestones.length > 4 && (
+//   <div className="flex items-center gap-2 rounded-lg py-1 ml-0.5 text-white-2">
+//     <Icons.IconDotsVertical size={16} />
+//     {milestones.length - 4} other, {milestones.filter((m) => m.status === "pending").length} pending
+//   </div>
+// )}
+
 function StatusUpdatesCardItem({ update }: { update: Projects.Update }) {
   return (
-    <div className="border-t border-b border-shade-1 py-1 flex justify-between items-center">
-      <div className="flex items-center gap-1.5 font-medium flex-1 pl-1">
-        <div className="shrink-0">
-          <Avatar person={update.author} size="tiny" />
-        </div>
-        <div className="line-clamp-1">
+    <div>
+      <div className="flex items-center gap-1.5 font-medium flex-1">
+        <div className="line-clamp-2">
           <RichContent jsonContent={update.message} />
         </div>
       </div>
 
-      <div className="shrink-0">
+      <div className="shrink-0 flex items-center gap-1.5 mt-3">
         {update.acknowledged ? (
-          <Icons.IconCircleCheckFilled size={16} className="text-green-400" />
+          <>
+            <Icons.IconCircleCheckFilled size={14} className="text-green-400" />
+            acknowledged
+          </>
         ) : (
-          <Icons.IconClockFilled size={16} className="text-yellow-400" />
+          <>
+            <Icons.IconClockFilled size={14} className="text-yellow-400" />
+            waiting for acknowledgment
+          </>
         )}
       </div>
     </div>
@@ -275,13 +227,22 @@ function StatuUpdatesCard({ project }: { project: Projects.Project }) {
   return (
     <Cards.Card linkTo={`/projects/${project.id}/updates`}>
       <Cards.Header>
-        <Cards.Title>Status Updates</Cards.Title>
+        <div className="flex items-center gap-2">
+          <Icons.IconReport size={20} className="text-white-1" />
+          <Cards.Title>Status Updates</Cards.Title>
+        </div>
       </Cards.Header>
 
       <Cards.Body>
-        {project.updates.map((update) => (
-          <StatusUpdatesCardItem key={update.id} update={update} />
-        ))}
+        <div className="mt-4">
+          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Last Update</div>
+
+          {project.updates.length === 0 ? (
+            <div className="text-white-2">No updates yet. Asking the champion every week for an update.</div>
+          ) : (
+            <StatusUpdatesCardItem update={project.updates[0]} />
+          )}
+        </div>
       </Cards.Body>
     </Cards.Card>
   );
