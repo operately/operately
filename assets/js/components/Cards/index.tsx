@@ -23,11 +23,15 @@ export function Card({ children, linkTo }) {
 }
 
 export function Header({ children }) {
-  return <div className="flex items-center justify-center gap-4 mb-2">{children}</div>;
+  return (
+    <div className="flex items-center justify-between gap-2 mb-2 border-b border-shade-2 -m-4 px-4 py-3">
+      {children}
+    </div>
+  );
 }
 
 export function Title({ children }) {
-  return <div className="font-bold flex items-center uppercase mb-0.5 -mt-1">{children}</div>;
+  return <div className="font-bold flex items-center">{children}</div>;
 }
 
 export function Body({ children }) {
