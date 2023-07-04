@@ -6,6 +6,8 @@ import GroupAddPage from "../pages/GroupAddPage";
 import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
 import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
+import { HomePage } from "@/pages/HomePage";
+
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
 import { ProjectListPage } from "../pages/ProjectListPage";
@@ -58,6 +60,10 @@ const routes = createBrowserRouter([
     path: "/",
     element: <DefaultLayout />,
     children: [
+      {
+        path: "/",
+        element: <HomePage />,
+      },
       {
         path: "/groups",
         loader: loaderWithApollo(GroupsListPageLoader),
