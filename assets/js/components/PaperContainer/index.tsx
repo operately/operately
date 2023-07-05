@@ -69,10 +69,56 @@ export function NavSeparator() {
 export function Body({ children, minHeight = "1000px" }) {
   return (
     <div
-      className="relative bg-dark-3/70 rounded-[20px] border border-shade-1 shadow-lg"
-      style={{ minHeight: minHeight }}
+      className="relative bg-dark-2 rounded-[20px] border border-shade-1 shadow-lg"
+      style={{
+        minHeight: minHeight,
+        background: "linear-gradient(0deg, var(--color-dark-2) 0%, var(--color-dark-3) 100%)",
+      }}
     >
       {children}
+    </div>
+  );
+}
+
+export function Title({ children }) {
+  return (
+    <div className="px-16 flex items-center gap-4 mt-12 mb-8">
+      <FancyLineSeparator />
+      <h1 className="text-4xl font-extrabold text-center">{children}</h1>
+      <FancyLineSeparator />
+    </div>
+  );
+}
+
+export function FancyLineSeparator() {
+  return (
+    <div
+      className="flex-1"
+      style={{
+        height: "2px",
+        background: "linear-gradient(90deg, var(--color-pink-600) 0%, var(--color-sky-600) 100%)",
+      }}
+    />
+  );
+}
+
+export function LineSeparator() {
+  return (
+    <div
+      className="flex-1"
+      style={{
+        height: "1px",
+        background: "linear-gradient(90deg, var(--color-white-2) 0%, var(--color-white-1) 100%)",
+      }}
+    />
+  );
+}
+
+export function SectionHeader({ children }) {
+  return (
+    <div className="px-16 flex items-center gap-4 my-16">
+      <h1 className="uppercase font-bold tracking-wider">{children}</h1>
+      <LineSeparator />
     </div>
   );
 }
