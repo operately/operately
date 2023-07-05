@@ -29,6 +29,14 @@ defmodule Operately.Updates do
 
       case result do
         {:ok, update} ->
+          if update.updatable_type == :project do
+            project = Operately.Projects.get_project!(update.updatable_id)
+
+            {:ok, _} = Operately.Projects.update_project(project, %{
+              next_update_scheduled_at: Operately.Projects.first_friday_from_today()
+            })
+          end
+
           {:ok, _} = Operately.Activities.submit_update_posted(update)
           :ok = publish_update_added(update)
 

@@ -252,7 +252,7 @@ defmodule Operately.Projects do
     Document.changeset(document, attrs)
   end
 
-  defp first_friday_from_today do
+  def first_friday_from_today do
     today = Date.utc_today()
 
     date = cond do
