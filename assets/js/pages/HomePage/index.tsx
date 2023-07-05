@@ -5,6 +5,8 @@ import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
+import * as Assignments from "@/graphql/Assignments";
+
 export function HomePage() {
   const { data, loading, error } = useMe();
 
@@ -40,54 +42,79 @@ export function HomePage() {
       <Paper.Body>
         <Paper.Title>My Assignments</Paper.Title>
 
-        <EmptyInbox />
-
-        <Paper.SectionHeader>Upcomming this week</Paper.SectionHeader>
-
-        <div className="flex flex-col mt-6">
-          <div className="flex items-center justify-between mx-14 hover:bg-dark-4 px-2 py-2 cursor-pointer">
-            <div className="flex gap-2 items-center justify-center">
-              <div
-                className="flex gap-2 items-center justify-center"
-                style={{
-                  width: "35px",
-                  height: "35px",
-                  borderRadius: "100%",
-                  background: "linear-gradient(to right top, var(--color-green-400), var(--color-sky-400))",
-                }}
-              >
-                <Icons.IconFlag size={24} stroke={2} className="text-dark-1" />
-              </div>
-              The <strong>Launch Website</strong> milestone on the <strong>Ship B2B Leadership ebook</strong> project is
-              due
-            </div>
-            <div className="bg-shade-2 text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center">
-              Tomorrow
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mx-14 hover:bg-dark-4 px-2 py-2 cursor-pointer">
-            <div className="flex gap-2 items-center justify-center">
-              <div
-                className="flex gap-2 items-center justify-center"
-                style={{
-                  width: "35px",
-                  height: "35px",
-                  borderRadius: "100%",
-                  background: "linear-gradient(to right top, var(--color-pink-400), var(--color-purple-400))",
-                }}
-              >
-                <Icons.IconReport size={24} stroke={2} className="text-dark-1" />
-              </div>
-              Write a status update for the <strong>Ship B2B Leadership ebook</strong>
-            </div>
-            <div className="bg-shade-2 text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center">
-              Tomorrow
-            </div>
-          </div>
-        </div>
+        <AssignmentList />
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function AssignmentList() {
+  const { data, loading, error } = Assignments.useAssignments();
+
+  if (loading || error) return null;
+
+  return (
+    <div>
+      <EmptyInbox />
+
+      <Paper.SectionHeader>Upcomming this week</Paper.SectionHeader>
+
+      <div className="flex flex-col mt-6">
+        {data.assignments.milestones.map((milestone) => (
+          <Assingment key={milestone.id} time={"Tomorrow"}>
+            <IconMilestone />
+            The <strong>{milestone.name}</strong> milestone on the <strong>{milestone.project.name}</strong> project is
+            due
+          </Assingment>
+        ))}
+
+        <Assingment time={"Tomorrow"}>
+          <IconStatusUpdate />
+          Write a status update for the <strong>Ship B2B Leadership ebook</strong>
+        </Assingment>
+      </div>
+    </div>
+  );
+}
+
+function Assingment({ time, children }) {
+  return (
+    <div className="flex items-center justify-between mx-14 hover:bg-dark-4 px-2 py-2 cursor-pointer">
+      <div className="flex gap-2 items-center justify-center">{children}</div>
+      <div className="bg-shade-2 text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center">{time}</div>
+    </div>
+  );
+}
+
+function IconMilestone() {
+  return (
+    <div
+      className="flex gap-2 items-center justify-center"
+      style={{
+        width: "35px",
+        height: "35px",
+        borderRadius: "100%",
+        background: "linear-gradient(to right top, var(--color-green-400), var(--color-sky-400))",
+      }}
+    >
+      <Icons.IconFlag size={24} stroke={2} className="text-dark-1" />
+    </div>
+  );
+}
+
+function IconStatusUpdate() {
+  return (
+    <div
+      className="flex gap-2 items-center justify-center"
+      style={{
+        width: "35px",
+        height: "35px",
+        borderRadius: "100%",
+        background: "linear-gradient(to right top, var(--color-pink-400), var(--color-purple-400))",
+      }}
+    >
+      <Icons.IconReport size={24} stroke={2} className="text-dark-1" />
+    </div>
   );
 }
 
