@@ -14,10 +14,10 @@ defmodule OperatelyWeb.GraphQL.Queries.Assignments do
 
   object :assignment_queries do
     field :assignments, non_null(:assignments) do
-      resolve fn _, %{context: context} ->
+      arg :range_start, non_null(:datetime)
+      arg :range_end, non_null(:datetime)
 
-        one_week_from_now = DateTime.utc_now() |> DateTime.add(7, :day)
-
+      resolve fn args, %{context: context} ->
         person = context.current_account.person
 
         projects = Repo.all(
@@ -30,14 +30,14 @@ defmodule OperatelyWeb.GraphQL.Queries.Assignments do
           from m in Milestone, 
             where: m.project_id in ^(Enum.map(projects, & &1.id)),
             where: not is_nil(m.deadline_at),
-            where: m.deadline_at < ^one_week_from_now
+            where: m.deadline_at > ^args.range_start and m.deadline_at < ^args.range_end
         )
 
         pendingStatusUpdate = Repo.all(
           from p in Project,
             where: p.id in ^(Enum.map(projects, & &1.id)),
             where: not is_nil(p.next_update_scheduled_at),
-            where: p.next_update_scheduled_at < ^one_week_from_now
+            where: p.next_update_scheduled_at > ^args.range_start and p.next_update_scheduled_at < ^args.range_end
         )
 
         {:ok, %{

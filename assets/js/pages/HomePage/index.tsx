@@ -49,26 +49,16 @@ function AssignmentList() {
 
   const assignments: SortedAndGroupedAssignments = sortAndGroupAssignemnts(data.assignments);
   const hasPending = assignments.pending.length > 0;
-  const hasUpcomingThisWeek = assignments.upcomingThisWeek.length > 0;
-  const hasUpcomingNextWeek = assignments.upcomingNextWeek.length > 0;
+  const hasUpcoming = assignments.upcoming.length > 0;
 
   return (
     <div>
       {hasPending ? assignments.pending.map((a) => a.element) : <EmptyInbox />}
 
-      {hasUpcomingThisWeek && (
+      {hasUpcoming && (
         <>
-          <Paper.SectionHeader>Upcomming this week</Paper.SectionHeader>
-          {assignments.upcomingThisWeek.map((a, i) => (
-            <React.Fragment key={i}>{a.element}</React.Fragment>
-          ))}
-        </>
-      )}
-
-      {hasUpcomingNextWeek && (
-        <>
-          <Paper.SectionHeader>Upcomming next week</Paper.SectionHeader>
-          {assignments.upcomingNextWeek.map((a, i) => (
+          <Paper.SectionHeader>Upcomming</Paper.SectionHeader>
+          {assignments.upcoming.map((a, i) => (
             <React.Fragment key={i}>{a.element}</React.Fragment>
           ))}
         </>

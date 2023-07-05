@@ -18,28 +18,17 @@ interface AssignmentElement {
 
 export interface SortedAndGroupedAssignments {
   pending: AssignmentElement[];
-  upcomingThisWeek: AssignmentElement[];
-  upcomingNextWeek: AssignmentElement[];
+  upcoming: AssignmentElement[];
 }
 
-export function sortAndGroupAssignemnts(assignments: Assignments.Assignments): SortedAndGroupedAssignments {
+function toAssigmentElementList(assignments: Assignments.Assignments): AssignmentElement[] {
   let flatAssignments: AssignmentElement[] = [];
 
   assignments.milestones.forEach((milestone) => {
     flatAssignments.push({
       type: "milestone",
       time: milestone.deadlineAt && new Date(Date.parse(milestone.deadlineAt)),
-      element: (
-        <Assingment
-          key={milestone.id}
-          time={milestone.deadlineAt}
-          icon={<IconMilestone />}
-          linkTo={`/projects/${milestone.project.id}/milestones`}
-        >
-          The <strong>{milestone.title}</strong> milestone on the <strong>{milestone.project.name}</strong> project is
-          due
-        </Assingment>
-      ),
+      element: <MilestoneAssignment key={milestone.id} milestone={milestone} />,
       link: `/projects/${milestone.project.id}/milestones`,
     });
   });
@@ -48,35 +37,53 @@ export function sortAndGroupAssignemnts(assignments: Assignments.Assignments): S
     flatAssignments.push({
       type: "status_update",
       time: project.nextUpdateScheduledAt && new Date(Date.parse(project.nextUpdateScheduledAt)),
-      element: (
-        <Assingment
-          key={project.id}
-          time={project.nextUpdateScheduledAt}
-          icon={<IconStatusUpdate />}
-          linkTo={`/projects/${project.id}/statut_updates`}
-        >
-          Write a status update for the <strong>{project.name}</strong> project
-        </Assingment>
-      ),
+      element: <StatusUpdateAssignment key={project.id} project={project} />,
       link: `/projects/${project.id}/status_updates`,
     });
   });
 
-  flatAssignments.sort((a, b) => +a.time - +b.time);
+  return flatAssignments.sort((a, b) => +a.time - +b.time);
+}
+
+function StatusUpdateAssignment({ project }) {
+  return (
+    <Assingment
+      key={project.id}
+      time={project.nextUpdateScheduledAt}
+      icon={<IconStatusUpdate />}
+      linkTo={`/projects/${project.id}/statut_updates`}
+    >
+      Write a status update for the <strong>{project.name}</strong> project
+    </Assingment>
+  );
+}
+
+function MilestoneAssignment({ milestone }) {
+  return (
+    <Assingment
+      key={milestone.id}
+      time={milestone.deadlineAt}
+      icon={<IconMilestone />}
+      linkTo={`/projects/${milestone.project.id}/milestones`}
+    >
+      The <strong>{milestone.title}</strong> milestone on the <strong>{milestone.project.name}</strong> project is due
+    </Assingment>
+  );
+}
+
+export function sortAndGroupAssignemnts(assignments: Assignments.Assignments): SortedAndGroupedAssignments {
+  let assignmentElements = toAssigmentElementList(assignments);
 
   let result: SortedAndGroupedAssignments = {
     pending: [],
-    upcomingThisWeek: [],
-    upcomingNextWeek: [],
+    upcoming: [],
   };
 
-  flatAssignments.forEach((assignment) => {
+  assignmentElements.forEach((assignment) => {
     if (assignment.time < endOfDay(new Date())) {
       result.pending.push(assignment);
-    } else if (isThisWeek(assignment.time)) {
-      result.upcomingThisWeek.push(assignment);
-    } else if (isNextWeek(assignment.time)) {
-      result.upcomingNextWeek.push(assignment);
+    } else {
+      result.upcoming.push(assignment);
     }
   });
 
@@ -118,7 +125,7 @@ function IconStatusUpdate() {
 function Assingment({ time, icon, linkTo, children }) {
   let timeDate = new Date(Date.parse(time));
 
-  const timeClassBase = "text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center shrink-0";
+  const timeClassBase = "text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center shrink-0 truncate";
   const timeClass = timeClassBase + " bg-dark-5";
   const overdueClass = timeClassBase + " bg-red-500";
 

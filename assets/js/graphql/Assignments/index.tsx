@@ -1,4 +1,5 @@
 import { useQuery, gql } from "@apollo/client";
+import * as Time from "@/utils/time";
 
 export interface Assignments {
   projectStatusUpdates: {
@@ -19,8 +20,8 @@ export interface Assignments {
 }
 
 const GET_ASSIGNMENTS = gql`
-  query Assignments {
-    assignments {
+  query Assignments($rangeStart: DateTime!, $rangeEnd: DateTime!) {
+    assignments(rangeStart: $rangeStart, rangeEnd: $rangeEnd) {
       projectStatusUpdates {
         id
         name
@@ -42,5 +43,10 @@ const GET_ASSIGNMENTS = gql`
 `;
 
 export function useAssignments() {
-  return useQuery(GET_ASSIGNMENTS);
+  return useQuery(GET_ASSIGNMENTS, {
+    variables: {
+      rangeStart: Time.epochZero().toISOString(),
+      rangeEnd: Time.endOfNextWeek().toISOString(),
+    },
+  });
 }
