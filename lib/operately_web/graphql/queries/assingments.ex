@@ -30,7 +30,8 @@ defmodule OperatelyWeb.GraphQL.Queries.Assignments do
           from m in Milestone, 
             where: m.project_id in ^(Enum.map(projects, & &1.id)),
             where: not is_nil(m.deadline_at),
-            where: m.deadline_at > ^args.range_start and m.deadline_at < ^args.range_end
+            where: m.deadline_at > ^args.range_start and m.deadline_at < ^args.range_end,
+            where: m.status == :pending
         )
 
         pendingStatusUpdate = Repo.all(

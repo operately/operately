@@ -44,6 +44,7 @@ const GET_ASSIGNMENTS = gql`
 
 export function useAssignments() {
   return useQuery(GET_ASSIGNMENTS, {
+    fetchPolicy: "network-only",
     variables: {
       rangeStart: Time.epochZero().toISOString(),
       rangeEnd: Time.endOfNextWeek().toISOString(),
