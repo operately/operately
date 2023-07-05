@@ -1,11 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { isThisWeek, isSameWeek, isPast, isFuture } from "date-fns";
+
 interface RelativeTimeProps {
   time: Date;
 }
 
-export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
+export function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   const { t } = useTranslation();
 
   const diff = utcDate() - +time;
@@ -47,6 +49,74 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   }
 
   return <>{t("intlRelativeDateTime", { val: -years, range: "year" })}</>;
+}
+
+export function RelativeDay({ time }: RelativeTimeProps): JSX.Element {
+  if (isToday(time)) {
+    return <>Today</>;
+  }
+
+  if (isYesterday(time)) {
+    return <>Yesterday</>;
+  }
+
+  if (isTomorrow(time)) {
+    return <>Tomorrow</>;
+  }
+
+  if (isFuture(time)) {
+    if (isThisWeek(time)) {
+      return <>On {time.toLocaleDateString("en-US", { weekday: "long" })}</>;
+    }
+
+    if (isNextWeek(time)) {
+      return <>Next {time.toLocaleDateString("en-US", { weekday: "long" })}</>;
+    }
+
+    return <>In {Math.floor((+time - +new Date()) / 86400000)} days</>;
+  }
+
+  if (isPast(time)) {
+    if (isThisWeek(time)) {
+      return <>On {time.toLocaleDateString("en-US", { weekday: "long" })}</>;
+    }
+
+    if (isLastWeek(time)) {
+      return <>Last {time.toLocaleDateString("en-US", { weekday: "long" })}</>;
+    }
+
+    return <>{Math.floor((+new Date() - +time) / 86400000)} days ago</>;
+  }
+
+  throw "Unknown date";
+}
+
+function isLastWeek(date: Date) {
+  return isSameWeek(date, new Date(+new Date() - 604800000));
+}
+
+function isNextWeek(date: Date) {
+  return isSameWeek(date, new Date(+new Date() + 604800000));
+}
+
+function isToday(date: Date) {
+  return isSameDay(date, new Date());
+}
+
+function isYesterday(date: Date) {
+  return isSameDay(date, new Date(+new Date() - 86400000));
+}
+
+function isTomorrow(date: Date) {
+  return isSameDay(date, new Date(+new Date() + 86400000));
+}
+
+function isSameDay(date: Date, other: Date) {
+  return (
+    date.getDate() === other.getDate() &&
+    date.getMonth() === other.getMonth() &&
+    date.getFullYear() === other.getFullYear()
+  );
 }
 
 function utcDate(): number {

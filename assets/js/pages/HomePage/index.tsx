@@ -1,5 +1,4 @@
 import React from "react";
-import { useMe } from "@/graphql/Me";
 import classnames from "classnames";
 
 import * as Icons from "@tabler/icons-react";
@@ -7,17 +6,9 @@ import * as Paper from "@/components/PaperContainer";
 
 import * as Assignments from "@/graphql/Assignments";
 
+import { sortAndGroupAssignemnts, SortedAndGroupedAssignments } from "./sortAndGroupAssignments";
+
 export function HomePage() {
-  const { data, loading, error } = useMe();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <Paper.Root size="large">
       <Tabs>
@@ -51,69 +42,37 @@ export function HomePage() {
 function AssignmentList() {
   const { data, loading, error } = Assignments.useAssignments();
 
-  if (loading || error) return null;
+  if (loading || error) {
+    console.log(error);
+    return null;
+  }
+
+  const assignments: SortedAndGroupedAssignments = sortAndGroupAssignemnts(data.assignments);
+  const hasPending = assignments.pending.length > 0;
+  const hasUpcomingThisWeek = assignments.upcomingThisWeek.length > 0;
+  const hasUpcomingNextWeek = assignments.upcomingNextWeek.length > 0;
 
   return (
     <div>
-      <EmptyInbox />
+      {hasPending ? assignments.pending.map((a) => a.element) : <EmptyInbox />}
 
-      <Paper.SectionHeader>Upcomming this week</Paper.SectionHeader>
+      {hasUpcomingThisWeek && (
+        <>
+          <Paper.SectionHeader>Upcomming this week</Paper.SectionHeader>
+          {assignments.upcomingThisWeek.map((a, i) => (
+            <React.Fragment key={i}>{a.element}</React.Fragment>
+          ))}
+        </>
+      )}
 
-      <div className="flex flex-col mt-6">
-        {data.assignments.milestones.map((milestone) => (
-          <Assingment key={milestone.id} time={"Tomorrow"}>
-            <IconMilestone />
-            The <strong>{milestone.name}</strong> milestone on the <strong>{milestone.project.name}</strong> project is
-            due
-          </Assingment>
-        ))}
-
-        <Assingment time={"Tomorrow"}>
-          <IconStatusUpdate />
-          Write a status update for the <strong>Ship B2B Leadership ebook</strong>
-        </Assingment>
-      </div>
-    </div>
-  );
-}
-
-function Assingment({ time, children }) {
-  return (
-    <div className="flex items-center justify-between mx-14 hover:bg-dark-4 px-2 py-2 cursor-pointer">
-      <div className="flex gap-2 items-center justify-center">{children}</div>
-      <div className="bg-shade-2 text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center">{time}</div>
-    </div>
-  );
-}
-
-function IconMilestone() {
-  return (
-    <div
-      className="flex gap-2 items-center justify-center"
-      style={{
-        width: "35px",
-        height: "35px",
-        borderRadius: "100%",
-        background: "linear-gradient(to right top, var(--color-green-400), var(--color-sky-400))",
-      }}
-    >
-      <Icons.IconFlag size={24} stroke={2} className="text-dark-1" />
-    </div>
-  );
-}
-
-function IconStatusUpdate() {
-  return (
-    <div
-      className="flex gap-2 items-center justify-center"
-      style={{
-        width: "35px",
-        height: "35px",
-        borderRadius: "100%",
-        background: "linear-gradient(to right top, var(--color-pink-400), var(--color-purple-400))",
-      }}
-    >
-      <Icons.IconReport size={24} stroke={2} className="text-dark-1" />
+      {hasUpcomingNextWeek && (
+        <>
+          <Paper.SectionHeader>Upcomming next week</Paper.SectionHeader>
+          {assignments.upcomingNextWeek.map((a, i) => (
+            <React.Fragment key={i}>{a.element}</React.Fragment>
+          ))}
+        </>
+      )}
     </div>
   );
 }

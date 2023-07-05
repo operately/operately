@@ -116,7 +116,7 @@ export function LineSeparator() {
 
 export function SectionHeader({ children }) {
   return (
-    <div className="px-16 flex items-center gap-4">
+    <div className="px-16 flex items-center gap-4 mt-8 mb-4">
       <h1 className="uppercase font-bold tracking-wider">{children}</h1>
       <LineSeparator />
     </div>
