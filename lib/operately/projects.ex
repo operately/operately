@@ -24,6 +24,9 @@ defmodule Operately.Projects do
   end
 
   def create_project(project_attrs, champion_attrs) do
+    project_attrs = Map.put(project_attrs, :next_update_scheduled_at, first_friday_from_today())
+    IO.inspect(project_attrs)
+
     Repo.transaction(fn ->
       result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
 
@@ -247,5 +250,20 @@ defmodule Operately.Projects do
 
   def change_document(%Document{} = document, attrs \\ %{}) do
     Document.changeset(document, attrs)
+  end
+
+  defp first_friday_from_today do
+    today = Date.utc_today()
+
+    date = cond do
+      Date.day_of_week(today) == 5  ->
+        Date.add(today, 7)
+      Date.day_of_week(today) < 5 ->
+        Date.add(today, 5 - Date.day_of_week(today))
+      true ->
+        Date.add(today, 12 - Date.day_of_week(today))
+    end
+
+    NaiveDateTime.new!(date, ~T[09:00:00])
   end
 end
