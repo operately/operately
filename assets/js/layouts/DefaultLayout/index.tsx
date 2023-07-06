@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import User from "./User";
 import { useLocation, NavLink } from "react-router-dom";
 
-import * as Icons from "tabler-icons-react";
+import * as Icons from "@tabler/icons-react";
 
 function Logo() {
   return (
@@ -13,8 +13,8 @@ function Logo() {
       xmlns="http://www.w3.org/2000/svg"
       id="Layer_1"
       viewBox="193.04 193.04 613.92 613.92"
-      width="20px"
-      height="20px"
+      width="24px"
+      height="24px"
     >
       <polygon points="602.32 806.96 397.68 806.96 397.68 602.32 602.32 806.96" fill="#024fac"></polygon>
       <polygon points="397.68 193.04 602.32 193.04 602.32 397.68 397.68 193.04" fill="#024fac"></polygon>
@@ -49,27 +49,23 @@ function Flare() {
 function NavigationContainer({ size, children }) {
   const padding = size === "large" ? "py-2 px-4" : "py-1 px-4";
 
-  return (
-    <div className={"fixed top-0 bg-dark-1 left-0 right-0 transition-all z-50 border-b border-shade-2" + " " + padding}>
-      {children}
-    </div>
-  );
+  return <div className={"fixed top-0 bg-dark-1 left-0 right-0 transition-all z-50" + " " + padding}>{children}</div>;
 }
 
 function NavigationItem({ to, title, icon }) {
-  const baseClass = "flex items-center px-2 py-1";
+  const baseClass = "flex items-center px-3 py-1";
 
   const classHandler = ({ isActive, isPending }) => {
     if (isActive || isPending) {
-      return baseClass + "  bg-shade-1 rounded-lg text-white-1";
+      return baseClass + "  bg-dark-5 rounded-lg text-white-1";
     } else {
-      return baseClass + " text-white-2";
+      return baseClass + "";
     }
   };
 
   return (
     <NavLink to={to} className={classHandler}>
-      <span className="font-bold flex items-center gap-2">
+      <span className="font-bold flex items-center gap-1">
         {icon}
         {title}
       </span>
@@ -82,17 +78,14 @@ function Navigation({ size }) {
     <NavigationContainer size={size}>
       <div className="flex justify-between">
         <div className="flex items-center">
-          <div className="flex items-center gap-2">
-            <div className="mr-4">
-              <div className="flex items-center gap-2">
-                <Logo />
-                <span className="text-white-1 font-bold">Operately</span>
-              </div>
-            </div>
-
-            <NavigationItem to="/" title="Home" icon={<Icons.Inbox size={16} />} />
-            <NavigationItem to="/projects" title="Projects" icon={<Icons.ClipboardText size={16} />} />
+          <div className="flex items-center gap-4">
+            <Logo />
           </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <NavigationItem to="/" title="Home" icon={<Icons.IconStarFilled size={16} stroke={3} />} />
+          <NavigationItem to="/projects" title="Projects" icon={<Icons.IconTableFilled size={16} />} />
         </div>
 
         <div className="flex items-center gap-4">
@@ -135,7 +128,7 @@ export default function DefaultLayout() {
   });
 
   return (
-    <div>
+    <div className="px-4">
       <ScrollToTop />
       <Navigation size={navigationSize} />
 

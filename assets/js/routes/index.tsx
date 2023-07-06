@@ -6,7 +6,7 @@ import GroupAddPage from "../pages/GroupAddPage";
 import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
 import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
-import { HomePage } from "@/pages/HomePage";
+import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
 
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
@@ -61,8 +61,8 @@ const routes = createBrowserRouter([
     element: <DefaultLayout />,
     children: [
       {
-        path: "/",
-        element: <HomePage />,
+        path: "/my-assignments",
+        element: <MyAssignmentsPage />,
       },
       {
         path: "/groups",

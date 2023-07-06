@@ -8,27 +8,15 @@ import * as Assignments from "@/graphql/Assignments";
 
 import { sortAndGroupAssignemnts, SortedAndGroupedAssignments } from "./sortAndGroupAssignments";
 
-export function HomePage() {
+export function MyAssignmentsPage() {
   return (
     <Paper.Root size="large">
-      <Tabs>
-        <Tabs.List>
-          <Tabs.Tab active>
-            <Icons.IconInbox size={16} stroke={3} />
-            My Assignments
-          </Tabs.Tab>
-
-          <Tabs.Tab active={false}>
-            <Icons.IconStar size={16} stroke={3} />
-            Followed Activity
-          </Tabs.Tab>
-
-          <Tabs.Tab active={false}>
-            <Icons.IconClipboardText size={16} stroke={3} />
-            My Projects
-          </Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo="/">
+          <Icons.IconStarFilled size={16} stroke={3} />
+          Home
+        </Paper.NavItem>
+      </Paper.Navigation>
 
       <Paper.Body>
         <Paper.Title>My Assignments</Paper.Title>
