@@ -25,7 +25,6 @@ defmodule Operately.Projects do
 
   def create_project(project_attrs, champion_attrs) do
     project_attrs = Map.put(project_attrs, :next_update_scheduled_at, first_friday_from_today())
-    IO.inspect(project_attrs)
 
     Repo.transaction(fn ->
       result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
@@ -33,7 +32,6 @@ defmodule Operately.Projects do
       case result do
         {:ok, project} -> 
           {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
-          {:ok, _} = create_initial_milestones(project)
           {:ok, _} = Activities.submit_project_created(project, champion)
 
           project
@@ -85,24 +83,6 @@ defmodule Operately.Projects do
           Repo.rollback(changeset)
       end
     end)
-  end
-
-  defp create_initial_milestones(project) do
-    Repo.transaction(fn ->
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Write a Project Pitch", phase: :concept})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Present Pitch to the team", phase: :concept})
-
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Invite contributors", phase: :planning})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Define execution milestones and schedule", phase: :planning})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Propose the Execution Plan", phase: :planning})
-
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Submit Execution Review", phase: :execution})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Submit Retrospective", phase: :control})
-    end)
-  end
-
-  def create_initial_milestone(attrs) do
-    %Milestone{} |> Milestone.changeset(attrs) |> Repo.insert()
   end
 
   def complete_milestone(person, milestone) do

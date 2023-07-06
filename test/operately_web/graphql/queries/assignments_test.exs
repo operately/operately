@@ -1,4 +1,4 @@
-defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
+efmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
   use OperatelyWeb.ConnCase
 
   setup :register_and_log_in_account
@@ -11,24 +11,25 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
       creator_id: ctx.person.id
     })
 
-    Operately.Repo.delete_all(Operately.Projects.Milestone)
-
     contributor_fixture(%{
       project_id: project.id,
       person_id: ctx.person.id,
       role: :champion
     })
 
-    milestone = milestone_fixture(ctx.person, %{project_id: project.id})
+    milestone = milestone_fixture(ctx.person, %{
+      project_id: project.id,
+      deadlineAt: DateTime.utc_now(),
+      status: :pending
+    })
 
     {:ok, %{project: project, milestone: milestone}}
   end
 
   @get_assignments_query """
-    query getAssignments {
-      assignments {
-        project_status_udpates {
-          id
+    query getAssignments($rangeStart: DateTime!, $rangeEnd: DateTime!) {
+      assignments(rangeStart: $rangeStart, rangeEnd: $rangeEnd) {
+        project_status_updates {
           name
         }
         milestones {
@@ -39,14 +40,19 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
   """
 
   test "query: getAssignments", ctx do
-    conn = graphql(ctx.conn, @get_assignments_query, %{})
+    one_week_ago = DateTime.utc_now() |> DateTime.add(-30, :day) |> DateTime.to_iso8601()
+    one_week_from_now = DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_iso8601()
+
+    conn = graphql(ctx.conn, @get_assignments_query, %{
+      "rangeStart" => one_week_ago,
+      "rangeEnd" => one_week_from_now
+    })
 
     assert json_response(conn, 200) == %{
       "data" => %{
         "assignments" => %{
           "project_status_udpates" => [
             %{
-              "id" => ctx.project.id,
               "name" => ctx.project.name
             }
           ],
