@@ -1,4 +1,4 @@
-efmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
+defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
   use OperatelyWeb.ConnCase
 
   setup :register_and_log_in_account
@@ -19,7 +19,7 @@ efmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
 
     milestone = milestone_fixture(ctx.person, %{
       project_id: project.id,
-      deadlineAt: DateTime.utc_now(),
+      deadline_at: DateTime.utc_now(),
       status: :pending
     })
 
@@ -51,7 +51,7 @@ efmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
     assert json_response(conn, 200) == %{
       "data" => %{
         "assignments" => %{
-          "project_status_udpates" => [
+          "project_status_updates" => [
             %{
               "name" => ctx.project.name
             }
