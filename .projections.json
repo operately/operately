@@ -1,0 +1,12 @@
+{
+  "lib/*.ex": {
+    "type": "src",
+    "alternate": "test/{}_test.exs",
+    "template": ["# lib/{}.ex", "defmodule XXX do", "end"]
+  },
+  "test/*_test.exs": {
+    "type": "test",
+    "alternate": "lib/{}.ex",
+    "template": ["# test/{}_test.exs", "defmodule XXX do", "end"]
+  }
+}

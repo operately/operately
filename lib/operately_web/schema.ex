@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.Comments
 
   # Queries
+  import_types Queries.Assignments
   import_types Queries.Activities
   import_types Queries.Projects
   import_types Queries.Objectives
@@ -63,6 +64,7 @@ defmodule OperatelyWeb.Schema do
   end
 
   query do
+    import_fields :assignment_queries
     import_fields :activity_queries
     import_fields :project_queries
     import_fields :objective_queries

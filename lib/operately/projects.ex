@@ -24,13 +24,14 @@ defmodule Operately.Projects do
   end
 
   def create_project(project_attrs, champion_attrs) do
+    project_attrs = Map.put(project_attrs, :next_update_scheduled_at, first_friday_from_today())
+
     Repo.transaction(fn ->
       result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
 
       case result do
         {:ok, project} -> 
           {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
-          {:ok, _} = create_initial_milestones(project)
           {:ok, _} = Activities.submit_project_created(project, champion)
 
           project
@@ -82,24 +83,6 @@ defmodule Operately.Projects do
           Repo.rollback(changeset)
       end
     end)
-  end
-
-  defp create_initial_milestones(project) do
-    Repo.transaction(fn ->
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Write a Project Pitch", phase: :concept})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Present Pitch to the team", phase: :concept})
-
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Invite contributors", phase: :planning})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Define execution milestones and schedule", phase: :planning})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Propose the Execution Plan", phase: :planning})
-
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Submit Execution Review", phase: :execution})
-      {:ok, _} = create_initial_milestone(%{project_id: project.id, title: "Submit Retrospective", phase: :control})
-    end)
-  end
-
-  def create_initial_milestone(attrs) do
-    %Milestone{} |> Milestone.changeset(attrs) |> Repo.insert()
   end
 
   def complete_milestone(person, milestone) do
@@ -247,5 +230,20 @@ defmodule Operately.Projects do
 
   def change_document(%Document{} = document, attrs \\ %{}) do
     Document.changeset(document, attrs)
+  end
+
+  def first_friday_from_today do
+    today = Date.utc_today()
+
+    date = cond do
+      Date.day_of_week(today) == 5  ->
+        Date.add(today, 7)
+      Date.day_of_week(today) < 5 ->
+        Date.add(today, 5 - Date.day_of_week(today))
+      true ->
+        Date.add(today, 12 - Date.day_of_week(today))
+    end
+
+    NaiveDateTime.new!(date, ~T[09:00:00])
   end
 end

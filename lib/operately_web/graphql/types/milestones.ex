@@ -7,5 +7,13 @@ defmodule OperatelyWeb.GraphQL.Types.Milestones do
     field :deadline_at, :date
     field :status, non_null(:string)
     field :phase, non_null(:string)
+
+    field :project, non_null(:project) do
+      resolve fn milestone, _, _ ->
+        milestone = Operately.Repo.preload(milestone, :project)
+
+        {:ok, milestone.project}
+      end
+    end
   end
 end
