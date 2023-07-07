@@ -6,22 +6,18 @@ import * as Paper from "@/components/PaperContainer";
 import { logOut } from "@/graphql/Me";
 
 import { PuffLoader } from "react-spinners";
+import { Link } from "react-router-dom";
 
 export function AccountPage() {
   return (
     <Paper.Root size="small">
-      <Paper.Body minHeight="500px">
+      <Paper.Body minHeight="300px">
         <Paper.Title>My Account</Paper.Title>
 
         <div className="m-16 flex flex-col gap-8">
           <div className="bg-dark-5 rounded-lg overflow-hidden divide-y divide-shade-2">
-            <div className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg">
-              <Icons.IconUserCircle size={24} /> Profile
-            </div>
-
-            <div className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg">
-              <Icons.IconBell size={24} /> Notifications
-            </div>
+            <ProfileLink />
+            <NotificationLink />
           </div>
 
           <div className="bg-dark-5 rounded-lg overflow-hidden">
@@ -30,6 +26,25 @@ export function AccountPage() {
         </div>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function ProfileLink() {
+  return (
+    <Link
+      to="/account/profile"
+      className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg"
+    >
+      <Icons.IconUserCircle size={24} /> Profile
+    </Link>
+  );
+}
+
+function NotificationLink() {
+  return (
+    <div className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg">
+      <Icons.IconBell size={24} /> Notifications
+    </div>
   );
 }
 

@@ -8,7 +8,9 @@ import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
 
 import { HomePage } from "@/pages/HomePage";
 import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
+
 import { AccountPage } from "@/pages/AccountPage";
+import { AccountEditProfilePage } from "@/pages/AccountEditProfilePage";
 
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
@@ -69,6 +71,10 @@ const routes = createBrowserRouter([
       {
         path: "/account",
         element: <AccountPage />,
+      },
+      {
+        path: "/account/profile",
+        element: <AccountEditProfilePage />,
       },
       {
         path: "/home/my-assignments",

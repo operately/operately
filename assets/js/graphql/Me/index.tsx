@@ -1,4 +1,4 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 
 const GET_ME = gql`
   query GetMe {
@@ -26,4 +26,21 @@ export function logOut() {
     method: "DELETE",
     headers: headers,
   });
+}
+
+export function useProfileMutation(options = {}) {
+  return useMutation(
+    gql`
+      mutation UpdateProfile($input: UpdateProfileInput!) {
+        updateProfile(input: $input) {
+          fullName
+          title
+        }
+      }
+    `,
+    {
+      refetchQueries: [{ query: GET_ME }],
+      ...options,
+    },
+  );
 }

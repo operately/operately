@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { PuffLoader } from "react-spinners";
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";
   size?: "base";
   linkTo?: string;
   disabled?: boolean;
+  submit?: boolean;
+  loading?: boolean;
 }
 
 const sizes = {
@@ -60,31 +62,38 @@ const variants = {
   },
 };
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (props, ref) => {
-    const { variant, size, linkTo, ...rest } = props;
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  const { variant, size, linkTo, children, loading, submit, ...rest } = props;
 
-    const sizeValue = sizes[size || "base"];
-    const variantValue = variants[variant || "default"];
+  const sizeValue = sizes[size || "base"];
+  const variantValue = variants[variant || "default"];
 
-    const className = [
-      sizeValue,
-      variantValue.base,
-      variantValue.color,
-      variantValue.text,
-      variantValue.border,
-      variantValue.hover,
-      props.disabled ? variantValue.disabled : "",
-    ].join(" ");
+  const className = [
+    "relative",
+    sizeValue,
+    variantValue.base,
+    variantValue.color,
+    variantValue.text,
+    variantValue.border,
+    variantValue.hover,
+    props.disabled ? variantValue.disabled : "",
+  ].join(" ");
 
-    const button = <button ref={ref} className={className} {...rest} />;
+  const button = (
+    <button ref={ref} className={className} {...rest}>
+      <div className={props.loading ? "opacity-50" : "opacity-100"}>{children}</div>
 
-    if (props.linkTo) {
-      return <Link to={props.linkTo}>{button}</Link>;
-    } else {
-      return button;
-    }
+      <div className="inset-0 flex items-center justify-center absolute">
+        {props.loading && <PuffLoader size={24} color="#fff" />}
+      </div>
+    </button>
+  );
+
+  if (props.linkTo) {
+    return <Link to={props.linkTo}>{button}</Link>;
+  } else {
+    return button;
   }
-);
+});
 
 export default Button;
