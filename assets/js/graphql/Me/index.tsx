@@ -7,6 +7,11 @@ const GET_ME = gql`
       fullName
       avatarUrl
       title
+
+      pinned {
+        id
+        __typename
+      }
     }
   }
 `;
@@ -42,5 +47,19 @@ export function useProfileMutation(options = {}) {
       refetchQueries: [{ query: GET_ME }],
       ...options,
     },
+  );
+}
+
+export function useTogglePin(options = {}) {
+  return useMutation(
+    gql`
+      mutation TogglePin($input: TogglePinInput!) {
+        togglePin(input: $input) {
+          id
+          __typename
+        }
+      }
+    `,
+    options,
   );
 }

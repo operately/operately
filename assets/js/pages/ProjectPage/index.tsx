@@ -14,7 +14,7 @@ import Activity from "./Activity";
 import Header from "./Header";
 
 import * as Milestones from "@/graphql/Projects/milestones";
-import Avatar from "@/components/Avatar";
+import * as Me from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
@@ -49,17 +49,59 @@ function Overview({ project }) {
       </Paper.Navigation>
 
       <Paper.Body minHeight="600px">
-        <Header project={project} />
+        <div className="relative">
+          <Header project={project} />
 
-        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
-          <MilestonesCard project={project} />
-          <DocumentationCard project={project} />
-          <StatuUpdatesCard project={project} />
+          <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
+            <MilestonesCard project={project} />
+            <DocumentationCard project={project} />
+            <StatuUpdatesCard project={project} />
+          </div>
+
+          <Activity projectId={project.id} />
+
+          <div className="absolute top-8 border-l border-shade-2 -right-[48px]">
+            <PinToHomePage project={project} />
+          </div>
         </div>
-
-        <Activity projectId={project.id} />
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function PinToHomePage({ project }) {
+  const meData = Me.useMe();
+
+  if (meData.loading) return null;
+  if (meData.error) return null;
+
+  const [togglePin] = Me.useTogglePin({
+    onCompleted: () => {
+      meData.refetch();
+    },
+  });
+
+  const handlePin = () => {
+    togglePin({
+      variables: {
+        input: {
+          id: project.id,
+          type: "Project",
+        },
+      },
+    });
+  };
+
+  const isPinned = meData.data.me.pinned.any((p) => p.id === project.id && p.__typename === "Project");
+
+  return (
+    <div className="rounded-r-lg bg-dark-3 p-3 cursor-pointer" onClick={handlePin}>
+      {isPinned ? (
+        <Icons.IconStarFilled size={20} className="text-yellow-400" />
+      ) : (
+        <Icons.IconStar size={20} className="text-white-1" />
+      )}
+    </div>
   );
 }
 

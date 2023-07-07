@@ -531,4 +531,45 @@ defmodule Operately.People do
       limit: ^limit
     )
   end
+
+  alias Operately.People.Pin
+
+  def toggle_pin(person, %{id: pinned_id, type: pinned_type}) do
+    pinned = Repo.one(
+      from p in Pin,
+      where: p.person_id == ^person.id and p.pinned_id == ^pinned_id and p.pinned_type == ^pinned_type
+    )
+
+    if pinned do
+      delete_pin(pinned)
+    else
+      create_pin(%{person_id: person.id, pinned_id: pinned_id, pinned_type: pinned_type})
+    end
+  end
+
+  def list_people_pins do
+    Repo.all(Pin)
+  end
+
+  def get_pin!(id), do: Repo.get!(Pin, id)
+
+  def create_pin(attrs \\ %{}) do
+    %Pin{}
+    |> Pin.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_pin(%Pin{} = pin, attrs) do
+    pin
+    |> Pin.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_pin(%Pin{} = pin) do
+    Repo.delete(pin)
+  end
+
+  def change_pin(%Pin{} = pin, attrs \\ %{}) do
+    Pin.changeset(pin, attrs)
+  end
 end
