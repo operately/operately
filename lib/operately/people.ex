@@ -547,8 +547,15 @@ defmodule Operately.People do
     end
   end
 
-  def list_people_pins do
-    Repo.all(Pin)
+  def is_pinned?(person, type, id) do
+    Repo.exists?(
+      from p in Pin,
+      where: p.person_id == ^person.id and p.pinned_id == ^id and p.pinned_type == ^type
+    )
+  end
+
+  def list_people_pins(person_id) do
+    Repo.all(from p in Pin, where: p.person_id == ^person_id)
   end
 
   def get_pin!(id), do: Repo.get!(Pin, id)

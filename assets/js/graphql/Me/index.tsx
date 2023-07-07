@@ -7,11 +7,6 @@ const GET_ME = gql`
       fullName
       avatarUrl
       title
-
-      pinned {
-        id
-        __typename
-      }
     }
   }
 `;

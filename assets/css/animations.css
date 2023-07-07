@@ -37,6 +37,16 @@
   }
 }
 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(0.01);
+  }
+}
+
 .fadeIn {
   animation: fadeInAnimation;
   animation-duration: 0.5s;
@@ -53,4 +63,8 @@
 
 .animate-notify {
   animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-pulse {
+  animation: pulse 0.3s linear infinite;
 }

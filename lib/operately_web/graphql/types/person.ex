@@ -14,5 +14,21 @@ defmodule OperatelyWeb.GraphQL.Types.Person do
         {:ok, company}
       end
     end
+
+    field :pins, list_of(:pin) do
+      resolve fn person, _, _ ->
+        pins = Operately.People.list_pins(person.id)
+
+        {:ok, pins}
+      end
+    end
+  end
+
+  union :pin do
+    types [:project]
+
+    resolve_type fn
+      %{type: type} -> type
+    end
   end
 end

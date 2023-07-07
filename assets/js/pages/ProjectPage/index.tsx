@@ -25,7 +25,7 @@ export function ProjectPage() {
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const { loading, error, data } = Projects.useProject(id);
+  const { loading, error, data, refetch } = Projects.useProject(id);
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
@@ -33,10 +33,10 @@ export function ProjectPage() {
 
   let project = data.project;
 
-  return <Overview project={project} />;
+  return <Overview project={project} refetch={refetch} />;
 }
 
-function Overview({ project }) {
+function Overview({ project, refetch }) {
   useDocumentTitle(project.name);
 
   return (
@@ -61,7 +61,7 @@ function Overview({ project }) {
           <Activity projectId={project.id} />
 
           <div className="absolute top-8 border-l border-shade-2 -right-[48px]">
-            <PinToHomePage project={project} />
+            <PinToHomePage project={project} refetch={refetch} />
           </div>
         </div>
       </Paper.Body>
@@ -69,15 +69,10 @@ function Overview({ project }) {
   );
 }
 
-function PinToHomePage({ project }) {
-  const meData = Me.useMe();
-
-  if (meData.loading) return null;
-  if (meData.error) return null;
-
-  const [togglePin] = Me.useTogglePin({
+function PinToHomePage({ project, refetch }) {
+  const [togglePin, { loading }] = Me.useTogglePin({
     onCompleted: () => {
-      meData.refetch();
+      refetch();
     },
   });
 
@@ -86,20 +81,18 @@ function PinToHomePage({ project }) {
       variables: {
         input: {
           id: project.id,
-          type: "Project",
+          type: "project",
         },
       },
     });
   };
 
-  const isPinned = meData.data.me.pinned.any((p) => p.id === project.id && p.__typename === "Project");
-
   return (
-    <div className="rounded-r-lg bg-dark-3 p-3 cursor-pointer" onClick={handlePin}>
-      {isPinned ? (
-        <Icons.IconStarFilled size={20} className="text-yellow-400" />
+    <div className={`rounded-r-lg bg-dark-3 p-3 cursor-pointer `} onClick={handlePin}>
+      {project.isPinned ? (
+        <Icons.IconStarFilled size={20} className={`text-yellow-400 ${loading && "animate-pulse"}`} />
       ) : (
-        <Icons.IconStar size={20} className="text-white-1" />
+        <Icons.IconStar size={20} className={`text-white-1 ${loading && "animate-pulse"}`} />
       )}
     </div>
   );
