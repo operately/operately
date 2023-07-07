@@ -92,6 +92,10 @@ function DocumentationCardListItem({ title, completed, pending }) {
   );
 }
 
+function CardSectionTitle({ title }) {
+  return <div className="font-bold mb-2 text-xs uppercase text-pink-400">{title}</div>;
+}
+
 function DocumentationCard({ project }) {
   return (
     <Cards.Card linkTo={`/projects/${project.id}/documentation`}>
@@ -104,7 +108,8 @@ function DocumentationCard({ project }) {
 
       <Cards.Body>
         <div className="mt-4">
-          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Next in line</div>
+          <CardSectionTitle title="Next in line" />
+
           <DocumentationCardListItem
             title="Project Pitch"
             completed={project.pitch}
@@ -113,7 +118,8 @@ function DocumentationCard({ project }) {
         </div>
 
         <div className="mt-4">
-          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Last Submitted</div>
+          <CardSectionTitle title="Last Submitted" />
+
           <div className="text-white-2">No documenation yet. Asking for submission on the end of each phase.</div>
         </div>
       </Cards.Body>
@@ -122,7 +128,7 @@ function DocumentationCard({ project }) {
 }
 
 function MilestonesCard({ project }) {
-  const milestoneGroups = Milestones.groupByPhase(project.milestones);
+  const upcomming = Milestones.sortByDeadline(project.milestones).filter((m) => m.status === "pending");
 
   return (
     <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
@@ -135,13 +141,19 @@ function MilestonesCard({ project }) {
 
       <Cards.Body>
         <div className="mt-6">
-          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Project Phase</div>
+          <CardSectionTitle title="Project Phase" />
+
           <div className="font-bold capitalize">{project.phase}</div>
         </div>
 
         <div className="mt-4">
-          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Upcomming Milestone</div>
-          <div className="font-bold">Write Project Pitch</div>
+          <CardSectionTitle title="Upcomming Milestone" />
+
+          {upcomming.length === 0 ? (
+            <div className="text-white-2">No upcomming milestone.</div>
+          ) : (
+            <div className="font-bold">{upcomming[0]}</div>
+          )}
         </div>
       </Cards.Body>
     </Cards.Card>
@@ -235,7 +247,7 @@ function StatuUpdatesCard({ project }: { project: Projects.Project }) {
 
       <Cards.Body>
         <div className="mt-4">
-          <div className="font-medium mb-2 text-xs uppercase text-pink-400">Last Update</div>
+          <CardSectionTitle title="Last Update" />
 
           {project.updates.length === 0 ? (
             <div className="text-white-2">No updates yet. Asking the champion every week for an update.</div>
