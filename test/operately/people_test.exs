@@ -592,7 +592,7 @@ defmodule Operately.PeopleTest do
 
     test "list_people_pins/0 returns all people_pins", ctx do
       pin = pin_fixture(ctx.person)
-      assert People.list_people_pins() == [pin]
+      assert People.list_people_pins(ctx.person.id) == [pin]
     end
 
     test "get_pin!/1 returns the pin with given id", ctx do
