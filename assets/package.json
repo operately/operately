@@ -42,6 +42,7 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.10.0",
     "react-select": "^5.7.1",
+    "react-spinners": "^0.13.8",
     "remount": "^1.0.0",
     "sort-by": "^0.0.2",
     "tabler-icons-react": "^1.56.0",

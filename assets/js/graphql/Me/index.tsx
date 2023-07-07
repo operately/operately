@@ -14,3 +14,16 @@ const GET_ME = gql`
 export function useMe() {
   return useQuery(GET_ME);
 }
+
+export function logOut() {
+  const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
+
+  const headers = {
+    "x-csrf-token": csrfToken,
+  } as HeadersInit;
+
+  return fetch("/accounts/log_out", {
+    method: "DELETE",
+    headers: headers,
+  });
+}

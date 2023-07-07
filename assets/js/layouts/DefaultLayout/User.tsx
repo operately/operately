@@ -1,8 +1,8 @@
 import React from "react";
 
-import Avatar, { AvatarSize } from "../../components/Avatar";
+import Avatar from "../../components/Avatar";
 import { useMe } from "../../graphql/Me";
-import * as Icons from "@tabler/icons-react";
+import { Link } from "react-router-dom";
 
 export default function User() {
   const { data, loading, error } = useMe();
@@ -11,8 +11,8 @@ export default function User() {
   if (error) return <div></div>;
 
   return (
-    <div className="flex items-center gap-2">
+    <Link to="/account" className="flex items-center gap-2 cursor-pointer">
       <Avatar person={data.me} />
-    </div>
+    </Link>
   );
 }
