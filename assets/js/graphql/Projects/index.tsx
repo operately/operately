@@ -136,6 +136,8 @@ export interface Project {
   retrospective: Document;
 
   updates: Update[];
+
+  isPinned: boolean;
 }
 
 const GET_PROJECT = gql`
@@ -148,6 +150,7 @@ const GET_PROJECT = gql`
       deadline
       nextUpdateScheduledAt
       phase
+      isPinned
 
       milestones {
         id

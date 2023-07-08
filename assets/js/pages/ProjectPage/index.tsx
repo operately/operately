@@ -14,7 +14,7 @@ import Activity from "./Activity";
 import Header from "./Header";
 
 import * as Milestones from "@/graphql/Projects/milestones";
-import Avatar from "@/components/Avatar";
+import * as Me from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
@@ -25,7 +25,7 @@ export function ProjectPage() {
 
   if (!id) return <p className="mt-16">Unable to find project</p>;
 
-  const { loading, error, data } = Projects.useProject(id);
+  const { loading, error, data, refetch } = Projects.useProject(id);
 
   if (loading) return <p className="mt-16">Loading...</p>;
   if (error) return <p className="mt-16">Error : {error.message}</p>;
@@ -33,10 +33,10 @@ export function ProjectPage() {
 
   let project = data.project;
 
-  return <Overview project={project} />;
+  return <Overview project={project} refetch={refetch} />;
 }
 
-function Overview({ project }) {
+function Overview({ project, refetch }) {
   useDocumentTitle(project.name);
 
   return (
@@ -49,17 +49,52 @@ function Overview({ project }) {
       </Paper.Navigation>
 
       <Paper.Body minHeight="600px">
-        <Header project={project} />
+        <div className="relative">
+          <Header project={project} />
 
-        <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
-          <MilestonesCard project={project} />
-          <DocumentationCard project={project} />
-          <StatuUpdatesCard project={project} />
+          <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
+            <MilestonesCard project={project} />
+            <DocumentationCard project={project} />
+            <StatuUpdatesCard project={project} />
+          </div>
+
+          <Activity projectId={project.id} />
+
+          <div className="absolute top-8 border-l border-shade-2 -right-[48px]">
+            <PinToHomePage project={project} refetch={refetch} />
+          </div>
         </div>
-
-        <Activity projectId={project.id} />
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function PinToHomePage({ project, refetch }) {
+  const [togglePin, { loading }] = Me.useTogglePin({
+    onCompleted: () => {
+      refetch();
+    },
+  });
+
+  const handlePin = () => {
+    togglePin({
+      variables: {
+        input: {
+          id: project.id,
+          type: "project",
+        },
+      },
+    });
+  };
+
+  return (
+    <div className={`rounded-r-lg bg-dark-3 p-3 cursor-pointer `} onClick={handlePin}>
+      {project.isPinned ? (
+        <Icons.IconStarFilled size={20} className={`text-yellow-400 ${loading && "animate-pulse"}`} />
+      ) : (
+        <Icons.IconStar size={20} className={`text-white-1 ${loading && "animate-pulse"}`} />
+      )}
+    </div>
   );
 }
 
@@ -152,7 +187,7 @@ function MilestonesCard({ project }) {
           {upcomming.length === 0 ? (
             <div className="text-white-2">No upcomming milestone.</div>
           ) : (
-            <div className="font-bold">{upcomming[0]}</div>
+            <div className="font-bold">{upcomming[0].title}</div>
           )}
         </div>
       </Cards.Body>

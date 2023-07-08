@@ -15,6 +15,42 @@ export function useMe() {
   return useQuery(GET_ME);
 }
 
+export function usePins(options = {}) {
+  return useQuery(
+    gql`
+      query GetPins {
+        pins {
+          id
+          pinned_id
+          pinned_type
+
+          pinned {
+            ... on Project {
+              name
+              phase
+
+              contributors {
+                role
+                person {
+                  id
+                  fullName
+                  avatarUrl
+                }
+              }
+
+              milestones {
+                title
+                status
+              }
+            }
+          }
+        }
+      }
+    `,
+    options,
+  );
+}
+
 export function logOut() {
   const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
 
@@ -42,5 +78,19 @@ export function useProfileMutation(options = {}) {
       refetchQueries: [{ query: GET_ME }],
       ...options,
     },
+  );
+}
+
+export function useTogglePin(options = {}) {
+  return useMutation(
+    gql`
+      mutation TogglePin($input: TogglePinInput!) {
+        togglePin(input: $input) {
+          id
+          __typename
+        }
+      }
+    `,
+    options,
   );
 }

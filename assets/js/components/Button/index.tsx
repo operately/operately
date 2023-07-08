@@ -81,7 +81,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => 
 
   const button = (
     <button ref={ref} className={className} {...rest}>
-      <div className={props.loading ? "opacity-50" : "opacity-100"}>{children}</div>
+      <div className={props.loading ? "flex items-center gap-2 opacity-50" : "flex items-center gap-2 opacity-100"}>
+        {children}
+      </div>
 
       <div className="inset-0 flex items-center justify-center absolute">
         {props.loading && <PuffLoader size={24} color="#fff" />}

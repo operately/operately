@@ -5,19 +5,21 @@ import { Link } from "react-router-dom";
 import Avatar from "@/components/Avatar";
 import * as Icons from "@tabler/icons-react";
 
-import { useMe } from "@/graphql/Me";
+import { useMe, usePins } from "@/graphql/Me";
 import { useCompany } from "@/graphql/Companies";
 
 export function HomePage() {
   const meData = useMe();
+  const pinsData = usePins({ fetchPolicy: "network-only" });
   const companyData = useCompany(window.companyID);
 
-  if (!meData.data || !companyData.data) {
+  if (!meData.data || !companyData.data || !pinsData.data) {
     return null;
   }
 
   const me = meData.data.me;
   const company = companyData.data.company;
+  const pins = pinsData.data.pins;
 
   return (
     <div className="max-w-5xl mx-auto mt-20 flex flex-col gap-8">
@@ -89,6 +91,42 @@ export function HomePage() {
             </div>
           </div>
         </Card>
+
+        {pins.map((pin) => (
+          <Card key={pin.id} linkTo={`/projects/${pin.pinned_id}`}>
+            <div className="h-full flex flex-col justify-between gap-4">
+              <h1 className="font-bold flex items-center gap-2">
+                <Icons.IconTableFilled size={20} /> {pin.pinned.name}
+              </h1>
+
+              <div className="flex-1 flex flex-col gap-4">
+                <div>
+                  <CardSectionTitle title="Phase" />
+                  <div className="font-bold capitalize">{pin.pinned.phase}</div>
+                </div>
+
+                <div>
+                  <CardSectionTitle title="Next Milestone" />
+                  {pin.pinned.milestones.filter((m) => m.status === "pending").length > 0 ? (
+                    <div className="font-bold capitalize">
+                      {pin.pinned.milestones.filter((m) => m.status === "pending")[0].title}
+                    </div>
+                  ) : (
+                    <div className="text-white-2">No milestones</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {pin.pinned.contributors.map((c) => (
+                  <div key={c.person.id} className="mt-4">
+                    <Avatar size="tiny" person={c.person} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
 
       <div className="mb-8 flex items-center justify-center text-sm gap-2">
@@ -126,4 +164,8 @@ function Card({ linkTo, children, colSpan = 1 }) {
       {children}
     </Link>
   );
+}
+
+function CardSectionTitle({ title }) {
+  return <div className="font-bold mb-2 text-xs uppercase text-pink-400">{title}</div>;
 }
