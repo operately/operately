@@ -187,7 +187,7 @@ function MilestonesCard({ project }) {
           {upcomming.length === 0 ? (
             <div className="text-white-2">No upcomming milestone.</div>
           ) : (
-            <div className="font-bold">{upcomming[0]}</div>
+            <div className="font-bold">{upcomming[0].title}</div>
           )}
         </div>
       </Cards.Body>

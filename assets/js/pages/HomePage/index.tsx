@@ -119,7 +119,7 @@ export function HomePage() {
 
               <div className="flex items-center gap-2">
                 {pin.pinned.contributors.map((c) => (
-                  <div key={c.id} className="mt-4">
+                  <div key={c.person.id} className="mt-4">
                     <Avatar size="tiny" person={c.person} />
                   </div>
                 ))}
