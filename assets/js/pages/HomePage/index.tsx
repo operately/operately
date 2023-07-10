@@ -11,6 +11,20 @@ import { ActivityFeedCard } from "./ActivityFeedCard";
 import { MyProjectsCard } from "./MyProjectsCard";
 import { PinnedProjectCard } from "./PinnedProjectCard";
 
+import { motion } from "framer-motion";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  useDndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+
+import { SortableContext, useSortable, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+
 export function HomePage() {
   const meData = useMe();
   const pinsData = usePins({ fetchPolicy: "network-only" });
@@ -34,16 +48,7 @@ export function HomePage() {
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <AccountCard me={me} company={company} />
-        <MyAssignmentsCard />
-        <ActivityFeedCard />
-        <MyProjectsCard />
-
-        {pins.map((pin) => (
-          <PinnedProjectCard key={pin.id} pin={pin} />
-        ))}
-      </div>
+      <Dashboard me={me} company={company} pins={pins} />
 
       <div className="mb-8 flex items-center justify-center text-sm gap-2">
         <div className="font-medium flex items-center gap-2 border border-shade-3 rounded-[20px] px-3 py-1.5 cursor-pointer">
@@ -57,4 +62,172 @@ export function HomePage() {
       </div>
     </div>
   );
+}
+
+const styles: { [style: string]: React.CSSProperties } = {
+  grid: {
+    display: "grid",
+    gridGap: 24,
+    padding: 0,
+  },
+  cardStyles: {
+    position: "relative",
+    height: "300px",
+  },
+};
+
+const spanSize = {
+  account: 1,
+  "my-assignments": 2,
+  "activity-feed": 2,
+  "my-projects": 1,
+};
+
+function Dashboard({ me, company, pins }) {
+  const [items, setItems] = React.useState([
+    "account",
+    "my-assignments",
+    "activity-feed",
+    "my-projects",
+    ...pins.map((pin) => pin.pinned.name),
+  ]);
+
+  const [activeId, setActiveId] = React.useState(null);
+  const columnCount = 3;
+
+  function handleDragStart({ active }) {
+    setActiveId(active.id);
+  }
+
+  function handleDragOver({ active, over }: DragEndEvent) {
+    setItems((items) => arrayMove(items, items.indexOf(active.id), items.indexOf(over?.id)));
+  }
+
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    setActiveId(null);
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  return (
+    <>
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+        <SortableContext items={items} strategy={() => null}>
+          <div
+            style={{
+              ...styles.grid,
+              gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+            }}
+          >
+            {items.map((id) => (
+              <Item id={id} activeId={activeId} span={spanSize[id] || 1}>
+                <Content id={id} me={me} company={company} pins={pins} />
+              </Item>
+            ))}
+          </div>
+        </SortableContext>
+
+        <DragOverlay>
+          {activeId ? (
+            <DragOverlayItem id={activeId}>
+              <Content id={activeId} pins={pins} me={me} company={company}></Content>
+            </DragOverlayItem>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </>
+  );
+}
+
+function Content({ id, me, company, pins }) {
+  if (id === "account") {
+    return <AccountCard me={me} company={company} />;
+  }
+
+  if (id === "my-assignments") {
+    return <MyAssignmentsCard />;
+  }
+
+  if (id === "activity-feed") {
+    return <ActivityFeedCard />;
+  }
+
+  if (id === "my-projects") {
+    return <MyProjectsCard />;
+  }
+
+  const pin = pins.find((pin) => pin.pinned.name === id);
+  if (pin) {
+    return <PinnedProjectCard pin={pin} />;
+  }
+
+  return null;
+}
+
+// string interpolation won't work here
+// because tailwind removes unused classes
+// so we need to use an array
+const colSpanOptions = ["col-span-0", "col-span-1", "col-span-2", "col-span-3"];
+
+function Item({ id, activeId, children, span = 1 }) {
+  const sortable = useSortable({
+    id,
+  });
+
+  const { setNodeRef, attributes, listeners, isDragging, transform, transition } = sortable;
+
+  return (
+    <motion.div
+      layoutId={id}
+      transition={{
+        type: "spring",
+        duration: activeId ? 0 : 0.6,
+      }}
+      className={`${colSpanOptions[span]} hover:scale-[1.01] transition-transform cursor-pointer`}
+      ref={setNodeRef}
+      style={{
+        ...styles.cardStyles,
+        opacity: isDragging ? 0.5 : 1,
+        transition,
+      }}
+      {...attributes}
+      {...listeners}
+      children={children}
+    />
+  );
+}
+
+function DragOverlayItem(props: { id: string; children }) {
+  const { id } = props;
+
+  // DragOver seems to cache this component so I can't tell if the item is still actually active
+  // It will remain active until it has settled in place rather than when dragEnd has occured
+  // I need to know when drag end has taken place to trigger the scale down animation
+  // I use a hook which looks at DndContex to get active
+
+  const isReallyActive = useDndIsReallyActiveId(id);
+
+  return (
+    <div
+      style={{
+        ...styles.cardStyles,
+        backgroundColor: id,
+        height: "100%",
+        padding: 0,
+        transform: isReallyActive ? "scale(1.05)" : "none",
+      }}
+      children={props.children}
+    />
+  );
+}
+
+function useDndIsReallyActiveId(id: string) {
+  const context = useDndContext();
+  const isActive = context.active?.id === id;
+  return isActive;
 }

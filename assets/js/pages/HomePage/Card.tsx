@@ -2,20 +2,11 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-// string interpolation won't work here
-// because tailwind removes unused classes
-// so we need to use an array
-const colSpanOptions = ["col-span-0", "col-span-1", "col-span-2", "col-span-3"];
-
-export function Card({ linkTo, children, colSpan = 1 }) {
+export function Card({ linkTo, children }) {
   return (
     <Link
       to={linkTo}
-      className={
-        "h-72 rounded-[20px] p-4 hover:scale-[1.01] transition-transform border border-dark-4 cursor-pointer" +
-        " " +
-        colSpanOptions[colSpan]
-      }
+      className={"h-full w-full block rounded-[20px] p-4 border border-dark-4"}
       style={{
         background: "linear-gradient(45deg, var(--color-dark-2), var(--color-dark-3))",
       }}
