@@ -6,7 +6,7 @@ import Avatar from "@/components/Avatar";
 
 export function PinnedProjectCard({ pin }) {
   return (
-    <Card key={pin.id} linkTo={`/projects/${pin.pinned_id}`}>
+    <Card key={pin.id} linkTo={`/projects/${pin.pinnedId}`}>
       <div className="h-full flex flex-col justify-between gap-4">
         <h1 className="font-bold flex items-center gap-2">
           <Icons.IconTableFilled size={20} /> {pin.pinned.name}
