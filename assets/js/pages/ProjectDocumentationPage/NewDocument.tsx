@@ -42,7 +42,7 @@ export function NewDocument({ project, schema, onSubmit }) {
       <Paper.Body>
         <NewDocumentTitle title={schema.title} subtitle={schema.subtitle} />
 
-        <div className="flex flex-col gap-6 px-16 p-8">
+        <div className="flex flex-col gap-6 py-8">
           {schema.content.map((item: any) =>
             itemHandler(item.type).component({
               item,
@@ -51,15 +51,13 @@ export function NewDocument({ project, schema, onSubmit }) {
           )}
         </div>
 
-        <div className="px-16">
-          <div className="flex items-center gap-2 mb-8">
-            <PostButton
-              onClick={() => post(form.toJSON())}
-              title={"Post " + schema.title}
-              disabled={!form.isSubmitable()}
-            />
-            <CancelButton linkTo={`/projects/${project.id}/documentation`} />
-          </div>
+        <div className="flex items-center gap-2 mb-8">
+          <PostButton
+            onClick={() => post(form.toJSON())}
+            title={"Post " + schema.title}
+            disabled={!form.isSubmitable()}
+          />
+          <CancelButton linkTo={`/projects/${project.id}/documentation`} />
         </div>
       </Paper.Body>
     </Paper.Root>
@@ -91,7 +89,7 @@ export function DocView({ project, doc, schema }) {
           }
           author={doc.author}
         />
-        <div className="flex flex-col gap-6 px-16 p-8">
+        <div className="flex flex-col gap-6 py-8">
           {schema.content.map((item: any) => (
             <ItemView key={item.name} item={item} content={JSON.parse(doc.content)[item.name]} />
           ))}
@@ -103,16 +101,14 @@ export function DocView({ project, doc, schema }) {
 
 function DocumentTitle({ title, author, subtitle }) {
   return (
-    <div className="p-16 pb-0">
-      <div className="flex items-center gap-4">
-        <div className="text-center">
-          <Avatar person={author} size="large" />
-        </div>
+    <div className="flex items-center gap-4">
+      <div className="text-center">
+        <Avatar person={author} size="large" />
+      </div>
 
-        <div>
-          <div className="text-2xl font-extrabold">{title}</div>
-          <div>{subtitle}</div>
-        </div>
+      <div>
+        <div className="text-2xl font-extrabold">{title}</div>
+        <div>{subtitle}</div>
       </div>
     </div>
   );
@@ -346,16 +342,14 @@ function NewDocumentTitle({ title, subtitle }) {
   const { data } = Me.useMe();
 
   return (
-    <div className="p-16 pb-0">
-      <div className="flex items-center gap-4">
-        <div className="text-center">
-          <Avatar person={data.me} size="large" />
-        </div>
+    <div className="flex items-center gap-4">
+      <div className="text-center">
+        <Avatar person={data.me} size="large" />
+      </div>
 
-        <div>
-          <div className="text-2xl font-extrabold">{title}</div>
-          <div>{subtitle}</div>
-        </div>
+      <div>
+        <div className="text-2xl font-extrabold">{title}</div>
+        <div>{subtitle}</div>
       </div>
     </div>
   );

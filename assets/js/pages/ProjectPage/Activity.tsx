@@ -15,7 +15,7 @@ export default function Activity({ projectId }): JSX.Element {
   const activityGroups = Activities.groupByDate(data?.activities);
 
   return (
-    <div className="rounded-b-[20px] bg-dark-2 min-h-[350px] border-t border-shade-1 py-8">
+    <div className="min-h-[350px] py-8">
       <SectionTitle title="Project Activity" />
 
       {loading && <div>Loading...</div>}
@@ -34,8 +34,8 @@ export default function Activity({ projectId }): JSX.Element {
 function ActivityGroup({ date, activities }) {
   return (
     <div className="flex flex-col relative">
-      <div className="absolute top-9 bottom-4 border-l border-shade-2 z-10" style={{ left: "145px" }} />
-      <div className="border-b border-shade-2 font-bold mx-16 py-2 text-sm">
+      <div className="absolute top-9 bottom-4 border-l border-shade-2 z-10" style={{ left: "99px" }} />
+      <div className="border-b border-shade-2 font-bold py-2 text-sm">
         <FormattedTime time={date} format="short-date-with-weekday-relative" />
       </div>
 
@@ -72,7 +72,7 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
 
 function ActivityItemContainer({ person, time, children }) {
   return (
-    <div className="flex items-start justify-between p-4 px-16 gap-4">
+    <div className="flex items-start justify-between p-4 gap-4">
       <div className="shrink-0 mt-1 text-sm" style={{ width: "50px" }}>
         <FormattedTime time={time} format="time-only" />
       </div>
@@ -230,5 +230,5 @@ function SeparatorLine() {
 }
 
 function SectionTitle({ title }) {
-  return <div className="font-bold flex items-center gap-2 uppercase tracking-wide py-4 px-16">{title}</div>;
+  return <div className="font-bold flex items-center gap-2 uppercase tracking-wide py-4">{title}</div>;
 }

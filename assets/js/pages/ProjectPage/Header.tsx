@@ -17,7 +17,7 @@ interface HeaderProps {
 
 export default function Header({ project }: HeaderProps): JSX.Element {
   return (
-    <div className="pt-12 pb-8 relative">
+    <div className="pb-8 relative">
       <ProjectName project={project} />
       <ContributorList project={project} />
     </div>
@@ -27,12 +27,7 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 function ProjectName({ project }) {
   return (
     <div
-      className={classnames(
-        "text-center",
-        "font-bold max-w-3xl mx-auto",
-        "break-all",
-        projectNameTextSize(project)
-      )}
+      className={classnames("text-center", "font-bold max-w-3xl mx-auto", "break-all", projectNameTextSize(project))}
     >
       {project.name}
     </div>
@@ -52,9 +47,7 @@ function projectNameTextSize(project: Project) {
 function ContributorList({ project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
 
-  const { champion, reviewer, contributors } = Contributors.splitByRole(
-    project.contributors
-  );
+  const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (
     <div className="mt-4 flex items-center justify-center">

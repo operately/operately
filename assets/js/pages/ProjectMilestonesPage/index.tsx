@@ -122,7 +122,7 @@ function PhaseMilestoneList({ project, refetch, phase, milestones }) {
 
 function Title() {
   return (
-    <div className="p-8 pb-8">
+    <div className="pb-8">
       <div className="flex items-center justify-center">
         <div>
           <div className="text-3xl font-extrabold text-center">Timeline</div>

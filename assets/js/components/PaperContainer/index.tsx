@@ -34,8 +34,16 @@ const sizes = {
   large: "max-w-5xl",
 };
 
+const Context = React.createContext({
+  size: "medium",
+});
+
 export function Root({ size, children }: { size: Size; children: React.ReactNode }) {
-  return <div className={classnames("mx-auto my-20", sizes[size])}>{children}</div>;
+  return (
+    <Context.Provider value={{ size }}>
+      <div className={classnames("mx-auto my-20 relative", sizes[size])}>{children}</div>
+    </Context.Provider>
+  );
 }
 
 Root.defaultProps = {
@@ -66,10 +74,19 @@ export function NavSeparator() {
   );
 }
 
-export function Body({ children, minHeight = "1000px" }) {
+const bodyPaddings = {
+  small: "px-10 py-8",
+  medium: "px-12 py-10",
+  large: "px-16 py-12",
+};
+
+export function Body({ children, minHeight }) {
+  const { size } = React.useContext(Context);
+  const padding = bodyPaddings[size];
+
   return (
     <div
-      className="relative bg-dark-2 rounded-[20px] border border-shade-1 shadow-lg"
+      className={`relative bg-dark-2 rounded-[20px] border border-shade-1 shadow-lg ${padding}`}
       style={{
         minHeight: minHeight,
         background: "linear-gradient(0deg, var(--color-dark-2) 0%, var(--color-dark-3) 100%)",
@@ -80,9 +97,13 @@ export function Body({ children, minHeight = "1000px" }) {
   );
 }
 
+Body.defaultProps = {
+  minHeight: "1000px",
+};
+
 export function Title({ children }) {
   return (
-    <div className="px-16 flex items-center gap-4 mt-12 mb-8">
+    <div className="flex items-center gap-4 mb-8">
       <FancyLineSeparator />
       <h1 className="text-4xl font-extrabold text-center">{children}</h1>
       <FancyLineSeparator />
@@ -116,9 +137,13 @@ export function LineSeparator() {
 
 export function SectionHeader({ children }) {
   return (
-    <div className="px-16 flex items-center gap-4 mt-12 mb-4">
+    <div className="flex items-center gap-4 mt-12 mb-4">
       <h1 className="uppercase font-bold tracking-wider">{children}</h1>
       <LineSeparator />
     </div>
   );
+}
+
+export function RightToolbox({ children }) {
+  return <div className="absolute top-16 border-l border-shade-2 -right-[47px]">{children}</div>;
 }
