@@ -30,7 +30,9 @@ const GET_COMPANY = gql`
   }
 `;
 
-export function useCompany(id: string) {
+export function useCompany() {
+  const id = window.companyID;
+
   return useQuery(GET_COMPANY, {
     variables: { id },
   });

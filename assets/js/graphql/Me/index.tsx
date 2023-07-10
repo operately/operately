@@ -1,5 +1,7 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 
+import { Project } from "@/graphql/Projects";
+
 const GET_ME = gql`
   query GetMe {
     me {
@@ -15,14 +17,21 @@ export function useMe() {
   return useQuery(GET_ME);
 }
 
+export interface Pin {
+  id: string;
+  pinnedId: string;
+  pinnedType: string;
+  pinned: Project;
+}
+
 export function usePins(options = {}) {
   return useQuery(
     gql`
       query GetPins {
         pins {
           id
-          pinned_id
-          pinned_type
+          pinnedId
+          pinnedType
 
           pinned {
             ... on Project {
