@@ -1,12 +1,13 @@
 import React from "react";
 
-import { Link } from "react-router-dom";
-
 import Avatar from "@/components/Avatar";
 import * as Icons from "@tabler/icons-react";
 
 import { useMe, usePins } from "@/graphql/Me";
 import { useCompany } from "@/graphql/Companies";
+
+import { AccountCard } from "./AccountCard";
+import { Card, CardSectionTitle } from "./Card";
 
 export function HomePage() {
   const meData = useMe();
@@ -32,28 +33,7 @@ export function HomePage() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card colSpan={1} linkTo="/account">
-          <div className="flex flex-col items-center justify-center h-full">
-            <Avatar size="xxlarge" person={me} />
-
-            <div className="mt-4 text-center">
-              <h1 className="text-2xl font-extrabold">{me.fullName}</h1>
-              <p className="text-sm">
-                {me.title} at {company.name}
-              </p>
-            </div>
-
-            <div className="mt-6 flex items-center justify-center gap-4 w-full">
-              <div className="flex items-center text-sm gap-2">
-                <Icons.IconBellFilled size={16} className="text-orange-400" /> Notifications On
-              </div>
-
-              <div className="flex items-center text-sm gap-2">
-                <Icons.IconBuilding size={16} className="text-sky-400" /> In the office
-              </div>
-            </div>
-          </div>
-        </Card>
+        <AccountCard me={me} company={company} />
 
         <Card colSpan={2} linkTo="/home/my-assignments">
           <h1 className="font-bold flex items-center gap-2">
@@ -141,31 +121,4 @@ export function HomePage() {
       </div>
     </div>
   );
-}
-
-// string interpolation won't work here
-// because tailwind removes unused classes
-// so we need to use an array
-const colSpanOptions = ["col-span-0", "col-span-1", "col-span-2", "col-span-3"];
-
-function Card({ linkTo, children, colSpan = 1 }) {
-  return (
-    <Link
-      to={linkTo}
-      className={
-        "h-72 rounded-[20px] p-4 hover:scale-[1.01] transition-transform border border-dark-4 cursor-pointer" +
-        " " +
-        colSpanOptions[colSpan]
-      }
-      style={{
-        background: "linear-gradient(45deg, var(--color-dark-2), var(--color-dark-3))",
-      }}
-    >
-      {children}
-    </Link>
-  );
-}
-
-function CardSectionTitle({ title }) {
-  return <div className="font-bold mb-2 text-xs uppercase text-pink-400">{title}</div>;
 }
