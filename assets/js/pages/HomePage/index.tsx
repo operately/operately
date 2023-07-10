@@ -11,6 +11,8 @@ import { ActivityFeedCard } from "./ActivityFeedCard";
 import { MyProjectsCard } from "./MyProjectsCard";
 import { PinnedProjectCard } from "./PinnedProjectCard";
 
+import classnames from "classnames";
+
 import { motion } from "framer-motion";
 import {
   DndContext,
@@ -25,7 +27,13 @@ import {
 
 import { SortableContext, useSortable, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 
+const Context = React.createContext({});
+
 export function HomePage() {
+  const [editing, setEditing] = React.useState(false);
+
+  const toggleEditing = () => setEditing((editing) => !editing);
+
   const meData = useMe();
   const pinsData = usePins({ fetchPolicy: "network-only" });
   const companyData = useCompany();
@@ -48,10 +56,15 @@ export function HomePage() {
         />
       </div>
 
-      <Dashboard me={me} company={company} pins={pins} />
+      <Context.Provider value={{ editing }}>
+        <Dashboard me={me} company={company} pins={pins} />
+      </Context.Provider>
 
       <div className="mb-8 flex items-center justify-center text-sm gap-2">
-        <div className="font-medium flex items-center gap-2 border border-shade-3 rounded-[20px] px-3 py-1.5 cursor-pointer">
+        <div
+          className="font-medium flex items-center gap-2 border border-shade-3 rounded-[20px] px-3 py-1.5 cursor-pointer"
+          onClick={toggleEditing}
+        >
           <Icons.IconGridPattern size={16} />
           Edit Home Page
         </div>
@@ -125,7 +138,15 @@ function Dashboard({ me, company, pins }) {
             }}
           >
             {items.map((id) => (
-              <Item id={id} activeId={activeId} span={spanSize[id] || 1}>
+              <Item
+                id={id}
+                activeId={activeId}
+                span={spanSize[id] || 1}
+                remove={() => {
+                  console.log("here");
+                  setItems((items) => items.filter((i) => i !== id));
+                }}
+              >
                 <Content id={id} me={me} company={company} pins={pins} />
               </Item>
             ))}
@@ -174,7 +195,9 @@ function Content({ id, me, company, pins }) {
 // so we need to use an array
 const colSpanOptions = ["col-span-0", "col-span-1", "col-span-2", "col-span-3"];
 
-function Item({ id, activeId, children, span = 1 }) {
+function Item({ id, activeId, children, span = 1, remove }) {
+  const { editing } = React.useContext(Context);
+
   const sortable = useSortable({
     id,
   });
@@ -188,7 +211,9 @@ function Item({ id, activeId, children, span = 1 }) {
         type: "spring",
         duration: activeId ? 0 : 0.6,
       }}
-      className={`${colSpanOptions[span]} hover:scale-[1.01] transition-transform cursor-pointer`}
+      className={classnames(colSpanOptions[span], "relative", {
+        "hover:scale-[1.01] transition-transform cursor-pointer": !editing,
+      })}
       ref={setNodeRef}
       style={{
         ...styles.cardStyles,
@@ -197,14 +222,21 @@ function Item({ id, activeId, children, span = 1 }) {
       }}
       {...attributes}
       {...listeners}
-      children={children}
-    />
+    >
+      {children}
+      {editing && (
+        <div
+          className="absolute p-1 -top-4 -right-4 flex items-center justify-center bg-orange-400 rounded-full"
+          onClick={() => remove()}
+        >
+          <Icons.IconX size={24} className="text-dark-1" />
+        </div>
+      )}
+    </motion.div>
   );
 }
 
-function DragOverlayItem(props: { id: string; children }) {
-  const { id } = props;
-
+function DragOverlayItem({ id, children }) {
   // DragOver seems to cache this component so I can't tell if the item is still actually active
   // It will remain active until it has settled in place rather than when dragEnd has occured
   // I need to know when drag end has taken place to trigger the scale down animation
@@ -221,7 +253,7 @@ function DragOverlayItem(props: { id: string; children }) {
         padding: 0,
         transform: isReallyActive ? "scale(1.05)" : "none",
       }}
-      children={props.children}
+      children={children}
     />
   );
 }
