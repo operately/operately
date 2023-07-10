@@ -47,16 +47,14 @@ export function ProjectStatusUpdateListPage() {
 
 function Title({ projectId }) {
   return (
-    <div className="p-8 pb-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-2xl font-extrabold ">Status Update</div>
-          <div className="text-medium">Asking the project champion for a status update every Friday at 3pm.</div>
-        </div>
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="text-2xl font-extrabold ">Status Update</div>
+        <div className="text-medium">Asking the project champion for a status update every Friday at 3pm.</div>
+      </div>
 
-        <div>
-          <PostUpdateButton linkTo={`/projects/${projectId}/updates/new`} />
-        </div>
+      <div>
+        <PostUpdateButton linkTo={`/projects/${projectId}/updates/new`} />
       </div>
     </div>
   );

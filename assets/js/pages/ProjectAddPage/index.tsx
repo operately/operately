@@ -30,11 +30,9 @@ export function ProjectAddPage() {
       </Paper.Navigation>
 
       <Paper.Body minHeight="300px">
-        <div className="px-16 py-12">
-          <h1 className="mb-8 font-bold text-2xl">New Project in {company.name}</h1>
+        <h1 className="mb-8 font-bold text-2xl">New Project in {company.name}</h1>
 
-          <Form />
-        </div>
+        <Form />
       </Paper.Body>
     </Paper.Root>
   );

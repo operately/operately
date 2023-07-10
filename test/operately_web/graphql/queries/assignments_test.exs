@@ -29,19 +29,27 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
   @get_assignments_query """
     query getAssignments($rangeStart: DateTime!, $rangeEnd: DateTime!) {
       assignments(rangeStart: $rangeStart, rangeEnd: $rangeEnd) {
-        project_status_updates {
-          name
-        }
-        milestones {
-          id
+        assignments {
+          type
+          due
+
+          resource {
+            ... on Milestone {
+              title
+            }
+
+            ... on Project {
+              name
+            }
+          }
         }
       }
     }
   """
 
   test "query: getAssignments", ctx do
-    one_week_ago = DateTime.utc_now() |> DateTime.add(-30, :day) |> DateTime.to_iso8601()
-    one_week_from_now = DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_iso8601()
+    one_week_ago = DateTime.utc_now() |> DateTime.add(-7, :day) |> DateTime.to_iso8601()
+    one_week_from_now = DateTime.utc_now() |> DateTime.add(7, :day) |> DateTime.to_iso8601()
 
     conn = graphql(ctx.conn, @get_assignments_query, %{
       "rangeStart" => one_week_ago,
@@ -51,14 +59,18 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
     assert json_response(conn, 200) == %{
       "data" => %{
         "assignments" => %{
-          "project_status_updates" => [
+          "assignments" => [
             %{
-              "name" => ctx.project.name
-            }
-          ],
-          "milestones" => [
+              "due" => Date.to_iso8601(ctx.milestone.deadline_at),
+              "resource" => %{
+                "title" => ctx.milestone.title
+              },
+              "type" => "milestone"
+            },
             %{
-              "id" => ctx.milestone.id,
+              "due" => Date.to_iso8601(ctx.project.next_update_scheduled_at),
+              "resource" => %{"name" => "some name"}, 
+              "type" => "project_status_update"
             }
           ]
         }

@@ -38,10 +38,8 @@ export function ProjectStatusUpdateNewPage() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <div className="px-16 py-16">
-          <NewUpdateHeader />
-          <Editor project={project} />
-        </div>
+        <NewUpdateHeader />
+        <Editor project={project} />
       </Paper.Body>
     </Paper.Root>
   );

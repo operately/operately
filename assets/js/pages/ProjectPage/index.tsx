@@ -49,22 +49,20 @@ function Overview({ project, refetch }) {
       </Paper.Navigation>
 
       <Paper.Body minHeight="600px">
-        <div className="relative">
-          <Header project={project} />
+        <Header project={project} />
 
-          <div className="grid grid-cols-3 px-16 gap-4 py-4 mb-8">
-            <MilestonesCard project={project} />
-            <DocumentationCard project={project} />
-            <StatuUpdatesCard project={project} />
-          </div>
-
-          <Activity projectId={project.id} />
-
-          <div className="absolute top-8 border-l border-shade-2 -right-[48px]">
-            <PinToHomePage project={project} refetch={refetch} />
-          </div>
+        <div className="grid grid-cols-3 gap-4">
+          <MilestonesCard project={project} />
+          <DocumentationCard project={project} />
+          <StatuUpdatesCard project={project} />
         </div>
+
+        <Activity projectId={project.id} />
       </Paper.Body>
+
+      <Paper.RightToolbox>
+        <PinToHomePage project={project} refetch={refetch} />
+      </Paper.RightToolbox>
     </Paper.Root>
   );
 }

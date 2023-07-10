@@ -59,7 +59,7 @@ export function ProjectDocumentationPage() {
 
 function ListTitle() {
   return (
-    <div className="p-8 pb-8">
+    <div className="pb-8">
       <div className="text-2xl font-extrabold flex justify-center items-center">Documentation</div>
     </div>
   );
@@ -77,7 +77,7 @@ function DocList({ project }) {
       <Paper.Body>
         <ListTitle />
 
-        <div className="flex flex-col gap-4 px-8 pb-8 fadeIn">
+        <div className="flex flex-col gap-4 fadeIn">
           <PitchSummary project={project} />
           {Projects.shouldBeFilledIn(project, "plan") && (
             <div className="mt-12 uppercase tracking-wide font-medium">Upcomming</div>

@@ -1,41 +1,36 @@
 import { useQuery, gql } from "@apollo/client";
 import * as Time from "@/utils/time";
 
-export interface Assignments {
-  projectStatusUpdates: {
-    id: string;
-    name: string;
-    nextUpdateScheduledAt: string;
-  }[];
+import { Project } from "@/graphql/Projects";
+import { Milestone } from "@/graphql/Projects/milestones";
 
-  milestones: {
-    id: string;
-    title: string;
-    deadlineAt: string;
-    project: {
-      id: string;
-      name: string;
-    };
-  }[];
+export interface Assignments {
+  type: "milestone" | "project_status_update";
+  due: string;
+  resource: Project | Milestone;
 }
 
 const GET_ASSIGNMENTS = gql`
   query Assignments($rangeStart: DateTime!, $rangeEnd: DateTime!) {
     assignments(rangeStart: $rangeStart, rangeEnd: $rangeEnd) {
-      projectStatusUpdates {
-        id
-        name
-        nextUpdateScheduledAt
-      }
+      assignments {
+        type
+        due
 
-      milestones {
-        id
-        title
-        deadlineAt
+        resource {
+          ... on Project {
+            id
+            name
+          }
 
-        project {
-          id
-          name
+          ... on Milestone {
+            id
+            title
+            project {
+              id
+              name
+            }
+          }
         }
       }
     }

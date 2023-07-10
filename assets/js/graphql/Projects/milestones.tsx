@@ -8,6 +8,11 @@ export interface Milestone {
   deadlineAt: string;
   status: MilestoneStatus;
   phase: "concept" | "planning" | "execution" | "control";
+
+  project?: {
+    id: string;
+    name: string;
+  };
 }
 
 export function sortByDeadline(milestones: Milestone[]) {
