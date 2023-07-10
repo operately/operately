@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Schema do
   import_types Absinthe.Type.Custom
 
   # Types
+  import_types Types.Assignments
   import_types Types.Activities
   import_types Types.Projects
   import_types Types.Objectives

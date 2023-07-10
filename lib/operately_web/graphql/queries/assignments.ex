@@ -7,11 +7,6 @@ defmodule OperatelyWeb.GraphQL.Queries.Assignments do
   alias Operately.Projects.Project
   alias Operately.Projects.Milestone
 
-  object :assignments do
-    field :project_status_updates, non_null(list_of(:project))
-    field :milestones, non_null(list_of(:milestone))
-  end
-
   object :assignment_queries do
     field :assignments, non_null(:assignments) do
       arg :range_start, non_null(:datetime)
@@ -34,16 +29,33 @@ defmodule OperatelyWeb.GraphQL.Queries.Assignments do
             where: m.status == :pending
         )
 
-        pendingStatusUpdate = Repo.all(
+        pending_status_updates = Repo.all(
           from p in Project,
             where: p.id in ^(Enum.map(projects, & &1.id)),
             where: not is_nil(p.next_update_scheduled_at),
             where: p.next_update_scheduled_at > ^args.range_start and p.next_update_scheduled_at < ^args.range_end
         )
 
+        assignments = [] 
+          ++ Enum.map(milestones, fn milestone ->
+            %{
+              type: "milestone",
+              due: milestone.deadline_at,
+              resource: milestone
+            }
+          end) 
+          ++ Enum.map(pending_status_updates, fn project_status_update ->
+            %{
+              type: "project_status_update",
+              due: project_status_update.next_update_scheduled_at,
+              resource: project_status_update
+            }
+          end)
+
+        assignments = Enum.sort_by(assignments, & &1.due)
+
         {:ok, %{
-          project_status_updates: pendingStatusUpdate,
-          milestones: milestones
+          assignments: assignments
         }}
       end
     end
