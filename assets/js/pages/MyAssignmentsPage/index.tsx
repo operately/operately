@@ -1,12 +1,16 @@
 import React from "react";
-import classnames from "classnames";
+
+import { Link } from "react-router-dom";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
+import FormattedTime from "@/components/FormattedTime";
 
 import * as Assignments from "@/graphql/Assignments";
+import { Milestone } from "@/graphql/Projects/milestones";
+import { Project } from "@/graphql/Projects";
 
-import { sortAndGroupAssignemnts, SortedAndGroupedAssignments } from "./sortAndGroupAssignments";
+import * as time from "@/utils/time";
 
 export function MyAssignmentsPage() {
   return (
@@ -35,23 +39,83 @@ function AssignmentList() {
     return null;
   }
 
-  const assignments: SortedAndGroupedAssignments = sortAndGroupAssignemnts(data.assignments);
-  const hasPending = assignments.pending.length > 0;
-  const hasUpcoming = assignments.upcoming.length > 0;
+  const assignments: Assignments.Assignments[] = data.assignments.assignments;
+  const pending = assignments.filter((a) => time.parseISO(a.due) < time.endOfToday());
+  const upcoming = assignments.filter((a) => time.parseISO(a.due) >= time.endOfToday());
+
+  const hasPending = pending.length > 0;
+  const hasUpcoming = upcoming.length > 0;
 
   return (
     <div>
-      {hasPending ? assignments.pending.map((a) => a.element) : <EmptyInbox />}
+      {hasPending ? pending.map((a) => <AssignmentItem assignment={a} />) : <EmptyInbox />}
 
       {hasUpcoming && (
         <>
           <Paper.SectionHeader>Upcomming</Paper.SectionHeader>
-          {assignments.upcoming.map((a, i) => (
-            <React.Fragment key={i}>{a.element}</React.Fragment>
+          {upcoming.map((a, i) => (
+            <AssignmentItem assignment={a} key={i} />
           ))}
         </>
       )}
     </div>
+  );
+}
+
+function AssignmentItem({ assignment }: { assignment: Assignments.Assignments }) {
+  switch (assignment.type) {
+    case "milestone": {
+      let milestone = assignment.resource as Milestone;
+      let project = milestone.project as Project;
+      let link = `/projects/${project!.id}/milestones/${milestone.id}`;
+      let icon = <IconMilestone />;
+
+      return (
+        <AssignmentCard due={assignment.due} icon={icon} linkTo={link}>
+          The <strong>{milestone.title}</strong> milestone on the <strong>{project.name}</strong> project is due
+        </AssignmentCard>
+      );
+    }
+
+    case "project_status_update": {
+      let project = assignment.resource as Project;
+      let icon = <IconStatusUpdate />;
+      let link = `/projects/${project!.id}/updates`;
+
+      return (
+        <AssignmentCard due={assignment.due} icon={icon} linkTo={link}>
+          Write a status update for the <strong>{project.name}</strong> project
+        </AssignmentCard>
+      );
+    }
+
+    default:
+      console.error("Unknown assignment type", assignment);
+      return null;
+  }
+}
+
+function AssignmentCard({ due, icon, linkTo, children }) {
+  let timeDate = time.parseISO(due);
+
+  const timeClassBase = "text-white-1 font-semibold px-2 rounded-lg py-1 text-xs w-24 text-center shrink-0 truncate";
+  const timeClass = timeClassBase + " bg-dark-5";
+  const overdueClass = timeClassBase + " bg-red-500";
+
+  let overdue = time.isToday(timeDate) && time.isPast(timeDate);
+
+  return (
+    <Link to={linkTo}>
+      <div className="flex items-center justify-between mx-14 hover:bg-dark-4 px-2 py-2 cursor-pointer">
+        <div className="flex gap-2 items-center justify-center">
+          <div className="shrink-0">{icon}</div>
+          <div>{children}</div>
+        </div>
+        <div className={overdue ? overdueClass : timeClass}>
+          <FormattedTime time={timeDate} format="relative-day" />
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -64,28 +128,34 @@ function EmptyInbox() {
   );
 }
 
-function Tabs({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-[40px] flex justify-center mx-16 mb-4">{children}</div>;
-}
-
-Tabs.List = function TabsList({ children }: { children: React.ReactNode }) {
-  return <div className="flex items-center justify-center p-1.5 gap-3">{children}</div>;
-};
-
-Tabs.Tab = function TabsTab({ active = false, children }: { active: boolean; children: React.ReactNode }) {
+function IconMilestone() {
   return (
     <div
-      className={classnames(
-        "px-4 py-1 flex items-center gap-2 font-semibold rounded-[40px]",
-        active
-          ? "border-2 border-purple-500 bg-dark-3 text-dark-1 font-bold"
-          : "border-2 border-dark-5 bg-transparent text-white-1/70 cursor-pointer hover:bg-dark-3 hover:text-pink-400 transition transition-duration-50",
-      )}
+      className="flex gap-2 items-center justify-center"
       style={{
-        background: active ? "linear-gradient(45deg, var(--color-pink-400), var(--color-purple-400))" : "",
+        width: "35px",
+        height: "35px",
+        borderRadius: "100%",
+        background: "linear-gradient(to right top, var(--color-green-400), var(--color-sky-400))",
       }}
     >
-      {children}
+      <Icons.IconFlag size={24} stroke={2} className="text-dark-1" />
     </div>
   );
-};
+}
+
+function IconStatusUpdate() {
+  return (
+    <div
+      className="flex gap-2 items-center justify-center"
+      style={{
+        width: "35px",
+        height: "35px",
+        borderRadius: "100%",
+        background: "linear-gradient(to right top, var(--color-pink-400), var(--color-purple-400))",
+      }}
+    >
+      <Icons.IconReport size={24} stroke={2} className="text-dark-1" />
+    </div>
+  );
+}
