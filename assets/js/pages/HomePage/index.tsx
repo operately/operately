@@ -60,7 +60,7 @@ export function HomePage() {
       </div>
 
       <Context.Provider value={{ editing }}>
-        <DashboardView me={me} company={company} dashboard={dashboard.data} />
+        <DashboardView me={me} company={company} dashboard={dashboard.data.homeDashboard} />
       </Context.Provider>
 
       <div className="mb-8 flex items-center justify-center text-sm gap-2">
@@ -95,7 +95,7 @@ const styles: { [style: string]: React.CSSProperties } = {
 const spanSize = {
   account: 1,
   "my-assignments": 2,
-  "activity-feed": 2,
+  activity: 2,
   "my-projects": 1,
 };
 
@@ -180,7 +180,7 @@ function Content({ me, company, panel }) {
       return <AccountCard me={me} company={company} />;
     case "my-assignments":
       return <MyAssignmentsCard />;
-    case "activity-feed":
+    case "activity":
       return <ActivityFeedCard />;
     case "my-projects":
       return <MyProjectsCard />;

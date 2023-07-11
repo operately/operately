@@ -259,7 +259,7 @@ defmodule Operately.People do
     person = Repo.preload(person, [:home_dashboard])
 
     if person.home_dashboard do
-      {:ok, person}
+      {:ok, person.home_dashboard}
     else
       create_home_dashboard(person)
     end
