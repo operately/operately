@@ -267,11 +267,35 @@ defmodule Operately.People do
 
   def create_home_dashboard(person) do
     Repo.transaction(fn ->
-      case Dashboards.create_dashboard(%{}) do
+      case Dashboards.create_dashboard(%{company_id: person.company_id}) do
         {:ok, dashboard} ->
           {:ok, person} = update_person(person, %{home_dashboard_id: dashboard.id})
 
-          {:ok, Repo.preload(person, [:home_dashboard]).home_dashboard}
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 0,
+            type: "account"
+          })
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 1,
+            type: "my-assignments"
+          })
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 2,
+            type: "activity"
+          })
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 3,
+            type: "my-projects"
+          })
+
+          dashboard
         {:error, changeset} -> 
           {:error, changeset}
       end

@@ -5,8 +5,8 @@ defmodule Operately.Dashboards.Dashboard do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "dashboards" do
-
-    field :company_id, :binary_id
+    belongs_to :company, Operately.Companies.Company
+    has_many :panels, Operately.Dashboards.Panel
 
     timestamps()
   end

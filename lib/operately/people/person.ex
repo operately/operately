@@ -22,7 +22,7 @@ defmodule Operately.People.Person do
   @doc false
   def changeset(person, attrs) do
     person
-    |> cast(attrs, [:full_name, :handle, :title, :avatar_url, :email, :account_id, :company_id])
+    |> cast(attrs, [:full_name, :handle, :title, :avatar_url, :email, :account_id, :company_id, :home_dashboard_id])
     |> validate_required([:full_name, :company_id])
     |> unique_constraint(:handle)
   end

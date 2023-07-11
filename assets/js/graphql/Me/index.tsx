@@ -17,8 +17,8 @@ export function useMe() {
   return useQuery(GET_ME);
 }
 
-export interface HomeDashboard {
-  pannels: Panel[];
+export interface Dashboard {
+  panels: Panel[];
 }
 
 export interface Panel {
@@ -32,27 +32,29 @@ export function useHomeDashboard(options = {}) {
   return useQuery(
     gql`
       query GetHomeDashboard {
-        panels {
-          id
-          type
+        homeDashboard {
+          panels {
+            id
+            type
 
-          linkedResource {
-            ... on Project {
-              name
-              phase
+            linkedResource {
+              ... on Project {
+                name
+                phase
 
-              contributors {
-                role
-                person {
-                  id
-                  fullName
-                  avatarUrl
+                contributors {
+                  role
+                  person {
+                    id
+                    fullName
+                    avatarUrl
+                  }
                 }
-              }
 
-              milestones {
-                title
-                status
+                milestones {
+                  title
+                  status
+                }
               }
             }
           }
