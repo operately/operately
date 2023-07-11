@@ -29,19 +29,10 @@ defmodule OperatelyWeb.GraphQL.Queries.People do
       end
     end
 
-    field :pins, list_of(:pin) do
-      resolve fn _, %{context: context} ->
-        person = context.current_account.person
-        pins = Operately.People.list_people_pins(person.id)
-
-        {:ok, pins}
-      end
-    end
-
     field :home_dashboard, non_null(:dashboard) do
       resolve fn _, %{context: context} ->
         person = context.current_account.person
-        dashboard = Operately.Dashboards.find_or_create_home_dashboard(person.id)
+        dashboard = Operately.Person.find_or_create_home_dashboard(person)
 
         {:ok, dashboard}
       end
@@ -57,8 +48,8 @@ defmodule OperatelyWeb.GraphQL.Queries.People do
     field :type, non_null(:string)
 
     field :linked_resource, :panel_linked_resource do
-      resolve fn pin, _, _ ->
-        project = Operately.Projects.get_project!(pin.pinned_id)
+      resolve fn resource, _, _ ->
+        project = Operately.Projects.get_project!(resource.linked_resource_id)
 
         {:ok, project}
       end

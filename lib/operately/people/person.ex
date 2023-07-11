@@ -8,6 +8,7 @@ defmodule Operately.People.Person do
   schema "people" do
     belongs_to(:account, Operately.Accounts.Account)
     belongs_to(:company, Operately.Companies.Company)
+    belongs_to(:home_dashboard, Operately.Dashboards.Dashboard)
 
     field :full_name, :string
     field :handle, :string

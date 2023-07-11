@@ -50,14 +50,6 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :deadline, :date
     field :next_update_scheduled_at, :date
 
-    field :is_pinned, non_null(:boolean) do
-      resolve fn project, _, %{context: context} ->
-        person = context.current_account.person
-
-        {:ok, Operately.People.is_pinned?(person, :project, project.id)}
-      end
-    end
-
     field :description, :string do
       resolve fn project, _, _ ->
         {:ok, Jason.encode!(project.description)}
