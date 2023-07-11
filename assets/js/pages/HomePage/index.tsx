@@ -29,6 +29,18 @@ import { SortableContext, useSortable, arrayMove, sortableKeyboardCoordinates } 
 
 const Context = React.createContext({});
 
+const dashboard = {
+  items: [
+    { type: "account" },
+    { type: "my-assignments" },
+    { type: "activity-feed" },
+    { type: "my-projects" },
+    { type: "pinned-project", id: "1" },
+    { type: "pinned-project", id: "2" },
+    { type: "pinned-project", id: "3" },
+  ],
+};
+
 export function HomePage() {
   const [editing, setEditing] = React.useState(false);
 
@@ -214,6 +226,7 @@ function Item({ id, activeId, children, span = 1, remove }) {
       }}
       className={classnames(colSpanOptions[span], "relative", {
         "hover:scale-[1.01] transition-transform cursor-pointer": !editing,
+        "animate-shake": editing && !isDragging,
       })}
       ref={setNodeRef}
       style={{
