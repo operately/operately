@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import { useMe, usePins, Pin } from "@/graphql/Me";
+import { useMe, useHomeDashboard, Dashoard, Panel } from "@/graphql/Me";
 import { useCompany } from "@/graphql/Companies";
 
 import { AccountCard } from "./AccountCard";
@@ -27,19 +27,11 @@ import {
 
 import { SortableContext, useSortable, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 
-const Context = React.createContext({});
+interface ContextDescriptor {
+  editing?: boolean;
+}
 
-const dashboard = {
-  items: [
-    { type: "account" },
-    { type: "my-assignments" },
-    { type: "activity-feed" },
-    { type: "my-projects" },
-    { type: "pinned-project", id: "1" },
-    { type: "pinned-project", id: "2" },
-    { type: "pinned-project", id: "3" },
-  ],
-};
+const Context = React.createContext<ContextDescriptor>({});
 
 export function HomePage() {
   const [editing, setEditing] = React.useState(false);
@@ -47,16 +39,15 @@ export function HomePage() {
   const toggleEditing = () => setEditing((editing) => !editing);
 
   const meData = useMe();
-  const pinsData = usePins({ fetchPolicy: "network-only" });
+  const dashboard = useHomeDashboard();
   const companyData = useCompany();
 
-  if (!meData.data || !companyData.data || !pinsData.data) {
+  if (!meData.data || !companyData.data || !dashboard.data) {
     return null;
   }
 
   const me = meData.data.me;
   const company = companyData.data.company;
-  const pins: Pin[] = pinsData.data.pins;
 
   return (
     <div className="max-w-5xl mx-auto mt-20 flex flex-col gap-8">
@@ -69,7 +60,7 @@ export function HomePage() {
       </div>
 
       <Context.Provider value={{ editing }}>
-        <Dashboard me={me} company={company} pins={pins} />
+        <DashboardView me={me} company={company} dashboard={dashboard.data} />
       </Context.Provider>
 
       <div className="mb-8 flex items-center justify-center text-sm gap-2">
@@ -108,29 +99,31 @@ const spanSize = {
   "my-projects": 1,
 };
 
-function Dashboard({ me, company, pins }) {
-  const [items, setItems] = React.useState([
-    "account",
-    "my-assignments",
-    "activity-feed",
-    "my-projects",
-    ...pins.map((pin) => pin.pinned.name),
-  ]);
+function DashboardView({ me, company, dashboard }: { me: any; company: any; dashboard: Dashoard }) {
+  const [panels, setPanels] = React.useState<Panel[]>(dashboard.panels);
 
-  const [activeId, setActiveId] = React.useState(null);
+  const [activeId, setActiveId] = React.useState<string | null>(null);
   const columnCount = 3;
 
-  function handleDragStart({ active }) {
+  const handleDragStart = ({ active }) => {
     setActiveId(active.id);
-  }
+  };
 
-  function handleDragOver({ active, over }: DragEndEvent) {
-    setItems((items) => arrayMove(items, items.indexOf(active.id), items.indexOf(over?.id)));
-  }
+  const handleDragOver = ({ active, over }: DragEndEvent) => {
+    setPanels((panels: Panel[]) => {
+      if (!active) return panels;
+      if (!over) return panels;
 
-  function handleDragEnd({ active, over }: DragEndEvent) {
+      const overIndex = panels.findIndex((panel) => panel.id === over.id);
+      const activeIndex = panels.findIndex((panel) => panel.id === active.id);
+
+      return arrayMove(panels, activeIndex, overIndex);
+    });
+  };
+
+  const handleDragEnd = () => {
     setActiveId(null);
-  }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -139,36 +132,40 @@ function Dashboard({ me, company, pins }) {
     }),
   );
 
+  const removePanel = (id: string) => {
+    setPanels((panels) => panels.filter((panel) => panel.id !== id));
+  };
+
+  const active = panels.find((p) => p.id === activeId);
+
   return (
     <>
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-        <SortableContext items={items} strategy={() => null}>
+        <SortableContext items={panels} strategy={() => null}>
           <div
             style={{
               ...styles.grid,
               gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
             }}
           >
-            {items.map((id) => (
+            {panels.map((panel) => (
               <Item
-                id={id}
+                key={panel.id}
+                id={panel.id}
                 activeId={activeId}
-                span={spanSize[id] || 1}
-                remove={() => {
-                  console.log("here");
-                  setItems((items) => items.filter((i) => i !== id));
-                }}
+                span={spanSize[panel.type]}
+                remove={() => removePanel(panel.id)}
               >
-                <Content id={id} me={me} company={company} pins={pins} />
+                <Content id={panel.id} me={me} company={company} panel={panel} />
               </Item>
             ))}
           </div>
         </SortableContext>
 
         <DragOverlay>
-          {activeId ? (
-            <DragOverlayItem id={activeId}>
-              <Content id={activeId} pins={pins} me={me} company={company}></Content>
+          {active ? (
+            <DragOverlayItem id={active.id}>
+              <Content id={active} me={me} company={company} panel={active} />
             </DragOverlayItem>
           ) : null}
         </DragOverlay>
@@ -177,29 +174,22 @@ function Dashboard({ me, company, pins }) {
   );
 }
 
-function Content({ id, me, company, pins }) {
-  if (id === "account") {
-    return <AccountCard me={me} company={company} />;
+function Content({ me, company, panel }) {
+  switch (panel.type) {
+    case "account":
+      return <AccountCard me={me} company={company} />;
+    case "my-assignments":
+      return <MyAssignmentsCard />;
+    case "activity-feed":
+      return <ActivityFeedCard />;
+    case "my-projects":
+      return <MyProjectsCard />;
+    case "pinned-project":
+      return <PinnedProjectCard panel={panel} />;
+    default:
+      console.error("Unknown panel type", panel);
+      return null;
   }
-
-  if (id === "my-assignments") {
-    return <MyAssignmentsCard />;
-  }
-
-  if (id === "activity-feed") {
-    return <ActivityFeedCard />;
-  }
-
-  if (id === "my-projects") {
-    return <MyProjectsCard />;
-  }
-
-  const pin = pins.find((pin) => pin.pinned.name === id);
-  if (pin) {
-    return <PinnedProjectCard pin={pin} />;
-  }
-
-  return null;
 }
 
 // string interpolation won't work here

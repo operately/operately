@@ -17,23 +17,26 @@ export function useMe() {
   return useQuery(GET_ME);
 }
 
-export interface Pin {
-  id: string;
-  pinnedId: string;
-  pinnedType: string;
-  pinned: Project;
+export interface HomeDashboard {
+  pannels: Panel[];
 }
 
-export function usePins(options = {}) {
+export interface Panel {
+  id: string;
+  type: string;
+
+  linkedResource?: Project;
+}
+
+export function useHomeDashboard(options = {}) {
   return useQuery(
     gql`
-      query GetPins {
-        pins {
+      query GetHomeDashboard {
+        panels {
           id
-          pinnedId
-          pinnedType
+          type
 
-          pinned {
+          linkedResource {
             ... on Project {
               name
               phase

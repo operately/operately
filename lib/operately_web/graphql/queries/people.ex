@@ -38,15 +38,25 @@ defmodule OperatelyWeb.GraphQL.Queries.People do
       end
     end
 
+    field :home_dashboard, non_null(:dashboard) do
+      resolve fn _, %{context: context} ->
+        person = context.current_account.person
+        dashboard = Operately.Dashboards.find_or_create_home_dashboard(person.id)
+
+        {:ok, dashboard}
+      end
+    end
   end
 
-  object :pin do
-    field :id, non_null(:id)
-    field :person_id, non_null(:id)
-    field :pinned_id, non_null(:id)
-    field :pinned_type, non_null(:string)
+  object :dashboard do
+    field :panels, list_of(:panel)
+  end
 
-    field :pinned, :pinned do
+  object :panel do
+    field :id, non_null(:id)
+    field :type, non_null(:string)
+
+    field :linked_resource, :panel_linked_resource do
       resolve fn pin, _, _ ->
         project = Operately.Projects.get_project!(pin.pinned_id)
 
@@ -55,7 +65,7 @@ defmodule OperatelyWeb.GraphQL.Queries.People do
     end
   end
 
-  union :pinned do
+  union :panel_linked_resource do
     types [:project]
 
     resolve_type fn
