@@ -7,8 +7,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.Dashboards do
   end
 
   input_object :panel_input do
-    field :id, non_null(:id)
-    field :index, non_null(:integer)
+    field :id, :id
+    field :index, :integer
     field :type, non_null(:string)
   end
 
@@ -19,20 +19,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Dashboards do
       resolve fn %{input: input}, _ ->
         Operately.Repo.transaction(fn ->
           dashboard = Operately.Dashboards.get_dashboard!(input.id)
-          panels = Operately.Repo.preload(dashboard, [:panels]).panels
 
-          panels |> Enum.each(fn panel ->
-            input_panel = Enum.find(input.panels, fn input_panel -> input_panel.id == panel.id end)
+          panels_in_the_db = Operately.Repo.preload(dashboard, [:panels]).panels
+          new_panels = Enum.filter(input.panels, fn input_panel -> input_panel[:id] === nil end)
+          updated_panels = Enum.filter(input.panels, fn input_panel -> input_panel[:id] !== nil end)
 
-            if input_panel do
-              {:ok, _} = Operately.Dashboards.update_panel(panel, %{
-                index: input_panel.index, 
-                type: input_panel.type
-              })
-            else
-              {:ok, _} = Operately.Dashboards.delete_panel(panel)
-            end
-          end)
+          create_panels(dashboard, new_panels)
+          update_panels(updated_panels, panels_in_the_db)
+          remove_panels(updated_panels, panels_in_the_db)
 
           dashboard
         end)
@@ -47,4 +41,35 @@ defmodule OperatelyWeb.GraphQL.Mutations.Dashboards do
       end
     end
   end
+
+  def create_panels(dashboard, panels) do
+    panels |> Enum.each(fn panel ->
+      {:ok, _} = Operately.Dashboards.create_panel(%{
+        dashboard_id: dashboard.id,
+        index: panel.index, 
+        type: panel.type
+      })
+    end)
+  end
+
+  def update_panels(updated_panels, panels_in_the_db) do
+    updated_panels |> Enum.each(fn new_data ->
+      IO.inspect(new_data)
+      panel = Enum.find(panels_in_the_db, fn panel -> panel.id == new_data.id end)
+
+      {:ok, _} = Operately.Dashboards.update_panel(panel, %{
+        index: new_data.index,
+        type: new_data.type
+      })
+    end)
+  end
+
+  def remove_panels(updated_panels, panels_in_the_db) do
+    panels_in_the_db |> Enum.each(fn panel ->
+      if Enum.find(updated_panels, fn new_panel -> new_panel.id == panel.id end) == nil do
+        Operately.Dashboards.delete_panel(panel)
+      end
+    end)
+  end
+
 end

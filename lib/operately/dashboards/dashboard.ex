@@ -6,7 +6,7 @@ defmodule Operately.Dashboards.Dashboard do
   @foreign_key_type :binary_id
   schema "dashboards" do
     belongs_to :company, Operately.Companies.Company
-    has_many :panels, Operately.Dashboards.Panel
+    has_many :panels, Operately.Dashboards.Panel, preload_order: [asc: :index]
 
     timestamps()
   end

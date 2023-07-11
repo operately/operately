@@ -69,8 +69,8 @@ export function HomePage() {
 
   const startEditing = () => setEditing(true);
   const finishEditing = async () => {
-    await dashboard.refetch();
     setEditing(false);
+    await dashboard.refetch();
   };
 
   return (
@@ -131,7 +131,7 @@ function DashboardView({ me, company, dashboard }: { me: any; company: any; dash
         input: {
           id: dashboard.id,
           panels: panels.map((panel) => ({
-            id: panel.id,
+            id: panel.id.includes("temp-id") ? undefined : panel.id,
             type: panel.type,
             index: panels.findIndex((p) => p.id === panel.id),
           })),
@@ -172,6 +172,13 @@ function DashboardView({ me, company, dashboard }: { me: any; company: any; dash
   };
 
   const active = panels.find((p) => p.id === activeId);
+
+  const addablePanels = [
+    { title: "My Profile", panel: { id: "temp-id-1", type: "account" } },
+    { title: "My Assignments", panel: { id: "temp-id-2", type: "my-assignments" } },
+    { title: "Activity Feed", panel: { id: "temp-id-3", type: "activity" } },
+    { title: "My Projects", panel: { id: "temp-id-4", type: "my-projects" } },
+  ].filter((panel) => !panels.find((p) => p.type === panel.panel.type));
 
   return (
     <>
@@ -220,6 +227,23 @@ function DashboardView({ me, company, dashboard }: { me: any; company: any; dash
           </Button>
         )}
       </div>
+
+      {editing && (
+        <div className="flex justify-center gap-4 mb-8">
+          {addablePanels.map((panel) => (
+            <div
+              key={panel.panel.id}
+              className="flex items-center justify-center bg-dark-3 rounded-[20px] p-4 gap-4 cursor-pointer relative"
+              onClick={() => setPanels((panels) => [...panels, panel.panel])}
+            >
+              <div className="p-1 bg-green-400 rounded-full">
+                <Icons.IconPlus size={16} className="text-dark-1" />
+              </div>
+              <div>{panel.title}</div>
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }
