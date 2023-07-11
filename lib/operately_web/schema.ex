@@ -32,6 +32,7 @@ defmodule OperatelyWeb.Schema do
   import_types Queries.Updates
 
   # Mutations
+  import_types Mutations.Dashboards
   import_types Mutations.Projects
   import_types Mutations.Objectives
   import_types Mutations.Groups
@@ -148,6 +149,7 @@ defmodule OperatelyWeb.Schema do
   end
 
   mutation do
+    import_fields :dashboard_mutations
     import_fields :objective_mutations
     import_fields :project_mutations
     import_fields :group_mutations

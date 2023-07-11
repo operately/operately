@@ -18,12 +18,14 @@ export function useMe() {
 }
 
 export interface Dashboard {
+  id: string;
   panels: Panel[];
 }
 
 export interface Panel {
   id: string;
   type: string;
+  index: number;
 
   linkedResource?: Project;
 }
@@ -33,8 +35,10 @@ export function useHomeDashboard(options = {}) {
     gql`
       query GetHomeDashboard {
         homeDashboard {
+          id
           panels {
             id
+            index
             type
 
             linkedResource {
@@ -95,13 +99,12 @@ export function useProfileMutation(options = {}) {
   );
 }
 
-export function useTogglePin(options = {}) {
+export function useUpdateDashboard(options = {}) {
   return useMutation(
     gql`
-      mutation TogglePin($input: TogglePinInput!) {
-        togglePin(input: $input) {
+      mutation UpdateDashboard($input: UpdateDashboardInput!) {
+        updateDashboard(input: $input) {
           id
-          __typename
         }
       }
     `,

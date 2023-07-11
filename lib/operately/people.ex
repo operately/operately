@@ -269,7 +269,7 @@ defmodule Operately.People do
     Repo.transaction(fn ->
       case Dashboards.create_dashboard(%{company_id: person.company_id}) do
         {:ok, dashboard} ->
-          {:ok, person} = update_person(person, %{home_dashboard_id: dashboard.id})
+          {:ok, _person} = update_person(person, %{home_dashboard_id: dashboard.id})
 
           {:ok, _} = Dashboards.create_panel(%{
             dashboard_id: dashboard.id,

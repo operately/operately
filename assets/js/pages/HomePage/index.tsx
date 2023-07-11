@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import { useMe, useHomeDashboard, Dashoard, Panel } from "@/graphql/Me";
+import { useMe, useHomeDashboard, Panel, useUpdateDashboard, Dashboard } from "@/graphql/Me";
 import { useCompany } from "@/graphql/Companies";
 
 import { AccountCard } from "./AccountCard";
@@ -10,6 +10,7 @@ import { MyAssignmentsCard } from "./MyAssignmentsCard";
 import { ActivityFeedCard } from "./ActivityFeedCard";
 import { MyProjectsCard } from "./MyProjectsCard";
 import { PinnedProjectCard } from "./PinnedProjectCard";
+import Button from "@/components/Button";
 
 import classnames from "classnames";
 
@@ -29,14 +30,14 @@ import { SortableContext, useSortable, arrayMove, sortableKeyboardCoordinates } 
 
 interface ContextDescriptor {
   editing?: boolean;
+  startEditing?: () => void;
+  finishEditing?: () => void;
 }
 
 const Context = React.createContext<ContextDescriptor>({});
 
 export function HomePage() {
   const [editing, setEditing] = React.useState(false);
-
-  const toggleEditing = () => setEditing((editing) => !editing);
 
   const meData = useMe();
   const dashboard = useHomeDashboard();
@@ -49,6 +50,12 @@ export function HomePage() {
   const me = meData.data.me;
   const company = companyData.data.company;
 
+  const startEditing = () => setEditing(true);
+  const finishEditing = async () => {
+    await dashboard.refetch();
+    setEditing(false);
+  };
+
   return (
     <div className="max-w-5xl mx-auto mt-20 flex flex-col gap-8">
       <div className="flex items-center justify-center">
@@ -59,23 +66,9 @@ export function HomePage() {
         />
       </div>
 
-      <Context.Provider value={{ editing }}>
+      <Context.Provider value={{ editing, startEditing, finishEditing }}>
         <DashboardView me={me} company={company} dashboard={dashboard.data.homeDashboard} />
       </Context.Provider>
-
-      <div className="mb-8 flex items-center justify-center text-sm gap-2">
-        <div
-          className="font-medium flex items-center gap-2 border border-shade-3 rounded-[20px] px-3 py-1.5 cursor-pointer"
-          onClick={toggleEditing}
-        >
-          <Icons.IconGridPattern size={16} />
-          Edit Home Page
-        </div>
-
-        <div className="font-medium flex items-center gap-2 border border-shade-3 rounded-[20px] px-3 py-1.5 cursor-pointer">
-          <Icons.IconArrowUp size={16} /> Back to Top
-        </div>
-      </div>
     </div>
   );
 }
@@ -99,11 +92,36 @@ const spanSize = {
   "my-projects": 1,
 };
 
-function DashboardView({ me, company, dashboard }: { me: any; company: any; dashboard: Dashoard }) {
-  const [panels, setPanels] = React.useState<Panel[]>(dashboard.panels);
+function DashboardView({ me, company, dashboard }: { me: any; company: any; dashboard: Dashboard }) {
+  const { editing, startEditing, finishEditing } = React.useContext(Context);
+
+  const [update, { loading }] = useUpdateDashboard({
+    onCompleted: () => {
+      if (finishEditing) finishEditing();
+    },
+  });
+
+  let sortedPanels = ([] as Panel[]).concat(dashboard.panels).sort((a, b) => a.index - b.index);
+
+  const [panels, setPanels] = React.useState<Panel[]>(sortedPanels);
 
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const columnCount = 3;
+
+  const saveChanges = () => {
+    update({
+      variables: {
+        input: {
+          id: dashboard.id,
+          panels: panels.map((panel) => ({
+            id: panel.id,
+            type: panel.type,
+            index: panels.findIndex((p) => p.id === panel.id),
+          })),
+        },
+      },
+    });
+  };
 
   const handleDragStart = ({ active }) => {
     setActiveId(active.id);
@@ -170,6 +188,21 @@ function DashboardView({ me, company, dashboard }: { me: any; company: any; dash
           ) : null}
         </DragOverlay>
       </DndContext>
+
+      <div className="mb-8 flex items-center justify-center text-sm gap-2">
+        {!editing && (
+          <Button variant="secondary" onClick={startEditing}>
+            <Icons.IconGridPattern size={16} />
+            Edit Home Page
+          </Button>
+        )}
+
+        {editing && (
+          <Button variant="success" onClick={saveChanges} loading={loading}>
+            Save Changes
+          </Button>
+        )}
+      </div>
     </>
   );
 }
