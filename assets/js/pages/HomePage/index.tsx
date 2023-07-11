@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import { useMe, useHomeDashboard, Panel, useUpdateDashboard, Dashboard } from "@/graphql/Me";
+import { useMe, useHomeDashboard, Panel, useUpdateDashboard, Dashboard, sortPanelsByIndex } from "@/graphql/Me";
 import { useCompany } from "@/graphql/Companies";
 
 import { AccountCard } from "./AccountCard";
@@ -40,8 +40,25 @@ export function HomePage() {
   const [editing, setEditing] = React.useState(false);
 
   const meData = useMe();
-  const dashboard = useHomeDashboard();
+  const dashboard = useHomeDashboard({
+    fetchPolicy: "network-only",
+  });
   const companyData = useCompany();
+
+  if (meData.error) {
+    console.error(meData.error);
+    return null;
+  }
+
+  if (companyData.error) {
+    console.error(companyData.error);
+    return null;
+  }
+
+  if (dashboard.error) {
+    console.error(dashboard.error);
+    return null;
+  }
 
   if (!meData.data || !companyData.data || !dashboard.data) {
     return null;
@@ -101,7 +118,7 @@ function DashboardView({ me, company, dashboard }: { me: any; company: any; dash
     },
   });
 
-  let sortedPanels = ([] as Panel[]).concat(dashboard.panels).sort((a, b) => a.index - b.index);
+  let sortedPanels = sortPanelsByIndex(dashboard.panels);
 
   const [panels, setPanels] = React.useState<Panel[]>(sortedPanels);
 

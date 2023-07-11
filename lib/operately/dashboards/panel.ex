@@ -21,6 +21,6 @@ defmodule Operately.Dashboards.Panel do
   def changeset(panel, attrs) do
     panel
     |> cast(attrs, [:linked_resource_id, :linked_resource_type, :index, :dashboard_id, :type])
-    |> validate_required([:dashboard_id])
+    |> validate_required([:dashboard_id, :type])
   end
 end

@@ -36,6 +36,29 @@ defmodule Operately.Dashboards do
     Repo.all(Panel)
   end
 
+  def has_panel?(dashboard_id, panel_type, linked_resource_id) do
+    res = from(p in Panel,
+      where: p.dashboard_id == ^dashboard_id,
+      where: p.type == ^panel_type,
+      where: p.linked_resource_id == ^linked_resource_id,
+      select: p
+    )
+    |> Repo.one()
+    |> is_nil()
+
+    not res
+  end
+
+  def remove_panel(dashboard_id, panel_type, linked_resource_id) do
+    from(
+      p in Panel,
+      where: p.dashboard_id == ^dashboard_id,
+      where: p.type == ^panel_type,
+      where: p.linked_resource_id == ^linked_resource_id
+    )
+    |> Repo.delete_all()
+  end
+
   def get_panel!(id), do: Repo.get!(Panel, id)
 
   def create_panel(attrs \\ %{}) do

@@ -43,6 +43,7 @@ export function useHomeDashboard(options = {}) {
 
             linkedResource {
               ... on Project {
+                id
                 name
                 phase
 
@@ -110,4 +111,15 @@ export function useUpdateDashboard(options = {}) {
     `,
     options,
   );
+}
+
+export function sortPanelsByIndex(panels: Panel[]) {
+  let copy = ([] as Panel[]).concat(panels);
+
+  return copy.sort((a, b) => {
+    if (a.index === null) return 1;
+    if (b.index === null) return -1;
+
+    return a.index - b.index;
+  });
 }

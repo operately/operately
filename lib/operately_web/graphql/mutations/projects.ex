@@ -32,6 +32,31 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    field :pin_project_to_home_page, non_null(:boolean) do
+      arg :project_id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+
+        if person.home_dashboard_id do
+          if Operately.Dashboards.has_panel?(person.home_dashboard_id, "pinned-project", args.project_id) do
+            Operately.Dashboards.remove_panel(person.home_dashboard_id, "pinned-project", args.project_id)
+          else
+            {:ok, _} = Operately.Dashboards.create_panel(%{
+              dashboard_id: person.home_dashboard_id,
+              type: "pinned-project",
+              linked_resource_id: args.project_id,
+              linked_resource_type: "project"
+            })
+          end
+
+          {:ok, true}
+        else
+          {:ok, false}
+        end
+      end
+    end
+
     #
     # Documents
     #
