@@ -200,6 +200,7 @@ function Item({ id, activeId, children, span = 1, remove }) {
 
   const sortable = useSortable({
     id,
+    disabled: !editing,
   });
 
   const { setNodeRef, attributes, listeners, isDragging, transform, transition } = sortable;
@@ -220,16 +221,25 @@ function Item({ id, activeId, children, span = 1, remove }) {
         opacity: isDragging ? 0.5 : 1,
         transition,
       }}
-      {...attributes}
-      {...listeners}
     >
       {children}
+      {editing && <div className="absolute inset-0 opacity-30 bg-dark-1"></div>}
       {editing && (
         <div
-          className="absolute p-1 -top-4 -right-4 flex items-center justify-center bg-orange-400 rounded-full"
+          className="absolute p-1 top-2 right-2 flex items-center justify-center bg-red-400 rounded-full"
           onClick={() => remove()}
         >
-          <Icons.IconX size={24} className="text-dark-1" />
+          <Icons.IconX size={16} className="text-dark-1" />
+        </div>
+      )}
+      {editing && (
+        <div
+          className="absolute p-1 top-2 right-10 flex items-center justify-center bg-dark-5 rounded-full"
+          onClick={() => remove()}
+          {...attributes}
+          {...listeners}
+        >
+          <Icons.IconGripVertical size={16} className="text-white-1" />
         </div>
       )}
     </motion.div>
