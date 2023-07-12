@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import Avatar from "@/components/Avatar";
-import { useMe } from "@/graphql/Me";
+import { useMe, useUpdateNotificationsSettings } from "@/graphql/Me";
 import * as Forms from "@/components/Form";
 
 export function AccountNotificationSettingsPage() {
@@ -25,30 +25,40 @@ export function AccountNotificationSettingsPage() {
         <h1 className="text-2xl font-bold">Edit your notification preferences</h1>
 
         <div className="mt-8 flex flex-col gap-8">
-          <NotificationsForm />
+          <NotificationsForm me={me} />
         </div>
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function NotificationsForm() {
-  const [sendMeDailySummary, setSendMeDailySummary] = React.useState(true);
-  const [sendOnMention, setSendOnMention] = React.useState(true);
-  const [sendOnAssignment, setSendOnAssignment] = React.useState(true);
+function NotificationsForm({ me }) {
+  const [sendDailySummary, setSendDailySummary] = React.useState(me.sendDailySummary);
+  const [notifyOnMention, setNotifyOnMention] = React.useState(me.notifyOnMention);
+  const [notifyAboutAssignments, setNotifyAboutAssignment] = React.useState(me.notifyAboutAssignments);
+
+  const [update, { loading }] = useUpdateNotificationsSettings({ onCompleted: redirectToAccountPage });
 
   const handleSubmit = () => {
-    console.log("submit");
+    update({
+      variables: {
+        input: {
+          sendDailySummary,
+          notifyOnMention,
+          notifyAboutAssignments,
+        },
+      },
+    });
   };
 
   return (
-    <Forms.Form onSubmit={handleSubmit} loading={false} isValid={true}>
-      <Forms.Switch label="Send me daily summary emails" value={sendMeDailySummary} onChange={setSendMeDailySummary} />
-      <Forms.Switch label="Notify me when I'm mentioned" value={sendOnMention} onChange={setSendOnMention} />
+    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={true}>
+      <Forms.Switch label="Send me daily summary emails" value={sendDailySummary} onChange={setSendDailySummary} />
+      <Forms.Switch label="Notify me when I'm mentioned" value={notifyOnMention} onChange={setNotifyOnMention} />
       <Forms.Switch
         label="Notify me about upcomming assignments"
-        value={sendOnAssignment}
-        onChange={setSendOnAssignment}
+        value={notifyAboutAssignments}
+        onChange={setNotifyAboutAssignment}
       />
 
       <Forms.SubmitArea>
@@ -56,4 +66,8 @@ function NotificationsForm() {
       </Forms.SubmitArea>
     </Forms.Form>
   );
+}
+
+function redirectToAccountPage() {
+  window.location.href = "/account";
 }

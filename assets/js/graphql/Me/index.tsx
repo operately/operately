@@ -9,6 +9,10 @@ const GET_ME = gql`
       fullName
       avatarUrl
       title
+
+      sendDailySummary
+      notifyOnMention
+      notifyAboutAssignments
     }
   }
 `;
@@ -90,6 +94,24 @@ export function useProfileMutation(options = {}) {
         updateProfile(input: $input) {
           fullName
           title
+        }
+      }
+    `,
+    {
+      refetchQueries: [{ query: GET_ME }],
+      ...options,
+    },
+  );
+}
+
+export function useUpdateNotificationsSettings(options = {}) {
+  return useMutation(
+    gql`
+      mutation UpdateNotificationsSettings($input: UpdateNotificationSettingsInput!) {
+        updateNotificationSettings(input: $input) {
+          sendDailySummary
+          notifyOnMention
+          notifyAboutAssignments
         }
       }
     `,
