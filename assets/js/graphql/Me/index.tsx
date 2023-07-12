@@ -1,6 +1,7 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 
 import { Project } from "@/graphql/Projects";
+import { Person } from "@/graphql/People";
 
 const GET_ME = gql`
   query GetMe {
@@ -144,4 +145,8 @@ export function sortPanelsByIndex(panels: Panel[]) {
 
     return a.index - b.index;
   });
+}
+
+export function areNotificationsEnabled(me: Person) {
+  return me.sendDailySummary || me.notifyOnMention || me.notifyAboutAssignments;
 }

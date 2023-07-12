@@ -4,9 +4,11 @@ import { Card } from "./Card";
 import Avatar from "@/components/Avatar";
 import * as Icons from "@tabler/icons-react";
 
+import { areNotificationsEnabled } from "@/graphql/Me";
+
 export function AccountCard({ me, company }) {
   return (
-    <Card colSpan={1} linkTo="/account">
+    <Card linkTo="/account">
       <div className="flex flex-col items-center justify-center h-full">
         <Avatar size="xxlarge" person={me} />
 
@@ -19,7 +21,12 @@ export function AccountCard({ me, company }) {
 
         <div className="mt-6 flex items-center justify-center gap-4 w-full">
           <div className="flex items-center text-sm gap-2">
-            <Icons.IconBellFilled size={16} className="text-orange-400" /> Notifications On
+            {areNotificationsEnabled(me) ? (
+              <Icons.IconBellRinging size={16} className="text-green-400" />
+            ) : (
+              <Icons.IconBellOff size={16} className="text-gray-400" />
+            )}
+            Notifications {me.sendDailySummary ? "on" : "off"}
           </div>
 
           <div className="flex items-center text-sm gap-2">
