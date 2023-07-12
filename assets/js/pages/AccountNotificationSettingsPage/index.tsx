@@ -43,9 +43,9 @@ function NotificationsForm() {
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={false} isValid={true}>
-      <Forms.Toggle label="Send me daily summary emails" value={sendMeDailySummary} onChange={setSendMeDailySummary} />
-      <Forms.Toggle label="Notify me when I'm mentioned" value={sendOnMention} onChange={setSendOnMention} />
-      <Forms.Toggle
+      <Forms.Switch label="Send me daily summary emails" value={sendMeDailySummary} onChange={setSendMeDailySummary} />
+      <Forms.Switch label="Notify me when I'm mentioned" value={sendOnMention} onChange={setSendOnMention} />
+      <Forms.Switch
         label="Notify me about upcomming assignments"
         value={sendOnAssignment}
         onChange={setSendOnAssignment}
