@@ -11,6 +11,7 @@ import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
 
 import { AccountPage } from "@/pages/AccountPage";
 import { AccountEditProfilePage } from "@/pages/AccountEditProfilePage";
+import { AccountNotificationSettingsPage } from "@/pages/AccountNotificationSettingsPage";
 
 import { ProjectPage } from "../pages/ProjectPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
@@ -22,14 +23,11 @@ import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
 import { ProjectStatusUpdateListPage } from "@/pages/ProjectStatusUpdateListPage";
 import { ProjectStatusUpdateNewPage } from "@/pages/ProjectStatusUpdateNewPage";
 
-import TenetAddPage from "../pages/TenetAddPage";
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
 
-import KpiAddPage from "../pages/KpiAddPage";
 import { KpiPage, KpiPageLoader } from "../pages/KpiPage";
 import { KpiListPage, KpiListPageLoader } from "../pages/KpiListPage";
 
-import ObjectiveAddPage from "../pages/ObjectiveAddPage";
 import { ObjectivePage } from "../pages/ObjectivePage";
 import { ObjectiveListPage, ObjectiveListPageLoader } from "../pages/ObjectiveListPage";
 
@@ -75,6 +73,10 @@ const routes = createBrowserRouter([
       {
         path: "/account/profile",
         element: <AccountEditProfilePage />,
+      },
+      {
+        path: "/account/notifications",
+        element: <AccountNotificationSettingsPage />,
       },
       {
         path: "/home/my-assignments",
@@ -136,10 +138,6 @@ const routes = createBrowserRouter([
         element: <TenetListPage />,
       },
       {
-        path: "/tenets/new",
-        element: <TenetAddPage />,
-      },
-      {
         path: "/tenets/:id",
         element: <ObjectiveListPage />,
       },
@@ -147,10 +145,6 @@ const routes = createBrowserRouter([
         path: "/kpis",
         loader: loaderWithApollo(KpiListPageLoader),
         element: <KpiListPage />,
-      },
-      {
-        path: "/kpis/new",
-        element: <KpiAddPage />,
       },
       {
         path: "/kpis/:id",
@@ -161,10 +155,6 @@ const routes = createBrowserRouter([
         path: "/objectives",
         loader: loaderWithApollo(ObjectiveListPageLoader),
         element: <ObjectiveListPage />,
-      },
-      {
-        path: "/objectives/new",
-        element: <ObjectiveAddPage />,
       },
       {
         path: "/objectives/:id",

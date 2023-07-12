@@ -1,14 +1,14 @@
-import React from 'react';
-import { useQuery, gql } from '@apollo/client';
-import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useQuery, gql } from "@apollo/client";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-import AddMembersModal from './AddMembersModal';
-import Avatar from '../../components/Avatar';
-import GroupMission from './GroupMission';
-import PointsOfContact from './PointsOfContact';
-import Projects from './Projects';
-import Objectives from './Objectives';
+import AddMembersModal from "./AddMembersModal";
+import Avatar from "../../components/Avatar";
+import GroupMission from "./GroupMission";
+import PointsOfContact from "./PointsOfContact";
+import Projects from "./Projects";
+import Objectives from "./Objectives";
 
 const GET_GROUP = gql`
   query GetGroup($id: ID!) {
@@ -33,12 +33,12 @@ const GET_GROUP = gql`
   }
 `;
 
-export async function GroupPageLoader(apolloClient : any, {params}) {
+export async function GroupPageLoader(apolloClient: any, { params }) {
   const { id } = params;
 
   await apolloClient.query({
     query: GET_GROUP,
-    variables: { id }
+    variables: { id },
   });
 
   return {};
@@ -50,10 +50,10 @@ interface Person {
   avatarUrl?: string;
 }
 
-function MemberList({ members } : { members: Person[] }) {
+function MemberList({ members }: { members: Person[] }) {
   return (
     <div className="flex gap-2 mb-4">
-      {members.map((m : Person) => (
+      {members.map((m: Person) => (
         <Avatar key={m.id} person={m} />
       ))}
     </div>
@@ -68,25 +68,27 @@ export function GroupPage() {
 
   const { loading, error, data, refetch } = useQuery(GET_GROUP, {
     variables: { id },
-    fetchPolicy: 'cache-only'
+    fetchPolicy: "cache-only",
   });
 
   if (loading) return <p>{t("loading.loading")}</p>;
-  if (error) return <p>{t("error.error")}: {error.message}</p>;
+  if (error)
+    return (
+      <p>
+        {t("error.error")}: {error.message}
+      </p>
+    );
 
   const handleAddMembersModalSubmit = () => {
     refetch();
-  }
+  };
 
   return (
     <div>
       <h1 className="text-2xl">{data.group.name}</h1>
 
       <div className="mb-4">
-        <GroupMission
-          groupId={id}
-          mission={data.group.mission}
-          onMissionChanged={refetch} />
+        <GroupMission groupId={id} mission={data.group.mission} onMissionChanged={refetch} />
       </div>
 
       <MemberList members={data.group.members} />
@@ -102,5 +104,5 @@ export function GroupPage() {
       <Projects groupId={id} />
       <Objectives groupId={id} />
     </div>
-  )
+  );
 }

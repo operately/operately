@@ -6,6 +6,10 @@ export interface Person {
   fullName: string;
   title: string;
   avatarUrl: string;
+
+  sendDailySummary: boolean;
+  notifyOnMention: boolean;
+  notifyAboutAssignments: boolean;
 }
 
 export function createProfile(client: ApolloClient<any>, fullName: string, title: string) {

@@ -42,9 +42,12 @@ function ProfileLink() {
 
 function NotificationLink() {
   return (
-    <div className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg">
+    <Link
+      to="/account/notifications"
+      className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg"
+    >
       <Icons.IconBell size={24} /> Notifications
-    </div>
+    </Link>
   );
 }
 

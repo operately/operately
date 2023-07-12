@@ -1,6 +1,7 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 
 import { Project } from "@/graphql/Projects";
+import { Person } from "@/graphql/People";
 
 const GET_ME = gql`
   query GetMe {
@@ -9,6 +10,10 @@ const GET_ME = gql`
       fullName
       avatarUrl
       title
+
+      sendDailySummary
+      notifyOnMention
+      notifyAboutAssignments
     }
   }
 `;
@@ -100,6 +105,24 @@ export function useProfileMutation(options = {}) {
   );
 }
 
+export function useUpdateNotificationsSettings(options = {}) {
+  return useMutation(
+    gql`
+      mutation UpdateNotificationsSettings($input: UpdateNotificationSettingsInput!) {
+        updateNotificationSettings(input: $input) {
+          sendDailySummary
+          notifyOnMention
+          notifyAboutAssignments
+        }
+      }
+    `,
+    {
+      refetchQueries: [{ query: GET_ME }],
+      ...options,
+    },
+  );
+}
+
 export function useUpdateDashboard(options = {}) {
   return useMutation(
     gql`
@@ -122,4 +145,8 @@ export function sortPanelsByIndex(panels: Panel[]) {
 
     return a.index - b.index;
   });
+}
+
+export function areNotificationsEnabled(me: Person) {
+  return me.sendDailySummary || me.notifyOnMention || me.notifyAboutAssignments;
 }

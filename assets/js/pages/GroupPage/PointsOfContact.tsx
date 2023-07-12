@@ -2,7 +2,7 @@ import React from "react";
 import Button from "../../components/Button";
 import Modal from "./Modal";
 
-import Form from "../../components/Form";
+import * as Forms from "../../components/Form";
 import FormSelect from "../../components/FormSelect";
 import FormTextInput from "../../components/FormTextInput";
 import Icon from "../../components/Icon";
@@ -14,16 +14,8 @@ function SlackInputFields() {
   return (
     <div>
       <div className="mt-4 flex flex-col gap-4">
-        <FormTextInput
-          data-test-id="groupPointOfContactValue"
-          id="value"
-          label="URL"
-        />
-        <FormTextInput
-          data-test-id="groupPointOfContactName"
-          id="name"
-          label="Name"
-        />
+        <FormTextInput data-test-id="groupPointOfContactValue" id="value" label="URL" />
+        <FormTextInput data-test-id="groupPointOfContactName" id="name" label="Name" />
       </div>
     </div>
   );
@@ -50,19 +42,9 @@ function AddContactModal(props: AddContactModalProps): JSX.Element {
   const [selected, setSelected] = React.useState("slack");
 
   return (
-    <Modal
-      title="Add a Point of Contact"
-      hideModal={props.hideModal}
-      isOpen={props.isOpen}
-    >
-      <Form
-        ref={props.formRef}
-        onSubmit={props.onSubmit}
-        onCancel={props.hideModal}
-      >
-        <p className="prose mb-4">
-          Select a third-party platform where the team works together.
-        </p>
+    <Modal title="Add a Point of Contact" hideModal={props.hideModal} isOpen={props.isOpen}>
+      <Forms.Form ref={props.formRef} onSubmit={props.onSubmit} onCancel={props.hideModal} isValid={true}>
+        <p className="prose mb-4">Select a third-party platform where the team works together.</p>
 
         <FormSelect
           data-test-id="groupPointOfContactType"
@@ -75,7 +57,7 @@ function AddContactModal(props: AddContactModalProps): JSX.Element {
         </FormSelect>
 
         <div className="mt-4">{InputFieldsForType(selected)}</div>
-      </Form>
+      </Forms.Form>
     </Modal>
   );
 }
@@ -112,25 +94,16 @@ interface PointsOfContactProps {
   onAddContact: () => void;
 }
 
-export default function PointsOfContact({
-  groupId,
-  groupName,
-  pointsOfContact,
-  onAddContact,
-}: PointsOfContactProps) {
+export default function PointsOfContact({ groupId, groupName, pointsOfContact, onAddContact }: PointsOfContactProps) {
   const client = useApolloClient();
   const [showModal, setShowModal] = React.useState(false);
 
   let formRef = React.useRef<HTMLFormElement>(null);
 
   async function handleAddContact() {
-    let typeInput = formRef.current?.querySelector(
-      "#contactType"
-    ) as HTMLSelectElement;
+    let typeInput = formRef.current?.querySelector("#contactType") as HTMLSelectElement;
     let nameInput = formRef.current?.querySelector("#name") as HTMLInputElement;
-    let valueInput = formRef.current?.querySelector(
-      "#value"
-    ) as HTMLInputElement;
+    let valueInput = formRef.current?.querySelector("#value") as HTMLInputElement;
 
     await addContact(client, {
       variables: {
@@ -151,8 +124,7 @@ export default function PointsOfContact({
     <div className="mt-4" data-test-id="groupPointsOfContact">
       <h2 className="text-lg font-semibold">Points of Contact</h2>
       <div className="mb-2">
-        Create links that help reach people in the {groupName} group, such as
-        team’s Slack channel.
+        Create links that help reach people in the {groupName} group, such as team’s Slack channel.
       </div>
 
       {pointsOfContact.length > 0 && (
@@ -165,12 +137,7 @@ export default function PointsOfContact({
         </div>
       )}
 
-      <Button
-        data-test-id="groupAddPointOfContact"
-        ghost
-        size={ButtonSize.Small}
-        onClick={() => setShowModal(true)}
-      >
+      <Button data-test-id="groupAddPointOfContact" ghost size={ButtonSize.Small} onClick={() => setShowModal(true)}>
         Add a Point of Contact
       </Button>
 
