@@ -25,6 +25,7 @@ defmodule Operately.DashboardsFixtures do
     {:ok, panel} =
       attrs
       |> Enum.into(%{
+        type: "activity",
         index: 42,
         linked_resource_id: "7488a646-e31f-11e4-aace-600308960662",
         linked_resource_type: "some linked_resource_type"

@@ -54,7 +54,6 @@ defmodule OperatelyWeb.GraphQL.Mutations.Dashboards do
 
   def update_panels(updated_panels, panels_in_the_db) do
     updated_panels |> Enum.each(fn new_data ->
-      IO.inspect(new_data)
       panel = Enum.find(panels_in_the_db, fn panel -> panel.id == new_data.id end)
 
       {:ok, _} = Operately.Dashboards.update_panel(panel, %{

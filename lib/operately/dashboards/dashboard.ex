@@ -14,7 +14,7 @@ defmodule Operately.Dashboards.Dashboard do
   @doc false
   def changeset(dashboard, attrs) do
     dashboard
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:company_id])
+    |> validate_required([:company_id])
   end
 end
