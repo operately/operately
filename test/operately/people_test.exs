@@ -575,13 +575,8 @@ defmodule Operately.PeopleTest do
     end
   end
 
-  describe "people_pins" do
-    alias Operately.People.Pin
-
+  describe "dashboards" do
     import Operately.CompaniesFixtures
-    import Operately.PeopleFixtures
-
-    @invalid_attrs %{id: nil, type: nil}
 
     setup do
       company = company_fixture()
@@ -590,56 +585,27 @@ defmodule Operately.PeopleTest do
       %{company: company, person: person}
     end
 
-    test "list_people_pins/0 returns all people_pins", ctx do
-      pin = pin_fixture(ctx.person)
-      assert People.list_people_pins(ctx.person.id) == [pin]
+    test "find_or_create_dashboard/2 creates a dashboard if it does not exist", ctx do
+      assert ctx.person.home_dashboard_id == nil
+      assert People.find_or_create_home_dashboard(ctx.person)
+      assert People.get_person!(ctx.person.id).home_dashboard_id != nil
     end
 
-    test "get_pin!/1 returns the pin with given id", ctx do
-      pin = pin_fixture(ctx.person)
-      assert People.get_pin!(pin.id) == pin
+    test "find_or_create_dashboard/2 returns the existing dashboard if it exists", ctx do
+      assert {:ok, dashboard1} = People.find_or_create_home_dashboard(ctx.person)
+      assert {:ok, dashboard2} = People.find_or_create_home_dashboard(ctx.person)
+
+      assert dashboard1.id == dashboard2.id
     end
 
-    test "create_pin/1 with valid data creates a pin", ctx do
-      valid_attrs = %{
-        pinned_id: "7488a646-e31f-11e4-aace-600308960662",
-        pinned_type: "project",
-        person_id: ctx.person.id
-      }
+    test "the dashboard includes default panels", ctx do
+      assert {:ok, dashboard} = People.find_or_create_home_dashboard(ctx.person)
 
-      assert {:ok, %Pin{} = pin} = People.create_pin(valid_attrs)
-      assert pin.pinned_id == "7488a646-e31f-11e4-aace-600308960662"
-      assert pin.pinned_type == :project
-      assert pin.person_id == ctx.person.id
-    end
+      dashboard = Repo.preload(dashboard, [:panels])
 
-    test "create_pin/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = People.create_pin(@invalid_attrs)
-    end
-
-    test "update_pin/2 with valid data updates the pin", ctx do
-      pin = pin_fixture(ctx.person)
-
-      update_attrs = %{
-        pinned_id: "7488a646-e31f-11e4-aace-600308960668",
-        pinned_type: "project"
-      }
-
-      assert {:ok, %Pin{} = pin} = People.update_pin(pin, update_attrs)
-      assert pin.pinned_id == "7488a646-e31f-11e4-aace-600308960668"
-      assert pin.pinned_type == :project
-      assert pin.person_id == ctx.person.id
-    end
-
-    test "delete_pin/1 deletes the pin", ctx do
-      pin = pin_fixture(ctx.person)
-      assert {:ok, %Pin{}} = People.delete_pin(pin)
-      assert_raise Ecto.NoResultsError, fn -> People.get_pin!(pin.id) end
-    end
-
-    test "change_pin/1 returns a pin changeset", ctx do
-      pin = pin_fixture(ctx.person)
-      assert %Ecto.Changeset{} = People.change_pin(pin)
+      assert length(dashboard.panels) == 4
+      assert Enum.map(dashboard.panels, & &1.type) == ["account", "my-assignments", "activity", "my-projects"]
     end
   end
+
 end

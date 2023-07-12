@@ -29,12 +29,10 @@ export function AccountEditProfilePage() {
       </Paper.Navigation>
 
       <Paper.Body minHeight="300px">
-        <div className="m-16">
-          <h1 className="text-2xl font-bold">Edit your profile information</h1>
+        <h1 className="text-2xl font-bold">Edit your profile information</h1>
 
-          <div className="mt-8 flex flex-col gap-8">
-            <ProfileForm me={me} />
-          </div>
+        <div className="mt-8 flex flex-col gap-8">
+          <ProfileForm me={me} />
         </div>
       </Paper.Body>
     </Paper.Root>

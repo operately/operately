@@ -8,233 +8,64 @@ defmodule Operately.People do
 
   alias Operately.People.Person
 
-  @doc """
-  Returns the list of people.
-
-  ## Examples
-
-      iex> list_people()
-      [%Person{}, ...]
-
-  """
   def list_people do
     Repo.all(Person)
   end
 
-  @doc """
-  Gets a single person.
-
-  Raises `Ecto.NoResultsError` if the Person does not exist.
-
-  ## Examples
-
-      iex> get_person!(123)
-      %Person{}
-
-      iex> get_person!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_person!(id), do: Repo.get!(Person, id)
 
-  @doc """
-  Gets the first person with the given name.
-
-  Raises `Ecto.NoResultsError` if the Person does not exist.
-
-  ## Examples
-
-      iex> get_person_by_name!("John Johnson")
-      %Person{}
-
-      iex> get_person_by_name!("John Doe")
-      ** (Ecto.NoResultsError)
-
-  """
   def get_person_by_name!(name) do
     Repo.one!(from p in Person, where: p.full_name == ^name)
   end
 
-  @doc """
-  Creates a person.
-
-  ## Examples
-
-      iex> create_person(%{field: value})
-      {:ok, %Person{}}
-
-      iex> create_person(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_person(attrs \\ %{}) do
     %Person{}
     |> Person.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a person.
-
-  ## Examples
-
-      iex> update_person(person, %{field: new_value})
-      {:ok, %Person{}}
-
-      iex> update_person(person, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_person(%Person{} = person, attrs) do
     person
     |> Person.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a person.
-
-  ## Examples
-
-      iex> delete_person(person)
-      {:ok, %Person{}}
-
-      iex> delete_person(person)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_person(%Person{} = person) do
     Repo.delete(person)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking person changes.
-
-  ## Examples
-
-      iex> change_person(person)
-      %Ecto.Changeset{data: %Person{}}
-
-  """
   def change_person(%Person{} = person, attrs \\ %{}) do
     Person.changeset(person, attrs)
   end
 
   alias Operately.People.{Account, AccountToken, AccountNotifier}
 
-  ## Database getters
-
-  @doc """
-  Gets a account by email.
-
-  ## Examples
-
-      iex> get_account_by_email("foo@example.com")
-      %Account{}
-
-      iex> get_account_by_email("unknown@example.com")
-      nil
-
-  """
   def get_account_by_email(email) when is_binary(email) do
     Repo.get_by(Account, email: email)
   end
 
-  @doc """
-  Gets a account by email and password.
-
-  ## Examples
-
-      iex> get_account_by_email_and_password("foo@example.com", "correct_password")
-      %Account{}
-
-      iex> get_account_by_email_and_password("foo@example.com", "invalid_password")
-      nil
-
-  """
   def get_account_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     account = Repo.get_by(Account, email: email)
     if Account.valid_password?(account, password), do: account
   end
 
-  @doc """
-  Gets a single account.
-
-  Raises `Ecto.NoResultsError` if the Account does not exist.
-
-  ## Examples
-
-      iex> get_account!(123)
-      %Account{}
-
-      iex> get_account!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_account!(id), do: Repo.get!(Account, id)
 
-  ## Account registration
-
-  @doc """
-  Registers a account.
-
-  ## Examples
-
-      iex> register_account(%{field: value})
-      {:ok, %Account{}}
-
-      iex> register_account(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def register_account(attrs) do
     %Account{}
     |> Account.registration_changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking account changes.
-
-  ## Examples
-
-      iex> change_account_registration(account)
-      %Ecto.Changeset{data: %Account{}}
-
-  """
   def change_account_registration(%Account{} = account, attrs \\ %{}) do
     Account.registration_changeset(account, attrs, hash_password: false, validate_email: false)
   end
 
-  ## Settings
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for changing the account email.
-
-  ## Examples
-
-      iex> change_account_email(account)
-      %Ecto.Changeset{data: %Account{}}
-
-  """
   def change_account_email(account, attrs \\ %{}) do
     Account.email_changeset(account, attrs, validate_email: false)
   end
 
-  @doc """
-  Emulates that the email will change without actually changing
-  it in the database.
-
-  ## Examples
-
-      iex> apply_account_email(account, "valid password", %{email: ...})
-      {:ok, %Account{}}
-
-      iex> apply_account_email(account, "invalid password", %{email: ...})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def apply_account_email(account, password, attrs) do
     account
     |> Account.email_changeset(attrs)
@@ -242,12 +73,6 @@ defmodule Operately.People do
     |> Ecto.Changeset.apply_action(:update)
   end
 
-  @doc """
-  Updates the account email using the given token.
-
-  If the token matches, the account email is updated and the token is deleted.
-  The confirmed_at date is also updated to the current time.
-  """
   def update_account_email(account, token) do
     context = "change:#{account.email}"
 
@@ -271,15 +96,6 @@ defmodule Operately.People do
     |> Ecto.Multi.delete_all(:tokens, AccountToken.account_and_contexts_query(account, [context]))
   end
 
-  @doc ~S"""
-  Delivers the update email instructions to the given account.
-
-  ## Examples
-
-      iex> deliver_account_update_email_instructions(account, current_email, &url(~p"/accounts/settings/confirm_email/#{&1})")
-      {:ok, %{to: ..., body: ...}}
-
-  """
   def deliver_account_update_email_instructions(%Account{} = account, current_email, update_email_url_fun)
       when is_function(update_email_url_fun, 1) do
     {encoded_token, account_token} = AccountToken.build_email_token(account, "change:#{current_email}")
@@ -288,31 +104,10 @@ defmodule Operately.People do
     AccountNotifier.deliver_update_email_instructions(account, update_email_url_fun.(encoded_token))
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for changing the account password.
-
-  ## Examples
-
-      iex> change_account_password(account)
-      %Ecto.Changeset{data: %Account{}}
-
-  """
   def change_account_password(account, attrs \\ %{}) do
     Account.password_changeset(account, attrs, hash_password: false)
   end
 
-  @doc """
-  Updates the account password.
-
-  ## Examples
-
-      iex> update_account_password(account, "valid password", %{password: ...})
-      {:ok, %Account{}}
-
-      iex> update_account_password(account, "invalid password", %{password: ...})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_account_password(account, password, attrs) do
     changeset =
       account
@@ -329,20 +124,12 @@ defmodule Operately.People do
     end
   end
 
-  ## Session
-
-  @doc """
-  Generates a session token.
-  """
   def generate_account_session_token(account) do
     {token, account_token} = AccountToken.build_session_token(account)
     Repo.insert!(account_token)
     token
   end
 
-  @doc """
-  Gets the account with the given signed token.
-  """
   def get_account_by_session_token(token) do
     {:ok, query} = AccountToken.verify_session_token_query(token)
 
@@ -354,28 +141,11 @@ defmodule Operately.People do
     end
   end
 
-  @doc """
-  Deletes the signed token with the given context.
-  """
   def delete_account_session_token(token) do
     Repo.delete_all(AccountToken.token_and_context_query(token, "session"))
     :ok
   end
 
-  ## Confirmation
-
-  @doc ~S"""
-  Delivers the confirmation email instructions to the given account.
-
-  ## Examples
-
-      iex> deliver_account_confirmation_instructions(account, &url(~p"/accounts/confirm/#{&1}"))
-      {:ok, %{to: ..., body: ...}}
-
-      iex> deliver_account_confirmation_instructions(confirmed_account, &url(~p"/accounts/confirm/#{&1}"))
-      {:error, :already_confirmed}
-
-  """
   def deliver_account_confirmation_instructions(%Account{} = account, confirmation_url_fun)
       when is_function(confirmation_url_fun, 1) do
     if account.confirmed_at do
@@ -387,12 +157,6 @@ defmodule Operately.People do
     end
   end
 
-  @doc """
-  Confirms a account by the given token.
-
-  If the token matches, the account account is marked as confirmed
-  and the token is deleted.
-  """
   def confirm_account(token) do
     with {:ok, query} <- AccountToken.verify_email_token_query(token, "confirm"),
          %Account{} = account <- Repo.one(query),
@@ -409,17 +173,6 @@ defmodule Operately.People do
     |> Ecto.Multi.delete_all(:tokens, AccountToken.account_and_contexts_query(account, ["confirm"]))
   end
 
-  ## Reset password
-
-  @doc ~S"""
-  Delivers the reset password email to the given account.
-
-  ## Examples
-
-      iex> deliver_account_reset_password_instructions(account, &url(~p"/accounts/reset_password/#{&1}"))
-      {:ok, %{to: ..., body: ...}}
-
-  """
   def deliver_account_reset_password_instructions(%Account{} = account, reset_password_url_fun)
       when is_function(reset_password_url_fun, 1) do
     {encoded_token, account_token} = AccountToken.build_email_token(account, "reset_password")
@@ -427,18 +180,6 @@ defmodule Operately.People do
     AccountNotifier.deliver_reset_password_instructions(account, reset_password_url_fun.(encoded_token))
   end
 
-  @doc """
-  Gets the account by reset password token.
-
-  ## Examples
-
-      iex> get_account_by_reset_password_token("validtoken")
-      %Account{}
-
-      iex> get_account_by_reset_password_token("invalidtoken")
-      nil
-
-  """
   def get_account_by_reset_password_token(token) do
     with {:ok, query} <- AccountToken.verify_email_token_query(token, "reset_password"),
          %Account{} = account <- Repo.one(query) do
@@ -448,18 +189,6 @@ defmodule Operately.People do
     end
   end
 
-  @doc """
-  Resets the account password.
-
-  ## Examples
-
-      iex> reset_account_password(account, %{password: "new long password", password_confirmation: "new long password"})
-      {:ok, %Account{}}
-
-      iex> reset_account_password(account, %{password: "valid", password_confirmation: "not the same"})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def reset_account_password(account, attrs) do
     Ecto.Multi.new()
     |> Ecto.Multi.update(:account, Account.password_changeset(account, attrs))
@@ -471,14 +200,6 @@ defmodule Operately.People do
     end
   end
 
-  @doc """
-  Fetch an existing account by email, or create a new one based on the given attributes.
-
-  ## Examples
-
-      iex> get_or_create_account(%{email: "test@tester.com"})
-      {:ok, %Account{}}
-  """
   def fetch_or_create_account(attrs) do
     restrict_entry!(attrs.email)
 
@@ -532,51 +253,54 @@ defmodule Operately.People do
     )
   end
 
-  alias Operately.People.Pin
+  alias Operately.Dashboards
 
-  def toggle_pin(person, %{id: pinned_id, type: pinned_type}) do
-    pinned = Repo.one(
-      from p in Pin,
-      where: p.person_id == ^person.id and p.pinned_id == ^pinned_id and p.pinned_type == ^pinned_type
-    )
+  def find_or_create_home_dashboard(person) do
+    person = get_person!(person.id)
+    person = Repo.preload(person, [:home_dashboard])
 
-    if pinned do
-      delete_pin(pinned)
+    if person.home_dashboard do
+      {:ok, person.home_dashboard}
     else
-      create_pin(%{person_id: person.id, pinned_id: pinned_id, pinned_type: pinned_type})
+      create_home_dashboard(person)
     end
   end
 
-  def is_pinned?(person, type, id) do
-    Repo.exists?(
-      from p in Pin,
-      where: p.person_id == ^person.id and p.pinned_id == ^id and p.pinned_type == ^type
-    )
+  defp create_home_dashboard(person) do
+    Repo.transaction(fn ->
+      case Dashboards.create_dashboard(%{company_id: person.company_id}) do
+        {:ok, dashboard} ->
+          {:ok, _person} = update_person(person, %{home_dashboard_id: dashboard.id})
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 0,
+            type: "account"
+          })
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 1,
+            type: "my-assignments"
+          })
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 2,
+            type: "activity"
+          })
+
+          {:ok, _} = Dashboards.create_panel(%{
+            dashboard_id: dashboard.id,
+            index: 3,
+            type: "my-projects"
+          })
+
+          dashboard
+        {:error, changeset} -> 
+          {:error, changeset}
+      end
+    end)
   end
 
-  def list_people_pins(person_id) do
-    Repo.all(from p in Pin, where: p.person_id == ^person_id)
-  end
-
-  def get_pin!(id), do: Repo.get!(Pin, id)
-
-  def create_pin(attrs \\ %{}) do
-    %Pin{}
-    |> Pin.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_pin(%Pin{} = pin, attrs) do
-    pin
-    |> Pin.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_pin(%Pin{} = pin) do
-    Repo.delete(pin)
-  end
-
-  def change_pin(%Pin{} = pin, attrs \\ %{}) do
-    Pin.changeset(pin, attrs)
-  end
 end

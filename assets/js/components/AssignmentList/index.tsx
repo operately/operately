@@ -39,7 +39,7 @@ export function AssignmentList({ showUpcoming = true, readOnly = false }) {
   return (
     <Context.Provider value={{ readOnly }}>
       <div>
-        {hasPending ? pending.map((a) => <AssignmentItem assignment={a} />) : <EmptyInbox />}
+        {hasPending ? pending.map((a, i) => <AssignmentItem key={i} assignment={a} />) : <EmptyInbox />}
 
         {showUpcoming && hasUpcoming && (
           <>
@@ -96,7 +96,7 @@ function AssignmentCard({ due, icon, linkTo, children }) {
   const timeClass = timeClassBase + " bg-dark-5";
   const overdueClass = timeClassBase + " bg-red-500";
 
-  let overdue = time.isToday(timeDate) && time.isPast(timeDate);
+  let overdue = !time.isToday(timeDate) && time.isPast(timeDate);
 
   const element = (
     <div

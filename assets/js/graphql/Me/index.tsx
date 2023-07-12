@@ -17,39 +17,49 @@ export function useMe() {
   return useQuery(GET_ME);
 }
 
-export interface Pin {
+export interface Dashboard {
   id: string;
-  pinnedId: string;
-  pinnedType: string;
-  pinned: Project;
+  panels: Panel[];
 }
 
-export function usePins(options = {}) {
+export interface Panel {
+  id: string;
+  type: string;
+  index: number;
+
+  linkedResource?: Project;
+}
+
+export function useHomeDashboard(options = {}) {
   return useQuery(
     gql`
-      query GetPins {
-        pins {
+      query GetHomeDashboard {
+        homeDashboard {
           id
-          pinnedId
-          pinnedType
+          panels {
+            id
+            index
+            type
 
-          pinned {
-            ... on Project {
-              name
-              phase
+            linkedResource {
+              ... on Project {
+                id
+                name
+                phase
 
-              contributors {
-                role
-                person {
-                  id
-                  fullName
-                  avatarUrl
+                contributors {
+                  role
+                  person {
+                    id
+                    fullName
+                    avatarUrl
+                  }
                 }
-              }
 
-              milestones {
-                title
-                status
+                milestones {
+                  title
+                  status
+                }
               }
             }
           }
@@ -90,16 +100,26 @@ export function useProfileMutation(options = {}) {
   );
 }
 
-export function useTogglePin(options = {}) {
+export function useUpdateDashboard(options = {}) {
   return useMutation(
     gql`
-      mutation TogglePin($input: TogglePinInput!) {
-        togglePin(input: $input) {
+      mutation UpdateDashboard($input: UpdateDashboardInput!) {
+        updateDashboard(input: $input) {
           id
-          __typename
         }
       }
     `,
     options,
   );
+}
+
+export function sortPanelsByIndex(panels: Panel[]) {
+  let copy = ([] as Panel[]).concat(panels);
+
+  return copy.sort((a, b) => {
+    if (a.index === null) return 1;
+    if (b.index === null) return -1;
+
+    return a.index - b.index;
+  });
 }

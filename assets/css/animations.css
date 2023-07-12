@@ -68,3 +68,35 @@
 .animate-pulse {
   animation: pulse 0.3s linear infinite;
 }
+
+.animate-shake:nth-child(2n) {
+  animation: animation-shake-1 0.3s linear infinite;
+}
+
+.animate-shake:nth-child(2n-1) {
+  animation: animation-shake-2 0.3s linear infinite;
+}
+
+@keyframes animation-shake-1 {
+  0% {
+    transform: rotate(-0.1deg);
+    animation-timing-function: ease-in;
+  }
+
+  50% {
+    transform: rotate(0.2deg);
+    animation-timing-function: ease-out;
+  }
+}
+
+@keyframes animation-shake-2 {
+  0% {
+    transform: rotate(0.1deg);
+    animation-timing-function: ease-in;
+  }
+
+  50% {
+    transform: rotate(-0.2deg);
+    animation-timing-function: ease-out;
+  }
+}

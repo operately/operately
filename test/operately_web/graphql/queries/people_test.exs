@@ -1,0 +1,61 @@
+defmodule OperatelyWeb.GraphQL.Queries.PeopleText do
+  use OperatelyWeb.ConnCase
+
+  setup :register_and_log_in_account
+
+  import Operately.CompaniesFixtures
+  import Operately.PeopleFixtures
+  import Operately.ProjectsFixtures
+
+  setup do
+    company = company_fixture(%{name: "Acme"})
+    person = person_fixture(%{full_name: "Bob Smith", company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id})
+
+    {:ok, %{company: company, person: person, project: project}}
+  end
+
+  @home_dashboard_query """
+    query {
+      homeDashboard {
+        panels {
+          index
+          type
+        }
+      }
+    }
+  """
+
+  test "query: homeDashboard", ctx do
+    conn = graphql(ctx.conn, @home_dashboard_query, %{})
+
+    assert json_response(conn, 200) == %{ 
+      "data" => %{
+        "homeDashboard" => %{
+          "panels" => [
+            %{
+              "index" => 0,
+              "type" => "account",
+            },
+            %{
+              "index" => 1,
+              "type" => "my-assignments",
+            },
+            %{
+              "index" => 2,
+              "type" => "activity",
+            },
+            %{
+              "index" => 3,
+              "type" => "my-projects",
+            }
+          ]
+        }
+      }
+    }
+  end
+      
+  defp graphql(conn, query, variables) do
+    conn |> post("/api/gql", %{query: query, variables: variables})
+  end
+end

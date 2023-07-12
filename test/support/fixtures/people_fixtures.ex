@@ -50,19 +50,4 @@ defmodule Operately.PeopleFixtures do
     token
   end
 
-  @doc """
-  Generate a pin.
-  """
-  def pin_fixture(person, attrs \\ %{}) do
-    {:ok, pin} =
-      attrs
-      |> Enum.into(%{
-        person_id: person.id,
-        pinned_id: "7488a646-e31f-11e4-aace-600308960662",
-        pinned_type: "project"
-      })
-      |> Operately.People.create_pin()
-
-    pin
-  end
 end

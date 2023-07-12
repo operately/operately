@@ -543,3 +543,14 @@ export function isPhaseCompleted(project: Project, phase: string): boolean {
 
   return phaseIndex < projectPhaseIndex;
 }
+
+export function usePinProjectToHomePage(options = {}) {
+  return useMutation(
+    gql`
+      mutation PinProjectToHomePage($projectId: ID!) {
+        pinProjectToHomePage(projectId: $projectId)
+      }
+    `,
+    options,
+  );
+}

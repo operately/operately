@@ -54,7 +54,12 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
       resolve fn project, _, %{context: context} ->
         person = context.current_account.person
 
-        {:ok, Operately.People.is_pinned?(person, :project, project.id)}
+        if person.home_dashboard_id do
+          pinned = Operately.Dashboards.has_panel?(person.home_dashboard_id, "pinned-project", project.id)
+          {:ok, pinned}
+        else
+          {:ok, false}
+        end
       end
     end
 

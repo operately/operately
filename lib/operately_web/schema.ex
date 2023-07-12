@@ -6,37 +6,39 @@ defmodule OperatelyWeb.Schema do
   import_types Absinthe.Type.Custom
 
   # Types
-  import_types Types.Assignments
   import_types Types.Activities
-  import_types Types.Projects
-  import_types Types.Objectives
-  import_types Types.Person
-  import_types Types.KeyResults
-  import_types Types.Groups
+  import_types Types.Assignments
+  import_types Types.Comments
   import_types Types.Companies
-  import_types Types.Tenets
+  import_types Types.Dashboards
+  import_types Types.Groups
+  import_types Types.KeyResults
   import_types Types.Kpis
   import_types Types.Milestones
-  import_types Types.Updates
+  import_types Types.Objectives
+  import_types Types.Person
+  import_types Types.Projects
   import_types Types.Reactions
-  import_types Types.Comments
+  import_types Types.Tenets
+  import_types Types.Updates
 
   # Queries
-  import_types Queries.Assignments
   import_types Queries.Activities
-  import_types Queries.Projects
-  import_types Queries.Objectives
-  import_types Queries.KeyResults
-  import_types Queries.People
+  import_types Queries.Assignments
   import_types Queries.Companies
+  import_types Queries.KeyResults
+  import_types Queries.Objectives
+  import_types Queries.People
+  import_types Queries.Projects
   import_types Queries.Updates
 
   # Mutations
-  import_types Mutations.Projects
-  import_types Mutations.Objectives
+  import_types Mutations.Dashboards
   import_types Mutations.Groups
   import_types Mutations.KeyResults
+  import_types Mutations.Objectives
   import_types Mutations.People
+  import_types Mutations.Projects
   import_types Mutations.Updates
 
   object :group_contact do
@@ -65,13 +67,13 @@ defmodule OperatelyWeb.Schema do
   end
 
   query do
-    import_fields :assignment_queries
     import_fields :activity_queries
-    import_fields :project_queries
-    import_fields :objective_queries
-    import_fields :key_result_queries
-    import_fields :people_queries
+    import_fields :assignment_queries
     import_fields :company_queries
+    import_fields :key_result_queries
+    import_fields :objective_queries
+    import_fields :people_queries
+    import_fields :project_queries
     import_fields :update_queries
 
     field :kpis, list_of(:kpi) do
@@ -148,11 +150,12 @@ defmodule OperatelyWeb.Schema do
   end
 
   mutation do
-    import_fields :objective_mutations
-    import_fields :project_mutations
+    import_fields :dashboard_mutations
     import_fields :group_mutations
     import_fields :key_result_mutations
+    import_fields :objective_mutations
     import_fields :people_mutations
+    import_fields :project_mutations
     import_fields :update_mutations
 
     field :create_tenet, :tenet do

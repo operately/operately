@@ -68,19 +68,16 @@ function Overview({ project, refetch }) {
 }
 
 function PinToHomePage({ project, refetch }) {
-  const [togglePin, { loading }] = Me.useTogglePin({
-    onCompleted: () => {
+  const [pin, { loading }] = Projects.usePinProjectToHomePage({
+    onCompleted: (res) => {
       refetch();
     },
   });
 
   const handlePin = () => {
-    togglePin({
+    pin({
       variables: {
-        input: {
-          id: project.id,
-          type: "project",
-        },
+        projectId: project.id,
       },
     });
   };
