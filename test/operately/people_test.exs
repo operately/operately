@@ -575,4 +575,37 @@ defmodule Operately.PeopleTest do
     end
   end
 
+  describe "dashboards" do
+    import Operately.CompaniesFixtures
+
+    setup do
+      company = company_fixture()
+      person = person_fixture(%{company_id: company.id})
+
+      %{company: company, person: person}
+    end
+
+    test "find_or_create_dashboard/2 creates a dashboard if it does not exist", ctx do
+      assert ctx.person.home_dashboard_id == nil
+      assert People.find_or_create_home_dashboard(ctx.person)
+      assert People.get_person!(ctx.person.id).home_dashboard_id != nil
+    end
+
+    test "find_or_create_dashboard/2 returns the existing dashboard if it exists", ctx do
+      assert {:ok, dashboard1} = People.find_or_create_home_dashboard(ctx.person)
+      assert {:ok, dashboard2} = People.find_or_create_home_dashboard(ctx.person)
+
+      assert dashboard1.id == dashboard2.id
+    end
+
+    test "the dashboard includes default panels", ctx do
+      assert {:ok, dashboard} = People.find_or_create_home_dashboard(ctx.person)
+
+      dashboard = Repo.preload(dashboard, [:panels])
+
+      assert length(dashboard.panels) == 4
+      assert Enum.map(dashboard.panels, & &1.type) == ["account", "my-assignments", "activity", "my-projects"]
+    end
+  end
+
 end

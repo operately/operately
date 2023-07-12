@@ -256,6 +256,7 @@ defmodule Operately.People do
   alias Operately.Dashboards
 
   def find_or_create_home_dashboard(person) do
+    person = get_person!(person.id)
     person = Repo.preload(person, [:home_dashboard])
 
     if person.home_dashboard do
@@ -265,7 +266,7 @@ defmodule Operately.People do
     end
   end
 
-  def create_home_dashboard(person) do
+  defp create_home_dashboard(person) do
     Repo.transaction(fn ->
       case Dashboards.create_dashboard(%{company_id: person.company_id}) do
         {:ok, dashboard} ->
