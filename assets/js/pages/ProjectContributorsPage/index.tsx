@@ -6,12 +6,7 @@ import { Project } from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 
-import {
-  ContributorSearch,
-  ResponsibilityInput,
-  CancelButton,
-  AddContribButton,
-} from "./FormElements";
+import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton } from "./FormElements";
 import ContributorItem from "./ContributorItem";
 import Button from "@/components/Button";
 
@@ -57,22 +52,17 @@ function Title({ projectID }) {
   const deactivateAddColab = () => setAddColabActive(false);
 
   return (
-    <div className="rounded-t-[20px] p-8 pb-12">
+    <div className="rounded-t-[20px] pb-12">
       <div className="flex items-center justify-between">
         <div>
           <div className="text-2xl font-extrabold ">Contributors</div>
-          <div className="text-medium">
-            People who are contributing to this project and their
-            responsibilities.
-          </div>
+          <div className="text-medium">People who are contributing to this project and their responsibilities.</div>
         </div>
 
         {!addColabActive && <AddButton onClick={activateAddColab} />}
       </div>
 
-      {addColabActive && (
-        <AddContribForm close={deactivateAddColab} projectID={projectID} />
-      )}
+      {addColabActive && <AddContribForm close={deactivateAddColab} projectID={projectID} />}
     </div>
   );
 }
@@ -91,17 +81,10 @@ function AddContribForm({ close, projectID }) {
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 mt-4 py-8">
-      <ContributorSearch
-        title="Contributor"
-        projectID={projectID}
-        onSelect={setPersonID}
-      />
+    <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 mt-4 py-8">
+      <ContributorSearch title="Contributor" projectID={projectID} onSelect={setPersonID} />
 
-      <ResponsibilityInput
-        value={responsibility}
-        onChange={setResponsibility}
-      />
+      <ResponsibilityInput value={responsibility} onChange={setResponsibility} />
 
       <div className="flex mt-8 gap-2">
         <AddContribButton onClick={handleSubmit} disabled={disabled} />
@@ -120,41 +103,17 @@ function AddButton({ onClick }) {
   );
 }
 
-function ContributorList({
-  project,
-  refetch,
-}: {
-  project: Project;
-  refetch: any;
-}) {
-  const { champion, reviewer, contributors } = Contributors.splitByRole(
-    project.contributors
-  );
+function ContributorList({ project, refetch }: { project: Project; refetch: any }) {
+  const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (
-    <div className="flex flex-col px-8">
-      <ContributorItem
-        contributor={champion}
-        role="champion"
-        projectId={project.id}
-        refetch={refetch}
-      />
+    <div className="flex flex-col">
+      <ContributorItem contributor={champion} role="champion" projectId={project.id} refetch={refetch} />
 
-      <ContributorItem
-        contributor={reviewer}
-        role="reviewer"
-        projectId={project.id}
-        refetch={refetch}
-      />
+      <ContributorItem contributor={reviewer} role="reviewer" projectId={project.id} refetch={refetch} />
 
       {contributors.map((c) => (
-        <ContributorItem
-          key={c.id}
-          contributor={c}
-          role="contributor"
-          projectId={project.id}
-          refetch={refetch}
-        />
+        <ContributorItem key={c.id} contributor={c} role="contributor" projectId={project.id} refetch={refetch} />
       ))}
     </div>
   );
