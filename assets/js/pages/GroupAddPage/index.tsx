@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
 
-import Form from "../../components/Form";
+import * as Forms from "../../components/Form";
 import FormTextInput from "../../components/FormTextInput";
 
 const CREATE_GROUP = gql`
@@ -36,7 +36,7 @@ export default function GroupAddPage() {
 
   return (
     <>
-      <Form onSubmit={onSubmit} onCancel={onCancel}>
+      <Forms.Form isValid={true} onSubmit={onSubmit} onCancel={onCancel}>
         <h1 className="text-2xl font-bold mb-4">{t("forms.group_add_title")}</h1>
 
         <FormTextInput
@@ -45,7 +45,7 @@ export default function GroupAddPage() {
           label={t("forms.group_name_label")}
           placeholder={t("forms.group_name_placeholder")!}
         />
-      </Form>
+      </Forms.Form>
     </>
-  )
+  );
 }

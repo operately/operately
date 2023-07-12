@@ -1,14 +1,13 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
-import { logOut, useProfileMutation } from "@/graphql/Me";
+import { useProfileMutation } from "@/graphql/Me";
 
-import { PuffLoader } from "react-spinners";
 import Avatar from "@/components/Avatar";
-import Button from "@/components/Button";
 import { useMe } from "@/graphql/Me";
+
+import * as Forms from "@/components/Form";
 
 export function AccountEditProfilePage() {
   const { data } = useMe();
@@ -49,9 +48,7 @@ function ProfileForm({ me }) {
   const [name, setName] = React.useState(me.fullName);
   const [title, setTitle] = React.useState(me.title);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     update({
       variables: {
         input: {
@@ -62,37 +59,16 @@ function ProfileForm({ me }) {
     });
   };
 
-  const isValid = () => {
-    return name.length > 0 && title.length > 0;
-  };
+  const isValid = name.length > 0 && title.length > 0;
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-      <Input value={name} onChange={setName} label="Name" />
-      <Input value={title} onChange={setTitle} label="Title in the Company" />
+    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
+      <Forms.TextInput value={name} onChange={setName} label="Name" />
+      <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" />
 
-      <div className="flex gap-2 mt-4">
-        <Button submit variant="success" loading={loading} disabled={!isValid()}>
-          Save Changes
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-function Input({ label, value, onChange }) {
-  return (
-    <div>
-      <label className="font-bold mb-1 block">{label}</label>
-
-      <div className="flex-1">
-        <input
-          className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      </div>
-    </div>
+      <Forms.SubmitArea>
+        <Forms.SubmitButton>Save Changes</Forms.SubmitButton>
+      </Forms.SubmitArea>
+    </Forms.Form>
   );
 }
