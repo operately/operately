@@ -88,6 +88,9 @@ config :operately, Oban,
     mailer: 10
   ]
 
+config :operately, OperatelyEmail.Mailer,
+  adapter: Bamboo.LocalAdapter
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
