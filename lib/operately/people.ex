@@ -303,4 +303,50 @@ defmodule Operately.People do
     end)
   end
 
+  def get_assignments(person, time_range_start, time_range_end) do
+    alias Operately.Projects.Project
+    alias Operately.Projects.Milestone
+
+    projects = Repo.all(
+      from p in Project,
+        join: a in assoc(p, :contributors),
+        where: a.person_id == ^person.id and a.role == :champion
+    )
+
+    milestones = Repo.all(
+      from m in Milestone, 
+        where: m.project_id in ^(Enum.map(projects, & &1.id)),
+        where: not is_nil(m.deadline_at),
+        where: m.deadline_at > ^time_range_start,
+        where: m.deadline_at < ^time_range_end,
+        where: m.status == :pending
+    )
+
+    pending_status_updates = Repo.all(
+      from p in Project,
+        where: p.id in ^(Enum.map(projects, & &1.id)),
+        where: not is_nil(p.next_update_scheduled_at),
+        where: p.next_update_scheduled_at > ^time_range_start,
+        where: p.next_update_scheduled_at < ^time_range_end
+    )
+
+    assignments = [] 
+      ++ Enum.map(milestones, fn milestone ->
+        %{
+          type: "milestone",
+          due: milestone.deadline_at,
+          resource: milestone
+        }
+      end) 
+        ++ Enum.map(pending_status_updates, fn project_status_update ->
+          %{
+            type: "project_status_update",
+            due: project_status_update.next_update_scheduled_at,
+            resource: project_status_update
+          }
+        end)
+
+    Enum.sort_by(assignments, & &1.due)
+  end
+
 end
