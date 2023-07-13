@@ -2,7 +2,6 @@ defmodule Operately.Projects.ListQuery do
   import Ecto.Query, warn: false
 
   alias Operately.Projects.Project
-  alias Operately.Alignments.Alignment
 
   def build(filters) do
     query = from p in Project
