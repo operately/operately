@@ -6,7 +6,7 @@ defmodule Operately.People.Person do
   @foreign_key_type :binary_id
 
   schema "people" do
-    belongs_to(:account, Operately.Accounts.Account)
+    belongs_to(:account, Operately.People.Account)
     belongs_to(:company, Operately.Companies.Company)
     belongs_to(:home_dashboard, Operately.Dashboards.Dashboard)
 
