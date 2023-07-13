@@ -76,8 +76,17 @@ config :operately, :restrict_entry, true
 
 config :operately, Oban,
   repo: Operately.Repo,
-  plugins: [Oban.Plugins.Pruner],
-  queues: [default: 10]
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 300},    
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"0 * * * *", OperatelyEmail.HourlyWorker},
+     ]}
+  ],
+  queues: [
+    default: 10, 
+    mailer: 10
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
