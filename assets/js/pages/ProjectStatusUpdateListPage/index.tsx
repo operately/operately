@@ -1,5 +1,6 @@
 import React from "react";
 
+import client from "@/graphql/client";
 import { Link, useParams } from "react-router-dom";
 import * as Projects from "@/graphql/Projects";
 
@@ -13,19 +14,19 @@ import DatePicker from "react-datepicker";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
-export function ProjectStatusUpdateListPage() {
-  const params = useParams();
-  const projectId = params["project_id"];
+export async function loader({ params }) {
+  let res = await client.query({
+    query: Projects.GET_PROJECT,
+    variables: { id: params["project_id"] },
+    fetchPolicy: "network-only",
+  });
 
-  if (!projectId) return <p className="mt-16">Unable to find project</p>;
+  return res.data.project;
+}
 
-  const { loading, error, data, refetch } = Projects.useProject(projectId);
-
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find project</p>;
-
-  const project = data.project;
+export function Page() {
+  const projectId = useParams()["project_id"];
+  const [project] = Paper.useLoadedData() as [Projects.Project];
 
   return (
     <Paper.Root>
@@ -38,8 +39,7 @@ export function ProjectStatusUpdateListPage() {
 
       <Paper.Body>
         <Title projectId={projectId} />
-
-        <UpdateList project={project} refetch={refetch} />
+        <UpdateList project={project} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -71,7 +71,7 @@ function PostUpdateButton({ linkTo }) {
 
 function UpdateList({ project }: { project: Projects.Project }) {
   return (
-    <div className="flex flex-col px-8 pb-8 fadeIn">
+    <div className="flex flex-col fadeIn border-b border-shade-2 pt-8">
       {project.updates.map((update) => (
         <StatusUpdateItem key={update.id} linkTo={`/projects/${project.id}/updates/${update.id}`} update={update} />
       ))}
@@ -86,10 +86,7 @@ interface StatusUpdateProps {
 
 function StatusUpdateItem({ linkTo, update }: StatusUpdateProps) {
   return (
-    <Link
-      to={linkTo}
-      className="border-t border-shade-2 flex items-start justify-between hover:bg-shade-1 px-2 py-4 rounded -ml-2"
-    >
+    <Link to={linkTo} className="border-t border-shade-2 flex items-start justify-between hover:bg-shade-1 py-3 px-1">
       <div className="flex items-start gap-4">
         <div className="shrink-0 mt-1 ml-1">
           <Avatar person={update.author} />

@@ -20,7 +20,7 @@ import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 import { ProjectMilestonesPage } from "@/pages/ProjectMilestonesPage";
 import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
-import { ProjectStatusUpdateListPage } from "@/pages/ProjectStatusUpdateListPage";
+import * as ProjectStatusUpdateListPage from "@/pages/ProjectStatusUpdateListPage";
 import { ProjectStatusUpdateNewPage } from "@/pages/ProjectStatusUpdateNewPage";
 
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
@@ -87,10 +87,7 @@ const routes = createBrowserRouter([
         path: "/projects/:project_id/updates/new",
         element: <ProjectStatusUpdateNewPage />,
       },
-      {
-        path: "/projects/:project_id/updates",
-        element: <ProjectStatusUpdateListPage />,
-      },
+      pageRoute("/projects/:project_id/updates", ProjectStatusUpdateListPage),
       {
         path: "/projects/:project_id/updates/:id",
         element: <ProjectStatusUpdatePage />,
