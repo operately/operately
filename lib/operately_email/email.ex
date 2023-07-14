@@ -57,7 +57,7 @@ defmodule OperatelyEmail.Email do
 
         "project_status_update" -> 
           project = assignment.resource
-          link = OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/status_updates/new"
+          link = OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/updates/new"
 
           "<li><a href='#{link}'>Status Update for #{assignment.resource.name}</a> #{relative_due(assignment.due)}</li>"
 
