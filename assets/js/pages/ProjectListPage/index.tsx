@@ -1,7 +1,9 @@
 import React from "react";
 
+import client from "@/graphql/client";
+import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "@/layouts/header";
-import { useProjects } from "@/graphql/Projects";
+import { LIST_PROJECTS, Project } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 import AvatarList from "@/components/AvatarList";
 
@@ -9,18 +11,34 @@ import Button from "@/components/Button";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
-import { useCompany } from "@/graphql/Companies";
+import { GET_COMPANY, companyID } from "@/graphql/Companies";
 
-export function ProjectListPage() {
+export async function loader() {
+  console.log("loader");
+
+  let projects = await client.query({
+    query: LIST_PROJECTS,
+    fetchPolicy: "network-only",
+  });
+
+  let company = await client.query({
+    query: GET_COMPANY,
+    variables: { id: companyID() },
+    fetchPolicy: "network-only",
+  });
+
+  return {
+    projects: projects.data.projects,
+    company: company.data.company,
+  };
+}
+
+export function Page() {
   useDocumentTitle("Projects");
 
-  const { loading, error, data } = useProjects({});
-  const companyData = useCompany();
+  const [data] = Paper.useLoadedData() as [{ projects: any; company: any }];
 
-  if (loading) return <></>;
-  if (error) throw new Error(error.message);
-  if (!companyData.data) return null;
-
+  const company = data.company;
   const projects = SortProjects(data.projects);
 
   return (
@@ -28,7 +46,7 @@ export function ProjectListPage() {
       <Paper.Body className="bg-dark-2" noPadding noGradient>
         <div className="flex items-center justify-between gap-4 px-6 py-6">
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-xl font-bold">Projects in {companyData.data.company.name}</h1>
+            <h1 className="text-xl font-bold">Projects in {company.name}</h1>
           </div>
 
           <div className="flex items-center justify-between gap-4">
@@ -85,12 +103,11 @@ function ProjectList({ projects }) {
 }
 
 function TableRow({ project }) {
-  const handleClick = () => {
-    window.location.href = `/projects/${project.id}`;
-  };
+  const navigate = useNavigate();
+  const goToProject = () => navigate(`/projects/${project.id}`);
 
   return (
-    <tr className="border-t border-shade-2 bg-dark-2 hover:bg-dark-3 cursor-pointer" onClick={handleClick}>
+    <tr className="border-t border-shade-2 bg-dark-2 hover:bg-dark-3 cursor-pointer" onClick={goToProject}>
       <th scope="row" className="px-6 py-4 font-medium text-white-1 whitespace-nowrap rounded-l-lg">
         {project.name}
       </th>
@@ -136,8 +153,8 @@ function Phase({ phase }) {
   return <span className="text-sm capitalize">{phase}</span>;
 }
 
-function SortProjects(projects) {
-  return [].concat(projects).sort((a, b) => {
+function SortProjects(projects: Project[]) {
+  return ([] as Project[]).concat(projects).sort((a, b) => {
     let aStart = a.startedAt || 0;
     let bStart = b.startedAt || 0;
 

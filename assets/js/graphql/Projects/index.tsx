@@ -4,7 +4,7 @@ import { gql, useQuery, useMutation, useApolloClient, ApolloClient, QueryResult 
 import { Milestone } from "./milestones";
 import * as fragments from "@/graphql/Fragments";
 
-const LIST_PROJECTS = gql`
+export const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
     projects(groupId: $groupId, objectiveId: $objectiveId) {
       id
@@ -146,7 +146,7 @@ export interface Project {
   isPinned: boolean;
 }
 
-const GET_PROJECT = gql`
+export const GET_PROJECT = gql`
   query GetProject($id: ID!) {
     project(id: $id) {
       id

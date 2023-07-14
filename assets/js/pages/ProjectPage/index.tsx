@@ -3,8 +3,6 @@ import React from "react";
 import classnames from "classnames";
 
 import { useDocumentTitle } from "@/layouts/header";
-import { useParams } from "react-router-dom";
-import * as Projects from "@/graphql/Projects";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
@@ -13,25 +11,25 @@ import * as Cards from "@/components/Cards";
 import Activity from "./Activity";
 import Header from "./Header";
 
+import client from "@/graphql/client";
+import * as Projects from "@/graphql/Projects";
 import * as Milestones from "@/graphql/Projects/milestones";
-import * as Me from "@/graphql/Me";
+
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
-export function ProjectPage() {
-  const params = useParams();
+export async function loader({ params }) {
+  let res = await client.query({
+    query: Projects.GET_PROJECT,
+    variables: { id: params.id },
+    fetchPolicy: "network-only",
+  });
 
-  const id = params["id"];
+  return res.data.project;
+}
 
-  if (!id) return <p className="mt-16">Unable to find project</p>;
-
-  const { loading, error, data, refetch } = Projects.useProject(id);
-
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find project</p>;
-
-  let project = data.project;
+export function Page() {
+  const [project, refetch] = Paper.useLoadedData();
 
   return <Overview project={project} refetch={refetch} />;
 }

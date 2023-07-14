@@ -13,9 +13,9 @@ import { AccountPage } from "@/pages/AccountPage";
 import { AccountEditProfilePage } from "@/pages/AccountEditProfilePage";
 import { AccountNotificationSettingsPage } from "@/pages/AccountNotificationSettingsPage";
 
-import { ProjectPage } from "../pages/ProjectPage";
+import * as ProjectPage from "../pages/ProjectPage";
+import * as ProjectListPage from "../pages/ProjectListPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
-import { ProjectListPage } from "../pages/ProjectListPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 import { ProjectMilestonesPage } from "@/pages/ProjectMilestonesPage";
@@ -37,25 +37,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import { CompanyPage } from "../pages/Company";
 
 import { createBrowserRouter } from "react-router-dom";
-import client from "../graphql/client";
-import nprogress from "nprogress";
-
-function loaderWithApollo(loader: any) {
-  return async (params: any) => {
-    try {
-      nprogress.start();
-
-      const data = await loader(client, params);
-
-      nprogress.done();
-
-      return data;
-    } catch (error) {
-      console.error(error);
-      nprogress.done();
-    }
-  };
-}
+import { loaderWithApollo, pageRoute } from "./utils";
 
 const routes = createBrowserRouter([
   {
@@ -96,10 +78,7 @@ const routes = createBrowserRouter([
         loader: loaderWithApollo(GroupPageLoader),
         element: <GroupPage />,
       },
-      {
-        path: "/projects",
-        element: <ProjectListPage />,
-      },
+      pageRoute("/projects", ProjectListPage),
       {
         path: "/projects/new",
         element: <ProjectAddPage />,
@@ -128,10 +107,7 @@ const routes = createBrowserRouter([
         path: "/projects/:project_id/documentation/*",
         element: <ProjectDocumentationPage />,
       },
-      {
-        path: "/projects/:id/*",
-        element: <ProjectPage />,
-      },
+      pageRoute("/projects/:id/*", ProjectPage),
       {
         path: "/tenets",
         loader: loaderWithApollo(TenetListPageLoader),

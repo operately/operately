@@ -23,6 +23,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { useLoaderData, useRevalidator } from "react-router-dom";
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 
@@ -84,7 +85,7 @@ const bodyPaddings = {
   xxlarge: "px-16 py-12",
 };
 
-export function Body({ children, minHeight, className, noPadding = false, noGradient = false }) {
+export function Body({ children, minHeight, className = "", noPadding = false, noGradient = false }) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
 
@@ -150,4 +151,11 @@ export function SectionHeader({ children }) {
 
 export function RightToolbox({ children }) {
   return <div className="absolute top-16 border-l border-shade-2 -right-[47px]">{children}</div>;
+}
+
+export function useLoadedData() {
+  const data = useLoaderData();
+  const { revalidate } = useRevalidator();
+
+  return [data, revalidate];
 }

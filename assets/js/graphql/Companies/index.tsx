@@ -1,6 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 
-const GET_COMPANY = gql`
+export const GET_COMPANY = gql`
   query GetCompany($id: ID!) {
     company(id: $id) {
       id
@@ -30,8 +30,12 @@ const GET_COMPANY = gql`
   }
 `;
 
+export function companyID() {
+  return window.companyID;
+}
+
 export function useCompany() {
-  const id = window.companyID;
+  const id = companyID();
 
   return useQuery(GET_COMPANY, {
     variables: { id },
