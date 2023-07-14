@@ -50,6 +50,12 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :deadline, :date
     field :next_update_scheduled_at, :date
 
+    field :next_milestone, :milestone do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.get_next_milestone(project)}
+      end
+    end
+
     field :is_pinned, non_null(:boolean) do
       resolve fn project, _, %{context: context} ->
         person = context.current_account.person

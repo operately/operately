@@ -4,72 +4,136 @@ import { useDocumentTitle } from "@/layouts/header";
 import { useProjects } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 import AvatarList from "@/components/AvatarList";
-import { Link } from "react-router-dom";
-import * as Icons from "tabler-icons-react";
 
 import Button from "@/components/Button";
 
-function DateOrNotSet({ date }) {
+import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
+import { useCompany } from "@/graphql/Companies";
+
+export function ProjectListPage() {
+  useDocumentTitle("Projects");
+
+  const { loading, error, data } = useProjects({});
+  const companyData = useCompany();
+
+  if (loading) return <></>;
+  if (error) throw new Error(error.message);
+  if (!companyData.data) return null;
+
+  const projects = SortProjects(data.projects);
+
+  return (
+    <Paper.Root size="xlarge">
+      <Paper.Body className="bg-dark-2" noPadding noGradient>
+        <div className="flex items-center justify-between gap-4 px-6 py-6">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-xl font-bold">Projects in {companyData.data.company.name}</h1>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <Button linkTo="/projects/new" variant="success">
+              <Icons.IconClipboardList size={20} />
+              New Project
+            </Button>
+          </div>
+        </div>
+
+        <ProjectList projects={projects} />
+      </Paper.Body>
+    </Paper.Root>
+  );
+}
+
+function ProjectList({ projects }) {
+  return (
+    <div className="relative overflow-x-auto">
+      <table className="w-full text-left text-white-1 border-b border-shade-2">
+        <thead className="text-xs uppercase text-white-2 border-t border-shade-2">
+          <tr>
+            <th scope="col" className="px-6 py-3 rounded-l-lg">
+              Project Name
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Contributors
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Start Date
+            </th>
+
+            <th scope="col" className="px-6 py-3">
+              Due Date
+            </th>
+
+            <th scope="col" className="px-6 py-3">
+              Phase
+            </th>
+
+            <th scope="col" className="px-6 py-3 rounded-r-lg">
+              Next Milestone
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {projects.map((project) => (
+            <TableRow key={project.id} project={project} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function TableRow({ project }) {
+  const handleClick = () => {
+    window.location.href = `/projects/${project.id}`;
+  };
+
+  return (
+    <tr className="border-t border-shade-2 bg-dark-2 hover:bg-dark-3 cursor-pointer" onClick={handleClick}>
+      <th scope="row" className="px-6 py-4 font-medium text-white-1 whitespace-nowrap rounded-l-lg">
+        {project.name}
+      </th>
+      <td className="px-6 py-4">
+        <AvatarList people={project.contributors.map((c) => c.person)} />
+      </td>
+      <td className="px-6 py-4 flex items-center gap-1">
+        <DateOrNotSet date={project.startedAt} ifNull="No Start Date" />
+      </td>
+      <td className="px-6 py-4">
+        <DateOrNotSet date={project.deadline} ifNull="No Due Date" />
+      </td>
+      <td className="px-6 py-4">
+        <Phase phase={project.phase} />
+      </td>
+      <td className="px-6 py-4 rounded-r-lg overflow-hidden truncate max-w-0" style={{ minWidth: "200px" }}>
+        <NextMilestone project={project} />
+      </td>
+    </tr>
+  );
+}
+
+function NextMilestone({ project }) {
+  if (project.nextMilestone === null) {
+    return <span className="text-sm text-white-2">No milestones</span>;
+  } else {
+    return <>{project.nextMilestone.title}</>;
+  }
+}
+
+function DateOrNotSet({ date, ifNull }) {
   if (date === null) {
-    return <span className="text-white-3 uppercase">not set</span>;
+    return <span className="text-sm text-white-2">{ifNull}</span>;
   }
   return (
-    <div className="uppercase">
+    <div className="text-sm">
       <FormattedTime time={date} format="short-date" />
     </div>
   );
 }
 
 function Phase({ phase }) {
-  return <span className="bg-shade-1 p-1 px-2 uppercase text-xs font-bold text-white-2">{phase}</span>;
-}
-
-function Flare() {
-  return (
-    <div
-      className="absolute"
-      style={{
-        top: 0,
-        left: 0,
-        right: 0,
-        height: "500px",
-        background: "radial-gradient(circle at top center, #FFFF0008 0%, #00000000 50%)",
-        pointerEvents: "none",
-      }}
-    ></div>
-  );
-}
-
-function ProjectListItem({ project }) {
-  return (
-    <Link to={`/projects/${project.id}`}>
-      <div className="flex items-center justify-between gap-4 bg-shade-1 py-2 px-4 rounded border border-transparent hover:border-white-1">
-        <div className="font-medium text-white-1 flex items-center w-1/3">{project.name}</div>
-
-        <div className="flex items-center justify-between gap-4 w-1/2">
-          <div className="flex items-center justify-between gap-4 w-1/3">
-            <div className="w-1/3 text-sm">
-              <AvatarList people={project.contributors.map((c) => c.person)} />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between gap-4 w-2/3">
-            <div className="w-32 text-sm text-right">
-              <DateOrNotSet date={project.startedAt} />
-            </div>
-
-            <div className="w-32 text-sm text-right">
-              <DateOrNotSet date={project.deadline} />
-            </div>
-
-            <div className="w-32 text-sm text-right">
-              <Phase phase={project.phase} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
+  return <span className="text-sm capitalize">{phase}</span>;
 }
 
 function SortProjects(projects) {
@@ -81,81 +145,4 @@ function SortProjects(projects) {
     if (aStart < bStart) return 1;
     return 0;
   });
-}
-
-export function ProjectListPage() {
-  useDocumentTitle("Projects");
-
-  const { loading, error, data } = useProjects({});
-
-  if (loading) return <p>Loading...</p>;
-  if (error) throw new Error(error.message);
-
-  const projects = SortProjects(data.projects);
-
-  return (
-    <div className="mt-20 flex flex-col gap-[2px] max-w-6xl mx-auto">
-      <Flare />
-      <div className="flex items-center justify-between gap-4 mb-10">
-        <div className="flex items-center justify-between gap-4">
-          <div className="p-2 rounded-full bg-pink-400/20 text-white-2 border border-pink-400">
-            <Icons.LayoutList size={16} className="text-pink-400" />
-          </div>
-
-          <div className="p-2 rounded-full border border-white-3 text-white-2 hover:bg-shade-1 cursor-pointer">
-            <Icons.Map size={16} />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between gap-4">
-          <Button linkTo="/projects/new" variant="success">
-            <Icons.ClipboardList size={20} />
-            New Project
-          </Button>
-        </div>
-      </div>
-
-      <div className="mb-16 flex flex-col items-center justify-between gap-8">
-        <div className="text-5xl font-bold text-center">Projects in Rendered Text</div>
-
-        <div className="flex items-center justify-between gap-3">
-          <button className="border border-orange-400 text-orange-400 bg-orange-400/20 rounded-full hover:border-orange-800 text-dark-1 hover:text-white-1 px-3 py-1.5 text-sm font-bold">
-            All Projects
-          </button>
-
-          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
-            Only Mine
-          </button>
-
-          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
-            Overdue
-          </button>
-
-          <button className="border border-white-2 rounded-full hover:border-white-2 text-white-2 hover:text-white-1 px-3 py-1.5 text-sm font-medium">
-            Drafts
-          </button>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-betweeen px-4 py-2 mb-1 rounded text-sm font-medium">
-        <div className="w-1/2 text-white-2 uppercase">PROJECT NAME</div>
-
-        <div className="w-1/2 flex items-center justify-between">
-          <div className="text-white-2 uppercase">CONTRIBUTORS </div>
-
-          <div className="w-2/3 flex items-center justify-between gap-4">
-            <div className="w-32 text-white-2 uppercase text-right">STARTED</div>
-
-            <div className="w-32 text-white-2 uppercase text-right">DEADLINE</div>
-
-            <div className="w-32 text-white-2 uppercase text-right">PHASE</div>
-          </div>
-        </div>
-      </div>
-
-      {projects.map((project) => (
-        <ProjectListItem project={project} key={project.id} />
-      ))}
-    </div>
-  );
 }

@@ -62,6 +62,16 @@ defmodule Operately.Projects do
     Repo.get!(Milestone, id)
   end
 
+  def get_next_milestone(project) do
+    query = from m in Milestone,
+      where: m.project_id == ^project.id,
+      where: m.status == ^:pending,
+      order_by: [asc: m.id],
+      limit: 1
+
+    Repo.one(query)
+  end
+
   def list_project_milestones(project) do
     query = from m in Milestone,
       where: m.project_id == ^project.id,

@@ -17,6 +17,12 @@ const LIST_PROJECTS = gql`
       contributors ${fragments.CONTRIBUTOR}
 
       phase
+
+      nextMilestone {
+        id
+        title
+        deadlineAt
+      }
     }
   }
 `;

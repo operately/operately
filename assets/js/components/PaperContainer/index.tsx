@@ -26,12 +26,14 @@ import { Link } from "react-router-dom";
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 
-type Size = "small" | "medium" | "large";
+type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 const sizes = {
   small: "max-w-2xl",
   medium: "max-w-4xl",
   large: "max-w-5xl",
+  xlarge: "max-w-6xl",
+  xxlarge: "max-w-7xl",
 };
 
 const Context = React.createContext({
@@ -78,18 +80,20 @@ const bodyPaddings = {
   small: "px-10 py-8",
   medium: "px-12 py-10",
   large: "px-16 py-12",
+  xlarge: "px-16 py-12",
+  xxlarge: "px-16 py-12",
 };
 
-export function Body({ children, minHeight }) {
+export function Body({ children, minHeight, className, noPadding = false, noGradient = false }) {
   const { size } = React.useContext(Context);
-  const padding = bodyPaddings[size];
+  const padding = noPadding ? "" : bodyPaddings[size];
 
   return (
     <div
-      className={`relative bg-dark-2 rounded-[20px] border border-shade-1 shadow-lg ${padding}`}
+      className={`relative bg-dark-2 rounded-[20px] border border-shade-1 shadow-lg ${padding} ${className}`}
       style={{
         minHeight: minHeight,
-        background: "linear-gradient(0deg, var(--color-dark-2) 0%, var(--color-dark-3) 100%)",
+        background: noGradient ? "" : "linear-gradient(0deg, var(--color-dark-2) 0%, var(--color-dark-3) 100%)",
       }}
     >
       {children}
