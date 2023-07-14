@@ -74,6 +74,23 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
 
 config :operately, :restrict_entry, true
 
+config :operately, Oban,
+  repo: Operately.Repo,
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 300},    
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"0 * * * *", OperatelyEmail.HourlyWorker},
+     ]}
+  ],
+  queues: [
+    default: 10, 
+    mailer: 10
+  ]
+
+config :operately, OperatelyEmail.Mailer,
+  adapter: Bamboo.LocalAdapter
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

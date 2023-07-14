@@ -1,8 +1,6 @@
 defmodule Operately.Features.SharedSteps.SimpleInteractions do
   use Cabbage.Feature
 
-  alias Operately.OkrsFixtures
-
   defand ~r/^I click on the "(?<button_title>[^"]+)" button$/, %{button_title: button_title}, state do
     state.session |> click(Query.button(button_title))
   end

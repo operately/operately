@@ -59,6 +59,9 @@ defmodule Operately.MixProject do
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_graphql_ws, github: "geometerio/absinthe_graphql_ws"},
 
+      {:oban, "~> 2.14"},
+      {:bamboo, "~> 2.3.0"},
+
       # testing
       {:cabbage, "~> 0.3.6", only: :test},
       {:wallaby, "~> 0.30.0", runtime: false, only: :test},
