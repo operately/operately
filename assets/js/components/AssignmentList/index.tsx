@@ -124,7 +124,7 @@ function AssignmentCard({ due, icon, linkTo, children }) {
 
 function EmptyInbox() {
   return (
-    <div className="flex flex-col items-center justify-center py-32">
+    <div className="flex flex-col items-center justify-center py-20">
       <Icons.IconSparkles size={24} className="text-yellow-400" />
       <div className="font-medium mt-2">Nothing for you today.</div>
     </div>
