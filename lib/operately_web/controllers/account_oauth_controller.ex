@@ -15,6 +15,7 @@ defmodule OperatelyWeb.AccountOauthController do
       email: account_info.email,
       password: random_password(),
       person: %{
+        company_id: hd(Operately.Companies.list_companies()).id,
         avatar_url: account_info.image,
         email: account_info.email,
         full_name: account_info.name,
