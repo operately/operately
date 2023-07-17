@@ -92,24 +92,32 @@ function AckBanner({ me, reviewer, update, champion }) {
   if (update.acknowledged) return null;
   if (!reviewer) return null;
 
+  let content = <></>;
+
   if (me.id === reviewer.id) {
-    return (
-      <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-between gap-2">
+    content = (
+      <>
         <div className="flex items-center gap-2">
           <Icons.IconClock size={20} />
           {champion.fullName} is waiting for you to acknowledge this update
         </div>
         <AckButton update={update} />
-      </div>
+      </>
     );
   } else {
-    return (
-      <div className="py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
+    content = (
+      <>
         <Icons.IconClock size={20} />
         Waiting for {reviewer.fullName} to acknowledge this update
-      </div>
+      </>
     );
   }
+
+  return (
+    <div className="-mx-12 -mt-10 py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
+      {content}
+    </div>
+  );
 }
 
 function Header({ update }) {
