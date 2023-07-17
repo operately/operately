@@ -284,17 +284,17 @@ defmodule Operately.People do
             type: "my-assignments"
           })
 
-          {:ok, _} = Dashboards.create_panel(%{
-            dashboard_id: dashboard.id,
-            index: 2,
-            type: "activity"
-          })
+          # {:ok, _} = Dashboards.create_panel(%{
+          #   dashboard_id: dashboard.id,
+          #   index: 2,
+          #   type: "activity"
+          # })
 
-          {:ok, _} = Dashboards.create_panel(%{
-            dashboard_id: dashboard.id,
-            index: 3,
-            type: "my-projects"
-          })
+          # {:ok, _} = Dashboards.create_panel(%{
+          #   dashboard_id: dashboard.id,
+          #   index: 3,
+          #   type: "my-projects"
+          # })
 
           dashboard
         {:error, changeset} -> 

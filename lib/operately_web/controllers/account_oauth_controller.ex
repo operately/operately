@@ -19,7 +19,7 @@ defmodule OperatelyWeb.AccountOauthController do
         avatar_url: account_info.image,
         email: account_info.email,
         full_name: account_info.name,
-        handle: account_info.name
+        handle: account_info.name,
         title: "Unknown title"
       }
     }

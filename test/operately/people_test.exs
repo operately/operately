@@ -603,8 +603,8 @@ defmodule Operately.PeopleTest do
 
       dashboard = Repo.preload(dashboard, [:panels])
 
-      assert length(dashboard.panels) == 4
-      assert Enum.map(dashboard.panels, & &1.type) == ["account", "my-assignments", "activity", "my-projects"]
+      assert length(dashboard.panels) == 2
+      assert Enum.map(dashboard.panels, & &1.type) == ["account", "my-assignments"]
     end
   end
 

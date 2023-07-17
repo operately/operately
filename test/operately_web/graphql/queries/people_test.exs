@@ -40,14 +40,6 @@ defmodule OperatelyWeb.GraphQL.Queries.PeopleText do
             %{
               "index" => 1,
               "type" => "my-assignments",
-            },
-            %{
-              "index" => 2,
-              "type" => "activity",
-            },
-            %{
-              "index" => 3,
-              "type" => "my-projects",
             }
           ]
         }
