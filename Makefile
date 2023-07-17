@@ -152,3 +152,16 @@ test.assets.compile:
 
 test.screenshots.clear:
 	rm -rf $(SCREENSHOTS_DIR)/*
+
+
+#
+# Building a docker image
+#
+
+DOCKER_IMAGE_TAG = $(shell git rev-parse --short HEAD)
+
+docker.build:
+	docker build -f Dockerfile.prod -t operately/operately:$(DOCKER_IMAGE_TAG) .
+
+docker.push:
+	docker push operately/operately:$(DOCKER_IMAGE_TAG)
