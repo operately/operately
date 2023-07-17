@@ -1,18 +1,10 @@
 version: "3"
 
-#
-# We will set up two services
-#
-# - app that runs our application. This will also be the container
-#   where we will run all the development commands.
-#
-# - db that runs the main database for our application.
-#
-
 services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile.dev
       args:
         - USER_ID
         - GROUP_ID

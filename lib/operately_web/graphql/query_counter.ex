@@ -4,6 +4,14 @@ defmodule OperatelyWeb.GraphQL.QueryCounter do
   def init(opts), do: opts
 
   def call(conn, _) do
+    if enabled?() do
+      count_queries(conn)
+    else
+      conn
+    end
+  end
+
+  defp count_queries(conn) do
     Operately.QueryCounter.reset_counts()
 
     Plug.Conn.register_before_send(conn, fn conn ->
@@ -15,5 +23,9 @@ defmodule OperatelyWeb.GraphQL.QueryCounter do
 
       conn
     end)
+  end
+
+  defp enabled?() do
+    Application.get_env(:operately, :start_query_counter)
   end
 end
