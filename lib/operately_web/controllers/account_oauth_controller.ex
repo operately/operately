@@ -20,6 +20,7 @@ defmodule OperatelyWeb.AccountOauthController do
         email: account_info.email,
         full_name: account_info.name,
         handle: account_info.name
+        title: "Unknown title"
       }
     }
 
