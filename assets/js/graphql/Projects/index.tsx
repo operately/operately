@@ -23,6 +23,13 @@ export const LIST_PROJECTS = gql`
         title
         deadlineAt
       }
+
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
     }
   }
 `;
