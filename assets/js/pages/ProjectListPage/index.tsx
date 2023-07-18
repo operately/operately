@@ -59,7 +59,7 @@ export function Page() {
           <div className="flex items-center gap-2">
             <Popover.Root>
               <Popover.Trigger asChild>
-                <div className="flex items-center gap-2 rounded-lg border border-dark-5 py-2 px-4 text-sm font-semibold">
+                <div className="flex items-center gap-2 rounded-lg border border-dark-5 py-2 px-4 text-sm font-semibold cursor-pointer">
                   <Icons.IconAdjustmentsHorizontal size={16} />
                   Display
                   <Icons.IconChevronDown size={16} />
@@ -101,102 +101,94 @@ export function Page() {
 }
 
 function ProjectList({ projects, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion }) {
-  var titles = ["Title"];
-  var sizes = ["flex-1"];
+  var columns: { title: String; size: String; visible: boolean }[] = [];
 
-  if (showNextMilestone) {
-    titles.push("Next Milestone");
-    sizes.push("flex-1");
-  }
-
-  if (showPhase) {
-    titles.push("Phase");
-    sizes.push("w-24");
-  }
-
-  if (showStartDate) {
-    titles.push("Start Date");
-    sizes.push("w-24");
-  }
-
-  if (showDueDate) {
-    titles.push("Due Date");
-    sizes.push("w-24");
-  }
-
-  if (showChampion) {
-    titles.push("Champion");
-    sizes.push("w-24");
-  }
+  columns.push({ title: "Title", size: "flex-1", visible: true });
+  columns.push({ title: "Next Milestone", size: "flex-1", visible: showNextMilestone });
+  columns.push({ title: "Phase", size: "w-24", visible: showPhase });
+  columns.push({ title: "Start Date", size: "w-24", visible: showStartDate });
+  columns.push({ title: "Due Date", size: "w-24", visible: showDueDate });
+  columns.push({ title: "Champion", size: "w-24", visible: showChampion });
 
   return (
     <div className="flex flex-col">
-      <Headers titles={titles} sizes={sizes} />
+      <Headers columns={columns} />
 
       {projects.map((project) => (
-        <ProjectRow
-          key={project.id}
-          project={project}
-          sizes={sizes}
-          showNextMilestone={showNextMilestone}
-          showPhase={showPhase}
-          showStartDate={showStartDate}
-          showDueDate={showDueDate}
-          showChampion={showChampion}
-        />
+        <ProjectRow key={project.id} project={project} columns={columns} />
       ))}
     </div>
   );
 }
 
-function Headers({ titles, sizes }) {
+function Headers({ columns }) {
   return (
     <Row className="text-sm text-white-2">
-      {titles.map((title, index) => (
-        <Cell key={index} size={sizes[index]}>
-          {title}
-        </Cell>
-      ))}
+      {columns
+        .filter((c) => c.visible)
+        .map((column, index) => (
+          <Cell key={index} size={column.size}>
+            {column.title}
+          </Cell>
+        ))}
     </Row>
   );
 }
 
-function ProjectRow({ project, sizes, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion }) {
+function ProjectRow({ project, columns }) {
+  const navigate = useNavigate();
+
   return (
-    <Row>
-      <Cell size={sizes[0]}>{project.name}</Cell>
-      {showNextMilestone && (
-        <Cell size={sizes[1]}>
-          {" "}
-          <NextMilestone project={project} />{" "}
-        </Cell>
-      )}
-      {showPhase && <Cell size={sizes[2]}>{project.phase}</Cell>}
-      {showStartDate && (
-        <Cell size={sizes[3]}>
-          <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />
-        </Cell>
-      )}
-      {showDueDate && (
-        <Cell size={sizes[4]}>
-          <DateOrNotSet date={project.deadline} ifNull="&mdash;" />
-        </Cell>
-      )}
-      {showChampion && (
-        <Cell size={sizes[5]}>
-          <Avatar person={project.champion} size="tiny" /> {project.champion.fullName.split(" ")[0]}
-        </Cell>
-      )}
+    <Row className="hover:bg-dark-3 cursor-pointer" onClick={() => navigate("/projects/" + project.id)}>
+      {columns
+        .filter((c) => c.visible)
+        .map((column, index) => (
+          <ProjectCell key={index} project={project} column={column} />
+        ))}
     </Row>
   );
 }
 
-function Row({ children, className = "" }) {
+function ProjectCell({ project, column }) {
+  switch (column.title) {
+    case "Title":
+      return <Cell size={column.size}>{project.name}</Cell>;
+    case "Next Milestone":
+      let milestone = <NextMilestone project={project} />;
+
+      return <Cell size={column.size}>{milestone}</Cell>;
+    case "Phase":
+      return <Cell size={column.size}>{project.phase}</Cell>;
+    case "Start Date":
+      let startDate = <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />;
+
+      return <Cell size={column.size}>{startDate}</Cell>;
+    case "Due Date":
+      let dueDate = <DateOrNotSet date={project.deadline} ifNull="&mdash;" />;
+
+      return <Cell size={column.size}>{dueDate}</Cell>;
+    case "Champion":
+      let avatar = <Avatar person={project.champion} size="tiny" />;
+      let name = project.champion.fullName.split(" ")[0];
+      let champion = (
+        <>
+          {avatar} {name}
+        </>
+      );
+
+      return <Cell size={column.size}>{champion}</Cell>;
+    default:
+      return <Cell size={column.size}> </Cell>;
+  }
+}
+
+function Row({ children, className = "", onClick }) {
   return (
     <div
       className={
         "flex items-center justify-between gap-4 first:border-t border-b border-shade-1 py-3 px-6 " + className
       }
+      onClick={onClick || (() => null)}
     >
       {children}
     </div>
@@ -205,33 +197,6 @@ function Row({ children, className = "" }) {
 
 function Cell({ children, size, className = "" }) {
   return <div className={"flex items-center gap-2 shrink-0" + " " + size + " " + className}>{children}</div>;
-}
-
-function TableRow({ project }) {
-  const navigate = useNavigate();
-  const goToProject = () => navigate(`/projects/${project.id}`);
-
-  return (
-    <tr className="border-t border-shade-2 bg-dark-2 hover:bg-dark-3 cursor-pointer" onClick={goToProject}>
-      <th scope="row" className="px-6 py-4 font-medium text-white-1 whitespace-nowrap rounded-l-lg">
-        <div className="flex items-center gap-2">
-          {project.champion && <Avatar person={project.champion} size="tiny" />}
-          {project.name}
-        </div>
-      </th>
-      <td className="px-6 py-4 flex items-center gap-1">
-        <DateOrNotSet date={project.startedAt} ifNull="Not set" />
-      </td>
-      <td className="px-6 py-4">
-        <DateOrNotSet date={project.deadline} ifNull="Not Due Date" />
-      </td>
-      <td className="px-6 py-4">
-        <Phase phase={project.phase} />
-      </td>
-      <td className="px-6 py-4 rounded-r-lg overflow-hidden truncate max-w-0" style={{ minWidth: "200px" }}></td>
-      <td className="px-6 py-4"></td>
-    </tr>
-  );
 }
 
 function NextMilestone({ project }) {
@@ -251,10 +216,6 @@ function DateOrNotSet({ date, ifNull }) {
       <FormattedTime time={date} format="short-date" />
     </div>
   );
-}
-
-function Phase({ phase }) {
-  return <span className="text-sm capitalize">{phase}</span>;
 }
 
 function SortProjects(projects: Project[]) {
