@@ -86,22 +86,64 @@ export function Page() {
             <Icons.IconPlus size={16} /> New Project
           </Button>
         </div>
-        <ProjectList projects={projects} />
+
+        <ProjectList
+          projects={projects}
+          showNextMilestone={showNextMilestone}
+          showPhase={showPhase}
+          showStartDate={showStartDate}
+          showDueDate={showDueDate}
+          showChampion={showChampion}
+        />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function ProjectList({ projects }) {
-  const titles = ["Title", "Next Milestone", "Phase", "Start Date", "Due Date", "Champion"];
-  const sizes = ["flex-1", "flex-1", "w-24", "w-24", "w-24", "w-24"];
+function ProjectList({ projects, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion }) {
+  var titles = ["Title"];
+  var sizes = ["flex-1"];
+
+  if (showNextMilestone) {
+    titles.push("Next Milestone");
+    sizes.push("flex-1");
+  }
+
+  if (showPhase) {
+    titles.push("Phase");
+    sizes.push("w-24");
+  }
+
+  if (showStartDate) {
+    titles.push("Start Date");
+    sizes.push("w-24");
+  }
+
+  if (showDueDate) {
+    titles.push("Due Date");
+    sizes.push("w-24");
+  }
+
+  if (showChampion) {
+    titles.push("Champion");
+    sizes.push("w-24");
+  }
 
   return (
     <div className="flex flex-col">
       <Headers titles={titles} sizes={sizes} />
 
       {projects.map((project) => (
-        <ProjectRow key={project.id} project={project} sizes={sizes} />
+        <ProjectRow
+          key={project.id}
+          project={project}
+          sizes={sizes}
+          showNextMilestone={showNextMilestone}
+          showPhase={showPhase}
+          showStartDate={showStartDate}
+          showDueDate={showDueDate}
+          showChampion={showChampion}
+        />
       ))}
     </div>
   );
@@ -119,19 +161,32 @@ function Headers({ titles, sizes }) {
   );
 }
 
-function ProjectRow({ project, sizes }) {
+function ProjectRow({ project, sizes, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion }) {
   return (
     <Row>
       <Cell size={sizes[0]}>{project.name}</Cell>
-      <Cell size={sizes[1]}>
-        <NextMilestone project={project} />
-      </Cell>
-      <Cell size={sizes[2]}>{project.phase}</Cell>
-      <Cell size={sizes[3]}>Jan 17</Cell>
-      <Cell size={sizes[4]}>Aug 19</Cell>
-      <Cell size={sizes[5]}>
-        <Avatar person={project.champion} size="tiny" /> {project.champion.fullName.split(" ")[0]}
-      </Cell>
+      {showNextMilestone && (
+        <Cell size={sizes[1]}>
+          {" "}
+          <NextMilestone project={project} />{" "}
+        </Cell>
+      )}
+      {showPhase && <Cell size={sizes[2]}>{project.phase}</Cell>}
+      {showStartDate && (
+        <Cell size={sizes[3]}>
+          <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />
+        </Cell>
+      )}
+      {showDueDate && (
+        <Cell size={sizes[4]}>
+          <DateOrNotSet date={project.deadline} ifNull="&mdash;" />
+        </Cell>
+      )}
+      {showChampion && (
+        <Cell size={sizes[5]}>
+          <Avatar person={project.champion} size="tiny" /> {project.champion.fullName.split(" ")[0]}
+        </Cell>
+      )}
     </Row>
   );
 }
