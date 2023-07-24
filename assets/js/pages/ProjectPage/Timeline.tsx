@@ -1,47 +1,89 @@
 import React from "react";
 
-import * as Icons from "tabler-icons-react";
-
+import DatePicker from "react-datepicker";
 import FormattedTime from "@/components/FormattedTime";
 
-export default function Timeline({ project }) {
+import * as Projects from "@/graphql/Projects";
+import * as Time from "@/utils/time";
+
+export default function Timeline({ me, project, refetch }) {
   return (
-    <div>
-      <div className="py-4 -mx-8 px-8 pb-10 pt-10">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between px-4 py-4 bg-shade-1 rounded-lg border border-shade-2">
-            <div className="flex items-center gap-2">
-              <Icons.Circle size={20} className="text-green-400" /> Created
-            </div>
-
-            <div className="flex items-center gap-2">
-              <FormattedTime time={project.deadline} format="short-date" />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between px-4 py-4 bg-shade-1 rounded-lg border border-shade-2">
-            <div className="flex items-center gap-2">
-              <Icons.BoxPadding size={20} className="text-green-400" /> Concept
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 px-4 py-4 bg-shade-1 rounded-lg border border-shade-2">
-            <Icons.Route size={20} className="text-green-400" /> Planning
-          </div>
-
-          <div className="flex items-center gap-2 px-4 py-4 bg-shade-1 rounded-lg border border-shade-2">
-            <Icons.Hammer size={20} className="text-green-400" /> Execution
-          </div>
-
-          <div className="flex items-center gap-2 px-4 py-4 bg-shade-1 rounded-lg border border-shade-2">
-            <Icons.ListCheck size={20} className="text-white-2" /> Closing
-          </div>
-
-          <div className="flex items-center gap-2 px-4 py-4 bg-shade-1 rounded-lg border border-shade-2">
-            <Icons.CircleCheck size={20} className="text-white-2" /> Closed
-          </div>
-        </div>
-      </div>
+    <div className="flex items-center gap-4 mb-4">
+      <StartDate me={me} project={project} refetch={refetch} />
     </div>
+  );
+}
+
+function StartDate({ me, project, refetch }) {
+  const startDate = project.startedAt ? Time.parseDateWithoutTime(project.startedAt) : null;
+
+  const [update] = Projects.useSetProjectStartDateMutation({ onCompleted: refetch });
+
+  const change = (date: Date | null) => {
+    update({
+      variables: {
+        projectId: project.id,
+        startDate: date ? Time.toDateWithoutTime(date) : null,
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-col">
+      <div className="font-bold text-sm">Start Date</div>
+      <DatePickerWithClear editable={project.champion.id === me.id} selected={startDate} onChange={change} />
+    </div>
+  );
+}
+
+function DatePickerWithClear({ selected, onChange, editable = true }) {
+  const [open, setOpen] = React.useState(false);
+
+  const handleChange = (date: Date | null) => {
+    if (!editable) return;
+
+    onChange(date);
+    setOpen(false);
+  };
+
+  let value: React.ReactNode = null;
+
+  if (editable) {
+    if (selected) {
+      value = (
+        <a className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2">
+          <FormattedTime time={selected} format="long-date" />
+        </a>
+      );
+    } else {
+      value = (
+        <a className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2">
+          Select Date...
+        </a>
+      );
+    }
+  } else {
+    if (selected) {
+      value = <FormattedTime time={selected} format="long-date" />;
+    } else {
+      value = <span className="text-white-2">Not set</span>;
+    }
+  }
+
+  return (
+    <DatePicker
+      open={open}
+      selected={selected}
+      onChange={handleChange}
+      onInputClick={() => setOpen(true)}
+      customInput={value}
+    >
+      <a
+        className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2 text-sm"
+        onClick={() => handleChange(null)}
+      >
+        Unset
+      </a>
+    </DatePicker>
   );
 }

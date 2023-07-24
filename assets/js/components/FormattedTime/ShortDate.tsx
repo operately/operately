@@ -1,6 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import * as Time from "@/utils/time";
+
 export default function ShortDate({ time, weekday }: { time: Date; weekday: boolean }): JSX.Element {
   const { t } = useTranslation();
 
@@ -18,7 +20,7 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
     params["formatParams"]["val"]["day"] = "numeric";
     params["formatParams"]["val"]["month"] = "short";
 
-    if (!isCurrentYear(time)) {
+    if (!Time.isCurrentYear(time)) {
       params["formatParams"]["val"]["year"] = "numeric";
     }
   }
@@ -36,10 +38,6 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
   }
 
   return <>{prefix + t("intlDateTime", params)}</>;
-}
-
-function isCurrentYear(date: Date) {
-  return date.getFullYear() === new Date().getFullYear();
 }
 
 function isSameDay(date: Date, other: Date) {
