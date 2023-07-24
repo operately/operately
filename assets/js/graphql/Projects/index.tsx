@@ -587,3 +587,16 @@ export function useSetProjectStartDateMutation(options = {}) {
     options,
   );
 }
+
+export function useSetProjectDueDateMutation(options = {}) {
+  return useMutation(
+    gql`
+      mutation SetProjectDueDate($projectId: ID!, $dueDate: Date) {
+        setProjectDueDate(projectId: $projectId, dueDate: $dueDate) {
+          id
+        }
+      }
+    `,
+    options,
+  );
+}

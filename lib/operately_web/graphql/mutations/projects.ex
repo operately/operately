@@ -38,14 +38,25 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
       resolve fn args, _ ->
         project = Operately.Projects.get_project!(args.project_id)
+        Operately.Projects.update_project(project, %{started_at: parse_date(args.start_date)})
+      end
+    end
 
-        if args.start_date do
-          start_date = NaiveDateTime.new!(args.start_date, ~T[00:00:00])
+    field :set_project_due_date, non_null(:project) do
+      arg :project_id, non_null(:id)
+      arg :due_date, :date
 
-          Operately.Projects.update_project(project, %{started_at: start_date})
-        else
-          Operately.Projects.update_project(project, %{started_at: nil})
-        end
+      resolve fn args, _ ->
+        project = Operately.Projects.get_project!(args.project_id)
+        Operately.Projects.update_project(project, %{deadline: parse_date(args.due_date)})
+      end
+    end
+
+    defp parse_date(date) do
+      if date do
+        NaiveDateTime.new!(date, ~T[00:00:00])
+      else
+        nil
       end
     end
 
