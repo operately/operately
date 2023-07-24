@@ -21,6 +21,8 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
+import { RightSidebarPortal } from "@/layouts/DefaultLayout";
+
 export async function loader({ params }) {
   let projectData = await client.query({
     query: Projects.GET_PROJECT,
@@ -48,7 +50,7 @@ function Overview({ me, project, refetch }) {
   useDocumentTitle(project.name);
 
   return (
-    <Paper.Root size="medium">
+    <Paper.Root size="medium" rightSidebar={<Sidebar project={project} />}>
       <Paper.Navigation>
         <Paper.NavItem linkTo={`/projects`}>
           <Icons.IconClipboardList size={16} />
@@ -59,7 +61,7 @@ function Overview({ me, project, refetch }) {
       <Paper.Body minHeight="600px">
         <Header project={project} />
         <Timeline me={me} project={project} refetch={refetch} />
-        <Description me={me} project={project} refetch={refetch} />
+        <Description me={me} project={project} />
 
         <div className="grid grid-cols-3 gap-4">
           <MilestonesCard project={project} />
@@ -74,6 +76,62 @@ function Overview({ me, project, refetch }) {
         <PinToHomePage project={project} refetch={refetch} />
       </Paper.RightToolbox>
     </Paper.Root>
+  );
+}
+
+function Sidebar({ project }) {
+  const tasks = [
+    {
+      title: "Write a project description",
+      completed: project.description !== null,
+    },
+    {
+      title: "Set the start and due dates",
+      completed: project.staredAt !== null && project.deadline !== null,
+    },
+    {
+      title: "Invite team members and assign roles",
+      completed: project.contributors.length > 1,
+    },
+    {
+      title: "Define the project milestones",
+      completed: project.milestones.length > 0,
+    },
+    {
+      title: "Write a status update",
+      completed: project.updates.length > 0,
+    },
+  ];
+
+  return (
+    <div className="px-4 pt-16">
+      <h1 className="font-bold mb-4 text-xl">Champion's Toolbar</h1>
+      <p className="text-sm">
+        You are the champion of this project, responsible for leading the execution, setting up the team and their
+        roles, and providing regular status updates about the progress.
+      </p>
+
+      <div>
+        <h1 className="font-bold mb-4 mt-8">Your Tasks</h1>
+
+        <div className="flex flex-col gap-2">
+          {tasks.map((task, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div
+                className={classnames("border rounded-full w-6 h-6 flex items-center justify-center text-xs", {
+                  "border-green-400/70 text-green-400": task.completed,
+                  "border-white-2 text-white-1": !task.completed,
+                })}
+              >
+                {task.completed ? <Icons.IconCheck size={14} /> : index + 1}
+              </div>
+
+              <span>{task.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
