@@ -32,6 +32,17 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    field :update_project_description, non_null(:project) do
+      arg :project_id, non_null(:id)
+      arg :description, :string
+
+      resolve fn args, _ ->
+        project = Operately.Projects.get_project!(args.project_id)
+
+        Operately.Projects.update_project(project, %{description: Jason.decode!(args.description)})
+      end
+    end
+
     field :set_project_start_date, non_null(:project) do
       arg :project_id, non_null(:id)
       arg :start_date, :date

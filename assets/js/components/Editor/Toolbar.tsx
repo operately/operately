@@ -18,10 +18,7 @@ function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
 
 function BoldButton({ editor }): JSX.Element {
   return (
-    <MenuBarToggle
-      onClick={() => editor.chain().focus().toggleBold().run()}
-      isActive={editor.isActive("bold")}
-    >
+    <MenuBarToggle onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive("bold")}>
       <Icons.Bold size={20} />
     </MenuBarToggle>
   );
@@ -29,10 +26,7 @@ function BoldButton({ editor }): JSX.Element {
 
 function ItalicButton({ editor }): JSX.Element {
   return (
-    <MenuBarToggle
-      onClick={() => editor.chain().focus().toggleItalic().run()}
-      isActive={editor.isActive("italic")}
-    >
+    <MenuBarToggle onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive("italic")}>
       <Icons.Italic size={20} />
     </MenuBarToggle>
   );

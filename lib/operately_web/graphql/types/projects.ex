@@ -71,7 +71,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
 
     field :description, :string do
       resolve fn project, _, _ ->
-        {:ok, Jason.encode!(project.description)}
+        {:ok, project.description && Jason.encode!(project.description)}
       end
     end
 

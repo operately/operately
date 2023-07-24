@@ -31,7 +31,7 @@ function StartDate({ me, project, refetch }) {
 
   return (
     <div className="flex flex-col">
-      <div className="font-bold text-sm">Start Date</div>
+      <div className="font-bold">Start Date</div>
       <DatePickerWithClear editable={project.champion.id === me.id} selected={startDate} onChange={change} />
     </div>
   );
@@ -53,7 +53,7 @@ function DueDate({ me, project, refetch }) {
 
   return (
     <div className="flex flex-col">
-      <div className="font-bold text-sm">Due Date</div>
+      <div className="font-bold">Due Date</div>
       <DatePickerWithClear editable={project.champion.id === me.id} selected={dueDate} onChange={change} />
     </div>
   );

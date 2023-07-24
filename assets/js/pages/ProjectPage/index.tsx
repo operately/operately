@@ -11,6 +11,7 @@ import * as Cards from "@/components/Cards";
 import Activity from "./Activity";
 import Header from "./Header";
 import Timeline from "./Timeline";
+import Description from "./Description";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -47,7 +48,7 @@ function Overview({ me, project, refetch }) {
   useDocumentTitle(project.name);
 
   return (
-    <Paper.Root size="large">
+    <Paper.Root size="medium">
       <Paper.Navigation>
         <Paper.NavItem linkTo={`/projects`}>
           <Icons.IconClipboardList size={16} />
@@ -58,6 +59,7 @@ function Overview({ me, project, refetch }) {
       <Paper.Body minHeight="600px">
         <Header project={project} />
         <Timeline me={me} project={project} refetch={refetch} />
+        <Description me={me} project={project} refetch={refetch} />
 
         <div className="grid grid-cols-3 gap-4">
           <MilestonesCard project={project} />

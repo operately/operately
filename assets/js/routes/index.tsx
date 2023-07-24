@@ -13,8 +13,9 @@ import { AccountPage } from "@/pages/AccountPage";
 import { AccountEditProfilePage } from "@/pages/AccountEditProfilePage";
 import { AccountNotificationSettingsPage } from "@/pages/AccountNotificationSettingsPage";
 
-import * as ProjectPage from "../pages/ProjectPage";
-import * as ProjectListPage from "../pages/ProjectListPage";
+import * as ProjectPage from "@/pages/ProjectPage";
+import * as ProjectListPage from "@/pages/ProjectListPage";
+import * as ProjectDescriptionEditPage from "@/pages/ProjectDescriptionEditPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
@@ -88,6 +89,7 @@ const routes = createBrowserRouter([
         element: <ProjectStatusUpdateNewPage />,
       },
       pageRoute("/projects/:project_id/updates", ProjectStatusUpdateListPage),
+      pageRoute("/projects/:project_id/description/edit", ProjectDescriptionEditPage),
       {
         path: "/projects/:project_id/updates/:id",
         element: <ProjectStatusUpdatePage />,
