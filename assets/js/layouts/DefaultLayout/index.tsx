@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 
 import { Outlet } from "react-router-dom";
 
@@ -30,41 +31,19 @@ function Logo() {
   );
 }
 
-function Flare() {
+function NavigationContainer({ size, children }) {
+  const padding = size === "large" ? "pt-2 pb-1.5 px-4" : "py-1 px-4";
+
   return (
-    <div
-      className="absolute"
-      style={{
-        top: 0,
-        left: 0,
-        right: 0,
-        height: "800px",
-        background: "radial-gradient(circle at top, #ffff0010 0%, #00000000 50%)",
-        pointerEvents: "none",
-      }}
-    ></div>
+    <div className={"fixed top-0 bg-dark-1 left-0 right-0 transition-all z-50 border-b border-shade-1" + " " + padding}>
+      {children}
+    </div>
   );
 }
 
-function NavigationContainer({ size, children }) {
-  const padding = size === "large" ? "py-2 px-4" : "py-1 px-4";
-
-  return <div className={"fixed top-0 bg-dark-1 left-0 right-0 transition-all z-50" + " " + padding}>{children}</div>;
-}
-
 function NavigationItem({ to, title, icon }) {
-  const baseClass = "flex items-center px-3 py-1";
-
-  const classHandler = ({ isActive, isPending }) => {
-    if (isActive || isPending) {
-      return baseClass + "  bg-dark-5 rounded-lg text-white-1";
-    } else {
-      return baseClass + "";
-    }
-  };
-
   return (
-    <NavLink to={to} className={classHandler}>
+    <NavLink to={to} className="flex items-center px-3 py-1">
       <span className="font-bold flex items-center gap-1">
         {icon}
         {title}
@@ -77,15 +56,15 @@ function Navigation({ size }) {
   return (
     <NavigationContainer size={size}>
       <div className="flex justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-4">
             <Logo />
           </div>
-        </div>
 
-        <div className="flex items-center gap-1">
-          <NavigationItem to="/" title="Home" icon={<Icons.IconStarFilled size={16} stroke={3} />} />
-          <NavigationItem to="/projects" title="Projects" icon={<Icons.IconTableFilled size={16} />} />
+          <div className="flex items-center gap-1">
+            <NavigationItem to="/" title="Home" icon={<Icons.IconStarFilled size={16} stroke={3} />} />
+            <NavigationItem to="/projects" title="Projects" icon={<Icons.IconTableFilled size={16} />} />
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -128,13 +107,11 @@ export default function DefaultLayout() {
   });
 
   return (
-    <div className="px-4">
+    <div className="">
       <ScrollToTop />
       <Navigation size={navigationSize} />
 
-      <div>
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 }

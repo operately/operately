@@ -41,10 +41,30 @@ const Context = React.createContext({
   size: "medium",
 });
 
-export function Root({ size, children }: { size: Size; children: React.ReactNode }) {
+export function Root({ size, children, rightSidebar }: { size: Size; children: React.ReactNode }) {
+  const rightSidebarWidth = "400px";
+
   return (
     <Context.Provider value={{ size }}>
-      <div className={classnames("mx-auto my-20 relative", sizes[size])}>{children}</div>
+      <div
+        className="fixed top-0 left-0 bottom-0 overflow-y-auto"
+        style={{
+          right: rightSidebar ? rightSidebarWidth : 0,
+        }}
+      >
+        <div className={classnames("flex-1 mx-auto my-20 relative", sizes[size])}>{children}</div>
+      </div>
+
+      {rightSidebar && (
+        <div
+          className="fixed top-0 right-0 bottom-0 overflow-y-scroll bg-dark-2 border-l border-shade-1"
+          style={{
+            left: "calc(100% - " + rightSidebarWidth + ")",
+          }}
+        >
+          {rightSidebar}
+        </div>
+      )}
     </Context.Provider>
   );
 }
