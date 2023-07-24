@@ -173,6 +173,13 @@ export const GET_PROJECT = gql`
         phase
       }
 
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
       contributors ${fragments.CONTRIBUTOR}
 
       pitch ${fragments.PROJECT_DOCUMENT}
@@ -562,6 +569,19 @@ export function usePinProjectToHomePage(options = {}) {
     gql`
       mutation PinProjectToHomePage($projectId: ID!) {
         pinProjectToHomePage(projectId: $projectId)
+      }
+    `,
+    options,
+  );
+}
+
+export function useSetProjectStartDateMutation(options = {}) {
+  return useMutation(
+    gql`
+      mutation SetProjectStartDate($projectId: ID!, $startDate: Date) {
+        setProjectStartDate(projectId: $projectId, startDate: $startDate) {
+          id
+        }
       }
     `,
     options,

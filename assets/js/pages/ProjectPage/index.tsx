@@ -10,31 +10,40 @@ import * as Cards from "@/components/Cards";
 
 import Activity from "./Activity";
 import Header from "./Header";
+import Timeline from "./Timeline";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
+import * as Me from "@/graphql/Me";
 import * as Milestones from "@/graphql/Projects/milestones";
 
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
 export async function loader({ params }) {
-  let res = await client.query({
+  let projectData = await client.query({
     query: Projects.GET_PROJECT,
     variables: { id: params.id },
     fetchPolicy: "network-only",
   });
 
-  return res.data.project;
+  let meData = await client.query({
+    query: Me.GET_ME,
+  });
+
+  return {
+    project: projectData.data.project,
+    me: meData.data.me,
+  };
 }
 
 export function Page() {
-  const [project, refetch] = Paper.useLoadedData();
+  const [data, refetch] = Paper.useLoadedData();
 
-  return <Overview project={project} refetch={refetch} />;
+  return <Overview me={data.me} project={data.project} refetch={refetch} />;
 }
 
-function Overview({ project, refetch }) {
+function Overview({ me, project, refetch }) {
   useDocumentTitle(project.name);
 
   return (
@@ -48,6 +57,7 @@ function Overview({ project, refetch }) {
 
       <Paper.Body minHeight="600px">
         <Header project={project} />
+        <Timeline me={me} project={project} refetch={refetch} />
 
         <div className="grid grid-cols-3 gap-4">
           <MilestonesCard project={project} />

@@ -27,3 +27,15 @@ export function isToday(date: Date) {
 export function isPast(date: Date) {
   return datefsn.isPast(date);
 }
+
+export function toDateWithoutTime(date: Date) {
+  return date.toISOString().split("T")[0];
+}
+
+export function parseDateWithoutTime(date: string) {
+  return new Date(Date.parse(date));
+}
+
+export function isCurrentYear(date: Date) {
+  return date.getFullYear() === new Date().getFullYear();
+}

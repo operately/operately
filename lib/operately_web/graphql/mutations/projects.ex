@@ -32,6 +32,23 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    field :set_project_start_date, non_null(:project) do
+      arg :project_id, non_null(:id)
+      arg :start_date, :date
+
+      resolve fn args, _ ->
+        project = Operately.Projects.get_project!(args.project_id)
+
+        if args.start_date do
+          start_date = NaiveDateTime.new!(args.start_date, ~T[00:00:00])
+
+          Operately.Projects.update_project(project, %{started_at: start_date})
+        else
+          Operately.Projects.update_project(project, %{started_at: nil})
+        end
+      end
+    end
+
     field :pin_project_to_home_page, non_null(:boolean) do
       arg :project_id, non_null(:id)
 
