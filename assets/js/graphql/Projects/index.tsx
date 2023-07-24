@@ -600,3 +600,16 @@ export function useSetProjectDueDateMutation(options = {}) {
     options,
   );
 }
+
+export function useUpdateDescriptionMutation(options = {}) {
+  return useMutation(
+    gql`
+      mutation UpdateProjectDescription($projectId: ID!, $description: String) {
+        updateProjectDescription(projectId: $projectId, description: $description) {
+          id
+        }
+      }
+    `,
+    options,
+  );
+}

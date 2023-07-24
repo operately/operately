@@ -9,11 +9,7 @@ import Mention from "@tiptap/extension-mention";
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
 
-export type EditorMentionSearchFunc = ({
-  query,
-}: {
-  query: string;
-}) => Promise<Person[]> | any[];
+export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]> | any[];
 
 interface Person {
   id: string;
@@ -33,6 +29,7 @@ interface OnBlurData {
 interface UseEditorProps {
   peopleSearch?: EditorMentionSearchFunc;
   placeholder?: string;
+  content?: any;
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
 }
@@ -41,6 +38,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
   const [_submitActive, setSubmitActive] = React.useState(false);
 
   return TipTap.useEditor({
+    content: props.content,
     injectCSS: false,
     editorProps: {
       attributes: {
