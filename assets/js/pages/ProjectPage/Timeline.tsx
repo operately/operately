@@ -8,8 +8,9 @@ import * as Time from "@/utils/time";
 
 export default function Timeline({ me, project, refetch }) {
   return (
-    <div className="flex items-center gap-4 mb-4">
+    <div className="flex items-center gap-8 mb-4">
       <StartDate me={me} project={project} refetch={refetch} />
+      <DueDate me={me} project={project} refetch={refetch} />
     </div>
   );
 }
@@ -32,6 +33,28 @@ function StartDate({ me, project, refetch }) {
     <div className="flex flex-col">
       <div className="font-bold text-sm">Start Date</div>
       <DatePickerWithClear editable={project.champion.id === me.id} selected={startDate} onChange={change} />
+    </div>
+  );
+}
+
+function DueDate({ me, project, refetch }) {
+  const dueDate = project.deadline ? Time.parseDateWithoutTime(project.deadline) : null;
+
+  const [update] = Projects.useSetProjectDueDateMutation({ onCompleted: refetch });
+
+  const change = (date: Date | null) => {
+    update({
+      variables: {
+        projectId: project.id,
+        dueDate: date ? Time.toDateWithoutTime(date) : null,
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-col">
+      <div className="font-bold text-sm">Due Date</div>
+      <DatePickerWithClear editable={project.champion.id === me.id} selected={dueDate} onChange={change} />
     </div>
   );
 }
