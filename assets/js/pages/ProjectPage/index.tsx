@@ -43,14 +43,21 @@ export async function loader({ params }): Promise<LoaderResult> {
 export function Page() {
   const [data, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
 
-  return <Overview me={data.me} project={data.project} refetch={refetch} />;
-}
+  const project = data.project;
+  const me = data.me;
 
-function Overview({ me, project, refetch }) {
   useDocumentTitle(project.name);
 
+  const championOfProject = project.champion?.id === me.id;
+
+  const [sidebarOpen, setSidebarOpen] = React.useState(championOfProject);
+
+  const sidebar = championOfProject ? (
+    <Sidebar project={project} isOpen={sidebarOpen} setOpen={setSidebarOpen} />
+  ) : null;
+
   return (
-    <Paper.Root size="medium" rightSidebar={<Sidebar project={project} />}>
+    <Paper.Root size="medium" rightSidebar={sidebar} rightSidebarWidth={sidebarOpen ? "400px" : "0px"}>
       <Paper.Navigation>
         <Paper.NavItem linkTo={`/projects`}>
           <Icons.IconClipboardList size={16} />
@@ -78,7 +85,7 @@ function Tools({ project }) {
   );
 }
 
-function Sidebar({ project }) {
+function Sidebar({ project, isOpen, setOpen }) {
   const tasks = [
     {
       title: "Write a project description",
@@ -103,7 +110,9 @@ function Sidebar({ project }) {
   ];
 
   return (
-    <div className="px-4 pt-16">
+    <div className="px-4 pt-16 relative">
+      <SidebarToggle open={isOpen} setOpen={setOpen} />
+
       <h1 className="font-bold mb-4 text-xl">Champion's Toolbar</h1>
       <p className="text-sm">
         You are the champion of this project, responsible for leading the execution, setting up the team and their
@@ -134,28 +143,28 @@ function Sidebar({ project }) {
   );
 }
 
-function PinToHomePage({ project, refetch }) {
-  const [pin, { loading }] = Projects.usePinProjectToHomePage({
-    onCompleted: (res) => {
-      refetch();
-    },
-  });
-
-  const handlePin = () => {
-    pin({
-      variables: {
-        projectId: project.id,
-      },
-    });
-  };
-
-  return (
-    <div className={`rounded-r-lg bg-dark-3 p-3 cursor-pointer `} onClick={handlePin}>
-      {project.isPinned ? (
-        <Icons.IconStarFilled size={20} className={`text-yellow-400 ${loading && "animate-pulse"}`} />
-      ) : (
-        <Icons.IconStar size={20} className={`text-white-1 ${loading && "animate-pulse"}`} />
-      )}
-    </div>
-  );
+function SidebarToggle({ open, setOpen }) {
+  if (open) {
+    return (
+      <button
+        className="absolute top-16 -left-10 p-2 rounded bg-white-1/5 hover:bg-white-1/20 transition-colors duration-200"
+        onClick={() => setOpen(false)}
+      >
+        <Icons.IconChevronRight size={16} />
+      </button>
+    );
+  } else {
+    return (
+      <button
+        className="absolute top-16 p-2 rounded bg-white-1/10 hover:bg-white-1/20 transition-colors duration-200 flex items-center gap-2"
+        style={{
+          left: "-190px",
+        }}
+        onClick={() => setOpen(true)}
+      >
+        <Icons.IconArrowBarLeft size={16} />
+        <span className="text-sm font-medium">Champion's Toolbar</span>
+      </button>
+    );
+  }
 }

@@ -45,11 +45,10 @@ interface RootProps {
   size?: Size;
   children?: React.ReactNode;
   rightSidebar?: React.ReactNode;
+  rightSidebarWidth?: string;
 }
 
-export function Root({ size, children, rightSidebar }: RootProps): JSX.Element {
-  const rightSidebarWidth = "400px";
-
+export function Root({ size, children, rightSidebar, rightSidebarWidth = "0" }: RootProps): JSX.Element {
   return (
     <Context.Provider value={{ size }}>
       <div
@@ -63,7 +62,7 @@ export function Root({ size, children, rightSidebar }: RootProps): JSX.Element {
 
       {rightSidebar && (
         <div
-          className="fixed top-0 right-0 bottom-0 overflow-y-scroll bg-dark-2 border-l border-shade-1"
+          className="fixed top-0 right-0 bottom-0 bg-dark-2 border-l border-shade-1"
           style={{
             left: "calc(100% - " + rightSidebarWidth + ")",
           }}
