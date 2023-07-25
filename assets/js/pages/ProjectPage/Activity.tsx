@@ -10,7 +10,8 @@ import { Link } from "react-router-dom";
 export default function Activity({ projectId }): JSX.Element {
   const { data, loading, error } = Activities.useListActivities("project", projectId);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <></>;
+  if (error) throw error;
 
   const activityGroups = Activities.groupByDate(data?.activities);
 
@@ -49,6 +50,8 @@ function ActivityGroup({ date, activities }) {
 }
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
+  if (activity.resource === null) return null;
+
   switch (activity.resourceType + "-" + activity.actionType) {
     case "project-create":
       return <ActivityItemProjectCreated activity={activity} />;
