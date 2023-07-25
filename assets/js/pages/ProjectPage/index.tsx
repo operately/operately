@@ -18,8 +18,9 @@ import * as Projects from "@/graphql/Projects";
 import * as Me from "@/graphql/Me";
 import * as Milestones from "@/graphql/Projects/milestones";
 
-import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
+
+import MessageBoardCard from "./MessageBoardCard";
 
 export async function loader({ params }) {
   let projectData = await client.query({
@@ -61,10 +62,9 @@ function Overview({ me, project, refetch }) {
         <Timeline me={me} project={project} refetch={refetch} />
         <Description me={me} project={project} />
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4 mt-8">
+          <MessageBoardCard project={project} />
           <MilestonesCard project={project} />
-          <DocumentationCard project={project} />
-          <StatuUpdatesCard project={project} />
         </div>
 
         <Activity projectId={project.id} />
@@ -305,58 +305,7 @@ function MilestoneList({ phase, milestones }) {
 //   </div>
 // )}
 
-function StatusUpdatesCardItem({ update }: { update: Projects.Update }) {
-  return (
-    <div>
-      <div className="flex items-center gap-1.5 font-medium flex-1">
-        <div className="line-clamp-2">
-          <RichContent jsonContent={update.message} />
-        </div>
-      </div>
-
-      <div className="shrink-0 flex items-center gap-1.5 mt-3">
-        {update.acknowledged ? (
-          <>
-            <Icons.IconCircleCheckFilled size={14} className="text-green-400" />
-            acknowledged
-          </>
-        ) : (
-          <>
-            <Icons.IconClockFilled size={14} className="text-yellow-400" />
-            waiting for acknowledgment
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function StatuUpdatesCard({ project }: { project: Projects.Project }) {
-  return (
-    <Cards.Card linkTo={`/projects/${project.id}/updates`}>
-      <Cards.Header>
-        <div className="flex items-center gap-2">
-          <Icons.IconReport size={20} className="text-white-1" />
-          <Cards.Title>Status Updates</Cards.Title>
-        </div>
-      </Cards.Header>
-
-      <Cards.Body>
-        <div className="mt-4">
-          <CardSectionTitle title="Last Update" />
-
-          {project.updates.length === 0 ? (
-            <div className="text-white-2">No updates yet. Asking the champion every week for an update.</div>
-          ) : (
-            <StatusUpdatesCardItem update={project.updates[0]} />
-          )}
-        </div>
-      </Cards.Body>
-    </Cards.Card>
-  );
-}
-
-function KeyResourcesCardItem({ icon, title }) {
+function KeyResourcesCardItem({ icon, title }): JSX.Element {
   return (
     <div className="border-t border-b border-shade-1 flex items-center gap-1.5 rounded-lg py-1">
       <div className="shrink-0">{icon}</div>

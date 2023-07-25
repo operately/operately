@@ -74,7 +74,7 @@ function DatePickerWithClear({ selected, onChange, editable = true }) {
   if (editable) {
     if (selected) {
       value = (
-        <a className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2">
+        <a className="font-medium text-blue-400 hover:text-blue-400 cursor-pointer underline underline-offset-2">
           <FormattedTime time={selected} format="long-date" />
         </a>
       );

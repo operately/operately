@@ -49,8 +49,7 @@ function Title({ projectId }) {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <div className="text-2xl font-extrabold ">Status Update</div>
-        <div className="text-medium">Asking the project champion for a status update every Friday at 3pm.</div>
+        <div className="text-2xl font-extrabold ">Message Board</div>
       </div>
 
       <div>
@@ -64,7 +63,7 @@ function PostUpdateButton({ linkTo }) {
   return (
     <Button variant="success" linkTo={linkTo}>
       <Icons.IconMessage2 size={20} />
-      Post Update
+      Write Message
     </Button>
   );
 }

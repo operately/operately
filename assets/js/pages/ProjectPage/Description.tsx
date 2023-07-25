@@ -22,7 +22,7 @@ export default function Description({ me, project }) {
   if (project.description) {
     return (
       <div className="flex flex-col gap-1 mb-8">
-        <div className="text-xl">
+        <div className="text-xl font-medium">
           <Truncate lines={lines}>
             <RichContent jsonContent={project.description} />
           </Truncate>

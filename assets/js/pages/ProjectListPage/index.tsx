@@ -54,8 +54,8 @@ export function Page() {
     <Paper.Root size="xxlarge">
       <div className="text-center font-extrabold text-3xl mt-4 mb-8 ml-4">Projects in {company.name}</div>
 
-      <Paper.Body className="bg-dark-2" noPadding noGradient>
-        <div className="flex items-center justify-between mb-4 gap-4 m-4">
+      <Paper.Body className="bg-dark-2" noPadding>
+        <div className="flex items-center justify-between mb-4 gap-4 m-4 pt-4">
           <div className="flex items-center gap-2">
             <Popover.Root>
               <Popover.Trigger asChild>

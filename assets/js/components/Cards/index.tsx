@@ -8,13 +8,15 @@ export function Card({ children, linkTo }) {
     <Link to={linkTo}>
       <div
         className={classnames(
-          "p-4 h-52",
-          "bg-dark-3 rounded-lg text-sm",
+          "p-4",
+          "bg-white-1/[3%] rounded-lg",
           "cursor-pointer",
-          "shadow hover:shadow-lg",
-          "border border-shade-2 hover:border-shade-3",
+          "shadow-sm hover:shadow-lg",
           "overflow-hidden",
         )}
+        style={{
+          height: "260px",
+        }}
       >
         {children}
       </div>
@@ -23,11 +25,7 @@ export function Card({ children, linkTo }) {
 }
 
 export function Header({ children }) {
-  return (
-    <div className="flex items-center justify-between gap-2 mb-2 border-b border-shade-2 -m-4 px-4 py-3">
-      {children}
-    </div>
-  );
+  return <div className="flex items-center justify-between gap-2 border-b border-shade-1 pb-2">{children}</div>;
 }
 
 export function Title({ children }) {
@@ -35,5 +33,5 @@ export function Title({ children }) {
 }
 
 export function Body({ children }) {
-  return <div>{children}</div>;
+  return <div className="h-full">{children}</div>;
 }

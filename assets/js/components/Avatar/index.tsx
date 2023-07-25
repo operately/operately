@@ -10,13 +10,7 @@ export enum AvatarSize {
   XXLarge = "xxlarge",
 }
 
-type AvatarSizeString =
-  | "tiny"
-  | "small"
-  | "normal"
-  | "large"
-  | "xlarge"
-  | "xxlarge";
+type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
 interface Person {
   avatarUrl?: string;
@@ -35,7 +29,7 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.Tiny:
       return "w-[20px] h-[20px]";
     case AvatarSize.Small:
-      return "w-9 h-9";
+      return "w-8 h-8";
     case AvatarSize.Normal:
       return "w-8 h-8";
     case AvatarSize.Large:
@@ -85,12 +79,7 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const baseClass = [
-    "flex items-center justify-center",
-    "text-dark-1",
-    "bg-pink-300",
-    "rounded-full",
-  ].join(" ");
+  const baseClass = ["flex items-center justify-center", "text-dark-1", "bg-pink-300", "rounded-full"].join(" ");
 
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
@@ -116,8 +105,7 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
 }
 
 function UnassingedAvatar({ size }: { size: AvatarSize }): JSX.Element {
-  const baseClass =
-    "rounded-full overflow-hidden bg-shade-1 flex items-center justify-center";
+  const baseClass = "rounded-full overflow-hidden bg-shade-1 flex items-center justify-center";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
 
