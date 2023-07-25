@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 #
 # Where to start with the project?
 #
@@ -133,7 +135,20 @@ dev.run.script:
 
 test:
 	mkdir -p $(SCREENSHOTS_DIR)
+	@if [[ "$(FILE)" == assets/js* ]]; then \
+		$(MAKE) test.npm FILE=$(FILE); \
+	elif [[ "$(FILE)" == test/* ]]; then \
+		$(MAKE) test.mix FILE=$(FILE); \
+	else \
+		$(MAKE) test.mix; \
+		$(MAKE) test.npm; \
+	fi
+
+test.mix:
 	$(TEST_CONTAINER) mix test $(FILE)
+
+test.npm:
+	$(TEST_CONTAINER) bash -c "cd assets && npm test"
 
 test.db.migrate:
 	$(TEST_CONTAINER) mix ecto.migrate
