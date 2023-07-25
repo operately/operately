@@ -142,6 +142,7 @@ export interface Project {
   milestones: Milestone[];
   parents: Parent[];
   contributors: Contributor[];
+  champion?: Person;
 
   pitch: Document;
   plan: Document;

@@ -16,12 +16,12 @@ import { AccountNotificationSettingsPage } from "@/pages/AccountNotificationSett
 import * as ProjectPage from "@/pages/ProjectPage";
 import * as ProjectListPage from "@/pages/ProjectListPage";
 import * as ProjectDescriptionEditPage from "@/pages/ProjectDescriptionEditPage";
+import * as ProjectMilestonesPage from "@/pages/ProjectMilestonesPage";
+import * as ProjectStatusUpdateListPage from "@/pages/ProjectStatusUpdateListPage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
 import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
-import { ProjectMilestonesPage } from "@/pages/ProjectMilestonesPage";
 import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
-import * as ProjectStatusUpdateListPage from "@/pages/ProjectStatusUpdateListPage";
 import { ProjectStatusUpdateNewPage } from "@/pages/ProjectStatusUpdateNewPage";
 
 import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
@@ -98,10 +98,7 @@ const routes = createBrowserRouter([
         path: "/projects/:project_id/contributors",
         element: <ProjectContributorsPage />,
       },
-      {
-        path: "/projects/:project_id/milestones",
-        element: <ProjectMilestonesPage />,
-      },
+      pageRoute("/projects/:project_id/milestones", ProjectMilestonesPage),
       {
         path: "/projects/:project_id/documentation/*",
         element: <ProjectDocumentationPage />,

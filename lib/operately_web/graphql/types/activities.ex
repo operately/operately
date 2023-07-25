@@ -11,7 +11,7 @@ defmodule OperatelyWeb.GraphQL.Types.Activities do
     field :inserted_at, non_null(:naive_datetime)
     field :updated_at, non_null(:naive_datetime)
 
-    field :resource, non_null(:activity_resource_union) do
+    field :resource, :activity_resource_union do
       resolve fn activity, _, _ ->
         {:ok, activity.resource}
       end
