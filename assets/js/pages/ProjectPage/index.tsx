@@ -62,7 +62,7 @@ function Overview({ me, project, refetch }) {
         <Timeline me={me} project={project} refetch={refetch} />
         <Description me={me} project={project} />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 mt-8">
           <MessageBoardCard project={project} />
           <MilestonesCard project={project} />
         </div>

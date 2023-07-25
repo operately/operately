@@ -34,7 +34,7 @@ export function ProjectStatusUpdateNewPage() {
 
         <Icons.IconSlash size={16} />
 
-        <Paper.NavItem linkTo={`/projects/${project.id}/updates`}>Status Updates</Paper.NavItem>
+        <Paper.NavItem linkTo={`/projects/${project.id}/updates`}>Message Board</Paper.NavItem>
       </Paper.Navigation>
 
       <Paper.Body>
