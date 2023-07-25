@@ -57,16 +57,30 @@
     "@absinthe/socket": "^0.2.1",
     "@absinthe/socket-apollo-link": "^0.2.1",
     "@jumpn/utils-graphql": "^0.6.0",
+    "@types/jest": "^29.5.3",
     "@types/nprogress": "^0.2.0",
     "@types/phoenix": "^1.5.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/react-modal": "^3.13.1",
     "esbuild": "^0.14.41",
-    "esbuild-plugin-svgr": "^1.1.0"
+    "esbuild-plugin-svgr": "^1.1.0",
+    "jest": "^29.6.1",
+    "ts-jest": "^29.1.1"
   },
   "prettier": {
     "printWidth": 120,
     "trailingComma": "all"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/?(*.)+(test).+(ts|tsx|js)"
+    ]
   }
 }

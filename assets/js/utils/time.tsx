@@ -16,6 +16,28 @@ export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }
 
+export function parse(date: string | Date | null) {
+  if (date === null) {
+    return null;
+  }
+
+  if (typeof date === "string") {
+    let parsed = Date.parse(date);
+
+    if (isNaN(parsed)) {
+      throw new Error("Invalid date");
+    }
+
+    return new Date(parsed);
+  }
+
+  if (date instanceof Date) {
+    return date;
+  }
+
+  throw new Error("Invalid date");
+}
+
 export function parseISO(date: string) {
   return datefsn.parseISO(date);
 }
