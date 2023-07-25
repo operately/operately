@@ -2,8 +2,8 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 import * as Cards from "@/components/Cards";
-// import * as Milestones from "@/graphql/Projects/milestones";
-// import FormattedTime from "@/components/FormattedTime";
+import * as Milestones from "@/graphql/Projects/milestones";
+import FormattedTime from "@/components/FormattedTime";
 
 export default function MilestonesCard({ project }) {
   return (
@@ -44,26 +44,23 @@ function EmptyState() {
 }
 
 function MilestonesList({ project }) {
-  return null;
-  // return (
-  //   <div className="flex flex-col gap-2">
-  //     {project.milestones.map((milestone) => (
-  //       <Item key={milestone.id} milestone={milestone} />
-  //     ))}
-  //   </div>
-  // );
+  const milestones = Milestones.sortByDeadline(project.milestones);
+
+  return (
+    <div className="flex flex-col gap-2 py-2">
+      {milestones.map((milestone) => (
+        <Item key={milestone.id} milestone={milestone} />
+      ))}
+    </div>
+  );
 }
 
 function Item({ milestone }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex flex-col gap-1">
-        <div className="font-semibold">{milestone.name}</div>
-        <div className="text-xs text-gray-500">{milestone.description}</div>
-      </div>
-      <div className="flex items-center gap-2">
-        <div className="text-xs text-gray-500">{milestone.tasks.length} tasks</div>
-        <Icons.IconChevronRight size={16} />
+    <div className="flex flex-col gap-0.5 text-xs">
+      <div className="font-semibold line-clamp-1">{milestone.title}</div>
+      <div className="text-yellow-400/80 font-medium">
+        <FormattedTime time={milestone.deadlineAt} format="long-date" />
       </div>
     </div>
   );
