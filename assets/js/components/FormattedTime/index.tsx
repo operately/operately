@@ -63,7 +63,6 @@ function LongDate({ time }: { time: Date }): JSX.Element {
       val: {
         day: "numeric",
         month: "long",
-        year: Time.isCurrentYear(time) ? undefined : "numeric",
       },
     },
   };
@@ -85,6 +84,7 @@ function LongDate({ time }: { time: Date }): JSX.Element {
     <>
       {t("intlDateTime", options)}
       {suffix}
+      {Time.isCurrentYear(time) ? "" : ", " + time.getFullYear()}
     </>
   );
 }
