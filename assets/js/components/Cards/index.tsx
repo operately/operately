@@ -9,7 +9,7 @@ export function Card({ children, linkTo }) {
       <div
         className={classnames(
           "p-4",
-          "bg-dark-4 rounded-lg",
+          "bg-white-1/[3%] rounded-lg",
           "cursor-pointer",
           "shadow-sm hover:shadow-lg",
           "overflow-hidden",
@@ -25,11 +25,7 @@ export function Card({ children, linkTo }) {
 }
 
 export function Header({ children }) {
-  return (
-    <div className="flex items-center justify-between gap-2 border-b border-shade-1 -mx-4 -mt-4 px-4 py-3">
-      {children}
-    </div>
-  );
+  return <div className="flex items-center justify-between gap-2 border-b border-shade-1 pb-2">{children}</div>;
 }
 
 export function Title({ children }) {

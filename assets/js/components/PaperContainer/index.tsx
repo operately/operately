@@ -75,7 +75,7 @@ Root.defaultProps = {
 
 export function Navigation({ children }) {
   return (
-    <div className="bg-dark-2/30 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t-lg border-x border-t border-dark-4">
+    <div className="bg-dark-2 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t">
       {children}
     </div>
   );
@@ -105,16 +105,15 @@ const bodyPaddings = {
   xxlarge: "px-16 py-12",
 };
 
-export function Body({ children, minHeight, className = "", noPadding = false, noGradient = false }) {
+export function Body({ children, minHeight, className = "", noPadding = false }) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
 
   return (
     <div
-      className={`relative bg-dark-2 rounded-[20px] border border-shade-1 shadow-lg ${padding} ${className}`}
+      className={`relative bg-dark-3 rounded shadow-lg ${padding} ${className}`}
       style={{
         minHeight: minHeight,
-        background: noGradient ? "" : "linear-gradient(0deg, var(--color-dark-2) 0%, var(--color-dark-3) 100%)",
       }}
     >
       {children}

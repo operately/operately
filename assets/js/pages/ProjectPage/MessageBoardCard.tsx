@@ -13,7 +13,6 @@ export default function MessageBoardCard({ project }: { project: Projects.Projec
     <Cards.Card linkTo={`/projects/${project.id}/updates`}>
       <Cards.Header>
         <div className="flex items-center gap-2">
-          <Icons.IconMessage size={20} className="text-white-1" />
           <Cards.Title>Message Board</Cards.Title>
         </div>
       </Cards.Header>
@@ -51,7 +50,7 @@ function EmptyState() {
 
 function ItemList({ updates }: { updates: Projects.Update[] }) {
   return (
-    <div className="-mx-4 px-2">
+    <div className="flex flex-col gap-2 py-2">
       {updates.map((update) => (
         <Item key={update.id} update={update} />
       ))}
@@ -61,11 +60,11 @@ function ItemList({ updates }: { updates: Projects.Update[] }) {
 
 function Item({ update }: { update: Projects.Update }) {
   return (
-    <div className="flex items-center gap-2 border-b border-shade-1 py-1 last:border-none">
+    <div className="flex items-center gap-2">
       <Avatar person={update.author} size="small" />
 
       <div className="flex items-center gap-1.5 font-medium flex-1">
-        <div className="line-clamp-2 text-sm">
+        <div className="line-clamp-2 text-xs font-medium">
           <RichContent jsonContent={update.message} />
         </div>
       </div>
