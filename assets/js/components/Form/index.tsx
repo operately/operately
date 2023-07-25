@@ -52,7 +52,7 @@ export function SubmitButton({ children }) {
   );
 }
 
-export function TextInput({ label, value, onChange }) {
+export function TextInput({ label, value, onChange, placeholder = "" }) {
   return (
     <div>
       <label className="font-bold mb-1 block">{label}</label>
@@ -62,6 +62,7 @@ export function TextInput({ label, value, onChange }) {
           className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
           type="text"
           value={value}
+          placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
         />
       </div>

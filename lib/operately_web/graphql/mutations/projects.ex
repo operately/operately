@@ -185,7 +185,6 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :project_id, non_null(:id)
       arg :title, non_null(:string)
       arg :deadline_at, :date
-      arg :phase, non_null(:string)
 
       resolve fn args, %{context: context} ->
         creator = context.current_account.person
@@ -195,7 +194,6 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
           project_id: args.project_id,
           title: args.title,
           deadline_at: deadline,
-          phase: args.phase
         })
       end
     end

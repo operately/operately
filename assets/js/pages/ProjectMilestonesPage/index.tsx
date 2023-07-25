@@ -1,166 +1,221 @@
 import React from "react";
 
-import classnames from "classnames";
-
-import { useParams } from "react-router-dom";
-import { useProject } from "@/graphql/Projects";
+import { useDocumentTitle } from "@/layouts/header";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
+import * as Forms from "@/components/Form";
 import * as Milestones from "@/graphql/Projects/milestones";
 
 import Button from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
 
-export function ProjectMilestonesPage() {
-  const params = useParams();
-  const projectId = params["project_id"];
+import client from "@/graphql/client";
+import * as Projects from "@/graphql/Projects";
+import * as Me from "@/graphql/Me";
 
-  if (!projectId) return <p className="mt-16">Unable to find project</p>;
+import * as Time from "@/utils/time";
 
-  const { loading, error, data, refetch } = useProject(projectId);
+interface LoaderResult {
+  project: Projects.Project;
+  me: any;
+}
 
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find project</p>;
+export async function loader({ params }): Promise<LoaderResult> {
+  let projectData = await client.query({
+    query: Projects.GET_PROJECT,
+    variables: { id: params.project_id },
+    fetchPolicy: "network-only",
+  });
 
-  const project = data.project;
+  let meData = await client.query({
+    query: Me.GET_ME,
+  });
 
-  const milestoneGroups = Milestones.groupByPhase(project.milestones);
+  return {
+    project: projectData.data.project,
+    me: meData.data.me,
+  };
+}
+
+interface ContextValue {
+  project: Projects.Project;
+  refetch: () => void;
+  editable: boolean;
+}
+
+const Context = React.createContext<ContextValue | null>(null);
+
+export function Page() {
+  const [{ project, me }, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
+
+  useDocumentTitle(project.name);
+
+  const [formVisible, setFormVisible] = React.useState(false);
+  const showForm = () => setFormVisible(true);
+  const hideForm = () => setFormVisible(false);
+  const refetchAndHideForm = () => {
+    hideForm();
+    refetch();
+  };
+
+  const editable = project.champion?.id === me.id;
 
   return (
     <Paper.Root>
       <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${projectId}`}>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
           <Icons.IconClipboardList size={16} />
           {project.name}
         </Paper.NavItem>
       </Paper.Navigation>
 
-      <Paper.Body noPadding className="py-8">
-        <Title />
-
-        <div className="flex flex-col gap-12 mb-8">
-          {milestoneGroups.map((group) => (
-            <PhaseMilestoneList project={project} refetch={refetch} phase={group.phase} milestones={group.milestones} />
-          ))}
-        </div>
+      <Paper.Body>
+        <Context.Provider value={{ project, refetch, editable }}>
+          <Title onAddClick={showForm} />
+          <AddMilestoneForm visible={formVisible} onCancel={hideForm} onSubmit={refetchAndHideForm} />
+          <Content />
+        </Context.Provider>
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function PhaseMilestoneList({ project, refetch, phase, milestones }) {
-  const [showAdd, setShowAdd] = React.useState(false);
-  const [open, setOpen] = React.useState(true);
+function Title({ onAddClick }) {
+  const { editable } = React.useContext(Context) as ContextValue;
 
-  const close = async () => {
-    await refetch();
-    setShowAdd(false);
+  return (
+    <div className="flex items-center justify-between mb-8">
+      <div>
+        <div className="text-2xl font-extrabold ">Milestones</div>
+      </div>
+
+      <div>
+        {editable && (
+          <Button variant="success" onClick={onAddClick}>
+            <Icons.IconPlus size={20} />
+            Add
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Content() {
+  const { project } = React.useContext(Context) as ContextValue;
+
+  if (project.milestones.length === 0) {
+    return <EmptyState />;
+  } else {
+    return <MilestoneList />;
+  }
+}
+
+function EmptyState() {
+  return null;
+}
+
+function MilestoneList() {
+  const { project } = React.useContext(Context) as ContextValue;
+  const milestones = Milestones.sortByDeadline(project.milestones);
+
+  const [pending, completed] = [
+    milestones.filter((m) => m.status === "pending"),
+    milestones.filter((m) => m.status === "done"),
+  ];
+
+  const showCompletedSeperator = pending.length > 0 && completed.length > 0;
+
+  return (
+    <div className="flex flex-col mb-8 gap-2">
+      {pending.map((m) => (
+        <Item key={m.id} milestone={m} />
+      ))}
+
+      {showCompletedSeperator && <h2 className="font-bold mt-12">Completed</h2>}
+
+      {completed.map((m) => (
+        <Item key={m.id} milestone={m} />
+      ))}
+    </div>
+  );
+}
+
+function Item({ milestone }) {
+  const { editable, refetch } = React.useContext(Context) as ContextValue;
+
+  const [setStatus] = Milestones.useSetStatus({ onCompleted: refetch });
+
+  const toggleComplete = async () => {
+    await setStatus({
+      variables: {
+        milestoneId: milestone.id,
+        status: milestone.status === "pending" ? "done" : "pending",
+      },
+    });
   };
 
   return (
-    <div className="relative mt-4">
-      <div className="relative">
-        <div className="px-8 border-b border-shade-1 pb-2 flex items-center justify-between">
-          <div className="flex items-center">
-            {open && <Icons.IconRadiusTopLeft size={16} className="mt-2 mr-2 ml-2 text-shade-3" />}
-            <div className="font-extrabold text-lg capitalize">{phase} Phase</div>
-          </div>
-          <div className="flex items-center gap-2">
-            {project.phase === phase && (
-              <div className="text-green-400 flex items-center gap-1 border border-green-400 text-xs font-bold py-1 px-2 rounded-lg ml-2">
-                <Icons.IconCheck size={12} stroke={4} />
-                Complete Phase
-              </div>
-            )}
-            <div className="cursor-pointer" onClick={() => setOpen(!open)}>
-              {open ? (
-                <Icons.IconChevronDown size={20} className="text-white-2" />
-              ) : (
-                <Icons.IconChevronRight size={20} className="text-white-2" />
-              )}
-            </div>
-          </div>
+    <div className="flex items-center bg-white-1/[3%] px-4 py-2 rounded-lg gap-2">
+      {editable && (
+        <div className="shrink-0 cursor-pointer" onClick={toggleComplete}>
+          {milestone.status === "done" ? (
+            <Icons.IconSquareCheck size={20} className="text-green-400" />
+          ) : (
+            <Icons.IconSquare size={20} className="text-white-1" />
+          )}
         </div>
-        {open && (
-          <React.Fragment>
-            <div className="flex flex-col z-20 relative">
-              {milestones.map((m) => (
-                <MilestoneItem key={m.id} milestone={m} refetch={refetch} />
-              ))}
-            </div>
-            {showAdd ? (
-              <AddMilestoneForm close={close} projectId={project.id} phase={phase} />
-            ) : (
-              <div
-                className="px-8 flex items-center py-4 border-b border-shade-1 cursor-pointer z-20 relative"
-                onClick={() => setShowAdd(true)}
-              >
-                <div className="bg-dark-3 rounded-full">
-                  <Icons.IconCirclePlus size={24} className="text-white-3 cursor-pointer" />
-                </div>
-                <div className="ml-2 text-white-2">Add Milestone</div>
-              </div>
-            )}
-          </React.Fragment>
-        )}
+      )}
+
+      <div className="shrink-0">
+        <Icons.IconFlag3Filled size={16} className="text-yellow-400" />
       </div>
 
-      <div
-        className="absolute border-l border-shade-3 z-10"
-        style={{
-          top: "23px",
-          left: "43px",
-          bottom: "16px",
-        }}
-      ></div>
-    </div>
-  );
-}
+      <div className="flex-1 font-medium">{milestone.title}</div>
 
-function Title() {
-  return (
-    <div className="pb-8">
-      <div className="flex items-center justify-center">
-        <div>
-          <div className="text-3xl font-extrabold text-center">Timeline</div>
-          <div className="text-medium">Set milestones for your project and track progress</div>
-        </div>
+      <div className="shrink-0">
+        <FormattedTime time={milestone.deadlineAt} format="long-date" />
       </div>
     </div>
   );
 }
 
-function AddMilestoneForm({ projectId, close, phase }) {
+function AddMilestoneForm({ visible, onSubmit, onCancel }) {
+  const { project } = React.useContext(Context) as ContextValue;
+
   const [value, setValue] = React.useState("");
   const [deadline, setDeadline] = React.useState(null);
-  const disabled = value.length === 0 && !deadline;
+  const disabled = value.length === 0 || !deadline;
+  const [add, { loading }] = Milestones.useAddMilestone({ onCompleted: onSubmit });
 
-  const [add, _s] = Milestones.useAddMilestone(projectId);
+  if (!visible) return <></>;
 
   const save = async () => {
     if (disabled) return;
+    if (loading) return;
+    if (!deadline) return;
 
-    await add(value, deadline, phase);
-    close();
+    await add({
+      variables: {
+        projectId: project.id,
+        title: value,
+        deadlineAt: Time.toDateWithoutTime(deadline),
+      },
+    });
   };
 
   return (
-    <div className="bg-dark-3 border-y border-shade-1 px-8 py-8 relative z-40">
+    <div className="bg-white-1/[5%] p-8 rounded-lg mb-4">
       <div className="flex items-center gap-2">
         <div className="flex-1">
-          <label className="font-bold mb-1 block">Desribes the milestone</label>
-          <div className="flex-1">
-            <input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-              type="text"
-              placeholder="ex. Contract signed with client"
-            />
-          </div>
+          <Forms.TextInput
+            label="Describe the milestone"
+            placeholder="ex. Contract Signed"
+            value={value}
+            onChange={setValue}
+          />
         </div>
 
         <div className="shrink-0">
@@ -172,12 +227,12 @@ function AddMilestoneForm({ projectId, close, phase }) {
       </div>
 
       <div className="flex mt-8 gap-2">
-        <Button variant="success" disabled={disabled} onClick={save}>
+        <Button variant="success" disabled={disabled} onClick={save} loading={loading}>
           <Icons.IconPlus size={20} />
           Add Milestone
         </Button>
 
-        <Button variant="secondary" onClick={close}>
+        <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
       </div>
