@@ -21,7 +21,11 @@ interface FormattedTimeProps {
 }
 
 export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
-  const parsedTime = typeof props.time === "string" ? Time.parseISO(props.time) : props.time;
+  const parsedTime = Time.parse(props.time);
+
+  if (!parsedTime) {
+    return <>Invalid date</>;
+  }
 
   switch (props.format) {
     case "relative-day":

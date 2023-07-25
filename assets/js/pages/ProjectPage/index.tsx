@@ -21,8 +21,6 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
-import { RightSidebarPortal } from "@/layouts/DefaultLayout";
-
 export async function loader({ params }) {
   let projectData = await client.query({
     query: Projects.GET_PROJECT,
