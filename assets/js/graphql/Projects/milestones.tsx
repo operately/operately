@@ -126,29 +126,12 @@ const UPDATE_MILESTONE = gql`
   mutation UpdateProjectMilestone($milestoneId: ID!, $title: String!, $deadlineAt: Date) {
     updateProjectMilestone(milestoneId: $milestoneId, title: $title, deadlineAt: $deadlineAt) {
       id
-      title
-      deadlineAt
-      status
     }
   }
 `;
 
-type UpdateMilestoneFun = (title: string, deadlineAt: Date | null) => Promise<any>;
-
-export function useUpdateMilestone(milestoneId: string): [UpdateMilestoneFun, any] {
-  const [fun, status] = useMutation(UPDATE_MILESTONE);
-
-  const updateMilestone = (title: string, deadlineAt: Date | null) => {
-    let date: string | null = null;
-
-    if (deadlineAt) {
-      date = deadlineAt.toISOString().split("T")[0] || null;
-    }
-
-    return fun({ variables: { milestoneId, title, deadlineAt: date } });
-  };
-
-  return [updateMilestone, status];
+export function useUpdateMilestone(options = {}) {
+  return useMutation(UPDATE_MILESTONE, options);
 }
 
 const REMOVE_MILESTONE = gql`
@@ -159,14 +142,6 @@ const REMOVE_MILESTONE = gql`
   }
 `;
 
-type RemoveMilestoneFun = () => Promise<any>;
-
-export function useRemoveMilestone(milestoneId: string): [RemoveMilestoneFun, any] {
-  const [fun, status] = useMutation(REMOVE_MILESTONE);
-
-  const removeMilestone = () => {
-    return fun({ variables: { milestoneId } });
-  };
-
-  return [removeMilestone, status];
+export function useRemoveMilestone(options = {}) {
+  return useMutation(REMOVE_MILESTONE, options);
 }
