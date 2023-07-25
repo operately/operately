@@ -41,7 +41,13 @@ const Context = React.createContext({
   size: "medium",
 });
 
-export function Root({ size, children, rightSidebar }: { size: Size; children: React.ReactNode }) {
+interface RootProps {
+  size?: Size;
+  children?: React.ReactNode;
+  rightSidebar?: React.ReactNode;
+}
+
+export function Root({ size, children, rightSidebar }: RootProps): JSX.Element {
   const rightSidebarWidth = "400px";
 
   return (
