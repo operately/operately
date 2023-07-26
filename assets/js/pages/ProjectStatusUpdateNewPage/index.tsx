@@ -1,28 +1,42 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
+import * as Icons from "@tabler/icons-react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
+import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 
 import Button from "@/components/Button";
 
-export function ProjectStatusUpdateNewPage() {
-  const params = useParams();
-  const id = params["project_id"];
+export async function loader({ params }) {
+  let res = await client.query({
+    query: Projects.GET_PROJECT,
+    variables: { id: params["project_id"] },
+    fetchPolicy: "network-only",
+  });
 
-  if (!id) return <p className="mt-16">Unable to find project</p>;
+  return res.data.project;
+}
 
-  const { loading, error, data } = Projects.useProject(id);
+interface ContextDescriptor {
+  project: Projects.Project;
+  messageType: "update" | "phase-change";
+  currentPhase?: string;
+  newPhase?: string | null;
+}
 
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find project</p>;
+const Context = React.createContext<ContextDescriptor | null>(null);
 
-  let project = data.project;
+export function Page() {
+  const [project] = Paper.useLoadedData() as [Projects.Project];
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const newPhase = searchParams.get("phase");
+  const messageType = newPhase ? "phase-change" : "update";
+  const currentPhase = project.phase;
 
   return (
     <Paper.Root>
@@ -38,35 +52,68 @@ export function ProjectStatusUpdateNewPage() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <NewUpdateHeader />
-        <Editor project={project} />
+        <Context.Provider value={{ project, messageType, currentPhase, newPhase }}>
+          <NewUpdateHeader project={project} />
+          <Editor project={project} />
+        </Context.Provider>
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function NewUpdateHeader() {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">STATUS UPDATE</div>
+function NewUpdateHeader({ project }) {
+  const { messageType, newPhase } = React.useContext(Context) as ContextDescriptor;
 
-      <div className="text-4xl font-bold mx-auto">What's new since the last update?</div>
-    </div>
-  );
+  switch (messageType) {
+    case "phase-change":
+      return (
+        <div>
+          <div className="uppercase text-white-1 tracking-wide w-full mb-2">PHASE CHANGE</div>
+          <div className="text-4xl font-bold mx-auto">
+            <span className="capitalize">{project.phase}</span> -&gt; <span className="capitalize">{newPhase}</span>
+          </div>
+        </div>
+      );
+    case "update":
+      return (
+        <div>
+          <div className="uppercase text-white-1 tracking-wide w-full mb-2">STATUS UPDATE</div>
+          <div className="text-4xl font-bold mx-auto">What's new since the last update?</div>
+        </div>
+      );
+    default:
+      throw new Error(`Unknown message type: ${messageType}`);
+  }
 }
 
 function Editor({ project }) {
   const navigate = useNavigate();
+  const { messageType, newPhase } = React.useContext(Context) as ContextDescriptor;
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Write your update here...",
   });
 
-  const [post] = Projects.usePostUpdate(project.id, {
+  const [post] = Projects.usePostUpdate({
     onCompleted: (data) => {
       navigate(`/projects/${project.id}/updates/${data.createUpdate.id}`);
     },
   });
+
+  const submit = () => {
+    if (!editor) return;
+
+    post({
+      variables: {
+        input: {
+          updatableType: "project",
+          updatableId: project.id,
+          content: JSON.stringify(editor.getJSON()),
+          phase: newPhase || undefined,
+        },
+      },
+    });
+  };
 
   return (
     <div>
@@ -79,7 +126,7 @@ function Editor({ project }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <PostButton onClick={() => post(editor.getJSON())} />
+        <PostButton onClick={submit} />
         <CancelButton linkTo={`/projects/${project.id}/updates`} />
       </div>
     </div>
