@@ -15,26 +15,14 @@ import * as ProjectIcons from "@/components/ProjectIcons";
 export default function Timeline({ me, project, refetch }) {
   return (
     <div className="flex items-center gap-8 mb-4">
-      <Phase me={me} project={project} refetch={refetch} />
+      <Phase me={me} project={project} />
       <StartDate me={me} project={project} refetch={refetch} />
       <DueDate me={me} project={project} refetch={refetch} />
     </div>
   );
 }
 
-function Phase({ me, project, refetch }) {
-  // const [update] = Projects.useSetProjectPhaseMutation({ onCompleted: refetch });
-  const [update] = [({}) => {}];
-
-  const change = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    update({
-      variables: {
-        projectId: project.id,
-        phase: event.target.value,
-      },
-    });
-  };
-
+function Phase({ me, project }) {
   return (
     <div className="flex flex-col">
       <div className="font-bold">Phase</div>

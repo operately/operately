@@ -230,8 +230,8 @@ export function useProject(id: string): UseProjectResult {
   return useQuery(GET_PROJECT, { variables: { id } });
 }
 
-export function usePostUpdate(projectId: string, options: any) {
-  const [fun, status] = useMutation(
+export function usePostUpdate(options: any) {
+  return useMutation(
     gql`
       mutation CreateUpdate($input: CreateUpdateInput!) {
         createUpdate(input: $input) {
@@ -241,20 +241,6 @@ export function usePostUpdate(projectId: string, options: any) {
     `,
     options,
   );
-
-  const createUpdate = (content: any) => {
-    return fun({
-      variables: {
-        input: {
-          updatableId: projectId,
-          updatableType: "project",
-          content: JSON.stringify(content),
-        },
-      },
-    });
-  };
-
-  return [createUpdate, status] as const;
 }
 
 export function usePostCommentMutation(updateId: string) {

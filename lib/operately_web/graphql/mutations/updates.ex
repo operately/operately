@@ -5,6 +5,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
     field :content, non_null(:string)
     field :updatable_id, non_null(:id)
     field :updatable_type, non_null(:string)
+    field :phase, :string
   end
 
   input_object :create_comment_input do
@@ -17,15 +18,24 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, %{context: context} ->
-        content = Jason.decode!(args.input.content)
+        Operately.Repo.transaction(fn -> 
+          content = Jason.decode!(args.input.content)
+          project = Operately.Projects.get_project!(args.input.updatable_id)
 
-        Operately.Updates.create_update(%{
-          updatable_type: args.input.updatable_type,
-          updatable_id: args.input.updatable_id,
-          author_id: context.current_account.person.id,
-          type: :status_update,
-          content: %{"message" => content}
-        })
+          if project.phase do
+            Operately.Projects.update_project(project, %{phase: args.input.phase})
+          end
+
+          {:ok, update} = Operately.Updates.create_update(%{
+            updatable_type: args.input.updatable_type,
+            updatable_id: args.input.updatable_id,
+            author_id: context.current_account.person.id,
+            type: :status_update,
+            content: %{"message" => content}
+          })
+
+          update
+        end)
       end
     end
 
