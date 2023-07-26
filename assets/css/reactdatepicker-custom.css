@@ -9,7 +9,7 @@
 .react-datepicker {
   font-family: unset;
   color: var(--color-white-1);
-  border: 1px solid var(--color-shade-3);
+  border: unset;
   background-color: var(--color-dark-3);
 }
 

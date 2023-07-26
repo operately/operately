@@ -173,19 +173,30 @@ function DatePickerWithClear({ selected, onChange, editable = true }) {
   }
 
   return (
-    <DatePicker
-      open={open}
-      selected={selected}
-      onChange={handleChange}
-      onInputClick={() => setOpen(true)}
-      customInput={value}
-    >
-      <a
-        className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2 text-sm"
-        onClick={() => handleChange(null)}
-      >
-        Unset
-      </a>
-    </DatePicker>
+    <Popover.Root open={open} onOpenChange={(state) => setOpen(state)}>
+      <Popover.Trigger asChild>{value}</Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className="outline-none">
+          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 mt-2">
+            <DatePicker
+              inline
+              selected={selected}
+              onChange={handleChange}
+              onInputClick={() => setOpen(true)}
+              className="border-none"
+              customInput={value}
+            ></DatePicker>
+
+            <a
+              className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2 mx-2 -mt-1 pb-1 block"
+              onClick={() => handleChange(null)}
+            >
+              Unset
+            </a>
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
