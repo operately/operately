@@ -23,11 +23,13 @@ export function IconForPhase({ phase }): JSX.Element {
 export function IconPlanning() {
   return (
     <div
+      className="shrink-0"
       style={{
         width: "16px",
         height: "16px",
         borderRadius: "100%",
         border: "2px solid #fff",
+        borderStyle: "dashed",
       }}
     ></div>
   );
@@ -36,7 +38,7 @@ export function IconPlanning() {
 export function IconExecution() {
   return (
     <div
-      className="flex items-center justify-center"
+      className="flex items-center justify-center shrink-0"
       style={{
         width: "16px",
         height: "16px",
@@ -53,7 +55,7 @@ export function IconExecution() {
 export function IconControl() {
   return (
     <div
-      className="flex items-center justify-center"
+      className="flex items-center justify-center shrink-0"
       style={{
         width: "16px",
         height: "16px",
@@ -70,7 +72,7 @@ export function IconControl() {
 export function IconCompleted() {
   return (
     <div
-      className="flex items-center justify-center"
+      className="flex items-center justify-center shrink-0"
       style={{
         width: "16px",
         height: "16px",
@@ -87,7 +89,7 @@ export function IconCompleted() {
 export function IconPaused() {
   return (
     <div
-      className="flex items-center justify-center"
+      className="flex items-center justify-center shrink-0"
       style={{
         width: "16px",
         height: "16px",
@@ -106,7 +108,7 @@ export function IconPaused() {
 export function IconCanceled() {
   return (
     <div
-      className="flex items-center justify-center"
+      className="flex items-center justify-center shrink-0"
       style={{
         width: "16px",
         height: "16px",
