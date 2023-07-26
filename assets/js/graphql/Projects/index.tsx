@@ -136,6 +136,7 @@ export interface Project {
   id: string;
   name: string;
   description: string;
+  startedAt: Date;
   deadline: Date;
   phase: ProjectPhase;
 
