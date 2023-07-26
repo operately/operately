@@ -1,16 +1,107 @@
 import React from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import DatePicker from "react-datepicker";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Projects from "@/graphql/Projects";
 import * as Time from "@/utils/time";
+import * as Popover from "@radix-ui/react-popover";
+import * as Icons from "@tabler/icons-react";
+
+import * as ProjectIcons from "@/components/ProjectIcons";
 
 export default function Timeline({ me, project, refetch }) {
   return (
     <div className="flex items-center gap-8 mb-4">
+      <Phase me={me} project={project} refetch={refetch} />
       <StartDate me={me} project={project} refetch={refetch} />
       <DueDate me={me} project={project} refetch={refetch} />
+    </div>
+  );
+}
+
+function Phase({ me, project, refetch }) {
+  // const [update] = Projects.useSetProjectPhaseMutation({ onCompleted: refetch });
+  const [update] = [({}) => {}];
+
+  const change = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    update({
+      variables: {
+        projectId: project.id,
+        phase: event.target.value,
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-col">
+      <div className="font-bold">Phase</div>
+      <PhasePopover editable={project.champion.id === me.id} project={project} />
+    </div>
+  );
+}
+
+function PhasePopover({ project, editable }) {
+  if (!editable) {
+    return <div className="font-medium text-white-2/80 capitalize">{project.phase}</div>;
+  }
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <a className="font-medium text-blue-400 hover:text-blue-400 cursor-pointer underline underline-offset-2 capitalize">
+          {project.phase}
+        </a>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className="outline-none">
+          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 mt-2">
+            <div className="font-bold text-sm px-2 py-1 mr-4">Change project phase</div>
+
+            <div className="border-t border-white-2/5 my-1" />
+
+            <PhasePopoverOption phase="paused" project={project} />
+
+            <div className="border-t border-white-2/5 my-1" />
+
+            <PhasePopoverOption phase="planning" project={project} />
+            <PhasePopoverOption phase="execution" project={project} />
+            <PhasePopoverOption phase="control" project={project} />
+
+            <div className="border-t border-white-2/5 my-1" />
+
+            <PhasePopoverOption phase="completed" project={project} />
+            <PhasePopoverOption phase="canceled" project={project} />
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+function PhasePopoverOption({ phase, project }) {
+  const navigate = useNavigate();
+  const active = project.phase === phase;
+
+  const onClick = () => {
+    if (active) return;
+
+    navigate(`/projects/${project.id}/updates/new?phase=${phase}`);
+  };
+
+  return (
+    <div
+      className="flex items-center justify-between gap-8 hover:bg-shade-1 cursor-pointer px-2 py-1 rounded text-sm font-medium"
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-3">
+        <ProjectIcons.IconForPhase phase={phase} />
+        <span className="capitalize">{phase}</span>
+      </div>
+      {active && <Icons.IconCheck size={16} className="text-white-1" />}
     </div>
   );
 }
