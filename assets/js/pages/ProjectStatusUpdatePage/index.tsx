@@ -45,22 +45,11 @@ export async function loader({ params }): Promise<LoaderData> {
 export function Page() {
   const [{ update, me }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
 
-  const projectId = update.project.id;
-
   const addReactionMutation = Projects.useReactMutation("update", update.id);
 
   return (
     <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${projectId}`}>
-          <Icons.IconClipboardList size={16} />
-          {update.project.name}
-        </Paper.NavItem>
-
-        <Paper.NavSeparator />
-
-        <Paper.NavItem linkTo={`/projects/${projectId}/updates`}> Message Board</Paper.NavItem>
-      </Paper.Navigation>
+      <Navigation project={update.project} />
 
       <Paper.Body>
         <AckBanner me={me} update={update} champion={update.project.champion} reviewer={update.project.reviewer} />
@@ -83,6 +72,21 @@ export function Page() {
         </div>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function Navigation({ project }) {
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+        <Icons.IconClipboardList size={16} />
+        {project.name}
+      </Paper.NavItem>
+
+      <Paper.NavSeparator />
+
+      <Paper.NavItem linkTo={`/projects/${project.id}/updates`}> Message Board</Paper.NavItem>
+    </Paper.Navigation>
   );
 }
 
@@ -123,7 +127,7 @@ function AckBanner({ me, reviewer, update, champion }) {
   }
 
   return (
-    <div className="-mx-12 -mt-10 py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
+    <div className="-mx-12 -mt-10 py-4 px-8 bg-shade-1 rounded-t font-semibold text-yellow-400 flex items-center justify-center gap-2">
       {content}
     </div>
   );
