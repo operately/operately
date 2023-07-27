@@ -131,6 +131,7 @@ export interface Update {
 }
 
 type ProjectPhase = "concept" | "planning" | "execution" | "control";
+type ProjectHealth = "unknown" | "on_track" | "at_risk" | "off_track";
 
 export interface Project {
   id: string;
@@ -139,6 +140,7 @@ export interface Project {
   startedAt: Date;
   deadline: Date;
   phase: ProjectPhase;
+  health: ProjectHealth;
 
   milestones: Milestone[];
   parents: Parent[];
@@ -165,6 +167,7 @@ export const GET_PROJECT = gql`
       deadline
       nextUpdateScheduledAt
       phase
+      health
       isPinned
 
       milestones {

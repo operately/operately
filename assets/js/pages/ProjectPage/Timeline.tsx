@@ -1,5 +1,7 @@
 import React from "react";
 
+import classnames from "classnames";
+
 import { useNavigate } from "react-router-dom";
 
 import DatePicker from "react-datepicker";
@@ -14,10 +16,19 @@ import * as ProjectIcons from "@/components/ProjectIcons";
 
 export default function Timeline({ me, project, refetch }) {
   return (
-    <div className="flex items-center gap-8 mb-4">
+    <div className="flex items-start gap-4 mb-4">
       <Phase me={me} project={project} />
-      <StartDate me={me} project={project} refetch={refetch} />
-      <DueDate me={me} project={project} refetch={refetch} />
+      <Dates me={me} project={project} refetch={refetch} />
+      <Health me={me} project={project} />
+    </div>
+  );
+}
+
+function Health({ me, project }) {
+  return (
+    <div className="flex flex-col">
+      <div className="font-bold text-sm ml-1">Health</div>
+      <HealthPopover editable={project.champion.id === me.id} project={project} />
     </div>
   );
 }
@@ -25,24 +36,99 @@ export default function Timeline({ me, project, refetch }) {
 function Phase({ me, project }) {
   return (
     <div className="flex flex-col">
-      <div className="font-bold">Phase</div>
+      <div className="font-bold text-sm ml-1">Phase</div>
       <PhasePopover editable={project.champion.id === me.id} project={project} />
     </div>
   );
 }
 
-function PhasePopover({ project, editable }) {
-  if (!editable) {
-    return <div className="font-medium text-white-2/80 capitalize">{project.phase}</div>;
+function Dates({ me, project, refetch }) {
+  return (
+    <div className="flex flex-col">
+      <div className="font-bold text-sm ml-1">Timeline</div>
+      <div className="flex items-center">
+        <StartDate me={me} project={project} refetch={refetch} />
+        <span className="mt-0.5">-&gt;</span>
+        <DueDate me={me} project={project} refetch={refetch} />
+      </div>
+    </div>
+  );
+}
+
+function SelectBox({ children, editable }) {
+  return (
+    <div
+      className={classnames({
+        "flex items-center gap-2 cursor-pointer rounded px-1.5 py-0.5 mt-1": true,
+        "hover:shadow hover:bg-white-1/[3%]": editable,
+      })}
+    >
+      {children}
+    </div>
+  );
+}
+
+function HealthTitle({ health }) {
+  switch (health) {
+    case "on_track":
+      return <>On-Track</>;
+    case "at_risk":
+      return <>At Risk</>;
+    case "off_track":
+      return <>Off-Track</>;
+    case "unknown":
+      return <span className="text-white-1/60">Unknown</span>;
+    default:
+      throw new Error(`Unknown health: ${health}`);
   }
+}
+
+function HealthPopover({ project, editable }) {
+  const label = (
+    <SelectBox editable={editable}>
+      <div className="flex items-center gap-1 -ml-1">
+        <ProjectIcons.IconForHealth health={project.health} />
+        <HealthTitle health={project.health} />
+      </div>
+    </SelectBox>
+  );
 
   return (
     <Popover.Root>
-      <Popover.Trigger asChild>
-        <a className="font-medium text-blue-400 hover:text-blue-400 cursor-pointer underline underline-offset-2 capitalize">
-          {project.phase}
-        </a>
-      </Popover.Trigger>
+      <Popover.Trigger>{label}</Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className="outline-none">
+          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 mt-2">
+            <div className="font-bold text-sm px-2 py-1 mr-4">Change project health</div>
+
+            <div className="border-t border-white-2/5 my-1" />
+
+            <HealthPopoverOption title="On-Track" health="on_track" project={project} />
+            <HealthPopoverOption title="At Risk" health="at_risk" project={project} />
+            <HealthPopoverOption title="Off-Track" health="off_track" project={project} />
+
+            <div className="border-t border-white-2/5 my-1" />
+
+            <HealthPopoverOption title="Unknown" health="unknown" project={project} />
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+function PhasePopover({ project, editable }) {
+  const label = (
+    <SelectBox editable={editable}>
+      <ProjectIcons.IconForPhase phase={project.phase} />
+      <span className="capitalize font-medium text-white-1/80">{project.phase}</span>
+    </SelectBox>
+  );
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger>{label}</Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content className="outline-none">
@@ -94,6 +180,30 @@ function PhasePopoverOption({ phase, project }) {
   );
 }
 
+function HealthPopoverOption({ health, title, project }) {
+  const navigate = useNavigate();
+  const active = project.health === health;
+
+  const onClick = () => {
+    if (active) return;
+
+    navigate(`/projects/${project.id}/updates/new?health=${health}`);
+  };
+
+  return (
+    <div
+      className="flex items-center justify-between gap-8 hover:bg-shade-1 cursor-pointer px-2 py-1 rounded text-sm font-medium"
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-3">
+        <ProjectIcons.IconForHealth health={health} />
+        <span className="capitalize">{title}</span>
+      </div>
+      {active && <Icons.IconCheck size={16} className="text-white-1" />}
+    </div>
+  );
+}
+
 function StartDate({ me, project, refetch }) {
   const startDate = project.startedAt ? Time.parseDateWithoutTime(project.startedAt) : null;
 
@@ -110,8 +220,12 @@ function StartDate({ me, project, refetch }) {
 
   return (
     <div className="flex flex-col">
-      <div className="font-bold">Start Date</div>
-      <DatePickerWithClear editable={project.champion.id === me.id} selected={startDate} onChange={change} />
+      <DatePickerWithClear
+        editable={project.champion.id === me.id}
+        selected={startDate}
+        onChange={change}
+        placeholder="Start Date"
+      />
     </div>
   );
 }
@@ -132,13 +246,17 @@ function DueDate({ me, project, refetch }) {
 
   return (
     <div className="flex flex-col">
-      <div className="font-bold">Due Date</div>
-      <DatePickerWithClear editable={project.champion.id === me.id} selected={dueDate} onChange={change} />
+      <DatePickerWithClear
+        editable={project.champion.id === me.id}
+        selected={dueDate}
+        onChange={change}
+        placeholder="Due Date"
+      />
     </div>
   );
 }
 
-function DatePickerWithClear({ selected, onChange, editable = true }) {
+function DatePickerWithClear({ selected, onChange, editable = true, placeholder }) {
   const [open, setOpen] = React.useState(false);
 
   const handleChange = (date: Date | null) => {
@@ -148,33 +266,19 @@ function DatePickerWithClear({ selected, onChange, editable = true }) {
     setOpen(false);
   };
 
-  let value: React.ReactNode = null;
-
-  if (editable) {
-    if (selected) {
-      value = (
-        <a className="font-medium text-blue-400 hover:text-blue-400 cursor-pointer underline underline-offset-2">
-          <FormattedTime time={selected} format="long-date" />
-        </a>
-      );
-    } else {
-      value = (
-        <a className="font-medium text-blue-400/80 hover:text-blue-400 cursor-pointer underline underline-offset-2">
-          Select Date...
-        </a>
-      );
-    }
-  } else {
-    if (selected) {
-      value = <FormattedTime time={selected} format="long-date" />;
-    } else {
-      value = <span className="text-white-2">Not set</span>;
-    }
-  }
+  let value = (
+    <SelectBox editable={editable}>
+      {selected ? (
+        <FormattedTime time={selected} format="short-date" />
+      ) : (
+        <span className="text-white-1/60">{placeholder}</span>
+      )}
+    </SelectBox>
+  );
 
   return (
     <Popover.Root open={open} onOpenChange={(state) => setOpen(state)}>
-      <Popover.Trigger asChild>{value}</Popover.Trigger>
+      <Popover.Trigger>{value}</Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content className="outline-none">
