@@ -3,6 +3,7 @@ import { gql, useQuery, useMutation, useApolloClient, ApolloClient, QueryResult 
 
 import { Milestone } from "./milestones";
 import * as fragments from "@/graphql/Fragments";
+import * as Updates from "./updates";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($groupId: ID, $objectiveId: ID) {
@@ -100,37 +101,6 @@ interface Document {
   author: Person;
 }
 
-interface Reaction {
-  id: string;
-  reactionType: string;
-  person: Person;
-}
-
-interface Comment {
-  id: string;
-  message: string;
-  insertedAt: Date;
-  updatedAt: Date;
-
-  reactions: Reaction[];
-}
-
-export interface Update {
-  id: string;
-  message: string;
-  insertedAt: Date;
-  updatedAt: Date;
-
-  author: Person;
-
-  acknowledgingPerson: Person;
-  acknowledged: boolean;
-  acknowledgedAt: Date;
-
-  reactions: Reaction[];
-  comments: Comment[];
-}
-
 type ProjectPhase = "concept" | "planning" | "execution" | "control";
 type ProjectHealth = "unknown" | "on_track" | "at_risk" | "off_track";
 
@@ -196,6 +166,13 @@ export const GET_PROJECT = gql`
       updates {
         id
         message
+        messageType
+
+        previousPhase
+        newPhase
+
+        previousHealth
+        newHealth
 
         insertedAt
         updatedAt
@@ -224,6 +201,7 @@ export const GET_PROJECT = gql`
           reactionType
           person ${fragments.PERSON}
         }
+
       }
     }
   }
@@ -453,52 +431,8 @@ export function useRemoveProjectContributorMutation(contribId: string) {
   });
 }
 
-export const GET_STATUS_UPDATE = gql`
-  query GetStatusUpdate($id: ID!) {
-    update(id: $id) {
-      id
-      message
-
-      insertedAt
-      updatedAt
-
-      author ${fragments.PERSON}
-
-      comments {
-        id
-        message
-        insertedAt
-        author ${fragments.PERSON}
-
-        reactions {
-          id
-          reactionType
-          person ${fragments.PERSON}
-        }
-      }
-
-      acknowledgingPerson ${fragments.PERSON}
-      acknowledged
-      acknowledgedAt
-
-      reactions {
-        id
-        reactionType
-        person ${fragments.PERSON}
-      }
-
-      project {
-        id
-        name
-        champion ${fragments.PERSON}
-        reviewer ${fragments.PERSON}
-      }
-    }
-  }
-`;
-
 export function useProjectStatusUpdate(id: string) {
-  return useQuery(GET_STATUS_UPDATE, { variables: { id: id } });
+  return useQuery(Updates.GET_STATUS_UPDATE, { variables: { id: id } });
 }
 
 const LIST_PROJECT_CONTRIBUTOR_CANDIDATES = gql`

@@ -1,24 +1,24 @@
 import React from "react";
 
-import { useParams } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
 
-import { useMe } from "@/graphql/Me";
-import RichContent from "@/components/RichContent";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
+import RichContent from "@/components/RichContent";
+import { useMe } from "@/graphql/Me";
 
 import { usePostCommentMutation } from "@/graphql/Projects";
 
 import Reactions from "./Reactions";
 
-import client from "@/graphql/client";
-import * as Projects from "@/graphql/Projects";
 import * as Me from "@/graphql/Me";
+import * as Projects from "@/graphql/Projects";
+import * as Updates from "@/graphql/Projects/updates";
+import client from "@/graphql/client";
 
 interface LoaderData {
   update: any;
@@ -27,7 +27,7 @@ interface LoaderData {
 
 export async function loader({ params }): Promise<LoaderData> {
   let updateData = await client.query({
-    query: Projects.GET_STATUS_UPDATE,
+    query: Updates.GET_STATUS_UPDATE,
     variables: { id: params.id },
     fetchPolicy: "network-only",
   });

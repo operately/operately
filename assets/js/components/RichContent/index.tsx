@@ -22,19 +22,14 @@ interface RichContentProps {
   className?: string;
 }
 
-export default function RichContent({
-  jsonContent,
-  className,
-}: RichContentProps): JSX.Element {
+export default function RichContent({ jsonContent, className }: RichContentProps): JSX.Element {
   try {
     if (jsonContent === null || jsonContent === "null") {
       return <div className={"ProseMirror " + className}></div>;
     }
 
     if (jsonContent === undefined) {
-      return (
-        <div className={"ProseMirror " + className}>Content not available.</div>
-      );
+      return <div className={"ProseMirror " + className}>Content not available.</div>;
     }
 
     const json = JSON.parse(jsonContent);
@@ -52,12 +47,7 @@ export default function RichContent({
       Heading,
     ]);
 
-    return (
-      <div
-        className={"ProseMirror " + className}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    );
+    return <div className={"ProseMirror " + className} dangerouslySetInnerHTML={{ __html: html }} />;
   } catch (e) {
     throw jsonContent;
   }

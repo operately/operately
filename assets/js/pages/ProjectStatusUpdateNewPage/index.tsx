@@ -23,7 +23,7 @@ export async function loader({ params }) {
 
 interface ContextDescriptor {
   project: Projects.Project;
-  messageType: "update" | "phase-change" | "health-change";
+  messageType: "update" | "phase_change" | "health_change";
   currentPhase?: string;
   newPhase?: string | null;
   newHealth?: string | null;
@@ -41,9 +41,9 @@ export function Page() {
 
   let messageType: ContextDescriptor["messageType"];
   if (newPhase) {
-    messageType = "phase-change";
+    messageType = "phase_change";
   } else if (newHealth) {
-    messageType = "health-change";
+    messageType = "health_change";
   } else {
     messageType = "update";
   }
@@ -90,7 +90,7 @@ function NewUpdateHeader({ project }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
   switch (messageType) {
-    case "phase-change":
+    case "phase_change":
       return (
         <div>
           <div className="uppercase text-white-1 tracking-wide w-full mb-2">PHASE CHANGE</div>
@@ -99,7 +99,7 @@ function NewUpdateHeader({ project }) {
           </div>
         </div>
       );
-    case "health-change":
+    case "health_change":
       return (
         <div>
           <div className="uppercase text-white-1 tracking-wide w-full mb-2">PROJECT HEALTH CHANGE</div>
@@ -127,10 +127,10 @@ function Editor({ project }) {
   let placeholder = "";
 
   switch (messageType) {
-    case "phase-change":
+    case "phase_change":
       placeholder = `Write a summary of the previous phase and what's coming up in the next phase...`;
       break;
-    case "health-change":
+    case "health_change":
       placeholder = `Describe the changes that happened to the project's health...`;
       break;
     case "update":
@@ -159,6 +159,7 @@ function Editor({ project }) {
           content: JSON.stringify(editor.getJSON()),
           phase: newPhase || undefined,
           health: newHealth || undefined,
+          messageType: messageType,
         },
       },
     });
