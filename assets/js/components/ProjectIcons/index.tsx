@@ -38,7 +38,7 @@ export function IconForHealth({ health }): JSX.Element {
 export function IconUnknownHealth() {
   return (
     <div className="shrink-0">
-      <Icons.IconHelpCircle size={20} className="text-zinc-400/80" />
+      <Icons.IconActivityHeartbeat size={20} className="text-white-2" />
     </div>
   );
 }
