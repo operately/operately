@@ -25,11 +25,15 @@ export function showProgress(loader: ({ params }: { params: any }) => Promise<an
     let samePage = req.request.url === document.URL;
 
     try {
+      const start = performance.now();
       if (!samePage) nprogress.start();
 
       const data = await loader(req);
 
       if (!samePage) nprogress.done();
+
+      const end = performance.now();
+      console.log(`Execution time: ${end - start} ms`);
 
       return data;
     } catch (error) {
