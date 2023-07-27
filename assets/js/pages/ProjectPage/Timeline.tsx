@@ -68,12 +68,27 @@ function SelectBox({ children, editable }) {
   );
 }
 
+function HealthTitle({ health }) {
+  switch (health) {
+    case "on_track":
+      return <>On-Track</>;
+    case "at_risk":
+      return <>At Risk</>;
+    case "off_track":
+      return <>Off-Track</>;
+    case "unknown":
+      return <span className="text-white-1/60">Unknown</span>;
+    default:
+      throw new Error(`Unknown health: ${health}`);
+  }
+}
+
 function HealthPopover({ project, editable }) {
   const label = (
     <SelectBox editable={editable}>
       <div className="flex items-center gap-1 -ml-1">
-        <ProjectIcons.IconForHealth health={"on-track"} />
-        On Track
+        <ProjectIcons.IconForHealth health={project.health} />
+        <HealthTitle health={project.health} />
       </div>
     </SelectBox>
   );
@@ -89,9 +104,9 @@ function HealthPopover({ project, editable }) {
 
             <div className="border-t border-white-2/5 my-1" />
 
-            <HealthPopoverOption title="On-Track" health="on-track" project={project} />
-            <HealthPopoverOption title="At Risk" health="at-risk" project={project} />
-            <HealthPopoverOption title="Off-Track" health="off-track" project={project} />
+            <HealthPopoverOption title="On-Track" health="on_track" project={project} />
+            <HealthPopoverOption title="At Risk" health="at_risk" project={project} />
+            <HealthPopoverOption title="Off-Track" health="off_track" project={project} />
 
             <div className="border-t border-white-2/5 my-1" />
 

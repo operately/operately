@@ -23,9 +23,10 @@ export async function loader({ params }) {
 
 interface ContextDescriptor {
   project: Projects.Project;
-  messageType: "update" | "phase-change";
+  messageType: "update" | "phase-change" | "health-change";
   currentPhase?: string;
   newPhase?: string | null;
+  newHealth?: string | null;
 }
 
 const Context = React.createContext<ContextDescriptor | null>(null);
@@ -35,8 +36,17 @@ export function Page() {
 
   const searchParams = new URLSearchParams(window.location.search);
   const newPhase = searchParams.get("phase");
-  const messageType = newPhase ? "phase-change" : "update";
+  const newHealth = searchParams.get("health");
   const currentPhase = project.phase;
+
+  let messageType: ContextDescriptor["messageType"];
+  if (newPhase) {
+    messageType = "phase-change";
+  } else if (newHealth) {
+    messageType = "health-change";
+  } else {
+    messageType = "update";
+  }
 
   return (
     <Paper.Root>
@@ -52,7 +62,7 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <Context.Provider value={{ project, messageType, currentPhase, newPhase }}>
+        <Context.Provider value={{ project, messageType, currentPhase, newPhase, newHealth }}>
           <NewUpdateHeader project={project} />
           <Editor project={project} />
         </Context.Provider>
@@ -61,8 +71,23 @@ export function Page() {
   );
 }
 
+function HealthTitle({ health }) {
+  switch (health) {
+    case "on_track":
+      return <>On-Track</>;
+    case "at_risk":
+      return <>At Risk</>;
+    case "off_track":
+      return <>Off-Track</>;
+    case "unknown":
+      return <>Unknown</>;
+    default:
+      throw new Error(`Unknown health: ${health}`);
+  }
+}
+
 function NewUpdateHeader({ project }) {
-  const { messageType, newPhase } = React.useContext(Context) as ContextDescriptor;
+  const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
   switch (messageType) {
     case "phase-change":
@@ -70,7 +95,16 @@ function NewUpdateHeader({ project }) {
         <div>
           <div className="uppercase text-white-1 tracking-wide w-full mb-2">PHASE CHANGE</div>
           <div className="text-4xl font-bold mx-auto">
-            <span className="capitalize">{project.phase}</span> -&gt; <span className="capitalize">{newPhase}</span>
+            <span className="capitalize">{project.phase}</span> -&gt;<span className="capitalize">{newPhase}</span>
+          </div>
+        </div>
+      );
+    case "health-change":
+      return (
+        <div>
+          <div className="uppercase text-white-1 tracking-wide w-full mb-2">PROJECT HEALTH CHANGE</div>
+          <div className="text-4xl font-bold mx-auto">
+            <HealthTitle health={project.health} /> -&gt; <HealthTitle health={newHealth} />
           </div>
         </div>
       );
@@ -88,11 +122,25 @@ function NewUpdateHeader({ project }) {
 
 function Editor({ project }) {
   const navigate = useNavigate();
-  const { messageType, newPhase } = React.useContext(Context) as ContextDescriptor;
+  const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
-  const editor = TipTapEditor.useEditor({
-    placeholder: "Write your update here...",
-  });
+  let placeholder = "";
+
+  switch (messageType) {
+    case "phase-change":
+      placeholder = `Write a summary of the previous phase and what's coming up in the next phase...`;
+      break;
+    case "health-change":
+      placeholder = `Describe the changes that happened to the project's health...`;
+      break;
+    case "update":
+      placeholder = `Write your update here...`;
+      break;
+    default:
+      throw new Error(`Unknown message type: ${messageType}`);
+  }
+
+  const editor = TipTapEditor.useEditor({ placeholder: placeholder });
 
   const [post] = Projects.usePostUpdate({
     onCompleted: (data) => {
@@ -110,6 +158,7 @@ function Editor({ project }) {
           updatableId: project.id,
           content: JSON.stringify(editor.getJSON()),
           phase: newPhase || undefined,
+          health: newHealth || undefined,
         },
       },
     });

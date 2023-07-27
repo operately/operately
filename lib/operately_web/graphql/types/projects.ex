@@ -43,6 +43,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
   object :project do
     field :id, non_null(:id)
     field :name, non_null(:string)
+    field :health, non_null(:string)
     field :phase, non_null(:string)
     field :updated_at, non_null(:date)
 

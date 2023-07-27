@@ -22,11 +22,11 @@ export function IconForPhase({ phase }): JSX.Element {
 
 export function IconForHealth({ health }): JSX.Element {
   switch (health) {
-    case "on-track":
+    case "on_track":
       return <IconOnTrack />;
-    case "at-risk":
+    case "at_risk":
       return <IconAtRisk />;
-    case "off-track":
+    case "off_track":
       return <IconOffTrack />;
     case "unknown":
       return <IconUnknownHealth />;
