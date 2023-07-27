@@ -20,68 +20,81 @@ export function IconForPhase({ phase }): JSX.Element {
   }
 }
 
+export function IconForHealth({ health }): JSX.Element {
+  switch (health) {
+    case "on-track":
+      return <IconOnTrack />;
+    case "at-risk":
+      return <IconAtRisk />;
+    case "off-track":
+      return <IconOffTrack />;
+    case "unknown":
+      return <IconUnknownHealth />;
+    default:
+      throw new Error("Invalid health " + health);
+  }
+}
+
+export function IconUnknownHealth() {
+  return (
+    <div className="shrink-0">
+      <Icons.IconHelpCircle size={20} className="text-zinc-400/80" />
+    </div>
+  );
+}
+
+export function IconOnTrack() {
+  return (
+    <div className="shrink-0">
+      <Icons.IconActivityHeartbeat size={20} className="text-green-400" />
+    </div>
+  );
+}
+
+export function IconAtRisk() {
+  return (
+    <div className="shrink-0">
+      <Icons.IconAlertCircle size={20} className="text-yellow-400" />
+    </div>
+  );
+}
+
+export function IconOffTrack() {
+  return (
+    <div className="shrink-0">
+      <Icons.IconAlertCircle size={20} className="text-red-400" />
+    </div>
+  );
+}
+
 export function IconPlanning() {
   return (
-    <div
-      className="shrink-0"
-      style={{
-        width: "16px",
-        height: "16px",
-        borderRadius: "100%",
-        border: "2px solid #fff",
-        borderStyle: "dashed",
-      }}
-    ></div>
+    <div className="shrink-0">
+      <Icons.IconCircleDashed size={20} stroke={2} className="text-zinc-400/80" />
+    </div>
   );
 }
 
 export function IconExecution() {
   return (
-    <div
-      className="flex items-center justify-center shrink-0"
-      style={{
-        width: "16px",
-        height: "16px",
-        borderRadius: "100%",
-        border: "2px solid var(--color-yellow-400)",
-        color: "var(--color-yellow-400)",
-      }}
-    >
-      <Icons.IconChevronRight size={10} stroke={5} style={{ marginLeft: "1px" }} />
+    <div className="shrink-0">
+      <Icons.IconCircleHalf2 size={20} stroke={2} className="text-yellow-400/80" />
     </div>
   );
 }
 
 export function IconControl() {
   return (
-    <div
-      className="flex items-center justify-center shrink-0"
-      style={{
-        width: "16px",
-        height: "16px",
-        borderRadius: "100%",
-        border: "2px solid var(--color-orange-400)",
-        color: "var(--color-orange-400)",
-      }}
-    >
-      <Icons.IconDots size={10} stroke={5} />
+    <div className="shrink-0">
+      <Icons.IconCircleDotFilled size={20} stroke={2} className="text-green-400/80" />
     </div>
   );
 }
 
 export function IconCompleted() {
   return (
-    <div
-      className="flex items-center justify-center shrink-0"
-      style={{
-        width: "16px",
-        height: "16px",
-        borderRadius: "100%",
-        border: "2px solid var(--color-green-400)",
-        color: "var(--color-green-400)",
-      }}
-    >
-      <Icons.IconCheck size={10} stroke={5} />
+    <div className="shrink-0">
+      <Icons.IconCircleCheckFilled size={20} stroke={2} className="text-green-400" />
     </div>
   );
 }
@@ -94,7 +107,7 @@ export function IconPaused() {
         width: "16px",
         height: "16px",
         borderRadius: "100%",
-        border: "2px solid var(--color-white-2)",
+        border: "1px solid var(--color-white-2)",
       }}
     >
       <div className="flex items-center justify-center gap-0.5">
@@ -107,17 +120,8 @@ export function IconPaused() {
 
 export function IconCanceled() {
   return (
-    <div
-      className="flex items-center justify-center shrink-0"
-      style={{
-        width: "16px",
-        height: "16px",
-        borderRadius: "100%",
-        border: "2px solid var(--color-white-2)",
-        color: "var(--color-white-2)",
-      }}
-    >
-      <Icons.IconX size={10} stroke={5} />
+    <div className="shrink-0">
+      <Icons.IconCircleXFilled size={20} stroke={2} className="text-red-400" />
     </div>
   );
 }
