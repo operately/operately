@@ -7,6 +7,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
     field :updatable_type, non_null(:string)
     field :phase, :string
     field :health, :string
+    field :message_type, :string
   end
 
   input_object :create_comment_input do
@@ -23,6 +24,12 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
           content = Jason.decode!(args.input.content)
           project = Operately.Projects.get_project!(args.input.updatable_id)
 
+          previous_phase = Atom.to_string(project.phase)
+          new_phase = args.input[:phase] || previous_phase
+
+          previous_health = Atom.to_string(project.health)
+          new_health = args.input[:health] || previous_health
+
           if args.input[:phase] do
             Operately.Projects.update_project(project, %{phase: args.input.phase})
           end
@@ -35,8 +42,12 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             updatable_type: args.input.updatable_type,
             updatable_id: args.input.updatable_id,
             author_id: context.current_account.person.id,
-            type: :status_update,
-            content: %{"message" => content}
+            type: args.input.message_type,
+            content: %{"message" => content},
+            previous_phase: previous_phase,
+            new_phase: new_phase,
+            previous_health: previous_health,
+            new_health: new_health
           })
 
           update

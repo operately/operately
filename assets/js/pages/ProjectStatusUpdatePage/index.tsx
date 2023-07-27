@@ -1,57 +1,55 @@
 import React from "react";
 
-import { useParams } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/graphql/Projects";
 
-import { useMe } from "@/graphql/Me";
-import RichContent from "@/components/RichContent";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
+import RichContent from "@/components/RichContent";
+import { useMe } from "@/graphql/Me";
 
 import { usePostCommentMutation } from "@/graphql/Projects";
 
 import Reactions from "./Reactions";
 
-export function ProjectStatusUpdatePage() {
-  const params = useParams();
+import * as Me from "@/graphql/Me";
+import * as Projects from "@/graphql/Projects";
+import * as Updates from "@/graphql/Projects/updates";
+import client from "@/graphql/client";
 
-  const projectId = params.project_id;
-  const id = params.id || "";
+interface LoaderData {
+  update: any;
+  me: any;
+}
 
-  const meData = useMe();
-  const updateData = Projects.useProjectStatusUpdate(id);
-  const addReactionMutation = Projects.useReactMutation("update", id);
+export async function loader({ params }): Promise<LoaderData> {
+  let updateData = await client.query({
+    query: Updates.GET_STATUS_UPDATE,
+    variables: { id: params.id },
+    fetchPolicy: "network-only",
+  });
 
-  if (meData.loading || updateData.loading) return <p className="mt-32">Loading...</p>;
+  let meData = await client.query({
+    query: Me.GET_ME,
+  });
 
-  if (meData.error || updateData.error)
-    return (
-      <p className="mt-32">
-        Error : {meData.error?.message} {updateData.error?.message}
-      </p>
-    );
+  return {
+    update: updateData.data.update,
+    me: meData.data.me,
+  };
+}
 
-  const refetch = updateData.refetch;
-  const update = updateData.data.update;
-  const me = meData.data.me;
+export function Page() {
+  const [{ update, me }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
+
+  const addReactionMutation = Projects.useReactMutation("update", update.id);
 
   return (
     <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${projectId}`}>
-          <Icons.IconClipboardList size={16} />
-          {update.project.name}
-        </Paper.NavItem>
-
-        <Paper.NavSeparator />
-
-        <Paper.NavItem linkTo={`/projects/${projectId}/updates`}> Status Updates</Paper.NavItem>
-      </Paper.Navigation>
+      <Navigation project={update.project} />
 
       <Paper.Body>
         <AckBanner me={me} update={update} champion={update.project.champion} reviewer={update.project.reviewer} />
@@ -74,6 +72,21 @@ export function ProjectStatusUpdatePage() {
         </div>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function Navigation({ project }) {
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+        <Icons.IconClipboardList size={16} />
+        {project.name}
+      </Paper.NavItem>
+
+      <Paper.NavSeparator />
+
+      <Paper.NavItem linkTo={`/projects/${project.id}/updates`}> Message Board</Paper.NavItem>
+    </Paper.Navigation>
   );
 }
 
@@ -114,7 +127,7 @@ function AckBanner({ me, reviewer, update, champion }) {
   }
 
   return (
-    <div className="-mx-12 -mt-10 py-4 px-8 bg-shade-1 rounded-t-[20px] font-semibold text-yellow-400 flex items-center justify-center gap-2">
+    <div className="-mx-12 -mt-10 py-4 px-8 bg-shade-1 rounded-t font-semibold text-yellow-400 flex items-center justify-center gap-2">
       {content}
     </div>
   );
