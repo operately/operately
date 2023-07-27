@@ -17,6 +17,7 @@ export const LIST_PROJECTS = gql`
       contributors ${fragments.CONTRIBUTOR}
 
       phase
+      health
 
       nextMilestone {
         id

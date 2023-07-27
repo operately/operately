@@ -50,6 +50,7 @@ export function Page() {
   const [showStartDate, setShowStartDate] = React.useState(true);
   const [showDueDate, setShowDueDate] = React.useState(true);
   const [showChampion, setShowChampion] = React.useState(true);
+  const [showHealth, setShowHealth] = React.useState(true);
 
   return (
     <Paper.Root size="xxlarge">
@@ -71,6 +72,7 @@ export function Page() {
                 <Popover.Content sideOffset={5} align="start" className="focus:outline-none">
                   <div className="bg-dark-3 rounded-lg p-4 w-64 text-sm border-dark-5 border-2">
                     <div className="flex flex-col gap-2">
+                      <Forms.Switch label="Health" value={showHealth} onChange={setShowHealth} />
                       <Forms.Switch label="Phase" value={showPhase} onChange={setShowPhase} />
                       <Forms.Switch label="Next Milestone" value={showNextMilestone} onChange={setShowNextMilestone} />
                       <Forms.Switch label="Start Date" value={showStartDate} onChange={setShowStartDate} />
@@ -95,15 +97,17 @@ export function Page() {
           showStartDate={showStartDate}
           showDueDate={showDueDate}
           showChampion={showChampion}
+          showHealth={showHealth}
         />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function ProjectList({ projects, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion }) {
+function ProjectList({ projects, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion, showHealth }) {
   var columns: { id: String; title: String; size: String; visible: boolean }[] = [];
 
+  columns.push({ id: "Health", title: "", size: "w-3", visible: showHealth });
   columns.push({ id: "Phase", title: "", size: "w-3", visible: showPhase });
   columns.push({ id: "Title", title: "Title", size: "flex-1", visible: true });
   columns.push({ id: "Milestone", title: "Next Milestone", size: "flex-1", visible: showNextMilestone });
@@ -185,6 +189,13 @@ function ProjectCell({ project, column }) {
       );
 
       return <Cell size={column.size}>{champion}</Cell>;
+
+    case "Health":
+      return (
+        <Cell size={column.size} className="text-sm capitalize">
+          <ProjectIcons.IconForHealth health={project.health} />
+        </Cell>
+      );
     default:
       return <Cell size={column.size}> </Cell>;
   }
