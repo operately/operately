@@ -92,8 +92,8 @@ function ItemTitle({ update }: { update: Updates.Update }) {
   if (update.messageType === "health_change") {
     return (
       <div className="text-xs font-bold text-lime-400/80">
-        <span className="capitalize">{update.previousHealth}</span> →{" "}
-        <span className="capitalize">{update.newHealth}</span>
+        <span className="capitalize">{update.previousHealth?.split("_")?.join(" ")}</span> →{" "}
+        <span className="capitalize">{update.newHealth?.split("_").join(" ")}</span>
       </div>
     );
   }

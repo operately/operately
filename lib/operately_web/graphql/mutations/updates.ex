@@ -25,7 +25,10 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
           project = Operately.Projects.get_project!(args.input.updatable_id)
 
           previous_phase = Atom.to_string(project.phase)
+          new_phase = args.input[:phase] || previous_phase
+
           previous_health = Atom.to_string(project.health)
+          new_health = args.input[:health] || previous_health
 
           if args.input[:phase] do
             Operately.Projects.update_project(project, %{phase: args.input.phase})
@@ -42,9 +45,9 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             type: args.input.message_type,
             content: %{"message" => content},
             previous_phase: previous_phase,
-            new_phase: args.input[:phase] || previous_phase,
-            previous_health: project.health,
-            new_health: args.input[:health] || previous_health
+            new_phase: new_phase,
+            previous_health: previous_health,
+            new_health: new_health
           })
 
           update
