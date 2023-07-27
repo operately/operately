@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/graphql/Projects";
 
 import { useMe } from "@/graphql/Me";
 import RichContent from "@/components/RichContent";
@@ -17,28 +16,38 @@ import { usePostCommentMutation } from "@/graphql/Projects";
 
 import Reactions from "./Reactions";
 
-export function ProjectStatusUpdatePage() {
-  const params = useParams();
+import client from "@/graphql/client";
+import * as Projects from "@/graphql/Projects";
+import * as Me from "@/graphql/Me";
 
-  const projectId = params.project_id;
-  const id = params.id || "";
+interface LoaderData {
+  update: any;
+  me: any;
+}
 
-  const meData = useMe();
-  const updateData = Projects.useProjectStatusUpdate(id);
-  const addReactionMutation = Projects.useReactMutation("update", id);
+export async function loader({ params }): Promise<LoaderData> {
+  let updateData = await client.query({
+    query: Projects.GET_STATUS_UPDATE,
+    variables: { id: params.id },
+    fetchPolicy: "network-only",
+  });
 
-  if (meData.loading || updateData.loading) return <p className="mt-32">Loading...</p>;
+  let meData = await client.query({
+    query: Me.GET_ME,
+  });
 
-  if (meData.error || updateData.error)
-    return (
-      <p className="mt-32">
-        Error : {meData.error?.message} {updateData.error?.message}
-      </p>
-    );
+  return {
+    update: updateData.data.update,
+    me: meData.data.me,
+  };
+}
 
-  const refetch = updateData.refetch;
-  const update = updateData.data.update;
-  const me = meData.data.me;
+export function Page() {
+  const [{ update, me }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
+
+  const projectId = update.project.id;
+
+  const addReactionMutation = Projects.useReactMutation("update", update.id);
 
   return (
     <Paper.Root>
@@ -50,7 +59,7 @@ export function ProjectStatusUpdatePage() {
 
         <Paper.NavSeparator />
 
-        <Paper.NavItem linkTo={`/projects/${projectId}/updates`}> Status Updates</Paper.NavItem>
+        <Paper.NavItem linkTo={`/projects/${projectId}/updates`}> Message Board</Paper.NavItem>
       </Paper.Navigation>
 
       <Paper.Body>

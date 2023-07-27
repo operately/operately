@@ -19,8 +19,8 @@ import * as ProjectDescriptionEditPage from "@/pages/ProjectDescriptionEditPage"
 import * as ProjectMilestonesPage from "@/pages/ProjectMilestonesPage";
 import * as ProjectStatusUpdateListPage from "@/pages/ProjectStatusUpdateListPage";
 import * as ProjectStatusUpdateNewPage from "@/pages/ProjectStatusUpdateNewPage";
+import * as ProjectStatusUpdatePage from "@/pages/ProjectStatusUpdatePage";
 import { ProjectAddPage } from "../pages/ProjectAddPage";
-import { ProjectStatusUpdatePage } from "@/pages/ProjectStatusUpdatePage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
 
@@ -84,17 +84,14 @@ const routes = createBrowserRouter([
         path: "/projects/new",
         element: <ProjectAddPage />,
       },
-      pageRoute("/projects/:project_id/updates", ProjectStatusUpdateListPage),
-      pageRoute("/projects/:project_id/updates/new", ProjectStatusUpdateNewPage),
-      pageRoute("/projects/:project_id/description/edit", ProjectDescriptionEditPage),
-      {
-        path: "/projects/:project_id/updates/:id",
-        element: <ProjectStatusUpdatePage />,
-      },
       {
         path: "/projects/:project_id/contributors",
         element: <ProjectContributorsPage />,
       },
+      pageRoute("/projects/:project_id/updates", ProjectStatusUpdateListPage),
+      pageRoute("/projects/:project_id/updates/new", ProjectStatusUpdateNewPage),
+      pageRoute("/projects/:project_id/description/edit", ProjectDescriptionEditPage),
+      pageRoute("/projects/:project_id/updates/:id", ProjectStatusUpdatePage),
       pageRoute("/projects/:project_id/milestones", ProjectMilestonesPage),
       {
         path: "/projects/:project_id/documentation/*",

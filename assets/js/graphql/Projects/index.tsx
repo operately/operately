@@ -453,7 +453,7 @@ export function useRemoveProjectContributorMutation(contribId: string) {
   });
 }
 
-const GET_STATUS_UPDATE = gql`
+export const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
       id
