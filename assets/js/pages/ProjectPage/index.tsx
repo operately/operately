@@ -2,6 +2,7 @@ import React from "react";
 
 import classnames from "classnames";
 
+import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "@/layouts/header";
 
 import * as Icons from "@tabler/icons-react";
@@ -86,6 +87,9 @@ function Tools({ project }) {
 }
 
 function Sidebar({ project, isOpen, setOpen }) {
+  const navigate = useNavigate();
+  const gotoNewStatusUpdate = () => navigate(`/projects/${project.id}/updates/new?messageType=status_update`);
+
   const tasks = [
     {
       title: "Write a project description",
@@ -137,6 +141,16 @@ function Sidebar({ project, isOpen, setOpen }) {
               <span>{task.title}</span>
             </div>
           ))}
+        </div>
+
+        <h1 className="font-bold mb-4 mt-8">Actions</h1>
+
+        <div
+          className="bg-white-1/[3%] rounded py-2 px-4 hover:bg-shade-1 hover:shadow flex items-center gap-2 text-white-1/80 hover:text-white-1 cursor-pointer"
+          onClick={gotoNewStatusUpdate}
+        >
+          <Icons.IconReport size={16} />
+          <span className="font-medium">Write a status update</span>
         </div>
       </div>
     </div>

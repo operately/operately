@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
+import * as Updates from "@/graphql/Projects/updates";
 
 import Button from "@/components/Button";
 
@@ -23,7 +24,7 @@ export async function loader({ params }) {
 
 interface ContextDescriptor {
   project: Projects.Project;
-  messageType: "message" | "update" | "phase_change" | "health_change";
+  messageType: Updates.UpdateMessageType;
   currentPhase?: string;
   newPhase?: string | null;
   newHealth?: string | null;
@@ -101,7 +102,7 @@ function NewUpdateHeader({ project, title, setTitle }) {
           </div>
         </div>
       );
-    case "update":
+    case "status_update":
       return (
         <div>
           <div className="uppercase text-white-1 tracking-wide w-full mb-2">STATUS UPDATE</div>
@@ -138,7 +139,7 @@ function Editor({ project, title }) {
     case "health_change":
       placeholder = `Describe the changes that happened to the project's health...`;
       break;
-    case "update":
+    case "status_update":
       placeholder = `Write your update here...`;
       break;
     case "message":
