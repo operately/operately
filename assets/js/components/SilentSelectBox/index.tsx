@@ -13,7 +13,14 @@ interface ContextDescriptor {
 
 const Context = React.createContext<ContextDescriptor | null>(null);
 
-export function SelectBox({ children, editable, onSelected = () => null, activeValue, open, onOpenChange }) {
+export function SelectBox({
+  children,
+  editable,
+  onSelected = () => null,
+  activeValue,
+  open = undefined,
+  onOpenChange = undefined,
+}) {
   return (
     <Context.Provider value={{ editable, onSelected, activeValue }}>
       <Popover.Root open={open} onOpenChange={onOpenChange}>
