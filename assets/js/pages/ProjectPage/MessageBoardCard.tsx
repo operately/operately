@@ -98,5 +98,9 @@ function ItemTitle({ update }: { update: Updates.Update }) {
     );
   }
 
+  if (update.messageType === "message") {
+    return <div className="text-xs font-bold text-white-1">{update.title}</div>;
+  }
+
   throw new Error(`Unknown update type: ${update.messageType}`);
 }

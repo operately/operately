@@ -165,6 +165,7 @@ export const GET_PROJECT = gql`
 
       updates {
         id
+        title
         message
         messageType
 

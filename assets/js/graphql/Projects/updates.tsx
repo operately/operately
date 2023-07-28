@@ -5,7 +5,9 @@ export const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) {
       id
+      title
       message
+      messageType
 
       insertedAt
       updatedAt
@@ -45,10 +47,11 @@ export const GET_STATUS_UPDATE = gql`
   }
 `;
 
-export type UpdateMessageType = "status_update" | "phase_change" | "health_change";
+export type UpdateMessageType = "message" | "status_update" | "phase_change" | "health_change";
 
 export interface Update {
   id: string;
+  title?: string;
   message: string;
   insertedAt: Date;
   updatedAt: Date;

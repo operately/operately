@@ -102,6 +102,8 @@ function AckButton({ update }) {
 }
 
 function AckBanner({ me, reviewer, update, champion }) {
+  if (update.messageType === "message") return null;
+
   if (update.acknowledged) return null;
   if (!reviewer) return null;
 
@@ -146,9 +148,29 @@ function Header({ update }) {
         </div>
       </div>
 
-      <div className="text-3xl font-bold">Status Update</div>
+      <Title update={update} />
     </div>
   );
+}
+
+function Title({ update }) {
+  if (update.messageType === "message") {
+    return <div className="text-3xl font-bold">{update.title}</div>;
+  }
+
+  if (update.messageType === "status_update") {
+    return <div className="text-3xl font-bold">Status Update</div>;
+  }
+
+  if (update.messageType === "phase_change") {
+    return <div className="text-3xl font-bold">Phase Change</div>;
+  }
+
+  if (update.messageType === "health_change") {
+    return <div className="text-3xl font-bold">Health Change</div>;
+  }
+
+  throw new Error("Unknown message type " + update.messageType);
 }
 
 function splitCommentsBeforeAndAfterAck(update) {
