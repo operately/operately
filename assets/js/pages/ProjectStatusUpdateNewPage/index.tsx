@@ -196,7 +196,7 @@ function PostButton({ onClick }) {
   return (
     <Button onClick={onClick} variant="success">
       <Icons.IconMail size={20} />
-      Post Update
+      Post
     </Button>
   );
 }
