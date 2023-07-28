@@ -10,6 +10,8 @@ import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 
+import Timeline from "@/pages/ProjectPage/Timeline";
+
 import Button from "@/components/Button";
 
 export async function loader({ params }) {
