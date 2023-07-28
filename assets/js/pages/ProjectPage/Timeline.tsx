@@ -209,7 +209,7 @@ function PhasePopoverOption({ phase, project }) {
   const onClick = () => {
     if (active) return;
 
-    navigate(`/projects/${project.id}/updates/new?phase=${phase}`);
+    navigate(`/projects/${project.id}/updates/new?messageType=phase_change&phase=${phase}`);
   };
 
   return (
@@ -227,7 +227,7 @@ function HealthPopoverOption({ health, title, project }) {
   const onClick = () => {
     if (active) return;
 
-    navigate(`/projects/${project.id}/updates/new?health=${health}`);
+    navigate(`/projects/${project.id}/updates/new?messageType=health_change&health=${health}`);
   };
 
   return (

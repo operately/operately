@@ -7,6 +7,7 @@ export const GET_STATUS_UPDATE = gql`
       id
       title
       message
+      messageType
 
       insertedAt
       updatedAt
