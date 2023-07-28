@@ -23,7 +23,7 @@ export async function loader({ params }) {
 
 interface ContextDescriptor {
   project: Projects.Project;
-  messageType: "update" | "phase_change" | "health_change";
+  messageType: "message" | "update" | "phase_change" | "health_change";
   currentPhase?: string;
   newPhase?: string | null;
   newHealth?: string | null;
@@ -33,20 +33,13 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 
 export function Page() {
   const [project] = Paper.useLoadedData() as [Projects.Project];
+  const [title, setTitle] = React.useState<string>("");
 
   const searchParams = new URLSearchParams(window.location.search);
   const newPhase = searchParams.get("phase");
   const newHealth = searchParams.get("health");
+  const messageType = (searchParams.get("messageType") || "message") as ContextDescriptor["messageType"];
   const currentPhase = project.phase;
-
-  let messageType: ContextDescriptor["messageType"];
-  if (newPhase) {
-    messageType = "phase_change";
-  } else if (newHealth) {
-    messageType = "health_change";
-  } else {
-    messageType = "update";
-  }
 
   return (
     <Paper.Root>
@@ -63,8 +56,8 @@ export function Page() {
 
       <Paper.Body>
         <Context.Provider value={{ project, messageType, currentPhase, newPhase, newHealth }}>
-          <NewUpdateHeader project={project} />
-          <Editor project={project} />
+          <NewUpdateHeader project={project} title={title} setTitle={setTitle} />
+          <Editor project={project} title={title} />
         </Context.Provider>
       </Paper.Body>
     </Paper.Root>
@@ -86,7 +79,7 @@ function HealthTitle({ health }) {
   }
 }
 
-function NewUpdateHeader({ project }) {
+function NewUpdateHeader({ project, title, setTitle }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
   switch (messageType) {
@@ -115,12 +108,24 @@ function NewUpdateHeader({ project }) {
           <div className="text-4xl font-bold mx-auto">What's new since the last update?</div>
         </div>
       );
+    case "message":
+      return (
+        <div>
+          <input
+            type="text"
+            className="w-full text-4xl font-bold mx-auto bg-transparent text-white-1 placeholder:text-white-2 p-0 border-transparent focus:border-transparent focus:ring-transparent"
+            placeholder="Write a title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+      );
     default:
       throw new Error(`Unknown message type: ${messageType}`);
   }
 }
 
-function Editor({ project }) {
+function Editor({ project, title }) {
   const navigate = useNavigate();
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
@@ -135,6 +140,9 @@ function Editor({ project }) {
       break;
     case "update":
       placeholder = `Write your update here...`;
+      break;
+    case "message":
+      placeholder = `Write your message here...`;
       break;
     default:
       throw new Error(`Unknown message type: ${messageType}`);
@@ -159,6 +167,7 @@ function Editor({ project }) {
           content: JSON.stringify(editor.getJSON()),
           phase: newPhase || undefined,
           health: newHealth || undefined,
+          title: title || undefined,
           messageType: messageType,
         },
       },
@@ -167,7 +176,7 @@ function Editor({ project }) {
 
   return (
     <div>
-      <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-8 -mx-2">
+      <div className="flex items-center gap-1 border-y border-shade-2 px-2 py-1 mt-4 -mx-2">
         <TipTapEditor.Toolbar editor={editor} />
       </div>
 

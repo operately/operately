@@ -3,6 +3,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
   object :update do
     field :id, non_null(:id)
+    field :title, :string
     field :inserted_at, non_null(:naive_datetime)
     field :updated_at, non_null(:naive_datetime)
     field :content, non_null(:string)
