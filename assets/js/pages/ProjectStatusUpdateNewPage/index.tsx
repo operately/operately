@@ -11,6 +11,8 @@ import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 
 import Button from "@/components/Button";
+import ProjectHealthSelector from "@/components/ProjectHealthSelector";
+import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 
 export async function loader({ params }) {
   let res = await client.query({
@@ -157,6 +159,9 @@ function Editor({ project, title }) {
     },
   });
 
+  const [health, setHealth] = React.useState<string>(newHealth || project.health);
+  const [phase, setPhase] = React.useState<string>(newPhase || project.phase);
+
   const submit = () => {
     if (!editor) return;
 
@@ -166,8 +171,8 @@ function Editor({ project, title }) {
           updatableType: "project",
           updatableId: project.id,
           content: JSON.stringify(editor.getJSON()),
-          phase: newPhase || undefined,
-          health: newHealth || undefined,
+          phase: phase,
+          health: health,
           title: title || undefined,
           messageType: messageType,
         },
@@ -185,9 +190,38 @@ function Editor({ project, title }) {
         <TipTapEditor.EditorContent editor={editor} />
       </div>
 
+      {messageType === "status_update" && (
+        <FieldUpdates phase={phase} health={health} setPhase={setPhase} setHealth={setHealth} />
+      )}
+
       <div className="flex items-center gap-2">
         <PostButton onClick={submit} />
         <CancelButton linkTo={`/projects/${project.id}/updates`} />
+      </div>
+    </div>
+  );
+}
+
+function FieldUpdates({ phase, health, setPhase, setHealth }) {
+  return (
+    <div className="mb-8 pt-8 border-t border-shade-2">
+      <p className="font-bold text-lg">Is there a change in the project's health or phase?</p>
+      <p className="text-white-1/70">Please adjust the values below.</p>
+
+      <div className="py-4 flex items-start gap-4">
+        <div>
+          <p className="font-bold ml-1">Phase</p>
+          <div className="flex items-center gap-2">
+            <ProjectPhaseSelector activePhase={phase} editable={true} onSelected={setPhase} />
+          </div>
+        </div>
+
+        <div>
+          <p className="font-bold ml-1">Health</p>
+          <div className="flex items-center gap-2">
+            <ProjectHealthSelector active={health} editable={true} onSelected={setHealth} />
+          </div>
+        </div>
       </div>
     </div>
   );

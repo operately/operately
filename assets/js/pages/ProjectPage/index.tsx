@@ -68,7 +68,7 @@ export function Page() {
 
       <Paper.Body minHeight="600px">
         <Header project={project} />
-        <Timeline me={me} project={project} refetch={refetch} />
+        <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Description me={me} project={project} />
         <Tools project={project} />
         <Activity projectId={project.id} />
