@@ -37,21 +37,6 @@ export async function loader(): Promise<LoaderData> {
 export function Page() {
   const [{ company }] = Paper.useLoadedData() as [LoaderData, () => void];
 
-  let navigate = useNavigate();
-  let nameInput = React.useRef<HTMLInputElement>(null);
-
-  const [createGroup] = useMutation(CREATE_GROUP);
-
-  const onSubmit = async () => {
-    await createGroup({ variables: { name: nameInput.current?.value } });
-
-    navigate("/groups");
-  };
-
-  const onCancel = () => {
-    navigate("/groups");
-  };
-
   return (
     <Paper.Root size="small">
       <Paper.Navigation>
@@ -70,18 +55,38 @@ export function Page() {
   );
 }
 
-function Form() {}
+function Form() {
+  let navigate = useNavigate();
 
-// <>
-//   <Forms.Form isValid={true} onSubmit={onSubmit} onCancel={onCancel}>
-//     <h1 className="text-2xl font-bold mb-4">{t("forms.group_add_title")}</h1>
+  const [name, setName] = React.useState("");
+  const [mission, setMission] = React.useState("");
 
-//     <FormTextInput
-//       ref={nameInput}
-//       id="name"
-//       label={t("forms.group_name_label")}
-//       placeholder={t("forms.group_name_placeholder")!}
-//     />
-//   </Forms.Form>
-// </>
-// );
+  const [createGroup] = useMutation(CREATE_GROUP);
+
+  const onSubmit = async () => {
+    const res = await createGroup({ variables: { name: name } });
+
+    navigate(`/groups/${res.data.createGroup.id}`);
+  };
+
+  const onCancel = () => navigate("/groups");
+
+  const isValid = name.length > 0 && mission.length > 0;
+
+  return (
+    <Forms.Form isValid={isValid} onSubmit={onSubmit} onCancel={onCancel}>
+      <Forms.TextInput label="Group Name" value={name} onChange={setName} placeholder="ex. Marketing" />
+      <Forms.TextInput
+        label="Mission"
+        value={mission}
+        onChange={setMission}
+        placeholder="ex. Create product awareness and bring new leads"
+      />
+
+      <Forms.SubmitArea>
+        <Forms.SubmitButton>Create Group</Forms.SubmitButton>
+        <Forms.CancelButton>Cancel</Forms.CancelButton>
+      </Forms.SubmitArea>
+    </Forms.Form>
+  );
+}
