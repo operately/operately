@@ -64,6 +64,7 @@ function Navigation({ size }) {
           <div className="flex items-center gap-1">
             <NavigationItem to="/" title="Home" icon={<Icons.IconStarFilled size={16} stroke={3} />} />
             <NavigationItem to="/projects" title="Projects" icon={<Icons.IconTableFilled size={16} />} />
+            <NavigationItem to="/groups" title="Groups" icon={<Icons.IconUsers size={16} stroke={3} />} />
           </div>
         </div>
 

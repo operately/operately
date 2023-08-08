@@ -4,7 +4,7 @@ import DefaultLayout from "../layouts/DefaultLayout";
 
 import GroupAddPage from "../pages/GroupAddPage";
 import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
-import { GroupListPage, GroupsListPageLoader } from "../pages/GroupListPage";
+import * as GroupListPage from "@/pages/GroupListPage";
 
 import { HomePage } from "@/pages/HomePage";
 import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
@@ -65,11 +65,7 @@ const routes = createBrowserRouter([
         path: "/home/my-assignments",
         element: <MyAssignmentsPage />,
       },
-      {
-        path: "/groups",
-        loader: loaderWithApollo(GroupsListPageLoader),
-        element: <GroupListPage />,
-      },
+      pageRoute("/groups", GroupListPage),
       {
         path: "/groups/new",
         element: <GroupAddPage />,

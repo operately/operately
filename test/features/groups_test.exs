@@ -1,8 +1,8 @@
 defmodule Operately.Features.GroupsTest do
   use Operately.FeatureCase
 
-  setup session do
-    session = session |> UI.login() |> visit_page()
+  setup state do
+    session = state.session |> UI.login()
 
     {:ok, %{session: session}}
   end
@@ -23,7 +23,6 @@ defmodule Operately.Features.GroupsTest do
   #   |> visit_page()
   #   |> assert_has(Query.text(group.name))
   # end
-
 
   # feature "adding group members", state do
   #   group = create_group("Marketing")
