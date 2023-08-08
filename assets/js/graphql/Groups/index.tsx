@@ -1,4 +1,61 @@
-import { gql, ApolloClient } from '@apollo/client';
+import { gql, useMutation, ApolloClient } from "@apollo/client";
+
+export interface PointOfContact {
+  id: string;
+  name: string;
+  type: string;
+  value: string;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  mission: string;
+  members: Person[];
+  pointsOfContact: PointOfContact[];
+}
+
+interface Person {
+  id: string;
+  fullName: string;
+  avatarUrl?: string;
+}
+
+export const GET_GROUP = gql`
+  query GetGroup($id: ID!) {
+    group(id: $id) {
+      id
+      name
+      mission
+
+      members {
+        id
+        fullName
+        avatarUrl
+      }
+
+      pointsOfContact {
+        id
+        name
+        type
+        value
+      }
+    }
+  }
+`;
+
+export const CREATE_GROUP = gql`
+  mutation CreateGroup($name: String!, $mission: String!) {
+    createGroup(name: $name, mission: $mission) {
+      id
+      name
+    }
+  }
+`;
+
+export function useCreateGroup(options = {}) {
+  return useMutation(CREATE_GROUP, options);
+}
 
 const LIST_POTENTIAL_GROUP_MEMBERS = gql`
   query ListPotentialGroupMembers($groupId: ID!, $query: String!, $excludeIds: [ID!], $limit: Int) {
@@ -19,8 +76,11 @@ interface ListPotentialGroupMembersParams {
   };
 }
 
-export function listPotentialGroupMembers(client : ApolloClient<object>, {variables} : ListPotentialGroupMembersParams) {
-  return client.query({ query: LIST_POTENTIAL_GROUP_MEMBERS, variables })
+export function listPotentialGroupMembers(
+  client: ApolloClient<object>,
+  { variables }: ListPotentialGroupMembersParams,
+) {
+  return client.query({ query: LIST_POTENTIAL_GROUP_MEMBERS, variables });
 }
 
 const SET_MISSION = gql`
@@ -39,11 +99,11 @@ interface SetMissionParams {
   };
 }
 
-export function setMission(client : ApolloClient<object>, {variables} : SetMissionParams) {
+export function setMission(client: ApolloClient<object>, { variables }: SetMissionParams) {
   return client.mutate({
     mutation: SET_MISSION,
-    variables: variables
-  })
+    variables: variables,
+  });
 }
 
 const ADD_CONTACT = gql`
@@ -67,9 +127,9 @@ interface AddContactParams {
   };
 }
 
-export function addContact(client : ApolloClient<object>, {variables} : AddContactParams) {
+export function addContact(client: ApolloClient<object>, { variables }: AddContactParams) {
   return client.mutate({
     mutation: ADD_CONTACT,
-    variables: variables
-  })
+    variables: variables,
+  });
 }

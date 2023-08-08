@@ -1,108 +1,73 @@
 import React from "react";
-import { useQuery, gql } from "@apollo/client";
-import { useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
-import AddMembersModal from "./AddMembersModal";
-import Avatar from "../../components/Avatar";
-import GroupMission from "./GroupMission";
-import PointsOfContact from "./PointsOfContact";
-import Projects from "./Projects";
-import Objectives from "./Objectives";
+import { useDocumentTitle } from "@/layouts/header";
 
-const GET_GROUP = gql`
-  query GetGroup($id: ID!) {
-    group(id: $id) {
-      id
-      name
-      mission
+import * as Paper from "@/components/PaperContainer";
+import * as Groups from "@/graphql/Groups";
+import * as Icons from "@tabler/icons-react";
 
-      members {
-        id
-        fullName
-        avatarUrl
-      }
+import client from "@/graphql/client";
 
-      pointsOfContact {
-        id
-        name
-        type
-        value
-      }
-    }
-  }
-`;
+interface LoadedData {
+  group: Groups.Group;
+}
 
-export async function GroupPageLoader(apolloClient: any, { params }) {
-  const { id } = params;
-
-  await apolloClient.query({
-    query: GET_GROUP,
-    variables: { id },
+export async function loader({ params }): Promise<LoadedData> {
+  const groupData = await client.query({
+    query: Groups.GET_GROUP,
+    variables: { id: params.id },
   });
 
-  return {};
+  return { group: groupData.data.group };
 }
 
-interface Person {
-  id: string;
-  fullName: string;
-  avatarUrl?: string;
-}
+export function Page() {
+  const [{ group }] = Paper.useLoadedData() as [LoadedData, () => void];
 
-function MemberList({ members }: { members: Person[] }) {
+  useDocumentTitle(group.name);
+
   return (
-    <div className="flex gap-2 mb-4">
-      {members.map((m: Person) => (
-        <Avatar key={m.id} person={m} />
-      ))}
-    </div>
+    <Paper.Root>
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/groups`}>
+          <Icons.IconUsers size={16} stroke={3} />
+          Groups
+        </Paper.NavItem>
+      </Paper.Navigation>
+
+      <Paper.Body>
+        <div className="mb-8">
+          <h1 className="font-extrabold text-2xl">{group.name}</h1>
+          <p className="mb-8">{group.mission}</p>
+        </div>
+      </Paper.Body>
+    </Paper.Root>
   );
 }
 
-export function GroupPage() {
-  const { t } = useTranslation();
-  const { id } = useParams();
+// <div className="mb-4">
+//   <GroupMission groupId={id} mission={data.group.mission} onMissionChanged={refetch} />
+// </div>
 
-  if (!id) return <p>Unable to find group</p>;
+// <MemberList members={data.group.members} />
+// <AddMembersModal groupId={id} members={data.group.members} onSubmit={handleAddMembersModalSubmit} />
 
-  const { loading, error, data, refetch } = useQuery(GET_GROUP, {
-    variables: { id },
-    fetchPolicy: "cache-only",
-  });
+// <PointsOfContact
+//   groupId={id}
+//   groupName={data.group.name}
+//   pointsOfContact={data.group.pointsOfContact}
+//   onAddContact={refetch}
+// />
 
-  if (loading) return <p>{t("loading.loading")}</p>;
-  if (error)
-    return (
-      <p>
-        {t("error.error")}: {error.message}
-      </p>
-    );
+// <Projects groupId={id} />
+// <Objectives groupId={id} />
 
-  const handleAddMembersModalSubmit = () => {
-    refetch();
-  };
-
-  return (
-    <div>
-      <h1 className="text-2xl">{data.group.name}</h1>
-
-      <div className="mb-4">
-        <GroupMission groupId={id} mission={data.group.mission} onMissionChanged={refetch} />
-      </div>
-
-      <MemberList members={data.group.members} />
-      <AddMembersModal groupId={id} members={data.group.members} onSubmit={handleAddMembersModalSubmit} />
-
-      <PointsOfContact
-        groupId={id}
-        groupName={data.group.name}
-        pointsOfContact={data.group.pointsOfContact}
-        onAddContact={refetch}
-      />
-
-      <Projects groupId={id} />
-      <Objectives groupId={id} />
-    </div>
-  );
-}
+// function MemberList({ members }: { members: Person[] }) {
+//   return (
+//     <div className="flex gap-2 mb-4">
+//       {members.map((m: Person) => (
+//         <Avatar key={m.id} person={m} />
+//       ))}
+//     </div>
+//   );
+// }

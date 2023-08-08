@@ -1,11 +1,26 @@
 defmodule Operately.Features.GroupsTest do
   use Operately.FeatureCase
 
-  # setup session do
-  #   session = session |> UI.login() |> visit_page()
+  import Operately.CompaniesFixtures
 
-  #   {:ok, %{session: session}}
-  # end
+  setup state do
+    company_fixture(%{name: "Test Org"})
+
+    session = state.session |> UI.login()
+
+    {:ok, %{session: session}}
+  end
+
+  feature "creating a new group", state do
+    state
+    |> visit_page()
+    |> UI.click(testid: "add-group")
+    |> fill_in(Query.text_field("Name"), with: "Marketing")
+    |> fill_in(Query.text_field("Mission"), with: "Let the world know about our products")
+    |> click(Query.button("Create Group"))
+    |> assert_has(Query.text("Marketing"))
+    |> assert_has(Query.text("Let the world know about our products"))
+  end
 
   # feature "listing existing groups", state do
   #   group = create_group("Marketing")
@@ -13,15 +28,6 @@ defmodule Operately.Features.GroupsTest do
   #   state
   #   |> visit_page()
   #   |> assert_has(Query.text(group.name))
-  # end
-
-  # feature "creating a new group", state do
-  #   state
-  #   |> visit_page()
-  #   |> click(Query.link("Add Group"))
-  #   |> fill_in(Query.text_field("Name"), with: "Marketing")
-  #   |> click(Query.button("Save"))
-  #   |> assert_has(Query.text("Marketing"))
   # end
 
   # feature "adding group members", state do
@@ -95,9 +101,9 @@ defmodule Operately.Features.GroupsTest do
 
   # # ===========================================================================
 
-  # defp visit_page(state) do
-  #   UI.visit(state, "/groups")
-  # end
+  defp visit_page(state) do
+    UI.visit(state, "/groups")
+  end
 
   # defp create_group(name) do
   #   Operately.GroupsFixtures.group_fixture(%{name: name})

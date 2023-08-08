@@ -1,51 +1,87 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router-dom";
-import { useMutation, gql } from "@apollo/client";
 
+import * as Paper from "@/components/PaperContainer";
+import * as Companies from "@/graphql/Companies";
+import * as Icons from "@tabler/icons-react";
 import * as Forms from "../../components/Form";
-import FormTextInput from "../../components/FormTextInput";
+import * as Groups from "@/graphql/Groups";
 
-const CREATE_GROUP = gql`
-  mutation CreateGroup($name: String!) {
-    createGroup(name: $name) {
-      id
-      name
-    }
-  }
-`;
+import client from "@/graphql/client";
 
-export default function GroupAddPage() {
-  const { t } = useTranslation();
+interface LoaderData {
+  company: Companies.Company;
+}
 
-  let navigate = useNavigate();
-  let nameInput = React.useRef<HTMLInputElement>(null);
+export async function loader(): Promise<LoaderData> {
+  const companyData = await client.query({
+    query: Companies.GET_COMPANY,
+    variables: { id: Companies.companyID() },
+    fetchPolicy: "network-only",
+  });
 
-  const [createGroup] = useMutation(CREATE_GROUP);
+  return { company: companyData.data.company };
+}
 
-  const onSubmit = async () => {
-    await createGroup({ variables: { name: nameInput.current?.value } });
-
-    navigate("/groups");
-  };
-
-  const onCancel = () => {
-    navigate("/groups");
-  };
+export function Page() {
+  const [{ company }] = Paper.useLoadedData() as [LoaderData, () => void];
 
   return (
-    <>
-      <Forms.Form isValid={true} onSubmit={onSubmit} onCancel={onCancel}>
-        <h1 className="text-2xl font-bold mb-4">{t("forms.group_add_title")}</h1>
+    <Paper.Root size="small">
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={`/groups`}>
+          <Icons.IconUsers size={16} stroke={3} />
+          Groups
+        </Paper.NavItem>
+      </Paper.Navigation>
 
-        <FormTextInput
-          ref={nameInput}
-          id="name"
-          label={t("forms.group_name_label")}
-          placeholder={t("forms.group_name_placeholder")!}
-        />
-      </Forms.Form>
-    </>
+      <Paper.Body minHeight="300px">
+        <h1 className="mb-8 font-bold text-2xl">New Group in {company.name}</h1>
+
+        <Form />
+      </Paper.Body>
+    </Paper.Root>
+  );
+}
+
+function Form() {
+  let navigate = useNavigate();
+
+  const [createGroup, { loading }] = Groups.useCreateGroup();
+
+  const [name, setName] = React.useState("");
+  const [mission, setMission] = React.useState("");
+
+  const onSubmit = async () => {
+    const res = await createGroup({
+      variables: {
+        name: name,
+        mission: mission,
+      },
+    });
+
+    navigate(`/groups/${res.data.createGroup.id}`);
+  };
+
+  const onCancel = () => navigate("/groups");
+
+  const isValid = name.length > 0 && mission.length > 0;
+
+  return (
+    <Forms.Form isValid={isValid} onSubmit={onSubmit} onCancel={onCancel} loading={loading}>
+      <Forms.TextInput label="Group Name" value={name} onChange={setName} placeholder="ex. Marketing" />
+      <Forms.TextInput
+        label="Mission"
+        value={mission}
+        onChange={setMission}
+        placeholder="ex. Create product awareness and bring new leads"
+      />
+
+      <Forms.SubmitArea>
+        <Forms.SubmitButton>Create Group</Forms.SubmitButton>
+        <Forms.CancelButton>Cancel</Forms.CancelButton>
+      </Forms.SubmitArea>
+    </Forms.Form>
   );
 }

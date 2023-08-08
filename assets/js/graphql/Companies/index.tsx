@@ -6,29 +6,15 @@ export const GET_COMPANY = gql`
       id
       name
       mission
-
-      tenets {
-        id
-        name
-        description
-
-        kpis {
-          id
-          name
-          description
-          unit
-          target
-          targetDirection
-
-          metrics {
-            value
-            date
-          }
-        }
-      }
     }
   }
 `;
+
+export interface Company {
+  id: string;
+  name: string;
+  mission: string;
+}
 
 export function companyID() {
   return window.companyID;

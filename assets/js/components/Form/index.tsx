@@ -17,6 +17,7 @@ interface Props {
 interface FormContextDescriptor {
   loading?: boolean;
   isValid?: boolean;
+  onCancel?: () => void;
 }
 
 const Context = React.createContext<FormContextDescriptor>({});
@@ -30,7 +31,7 @@ export const Form = React.forwardRef<Ref, Props>((props, ref) => {
   };
 
   return (
-    <Context.Provider value={{ loading: props.loading, isValid: props.isValid }}>
+    <Context.Provider value={{ loading: props.loading, isValid: props.isValid, onCancel: props.onCancel }}>
       <form className="flex flex-col gap-6" ref={ref} onSubmit={handleSubmit}>
         {children}
       </form>
@@ -52,13 +53,28 @@ export function SubmitButton({ children }) {
   );
 }
 
+export function CancelButton({ children }) {
+  const { onCancel } = React.useContext(Context);
+
+  return (
+    <Button submit variant="secondary" onClick={onCancel}>
+      {children}
+    </Button>
+  );
+}
+
 export function TextInput({ label, value, onChange, placeholder = "" }) {
+  const id = React.useMemo(() => Math.random().toString(36), []);
+
   return (
     <div>
-      <label className="font-bold mb-1 block">{label}</label>
+      <label htmlFor={id} className="font-bold mb-1 block">
+        {label}
+      </label>
 
       <div className="flex-1">
         <input
+          id={id}
           className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
           type="text"
           value={value}

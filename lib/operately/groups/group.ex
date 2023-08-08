@@ -16,6 +16,6 @@ defmodule Operately.Groups.Group do
   def changeset(group, attrs) do
     group
     |> cast(attrs, [:name, :mission])
-    |> validate_required([:name])
+    |> validate_required([:name, :mission])
   end
 end
