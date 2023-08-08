@@ -64,12 +64,17 @@ export function CancelButton({ children }) {
 }
 
 export function TextInput({ label, value, onChange, placeholder = "" }) {
+  const id = React.useMemo(() => Math.random().toString(36), []);
+
   return (
     <div>
-      <label className="font-bold mb-1 block">{label}</label>
+      <label htmlFor={id} className="font-bold mb-1 block">
+        {label}
+      </label>
 
       <div className="flex-1">
         <input
+          id={id}
           className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
           type="text"
           value={value}

@@ -16,8 +16,10 @@ defmodule Operately.Features.GroupsTest do
     |> visit_page()
     |> UI.click(testid: "add-group")
     |> fill_in(Query.text_field("Name"), with: "Marketing")
-    |> click(Query.button("Save"))
+    |> fill_in(Query.text_field("Mission"), with: "Let the world know about our products")
+    |> click(Query.button("Create Group"))
     |> assert_has(Query.text("Marketing"))
+    |> assert_has(Query.text("Let the world know about our products"))
   end
 
   # feature "listing existing groups", state do
