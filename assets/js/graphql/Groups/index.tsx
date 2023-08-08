@@ -133,3 +133,13 @@ export function addContact(client: ApolloClient<object>, { variables }: AddConta
     variables: variables,
   });
 }
+
+export const LIST_GROUPS = gql`
+  query ListGroups {
+    groups {
+      id
+      name
+      mission
+    }
+  }
+`;
