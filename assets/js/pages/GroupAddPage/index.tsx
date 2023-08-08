@@ -1,24 +1,14 @@
 import React from "react";
 
 import { useNavigate } from "react-router-dom";
-import { useMutation, gql } from "@apollo/client";
 
-import * as Forms from "../../components/Form";
-import FormTextInput from "../../components/FormTextInput";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Companies from "@/graphql/Companies";
+import * as Icons from "@tabler/icons-react";
+import * as Forms from "../../components/Form";
+import * as Groups from "@/graphql/Groups";
 
 import client from "@/graphql/client";
-
-const CREATE_GROUP = gql`
-  mutation CreateGroup($name: String!) {
-    createGroup(name: $name) {
-      id
-      name
-    }
-  }
-`;
 
 interface LoaderData {
   company: Companies.Company;
@@ -40,7 +30,7 @@ export function Page() {
   return (
     <Paper.Root size="small">
       <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects`}>
+        <Paper.NavItem linkTo={`/groups`}>
           <Icons.IconUsers size={16} stroke={3} />
           Groups
         </Paper.NavItem>
@@ -58,13 +48,18 @@ export function Page() {
 function Form() {
   let navigate = useNavigate();
 
+  const [createGroup, { loading }] = Groups.useCreateGroup();
+
   const [name, setName] = React.useState("");
   const [mission, setMission] = React.useState("");
 
-  const [createGroup] = useMutation(CREATE_GROUP);
-
   const onSubmit = async () => {
-    const res = await createGroup({ variables: { name: name } });
+    const res = await createGroup({
+      variables: {
+        name: name,
+        mission: mission,
+      },
+    });
 
     navigate(`/groups/${res.data.createGroup.id}`);
   };
@@ -74,7 +69,7 @@ function Form() {
   const isValid = name.length > 0 && mission.length > 0;
 
   return (
-    <Forms.Form isValid={isValid} onSubmit={onSubmit} onCancel={onCancel}>
+    <Forms.Form isValid={isValid} onSubmit={onSubmit} onCancel={onCancel} loading={loading}>
       <Forms.TextInput label="Group Name" value={name} onChange={setName} placeholder="ex. Marketing" />
       <Forms.TextInput
         label="Mission"
