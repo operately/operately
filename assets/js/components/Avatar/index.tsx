@@ -111,7 +111,7 @@ function UnassingedAvatar({ size }: { size: AvatarSize }): JSX.Element {
 
   return (
     <div title="Unassigned" className={className}>
-      <Icons.IconUserQuestion size={24} />
+      <Icons.IconUser size={24} />
     </div>
   );
 }

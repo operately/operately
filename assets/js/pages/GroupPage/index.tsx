@@ -1,10 +1,16 @@
 import React from "react";
 
 import { useDocumentTitle } from "@/layouts/header";
+import { useNavigate } from "react-router-dom";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Groups from "@/graphql/Groups";
 import * as Icons from "@tabler/icons-react";
+
+import Avatar from "@/components/Avatar";
+import Button from "@/components/Button";
+
+import { ContributorAdd } from "@/components/ContributorAvatar";
 
 import client from "@/graphql/client";
 
@@ -36,21 +42,33 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <div className="mb-8">
+        <div className="mb-4">
           <h1 className="font-extrabold text-2xl">{group.name}</h1>
-          <p className="mb-8">{group.mission}</p>
+          <div>{group.mission}</div>
         </div>
+
+        <MemberList group={group} />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-// <div className="mb-4">
-//   <GroupMission groupId={id} mission={data.group.mission} onMissionChanged={refetch} />
-// </div>
+function MemberList({ group }: { group: Groups.Group }) {
+  const navigate = useNavigate();
+  const gotoGroupMembersPage = () => navigate(`/groups/${group.id}/members`);
 
-// <MemberList members={data.group.members} />
-// <AddMembersModal groupId={id} members={data.group.members} onSubmit={handleAddMembersModalSubmit} />
+  return (
+    <div className="flex gap-2 items-center mb-4 cursor-pointer" onClick={gotoGroupMembersPage}>
+      {group.members.map((m) => (
+        <Avatar key={m.id} person={m} />
+      ))}
+
+      <div className="shrink-0 relative w-8 h-8 border-dashed border border-white-3 rounded-full p-0.5 text-white-3 flex items-center justify-center">
+        <Icons.IconPlus size={16} />
+      </div>
+    </div>
+  );
+}
 
 // <PointsOfContact
 //   groupId={id}
@@ -61,13 +79,3 @@ export function Page() {
 
 // <Projects groupId={id} />
 // <Objectives groupId={id} />
-
-// function MemberList({ members }: { members: Person[] }) {
-//   return (
-//     <div className="flex gap-2 mb-4">
-//       {members.map((m: Person) => (
-//         <Avatar key={m.id} person={m} />
-//       ))}
-//     </div>
-//   );
-// }
