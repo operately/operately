@@ -58,10 +58,12 @@ defmodule OperatelyWeb.AccountOauthController do
         email: params["email"],
         password: random_password(),
         person: %{
+          company_id: hd(Operately.Companies.list_companies()).id,
+          avatar_url: "https://www.gravatar.com/avatar/#{:crypto.strong_rand_bytes(16) |> Base.encode16()}",
           email: params["email"],
           full_name: params["email"],
           handle: params["email"],
-          avatar_url: "https://www.gravatar.com/avatar/#{:crypto.strong_rand_bytes(16) |> Base.encode16()}"
+          title: "Junion Developer"
         }
       }
 

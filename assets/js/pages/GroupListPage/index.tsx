@@ -19,7 +19,7 @@ export function Page() {
       <div className="flex items-center justify-between">
         <div className="font-extrabold text-3xl">Groups</div>
 
-        <Button linkTo="/groups/new" variant="success">
+        <Button linkTo="/groups/new" variant="success" data-test-id="add-group">
           <Icons.IconPlus size={16} /> Add Group
         </Button>
       </div>

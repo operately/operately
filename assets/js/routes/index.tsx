@@ -2,9 +2,9 @@ import React from "react";
 
 import DefaultLayout from "../layouts/DefaultLayout";
 
-import GroupAddPage from "../pages/GroupAddPage";
 import { GroupPage, GroupPageLoader } from "../pages/GroupPage";
 import * as GroupListPage from "@/pages/GroupListPage";
+import * as GroupAddPage from "../pages/GroupAddPage";
 
 import { HomePage } from "@/pages/HomePage";
 import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
@@ -66,10 +66,7 @@ const routes = createBrowserRouter([
         element: <MyAssignmentsPage />,
       },
       pageRoute("/groups", GroupListPage),
-      {
-        path: "/groups/new",
-        element: <GroupAddPage />,
-      },
+      pageRoute("/groups/new", GroupAddPage),
       {
         path: "/groups/:id",
         loader: loaderWithApollo(GroupPageLoader),

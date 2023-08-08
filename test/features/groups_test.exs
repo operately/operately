@@ -1,7 +1,11 @@
 defmodule Operately.Features.GroupsTest do
   use Operately.FeatureCase
 
+  import Operately.CompaniesFixtures
+
   setup state do
+    company_fixture(%{name: "Test Org"})
+
     session = state.session |> UI.login()
 
     {:ok, %{session: session}}
@@ -10,7 +14,7 @@ defmodule Operately.Features.GroupsTest do
   feature "creating a new group", state do
     state
     |> visit_page()
-    |> click(Query.link("Add Group"))
+    |> UI.click(testid: "add-group")
     |> fill_in(Query.text_field("Name"), with: "Marketing")
     |> click(Query.button("Save"))
     |> assert_has(Query.text("Marketing"))
