@@ -67,7 +67,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => 
   const { variant, size, linkTo, children, loading, submit, ...rest } = props;
 
   const sizeValue = sizes[size || "base"];
-  console.log(sizeValue);
   const variantValue = variants[variant || "default"];
 
   const className = [

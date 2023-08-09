@@ -8,9 +8,6 @@ import * as Groups from "@/graphql/Groups";
 import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
-import Button from "@/components/Button";
-
-import { ContributorAdd } from "@/components/ContributorAvatar";
 
 import client from "@/graphql/client";
 
@@ -58,7 +55,11 @@ function MemberList({ group }: { group: Groups.Group }) {
   const gotoGroupMembersPage = () => navigate(`/groups/${group.id}/members`);
 
   return (
-    <div className="flex gap-2 items-center mb-4 cursor-pointer" onClick={gotoGroupMembersPage}>
+    <div
+      className="flex gap-2 items-center mb-4 cursor-pointer"
+      onClick={gotoGroupMembersPage}
+      data-test-id="group-members"
+    >
       {group.members.map((m) => (
         <Avatar key={m.id} person={m} />
       ))}

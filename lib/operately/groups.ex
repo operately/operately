@@ -157,20 +157,22 @@ defmodule Operately.Groups do
     Repo.all(query)
   end
 
-  def add_members(group, people_ids) do
-    members = Enum.map(people_ids, fn id ->
-      Member.changeset(%Member{}, %{
-        group_id: group.id,
-        person_id: id
-      })
-    end)
+  def add_member(group, people_id) do
+    changeset = Member.changeset(%Member{}, %{
+      group_id: group.id,
+      person_id: people_id
+    })
 
-    members
-    |> Enum.with_index()
-    |> Enum.reduce(Ecto.Multi.new(), fn ({changeset, index}, multi) ->
-       Ecto.Multi.insert(multi, Integer.to_string(index), changeset)
-    end)
-    |> Repo.transaction()
+    Repo.insert(changeset)
+  end
+
+  def remove_member(group, people_id) do
+    query = (
+      from m in Member,
+      where: m.group_id == ^group.id and m.person_id == ^people_id
+    )
+
+    Repo.delete_all(query)
   end
 
   def add_contact(group, name, value, type) do

@@ -1,10 +1,11 @@
 import React from "react";
 
-import DefaultLayout from "../layouts/DefaultLayout";
+import DefaultLayout from "@/layouts/DefaultLayout";
 
-import * as GroupPage from "../pages/GroupPage";
+import * as GroupPage from "@/pages/GroupPage";
 import * as GroupListPage from "@/pages/GroupListPage";
-import * as GroupAddPage from "../pages/GroupAddPage";
+import * as GroupAddPage from "@/pages/GroupAddPage";
+import * as GroupMembersPage from "@/pages/GroupMembersPage";
 
 import { HomePage } from "@/pages/HomePage";
 import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
@@ -68,6 +69,7 @@ const routes = createBrowserRouter([
       pageRoute("/groups", GroupListPage),
       pageRoute("/groups/new", GroupAddPage),
       pageRoute("/groups/:id", GroupPage),
+      pageRoute("/groups/:id/members", GroupMembersPage),
       pageRoute("/projects", ProjectListPage),
       {
         path: "/projects/new",

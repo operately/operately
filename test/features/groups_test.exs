@@ -3,13 +3,13 @@ defmodule Operately.Features.GroupsTest do
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
+  import Operately.PeopleFixtures
 
   setup state do
-    company_fixture(%{name: "Test Org"})
-
+    company = company_fixture(%{name: "Test Org"})
     session = state.session |> UI.login()
 
-    {:ok, %{session: session}}
+    {:ok, %{session: session, company: company}}
   end
 
   feature "listing existing groups", state do
@@ -35,6 +35,33 @@ defmodule Operately.Features.GroupsTest do
     |> assert_has(Query.text("Let the world know about our products"))
   end
 
+  feature "listing group members", state do
+    group = group_fixture(%{name: "Marketing"})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+
+    Operately.Groups.add_member(group, person.id)
+
+    state
+    |> visit_page()
+    |> UI.click(title: group.name)
+    |> UI.click(testid: "group-members")
+    |> assert_has(Query.text(person.full_name))
+  end
+
+  feature "removing group members", state do
+    group = group_fixture(%{name: "Marketing"})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+
+    Operately.Groups.add_member(group, person.id)
+
+    state
+    |> visit_page()
+    |> UI.click(title: group.name)
+    |> UI.click(testid: "group-members")
+    |> assert_has(Query.text(person.full_name))
+    |> UI.click(testid: "remove-member-#{person.id}")
+    |> refute_has(Query.text(person.full_name))
+  end
 
   # feature "adding group members", state do
   #   group = create_group("Marketing")

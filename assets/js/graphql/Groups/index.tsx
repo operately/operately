@@ -32,6 +32,7 @@ export const GET_GROUP = gql`
         id
         fullName
         avatarUrl
+        title
       }
 
       pointsOfContact {
@@ -143,3 +144,15 @@ export const LIST_GROUPS = gql`
     }
   }
 `;
+
+export const REMOVE_GROUP_MEMBER = gql`
+  mutation RemoveGroupMember($groupId: ID!, $memberId: ID!) {
+    removeGroupMember(groupId: $groupId, memberId: $memberId) {
+      id
+    }
+  }
+`;
+
+export function useRemoveMemberFromGroup(options = {}) {
+  return useMutation(REMOVE_GROUP_MEMBER, options);
+}
