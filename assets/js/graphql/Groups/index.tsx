@@ -64,6 +64,7 @@ const LIST_POTENTIAL_GROUP_MEMBERS = gql`
       id
       fullName
       title
+      avatarUrl
     }
   }
 `;
@@ -156,3 +157,11 @@ export const REMOVE_GROUP_MEMBER = gql`
 export function useRemoveMemberFromGroup(options = {}) {
   return useMutation(REMOVE_GROUP_MEMBER, options);
 }
+
+export const ADD_MEMBERS = gql`
+  mutation AddGroupMembers($groupId: ID!, $personIds: [ID!]!) {
+    addGroupMembers(groupId: $groupId, personIds: $personIds) {
+      id
+    }
+  }
+`;

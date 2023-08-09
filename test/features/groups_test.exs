@@ -48,6 +48,22 @@ defmodule Operately.Features.GroupsTest do
     |> assert_has(Query.text(person.full_name))
   end
 
+  feature "adding group members", state do
+    group = group_fixture(%{name: "Marketing"})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+
+    state
+    |> visit_page()
+    |> UI.click(title: group.name)
+    |> UI.click(testid: "group-members")
+    |> UI.click(testid: "add-group-members")
+    |> fill_in(Query.css("#peopleSearch"), with: "Mati")
+    |> assert_text("Mati Aharoni")
+    |> send_keys([:enter])
+    |> UI.click(testid: "submit-group-members")
+    |> UI.assert_has(title: person.full_name)
+  end
+
   feature "removing group members", state do
     group = group_fixture(%{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
@@ -62,23 +78,6 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(testid: "remove-member-#{person.id}")
     |> refute_has(Query.text(person.full_name))
   end
-
-  # feature "adding group members", state do
-  #   group = create_group("Marketing")
-  #   person = crete_person("Mati Aharoni")
-
-  #   state
-  #   |> visit_page()
-  #   |> click(Query.link(group.name))
-  #   |> click(Query.button("Add Members"))
-  #   |> fill_in(Query.css("#peopleSearch"), with: "Mati")
-  #   |> assert_text("Mati Aharoni")
-  #   |> send_keys([:enter])
-  #   |> find(Query.css(".ReactModalPortal"), fn modal ->
-  #     click(modal, Query.button("Add Members"))
-  #   end)
-  #   |> UI.assert_has(title: person.full_name)
-  # end
 
   # feature "setting group mission", state do
   #   mission = "Let the world know about our products"
@@ -137,20 +136,4 @@ defmodule Operately.Features.GroupsTest do
   defp visit_page(state) do
     UI.visit(state, "/groups")
   end
-
-  # defp create_group(name) do
-  #   Operately.GroupsFixtures.group_fixture(%{name: name})
-  # end
-
-  # defp crete_person(name) do
-  #   Operately.PeopleFixtures.person_fixture(%{full_name: name})
-  # end
-
-  # defp create_project(name, group: group) do
-  #   Operately.ProjectsFixtures.project_fixture(%{name: name, group_id: group.id})
-  # end
-
-  # defp crete_goal(name, group: group) do
-  #   Operately.OkrsFixtures.objective_fixture(%{name: name, group_id: group.id})
-  # end
 end

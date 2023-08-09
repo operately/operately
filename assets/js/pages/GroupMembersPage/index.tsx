@@ -5,9 +5,12 @@ import { useDocumentTitle } from "@/layouts/header";
 import * as Paper from "@/components/PaperContainer";
 import * as Groups from "@/graphql/Groups";
 import * as Icons from "@tabler/icons-react";
+import * as Forms from "@/components/Form";
 
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
+
+import AddMembersModal from "./AddMembersModal";
 
 import client from "@/graphql/client";
 
@@ -41,18 +44,20 @@ export function Page() {
 
       <Paper.Body>
         <Header group={group} />
-
         <MemberList group={group} />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Header({ group }: { group: Groups.Group }) {
+function Header({ group }) {
+  const [_, refetch] = Paper.useLoadedData() as [LoadedData, () => void];
+
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="font-extrabold text-2xl">Group Members</div>
-      <Button variant="success">Add Member</Button>
+
+      <AddMembersModal groupId={group.id} onSubmit={refetch} members={group.members} />
     </div>
   );
 }
