@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Groups from "@/graphql/Groups";
 import * as Projects from "@/graphql/Projects";
+import * as ProjectIcons from "@/components/ProjectIcons";
 
 export default function OwnedProjects({ group }: { group: Groups.Group }) {
   const { data, loading, error } = Projects.useProjects({
@@ -21,24 +22,48 @@ export default function OwnedProjects({ group }: { group: Groups.Group }) {
 }
 
 function ProjectTable({ projects }: { projects: Projects.Project[] }) {
-  return (
-    <>
-      {projects.map((p) => (
-        <ProjectRow key={p.id} project={p} />
-      ))}
-    </>
-  );
+  const headers = [
+    { id: "health", label: "" },
+    { id: "phase", label: "" },
+    { id: "title", label: "Title" },
+    { id: "champion", label: "Champion" },
+    { id: "timeline", label: "Timeline" },
+  ];
+
+  const rows = projects.map((p) => {
+    return [
+      { id: "health", value: <ProjectIcons.IconForHealth health={p.health} /> },
+      { id: "phase", value: <ProjectIcons.IconForPhase phase={p.phase} /> },
+      { id: "title", value: p.name },
+      { id: "champion", value: <ProjectIcons.Champion person={p.champion} /> },
+      { id: "timeline", value: p.startedAt + " - " + p.deadline },
+    ];
+  });
+
+  return <Table headers={headers} rows={rows} />;
 }
 
-function ProjectRow({ project }: { project: Projects.Project }) {
+function Table({ headers, rows }: { headers: any[]; rows: any[] }) {
   return (
-    <div className="flex items-center gap-4 mb-4">
-      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300" />
-      <div className="flex-grow">
-        <div className="font-bold">{project.name}</div>
-        <div className="text-sm text-gray-500">{project.description}</div>
-        <div className="text-sm text-gray-500">{project.champion?.fullName}</div>
-      </div>
-    </div>
+    <table className="w-full">
+      <thead>
+        <tr>
+          {headers.map((h) => (
+            <th key={h.id} className="text-left">
+              {h.label}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.id}>
+            {r.map((c) => (
+              <td key={c.id}>{c.value}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

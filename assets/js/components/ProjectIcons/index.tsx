@@ -1,5 +1,7 @@
 import React from "react";
+
 import * as Icons from "@tabler/icons-react";
+import Avatar from "@/components/Avatar";
 
 export function IconForPhase({ phase }): JSX.Element {
   switch (phase) {
@@ -122,6 +124,15 @@ export function IconCanceled() {
   return (
     <div className="shrink-0">
       <Icons.IconCircleXFilled size={20} stroke={2} className="text-red-400" />
+    </div>
+  );
+}
+
+export function Champion({ person }): JSX.Element {
+  return (
+    <div className="flex items-center gap-2">
+      <Avatar person={person} />
+      <div className="text-white-1">{person.fullName.split(" ")[0]}</div>
     </div>
   );
 }

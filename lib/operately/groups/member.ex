@@ -5,7 +5,6 @@ defmodule Operately.Groups.Member do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "members" do
-
     field :group_id, :binary_id
     field :person_id, :binary_id
 
