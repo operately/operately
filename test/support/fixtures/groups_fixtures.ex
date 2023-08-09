@@ -11,7 +11,8 @@ defmodule Operately.GroupsFixtures do
     {:ok, group} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some name",
+        mission: "some mission"
       })
       |> Operately.Groups.create_group()
 

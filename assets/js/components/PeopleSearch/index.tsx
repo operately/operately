@@ -4,24 +4,27 @@ import AsyncSelect from "react-select/async";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import classnames from "classnames";
 
-interface Person {
+export interface Person {
   id: string;
   fullName: string;
   avatarUrl: string;
   title: string;
 }
 
-interface Option {
+export interface Option {
   value: string;
   label: React.ReactNode;
+  person: Person;
 }
 
 interface PeopleSearchProps {
-  onChange: ({ value }: { value: string }) => void;
+  onChange: (value: Person | null) => void;
   loader: (input: string) => Promise<Person[]>;
+  filterOption?: (candidate: any) => boolean;
   placeholder: string;
   alreadySelected?: string[];
   defaultValue?: Person;
+  value?: Person | null;
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
@@ -42,6 +45,8 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       defaultValue={defaultValue}
       defaultOptions
       cacheOptions={false}
+      filterOption={props.filterOption || (() => true)}
+      value={props.value || null}
       classNames={classNames()}
     />
   );
@@ -63,6 +68,7 @@ function personAsOption(person: Person): Option {
   return {
     value: person.id,
     label: <PersonLabel person={person} />,
+    person: person,
   };
 }
 

@@ -32,6 +32,7 @@ export const GET_GROUP = gql`
         id
         fullName
         avatarUrl
+        title
       }
 
       pointsOfContact {
@@ -63,6 +64,7 @@ const LIST_POTENTIAL_GROUP_MEMBERS = gql`
       id
       fullName
       title
+      avatarUrl
     }
   }
 `;
@@ -140,6 +142,26 @@ export const LIST_GROUPS = gql`
       id
       name
       mission
+    }
+  }
+`;
+
+export const REMOVE_GROUP_MEMBER = gql`
+  mutation RemoveGroupMember($groupId: ID!, $memberId: ID!) {
+    removeGroupMember(groupId: $groupId, memberId: $memberId) {
+      id
+    }
+  }
+`;
+
+export function useRemoveMemberFromGroup(options = {}) {
+  return useMutation(REMOVE_GROUP_MEMBER, options);
+}
+
+export const ADD_MEMBERS = gql`
+  mutation AddGroupMembers($groupId: ID!, $personIds: [ID!]!) {
+    addGroupMembers(groupId: $groupId, personIds: $personIds) {
+      id
     }
   }
 `;

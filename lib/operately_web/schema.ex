@@ -175,18 +175,6 @@ defmodule OperatelyWeb.Schema do
       end
     end
 
-    field :add_members, :group do
-      arg :group_id, non_null(:id)
-      arg :person_ids, non_null(list_of(non_null(:id)))
-
-      resolve fn args, _ ->
-        group = Operately.Groups.get_group!(args.group_id)
-        {:ok, _} = Operately.Groups.add_members(group, args.person_ids)
-
-        {:ok, group}
-      end
-    end
-
     field :set_group_mission, :group do
       arg :group_id, non_null(:id)
       arg :mission, non_null(:string)

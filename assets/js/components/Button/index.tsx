@@ -4,7 +4,7 @@ import { PuffLoader } from "react-spinners";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";
-  size?: "base";
+  size?: "small" | "base";
   linkTo?: string;
   disabled?: boolean;
   submit?: boolean;
@@ -12,6 +12,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const sizes = {
+  small: "px-2 py-1 text-xs gap-1",
   base: "px-3 py-1.5 text-sm gap-2",
 };
 
@@ -39,7 +40,7 @@ const variants = {
     color: "text-white-2",
     text: "font-bold uppercase",
     border: "border border-white-2 rounded-full",
-    hover: "hover:border-white-2 hover:text-white-1 ",
+    hover: "hover:border-white-2 hover:text-white-1",
     disabled: "opacity-50 cursor-not-allowed",
   },
 

@@ -63,6 +63,7 @@ function GroupListItem({ group }: { group: Groups.Group }) {
     <div
       className="px-4 py-3 rounded-lg bg-dark-3 hover:shadow-lg hover:bg-dark-4 transition-colors cursor-pointer"
       onClick={gotoGroupPage}
+      title={group.name}
     >
       <div className="font-semibold text-xl">{group.name}</div>
       <div className="text-white-1/80 text-sm">{group.mission}</div>
