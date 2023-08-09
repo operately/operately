@@ -6,8 +6,8 @@ import * as fragments from "@/graphql/Fragments";
 import * as Updates from "./updates";
 
 export const LIST_PROJECTS = gql`
-  query ListProjects($groupId: ID, $objectiveId: ID) {
-    projects(groupId: $groupId, objectiveId: $objectiveId) {
+  query ListProjects($groupId: ID, $objectiveId: ID, $groupMemberRoles: [String!]) {
+    projects(groupId: $groupId, objectiveId: $objectiveId, groupMemberRoles: $groupMemberRoles) {
       id
       name
       updatedAt
@@ -46,6 +46,7 @@ const PROJECT_SUBSCRIPTION = gql`
 
 interface ListProjectsVariables {
   groupId?: string;
+  groupMemberRoles?: string[];
   objectiveId?: string;
 }
 
