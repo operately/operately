@@ -9,7 +9,7 @@ import * as Icons from "@tabler/icons-react";
 import client from "@/graphql/client";
 
 import MemberList from "./MemberList";
-import OwnedProjects from "./OwnedProjects";
+import * as ProjectsList from "./ProjectsList";
 
 interface LoadedData {
   group: Groups.Group;
@@ -47,7 +47,8 @@ export function Page() {
         <MemberList group={group} />
 
         <div className="flex flex-col gap-4 mt-8">
-          <OwnedProjects group={group} />
+          <ProjectsList.Championed group={group} />
+          <ProjectsList.Reviewed group={group} />
         </div>
       </Paper.Body>
     </Paper.Root>

@@ -130,6 +130,26 @@ export function IconCanceled() {
 }
 
 export function Champion({ person }): JSX.Element {
+  if (!person) {
+    return <div className="flex items-center gap-2 text-white-2">No Champion</div>;
+  }
+
+  const avatar = <Avatar person={person} size="tiny" />;
+  const name = person.fullName.split(" ")[0];
+
+  return (
+    <div className="flex items-center gap-2">
+      {avatar}
+      {name}
+    </div>
+  );
+}
+
+export function Reviewer({ person }): JSX.Element {
+  if (!person) {
+    return <div className="flex items-center gap-2 text-white-2">No Reviwer</div>;
+  }
+
   const avatar = <Avatar person={person} size="tiny" />;
   const name = person.fullName.split(" ")[0];
 
@@ -147,9 +167,9 @@ export function Timeline({ project }): JSX.Element {
 
   return (
     <div className="text-sm flex items-center gap-2">
-      {startedAt ? <FormattedTime time={startedAt} format="short-date" /> : "Start"}
+      {startedAt ? <FormattedTime time={startedAt} format="short-date" /> : <div className="text-white-2">Not Set</div>}
       <div>-&gt;</div>
-      {deadline ? <FormattedTime time={deadline} format="short-date" /> : "Due Date"}
+      {deadline ? <FormattedTime time={deadline} format="short-date" /> : <div className="text-white-2">Not Set</div>}
     </div>
   );
 }
