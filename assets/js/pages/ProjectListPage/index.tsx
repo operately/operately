@@ -17,8 +17,6 @@ import * as Forms from "@/components/Form";
 import * as ProjectIcons from "@/components/ProjectIcons";
 
 export async function loader() {
-  console.log("loader");
-
   let projects = await client.query({
     query: LIST_PROJECTS,
     fetchPolicy: "network-only",

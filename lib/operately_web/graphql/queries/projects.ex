@@ -13,13 +13,15 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
       arg :filters, :project_list_filters
 
       resolve fn _, args, _ ->
+        filters = Map.get(args, :filters, %{})
+
         projects = Operately.Projects.list_projects(%{
-          group_id: args.filters[:group_id],
-          group_member_roles: args.filters[:group_member_roles],
-          objective_id: args.filters[:objective_id]
+          group_id: filters[:group_id],
+          group_member_roles: filters[:group_member_roles],
+          objective_id: filters[:objective_id]
         })
 
-        projects = preload_contributors(projects, args.filters)
+        projects = preload_contributors(projects, filters)
 
         {:ok, projects}
       end
