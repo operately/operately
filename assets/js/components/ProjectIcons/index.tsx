@@ -161,6 +161,24 @@ export function Reviewer({ person }): JSX.Element {
   );
 }
 
+export function Contributors({ contributors }): JSX.Element {
+  if (!contributors || contributors.length === 0) {
+    return <div className="flex items-center gap-2 text-white-2">No Contributors</div>;
+  }
+
+  const firstFive = contributors.slice(0, 5);
+  const restCount = contributors.length - 5;
+
+  return (
+    <div className="flex items-center gap-1">
+      {firstFive.map((c) => (
+        <Avatar key={c.id} person={c.person} size="tiny" />
+      ))}
+      {restCount > 0 && <div className="text-sm text-white-2">+{restCount}</div>}
+    </div>
+  );
+}
+
 export function Timeline({ project }): JSX.Element {
   const startedAt = project.startedAt;
   const deadline = project.deadline;

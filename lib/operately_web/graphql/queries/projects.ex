@@ -1,18 +1,25 @@
 defmodule OperatelyWeb.GraphQL.Queries.Projects do
   use Absinthe.Schema.Notation
 
+  input_object :project_list_filters do
+    field :group_id, :id
+    field :group_member_roles, list_of(:string)
+    field :limit_contributors_to_group_members, :boolean
+    field :objective_id, :id
+  end
+
   object :project_queries do
     field :projects, list_of(:project) do
-      arg :group_id, :id
-      arg :group_member_roles, list_of(:string)
-      arg :objective_id, :id
+      arg :filters, :project_list_filters
 
       resolve fn _, args, _ ->
         projects = Operately.Projects.list_projects(%{
-          group_id: args[:group_id],
-          group_member_roles: args[:group_member_roles],
-          objective_id: args[:objective_id]
+          group_id: args.filters[:group_id],
+          group_member_roles: args.filters[:group_member_roles],
+          objective_id: args.filters[:objective_id]
         })
+
+        projects = preload_contributors(projects, args.filters)
 
         {:ok, projects}
       end
@@ -43,5 +50,33 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
         {:ok, candidates}
       end
     end
+
+    defp preload_contributors(projects, filters) do
+      if filters[:group_id] && filters[:limit_contributors_to_group_members] do
+        preload_only_group_members(projects, filters[:group_id])
+      else
+        preload_all(projects)
+      end
+    end
+
+    defp preload_only_group_members(projects, group_id) do
+      import Ecto.Query
+      alias Operately.Projects.Contributor
+      alias Operately.Groups.Member
+
+      query = from(
+        c in Contributor, 
+        preload: [:person], 
+        join: m in Member, on: c.person_id == m.person_id,
+        where: m.group_id == ^group_id
+      )
+
+      Operately.Repo.preload(projects, contributors: query)
+    end
+
+    defp preload_all(projects) do
+      Operately.Repo.preload(projects, contributors: :person)
+    end
+
   end
 end

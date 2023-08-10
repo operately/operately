@@ -6,8 +6,8 @@ import * as fragments from "@/graphql/Fragments";
 import * as Updates from "./updates";
 
 export const LIST_PROJECTS = gql`
-  query ListProjects($groupId: ID, $objectiveId: ID, $groupMemberRoles: [String!]) {
-    projects(groupId: $groupId, objectiveId: $objectiveId, groupMemberRoles: $groupMemberRoles) {
+  query ListProjects($filters: ProjectListFilters) {
+    projects(filters: $filters) {
       id
       name
       updatedAt
@@ -51,14 +51,15 @@ const PROJECT_SUBSCRIPTION = gql`
   }
 `;
 
-interface ListProjectsVariables {
+interface ListProjectsFilters {
   groupId?: string;
   groupMemberRoles?: string[];
+  limitContributorsToGroupMembers?: boolean;
   objectiveId?: string;
 }
 
-export function useProjects(variables: ListProjectsVariables) {
-  const query = useQuery(LIST_PROJECTS, { variables });
+export function useProjects(filters: ListProjectsFilters) {
+  const query = useQuery(LIST_PROJECTS, { variables: { filters } });
 
   React.useEffect(() => {
     query.subscribeToMore({
