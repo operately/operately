@@ -6,6 +6,8 @@ defmodule Operately.Groups.Group do
   @foreign_key_type :binary_id
 
   schema "groups" do
+    has_many :members, Operately.Groups.Member, foreign_key: :group_id
+
     field :name, :string
     field :mission, :string
 

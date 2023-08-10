@@ -4,6 +4,7 @@ defmodule Operately.Features.GroupsTest do
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+  import Operately.ProjectsFixtures
 
   setup state do
     company = company_fixture(%{name: "Test Org"})
@@ -105,18 +106,23 @@ defmodule Operately.Features.GroupsTest do
   #   |> UI.assert_text("#marketing")
   # end
 
-  # feature "listing projects in a group", state do
-  #   group = create_group("Marketing")
+  feature "listing championed projects in a group", state do
+    group = group_fixture(%{name: "Marketing"})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+    project1 = project_fixture(%{name: "Project 1", company_id: state.company.id, creator_id: person.id})
 
-  #   project1 = create_project("Marketing Website", group: group)
-  #   project2 = create_project("Marketing Campaign", group: group)
+    Operately.Groups.add_member(group, person.id)
+    Operately.Projects.create_contributor(%{
+      project_id: project1.id,
+      person_id: person.id,
+      role: "champion"
+    })
 
-  #   state
-  #   |> visit_page()
-  #   |> UI.click_link(group.name)
-  #   |> UI.assert_text(project1.name)
-  #   |> UI.assert_text(project2.name)
-  # end
+    state
+    |> visit_page()
+    |> UI.click(title: group.name)
+    |> UI.assert_text(project1.name)
+  end
 
   # feature "listing goals in a group", state do
   #   group = create_group("Marketing")

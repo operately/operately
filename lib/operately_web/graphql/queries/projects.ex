@@ -4,11 +4,13 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
   object :project_queries do
     field :projects, list_of(:project) do
       arg :group_id, :id
+      arg :group_member_roles, list_of(:string)
       arg :objective_id, :id
 
       resolve fn _, args, _ ->
         projects = Operately.Projects.list_projects(%{
           group_id: args[:group_id],
+          group_member_roles: args[:group_member_roles],
           objective_id: args[:objective_id]
         })
 
