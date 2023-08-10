@@ -112,11 +112,14 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     end
 
     field :contributors, list_of(:project_contributor) do
-      resolve fn project, _, _ ->
-        contributors = Operately.Projects.list_project_contributors(project)
-        contributors = Operately.Repo.preload(contributors, :person)
+      resolve fn project, _, info ->
+        if Ecto.assoc_loaded?(project.contributors) do
+          {:ok, project.contributors}
+        else
+          project = Operately.Repo.preload(project, contributors: :person)
 
-        {:ok, contributors}
+          {:ok, project.contributors}
+        end
       end
     end
 

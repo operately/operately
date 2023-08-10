@@ -49,6 +49,7 @@ export function Page() {
         <div className="flex flex-col gap-4 mt-8">
           <ProjectsList.Championed group={group} />
           <ProjectsList.Reviewed group={group} />
+          <ProjectsList.Contributed group={group} />
         </div>
       </Paper.Body>
     </Paper.Root>

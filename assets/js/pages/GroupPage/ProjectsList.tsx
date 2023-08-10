@@ -10,7 +10,11 @@ import * as Icons from "@tabler/icons-react";
 import Table from "@/components/Table";
 
 export function Championed({ group }: { group: Groups.Group }) {
-  const { data, loading, error } = Projects.useProjects({ groupId: group.id, groupMemberRoles: ["champion"] });
+  const { data, loading, error } = Projects.useProjects({
+    groupId: group.id,
+    groupMemberRoles: ["champion"],
+    limitContributorsToGroupMembers: true,
+  });
 
   if (error) throw error;
 
@@ -32,7 +36,11 @@ export function Championed({ group }: { group: Groups.Group }) {
 }
 
 export function Reviewed({ group }: { group: Groups.Group }) {
-  const { data, loading, error } = Projects.useProjects({ groupId: group.id, groupMemberRoles: ["reviewer"] });
+  const { data, loading, error } = Projects.useProjects({
+    groupId: group.id,
+    groupMemberRoles: ["reviewer"],
+    limitContributorsToGroupMembers: true,
+  });
 
   if (error) throw error;
 
@@ -53,6 +61,32 @@ export function Reviewed({ group }: { group: Groups.Group }) {
   );
 }
 
+export function Contributed({ group }: { group: Groups.Group }) {
+  const { data, loading, error } = Projects.useProjects({
+    groupId: group.id,
+    groupMemberRoles: ["contributor"],
+    limitContributorsToGroupMembers: true,
+  });
+
+  if (error) throw error;
+
+  return (
+    <ProjectTable
+      title="Contributed Projects"
+      subtitle="Members of this group are contributing to these projects."
+      projects={data?.projects}
+      loading={loading}
+      columns={{ title: true, timeline: true, contributors: true, status: true }}
+      emptyState={
+        <EmptyState
+          title="No contributed projects."
+          subtitle="When members of this group are assigned as contributors to projects, the projects will appear here."
+        />
+      }
+    />
+  );
+}
+
 interface ProjectTableProps {
   title: string;
   subtitle: string;
@@ -65,6 +99,7 @@ interface ProjectTableProps {
     champion?: boolean;
     reviewer?: boolean;
     status?: boolean;
+    contributors?: boolean;
   };
 }
 
@@ -84,6 +119,7 @@ function ProjectTable({ title, subtitle, projects, loading, emptyState, columns 
     { id: "timeline", label: "Timeline", size: "w-36", visible: columns.timeline || false },
     { id: "champion", label: "Champion", size: "w-24", visible: columns.champion || false },
     { id: "reviewer", label: "Reviewer", size: "w-24", visible: columns.reviewer || false },
+    { id: "contributors", label: "Contributors", size: "w-24", visible: columns.contributors || false },
     { id: "status", label: "Status", size: "w-10", visible: columns.status || false },
   ];
 
@@ -96,6 +132,7 @@ function ProjectTable({ title, subtitle, projects, loading, emptyState, columns 
         timeline: <ProjectIcons.Timeline project={p} />,
         champion: <ProjectIcons.Champion person={p.champion} />,
         reviewer: <ProjectIcons.Reviewer person={p.reviewer} />,
+        contributors: <ProjectIcons.Contributors contributors={p.contributors} />,
       },
     };
   });
