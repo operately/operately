@@ -124,6 +124,24 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_text(project1.name)
   end
 
+  feature "listing reviwed projects in a group", state do
+    group = group_fixture(%{name: "Marketing"})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+    project1 = project_fixture(%{name: "Project 1", company_id: state.company.id, creator_id: person.id})
+
+    Operately.Groups.add_member(group, person.id)
+    Operately.Projects.create_contributor(%{
+      project_id: project1.id,
+      person_id: person.id,
+      role: "reviewer"
+    })
+
+    state
+    |> visit_page()
+    |> UI.click(title: group.name)
+    |> UI.assert_text(project1.name)
+  end
+
   # feature "listing goals in a group", state do
   #   group = create_group("Marketing")
 
