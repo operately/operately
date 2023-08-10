@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "@/layouts/header";
 import { LIST_PROJECTS, Project } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
-import Avatar from "@/components/Avatar";
 
 import Button from "@/components/Button";
+import Table from "@/components/Table";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
@@ -52,6 +52,16 @@ export function Page() {
   const [showChampion, setShowChampion] = React.useState(true);
   const [showHealth, setShowHealth] = React.useState(true);
 
+  const headerVisibility = {
+    health: showHealth,
+    phase: showPhase,
+    title: true,
+    nextMilestone: showNextMilestone,
+    startDate: showStartDate,
+    dueDate: showDueDate,
+    champion: showChampion,
+  };
+
   return (
     <Paper.Root size="xxlarge">
       <div className="font-extrabold text-3xl mt-4 mb-8">Projects in {company.name}</div>
@@ -90,132 +100,41 @@ export function Page() {
           </Button>
         </div>
 
-        <ProjectList
-          projects={projects}
-          showNextMilestone={showNextMilestone}
-          showPhase={showPhase}
-          showStartDate={showStartDate}
-          showDueDate={showDueDate}
-          showChampion={showChampion}
-          showHealth={showHealth}
-        />
+        <ProjectList projects={projects} headerVisibility={headerVisibility} />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function ProjectList({ projects, showNextMilestone, showPhase, showStartDate, showDueDate, showChampion, showHealth }) {
-  var columns: { id: String; title: String; size: String; visible: boolean }[] = [];
-
-  columns.push({ id: "Health", title: "", size: "w-3", visible: showHealth });
-  columns.push({ id: "Phase", title: "", size: "w-3", visible: showPhase });
-  columns.push({ id: "Title", title: "Title", size: "flex-1", visible: true });
-  columns.push({ id: "Milestone", title: "Next Milestone", size: "flex-1", visible: showNextMilestone });
-  columns.push({ id: "Start", title: "Start Date", size: "w-24", visible: showStartDate });
-  columns.push({ id: "Due", title: "Due Date", size: "w-24", visible: showDueDate });
-  columns.push({ id: "Champion", title: "Champion", size: "w-24", visible: showChampion });
-
-  return (
-    <div className="flex flex-col">
-      <Headers columns={columns} />
-
-      {projects.map((project) => (
-        <ProjectRow key={project.id} project={project} columns={columns} />
-      ))}
-    </div>
-  );
-}
-
-function Headers({ columns }) {
-  return (
-    <Row className="text-sm text-white-2">
-      {columns
-        .filter((c) => c.visible)
-        .map((column, index) => (
-          <Cell key={index} size={column.size} className="font-bold text-white-1">
-            {column.title}
-          </Cell>
-        ))}
-    </Row>
-  );
-}
-
-function ProjectRow({ project, columns }) {
+function ProjectList({ projects, headerVisibility }: { projects: Project[]; headerVisibility: any }) {
   const navigate = useNavigate();
 
-  return (
-    <Row
-      className="hover:bg-dark-4 cursor-pointer transition-colors"
-      onClick={() => navigate("/projects/" + project.id)}
-    >
-      {columns
-        .filter((c) => c.visible)
-        .map((column, index) => (
-          <ProjectCell key={index} project={project} column={column} />
-        ))}
-    </Row>
-  );
-}
+  const headers = [
+    { id: "health", label: "", size: "w-3", visible: headerVisibility.health },
+    { id: "phase", label: "", size: "w-3", visible: headerVisibility.phase },
+    { id: "title", label: "Title", size: "flex-1", visible: true },
+    { id: "milestone", label: "Next Milestone", size: "flex-1", visible: headerVisibility.nextMilestone },
+    { id: "start", label: "Start Date", size: "w-24", visible: headerVisibility.startDate },
+    { id: "due", label: "Due Date", size: "w-24", visible: headerVisibility.dueDate },
+    { id: "champion", label: "Champion", size: "w-24", visible: headerVisibility.champion },
+  ];
 
-function ProjectCell({ project, column }) {
-  switch (column.id) {
-    case "Phase":
-      return (
-        <Cell size={column.size} className="text-sm capitalize">
-          <ProjectIcons.IconForPhase phase={project.phase} />
-        </Cell>
-      );
-    case "Title":
-      return <Cell size={column.size}>{project.name}</Cell>;
-    case "Milestone":
-      let milestone = <NextMilestone project={project} />;
+  const rows = projects.map((project) => {
+    return {
+      onClick: () => navigate(`/projects/${project.id}`),
+      cells: {
+        health: <ProjectIcons.IconForHealth health={project.health} />,
+        phase: <ProjectIcons.IconForPhase phase={project.phase} />,
+        title: project.name,
+        milestone: <NextMilestone project={project} />,
+        start: <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />,
+        due: <DateOrNotSet date={project.deadline} ifNull="&mdash;" />,
+        champion: <ProjectIcons.Champion person={project.champion} />,
+      },
+    };
+  });
 
-      return <Cell size={column.size}>{milestone}</Cell>;
-    case "Start":
-      let startDate = <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />;
-
-      return <Cell size={column.size}>{startDate}</Cell>;
-    case "Due":
-      let dueDate = <DateOrNotSet date={project.deadline} ifNull="&mdash;" />;
-
-      return <Cell size={column.size}>{dueDate}</Cell>;
-    case "Champion":
-      let avatar = <Avatar person={project.champion} size="tiny" />;
-      let name = project.champion.fullName.split(" ")[0];
-      let champion = (
-        <>
-          {avatar} {name}
-        </>
-      );
-
-      return <Cell size={column.size}>{champion}</Cell>;
-
-    case "Health":
-      return (
-        <Cell size={column.size} className="text-sm capitalize">
-          <ProjectIcons.IconForHealth health={project.health} />
-        </Cell>
-      );
-    default:
-      return <Cell size={column.size}> </Cell>;
-  }
-}
-
-function Row({ children, className = "", onClick }) {
-  return (
-    <div
-      className={
-        "flex items-center justify-between gap-4 first:border-t border-b border-shade-1 py-3 px-6 " + className
-      }
-      onClick={onClick || (() => null)}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Cell({ children, size, className = "" }) {
-  return <div className={"flex items-center gap-2 shrink-0" + " " + size + " " + className}>{children}</div>;
+  return <Table headers={headers} rows={rows} />;
 }
 
 function NextMilestone({ project }) {

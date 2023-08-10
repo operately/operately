@@ -30,7 +30,7 @@ export function Page() {
   useDocumentTitle(group.name);
 
   return (
-    <Paper.Root>
+    <Paper.Root size="large">
       <Paper.Navigation>
         <Paper.NavItem linkTo={`/groups`}>
           <Icons.IconUsers size={16} stroke={3} />
@@ -45,7 +45,10 @@ export function Page() {
         </div>
 
         <MemberList group={group} />
-        <OwnedProjects group={group} />
+
+        <div className="flex flex-col gap-4 mt-8">
+          <OwnedProjects group={group} />
+        </div>
       </Paper.Body>
     </Paper.Root>
   );

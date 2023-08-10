@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
 
 export function IconForPhase({ phase }): JSX.Element {
   switch (phase) {
@@ -129,10 +130,26 @@ export function IconCanceled() {
 }
 
 export function Champion({ person }): JSX.Element {
+  const avatar = <Avatar person={person} size="tiny" />;
+  const name = person.fullName.split(" ")[0];
+
   return (
     <div className="flex items-center gap-2">
-      <Avatar person={person} />
-      <div className="text-white-1">{person.fullName.split(" ")[0]}</div>
+      {avatar}
+      {name}
+    </div>
+  );
+}
+
+export function Timeline({ project }): JSX.Element {
+  const startedAt = project.startedAt;
+  const deadline = project.deadline;
+
+  return (
+    <div className="text-sm flex items-center gap-2">
+      {startedAt ? <FormattedTime time={startedAt} format="short-date" /> : "Start"}
+      <div>-&gt;</div>
+      {deadline ? <FormattedTime time={deadline} format="short-date" /> : "Due Date"}
     </div>
   );
 }
