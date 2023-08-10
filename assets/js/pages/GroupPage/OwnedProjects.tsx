@@ -56,7 +56,7 @@ function ProjectTable({ projects }: { projects: Projects.Project[] }) {
 
   const headers = [
     { id: "title", label: "Title", size: "flex-1" },
-    { id: "timeline", label: "Timeline", size: "w-32" },
+    { id: "timeline", label: "Timeline", size: "w-40" },
     { id: "champion", label: "Champion", size: "w-20" },
     { id: "status", label: "Status", size: "w-10" },
   ];
