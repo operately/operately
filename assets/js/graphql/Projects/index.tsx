@@ -32,6 +32,13 @@ export const LIST_PROJECTS = gql`
         avatarUrl
         title
       }
+
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
     }
   }
 `;
@@ -118,6 +125,7 @@ export interface Project {
   parents: Parent[];
   contributors: Contributor[];
   champion?: Person;
+  reviewer?: Person;
 
   pitch: Document;
   plan: Document;
