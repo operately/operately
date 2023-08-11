@@ -2,77 +2,93 @@ import React from "react";
 
 import { useNavigate } from "react-router-dom";
 import RichContent from "@/components/RichContent";
+import * as Icons from "@tabler/icons-react";
 
-import Truncate from "@/components/Truncate";
+import { Truncate, useIsClamped } from "@/components/Truncate";
+
+const CondensedLineCount = 4;
+const ExpandedLineCount = 100;
+const isCondensed = (lines: number) => lines === CondensedLineCount;
+const toggle = (lines: number) => (lines === CondensedLineCount ? ExpandedLineCount : CondensedLineCount);
 
 export default function Description({ me, project }) {
   const navigate = useNavigate();
+  const editLink = () => navigate("/projects/" + project.id + "/description/edit");
 
-  const [lines, setLines] = React.useState(3);
+  const [lines, setLines] = React.useState(CondensedLineCount);
+  const toggleLines = () => setLines(toggle);
 
-  const toggleLines = () => {
-    if (lines === 3) {
-      setLines(100);
-    } else {
-      setLines(3);
-    }
-  };
+  const ref = React.useRef<HTMLDivElement>(null);
+  const isClamped = useIsClamped(ref);
 
+  return (
+    <div className="flex flex-col gap-1 mb-8 border-y border-dark-5 py-4 relative">
+      <div className="font-bold flex justify-between items-center">
+        About
+        <EditButton me={me} project={project} onClick={editLink} />
+      </div>
+
+      <div className="font-medium">
+        <Truncate lines={lines} ref={ref}>
+          <Body project={project} me={me} editLink={editLink} />
+        </Truncate>
+
+        {isClamped && <ToggleHeight lines={lines} toggleLines={toggleLines} />}
+      </div>
+    </div>
+  );
+}
+
+function Body({ project, me, editLink }) {
   if (project.description) {
-    return (
-      <div className="flex flex-col gap-1 mb-8">
-        <div className="text-xl font-medium">
-          <Truncate lines={lines}>
-            <RichContent jsonContent={project.description} />
-          </Truncate>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <ActionLink variant="secondary" onClick={() => navigate("/projects/" + project.id + "/description/edit")}>
-            Edit
-          </ActionLink>
-
-          <ActionLink variant="secondary" onClick={toggleLines}>
-            {lines === 3 ? "Show Full" : "Collapse"}
-          </ActionLink>
-        </div>
-      </div>
-    );
+    return <RichContent jsonContent={project.description} />;
   } else {
-    return (
-      <div className="mb-4">
-        <div className="font-bold">Description</div>
-
-        <WriteDescription me={me} project={project} />
-      </div>
-    );
+    return <EmptyDesctipion me={me} project={project} editLink={editLink} />;
   }
 }
 
-function WriteDescription({ me, project }) {
-  let navigate = useNavigate();
-
-  if (project.champion.id !== me.id) {
-    return <div className="text-white-2">No description.</div>;
+function EmptyDesctipion({ me, project, editLink }) {
+  if (me.id === project.champion.id) {
+    return <ActionLink onClick={editLink}>Write description...</ActionLink>;
+  } else {
+    return <span className="text-white-2">No description.</span>;
   }
+}
 
+function ToggleHeight({ lines, toggleLines }) {
   return (
-    <ActionLink onClick={() => navigate("/projects/" + project.id + "/description/edit")}>
-      Write description...
-    </ActionLink>
+    <div className="flex justify-center mt-2 absolute left-0 right-0 -bottom-2 text-white-2">
+      <div className="bg-dark-5 px-4 rounded-lg hover:px-6 transition-all cursor-pointer" onClick={toggleLines}>
+        {isCondensed(lines) ? <Icons.IconChevronDown size={16} /> : <Icons.IconChevronUp size={16} />}
+      </div>
+    </div>
   );
+}
+
+function EditButton({ me, project, onClick }) {
+  if (me.id === project.champion.id) {
+    return (
+      <div className="cursor-pointer hover:text-white-1 transition-all text-white-2" onClick={onClick}>
+        <Icons.IconEdit size={18} />
+      </div>
+    );
+  } else {
+    return null;
+  }
 }
 
 function ActionLink({ onClick, children, variant = "primary" }) {
   const variants = {
-    primary: "text-blue-400/80 hover:text-blue-400",
+    primary: "text-blue-400/90 hover:text-blue-400",
     secondary: "text-white-1/80 hover:text-white",
   };
 
   return (
     <a
       className={
-        variants[variant] + " " + "font-medium cursor-pointer underline underline-offset-2 flex items-center gap-1"
+        variants[variant] +
+        " " +
+        "font-medium cursor-pointer underline underline-offset-2 inline-flex items-center gap-1"
       }
       onClick={onClick}
     >
