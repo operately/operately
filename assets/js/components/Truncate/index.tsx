@@ -29,8 +29,6 @@ export function useIsClamped(ref: React.RefObject<HTMLDivElement>) {
   React.useEffect(() => {
     if (!ref.current) return setIsClamped(false);
 
-    console.log(ref.current.scrollHeight, ref.current.clientHeight);
-
     setIsClamped(ref.current.scrollHeight > ref.current.clientHeight);
   }, [ref]);
 

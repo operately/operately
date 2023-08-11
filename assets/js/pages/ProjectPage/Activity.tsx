@@ -93,6 +93,8 @@ function ActivityItemProjectCreated({ activity }: { activity: Activities.Activit
   const eventData = activity.eventData as Activities.ProjectCreateEventData;
   const champion = eventData.champion;
 
+  if (!champion) return null;
+
   const creatorIsChampion = activity.person.id === champion.id;
 
   const who = creatorIsChampion ? (

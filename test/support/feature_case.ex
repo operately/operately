@@ -49,6 +49,12 @@ defmodule Operately.FeatureCase do
       session(session) |> Browser.visit(path)
     end
 
+    def get_account() do
+      Operately.People.Account
+      |> Operately.Repo.get_by(email: "john@johnson.com")
+      |> Operately.Repo.preload(:person)
+    end
+
     def click(state, opts) do
       {session, opts} = Keyword.pop(opts, :in)
       context = session || session(state)
