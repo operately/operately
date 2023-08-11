@@ -2,7 +2,6 @@ import React from "react";
 
 import { useNavigate } from "react-router-dom";
 import RichContent from "@/components/RichContent";
-import * as Icons from "@tabler/icons-react";
 
 import Truncate from "@/components/Truncate";
 

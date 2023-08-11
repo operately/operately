@@ -37,11 +37,9 @@ function ProjectName({ project }) {
 function projectNameTextSize(project: Project) {
   if (project.name.length > 40) {
     return "text-3xl";
-  }
-  if (project.name.length > 30) {
+  } else {
     return "text-4xl";
   }
-  return "text-5xl";
 }
 
 function ContributorList({ project }) {
