@@ -1,8 +1,15 @@
 import React from "react";
 
-export default function Truncate({ lines, children }) {
+interface TruncateProps {
+  lines: number;
+  children: React.ReactNode;
+}
+
+export const Truncate = React.forwardRef<HTMLDivElement, TruncateProps>((props, ref) => {
+  const { lines, children } = props;
   return (
     <div
+      ref={ref}
       style={{
         WebkitBoxOrient: "vertical",
         WebkitLineClamp: lines,
@@ -14,4 +21,16 @@ export default function Truncate({ lines, children }) {
       {children}
     </div>
   );
+});
+
+export function useIsClamped(ref: React.RefObject<HTMLDivElement>) {
+  const [isClamped, setIsClamped] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!ref.current) return setIsClamped(false);
+
+    setIsClamped(ref.current.scrollHeight > ref.current.clientHeight);
+  }, [ref]);
+
+  return isClamped;
 }

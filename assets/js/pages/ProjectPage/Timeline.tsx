@@ -23,7 +23,7 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
-      <div className="flex items-start gap-4 mb-4">
+      <div className="flex items-start gap-4 py-4 border-t border-dark-5">
         <Phase />
         <Dates />
         <Health />
