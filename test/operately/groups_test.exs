@@ -40,7 +40,7 @@ defmodule Operately.GroupsTest do
     end
 
     test "create_group/1 with valid data creates a group" do
-      valid_attrs = %{name: "some name"}
+      valid_attrs = %{name: "some name", mission: "some mission"}
 
       assert {:ok, %Group{} = group} = Groups.create_group(valid_attrs)
       assert group.name == "some name"

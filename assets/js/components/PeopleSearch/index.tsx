@@ -24,7 +24,7 @@ interface PeopleSearchProps {
   placeholder: string;
   alreadySelected?: string[];
   defaultValue?: Person;
-  value?: Person | null;
+  value?: Person | undefined;
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
@@ -46,7 +46,7 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       defaultOptions
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
-      value={props.value || null}
+      value={props.value}
       classNames={classNames()}
     />
   );

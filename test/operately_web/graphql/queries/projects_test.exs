@@ -17,8 +17,8 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
   end
 
   @projects_query """
-  query projects($groupId: ID, $groupMemberRoles: [String!], $limitContributorsToGroupMembers: Boolean, $objectiveId: ID) {
-    projects(groupId: $groupId, groupMemberRoles: $groupMemberRoles, limitContributorsToGroupMembers: $limitContributorsToGroupMembers, objectiveId: $objectiveId) {
+  query projects($filters: ProjectListFilters!) {
+    projects(filters: $filters) {
       id
       contributors {
         person {

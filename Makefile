@@ -140,9 +140,11 @@ test:
 	elif [[ "$(FILE)" == test/* ]]; then \
 		$(MAKE) test.mix FILE=$(FILE); \
 	else \
-		$(MAKE) test.mix; \
-		$(MAKE) test.npm; \
+		$(MAKE) test.all; \
 	fi
+
+test.all:
+	$(MAKE) test.mix && $(MAKE) test.npm
 
 test.mix:
 	$(TEST_CONTAINER) mix test $(FILE)
