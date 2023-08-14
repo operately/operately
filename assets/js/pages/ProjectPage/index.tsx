@@ -12,6 +12,7 @@ import Description from "./Description";
 import MessageBoardCard from "./MessageBoardCard";
 import MilestonesCard from "./MilestonesCard";
 import Sidebar from "./Sidebar";
+import KeyResources from "./KeyResources";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -68,6 +69,7 @@ export function Page() {
         <Header project={project} />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Description me={me} project={project} />
+        <KeyResources editable={championOfProject} project={project} />
         <Tools project={project} />
         <Activity projectId={project.id} />
       </Paper.Body>
