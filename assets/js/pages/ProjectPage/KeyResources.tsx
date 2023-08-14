@@ -75,7 +75,7 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <div className="text-white-2 hover:text-white-1">
+        <div className="text-white-2 hover:text-white-1" data-test-id="key-resource-options">
           <Icons.IconDotsVertical size={16} />
         </div>
       </Popover.Trigger>
@@ -86,6 +86,7 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
             <div
               className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer hover:text-red-400"
               onClick={handleRemove}
+              data-test-id="remove-key-resource"
             >
               <Icons.IconTrash size={16} className="text-red-400/70" />
               Remove
