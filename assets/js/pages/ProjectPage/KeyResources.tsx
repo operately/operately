@@ -1,10 +1,11 @@
 import React from "react";
 
-import { KeyResource, useAddKeyResourceMutation } from "@/graphql/Projects/key_resources";
+import { KeyResource, useAddKeyResourceMutation, useRemoveKeyResourceMutation } from "@/graphql/Projects/key_resources";
 
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/graphql/Projects";
 import * as Forms from "@/components/Form";
+import * as Popover from "@/components/Popover";
 
 import Modal from "@/components/Modal";
 
@@ -22,18 +23,18 @@ export default function KeyResources({ project, editable, refetch }: Props): JSX
         {editable && <AddResource project={project} refetch={refetch} />}
       </div>
 
-      <Body project={project} />
+      <Body project={project} refetch={refetch} editable={editable} />
     </div>
   );
 }
 
-function Body({ project }: { project: Projects.Project }): JSX.Element {
+function Body({ project, refetch, editable }: Props): JSX.Element {
   if (project.keyResources.length === 0) return <EmptyState />;
 
   return (
     <div className="flex flex-wrap gap-2 mt-1">
       {project.keyResources.map((kr) => (
-        <Link resource={kr} key={kr.id} />
+        <Link resource={kr} key={kr.id} refetch={refetch} editable={editable} />
       ))}
     </div>
   );
@@ -43,16 +44,57 @@ function EmptyState() {
   return <div className="text-white-2">No key resources.</div>;
 }
 
-function Link({ resource }: { resource: KeyResource }): JSX.Element {
+function Link({ resource, refetch, editable }: { resource: KeyResource; refetch: () => void; editable: boolean }) {
   return (
-    <a
-      href={resource.link}
-      target="_blank"
-      className="font-medium bg-shade-1 px-3 py-2 flex items-center gap-2 rounded-lg cursor-pointer text-sm"
-    >
-      <LinkIcon type={resource.type} />
-      {resource.title}
-    </a>
+    <div className="font-medium bg-shade-1 pl-3 pr-2 py-2 flex items-center gap-2 rounded-lg cursor-pointer text-sm">
+      <a href={resource.link} target="_blank" className="flex items-center gap-2">
+        <LinkIcon type={resource.type} />
+        {resource.title}
+      </a>
+
+      {editable && <LinkOptions resource={resource} refetch={refetch} />}
+    </div>
+  );
+}
+
+function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: () => void }) {
+  const [remove] = useRemoveKeyResourceMutation({
+    onCompleted: () => {
+      refetch();
+    },
+  });
+
+  const handleRemove = async () => {
+    await remove({
+      variables: {
+        id: resource.id,
+      },
+    });
+  };
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <div className="text-white-2 hover:text-white-1" data-test-id="key-resource-options">
+          <Icons.IconDotsVertical size={16} />
+        </div>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className="outline-none">
+          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 text-sm">
+            <div
+              className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer hover:text-red-400"
+              onClick={handleRemove}
+              data-test-id="remove-key-resource"
+            >
+              <Icons.IconTrash size={16} className="text-red-400/70" />
+              Remove
+            </div>
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 

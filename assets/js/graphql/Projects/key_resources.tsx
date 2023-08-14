@@ -30,3 +30,15 @@ export const ADD_KEY_RESOURCE = gql`
 export function useAddKeyResourceMutation(options = {}) {
   return useMutation(ADD_KEY_RESOURCE, options);
 }
+
+export const REMOVE_KEY_RESOURCE = gql`
+  mutation RemoveKeyResource($id: ID!) {
+    removeKeyResource(id: $id) {
+      id
+    }
+  }
+`;
+
+export function useRemoveKeyResourceMutation(options = {}) {
+  return useMutation(REMOVE_KEY_RESOURCE, options);
+}
