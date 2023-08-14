@@ -86,6 +86,17 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("Code Repository"))
   end
 
+  feature "removing key resources from a project", state do
+    add_key_resource(state.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
+
+    state
+    |> visit_show(state.project)
+    |> assert_has(Query.text("Code Repository"))
+    |> UI.click(testid: "key-resource-options")
+    |> UI.click(testid: "remove-key-resource")
+    |> refute_has(Query.text("Code Repository"))
+  end
+
   # feature "creating a new project", state do
   #   project = "Live support"
 
