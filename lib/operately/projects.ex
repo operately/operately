@@ -259,96 +259,28 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.KeyResource
 
-  @doc """
-  Returns the list of project_key_resources.
-
-  ## Examples
-
-      iex> list_project_key_resources()
-      [%KeyResource{}, ...]
-
-  """
-  def list_project_key_resources do
-    Repo.all(KeyResource)
+  def list_key_resources(project) do
+    Operately.Repo.preload(project, :key_resources).key_resources
   end
 
-  @doc """
-  Gets a single key_resource.
-
-  Raises `Ecto.NoResultsError` if the Key resource does not exist.
-
-  ## Examples
-
-      iex> get_key_resource!(123)
-      %KeyResource{}
-
-      iex> get_key_resource!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_key_resource!(id), do: Repo.get!(KeyResource, id)
 
-  @doc """
-  Creates a key_resource.
-
-  ## Examples
-
-      iex> create_key_resource(%{field: value})
-      {:ok, %KeyResource{}}
-
-      iex> create_key_resource(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_key_resource(attrs \\ %{}) do
     %KeyResource{}
     |> KeyResource.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a key_resource.
-
-  ## Examples
-
-      iex> update_key_resource(key_resource, %{field: new_value})
-      {:ok, %KeyResource{}}
-
-      iex> update_key_resource(key_resource, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_key_resource(%KeyResource{} = key_resource, attrs) do
     key_resource
     |> KeyResource.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a key_resource.
-
-  ## Examples
-
-      iex> delete_key_resource(key_resource)
-      {:ok, %KeyResource{}}
-
-      iex> delete_key_resource(key_resource)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_key_resource(%KeyResource{} = key_resource) do
     Repo.delete(key_resource)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking key_resource changes.
-
-  ## Examples
-
-      iex> change_key_resource(key_resource)
-      %Ecto.Changeset{data: %KeyResource{}}
-
-  """
   def change_key_resource(%KeyResource{} = key_resource, attrs \\ %{}) do
     KeyResource.changeset(key_resource, attrs)
   end
