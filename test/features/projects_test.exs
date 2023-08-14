@@ -65,6 +65,17 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("TEXT END MARKER"))
   end
 
+  feature "listing key resources", state do
+    add_key_resource(state.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
+    add_key_resource(state.project, %{title: "Website", link: "https://operately.com", type: "generic"})
+
+    state
+    |> visit_show(state.project)
+    |> assert_has(Query.text("Key Resources"))
+    |> assert_has(Query.text("Code Repository"))
+    |> assert_has(Query.text("Website"))
+  end
+
   feature "adding key resources to a project", state do
     state
     |> visit_show(state.project)
@@ -108,6 +119,10 @@ defmodule Operately.Features.ProjectsTest do
 
   def click_save(state) do
     click(state, Query.button("Save"))
+  end
+
+  def add_key_resource(project, attrs) do
+    {:ok, _} = Operately.Projects.create_key_resource(%{project_id: project.id} |> Map.merge(attrs))
   end
 
   # def click_new_project(state) do

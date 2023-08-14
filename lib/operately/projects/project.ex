@@ -11,6 +11,7 @@ defmodule Operately.Projects.Project do
     belongs_to :objective, Operately.Okrs.Objective, foreign_key: :objective_id
 
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
+    has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
 
     field :description, :map
     field :name, :string
