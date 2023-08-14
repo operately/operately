@@ -1,8 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Modal from "./Modal";
-
+import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
 

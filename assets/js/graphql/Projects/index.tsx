@@ -1,9 +1,10 @@
 import React from "react";
 import { gql, useQuery, useMutation, useApolloClient, ApolloClient, QueryResult } from "@apollo/client";
 
-import { Milestone } from "./milestones";
 import * as fragments from "@/graphql/Fragments";
 import * as Updates from "./updates";
+import * as KeyResources from "./key_resources";
+import * as Milestones from "./milestones";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -16,6 +17,7 @@ export const LIST_PROJECTS = gql`
       deadline
 
       contributors ${fragments.CONTRIBUTOR}
+      keyResources ${KeyResources.GQL_FRAGMENT}
 
       phase
       health
@@ -122,7 +124,7 @@ export interface Project {
   phase: ProjectPhase;
   health: ProjectHealth;
 
-  milestones: Milestone[];
+  milestones: Milestones.Milestone[];
   parents: Parent[];
   contributors: Contributor[];
   champion?: Person;
@@ -134,6 +136,7 @@ export interface Project {
   retrospective: Document;
 
   updates: Update[];
+  keyResources: KeyResources.KeyResource[];
 
   isPinned: boolean;
 }
@@ -150,6 +153,8 @@ export const GET_PROJECT = gql`
       phase
       health
       isPinned
+
+      keyResources ${KeyResources.GQL_FRAGMENT}
 
       milestones {
         id

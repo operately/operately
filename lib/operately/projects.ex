@@ -256,4 +256,32 @@ defmodule Operately.Projects do
 
     NaiveDateTime.new!(date, ~T[09:00:00])
   end
+
+  alias Operately.Projects.KeyResource
+
+  def list_key_resources(project) do
+    Operately.Repo.preload(project, :key_resources).key_resources
+  end
+
+  def get_key_resource!(id), do: Repo.get!(KeyResource, id)
+
+  def create_key_resource(attrs \\ %{}) do
+    %KeyResource{}
+    |> KeyResource.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_key_resource(%KeyResource{} = key_resource, attrs) do
+    key_resource
+    |> KeyResource.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_key_resource(%KeyResource{} = key_resource) do
+    Repo.delete(key_resource)
+  end
+
+  def change_key_resource(%KeyResource{} = key_resource, attrs \\ %{}) do
+    KeyResource.changeset(key_resource, attrs)
+  end
 end
