@@ -1,6 +1,13 @@
 defmodule OperatelyWeb.GraphQL.Mutations.Projects do
   use Absinthe.Schema.Notation
 
+  input_object :add_key_resource_input do
+    field :project_id, non_null(:id)
+    field :type, non_null(:string)
+    field :title, non_null(:string)
+    field :link, non_null(:string)
+  end
+
   object :project_mutations do
     field :create_project, non_null(:project) do
       arg :name, non_null(:string)
@@ -29,6 +36,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
           project
         end)
+      end
+    end
+
+    field :add_key_resource, non_null(:project_key_resource) do
+      arg :input, non_null(:add_key_resource_input)
+
+      resolve fn args, _ ->
+        Operately.Projects.create_key_resource(args.input)
       end
     end
 

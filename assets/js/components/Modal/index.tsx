@@ -2,11 +2,11 @@ import React from "react";
 import ReactModal from "react-modal";
 import * as Icons from "@tabler/icons-react";
 
-export default function Modal({ isOpen, hideModal, title, children }) {
+export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px" }) {
   return (
     <ReactModal
       isOpen={isOpen}
-      contentLabel="Add Members Modal"
+      contentLabel={title}
       ariaHideApp={false}
       style={{
         overlay: {
@@ -25,10 +25,10 @@ export default function Modal({ isOpen, hideModal, title, children }) {
           height: "auto",
           marginTop: "150px",
           marginLeft: "-300px",
-          borderRadius: "8px",
+          borderRadius: "4px",
           overflow: "scroll-y",
           bottom: "auto",
-          minHeight: "600px",
+          minHeight: minHeight,
           backgroundColor: "var(--color-dark-2)",
           border: "1px solid var(--color-dark-3)",
           boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
@@ -38,8 +38,8 @@ export default function Modal({ isOpen, hideModal, title, children }) {
       <div className="flex items-center justify-between mb-4">
         <h1 className="font-bold">{title}</h1>
 
-        <div className="hover:cursor-pointer text-white-3 hover:text-white-1 transition-colors" onClick={hideModal}>
-          <Icons.IconX size={24} />
+        <div className="hover:cursor-pointer text-dark-8 hover:text-white-1 transition-colors" onClick={hideModal}>
+          <Icons.IconX size={20} />
         </div>
       </div>
 

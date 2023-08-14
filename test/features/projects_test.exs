@@ -80,12 +80,9 @@ defmodule Operately.Features.ProjectsTest do
     state
     |> visit_show(state.project)
     |> UI.click(testid: "add-key-resource")
-    |> UI.fill("Name", with: "Code Repository")
-    |> UI.fill("URL", with: "github.com/operately/operately")
+    |> UI.fill("Title", with: "Code Repository")
+    |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save-key-resource")
-
-    state
-    |> visit_show(state.project)
     |> assert_has(Query.text("Code Repository"))
   end
 

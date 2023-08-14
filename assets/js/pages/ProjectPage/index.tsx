@@ -69,7 +69,7 @@ export function Page() {
         <Header project={project} />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Description me={me} project={project} />
-        <KeyResources editable={championOfProject} project={project} />
+        <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         <Tools project={project} />
         <Activity projectId={project.id} />
       </Paper.Body>
