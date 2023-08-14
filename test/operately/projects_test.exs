@@ -251,4 +251,62 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_document(ctx.document)
     end
   end
+
+  describe "project_key_resources" do
+    alias Operately.Projects.KeyResource
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{link: nil, title: nil, type: nil}
+
+    test "list_project_key_resources/0 returns all project_key_resources" do
+      key_resource = key_resource_fixture()
+      assert Projects.list_project_key_resources() == [key_resource]
+    end
+
+    test "get_key_resource!/1 returns the key_resource with given id" do
+      key_resource = key_resource_fixture()
+      assert Projects.get_key_resource!(key_resource.id) == key_resource
+    end
+
+    test "create_key_resource/1 with valid data creates a key_resource" do
+      valid_attrs = %{link: "some link", title: "some title", type: :github}
+
+      assert {:ok, %KeyResource{} = key_resource} = Projects.create_key_resource(valid_attrs)
+      assert key_resource.link == "some link"
+      assert key_resource.title == "some title"
+      assert key_resource.type == :github
+    end
+
+    test "create_key_resource/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_key_resource(@invalid_attrs)
+    end
+
+    test "update_key_resource/2 with valid data updates the key_resource" do
+      key_resource = key_resource_fixture()
+      update_attrs = %{link: "some updated link", title: "some updated title", type: :generic}
+
+      assert {:ok, %KeyResource{} = key_resource} = Projects.update_key_resource(key_resource, update_attrs)
+      assert key_resource.link == "some updated link"
+      assert key_resource.title == "some updated title"
+      assert key_resource.type == :generic
+    end
+
+    test "update_key_resource/2 with invalid data returns error changeset" do
+      key_resource = key_resource_fixture()
+      assert {:error, %Ecto.Changeset{}} = Projects.update_key_resource(key_resource, @invalid_attrs)
+      assert key_resource == Projects.get_key_resource!(key_resource.id)
+    end
+
+    test "delete_key_resource/1 deletes the key_resource" do
+      key_resource = key_resource_fixture()
+      assert {:ok, %KeyResource{}} = Projects.delete_key_resource(key_resource)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_key_resource!(key_resource.id) end
+    end
+
+    test "change_key_resource/1 returns a key_resource changeset" do
+      key_resource = key_resource_fixture()
+      assert %Ecto.Changeset{} = Projects.change_key_resource(key_resource)
+    end
+  end
 end

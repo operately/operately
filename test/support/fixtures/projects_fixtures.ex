@@ -61,4 +61,20 @@ defmodule Operately.ProjectsFixtures do
 
     document
   end
+
+  @doc """
+  Generate a key_resource.
+  """
+  def key_resource_fixture(attrs \\ %{}) do
+    {:ok, key_resource} =
+      attrs
+      |> Enum.into(%{
+        link: "some link",
+        title: "some title",
+        type: :github
+      })
+      |> Operately.Projects.create_key_resource()
+
+    key_resource
+  end
 end
