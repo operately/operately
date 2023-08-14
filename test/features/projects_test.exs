@@ -65,6 +65,18 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("TEXT END MARKER"))
   end
 
+  feature "adding key resources to a project", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "add-key-resource")
+    |> UI.fill("Name", with: "Code Repository")
+    |> UI.fill("URL", with: "github.com/operately/operately")
+    |> UI.click(testid: "save-key-resource")
+
+    state
+    |> visit_show(state.project)
+    |> assert_has(Query.text("Code Repository"))
+  end
 
   # feature "creating a new project", state do
   #   project = "Live support"
