@@ -47,6 +47,15 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    field :remove_key_resource, non_null(:project_key_resource) do
+      arg :id, non_null(:id)
+
+      resolve fn args, _ ->
+        resource = Operately.Projects.get_key_resource!(args.id)
+        Operately.Projects.delete_key_resource(resource)
+      end
+    end
+
     field :update_project_description, non_null(:project) do
       arg :project_id, non_null(:id)
       arg :description, :string
