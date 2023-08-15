@@ -53,8 +53,12 @@ function Link({ resource, refetch, editable }: { resource: KeyResource; refetch:
   const href = resource.link.startsWith("http") ? resource.link : `https://${resource.link}`;
 
   return (
-    <div className="font-medium bg-shade-1 pl-3 pr-2 py-2 flex items-center gap-2 rounded-lg cursor-pointer text-sm">
-      <a href={href} target="_blank" className="flex items-center gap-2">
+    <div className="font-medium bg-shade-1 flex items-center rounded-lg cursor-pointer text-sm overflow-hidden">
+      <a
+        href={href}
+        target="_blank"
+        className="flex items-center gap-2 hover:bg-shade-1 pl-3 pr-2 py-2 transition-colors"
+      >
         <LinkIcon resource={resource} />
         {resource.title}
       </a>
@@ -76,7 +80,7 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
   return (
     <Popover.Root open={popoverOpen} onOpenChange={changePopoverOpen}>
       <Popover.Trigger asChild>
-        <div className="text-white-2 hover:text-white-1" data-test-id="key-resource-options">
+        <div className="text-white-2 hover:bg-shade-1 pr-1 pl-1 py-2" data-test-id="key-resource-options">
           <Icons.IconDotsVertical size={16} />
         </div>
       </Popover.Trigger>
@@ -103,7 +107,7 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
 function EditResourceLinkOption({ onClick }) {
   return (
     <div
-      className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer"
+      className="flex gap-1.5 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer"
       onClick={onClick}
       data-test-id="edit-key-resource"
     >
@@ -130,7 +134,7 @@ function RemoveResource({ resource, refetch }) {
 
   return (
     <div
-      className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer hover:text-red-400"
+      className="flex gap-1.5 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer hover:text-red-400"
       onClick={handleRemove}
       data-test-id="remove-key-resource"
     >
