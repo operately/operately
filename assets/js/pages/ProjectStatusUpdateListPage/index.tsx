@@ -85,7 +85,11 @@ interface StatusUpdateProps {
 
 function StatusUpdateItem({ linkTo, update }: StatusUpdateProps) {
   return (
-    <Link to={linkTo} className="border-t border-shade-2 flex items-start justify-between hover:bg-shade-1 py-3 px-1">
+    <Link
+      to={linkTo}
+      className="border-t border-shade-2 flex items-start justify-between hover:bg-shade-1 py-3 px-1"
+      data-test-id="status-update"
+    >
       <div className="flex items-start gap-4">
         <div className="shrink-0 mt-1 ml-1">
           <Avatar person={update.author} />

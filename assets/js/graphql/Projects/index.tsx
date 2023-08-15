@@ -254,7 +254,7 @@ export function usePostCommentMutation(updateId: string) {
     {
       refetchQueries: [
         {
-          query: GET_STATUS_UPDATE,
+          query: Updates.GET_STATUS_UPDATE,
           variables: { id: updateId },
         },
       ],
@@ -273,7 +273,6 @@ export function usePostCommentMutation(updateId: string) {
   };
 
   return [createComment, status] as const;
-  return [post, status] as const;
 }
 
 export function usePostDocument(projectId: string, type: string, options?: any) {

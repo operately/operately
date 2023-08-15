@@ -124,7 +124,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     end
 
     field :contributors, list_of(:project_contributor) do
-      resolve fn project, _, info ->
+      resolve fn project, _, _info ->
         if Ecto.assoc_loaded?(project.contributors) do
           {:ok, project.contributors}
         else
