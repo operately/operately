@@ -1,6 +1,11 @@
 import React from "react";
 
-import { KeyResource, useAddKeyResourceMutation, useRemoveKeyResourceMutation } from "@/graphql/Projects/key_resources";
+import {
+  KeyResource,
+  useAddKeyResourceMutation,
+  useEditKeyResourceMutation,
+  useRemoveKeyResourceMutation,
+} from "@/graphql/Projects/key_resources";
 
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/graphql/Projects";
@@ -58,6 +63,55 @@ function Link({ resource, refetch, editable }: { resource: KeyResource; refetch:
 }
 
 function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: () => void }) {
+  const [popoverOpen, changePopoverOpen] = React.useState(false);
+  const [editModalOpen, changeEditModalOpen] = React.useState(false);
+
+  const handleEdit = () => {
+    changePopoverOpen(false);
+    changeEditModalOpen(true);
+  };
+
+  return (
+    <Popover.Root open={popoverOpen} onOpenChange={changePopoverOpen}>
+      <Popover.Trigger asChild>
+        <div className="text-white-2 hover:text-white-1" data-test-id="key-resource-options">
+          <Icons.IconDotsVertical size={16} />
+        </div>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className="outline-none">
+          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 text-sm">
+            <EditResourceLinkOption onClick={handleEdit} />
+            <RemoveResource resource={resource} refetch={refetch} />
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+
+      <EditResourceModal
+        resource={resource}
+        refetch={refetch}
+        isOpen={editModalOpen}
+        close={() => changeEditModalOpen(false)}
+      />
+    </Popover.Root>
+  );
+}
+
+function EditResourceLinkOption({ onClick }) {
+  return (
+    <div
+      className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer"
+      onClick={onClick}
+      data-test-id="edit-key-resource"
+    >
+      <Icons.IconPencil size={16} className="text-white-1" />
+      Edit
+    </div>
+  );
+}
+
+function RemoveResource({ resource, refetch }) {
   const [remove] = useRemoveKeyResourceMutation({
     onCompleted: () => {
       refetch();
@@ -73,28 +127,57 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
   };
 
   return (
-    <Popover.Root>
-      <Popover.Trigger asChild>
-        <div className="text-white-2 hover:text-white-1" data-test-id="key-resource-options">
-          <Icons.IconDotsVertical size={16} />
-        </div>
-      </Popover.Trigger>
+    <div
+      className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer hover:text-red-400"
+      onClick={handleRemove}
+      data-test-id="remove-key-resource"
+    >
+      <Icons.IconTrash size={16} className="text-red-400/70" />
+      Remove
+    </div>
+  );
+}
 
-      <Popover.Portal>
-        <Popover.Content className="outline-none">
-          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 text-sm">
-            <div
-              className="flex gap-1 items-center rounded px-1.5 py-0.5 hover:bg-white-1/[3%] cursor-pointer hover:text-red-400"
-              onClick={handleRemove}
-              data-test-id="remove-key-resource"
-            >
-              <Icons.IconTrash size={16} className="text-red-400/70" />
-              Remove
-            </div>
-          </div>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+function EditResourceModal({ resource, refetch, isOpen, close }) {
+  const [title, setTitle] = React.useState(resource.title);
+  const [link, setLink] = React.useState(resource.link);
+
+  const [edit, { loading }] = useEditKeyResourceMutation({
+    onCompleted: () => {
+      setTitle("");
+      setLink("");
+      refetch();
+      close();
+    },
+  });
+
+  const handleSubmit = () => {
+    edit({
+      variables: {
+        input: {
+          id: resource.id,
+          title,
+          link,
+          type: "generic",
+        },
+      },
+    });
+  };
+
+  return (
+    <>
+      <Modal title={"Edit Key Resource"} isOpen={isOpen} hideModal={close} minHeight="200px">
+        <KeyResourcesForm
+          title={title}
+          setTitle={setTitle}
+          link={link}
+          setLink={setLink}
+          onSubmit={handleSubmit}
+          loading={loading}
+          buttonLabel="Save"
+        />
+      </Modal>
+    </>
   );
 }
 
@@ -115,8 +198,6 @@ function AddResource({ project, refetch }) {
 
   const [title, setTitle] = React.useState("");
   const [link, setLink] = React.useState("");
-
-  const valid = title.length > 0 && link.length > 0;
 
   const [add, { loading }] = useAddKeyResourceMutation({
     onCompleted: () => {
@@ -151,20 +232,38 @@ function AddResource({ project, refetch }) {
       </div>
 
       <Modal title={"Add a key resource"} isOpen={isModalOpen} hideModal={hideModal} minHeight="200px">
-        <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={valid}>
-          <Forms.TextInput value={title} onChange={setTitle} label="Title" placeholder="e.g. GitHub Repository" />
-          <Forms.TextInput
-            value={link}
-            onChange={setLink}
-            label="URL"
-            placeholder="e.g. https://github.com/operately/operately"
-          />
-
-          <Forms.SubmitArea>
-            <Forms.SubmitButton data-test-id="save-key-resource">Add</Forms.SubmitButton>
-          </Forms.SubmitArea>
-        </Forms.Form>
+        <KeyResourcesForm
+          title={title}
+          setTitle={setTitle}
+          link={link}
+          setLink={setLink}
+          onSubmit={handleSubmit}
+          loading={loading}
+        />
       </Modal>
     </>
+  );
+}
+
+function KeyResourcesForm({ title, setTitle, link, setLink, onSubmit, loading, buttonLabel = "Add" }) {
+  const valid = title.length > 0 && link.length > 0;
+
+  return (
+    <div className="mt-8">
+      <Forms.Form onSubmit={onSubmit} loading={loading} isValid={valid}>
+        <Forms.TextInput
+          value={link}
+          onChange={setLink}
+          label="URL"
+          placeholder="Link to your resource (ex. Google Doc, Figma Link)"
+        />
+
+        <Forms.TextInput value={title} onChange={setTitle} label="Title" placeholder="Give a title for this resource" />
+
+        <Forms.SubmitArea>
+          <Forms.SubmitButton data-test-id="save-key-resource">{buttonLabel}</Forms.SubmitButton>
+        </Forms.SubmitArea>
+      </Forms.Form>
+    </div>
   );
 }

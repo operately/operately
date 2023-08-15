@@ -31,6 +31,18 @@ export function useAddKeyResourceMutation(options = {}) {
   return useMutation(ADD_KEY_RESOURCE, options);
 }
 
+export const EDIT_KEY_RESOURCE = gql`
+  mutation EditKeyResource($input: EditKeyResourceInput!) {
+    editKeyResource(input: $input) {
+      id
+    }
+  }
+`;
+
+export function useEditKeyResourceMutation(options = {}) {
+  return useMutation(EDIT_KEY_RESOURCE, options);
+}
+
 export const REMOVE_KEY_RESOURCE = gql`
   mutation RemoveKeyResource($id: ID!) {
     removeKeyResource(id: $id) {
