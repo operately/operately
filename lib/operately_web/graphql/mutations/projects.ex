@@ -8,6 +8,13 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     field :link, non_null(:string)
   end
 
+  input_object :edit_key_resource_input do
+    field :id, non_null(:id)
+    field :type, non_null(:string)
+    field :title, non_null(:string)
+    field :link, non_null(:string)
+  end
+
   object :project_mutations do
     field :create_project, non_null(:project) do
       arg :name, non_null(:string)
@@ -44,6 +51,16 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
       resolve fn args, _ ->
         Operately.Projects.create_key_resource(args.input)
+      end
+    end
+
+    field :edit_key_resource, non_null(:project_key_resource) do
+      arg :input, non_null(:edit_key_resource_input)
+
+      resolve fn args, _ ->
+        resource = Operately.Projects.get_key_resource!(args.input.id)
+
+        Operately.Projects.update_key_resource(resource, args.input)
       end
     end
 
