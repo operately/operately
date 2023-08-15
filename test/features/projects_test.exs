@@ -65,7 +65,7 @@ defmodule Operately.Features.ProjectsTest do
     |> visit_show(state.project)
     |> assert_has(Query.text("Code Repository"))
     |> UI.click(testid: "key-resource-options")
-    |> UI.click(testid: "edit-resource-options")
+    |> UI.click(testid: "edit-key-resource")
     |> UI.fill("Title", with: "Github Repository")
     |> UI.fill("URL", with: "https://github.com/operately/kpiexamples")
     |> refute_has(Query.text("Github Repository"))
