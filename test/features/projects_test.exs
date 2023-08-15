@@ -82,15 +82,17 @@ defmodule Operately.Features.ProjectsTest do
     |> refute_has(Query.text("Code Repository"))
   end
 
-  # feature "creating a new project", state do
-  #   project = "Live support"
+  feature "leave a comment on an update", state do
+    add_status_update(state.project, "This is a status update.")
 
-  #   state
-  #   |> click_new_project()
-  #   |> set_name(project)
-  #   |> save()
-  #   |> assert_project_is_in_the_list(project)
-  # end
+    state
+    |> visit_message_board(state.project)
+    |> UI.click(testid: "status-update")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+    |> assert_has(Query.text("This is a comment."))
+  end
 
   # # ===========================================================================
 
@@ -100,6 +102,10 @@ defmodule Operately.Features.ProjectsTest do
 
   defp visit_show(state, project) do
     UI.visit(state, "/projects" <> "/" <> project.id)
+  end
+
+  defp visit_message_board(state, project) do
+    UI.visit(state, "/projects" <> "/" <> project.id <> "/updates")
   end
 
   def click_write_description(state) do
@@ -151,6 +157,35 @@ defmodule Operately.Features.ProjectsTest do
     the pace of innovation in the complex, fast-paced world.
     TEXT END MARKER <- this is the end of the text
     """
+  end
+
+  def add_status_update(project, text) do
+    {:ok, _} = Operately.Updates.create_update(%{
+      type: :status_update,
+      updatable_type: :project,
+      updatable_id: project.id,
+      content: rich_text_paragraph(text),
+      author_id: project.creator_id
+    })
+  end
+
+  def rich_text_paragraph(text) do
+    %{
+      "message" => %{
+        "type" => "doc", 
+        "content" => [
+          %{
+            "type" => "paragraph", 
+            "content" => [
+              %{
+                "text" => text, 
+                "type" => "text"
+              }
+            ]
+          }
+        ]
+      }
+    }
   end
 
   # def click_new_project(state) do

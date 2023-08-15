@@ -266,7 +266,11 @@ function AddComment({ me, update }) {
 
 function AddCommentNonActive({ me, onClick }) {
   return (
-    <div className="flex items-center gap-3 py-4 border-t border-shade-2 text-white-2 cursor-pointer" onClick={onClick}>
+    <div
+      className="flex items-center gap-3 py-4 border-t border-shade-2 text-white-2 cursor-pointer"
+      onClick={onClick}
+      data-test-id="add-comment"
+    >
       <Avatar person={me} size={AvatarSize.Normal} />
 
       <div className="text-white-2">Leave a comment&hellip;</div>
@@ -275,6 +279,8 @@ function AddCommentNonActive({ me, onClick }) {
 }
 
 function AddCommentActive({ update, onBlur, onPost }) {
+  const [_, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
+
   const editor = TipTapEditor.useEditor({
     placeholder: "Write your comment here...",
   });
@@ -286,8 +292,9 @@ function AddCommentActive({ update, onBlur, onPost }) {
     if (loading) return;
 
     await postComment(editor.getJSON());
+    await onPost();
 
-    onPost();
+    refetch();
   };
 
   return (
@@ -317,7 +324,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
 function PostButton({ onClick }) {
   return (
-    <Button onClick={onClick} variant="success">
+    <Button onClick={onClick} variant="success" data-test-id="post-comment">
       <Icons.IconMail size={20} />
       Post Comment
     </Button>

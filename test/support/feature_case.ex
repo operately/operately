@@ -100,7 +100,7 @@ defmodule Operately.FeatureCase do
 
     def fill_rich_text(state, message) do
       session(state)
-      |> Browser.find(Query.css(".ProseMirror"), fn element ->
+      |> Browser.find(Query.css(".ProseMirror[contenteditable=true]"), fn element ->
         element |> Browser.send_keys(message)
       end)
     end
