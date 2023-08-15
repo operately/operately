@@ -44,7 +44,6 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :id, non_null(:id)
     field :title, non_null(:string)
     field :link, non_null(:string)
-    field :type, non_null(:string)
   end
 
   object :project do

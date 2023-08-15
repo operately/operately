@@ -4,7 +4,6 @@ export interface KeyResource {
   id: string;
   title: string;
   link: string;
-  type: "github" | "generic";
 }
 
 export const GQL_FRAGMENT = gql`
@@ -12,7 +11,6 @@ export const GQL_FRAGMENT = gql`
     id
     title
     link
-    type
   }
 `;
 
@@ -22,7 +20,6 @@ export const ADD_KEY_RESOURCE = gql`
       id
       title
       link
-      type
     }
   }
 `;

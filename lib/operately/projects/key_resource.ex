@@ -9,7 +9,6 @@ defmodule Operately.Projects.KeyResource do
 
     field :link, :string
     field :title, :string
-    field :type, Ecto.Enum, values: [:github, :generic]
 
     timestamps()
   end
@@ -17,7 +16,7 @@ defmodule Operately.Projects.KeyResource do
   @doc false
   def changeset(key_resource, attrs) do
     key_resource
-    |> cast(attrs, [:title, :link, :type, :project_id])
-    |> validate_required([:title, :link, :type, :project_id])
+    |> cast(attrs, [:title, :link, :project_id])
+    |> validate_required([:title, :link, :project_id])
   end
 end

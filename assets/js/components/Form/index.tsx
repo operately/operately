@@ -63,7 +63,7 @@ export function CancelButton({ children }) {
   );
 }
 
-export function TextInput({ label, value, onChange, placeholder = "" }) {
+export function TextInput({ label, value, onChange, placeholder = "", ...props }) {
   const id = React.useMemo(() => Math.random().toString(36), []);
 
   return (
@@ -80,6 +80,7 @@ export function TextInput({ label, value, onChange, placeholder = "" }) {
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
+          {...props}
         />
       </div>
     </div>
