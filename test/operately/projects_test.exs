@@ -257,7 +257,7 @@ defmodule Operately.ProjectsTest do
 
     import Operately.ProjectsFixtures
 
-    @invalid_attrs %{link: nil, title: nil, type: nil}
+    @invalid_attrs %{link: nil, title: nil}
 
     setup ctx do
       key_resource = key_resource_fixture(%{project_id: ctx.project.id})
@@ -274,12 +274,11 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_key_resource/1 with valid data creates a key_resource", ctx do
-      valid_attrs = %{link: "some link", title: "some title", type: :github, project_id: ctx.project.id}
+      valid_attrs = %{link: "some link", title: "some title", project_id: ctx.project.id}
 
       assert {:ok, %KeyResource{} = key_resource} = Projects.create_key_resource(valid_attrs)
       assert key_resource.link == "some link"
       assert key_resource.title == "some title"
-      assert key_resource.type == :github
       assert key_resource.project_id == ctx.project.id
     end
 
@@ -288,12 +287,11 @@ defmodule Operately.ProjectsTest do
     end
 
     test "update_key_resource/2 with valid data updates the key_resource", ctx do
-      update_attrs = %{link: "some updated link", title: "some updated title", type: :generic}
+      update_attrs = %{link: "some updated link", title: "some updated title"}
 
       assert {:ok, %KeyResource{} = key_resource} = Projects.update_key_resource(ctx.key_resource, update_attrs)
       assert key_resource.link == "some updated link"
       assert key_resource.title == "some updated title"
-      assert key_resource.type == :generic
       assert key_resource.project_id == ctx.project.id
     end
 
