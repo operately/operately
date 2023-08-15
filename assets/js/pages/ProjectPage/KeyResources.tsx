@@ -50,10 +50,12 @@ function EmptyState() {
 }
 
 function Link({ resource, refetch, editable }: { resource: KeyResource; refetch: () => void; editable: boolean }) {
+  const href = resource.link.startsWith("http") ? resource.link : `https://${resource.link}`;
+
   return (
     <div className="font-medium bg-shade-1 pl-3 pr-2 py-2 flex items-center gap-2 rounded-lg cursor-pointer text-sm">
-      <a href={resource.link} target="_blank" className="flex items-center gap-2">
-        <LinkIcon type={resource.type} />
+      <a href={href} target="_blank" className="flex items-center gap-2">
+        <LinkIcon resource={resource} />
         {resource.title}
       </a>
 
@@ -158,7 +160,6 @@ function EditResourceModal({ resource, refetch, isOpen, close }) {
           id: resource.id,
           title,
           link,
-          type: "generic",
         },
       },
     });
@@ -181,13 +182,24 @@ function EditResourceModal({ resource, refetch, isOpen, close }) {
   );
 }
 
-function LinkIcon({ type }) {
-  switch (type) {
-    case "github":
-      return <Icons.IconBrandGithub size={20} className="text-pink-400" />;
-    default:
-      return <Icons.IconLink size={20} className="text-pink-400" />;
+const GithubLinkRegex = new RegExp("^https://github.com/.*/.*$");
+const FigmaLinkRegex = new RegExp("^https://(.*).figma.com/.*$");
+const SlackLinkRegex = new RegExp("^https://.*.slack.com/.*$");
+
+function LinkIcon({ resource }: { resource: KeyResource }) {
+  if (resource.link.match(GithubLinkRegex)) {
+    return <Icons.IconBrandGithub size={20} className="text-pink-400" />;
   }
+
+  if (resource.link.match(FigmaLinkRegex)) {
+    return <Icons.IconBrandFigma size={20} className="text-pink-400" />;
+  }
+
+  if (resource.link.match(SlackLinkRegex)) {
+    return <Icons.IconBrandSlack size={20} className="text-pink-400" />;
+  }
+
+  return <Icons.IconLink size={20} className="text-pink-400" />;
 }
 
 function AddResource({ project, refetch }) {
@@ -215,7 +227,6 @@ function AddResource({ project, refetch }) {
           projectId: project.id,
           title,
           link,
-          type: "generic",
         },
       },
     });
@@ -256,6 +267,7 @@ function KeyResourcesForm({ title, setTitle, link, setLink, onSubmit, loading, b
           onChange={setLink}
           label="URL"
           placeholder="Link to your resource (ex. Google Doc, Figma Link)"
+          autoFocus
         />
 
         <Forms.TextInput value={title} onChange={setTitle} label="Title" placeholder="Give a title for this resource" />
