@@ -13,9 +13,7 @@ blocks:
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
           - cp docker-compose.yml.ci docker-compose.yml
-          - sudo chown -R 1000:1000 deps
-          - sudo chown -R 1000:1000 _build
-          - sudo chown -R 1000:1000 assets/node_modules
+          - sudo chown -R 1000:1000 .
       jobs:
         - name: mix test
           commands:
