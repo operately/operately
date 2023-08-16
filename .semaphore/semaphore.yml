@@ -11,6 +11,7 @@ blocks:
         commands:
           - checkout
           - cache restore
+          - cd assets && cache restore && cd .. # cache node_packages
       jobs:
         - name: mix test
           commands:
@@ -18,6 +19,7 @@ blocks:
             - make test.setup
             - make test
             - cache store
+            - cd assets && cache store && cd .. # cache node_packages
 
 promotions:
   - name: Docker Image Release
