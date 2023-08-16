@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        - USER_ID
+        - GROUP_ID
+    user: ${USER_ID}:${GROUP_ID}
+    volumes:
+      - ./:/home/dev/app
+    ports:
+      - "127.0.0.1:4000:4000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=keyboard-cat
+    env_file:
+      - .env
+
+  db:
+    image: registry.semaphoreci.com/postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: keyboard-cat
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+    driver: local
