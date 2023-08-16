@@ -94,6 +94,41 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("This is a comment."))
   end
 
+  feature "changing phase from pending -> execution and filling in the review", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "execution")
+    |> UI.find(testid: "schedule", fn section ->
+      section
+      |> assert_has("Was the project completed on schedule?")
+      |> UI.click(testid: "no")
+      |> UI.fill(testid: "comments", with: "The project was not completed on schedule because of X, Y, and Z.")
+    end)
+    |> UI.find(testid: "cost", fn section ->
+      section
+      |> assert_has("Was the planning phase completed within budget?")
+      |> UI.click(testid: "yes")
+      |> UI.fill(testid: "comments", with: "Yes, the planning phase was completed within budget.")
+    end)
+    |> UI.find(testid: "deliverables", fn section ->
+      section
+      |> UI.fill(testid: "comments", with: "- Deliverable 1\n- Deliverable 2\n- Deliverable 3")
+    end)
+    |> UI.find(testid: "team", fn section ->
+      section
+      |> assert_has("Was the team staffed with suitable roles?")
+      |> UI.click(testid: "no")
+      |> UI.fill(testid: "comments", with: "The team was not staffed with suitable roles because of X, Y, and Z.")
+    end)
+    |> UI.find(testid: "risks", fn section ->
+      section
+      |> assert_has("Are there any outstanding project risks?")
+      |> UI.click(testid: "no")
+    end)
+    |> UI.click(testid: "submit")
+  end
+
   # # ===========================================================================
 
   defp visit_index(state) do
