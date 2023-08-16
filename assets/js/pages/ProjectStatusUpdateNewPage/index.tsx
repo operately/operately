@@ -14,6 +14,8 @@ import Button from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 
+import Review from "./Review";
+
 export async function loader({ params }) {
   let res = await client.query({
     query: Projects.GET_PROJECT,
@@ -30,6 +32,8 @@ interface ContextDescriptor {
   currentPhase?: string;
   newPhase?: string | null;
   newHealth?: string | null;
+  title: string;
+  setTitle: (title: string) => void;
 }
 
 const Context = React.createContext<ContextDescriptor | null>(null);
@@ -58,13 +62,23 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <Context.Provider value={{ project, messageType, currentPhase, newPhase, newHealth }}>
+        <Context.Provider value={{ project, messageType, currentPhase, newPhase, newHealth, title, setTitle }}>
           <NewUpdateHeader project={project} title={title} setTitle={setTitle} />
-          <Editor project={project} title={title} />
+          <Content />
         </Context.Provider>
       </Paper.Body>
     </Paper.Root>
   );
+}
+
+function Content() {
+  const { title, project, messageType, currentPhase, newPhase } = React.useContext(Context) as ContextDescriptor;
+
+  if (messageType === "phase_change" && currentPhase === "planning" && newPhase === "execution") {
+    return <Review />;
+  } else {
+    return <Editor project={project} title={title} />;
+  }
 }
 
 function HealthTitle({ health }) {
@@ -89,9 +103,9 @@ function NewUpdateHeader({ project, title, setTitle }) {
     case "phase_change":
       return (
         <div>
-          <div className="uppercase text-white-1 tracking-wide w-full mb-2">PHASE CHANGE</div>
+          <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: PHASE CHANGE</div>
           <div className="text-4xl font-bold mx-auto">
-            <span className="capitalize">{project.phase}</span> -&gt;<span className="capitalize">{newPhase}</span>
+            <span className="capitalize">{project.phase}</span> -&gt; <span className="capitalize">{newPhase}</span>
           </div>
         </div>
       );

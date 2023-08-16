@@ -101,28 +101,28 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "phase-execution")
 
     state
-    |> UI.find(testid: "schedule")
-    |> UI.click(testid: "no")
-    |> UI.fill(testid: "comments", with: "The project was not completed on schedule because of X, Y, and Z.")
+    |> UI.find(testid: "section-schedule")
+    |> UI.click(testid: "schedule-yes")
+    |> UI.fill(testid: "schedule-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
 
     state
-    |> UI.find(testid: "costs")
-    |> UI.click(testid: "yes")
-    |> UI.fill(testid: "comments", with: "Yes, the planning phase was completed within budget.")
+    |> UI.find(testid: "section-costs")
+    |> UI.click(testid: "costs-yes")
+    |> UI.fill(testid: "costs-comments", with: "Yes, the planning phase was completed within budget.")
 
     state
-    |> UI.find(testid: "deliverables")
-    |> UI.fill(testid: "comments", with: "- Deliverable 1\n- Deliverable 2\n- Deliverable 3")
+    |> UI.find(testid: "section-deliverables")
+    |> UI.fill(testid: "deliverables-answer", with: "- Deliverable 1\n- Deliverable 2\n- Deliverable 3")
 
     state
-    |> UI.find(testid: "team")
-    |> UI.click(testid: "no")
-    |> UI.fill(testid: "comments", with: "The team was not staffed with suitable roles because of X, Y, and Z.")
+    |> UI.find(testid: "section-team")
+    |> UI.click(testid: "team-yes")
+    |> UI.fill(testid: "team-comments", with: "The team was not staffed with suitable roles because of X, Y, and Z.")
 
     state
-    |> UI.find(testid: "risks")
-    |> assert_has("Are there any outstanding project risks?")
-    |> UI.click(testid: "no")
+    |> UI.find(testid: "section-risks")
+    |> UI.click(testid: "risks-yes")
+    |> UI.fill(testid: "risks-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
 
     state
     |> UI.click(testid: "submit")
