@@ -120,7 +120,7 @@ function YesNoQuestionWithComments({ name, title, question, answer, setAnswer, c
               type="radio"
               name={name}
               value="yes"
-              id={name + "-no"}
+              id={name + "-yes"}
               data-test-id={name + "-yes"}
               checked={answer === "yes"}
               onChange={() => setAnswer("yes")}
