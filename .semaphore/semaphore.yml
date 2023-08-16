@@ -7,6 +7,9 @@ agent:
 blocks:
   - name: Tests
     task:
+      prologue:
+        commands:
+          - cache restore
       jobs:
         - name: mix test
           commands:
@@ -14,6 +17,7 @@ blocks:
             - make test.seed.env
             - make test.setup
             - make test
+            - cache store
 
 promotions:
   - name: Docker Image Release
