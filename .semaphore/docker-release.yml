@@ -11,11 +11,11 @@ blocks:
         - name: docker-push
       prologue:
         commands:
+          - checkout
           - cache restore
       jobs:
         - name: "Docker Release"
           commands:
-            - checkout
             - make test.seed.env
             - make test.setup
             - make docker.build
