@@ -13,6 +13,7 @@ blocks:
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
           - docker pull operately/dev-image:latest
+          - docker tag operately/dev-image:latest operately-app:latest
       jobs:
         - name: mix test
           commands:
