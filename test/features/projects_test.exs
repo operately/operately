@@ -94,6 +94,41 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("This is a comment."))
   end
 
+  feature "changing phase from pending -> execution and filling in the review", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-execution")
+
+    state
+    |> UI.find(testid: "section-schedule")
+    |> UI.click(testid: "schedule-yes")
+    |> UI.fill(testid: "schedule-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
+
+    state
+    |> UI.find(testid: "section-costs")
+    |> UI.click(testid: "costs-yes")
+    |> UI.fill(testid: "costs-comments", with: "Yes, the planning phase was completed within budget.")
+
+    state
+    |> UI.find(testid: "section-deliverables")
+    |> UI.fill(testid: "deliverables-answer", with: "- Deliverable 1\n- Deliverable 2\n- Deliverable 3")
+
+    state
+    |> UI.find(testid: "section-team")
+    |> UI.click(testid: "team-yes")
+    |> UI.fill(testid: "team-comments", with: "The team was not staffed with suitable roles because of X, Y, and Z.")
+
+    state
+    |> UI.find(testid: "section-risks")
+    |> UI.click(testid: "risks-yes")
+    |> UI.fill(testid: "risks-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
+
+    state
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+  end
+
   # # ===========================================================================
 
   defp visit_index(state) do
@@ -127,12 +162,13 @@ defmodule Operately.Features.ProjectsTest do
   defp create_project(company, champion) do
     project = project_fixture(%{name: "Live support", company_id: company.id, creator_id: champion.id})
 
-    {:ok, _} = Operately.Projects.create_contributor(%{
-      project_id: project.id,
-      person_id: champion.id,
-      role: "champion"
-    })
-    
+    {:ok, _} =
+      Operately.Projects.create_contributor(%{
+        project_id: project.id,
+        person_id: champion.id,
+        role: "champion"
+      })
+
     project
   end
 
@@ -160,25 +196,26 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   def add_status_update(project, text) do
-    {:ok, _} = Operately.Updates.create_update(%{
-      type: :status_update,
-      updatable_type: :project,
-      updatable_id: project.id,
-      content: rich_text_paragraph(text),
-      author_id: project.creator_id
-    })
+    {:ok, _} =
+      Operately.Updates.create_update(%{
+        type: :status_update,
+        updatable_type: :project,
+        updatable_id: project.id,
+        content: rich_text_paragraph(text),
+        author_id: project.creator_id
+      })
   end
 
   def rich_text_paragraph(text) do
     %{
       "message" => %{
-        "type" => "doc", 
+        "type" => "doc",
         "content" => [
           %{
-            "type" => "paragraph", 
+            "type" => "paragraph",
             "content" => [
               %{
-                "text" => text, 
+                "text" => text,
                 "type" => "text"
               }
             ]

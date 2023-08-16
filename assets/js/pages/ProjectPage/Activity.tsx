@@ -169,6 +169,8 @@ function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.A
 }
 
 function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity }) {
+  if (activity.resource.messageType === "review") return null;
+
   const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
 
   return (

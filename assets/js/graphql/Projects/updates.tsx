@@ -1,5 +1,5 @@
 import * as fragments from "@/graphql/Fragments";
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 
 export const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
@@ -47,7 +47,7 @@ export const GET_STATUS_UPDATE = gql`
   }
 `;
 
-export type UpdateMessageType = "message" | "status_update" | "phase_change" | "health_change";
+export type UpdateMessageType = "message" | "status_update" | "phase_change" | "health_change" | "review";
 
 export interface Update {
   id: string;
@@ -93,4 +93,16 @@ interface Reaction {
   id: string;
   reactionType: string;
   person: Person;
+}
+
+const POST_UPDATE = gql`
+  mutation CreateUpdate($input: CreateUpdateInput!) {
+    createUpdate(input: $input) {
+      id
+    }
+  }
+`;
+
+export function usePostUpdateMutation(options = {}) {
+  return useMutation(POST_UPDATE, options);
 }

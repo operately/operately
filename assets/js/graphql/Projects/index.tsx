@@ -135,7 +135,7 @@ export interface Project {
   execution_review: Document;
   retrospective: Document;
 
-  updates: Update[];
+  updates: Updates.Update[];
   keyResources: KeyResources.KeyResource[];
 
   isPinned: boolean;
@@ -301,15 +301,13 @@ export function usePostDocument(projectId: string, type: string, options?: any) 
 }
 
 export function useReactMutation(entityType: string, entityID: string) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation AddReaction($entityID: ID!, $entityType: String!, $type: String!) {
-        addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
-          id
-        }
+  const [fun, status] = useMutation(gql`
+    mutation AddReaction($entityID: ID!, $entityType: String!, $type: String!) {
+      addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
+        id
       }
-    `,
-  );
+    }
+  `);
 
   const addReaction = (type: any) => {
     return fun({

@@ -11,7 +11,7 @@ defmodule Operately.Updates.Update do
     field :updatable_id, Ecto.UUID
     field :updatable_type, Ecto.Enum, values: [:objective, :project]
 
-    field :type, Ecto.Enum, values: [:message, :status_update, :health_change, :phase_change]
+    field :type, Ecto.Enum, values: [:message, :status_update, :health_change, :phase_change, :review]
     field :content, :map
 
     belongs_to :acknowledging_person, Operately.People.Person

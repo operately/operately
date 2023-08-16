@@ -38,13 +38,13 @@ export function SelectBox({
   );
 }
 
-export function Trigger({ children, className = "" }) {
+export function Trigger({ children, ...props }) {
   const { editable } = React.useContext(Context) as ContextDescriptor;
 
   if (editable) {
-    return <Popover.Trigger className={className}>{children}</Popover.Trigger>;
+    return <Popover.Trigger {...props}>{children}</Popover.Trigger>;
   } else {
-    return <div className={className}>{children}</div>;
+    return <div {...props}>{children}</div>;
   }
 }
 
@@ -58,7 +58,7 @@ export function Popup({ children }) {
   );
 }
 
-export function Option({ children, value }) {
+export function Option({ children, value, ...props }) {
   const { onSelected, activeValue } = React.useContext(Context) as ContextDescriptor;
 
   const handleSelect = () => {
@@ -71,6 +71,7 @@ export function Option({ children, value }) {
     <div
       className="flex justify-between items-center rounded px-1.5 py-0.5 mt-1 hover:bg-white-1/[3%] cursor-pointer"
       onClick={handleSelect}
+      {...props}
     >
       <div className="flex items-center gap-3">{children}</div>
 
