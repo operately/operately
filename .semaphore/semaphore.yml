@@ -12,8 +12,7 @@ blocks:
           - checkout
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
-          - docker pull operately/dev-image:latest
-          - docker tag operately/dev-image:latest operately-app:latest
+          - mv docker-compose.yml.ci docker-compose.yml
       jobs:
         - name: mix test
           commands:
