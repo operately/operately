@@ -6,11 +6,11 @@ agent:
     os_image: ubuntu2004
 blocks:
   - name: Docker
-    secrets:
-      - docker-
     task:
+      secrets:
+        - docker-push
       jobs:
-        - name: docker release
+        - name: "Docker Release"
           commands:
             - checkout
             - make dev.setup

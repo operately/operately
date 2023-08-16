@@ -17,6 +17,6 @@ blocks:
 
 promotions:
   - name: Docker Image Release
-    auto_promote:
-      when: "result = 'passed' and branch = 'master'"
     pipeline_file: docker-release.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
