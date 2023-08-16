@@ -1,4 +1,6 @@
 import React from "react";
+import * as Forms from "@/components/Form";
+import { useNavigate } from "react-router-dom";
 
 const questions = [
   {
@@ -33,7 +35,9 @@ const questions = [
   },
 ];
 
-export default function Review() {
+export default function Review({ project }) {
+  const navigate = useNavigate();
+
   const [answers, setAnswers] = React.useState({
     schedule: {
       answer: "",
@@ -66,42 +70,59 @@ export default function Review() {
     }));
   };
 
+  const loading = false;
+  const valid = true;
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(answers);
+  };
+
+  const handleCancel = () => {
+    navigate("/projects/" + project.id);
+  };
+
   return (
     <div className="flex flex-col gap-8 my-8">
-      {questions.map((question) => {
-        switch (question.type) {
-          case "yes_no_with_comments":
-            return (
-              <YesNoQuestionWithComments
-                key={question.name}
-                name={question.name}
-                title={question.title}
-                question={question.question}
-                answer={answers[question.name].answer}
-                setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
-                comments={answers[question.name].comments}
-                setComments={(comments: string) => setAnswer(question.name, "comments", comments)}
-              />
-            );
-          case "text_area":
-            return (
-              <TextAreaQuestion
-                name={question.name}
-                key={question.name}
-                title={question.title}
-                question={question.question}
-                answer={answers[question.name].answer}
-                setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
-              />
-            );
-          default:
-            throw new Error(`Unknown question type: ${question.type}`);
-        }
-      })}
+      <Forms.Form onSubmit={handleSubmit} isValid={true} loading={loading} onCancel={handleCancel}>
+        {questions.map((question) => {
+          switch (question.type) {
+            case "yes_no_with_comments":
+              return (
+                <YesNoQuestionWithComments
+                  key={question.name}
+                  name={question.name}
+                  title={question.title}
+                  question={question.question}
+                  answer={answers[question.name].answer}
+                  setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
+                  comments={answers[question.name].comments}
+                  setComments={(comments: string) => setAnswer(question.name, "comments", comments)}
+                />
+              );
+            case "text_area":
+              return (
+                <TextAreaQuestion
+                  name={question.name}
+                  key={question.name}
+                  title={question.title}
+                  question={question.question}
+                  answer={answers[question.name].answer}
+                  setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
+                />
+              );
+            default:
+              throw new Error(`Unknown question type: ${question.type}`);
+          }
+        })}
 
-      <button className="w-full py-2 bg-primary rounded text-white font-bold" data-test-id="submit">
-        Submit
-      </button>
+        <Forms.SubmitArea>
+          <Forms.SubmitButton type="submit" disabled={!valid} loading={loading}>
+            Submit
+          </Forms.SubmitButton>
+          <Forms.CancelButton>Cancel</Forms.CancelButton>
+        </Forms.SubmitArea>
+      </Forms.Form>
     </div>
   );
 }
