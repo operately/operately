@@ -16,6 +16,7 @@ blocks:
       jobs:
         - name: "Docker Release"
           commands:
+            - docker pull operately/operately:latest
             - make test.seed.env
             - make test.setup
             - make docker.build
