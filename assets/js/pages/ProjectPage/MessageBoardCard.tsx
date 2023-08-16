@@ -60,6 +60,10 @@ function ItemList({ updates }: { updates: Updates.Update[] }) {
 }
 
 function Item({ update }: { update: Updates.Update }) {
+  if (update.messageType === "review") {
+    return <></>;
+  }
+
   return (
     <div className="flex items-center gap-2">
       <Avatar person={update.author} size="small" />
@@ -76,6 +80,10 @@ function Item({ update }: { update: Updates.Update }) {
 }
 
 function ItemTitle({ update }: { update: Updates.Update }) {
+  if (update.messageType === "review") {
+    return <div className="text-xs font-bold text-yellow-400/80">Check-In</div>;
+  }
+
   if (update.messageType === "status_update") {
     return <div className="text-xs font-bold text-yellow-400/80">Status Update</div>;
   }

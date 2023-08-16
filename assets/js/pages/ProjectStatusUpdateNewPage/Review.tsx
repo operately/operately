@@ -1,6 +1,7 @@
 import React from "react";
 import * as Forms from "@/components/Form";
 import { useNavigate } from "react-router-dom";
+import * as Updates from "@/graphql/Projects/updates";
 
 const questions = [
   {
@@ -35,7 +36,8 @@ const questions = [
   },
 ];
 
-export default function Review({ project }) {
+export default function Review({ project, newPhase }) {
+  const [post, { loading }] = Updates.usePostUpdateMutation();
   const navigate = useNavigate();
 
   const [answers, setAnswers] = React.useState({
@@ -70,12 +72,22 @@ export default function Review({ project }) {
     }));
   };
 
-  const loading = false;
-  const valid = true;
+  const valid = Object.values(answers).every((answer) => answer.answer !== "");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(answers);
+
+    post({
+      variables: {
+        input: {
+          updatableType: "project",
+          updatableId: project.id,
+          content: JSON.stringify(answers),
+          messageType: "review",
+          phase: newPhase,
+        },
+      },
+    });
   };
 
   const handleCancel = () => {
@@ -117,7 +129,7 @@ export default function Review({ project }) {
         })}
 
         <Forms.SubmitArea>
-          <Forms.SubmitButton type="submit" disabled={!valid} loading={loading}>
+          <Forms.SubmitButton type="submit" disabled={!valid} loading={loading} data-test-id="submit">
             Submit
           </Forms.SubmitButton>
           <Forms.CancelButton>Cancel</Forms.CancelButton>

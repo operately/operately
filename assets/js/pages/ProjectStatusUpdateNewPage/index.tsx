@@ -75,7 +75,7 @@ function Content() {
   const { title, project, messageType, currentPhase, newPhase } = React.useContext(Context) as ContextDescriptor;
 
   if (messageType === "phase_change" && currentPhase === "planning" && newPhase === "execution") {
-    return <Review project={project} />;
+    return <Review project={project} newPhase={newPhase} />;
   } else {
     return <Editor project={project} title={title} />;
   }

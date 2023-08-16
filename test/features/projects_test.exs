@@ -125,6 +125,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.fill(testid: "risks-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
 
     state
+    |> UI.scroll_to(testid: "submit")
     |> UI.click(testid: "submit")
   end
 

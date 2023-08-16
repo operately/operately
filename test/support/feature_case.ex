@@ -136,6 +136,10 @@ defmodule Operately.FeatureCase do
       session(state) |> Browser.visit(path)
     end
 
+    def scroll_to(state, testid: id) do
+      session(state) |> Wallaby.Browser.execute_script("document.querySelector('[data-test-id=#{id}]').scrollIntoView()")
+    end
+
     def find(state, testid: id) do
       session(state) |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"))
     end

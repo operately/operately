@@ -84,6 +84,8 @@ interface StatusUpdateProps {
 }
 
 function StatusUpdateItem({ linkTo, update }: StatusUpdateProps) {
+  if (update.messageType === "review") return null;
+
   return (
     <Link
       to={linkTo}

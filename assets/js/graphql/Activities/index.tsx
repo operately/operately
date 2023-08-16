@@ -54,6 +54,7 @@ const LIST_ACTIVITIES = gql`
         ... on Update {
           id
           message
+          messageType
         }
 
         ... on Milestone {
@@ -99,17 +100,20 @@ export function useListActivities(scope_type: string, scope_id: string) {
 }
 
 export function groupByDate(activities: Activity[]) {
-  const grouped = activities.reduce((acc, activity) => {
-    const date = new Date(activity.insertedAt).toDateString();
+  const grouped = activities.reduce(
+    (acc, activity) => {
+      const date = new Date(activity.insertedAt).toDateString();
 
-    if (!acc[date]) {
-      acc[date] = [];
-    }
+      if (!acc[date]) {
+        acc[date] = [];
+      }
 
-    acc[date]!.push(activity);
+      acc[date]!.push(activity);
 
-    return acc;
-  }, {} as Record<string, Activity[]>);
+      return acc;
+    },
+    {} as Record<string, Activity[]>,
+  );
 
   return Object.entries(grouped).map(([date, activities]) => ({
     date,
