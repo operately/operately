@@ -16,6 +16,7 @@ blocks:
         - name: "Docker Release"
           commands:
             - checkout
-            - make dev.setup
+            - make test.seed.env
+            - make test.setup
             - make docker.build
             - make docker.push
