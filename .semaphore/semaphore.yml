@@ -12,7 +12,6 @@ blocks:
           - checkout
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
-          - mv docker-compose.yml.ci docker-compose.yml
       jobs:
         - name: mix test
           commands:
