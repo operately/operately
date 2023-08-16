@@ -88,6 +88,7 @@ dev.setup:
 	$(DEV_CONTAINER) mix deps.compile
 
 test.setup:
+	$(USER_CONTEXT) && docker compose build
 	$(TEST_CONTAINER) mix deps.get
 	$(TEST_CONTAINER) mix deps.compile
 	$(TEST_CONTAINER) bash -c "cd assets && npm install"
@@ -128,10 +129,15 @@ dev.run.script:
 	cp -f $(FILE) tmp/
 	$(DEV_CONTAINER) mix run tmp/$$(basename $(FILE))
 
+dev.image.build:
+	docker build -f Dockerfile.dev.base -t operately/dev-image:latest .
+
+dev.image.push:
+	docker push operately/dev-image:latest
+
 #
 # Testing tasks
 #
-
 
 test:
 	mkdir -p $(SCREENSHOTS_DIR)
@@ -169,7 +175,6 @@ test.assets.compile:
 
 test.screenshots.clear:
 	rm -rf $(SCREENSHOTS_DIR)/*
-
 
 #
 # Building a docker image

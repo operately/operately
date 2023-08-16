@@ -1,4 +1,4 @@
-FROM elixir:1.14.2
+FROM operately/dev-image:latest
 
 # This is a development image. It is not intended to be used in production.
 # It is intended to be used for development and testing.
@@ -17,40 +17,6 @@ FROM elixir:1.14.2
 ARG USER_ID
 ARG GROUP_ID
 
-# Install the build dependencies and tools.
-#
-# - build-essential is required to build C dependencies from source code, such as
-#   the PostgreSQL client library, or native extensions for Elixir libraries.
-#
-# - git is required to install Elixir dependencies from git repositories.
-#
-# - inotify-tools is required to watch for file changes in the source code.
-#
-# - postgresql-client is required to run the database migrations.
-#
-# - nodejs is required to compile the assets.
-#
-# - curl is required to download the latest version of the Node.js package
-#
-
-RUN apt-get update -y                              \
- && apt-get install -y                             \
-      build-essential                              \
-      git                                          \
-      nodejs                                       \
-      npm                                          \
-      curl                                         \
-      postgresql-client                            \
-      inotify-tools                                \
-      chromium                                     \
-      chromium-driver                              \
- && apt-get clean && rm -f /var/lib/apt/lists/*_*
-
-# Install the latest version of the Node.js package.
-
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
- && apt-get install -y nodejs
-
 # Create a user with the same UID and GID as the user on the host machine.
 # We will call this user 'dev' inside of the development container.
 # The name might differ from your host machine, but the UID and GID will be the same.
@@ -61,7 +27,6 @@ RUN groupadd --force --gid ${GROUP_ID} dev \
 # Switch to the 'dev' user.
 
 USER dev
-
 
 RUN mix local.hex --force && mix local.rebar --force
 RUN mix archive.install hex phx_new 1.7.0-rc.0 --force

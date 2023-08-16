@@ -12,8 +12,7 @@ blocks:
           - checkout
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
-          - cp docker-compose.yml.ci docker-compose.yml
-          - sudo chown -R 1000:1000 .
+          - docker pull operately:dev-image:latest
       jobs:
         - name: mix test
           commands:

@@ -1,0 +1,34 @@
+FROM elixir:1.14.2
+
+# Install the build dependencies and tools.
+#
+# - build-essential is required to build C dependencies from source code, such as
+#   the PostgreSQL client library, or native extensions for Elixir libraries.
+#
+# - git is required to install Elixir dependencies from git repositories.
+#
+# - inotify-tools is required to watch for file changes in the source code.
+#
+# - postgresql-client is required to run the database migrations.
+#
+# - nodejs is required to compile the assets.
+#
+# - curl is required to download the latest version of the Node.js package
+#
+
+RUN apt-get update -y                              \
+ && apt-get install -y                             \
+      build-essential                              \
+      git                                          \
+      nodejs                                       \
+      npm                                          \
+      curl                                         \
+      postgresql-client                            \
+      inotify-tools                                \
+      chromium                                     \
+      chromium-driver                              \
+ && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+# Install the latest version of the Node.js package.
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
