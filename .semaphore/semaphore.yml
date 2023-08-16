@@ -14,3 +14,7 @@ blocks:
             - make test.seed.env
             - make test.setup
             - make test
+
+promotions:
+  - name: Docker Image Release
+    pipeline_file: docker-release.yml

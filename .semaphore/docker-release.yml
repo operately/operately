@@ -1,0 +1,18 @@
+version: v1.0
+name: Docker Release
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Docker
+    secrets:
+      - docker-
+    task:
+      jobs:
+        - name: docker release
+          commands:
+            - checkout
+            - make dev.setup
+            - make docker.build
+            - make docker.push
