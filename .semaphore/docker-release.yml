@@ -8,7 +8,10 @@ blocks:
   - name: Docker
     task:
       secrets:
-        - docker-push
+        - name: docker-push
+      prologue:
+        commands:
+          - cache restore
       jobs:
         - name: "Docker Release"
           commands:
