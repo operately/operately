@@ -15,7 +15,7 @@ blocks:
           - cp docker-compose.yml.ci docker-compose.yml
           - sudo chown -R 1000:1000 deps
           - sudo chown -R 1000:1000 _build
-          - sudo chown -R 1000:1000 assets/node_packages
+          - sudo chown -R 1000:1000 assets/node_modules
       jobs:
         - name: mix test
           commands:
