@@ -88,6 +88,8 @@ dev.setup:
 	$(DEV_CONTAINER) mix deps.compile
 
 test.setup:
+	$(TEST_CONTAINER) mix local.hex --force
+	$(TEST_CONTAINER) mix local.rebar --force
 	$(TEST_CONTAINER) mix deps.get
 	$(TEST_CONTAINER) mix deps.compile
 	$(TEST_CONTAINER) bash -c "cd assets && npm install"
