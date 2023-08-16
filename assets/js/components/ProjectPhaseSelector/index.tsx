@@ -1,13 +1,12 @@
 import React from "react";
 
 import * as ProjectIcons from "@/components/ProjectIcons";
-
 import * as SelectBox from "@/components/SilentSelectBox";
 
 export default function ProjectPhaseSelector({ activePhase, editable, onSelected }) {
   return (
     <SelectBox.SelectBox editable={editable} onSelected={onSelected} activeValue={activePhase}>
-      <SelectBox.Trigger className="flex items-center gap-1 -ml-1">
+      <SelectBox.Trigger className="flex items-center gap-1 -ml-1" data-test-id="phase-selector">
         <ProjectIcons.IconForPhase phase={activePhase} />
         <span className="capitalize font-medium text-white-1/80">{activePhase}</span>
       </SelectBox.Trigger>
@@ -36,7 +35,7 @@ export default function ProjectPhaseSelector({ activePhase, editable, onSelected
 
 function Option({ phase }) {
   return (
-    <SelectBox.Option value={phase}>
+    <SelectBox.Option value={phase} data-test-id={"phase-" + phase}>
       <ProjectIcons.IconForPhase phase={phase} />
       <span className="capitalize">{phase}</span>
     </SelectBox.Option>
