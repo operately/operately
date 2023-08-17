@@ -129,6 +129,41 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "submit")
   end
 
+  feature "changing phase from execution -> control and filling in the review", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-control")
+
+    state
+    |> UI.find(testid: "section-schedule")
+    |> UI.click(testid: "schedule-yes")
+    |> UI.fill(testid: "schedule-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
+
+    state
+    |> UI.find(testid: "section-costs")
+    |> UI.click(testid: "costs-yes")
+    |> UI.fill(testid: "costs-comments", with: "Yes, the execution phase was completed within budget.")
+
+    state
+    |> UI.find(testid: "section-deliverables")
+    |> UI.fill(testid: "deliverables-answer", with: "- Deliverable 1\n- Deliverable 2\n- Deliverable 3")
+
+    state
+    |> UI.find(testid: "section-team")
+    |> UI.click(testid: "team-yes")
+    |> UI.fill(testid: "team-comments", with: "The team was not staffed with suitable roles because of X, Y, and Z.")
+
+    state
+    |> UI.find(testid: "section-risks")
+    |> UI.click(testid: "risks-yes")
+    |> UI.fill(testid: "risks-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
+
+    state
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+  end
+
   # # ===========================================================================
 
   defp visit_index(state) do
