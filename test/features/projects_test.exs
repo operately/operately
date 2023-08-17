@@ -166,6 +166,31 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "submit")
   end
 
+  feature "changing phase from control -> completed and filling in a retrospective", state do
+    change_phase(state.project, :control)
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-completed")
+
+    state
+    |> UI.find(testid: "section-what-went-well")
+    |> UI.fill(testid: "what-went-well-anwer", with: "The project was completed on schedule.")
+
+    state
+    |> UI.find(testid: "section-could-be-better")
+    |> UI.fill(testid: "could-be-better-answer", with: "The project could have been completed on budget.")
+
+    state
+    |> UI.find(testid: "section-what-we-learned")
+    |> UI.fill(testid: "what-we-learned-answer", with: "We learned that we need to improve our budgeting process.")
+
+    state
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+  end
+
   # # ===========================================================================
 
   defp visit_index(state) do
