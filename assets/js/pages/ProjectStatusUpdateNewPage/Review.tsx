@@ -13,9 +13,7 @@ export default function Review({ project, newPhase }) {
   const [answers, setAnswers] = React.useState(emptyAnswers);
 
   const setAnswer = (name: string, field: string, answer: string) => {
-    setAnswers((prev) => ({
-      updatePathInObject(prev, [name, field], prev);
-    }));
+    setAnswers((prev) => updatePathInObject(prev, [name, field], prev));
   };
 
   const valid = Object.values(answers).every((answer) => answer.answer !== "");
