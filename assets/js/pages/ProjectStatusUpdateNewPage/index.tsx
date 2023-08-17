@@ -134,21 +134,65 @@ function PausedHeader() {
   );
 }
 
+function GoingBackToPreviousPhaseHeader() {
+  return (
+    <div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: REVERTING PROJECT PHASE</div>
+      <div className="text-4xl font-bold mx-auto">Going back to previous phase</div>
+    </div>
+  );
+}
+
 function NewUpdateHeader({ project, title, setTitle }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
+  const terminalPhases = ["completed", "canceled"];
+  const nonTerminalPhases = ["planning", "execution", "control"] as Projects.ProjectPhase[];
+
   switch (messageType) {
     case "phase_change":
-      switch (newPhase) {
-        case "completed":
-          return <CompletedHeader />;
-        case "canceled":
-          return <CanceledHeader />;
-        case "paused":
+      if (!newPhase) throw new Error("New phase is not defined");
+
+      if (newPhase === "paused") {
+        if (terminalPhases.includes(project.phase)) {
+          throw new Error(`Cannot change phase from ${project.phase} to ${newPhase}`);
+        }
+
+        if (nonTerminalPhases.includes(project.phase)) {
           return <PausedHeader />;
-        default:
-          return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
+        }
+
+        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
       }
+
+      if (nonTerminalPhases.includes(project.phase) && terminalPhases.includes(newPhase)) {
+        if (newPhase === "completed") {
+          return <CompletedHeader />;
+        }
+
+        if (newPhase === "canceled") {
+          return <CanceledHeader />;
+        }
+
+        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
+      }
+
+      if (nonTerminalPhases.includes(project.phase) && nonTerminalPhases.includes(newPhase)) {
+        let oldIndex = nonTerminalPhases.indexOf(project.phase);
+        let newIndex = nonTerminalPhases.indexOf(newPhase);
+
+        if (oldIndex > newIndex) {
+          return <GoingBackToPreviousPhaseHeader />;
+        }
+
+        if (oldIndex < newIndex) {
+          return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
+        }
+
+        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
+      }
+
+      throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
     case "health_change":
       return (
         <div>

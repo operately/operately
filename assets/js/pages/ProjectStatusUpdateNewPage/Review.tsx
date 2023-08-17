@@ -191,6 +191,8 @@ type Answer = YesNoAnswer | TextAreaAnswer;
 type Answers = Record<string, Answer>;
 
 function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects.ProjectPhase): Question[] {
+  const phaseOrder = ["planning", "execution", "control"];
+
   if (newPhase === "completed" || newPhase === "canceled") {
     return [
       {
@@ -223,38 +225,51 @@ function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects
       },
     ];
   } else {
-    return [
-      {
-        name: "schedule",
-        title: "Schedule",
-        question: `Was the ${currentPhase} phase completed on schedule?`,
-        type: "yes_no_with_comments",
-      },
-      {
-        name: "costs",
-        title: "Costs",
-        question: `Was the ${currentPhase} phase completed within budget?`,
-        type: "yes_no_with_comments",
-      },
-      {
-        name: "team",
-        title: "Team",
-        question: "Was the team staffed with suitable roles?",
-        type: "yes_no_with_comments",
-      },
-      {
-        name: "risks",
-        title: "Risks",
-        question: "Are there any outstanding project risks?",
-        type: "yes_no_with_comments",
-      },
-      {
-        name: "deliverables",
-        title: "Deliverables",
-        question: `Summarize the deliverables of the ${currentPhase} phase`,
-        type: "text_area",
-      },
-    ];
+    const oldPhaseIndex = phaseOrder.indexOf(currentPhase);
+    const newPhaseIndex = phaseOrder.indexOf(newPhase);
+
+    if (oldPhaseIndex < newPhaseIndex) {
+      return [
+        {
+          name: "schedule",
+          title: "Schedule",
+          question: `Was the ${currentPhase} phase completed on schedule?`,
+          type: "yes_no_with_comments",
+        },
+        {
+          name: "costs",
+          title: "Costs",
+          question: `Was the ${currentPhase} phase completed within budget?`,
+          type: "yes_no_with_comments",
+        },
+        {
+          name: "team",
+          title: "Team",
+          question: "Was the team staffed with suitable roles?",
+          type: "yes_no_with_comments",
+        },
+        {
+          name: "risks",
+          title: "Risks",
+          question: "Are there any outstanding project risks?",
+          type: "yes_no_with_comments",
+        },
+        {
+          name: "deliverables",
+          title: "Deliverables",
+          question: `Summarize the deliverables of the ${currentPhase} phase`,
+          type: "text_area",
+        },
+      ];
+    } else {
+      return [
+        {
+          name: "why-are-you-switching-back",
+          title: "Why are you switching back to " + newPhase + "?",
+          type: "text_area",
+        },
+      ];
+    }
   }
 }
 
