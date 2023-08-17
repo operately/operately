@@ -7,36 +7,21 @@ export default function Review({ project, newPhase }) {
   const [post, { loading }] = Updates.usePostUpdateMutation();
   const navigate = useNavigate();
 
-  const [answers, setAnswers] = React.useState({
-    schedule: {
-      answer: "",
-      comments: "",
-    },
-    costs: {
-      answer: "",
-      comments: "",
-    },
-    team: {
-      answer: "",
-      comments: "",
-    },
-    risks: {
-      answer: "",
-      comments: "",
-    },
-    deliverables: {
-      answer: "",
-    },
-  });
+  const questions = createQuestions(project.phase, newPhase);
+  const emptyAnswers = createEmptyAnswers(questions);
+
+  const [answers, setAnswers] = React.useState<Answers>(emptyAnswers);
 
   const setAnswer = (name: string, field: string, answer: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        [field]: answer,
-      },
-    }));
+    setAnswers((answers: Answers): Answers => {
+      return {
+        ...answers,
+        [name]: {
+          ...answers[name],
+          [field]: answer,
+        },
+      } as Answers;
+    });
   };
 
   const valid = Object.values(answers).every((answer) => answer.answer !== "");
@@ -61,8 +46,6 @@ export default function Review({ project, newPhase }) {
     navigate("/projects/" + project.id);
   };
 
-  const questions = createQuestions(project.phase, newPhase);
-
   return (
     <div className="flex flex-col gap-8 my-8">
       <Forms.Form onSubmit={handleSubmit} isValid={true} loading={loading} onCancel={handleCancel}>
@@ -75,9 +58,9 @@ export default function Review({ project, newPhase }) {
                   name={question.name}
                   title={question.title}
                   question={question.question}
-                  answer={answers[question.name].answer}
+                  answer={answers[question.name]!.answer}
                   setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
-                  comments={answers[question.name].comments}
+                  comments={(answers[question.name]! as YesNoAnswer).comments}
                   setComments={(comments: string) => setAnswer(question.name, "comments", comments)}
                 />
               );
@@ -88,7 +71,7 @@ export default function Review({ project, newPhase }) {
                   key={question.name}
                   title={question.title}
                   question={question.question}
-                  answer={answers[question.name].answer}
+                  answer={answers[question.name]!.answer}
                   setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
                 />
               );
@@ -106,41 +89,6 @@ export default function Review({ project, newPhase }) {
       </Forms.Form>
     </div>
   );
-}
-
-function createQuestions(currentPhase: string, _newPhase: string) {
-  return [
-    {
-      name: "schedule",
-      title: "Schedule",
-      question: `Was the ${currentPhase} phase completed on schedule?`,
-      type: "yes_no_with_comments",
-    },
-    {
-      name: "costs",
-      title: "Costs",
-      question: `Was the ${currentPhase} phase completed within budget?`,
-      type: "yes_no_with_comments",
-    },
-    {
-      name: "team",
-      title: "Team",
-      question: "Was the team staffed with suitable roles?",
-      type: "yes_no_with_comments",
-    },
-    {
-      name: "risks",
-      title: "Risks",
-      question: "Are there any outstanding project risks?",
-      type: "yes_no_with_comments",
-    },
-    {
-      name: "deliverables",
-      title: "Deliverables",
-      question: `Summarize the deliverables of the ${currentPhase} phase`,
-      type: "text_area",
-    },
-  ];
 }
 
 function YesNoQuestionWithComments({ name, title, question, answer, setAnswer, comments, setComments }) {
@@ -209,4 +157,110 @@ function TextAreaQuestion({ name, title, question, answer, setAnswer }) {
       />
     </div>
   );
+}
+
+type YesNoQuestion = {
+  name: string;
+  title: string;
+  question: string;
+  type: "yes_no_with_comments";
+};
+
+type TextAreaQuestion = {
+  name: string;
+  title: string;
+  question?: string;
+  type: "text_area";
+};
+
+type Question = YesNoQuestion | TextAreaQuestion;
+
+type YesNoAnswer = {
+  answer: "yes" | "no";
+  comments: string;
+};
+
+type TextAreaAnswer = {
+  answer: string;
+};
+
+type Answer = YesNoAnswer | TextAreaAnswer;
+type Answers = Record<string, Answer>;
+
+function createQuestions(currentPhase: string, newPhase: string): Question[] {
+  if (newPhase === "completed") {
+    return [
+      {
+        name: "what-went-well",
+        title: "What went well?",
+        type: "text_area",
+      },
+      {
+        name: "what-could-be-better",
+        title: "What could've gone better?",
+        type: "text_area",
+      },
+      {
+        name: "what-we-learned",
+        title: "What we learned?",
+        type: "text_area",
+      },
+    ];
+  } else {
+    return [
+      {
+        name: "schedule",
+        title: "Schedule",
+        question: `Was the ${currentPhase} phase completed on schedule?`,
+        type: "yes_no_with_comments",
+      },
+      {
+        name: "costs",
+        title: "Costs",
+        question: `Was the ${currentPhase} phase completed within budget?`,
+        type: "yes_no_with_comments",
+      },
+      {
+        name: "team",
+        title: "Team",
+        question: "Was the team staffed with suitable roles?",
+        type: "yes_no_with_comments",
+      },
+      {
+        name: "risks",
+        title: "Risks",
+        question: "Are there any outstanding project risks?",
+        type: "yes_no_with_comments",
+      },
+      {
+        name: "deliverables",
+        title: "Deliverables",
+        question: `Summarize the deliverables of the ${currentPhase} phase`,
+        type: "text_area",
+      },
+    ];
+  }
+}
+
+function createEmptyAnswers(questions: any[]): Answers {
+  return questions.reduce((acc, question) => {
+    if (question.type === "yes_no_with_comments") {
+      return {
+        ...acc,
+        [question.name]: {
+          answer: "",
+          comments: "",
+        },
+      };
+    } else if (question.type === "text_area") {
+      return {
+        ...acc,
+        [question.name]: {
+          answer: "",
+        },
+      };
+    } else {
+      throw new Error(`Unknown question type: ${question.type}`);
+    }
+  }, {});
 }

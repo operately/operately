@@ -127,6 +127,11 @@ defmodule Operately.Features.ProjectsTest do
     state
     |> UI.scroll_to(testid: "submit")
     |> UI.click(testid: "submit")
+
+    # placeholdes while we wait for the page to load
+    # when we have the reload feature, we can remove this
+    # and verify if the page has reloaded and contains the answers
+    :timer.sleep(1000) 
   end
 
   feature "changing phase from execution -> control and filling in the review", state do
@@ -164,6 +169,41 @@ defmodule Operately.Features.ProjectsTest do
     state
     |> UI.scroll_to(testid: "submit")
     |> UI.click(testid: "submit")
+
+    # placeholdes while we wait for the page to load
+    # when we have the reload feature, we can remove this
+    # and verify if the page has reloaded and contains the answers
+    :timer.sleep(1000) 
+  end
+
+  feature "changing phase from control -> completed and filling in a retrospective", state do
+    change_phase(state.project, :control)
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-completed")
+
+    state
+    |> UI.find(testid: "section-what-went-well")
+    |> UI.fill(testid: "what-went-well-answer", with: "The project was completed on schedule.")
+
+    state
+    |> UI.find(testid: "section-what-could-be-better")
+    |> UI.fill(testid: "what-could-be-better-answer", with: "The project could have been completed on budget.")
+
+    state
+    |> UI.find(testid: "section-what-we-learned")
+    |> UI.fill(testid: "what-we-learned-answer", with: "We learned that we need to improve our budgeting process.")
+
+    state
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+
+    # placeholdes while we wait for the page to load
+    # when we have the reload feature, we can remove this
+    # and verify if the page has reloaded and contains the answers
+    :timer.sleep(1000) 
   end
 
   # # ===========================================================================
