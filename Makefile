@@ -85,12 +85,12 @@ gen.migration:
 
 dev.setup:
 	$(DEV_CONTAINER) mix deps.get
-	$(DEV_CONTAINER) mix deps.compile
+	$(DEV_CONTAINER) mix compile
 
 test.setup:
 	$(USER_CONTEXT) && docker compose build
 	$(TEST_CONTAINER) mix deps.get
-	$(TEST_CONTAINER) mix deps.compile
+	$(TEST_CONTAINER) mix compile
 	$(TEST_CONTAINER) bash -c "cd assets && npm install"
 	$(TEST_CONTAINER) mix assets.deploy
 
