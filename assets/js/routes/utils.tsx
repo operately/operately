@@ -33,7 +33,10 @@ export function showProgress(loader: ({ params }: { params: any }) => Promise<an
       if (!samePage) nprogress.done();
 
       const end = performance.now();
-      console.log(`Execution time: ${end - start} ms`);
+
+      if (window["environment"] === "dev") {
+        console.log(`Execution time: ${end - start} ms`);
+      }
 
       return data;
     } catch (error) {
