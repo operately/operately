@@ -1,5 +1,7 @@
 import Config
 
+config :operately, :app_env, :dev
+
 # Configure your database
 config :operately, Operately.Repo,
   username: System.get_env("DB_USERNAME"),

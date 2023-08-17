@@ -128,12 +128,13 @@ function YesNoQuestionWithComments({ name, title, question, answer, setAnswer, c
         </div>
       </div>
 
-      <textarea
+      <Forms.Textarea
         data-test-id={name + "-comments"}
-        className="w-full h-20 bg-dark-5 rounded outline-none border-none resize-none"
+        className="w-full bg-dark-5 rounded outline-none border-none resize-none"
+        style={{ minHeight: "4rem" }}
         placeholder="Leave a comment..."
         value={comments}
-        onChange={(e) => setComments(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComments(e.target.value)}
       />
     </div>
   );
@@ -148,12 +149,13 @@ function TextAreaQuestion({ name, title, question, answer, setAnswer }) {
         <p className="font-medium">{question}</p>
       </div>
 
-      <textarea
+      <Forms.Textarea
         data-test-id={name + "-answer"}
-        className="w-full h-20 bg-dark-5 rounded outline-none border-none resize-none"
+        className="w-full bg-dark-5 rounded outline-none border-none resize-none"
+        style={{ minHeight: "4rem" }}
         placeholder="Write here..."
         value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAnswer(e.target.value)}
       />
     </div>
   );
