@@ -209,6 +209,19 @@ function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects
         type: "text_area",
       },
     ];
+  } else if (newPhase === "paused") {
+    return [
+      {
+        name: "why-are-you-pausing",
+        title: "Why are you pausing this project?",
+        type: "text_area",
+      },
+      {
+        name: "when-will-you-resume",
+        title: "When will you resume?",
+        type: "text_area",
+      },
+    ];
   } else {
     return [
       {

@@ -244,11 +244,11 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> UI.find(testid: "section-why-are-you-pausing")
-    |> UI.fill(testid: "why-are-you-pausing", with: "We are pausing the project because of X, Y, and Z.")
+    |> UI.fill(testid: "why-are-you-pausing-answer", with: "We are pausing the project because of X, Y, and Z.")
 
     state
     |> UI.find(testid: "section-when-will-you-resume")
-    |> UI.fill(testid: "when-will-you-resume", with: "We will resume the project on X date.")
+    |> UI.fill(testid: "when-will-you-resume-answer", with: "We will resume the project on X date.")
 
     state
     |> UI.scroll_to(testid: "submit")
