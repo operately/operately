@@ -56,7 +56,7 @@ USER_CONTEXT = export GROUP_ID=$$(id -g) && export USER_ID=$$(id -u)
 # Most importantly, it is able to seemlesly use ARM images on ARM machines, and
 # AMD64 images on AMD64 machines.
 #
-DOCKER_COMPOSE = docker compose run --rm -v $(SCREENSHOTS_DIR):/tmp/screenshots
+DOCKER_COMPOSE = docker compose --progress plain run --rm -v $(SCREENSHOTS_DIR):/tmp/screenshots
 
 #
 # Prepare commands to run the containers in various modes.
@@ -73,7 +73,7 @@ DEV_CONTAINER_WITH_PORTS = $(USER_CONTEXT) && $(DOCKER_COMPOSE) --service-ports 
 # It will build the container and install all dependencies.
 #
 setup:
-	$(USER_CONTEXT) && docker compose build
+	$(USER_CONTEXT) && docker compose --progress plain build
 	$(MAKE) dev.setup
 
 migrate:
