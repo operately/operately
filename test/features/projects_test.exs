@@ -130,6 +130,8 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   feature "changing phase from execution -> control and filling in the review", state do
+    change_phase(state.project, :execution)
+
     state
     |> visit_show(state.project)
     |> UI.click(testid: "phase-selector")
@@ -258,6 +260,10 @@ defmodule Operately.Features.ProjectsTest do
         ]
       }
     }
+  end
+
+  def change_phase(project, phase) do
+    {:ok, _} = Operately.Projects.update_project(project, %{phase: phase})
   end
 
   # def click_new_project(state) do

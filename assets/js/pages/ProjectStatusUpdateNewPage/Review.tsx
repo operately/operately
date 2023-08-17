@@ -3,39 +3,6 @@ import * as Forms from "@/components/Form";
 import { useNavigate } from "react-router-dom";
 import * as Updates from "@/graphql/Projects/updates";
 
-const questions = [
-  {
-    name: "schedule",
-    title: "Schedule",
-    question: "Was the planning phase completed on schedule?",
-    type: "yes_no_with_comments",
-  },
-  {
-    name: "costs",
-    title: "Costs",
-    question: "Was the planning phase completed within budget?",
-    type: "yes_no_with_comments",
-  },
-  {
-    name: "team",
-    title: "Team",
-    question: "Was the team staffed with suitable roles?",
-    type: "yes_no_with_comments",
-  },
-  {
-    name: "risks",
-    title: "Risks",
-    question: "Are there any outstanding project risks?",
-    type: "yes_no_with_comments",
-  },
-  {
-    name: "deliverables",
-    title: "Deliverables",
-    question: "Summarize the deliverables of the planning phase",
-    type: "text_area",
-  },
-];
-
 export default function Review({ project, newPhase }) {
   const [post, { loading }] = Updates.usePostUpdateMutation();
   const navigate = useNavigate();
@@ -94,6 +61,8 @@ export default function Review({ project, newPhase }) {
     navigate("/projects/" + project.id);
   };
 
+  const questions = createQuestions(project.phase, newPhase);
+
   return (
     <div className="flex flex-col gap-8 my-8">
       <Forms.Form onSubmit={handleSubmit} isValid={true} loading={loading} onCancel={handleCancel}>
@@ -137,6 +106,41 @@ export default function Review({ project, newPhase }) {
       </Forms.Form>
     </div>
   );
+}
+
+function createQuestions(currentPhase: string, _newPhase: string) {
+  return [
+    {
+      name: "schedule",
+      title: "Schedule",
+      question: `Was the ${currentPhase} phase completed on schedule?`,
+      type: "yes_no_with_comments",
+    },
+    {
+      name: "costs",
+      title: "Costs",
+      question: `Was the ${currentPhase} phase completed within budget?`,
+      type: "yes_no_with_comments",
+    },
+    {
+      name: "team",
+      title: "Team",
+      question: "Was the team staffed with suitable roles?",
+      type: "yes_no_with_comments",
+    },
+    {
+      name: "risks",
+      title: "Risks",
+      question: "Are there any outstanding project risks?",
+      type: "yes_no_with_comments",
+    },
+    {
+      name: "deliverables",
+      title: "Deliverables",
+      question: `Summarize the deliverables of the ${currentPhase} phase`,
+      type: "text_area",
+    },
+  ];
 }
 
 function YesNoQuestionWithComments({ name, title, question, answer, setAnswer, comments, setComments }) {
