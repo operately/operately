@@ -129,7 +129,7 @@ function YesNoQuestionWithComments({ name, title, question, answer, setAnswer, c
       </div>
 
       <Forms.Textarea
-        data-test-id={name + "-answer"}
+        data-test-id={name + "-comments"}
         className="w-full bg-dark-5 rounded outline-none border-none resize-none"
         style={{ minHeight: "4rem" }}
         placeholder="Leave a comment..."
