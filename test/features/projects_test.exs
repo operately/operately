@@ -176,11 +176,11 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> UI.find(testid: "section-what-went-well")
-    |> UI.fill(testid: "what-went-well-anwer", with: "The project was completed on schedule.")
+    |> UI.fill(testid: "what-went-well-answer", with: "The project was completed on schedule.")
 
     state
-    |> UI.find(testid: "section-could-be-better")
-    |> UI.fill(testid: "could-be-better-answer", with: "The project could have been completed on budget.")
+    |> UI.find(testid: "section-what-could-be-better")
+    |> UI.fill(testid: "what-could-be-better-answer", with: "The project could have been completed on budget.")
 
     state
     |> UI.find(testid: "section-what-we-learned")

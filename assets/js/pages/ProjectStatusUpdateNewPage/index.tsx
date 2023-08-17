@@ -78,6 +78,8 @@ function Content() {
     return <Review project={project} newPhase={newPhase} />;
   } else if (messageType === "phase_change" && currentPhase === "execution" && newPhase === "control") {
     return <Review project={project} newPhase={newPhase} />;
+  } else if (messageType === "phase_change" && currentPhase === "control" && newPhase === "completed") {
+    return <Review project={project} newPhase={newPhase} />;
   } else {
     return <Editor project={project} title={title} />;
   }
@@ -98,19 +100,36 @@ function HealthTitle({ health }) {
   }
 }
 
+function ReviewHeader({ prevPhase, newPhase }) {
+  return (
+    <div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: PHASE CHANGE</div>
+      <div className="text-4xl font-bold mx-auto">
+        <span className="capitalize">{prevPhase}</span> -&gt; <span className="capitalize">{newPhase}</span>
+      </div>
+    </div>
+  );
+}
+
+function RetrospectiveHeader() {
+  return (
+    <div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: COMPLETING THE PROJECT</div>
+      <div className="text-4xl font-bold mx-auto">Project Retrospective</div>
+    </div>
+  );
+}
+
 function NewUpdateHeader({ project, title, setTitle }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
   switch (messageType) {
     case "phase_change":
-      return (
-        <div>
-          <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: PHASE CHANGE</div>
-          <div className="text-4xl font-bold mx-auto">
-            <span className="capitalize">{project.phase}</span> -&gt; <span className="capitalize">{newPhase}</span>
-          </div>
-        </div>
-      );
+      if (newPhase === "completed") {
+        return <RetrospectiveHeader />;
+      } else {
+        return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
+      }
     case "health_change":
       return (
         <div>
