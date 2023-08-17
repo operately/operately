@@ -2,6 +2,7 @@ import React from "react";
 import * as Forms from "@/components/Form";
 import { useNavigate } from "react-router-dom";
 import * as Updates from "@/graphql/Projects/updates";
+import * as Projects from "@/graphql/Projects";
 
 export default function Review({ project, newPhase }) {
   const [post, { loading }] = Updates.usePostUpdateMutation();
@@ -189,8 +190,8 @@ type TextAreaAnswer = {
 type Answer = YesNoAnswer | TextAreaAnswer;
 type Answers = Record<string, Answer>;
 
-function createQuestions(currentPhase: string, newPhase: string): Question[] {
-  if (newPhase === "completed") {
+function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects.ProjectPhase): Question[] {
+  if (newPhase === "completed" || newPhase === "canceled") {
     return [
       {
         name: "what-went-well",
