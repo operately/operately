@@ -191,9 +191,10 @@ type Answer = YesNoAnswer | TextAreaAnswer;
 type Answers = Record<string, Answer>;
 
 function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects.ProjectPhase): Question[] {
-  const phaseOrder = ["planning", "execution", "control"];
+  const terminalPhases = ["completed", "canceled"];
+  const nonTerminalPhases = ["planning", "execution", "control"];
 
-  if (newPhase === "completed" || newPhase === "canceled") {
+  if (terminalPhases.includes(newPhase)) {
     return [
       {
         name: "what-went-well",
@@ -224,9 +225,17 @@ function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects
         type: "text_area",
       },
     ];
-  } else {
-    const oldPhaseIndex = phaseOrder.indexOf(currentPhase);
-    const newPhaseIndex = phaseOrder.indexOf(newPhase);
+  } else if (terminalPhases.includes(currentPhase) && nonTerminalPhases.includes(newPhase)) {
+    return [
+      {
+        name: "why-are-you-restarting",
+        title: "Why are you restarting this project?",
+        type: "text_area",
+      },
+    ];
+  } else if (nonTerminalPhases.includes(currentPhase) && nonTerminalPhases.includes(newPhase)) {
+    const oldPhaseIndex = nonTerminalPhases.indexOf(currentPhase);
+    const newPhaseIndex = nonTerminalPhases.indexOf(newPhase);
 
     if (oldPhaseIndex < newPhaseIndex) {
       return [
@@ -270,6 +279,8 @@ function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects
         },
       ];
     }
+  } else {
+    throw new Error(`Unknown phase transition: ${currentPhase} -> ${newPhase}`);
   }
 }
 

@@ -260,7 +260,7 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
-  feature "changing phase from control -> pending and filling in a the questions", state do
+  feature "changing phase from control -> planning and filling in a the questions", state do
     change_phase(state.project, :control)
 
     state
@@ -271,6 +271,28 @@ defmodule Operately.Features.ProjectsTest do
     state
     |> UI.find(testid: "section-why-are-you-switching-back")
     |> UI.fill(testid: "why-are-you-switching-back-answer", with: "We are switching back to the pending phase because of X, Y, and Z.")
+
+    state
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+
+    # placeholdes while we wait for the page to load
+    # when we have the reload feature, we can remove this
+    # and verify if the page has reloaded and contains the answers
+    :timer.sleep(1000) 
+  end
+
+  feature "changing phase from completed -> planning and filling in a the questions", state do
+    change_phase(state.project, :completed)
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-planning")
+
+    state
+    |> UI.find(testid: "section-why-are-you-restarting")
+    |> UI.fill(testid: "why-are-you-restarting-answer", with: "We are restarting the project because of X, Y, and Z.")
 
     state
     |> UI.scroll_to(testid: "submit")

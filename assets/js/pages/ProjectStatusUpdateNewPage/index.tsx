@@ -30,7 +30,7 @@ interface ContextDescriptor {
   project: Projects.Project;
   messageType: Updates.UpdateMessageType;
   currentPhase?: string;
-  newPhase?: string | null;
+  newPhase?: Projects.ProjectPhase | null;
   newHealth?: string | null;
   title: string;
   setTitle: (title: string) => void;
@@ -143,6 +143,15 @@ function GoingBackToPreviousPhaseHeader() {
   );
 }
 
+function RestartingHeader() {
+  return (
+    <div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: RESTARTING PROJECT</div>
+      <div className="text-4xl font-bold mx-auto">Restarting work on the project</div>
+    </div>
+  );
+}
+
 function NewUpdateHeader({ project, title, setTitle }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
@@ -172,6 +181,14 @@ function NewUpdateHeader({ project, title, setTitle }) {
 
         if (newPhase === "canceled") {
           return <CanceledHeader />;
+        }
+
+        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
+      }
+
+      if (terminalPhases.includes(project.phase) && nonTerminalPhases.includes(newPhase)) {
+        if (newPhase === "planning") {
+          return <RestartingHeader />;
         }
 
         throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
