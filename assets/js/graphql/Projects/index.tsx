@@ -112,8 +112,8 @@ interface Document {
   author: Person;
 }
 
-type ProjectPhase = "concept" | "planning" | "execution" | "control";
-type ProjectHealth = "unknown" | "on_track" | "at_risk" | "off_track";
+export type ProjectPhase = "planning" | "execution" | "control" | "completed" | "canceled" | "paused";
+export type ProjectHealth = "unknown" | "on_track" | "at_risk" | "off_track";
 
 export interface Project {
   id: string;

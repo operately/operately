@@ -72,13 +72,9 @@ export function Page() {
 }
 
 function Content() {
-  const { title, project, messageType, currentPhase, newPhase } = React.useContext(Context) as ContextDescriptor;
+  const { title, project, messageType, newPhase } = React.useContext(Context) as ContextDescriptor;
 
-  if (messageType === "phase_change" && currentPhase === "planning" && newPhase === "execution") {
-    return <Review project={project} newPhase={newPhase} />;
-  } else if (messageType === "phase_change" && currentPhase === "execution" && newPhase === "control") {
-    return <Review project={project} newPhase={newPhase} />;
-  } else if (messageType === "phase_change" && currentPhase === "control" && newPhase === "completed") {
+  if (messageType === "phase_change") {
     return <Review project={project} newPhase={newPhase} />;
   } else {
     return <Editor project={project} title={title} />;
@@ -111,10 +107,19 @@ function ReviewHeader({ prevPhase, newPhase }) {
   );
 }
 
-function RetrospectiveHeader() {
+function CompletedHeader() {
   return (
     <div>
       <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: COMPLETING THE PROJECT</div>
+      <div className="text-4xl font-bold mx-auto">Project Retrospective</div>
+    </div>
+  );
+}
+
+function CanceledHeader() {
+  return (
+    <div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: CANCELING THE PROJECT</div>
       <div className="text-4xl font-bold mx-auto">Project Retrospective</div>
     </div>
   );
@@ -125,10 +130,13 @@ function NewUpdateHeader({ project, title, setTitle }) {
 
   switch (messageType) {
     case "phase_change":
-      if (newPhase === "completed") {
-        return <RetrospectiveHeader />;
-      } else {
-        return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
+      switch (newPhase) {
+        case "completed":
+          return <CompletedHeader />;
+        case "canceled":
+          return <CanceledHeader />;
+        default:
+          return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
       }
     case "health_change":
       return (
