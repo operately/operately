@@ -10,10 +10,18 @@ export default function Review({ project, newPhase }) {
   const questions = createQuestions(project.phase, newPhase);
   const emptyAnswers = createEmptyAnswers(questions);
 
-  const [answers, setAnswers] = React.useState(emptyAnswers);
+  const [answers, setAnswers] = React.useState<Answers>(emptyAnswers);
 
   const setAnswer = (name: string, field: string, answer: string) => {
-    setAnswers((prev) => updatePathInObject(prev, [name, field], prev));
+    setAnswers((answers: Answers): Answers => {
+      return {
+        ...answers,
+        [name]: {
+          ...answers[name],
+          [field]: answer,
+        },
+      } as Answers;
+    });
   };
 
   const valid = Object.values(answers).every((answer) => answer.answer !== "");
@@ -50,9 +58,9 @@ export default function Review({ project, newPhase }) {
                   name={question.name}
                   title={question.title}
                   question={question.question}
-                  answer={answers[question.name].answer}
+                  answer={answers[question.name]!.answer}
                   setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
-                  comments={answers[question.name].comments}
+                  comments={(answers[question.name]! as YesNoAnswer).comments}
                   setComments={(comments: string) => setAnswer(question.name, "comments", comments)}
                 />
               );
@@ -63,7 +71,7 @@ export default function Review({ project, newPhase }) {
                   key={question.name}
                   title={question.title}
                   question={question.question}
-                  answer={answers[question.name].answer}
+                  answer={answers[question.name]!.answer}
                   setAnswer={(answer: string) => setAnswer(question.name, "answer", answer)}
                 />
               );
@@ -151,7 +159,35 @@ function TextAreaQuestion({ name, title, question, answer, setAnswer }) {
   );
 }
 
-function createQuestions(currentPhase: string, newPhase: string) {
+type YesNoQuestion = {
+  name: string;
+  title: string;
+  question: string;
+  type: "yes_no_with_comments";
+};
+
+type TextAreaQuestion = {
+  name: string;
+  title: string;
+  question?: string;
+  type: "text_area";
+};
+
+type Question = YesNoQuestion | TextAreaQuestion;
+
+type YesNoAnswer = {
+  answer: "yes" | "no";
+  comments: string;
+};
+
+type TextAreaAnswer = {
+  answer: string;
+};
+
+type Answer = YesNoAnswer | TextAreaAnswer;
+type Answers = Record<string, Answer>;
+
+function createQuestions(currentPhase: string, newPhase: string): Question[] {
   if (newPhase === "completed") {
     return [
       {
@@ -206,7 +242,7 @@ function createQuestions(currentPhase: string, newPhase: string) {
   }
 }
 
-function createEmptyAnswers(questions: any[]) {
+function createEmptyAnswers(questions: any[]): Answers {
   return questions.reduce((acc, question) => {
     if (question.type === "yes_no_with_comments") {
       return {
@@ -227,17 +263,4 @@ function createEmptyAnswers(questions: any[]) {
       throw new Error(`Unknown question type: ${question.type}`);
     }
   }, {});
-}
-
-function updatePathInObject(object: any, path: string[], value: any) {
-  const [first, ...rest] = path;
-  const updated = { ...object };
-
-  if (rest.length === 0) {
-    updated[first] = value;
-    return updated;
-  } else {
-    updated[first] = updatePathInObject(object[first], rest, value);
-    return updated;
-  }
 }
