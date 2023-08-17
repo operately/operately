@@ -76,6 +76,8 @@ function Content() {
 
   if (messageType === "phase_change" && currentPhase === "planning" && newPhase === "execution") {
     return <Review project={project} newPhase={newPhase} />;
+  } else if (messageType === "phase_change" && currentPhase === "execution" && newPhase === "control") {
+    return <Review project={project} newPhase={newPhase} />;
   } else {
     return <Editor project={project} title={title} />;
   }
