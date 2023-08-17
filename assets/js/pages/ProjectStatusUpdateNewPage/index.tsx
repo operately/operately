@@ -125,6 +125,15 @@ function CanceledHeader() {
   );
 }
 
+function PausedHeader() {
+  return (
+    <div>
+      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: PAUSING THE PROJECT</div>
+      <div className="text-4xl font-bold mx-auto">Project Pause</div>
+    </div>
+  );
+}
+
 function NewUpdateHeader({ project, title, setTitle }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
 
@@ -135,6 +144,8 @@ function NewUpdateHeader({ project, title, setTitle }) {
           return <CompletedHeader />;
         case "canceled":
           return <CanceledHeader />;
+        case "paused":
+          return <PausedHeader />;
         default:
           return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
       }

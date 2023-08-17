@@ -236,6 +236,30 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
+  feature "pausing a project", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-paused")
+
+    state
+    |> UI.find(testid: "section-why-are-you-pausing")
+    |> UI.fill(testid: "why-are-you-pausing-answer", with: "We are pausing the project because of X, Y, and Z.")
+
+    state
+    |> UI.find(testid: "section-when-will-you-resume")
+    |> UI.fill(testid: "when-will-you-resume-answer", with: "We will resume the project on X date.")
+
+    state
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+
+    # placeholdes while we wait for the page to load
+    # when we have the reload feature, we can remove this
+    # and verify if the page has reloaded and contains the answers
+    :timer.sleep(1000) 
+  end
+
   # # ===========================================================================
 
   defp visit_index(state) do
