@@ -2,6 +2,7 @@ import React from "react";
 
 import { Handler } from "../handler";
 import { Question, yesNoQuestion, textAreaQuestion } from "../questions";
+import { Answers } from "../answers";
 
 export class Review extends Handler {
   updateType(): string {
@@ -29,5 +30,21 @@ export class Review extends Handler {
         </div>
       );
     };
+  }
+
+  activityMessage(answers: Answers): React.FC {
+    const questions = this.questions();
+
+    return () => (
+      <>
+        <p className="font-bold mb-4">Project review after the {this.from} phase</p>
+
+        {questions.map((q) => (
+          <div>
+            {q.question} -&gt; {answers[q.name].answer}
+          </div>
+        ))}
+      </>
+    );
   }
 }

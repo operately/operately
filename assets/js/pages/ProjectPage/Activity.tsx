@@ -13,7 +13,7 @@ export default function Activity({ projectId }): JSX.Element {
   if (loading) return <></>;
   if (error) throw error;
 
-  const activityGroups = Activities.groupByDate(data?.activities);
+  const activities = data?.activities;
 
   return (
     <div className="min-h-[350px] py-8">
@@ -22,29 +22,12 @@ export default function Activity({ projectId }): JSX.Element {
       {loading && <div>Loading...</div>}
       {error && <div>{error.message}</div>}
       {data && (
-        <div className="flex flex-col gap-16">
-          {activityGroups.map((group) => (
-            <ActivityGroup key={group.date} date={group.date} activities={group.activities} />
+        <div className="flex flex-col gap-4">
+          {activities.map((activity: Activities.Activity) => (
+            <ActivityItem key={activity.id} activity={activity} />
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function ActivityGroup({ date, activities }) {
-  return (
-    <div className="flex flex-col relative">
-      <div className="absolute top-9 bottom-4 border-l border-shade-2 z-10" style={{ left: "99px" }} />
-      <div className="border-b border-shade-2 font-bold py-2 text-sm">
-        <FormattedTime time={date} format="short-date-with-weekday-relative" />
-      </div>
-
-      <div className="relative z-20">
-        {activities.map((activity: Activities.Activity) => (
-          <ActivityItem key={activity.id} activity={activity} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -73,18 +56,42 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
   }
 }
 
-function ActivityItemContainer({ person, time, children }) {
-  return (
-    <div className="flex items-start justify-between p-4 gap-4">
-      <div className="shrink-0 mt-1 text-sm" style={{ width: "50px" }}>
-        <FormattedTime time={time} format="time-only" />
-      </div>
+function ActivityItemContainer({ person, time, children, tint }) {
+  const border = tint || "border-dark-8";
 
-      <div className="shrink-0">
+  return (
+    <div className="flex items-start justify-between my-2">
+      <div className="shrink-0 mt-1.5">
         <Avatar person={person} />
       </div>
 
-      <div className="flex-1 mt-1">{children}</div>
+      <div className={"w-full border rounded-lg relative ml-3.5 bg-dark-4 shadow-lg" + " " + border}>
+        <svg height="16" width="7" className="absolute" style={{ left: "-7px", top: "12px" }}>
+          <polygon
+            points="0,8 8,0 8,16"
+            style={{ fill: "var(--color-dark-4)", stroke: "var(--color-dark-8)", strokeWidth: 1 }}
+          />
+        </svg>
+
+        <div className="flex flex-col overflow-hidden">
+          <div className="flex justify-between items-center border-b border-dark-8">
+            <div className="px-4 py-2">
+              <span className="font-bold">{person.fullName}</span> &middot;{" "}
+              <span className="text-white-2">
+                <FormattedTime time={time} format="relative" />
+              </span>
+            </div>
+
+            <div className="mr-4">
+              <div className="border border-yellow-400/50 rounded-full px-1.5 py-0.5 text-yellow-400/70 text-xs font-medium">
+                Champion
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 py-2 bg-dark-3 rounded-b-lg">{children}</div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -109,7 +116,7 @@ function ActivityItemProjectCreated({ activity }: { activity: Activities.Activit
 
   return (
     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-      <div className="flex items-center gap-1.5 font-bold">
+      <div className="flex items-center gap-1.5">
         {activity.person.fullName} created this project and assigned {who} as the champion.
       </div>
     </ActivityItemContainer>
@@ -169,27 +176,30 @@ function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.A
 }
 
 function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity }) {
-  if (activity.resource.messageType === "review") return null;
-
-  const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
-
   return (
-    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-      <div className="flex items-center gap-1.5 font-semibold">
-        {activity.person.fullName} posted a:
-        <Link to={link} className="font-semibold text-sky-400 underline underline-offset-2">
-          Status Update
-        </Link>
-      </div>
-
-      <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
-        <div className="line-clamp-4">
-          <RichContent jsonContent={activity.resource.message} />
-        </div>
-      </div>
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt} tint="border-blue-400/70">
+      {activity.resource.messageType === "review" && <Review activity={activity} />}
     </ActivityItemContainer>
   );
 }
+
+import * as PhaseChange from "@/features/phase_change";
+
+function Review({ activity }: { activity: Activities.Activity }) {
+  const handler = PhaseChange.handler({ id: 1 }, activity.resource.previousPhase, activity.resource.newPhase);
+
+  const answers = JSON.parse(activity.resource.message);
+  console.log(answers);
+  const Message = handler.activityMessage(answers);
+
+  return <Message />;
+}
+
+// <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
+//   <div className="line-clamp-4">
+//     <RichContent jsonContent={activity.resource.message} />
+//   </div>
+// </div>
 
 function ActivityItemUpdateAcknowledged({ activity }: { activity: Activities.Activity }) {
   const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
@@ -232,10 +242,6 @@ function ActivityItemCommentPost({ activity }: { activity: Activities.Activity }
   );
 }
 
-function SeparatorLine() {
-  return <div className="border-b border-white-3 flex-1"></div>;
-}
-
 function SectionTitle({ title }) {
-  return <div className="font-bold flex items-center gap-2 uppercase tracking-wide py-4">{title}</div>;
+  return <div className="font-bold flex items-center gap-2 py-4 border-t border-shade-1">{title}</div>;
 }

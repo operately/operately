@@ -55,6 +55,10 @@ const LIST_ACTIVITIES = gql`
           id
           message
           messageType
+
+          previousPhase
+          newPhase
+          message
         }
 
         ... on Milestone {
