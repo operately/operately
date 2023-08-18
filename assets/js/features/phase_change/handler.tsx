@@ -29,4 +29,5 @@ export abstract class Handler {
   abstract updateType(): string;
   abstract questions(): Question[];
   abstract formHeader(): React.FC;
+  abstract activityMessage(answers: Answers): React.FC;
 }

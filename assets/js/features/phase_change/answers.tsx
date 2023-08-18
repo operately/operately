@@ -1,15 +1,15 @@
 import { Question } from "./questions";
 
-type YesNoAnswer = {
+export type YesNoAnswer = {
   answer: "yes" | "no";
   comments: string;
 };
 
-type TextAreaAnswer = {
+export type TextAreaAnswer = {
   answer: string;
 };
 
-type Answer = YesNoAnswer | TextAreaAnswer;
+export type Answer = YesNoAnswer | TextAreaAnswer;
 export type Answers = Record<string, Answer>;
 
 export function buildEmptyAnswers(questions: Question[]): Answers {

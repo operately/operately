@@ -71,7 +71,7 @@ export function Page() {
         <Description me={me} project={project} />
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         <Tools project={project} />
-        <Activity projectId={project.id} />
+        <Activity project={project} />
       </Paper.Body>
     </Paper.Root>
   );
