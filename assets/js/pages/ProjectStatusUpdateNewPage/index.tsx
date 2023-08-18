@@ -13,8 +13,7 @@ import * as Updates from "@/graphql/Projects/updates";
 import Button from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
-
-import Review from "./Review";
+import * as PhaseChange from "@/features/phase_change";
 
 export async function loader({ params }) {
   let res = await client.query({
@@ -75,7 +74,12 @@ function Content() {
   const { title, project, messageType, newPhase } = React.useContext(Context) as ContextDescriptor;
 
   if (messageType === "phase_change") {
-    return <Review project={project} newPhase={newPhase} />;
+    if (!newPhase) throw new Error("New phase is not defined");
+
+    const handler = PhaseChange.handler(project, project.phase, newPhase);
+    const Form = handler.form();
+
+    return <Form />;
   } else {
     return <Editor project={project} title={title} />;
   }
@@ -96,120 +100,18 @@ function HealthTitle({ health }) {
   }
 }
 
-function ReviewHeader({ prevPhase, newPhase }) {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: PHASE CHANGE</div>
-      <div className="text-4xl font-bold mx-auto">
-        <span className="capitalize">{prevPhase}</span> -&gt; <span className="capitalize">{newPhase}</span>
-      </div>
-    </div>
-  );
-}
-
-function CompletedHeader() {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: COMPLETING THE PROJECT</div>
-      <div className="text-4xl font-bold mx-auto">Project Retrospective</div>
-    </div>
-  );
-}
-
-function CanceledHeader() {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: CANCELING THE PROJECT</div>
-      <div className="text-4xl font-bold mx-auto">Project Retrospective</div>
-    </div>
-  );
-}
-
-function PausedHeader() {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: PAUSING THE PROJECT</div>
-      <div className="text-4xl font-bold mx-auto">Project Pause</div>
-    </div>
-  );
-}
-
-function GoingBackToPreviousPhaseHeader() {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: REVERTING PROJECT PHASE</div>
-      <div className="text-4xl font-bold mx-auto">Going back to previous phase</div>
-    </div>
-  );
-}
-
-function RestartingHeader() {
-  return (
-    <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN: RESTARTING PROJECT</div>
-      <div className="text-4xl font-bold mx-auto">Restarting work on the project</div>
-    </div>
-  );
-}
-
 function NewUpdateHeader({ project, title, setTitle }) {
   const { messageType, newPhase, newHealth } = React.useContext(Context) as ContextDescriptor;
-
-  const terminalPhases = ["completed", "canceled"];
-  const nonTerminalPhases = ["planning", "execution", "control"] as Projects.ProjectPhase[];
 
   switch (messageType) {
     case "phase_change":
       if (!newPhase) throw new Error("New phase is not defined");
 
-      if (newPhase === "paused") {
-        if (terminalPhases.includes(project.phase)) {
-          throw new Error(`Cannot change phase from ${project.phase} to ${newPhase}`);
-        }
+      const handler = PhaseChange.handler(project, project.phase, newPhase);
+      const Header = handler.formHeader();
 
-        if (nonTerminalPhases.includes(project.phase)) {
-          return <PausedHeader />;
-        }
+      return <Header />;
 
-        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
-      }
-
-      if (nonTerminalPhases.includes(project.phase) && terminalPhases.includes(newPhase)) {
-        if (newPhase === "completed") {
-          return <CompletedHeader />;
-        }
-
-        if (newPhase === "canceled") {
-          return <CanceledHeader />;
-        }
-
-        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
-      }
-
-      if (terminalPhases.includes(project.phase) && nonTerminalPhases.includes(newPhase)) {
-        if (newPhase === "planning") {
-          return <RestartingHeader />;
-        }
-
-        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
-      }
-
-      if (nonTerminalPhases.includes(project.phase) && nonTerminalPhases.includes(newPhase)) {
-        let oldIndex = nonTerminalPhases.indexOf(project.phase);
-        let newIndex = nonTerminalPhases.indexOf(newPhase);
-
-        if (oldIndex > newIndex) {
-          return <GoingBackToPreviousPhaseHeader />;
-        }
-
-        if (oldIndex < newIndex) {
-          return <ReviewHeader prevPhase={project.phase} newPhase={newPhase} />;
-        }
-
-        throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
-      }
-
-      throw new Error(`Unknown phase change: ${project.phase} -> ${newPhase}`);
     case "health_change":
       return (
         <div>
