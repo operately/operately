@@ -2,6 +2,11 @@ import React from "react";
 
 import { Handler } from "../handler";
 import { Question, textAreaQuestion } from "../questions";
+import { Answers } from "../answers";
+
+import * as ProjectIcons from "@/components/ProjectIcons";
+import * as Icons from "@tabler/icons-react";
+import { AnswersView } from "../activity_view";
 
 export class Retrospective extends Handler {
   updateType(): string {
@@ -26,6 +31,52 @@ export class Retrospective extends Handler {
           <div className="text-4xl font-bold mx-auto">Project Retrospective</div>
         </div>
       );
+    };
+  }
+
+  activityMessage(answers: Answers): React.FC {
+    const questions = this.questions();
+
+    const fromIcon = <ProjectIcons.IconForPhase phase={this.from} />;
+    const toIcon = <ProjectIcons.IconForPhase phase={this.to} />;
+    const HeroIcon = this.HeroIcon();
+    const Title = this.Title();
+
+    return () => (
+      <>
+        <div className="flex flex-col items-center gap-2 mb-8 border-b border-shade-1 pb-8">
+          <HeroIcon />
+          <Title />
+
+          <div className="flex items-center gap-2">
+            {fromIcon} <span className="capitalize">{this.from}</span> -&gt; {toIcon}{" "}
+            <span className="capitalize">{this.to}</span>
+          </div>
+        </div>
+
+        <p className="font-medium mb-4">Project Retrospective</p>
+        <AnswersView questions={questions} answers={answers} />
+      </>
+    );
+  }
+
+  private Title(): React.FC {
+    return () => {
+      if (this.to === "completed") {
+        return <div className="text-xl font-bold">Project Completed</div>;
+      } else {
+        return <div className="text-xl font-bold">Project Canceled</div>;
+      }
+    };
+  }
+
+  private HeroIcon(): React.FC {
+    return () => {
+      if (this.to === "completed") {
+        return <Icons.IconConfetti className="text-pink-400 mb-2" size={40} stroke={1} />;
+      } else {
+        return <Icons.IconCircleX className="text-red-400 mb-2" size={40} stroke={1} />;
+      }
     };
   }
 }
