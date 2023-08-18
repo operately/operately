@@ -1,5 +1,5 @@
 import React from "react";
-import { Form } from "../Form";
+
 import { Handler } from "../handler";
 import { Question, yesNoQuestion, textAreaQuestion } from "../questions";
 

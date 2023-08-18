@@ -3,10 +3,8 @@ import { Answers } from "./answers";
 import * as Forms from "@/components/Form";
 import { useNavigate } from "react-router-dom";
 import * as Updates from "@/graphql/Projects/updates";
-import * as Projects from "@/graphql/Projects";
-import { Handler } from "./handler";
 
-export function Form({ project, handler }: { project: Projects.Project; handler: Handler }) {
+export function Form({ project, handler, questions }) {
   const [post, { loading }] = Updates.usePostUpdateMutation();
   const navigate = useNavigate();
 

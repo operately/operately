@@ -107,7 +107,7 @@ function NewUpdateHeader({ project, title, setTitle }) {
     case "phase_change":
       if (!newPhase) throw new Error("New phase is not defined");
 
-      const handler = PhaseChange.handler(project.phase, newPhase);
+      const handler = PhaseChange.handler(project, project.phase, newPhase);
       const Header = handler.formHeader();
 
       return <Header />;

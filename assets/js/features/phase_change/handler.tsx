@@ -23,7 +23,7 @@ export abstract class Handler {
   }
 
   form(): React.FC {
-    return () => <Form project={this.project} handler={this} />;
+    return () => <Form project={this.project} handler={this} questions={this.questions()} />;
   }
 
   abstract updateType(): string;
