@@ -1,14 +1,16 @@
 import React from "react";
 
 import * as Activities from "@/graphql/Activities";
+import * as Projects from "@/graphql/Projects";
+import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import { Link } from "react-router-dom";
 
-export default function Activity({ projectId }): JSX.Element {
-  const { data, loading, error } = Activities.useListActivities("project", projectId);
+export default function Activity({ project }): JSX.Element {
+  const { data, loading, error } = Activities.useListActivities("project", project.id);
 
   if (loading) return <></>;
   if (error) throw error;
@@ -24,7 +26,7 @@ export default function Activity({ projectId }): JSX.Element {
       {data && (
         <div className="flex flex-col gap-4">
           {activities.map((activity: Activities.Activity) => (
-            <ActivityItem key={activity.id} activity={activity} />
+            <ActivityItem key={activity.id} activity={activity} project={project} />
           ))}
         </div>
       )}
@@ -32,7 +34,7 @@ export default function Activity({ projectId }): JSX.Element {
   );
 }
 
-function ActivityItem({ activity }: { activity: Activities.Activity }) {
+function ActivityItem({ project, activity }: { project: Projects.Project; activity: Activities.Activity }) {
   if (activity.resource === null) return null;
 
   switch (activity.resourceType + "-" + activity.actionType) {
@@ -45,7 +47,7 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
     case "milestone-uncomplete":
       return <ActivityItemMilestoneUnCompleted activity={activity} />;
     case "update-post":
-      return <ActivityItemUpdatePost activity={activity} />;
+      return <ActivityItemUpdatePost project={project} activity={activity} />;
     case "update-acknowledge":
       return <ActivityItemUpdateAcknowledged activity={activity} />;
     case "comment-post":
@@ -56,8 +58,23 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
   }
 }
 
-function ActivityItemContainer({ person, time, children, tint }) {
-  const border = tint || "border-dark-8";
+const ContainerColors = {
+  blue: {
+    border: "border-blue-400/70",
+    stroke: "stroke-blue-400/70",
+  },
+  yellow: {
+    border: "border-yellow-400/50",
+    stroke: "stroke-yellow-400/50",
+  },
+  gray: {
+    border: "border-dark-8",
+    stroke: "stroke-dark-8",
+  },
+};
+
+function ActivityItemContainer({ person, time, children, tint = "gray" }) {
+  const colors = ContainerColors[tint];
 
   return (
     <div className="flex items-start justify-between my-2">
@@ -65,16 +82,17 @@ function ActivityItemContainer({ person, time, children, tint }) {
         <Avatar person={person} />
       </div>
 
-      <div className={"w-full border rounded-lg relative ml-3.5 bg-dark-4 shadow-lg" + " " + border}>
+      <div className={"w-full border rounded-lg relative ml-3.5 shadow-lg" + " " + colors.border}>
         <svg height="16" width="7" className="absolute" style={{ left: "-7px", top: "12px" }}>
           <polygon
             points="0,8 8,0 8,16"
-            style={{ fill: "var(--color-dark-4)", stroke: "var(--color-dark-8)", strokeWidth: 1 }}
+            className={colors.stroke}
+            style={{ fill: "var(--color-dark-4)", strokeWidth: 1 }}
           />
         </svg>
 
         <div className="flex flex-col overflow-hidden">
-          <div className="flex justify-between items-center border-b border-dark-8">
+          <div className={"flex justify-between items-center"}>
             <div className="px-4 py-2">
               <span className="font-bold">{person.fullName}</span> &middot;{" "}
               <span className="text-white-2">
@@ -82,14 +100,26 @@ function ActivityItemContainer({ person, time, children, tint }) {
               </span>
             </div>
 
-            <div className="mr-4">
+            <div className="mr-3">
               <div className="border border-yellow-400/50 rounded-full px-1.5 py-0.5 text-yellow-400/70 text-xs font-medium">
                 Champion
               </div>
             </div>
           </div>
 
-          <div className="px-4 py-2 bg-dark-3 rounded-b-lg">{children}</div>
+          <div className="px-4 py-2 rounded-b-lg">{children}</div>
+
+          <div className="mt-4 px-4 py-2">
+            <div className="flex justify-between items-center">
+              <Icons.IconMoodPlus size={24} className="text-white-2 cursor-pointer" />
+
+              <span className="text-white-2 font-medium">0 comments</span>
+            </div>
+
+            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4">
+              Start a conversation... encourage, congratulate, or ask a question.
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -175,21 +205,20 @@ function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.A
   );
 }
 
-function ActivityItemUpdatePost({ activity }: { activity: Activities.Activity }) {
+function ActivityItemUpdatePost({ project, activity }: { project: Projects.Project; activity: Activities.Activity }) {
   return (
-    <ActivityItemContainer person={activity.person} time={activity.insertedAt} tint="border-blue-400/70">
-      {activity.resource.messageType === "review" && <Review activity={activity} />}
+    <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
+      {activity.resource.messageType === "review" && <Review project={activity.resource.project} activity={activity} />}
     </ActivityItemContainer>
   );
 }
 
 import * as PhaseChange from "@/features/phase_change";
 
-function Review({ activity }: { activity: Activities.Activity }) {
-  const handler = PhaseChange.handler({ id: 1 }, activity.resource.previousPhase, activity.resource.newPhase);
+function Review({ project, activity }: { project: Projects.Project; activity: Activities.Activity }) {
+  const handler = PhaseChange.handler(project, activity.resource.previousPhase, activity.resource.newPhase);
 
   const answers = JSON.parse(activity.resource.message);
-  console.log(answers);
   const Message = handler.activityMessage(answers);
 
   return <Message />;
