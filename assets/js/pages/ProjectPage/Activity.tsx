@@ -216,6 +216,8 @@ function ActivityItemUpdatePost({ project, activity }: { project: Projects.Proje
 import * as PhaseChange from "@/features/phase_change";
 
 function Review({ project, activity }: { project: Projects.Project; activity: Activities.Activity }) {
+  if (activity.resource.previousPhase === activity.resource.newPhase) return null;
+
   const handler = PhaseChange.handler(project, activity.resource.previousPhase, activity.resource.newPhase);
 
   const answers = JSON.parse(activity.resource.message);

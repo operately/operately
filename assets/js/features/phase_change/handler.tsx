@@ -29,5 +29,8 @@ export abstract class Handler {
   abstract updateType(): string;
   abstract questions(): Question[];
   abstract formHeader(): React.FC;
-  abstract activityMessage(answers: Answers): React.FC;
+
+  activityMessage(answers: Answers): React.FC {
+    return () => <div>Activity message not implemented</div>;
+  }
 }
