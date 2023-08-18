@@ -1,15 +1,16 @@
-import React from "react";
+import * as React from "react";
+import { Answers } from "./answers";
 import * as Forms from "@/components/Form";
 import { useNavigate } from "react-router-dom";
 import * as Updates from "@/graphql/Projects/updates";
 import * as Projects from "@/graphql/Projects";
+import { Handler } from "./handler";
 
-export default function Review({ project, newPhase }) {
+export function Form({ project, handler }: { project: Projects.Project; handler: Handler }) {
   const [post, { loading }] = Updates.usePostUpdateMutation();
   const navigate = useNavigate();
 
-  const questions = createQuestions(project.phase, newPhase);
-  const emptyAnswers = createEmptyAnswers(questions);
+  const emptyAnswers = handler.emptyAnswers();
 
   const [answers, setAnswers] = React.useState<Answers>(emptyAnswers);
 
@@ -37,7 +38,7 @@ export default function Review({ project, newPhase }) {
           updatableId: project.id,
           content: JSON.stringify(answers),
           messageType: "review",
-          phase: newPhase,
+          phase: handler.to,
         },
       },
     });
@@ -160,149 +161,4 @@ function TextAreaQuestion({ name, title, question, answer, setAnswer }) {
       />
     </div>
   );
-}
-
-type YesNoQuestion = {
-  name: string;
-  title: string;
-  question: string;
-  type: "yes_no_with_comments";
-};
-
-type TextAreaQuestion = {
-  name: string;
-  title: string;
-  question?: string;
-  type: "text_area";
-};
-
-type Question = YesNoQuestion | TextAreaQuestion;
-
-type YesNoAnswer = {
-  answer: "yes" | "no";
-  comments: string;
-};
-
-type TextAreaAnswer = {
-  answer: string;
-};
-
-type Answer = YesNoAnswer | TextAreaAnswer;
-type Answers = Record<string, Answer>;
-
-function createQuestions(currentPhase: Projects.ProjectPhase, newPhase: Projects.ProjectPhase): Question[] {
-  const terminalPhases = ["completed", "canceled"];
-  const nonTerminalPhases = ["planning", "execution", "control"];
-
-  if (terminalPhases.includes(newPhase)) {
-    return [
-      {
-        name: "what-went-well",
-        title: "What went well?",
-        type: "text_area",
-      },
-      {
-        name: "what-could-be-better",
-        title: "What could've gone better?",
-        type: "text_area",
-      },
-      {
-        name: "what-we-learned",
-        title: "What we learned?",
-        type: "text_area",
-      },
-    ];
-  } else if (newPhase === "paused") {
-    return [
-      {
-        name: "why-are-you-pausing",
-        title: "Why are you pausing this project?",
-        type: "text_area",
-      },
-      {
-        name: "when-will-you-resume",
-        title: "When will you resume?",
-        type: "text_area",
-      },
-    ];
-  } else if (terminalPhases.includes(currentPhase) && nonTerminalPhases.includes(newPhase)) {
-    return [
-      {
-        name: "why-are-you-restarting",
-        title: "Why are you restarting this project?",
-        type: "text_area",
-      },
-    ];
-  } else if (nonTerminalPhases.includes(currentPhase) && nonTerminalPhases.includes(newPhase)) {
-    const oldPhaseIndex = nonTerminalPhases.indexOf(currentPhase);
-    const newPhaseIndex = nonTerminalPhases.indexOf(newPhase);
-
-    if (oldPhaseIndex < newPhaseIndex) {
-      return [
-        {
-          name: "schedule",
-          title: "Schedule",
-          question: `Was the ${currentPhase} phase completed on schedule?`,
-          type: "yes_no_with_comments",
-        },
-        {
-          name: "costs",
-          title: "Costs",
-          question: `Was the ${currentPhase} phase completed within budget?`,
-          type: "yes_no_with_comments",
-        },
-        {
-          name: "team",
-          title: "Team",
-          question: "Was the team staffed with suitable roles?",
-          type: "yes_no_with_comments",
-        },
-        {
-          name: "risks",
-          title: "Risks",
-          question: "Are there any outstanding project risks?",
-          type: "yes_no_with_comments",
-        },
-        {
-          name: "deliverables",
-          title: "Deliverables",
-          question: `Summarize the deliverables of the ${currentPhase} phase`,
-          type: "text_area",
-        },
-      ];
-    } else {
-      return [
-        {
-          name: "why-are-you-switching-back",
-          title: "Why are you switching back to " + newPhase + "?",
-          type: "text_area",
-        },
-      ];
-    }
-  } else {
-    throw new Error(`Unknown phase transition: ${currentPhase} -> ${newPhase}`);
-  }
-}
-
-function createEmptyAnswers(questions: any[]): Answers {
-  return questions.reduce((acc, question) => {
-    if (question.type === "yes_no_with_comments") {
-      return {
-        ...acc,
-        [question.name]: {
-          answer: "",
-          comments: "",
-        },
-      };
-    } else if (question.type === "text_area") {
-      return {
-        ...acc,
-        [question.name]: {
-          answer: "",
-        },
-      };
-    } else {
-      throw new Error(`Unknown question type: ${question.type}`);
-    }
-  }, {});
 }
