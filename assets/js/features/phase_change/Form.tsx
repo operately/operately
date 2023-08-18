@@ -5,11 +5,15 @@ import { useNavigate } from "react-router-dom";
 import * as Updates from "@/graphql/Projects/updates";
 
 export function Form({ project, handler, questions }) {
-  const [post, { loading }] = Updates.usePostUpdateMutation();
   const navigate = useNavigate();
 
-  const emptyAnswers = handler.emptyAnswers();
+  const [post, { loading }] = Updates.usePostUpdateMutation({
+    onCompleted: () => {
+      navigate("/projects/" + project.id);
+    },
+  });
 
+  const emptyAnswers = handler.emptyAnswers();
   const [answers, setAnswers] = React.useState<Answers>(emptyAnswers);
 
   const setAnswer = (name: string, field: string, answer: string) => {

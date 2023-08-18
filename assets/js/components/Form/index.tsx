@@ -57,7 +57,7 @@ export function CancelButton({ children }) {
   const { onCancel } = React.useContext(Context);
 
   return (
-    <Button submit variant="secondary" onClick={onCancel}>
+    <Button variant="secondary" onClick={onCancel}>
       {children}
     </Button>
   );
