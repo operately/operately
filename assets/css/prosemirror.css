@@ -2,6 +2,17 @@
   word-break: break-word;
 }
 
+.ProseMirror hr {
+  height: 1px;
+  background-color: var(--color-dark-8);
+  border: none;
+  width: 50px !important;
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 .ProseMirror ul {
   padding: 0;
   padding-left: 36px;
