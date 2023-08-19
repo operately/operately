@@ -4,9 +4,8 @@ import { Handler } from "../handler";
 import { Question, textAreaQuestion } from "../questions";
 import { Answers } from "../answers";
 
-import * as ProjectIcons from "@/components/ProjectIcons";
 import * as Icons from "@tabler/icons-react";
-import { AnswersView } from "../activity_view";
+import { AnswersView, PhaseChangeDiagram } from "../activity_view";
 
 export class Retrospective extends Handler {
   updateType(): string {
@@ -37,8 +36,6 @@ export class Retrospective extends Handler {
   activityMessage(answers: Answers): React.FC {
     const questions = this.questions();
 
-    const fromIcon = <ProjectIcons.IconForPhase phase={this.from} />;
-    const toIcon = <ProjectIcons.IconForPhase phase={this.to} />;
     const HeroIcon = this.HeroIcon();
     const Title = this.Title();
 
@@ -47,11 +44,7 @@ export class Retrospective extends Handler {
         <div className="flex flex-col items-center gap-2 mb-8 border-b border-shade-1 pb-8">
           <HeroIcon />
           <Title />
-
-          <div className="flex items-center gap-2">
-            {fromIcon} <span className="capitalize">{this.from}</span> -&gt; {toIcon}{" "}
-            <span className="capitalize">{this.to}</span>
-          </div>
+          <PhaseChangeDiagram from={this.from} to={this.to} />
         </div>
 
         <p className="font-medium mb-4">Project Retrospective</p>
