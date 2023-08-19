@@ -1,6 +1,18 @@
 import React from "react";
 import { Question } from "./questions";
 import { Answers, Answer, YesNoAnswer, TextAreaAnswer } from "./answers";
+import * as ProjectIcons from "@/components/ProjectIcons";
+
+export function PhaseChangeDiagram({ from, to }: { from: string; to: string }) {
+  const fromIcon = <ProjectIcons.IconForPhase phase={from} />;
+  const toIcon = <ProjectIcons.IconForPhase phase={to} />;
+
+  return (
+    <div className="flex items-center gap-2">
+      {fromIcon} <span className="capitalize">{from}</span> -&gt; {toIcon} <span className="capitalize">{to}</span>
+    </div>
+  );
+}
 
 export function AnswersView({ questions, answers }: { questions: Question[]; answers: Answers }) {
   return (

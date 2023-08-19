@@ -246,10 +246,8 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.scroll_to(testid: "submit")
     |> UI.click(testid: "submit")
 
-    # placeholdes while we wait for the page to load
-    # when we have the reload feature, we can remove this
-    # and verify if the page has reloaded and contains the answers
-    :timer.sleep(1000) 
+    state
+    |> UI.assert_text("Project is being paused")
   end
 
   feature "changing phase from control -> planning and filling in a the questions", state do
