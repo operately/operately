@@ -1,6 +1,5 @@
 import React from "react";
 
-import * as Activities from "@/graphql/Activities";
 import * as Icons from "@tabler/icons-react";
 
 import * as Updates from "@/graphql/Projects/updates";
@@ -8,6 +7,7 @@ import * as Projects from "@/graphql/Projects";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
+import ShortName from "@/components/ShortName";
 
 export default function Activity({ project }): JSX.Element {
   const { data, loading, error } = Updates.useListUpdates({
@@ -32,7 +32,7 @@ export default function Activity({ project }): JSX.Element {
 
 export function ActivityList({ project, updates }: { project: Projects.Project; updates: Updates.BaseUpdate[] }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 border-y-4 border-shade-1 py-4">
       {updates.map((update) => (
         <UpdateItem key={update.id} project={project} update={update} />
       ))}
@@ -50,6 +50,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
 
     case "review":
       return <Review project={project} update={update as Updates.Review} />;
+
+    case "project_created":
+      return <ProjectCreated project={project} update={update as Updates.ProjectCreated} />;
 
     default:
       throw new Error("Unknown update message type: " + update.messageType);
@@ -143,32 +146,47 @@ function ActivityItemContainer({ person, time, children, tint = "gray" }) {
   );
 }
 
-// function ActivityItemProjectCreated({ activity }: { activity: Activities.Activity }) {
-//   const eventData = activity.eventData as Activities.ProjectCreateEventData;
-//   const champion = eventData.champion;
+function ProjectCreated({ project, update }: { project: Projects.Project; update: Updates.BaseUpdate }) {
+  const content = update.content as Updates.UpdateContentProjectCreated;
 
-//   if (!champion) return null;
+  const champion = content.champion;
+  const creator = content.creator;
 
-//   const creatorIsChampion = activity.person.id === champion.id;
+  const creatorIsChampion = creator.id === champion.id;
 
-//   const who = creatorIsChampion ? (
-//     <>
-//       <span>themself</span>
-//     </>
-//   ) : (
-//     <>
-//       <Avatar person={champion} size="tiny" /> {champion.fullName}
-//     </>
-//   );
+  const who = creatorIsChampion ? (
+    <span className="font-extrabold text-white-1">themselves</span>
+  ) : (
+    <>
+      <Avatar person={champion} size="tiny" />{" "}
+      <span className="font-extrabold text-white-1">
+        <ShortName fullName={champion.fullName} />
+      </span>
+    </>
+  );
 
-//   return (
-//     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-//       <div className="flex items-center gap-1.5">
-//         {activity.person.fullName} created this project and assigned {who} as the champion.
-//       </div>
-//     </ActivityItemContainer>
-//   );
-// }
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        created this project and assigned {who} as the champion.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function SmallContainer({ time, children }) {
+  return (
+    <div className="flex items-center justify-between my-2">
+      <div className="flex-1">{children}</div>
+      <div className="shrink-0 ml-4">
+        <FormattedTime time={time} format="relative" />
+      </div>
+    </div>
+  );
+}
 
 // function ActivityItemMilestoneCreated({ activity }: { activity: Activities.Activity }) {
 //   const eventData = activity.eventData as Activities.MilestoneCreateEventData;

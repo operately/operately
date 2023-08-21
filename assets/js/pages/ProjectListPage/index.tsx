@@ -93,7 +93,7 @@ export function Page() {
             </Popover.Root>
           </div>
 
-          <Button variant="success" onClick={() => navigate("/projects/new")}>
+          <Button variant="success" onClick={() => navigate("/projects/new")} data-test-id="add-project">
             <Icons.IconPlus size={16} /> New Project
           </Button>
         </div>

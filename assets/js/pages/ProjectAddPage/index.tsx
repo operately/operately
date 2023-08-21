@@ -6,19 +6,30 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
 import PeopleSearch from "@/components/PeopleSearch";
-import Button from "@/components/Button";
 
 import * as Companines from "@/graphql/Companies";
 import * as People from "@/graphql/People";
 import * as Projects from "@/graphql/Projects";
+import * as Forms from "@/components/Form";
 
-export function ProjectAddPage() {
-  const { data, loading, error } = Companines.useCompany(window.companyID);
+import { useDocumentTitle } from "@/layouts/header";
+import client from "@/graphql/client";
 
-  if (loading) return <p>Loading...</p>;
-  if (error) throw new Error(error.message);
+export async function loader() {
+  let company = await client.query({
+    query: Companines.GET_COMPANY,
+    variables: { id: Companines.companyID() },
+    fetchPolicy: "network-only",
+  });
 
-  const company = data?.company;
+  return {
+    company: company.data.company,
+  };
+}
+
+export function Page() {
+  useDocumentTitle("New Project");
+  const [{ company }] = Paper.useLoadedData() as [{ company: any }];
 
   return (
     <Paper.Root size="small">
@@ -44,7 +55,7 @@ function Form() {
   const [projectName, setProjectName] = React.useState("");
   const [projectChampion, setProjectChampion] = React.useState(null);
 
-  const [add] = Projects.useAddProject({
+  const [add, { loading }] = Projects.useAddProject({
     onCompleted: (data: any) => navigate(`/projects/${data?.createProject?.id}`),
   });
 
@@ -57,43 +68,31 @@ function Form() {
     });
   };
 
-  const isDisabled = () => {
-    return !projectName || !projectChampion;
+  const handleCancel = () => {
+    navigate(`/projects`);
   };
 
+  const isValid = projectName.length > 0 && projectChampion !== null;
+
   return (
-    <>
+    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid} onCancel={handleCancel}>
       <div className="flex flex-col gap-6">
-        <ProjectNameInput value={projectName} onChange={setProjectName} />
+        <Forms.TextInput
+          label="Project Name"
+          value={projectName}
+          onChange={setProjectName}
+          placeholder="ex. HR System Update"
+          data-test-id="project-name-input"
+        />
+
         <ContributorSearch title="Choose a Project Champion" onSelect={setProjectChampion} />
       </div>
 
-      <div className="flex items-center gap-3 mt-12">
-        <Button variant="success" onClick={handleSubmit} disabled={isDisabled()}>
-          Create Project
-        </Button>
-        <Button variant="secondary" linkTo="/projects">
-          Cancel
-        </Button>
-      </div>
-    </>
-  );
-}
-
-function ProjectNameInput({ value, onChange }) {
-  return (
-    <div>
-      <label className="font-bold mb-1 block">Project Name</label>
-      <div className="flex-1">
-        <input
-          className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
-          type="text"
-          placeholder="ex. HR System Update"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      </div>
-    </div>
+      <Forms.SubmitArea>
+        <Forms.SubmitButton data-test-id="save">Create Project</Forms.SubmitButton>
+        <Forms.CancelButton>Cancel</Forms.CancelButton>
+      </Forms.SubmitArea>
+    </Forms.Form>
   );
 }
 

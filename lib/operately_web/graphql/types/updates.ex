@@ -6,7 +6,6 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
     field :title, :string
     field :inserted_at, non_null(:naive_datetime)
     field :updated_at, non_null(:naive_datetime)
-    field :content, non_null(:string)
     field :acknowledged, non_null(:boolean)
     field :acknowledged_at, :naive_datetime
 
@@ -70,5 +69,40 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
         {:ok, reactions}
       end
     end
+
+    field :content, :update_content do
+      resolve fn update, _, _ ->
+        {:ok, update}
+      end
+    end
   end
+
+  union :update_content do
+    types [
+      :update_content_project_created,
+    ]
+
+    resolve_type fn %{type: type}, _ ->
+      String.to_atom("update_content_#{type}") 
+    end
+  end
+
+  object :update_content_project_created do
+    field :creator, :person do
+      resolve fn update, _, _ ->
+        person = Operately.People.get_person!(update.content["creator_id"])
+
+        {:ok, person}
+      end
+    end
+
+    field :champion, :person do
+      resolve fn update, _, _ ->
+        person = Operately.People.get_person!(update.content["champion_id"])
+
+        {:ok, person}
+      end
+    end
+  end
+
 end

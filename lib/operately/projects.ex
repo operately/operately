@@ -10,6 +10,7 @@ defmodule Operately.Projects do
   alias Operately.Projects.Contributor
   alias Operately.People.Person
   alias Operately.Activities
+  alias Operately.Updates
 
   def get_project!(id) do
     Repo.get!(Project, id)
@@ -32,7 +33,13 @@ defmodule Operately.Projects do
       case result do
         {:ok, project} -> 
           {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
-          {:ok, _} = Activities.submit_project_created(project, champion)
+          champion_id = if champion, do: champion.person_id, else: nil
+
+          {:ok, _} = Updates.record_project_creation(
+            project.creator_id, 
+            project.id, 
+            champion_id
+          )
 
           project
 

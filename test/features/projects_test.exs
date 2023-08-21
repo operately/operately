@@ -13,6 +13,17 @@ defmodule Operately.Features.ProjectsTest do
     {:ok, %{session: session, company: company.id, champion: champion, project: project}}
   end
 
+  feature "add project", state do
+    state
+    |> visit_index()
+    |> UI.click(testid: "add-project")
+    |> UI.fill(testid: "project-name-input", with: "Website Redesign")
+    |> UI.select_person(state.champion.full_name)
+    |> UI.click(testid: "save")
+    |> UI.assert_text("Website Redesign")
+    |> UI.assert_text("created this project and assigned")
+  end
+
   feature "listing projects", state do
     state
     |> visit_index()
@@ -294,7 +305,7 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
-  # # ===========================================================================
+  # ===========================================================================
 
   defp visit_index(state) do
     UI.visit(state, "/projects")
@@ -302,10 +313,6 @@ defmodule Operately.Features.ProjectsTest do
 
   defp visit_show(state, project) do
     UI.visit(state, "/projects" <> "/" <> project.id)
-  end
-
-  defp visit_message_board(state, project) do
-    UI.visit(state, "/projects" <> "/" <> project.id <> "/updates")
   end
 
   def click_write_description(state) do
@@ -325,14 +332,13 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   defp create_project(company, champion) do
-    project = project_fixture(%{name: "Live support", company_id: company.id, creator_id: champion.id})
-
-    {:ok, _} =
-      Operately.Projects.create_contributor(%{
-        project_id: project.id,
-        person_id: champion.id,
-        role: "champion"
-      })
+    {:ok, project} = Operately.Projects.create_project(%{
+      name: "Live support",
+      company_id: company.id,
+      creator_id: champion.id,
+    }, %{
+      person_id: champion.id, 
+    })
 
     project
   end
