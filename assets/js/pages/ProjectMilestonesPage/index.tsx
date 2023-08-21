@@ -288,6 +288,9 @@ function AddMilestoneForm({ visible, onSubmit, onCancel }) {
     if (loading) return;
     if (!deadline) return;
 
+    setValue("");
+    setDeadline(null);
+
     await add({
       variables: {
         projectId: project.id,
