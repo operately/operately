@@ -70,18 +70,9 @@ export function Page() {
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Description me={me} project={project} />
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
-        <Tools project={project} />
+        <MilestonesCard project={project} />
         <Activity project={project} />
       </Paper.Body>
     </Paper.Root>
-  );
-}
-
-function Tools({ project }) {
-  return (
-    <div className="grid grid-cols-2 gap-4 mt-8">
-      <MessageBoardCard project={project} />
-      <MilestonesCard project={project} />
-    </div>
   );
 }
