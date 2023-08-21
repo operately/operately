@@ -82,17 +82,17 @@ defmodule Operately.Features.ProjectsTest do
     |> refute_has(Query.text("Code Repository"))
   end
 
-  feature "leave a comment on an update", state do
-    add_status_update(state.project, "This is a status update.")
+  # feature "leave a comment on an update", state do
+  #   add_status_update(state.project, "This is a status update.")
 
-    state
-    |> visit_message_board(state.project)
-    |> UI.click(testid: "status-update")
-    |> UI.click(testid: "add-comment")
-    |> UI.fill_rich_text("This is a comment.")
-    |> UI.click(testid: "post-comment")
-    |> assert_has(Query.text("This is a comment."))
-  end
+  #   state
+  #   |> visit_message_board(state.project)
+  #   |> UI.click(testid: "status-update")
+  #   |> UI.click(testid: "add-comment")
+  #   |> UI.fill_rich_text("This is a comment.")
+  #   |> UI.click(testid: "post-comment")
+  #   |> assert_has(Query.text("This is a comment."))
+  # end
 
   feature "changing phase from pending -> execution and filling in the review", state do
     state

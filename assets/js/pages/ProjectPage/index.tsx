@@ -9,7 +9,6 @@ import Activity from "./Activity";
 import Header from "./Header";
 import Timeline from "./Timeline";
 import Description from "./Description";
-import MessageBoardCard from "./MessageBoardCard";
 import MilestonesCard from "./MilestonesCard";
 import Sidebar from "./Sidebar";
 import KeyResources from "./KeyResources";

@@ -135,7 +135,6 @@ export interface Project {
   execution_review: Document;
   retrospective: Document;
 
-  updates: Updates.Update[];
   keyResources: KeyResources.KeyResource[];
 
   isPinned: boolean;
@@ -172,11 +171,6 @@ export const GET_PROJECT = gql`
       }
 
       contributors ${fragments.CONTRIBUTOR}
-
-      pitch ${fragments.PROJECT_DOCUMENT}
-      plan ${fragments.PROJECT_DOCUMENT}
-      execution_review ${fragments.PROJECT_DOCUMENT}
-      retrospective ${fragments.PROJECT_DOCUMENT}
 
       updates {
         id
