@@ -105,6 +105,13 @@ defmodule Operately.FeatureCase do
       end)
     end
 
+    def select_person(state, name) do
+      session(state)
+      |> fill_in(Query.css("#peopleSearch"), with: name)
+      |> Browser.assert_text(name)
+      |> Browser.send_keys([:enter])
+    end
+
     def send_keys(state, keys) do
       session(state)
       |> Browser.send_keys(keys)

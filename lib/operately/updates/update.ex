@@ -11,7 +11,15 @@ defmodule Operately.Updates.Update do
     field :updatable_id, Ecto.UUID
     field :updatable_type, Ecto.Enum, values: [:objective, :project]
 
-    field :type, Ecto.Enum, values: [:message, :status_update, :health_change, :phase_change, :review]
+    field :type, Ecto.Enum, values: [
+      :message, 
+      :status_update, 
+      :health_change, 
+      :phase_change, 
+      :review,
+      :project_created
+    ]
+
     field :content, :map
 
     belongs_to :acknowledging_person, Operately.People.Person
@@ -34,12 +42,31 @@ defmodule Operately.Updates.Update do
     update
     |> cast(attrs, __schema__(:fields))
     |> validate_required([
-      :content,
       :updatable_id,
       :updatable_type,
       :author_id,
-      :type
+      :type,
+      :content,
     ])
+    |> validate_content()
+  end
+
+  defp validate_content(changeset) do
+    type = get_field(changeset, :type)
+    content = get_field(changeset, :content)
+
+    cond do
+      type == :project_created ->
+        change = Operately.Updates.Types.ProjectCreated.changeset(content)
+
+        if change.valid? do
+          changeset
+        else
+          add_error(changeset, :content, "invalid")
+        end
+      true -> 
+        changeset
+    end
   end
 
 end

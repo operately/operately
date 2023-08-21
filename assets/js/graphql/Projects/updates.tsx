@@ -41,8 +41,22 @@ export const UPDATE_FRAGMENT = gql`
 
     previousHealth
     newHealth
+
+    content {
+      __typename
+
+      ... on UpdateContentProjectCreated {
+        champion ${fragments.PERSON}
+        creator ${fragments.PERSON}
+      }
+    }
   }
 `;
+
+export interface UpdateContentProjectCreated {
+  champion: Person;
+  creator: Person;
+}
 
 export const LIST_UPDATES = gql`
   query ListUpdates($filter: UpdatesFilter!) {
@@ -56,7 +70,13 @@ export const GET_STATUS_UPDATE = gql`
   }
 `;
 
-export type UpdateMessageType = "message" | "status_update" | "phase_change" | "health_change" | "review";
+export type UpdateMessageType =
+  | "message"
+  | "status_update"
+  | "phase_change"
+  | "health_change"
+  | "review"
+  | "project_created";
 
 export interface BaseUpdate {
   id: string;

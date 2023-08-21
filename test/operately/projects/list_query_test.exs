@@ -9,7 +9,7 @@ defmodule Operately.Projects.ListQueryTest do
   setup do
     company = company_fixture()
     person = person_fixture(company_id: company.id)
-    project = project_fixture(company_id: company.id, creator_id: person.id)
+    project = project_fixture(%{company_id: company.id, creator_id: person.id})
     group = group_fixture()
 
     {:ok, %{

@@ -48,6 +48,19 @@ defmodule Operately.Updates do
     end)
   end
 
+  def record_project_creation(creator_id, project_id, champion_id) do
+    create_update(%{
+      type: :project_created,
+      author_id: creator_id,
+      updatable_id: project_id,
+      updatable_type: :project,
+      content: %{
+        creator_id: creator_id,
+        champion_id: champion_id
+      }
+    })
+  end
+
   def publish_update_added(update) do
     Absinthe.Subscription.publish(
       OperatelyWeb.Endpoint,

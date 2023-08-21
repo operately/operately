@@ -76,6 +76,8 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
     end
 
     test "with all contributors", ctx do
+      champion = Operately.Projects.list_project_contributors(ctx.project) |> Enum.find(fn c -> c.role == :champion end)
+
       conn = graphql(ctx.conn, @projects_query, %{
         "filters" => %{
           "groupId" => ctx.group.id,
@@ -89,6 +91,7 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
           "projects" => [
             %{
               "contributors" => [
+                %{"person" => %{"id" => champion.person_id}},
                 %{"person" => %{"id" => ctx.person1.id}},
                 %{"person" => %{"id" => ctx.person2.id}}
               ],
@@ -112,6 +115,8 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
   """
 
   test "query: projectContributorCandidates", ctx do
+    remove_all_people_from_project(ctx.project)
+
     conn = graphql(ctx.conn, @project_contributor_candidates_query, %{
       "projectId" => ctx.project.id,
       "query" => "bob"
@@ -133,5 +138,11 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
       
   defp graphql(conn, query, variables) do
     conn |> post("/api/gql", %{query: query, variables: variables})
+  end
+
+  defp remove_all_people_from_project(project) do
+    Enum.each(Operately.Projects.list_project_contributors(project), fn c ->
+      Operately.Projects.delete_contributor(c)
+    end)
   end
 end
