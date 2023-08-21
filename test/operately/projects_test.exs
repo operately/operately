@@ -153,7 +153,7 @@ defmodule Operately.ProjectsTest do
     end
 
     test "list_project_contributors/0 returns all project_contributors", ctx do
-      assert Projects.list_project_contributors(ctx.project) == [ctx.contributor]
+      assert Projects.list_project_contributors(ctx.project) |> Enum.member?(ctx.contributor)
     end
 
     test "get_contributor!/1 returns the contributor with given id", ctx do

@@ -184,7 +184,10 @@ defmodule Operately.Projects do
   end
 
   def create_contributor_if_provided(attrs, project_id) do
-    create_contributor(Map.merge(attrs, %{project_id: project_id}))
+    create_contributor(Map.merge(attrs, %{
+      project_id: project_id,
+      role: :champion
+    }))
   end
 
   def update_contributor(%Contributor{} = contributor, attrs) do

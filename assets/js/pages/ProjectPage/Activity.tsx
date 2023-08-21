@@ -32,9 +32,13 @@ export default function Activity({ project }): JSX.Element {
 
 export function ActivityList({ project, updates }: { project: Projects.Project; updates: Updates.BaseUpdate[] }) {
   return (
-    <div className="flex flex-col gap-4 border-y-4 border-shade-1 py-4">
+    <div className="flex flex-col gap-4 relative">
+      <div className="absolute border-l border-shade-2 top-3 bottom-3 z-10" style={{ left: "25px" }}></div>
+
       {updates.map((update) => (
-        <UpdateItem key={update.id} project={project} update={update} />
+        <div key={update.id} className="z-20">
+          <UpdateItem key={update.id} project={project} update={update} />
+        </div>
       ))}
     </div>
   );
@@ -93,37 +97,26 @@ const ContainerColors = {
   },
 };
 
-function ActivityItemContainer({ person, time, children, tint = "gray" }) {
+function BigContainer({ person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
 
   return (
     <div className="flex items-start justify-between my-2">
-      <div className="shrink-0 mt-1.5">
-        <Avatar person={person} />
-      </div>
-
-      <div className={"w-full border rounded-lg relative ml-3.5 shadow-lg" + " " + colors.border}>
-        <svg height="16" width="7" className="absolute" style={{ left: "-7px", top: "12px" }}>
-          <polygon
-            points="0,8 8,0 8,16"
-            className={colors.stroke}
-            style={{ fill: "var(--color-dark-4)", strokeWidth: 1 }}
-          />
-        </svg>
-
+      <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
           <div className={"flex justify-between items-center"}>
-            <div className="px-4 py-2">
-              <span className="font-bold">{person.fullName}</span> &middot;{" "}
-              <span className="text-white-2">
-                <FormattedTime time={time} format="relative" />
-              </span>
-            </div>
-
-            <div className="mr-3">
+            <div className="px-2 py-2 flex items-center gap-2">
+              <Avatar person={person} size="tiny" />
+              <span className="font-bold">{person.fullName}</span>
               <div className="border border-yellow-400/50 rounded-full px-1.5 py-0.5 text-yellow-400/70 text-xs font-medium">
                 Champion
               </div>
+            </div>
+
+            <div className="mr-3">
+              <span className="text-white-2">
+                <FormattedTime time={time} format="relative" />
+              </span>
             </div>
           </div>
 
@@ -179,9 +172,19 @@ function ProjectCreated({ project, update }: { project: Projects.Project; update
 
 function SmallContainer({ time, children }) {
   return (
-    <div className="flex items-center justify-between my-2">
+    <div className="flex items-center justify-between my-2 mr-1">
+      <div
+        className="w-5 h-5 bg-dark-3 rounded-full flex items-center justify-center"
+        style={{
+          marginLeft: "15px",
+          marginRight: "15px",
+        }}
+      >
+        <div className="w-2.5 h-2.5 border-2 border-white-2 rounded-full"></div>
+      </div>
+
       <div className="flex-1">{children}</div>
-      <div className="shrink-0 ml-4">
+      <div className="shrink-0 ml-4 text-white-2">
         <FormattedTime time={time} format="relative" />
       </div>
     </div>
@@ -253,9 +256,9 @@ function Review({ project, update }: { project: Projects.Project; update: Update
   const Message = handler.activityMessage(answers);
 
   return (
-    <ActivityItemContainer person={update.author} time={update.insertedAt}>
+    <BigContainer person={update.author} time={update.insertedAt}>
       <Message />
-    </ActivityItemContainer>
+    </BigContainer>
   );
 }
 

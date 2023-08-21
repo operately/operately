@@ -13,7 +13,9 @@ defmodule Operately.ProjectsFixtures do
       |> Enum.into(%{
         name: "some name"
       })
-      |> Operately.Projects.create_project()
+      |> Operately.Projects.create_project(%{
+        person_id: attrs.creator_id,
+      })
 
     project
   end

@@ -1,7 +1,6 @@
 defmodule Operately.Features.ProjectsTest do
   use Operately.FeatureCase
 
-  import Operately.ProjectsFixtures
   import Operately.CompaniesFixtures
 
   setup session do
