@@ -59,7 +59,8 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
       return <ProjectCreated project={project} update={update as Updates.ProjectCreated} />;
 
     default:
-      throw new Error("Unknown update message type: " + update.messageType);
+      console.log("Unknown update type: " + update.messageType);
+      return null;
   }
   // switch (activity.resourceType + "-" + activity.actionType) {
   //   case "project-create":
