@@ -117,7 +117,7 @@ function ActivityItemContainer({ person, time, children, tint = "gray" }) {
             </div>
 
             <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4">
-              Start a conversation... encourage, congratulate, or ask a question.
+              Post a comment...
             </div>
           </div>
         </div>
