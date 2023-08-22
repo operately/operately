@@ -2,6 +2,16 @@ import { gql, useMutation } from "@apollo/client";
 
 type MilestoneStatus = "pending" | "done";
 
+export const FRAGEMNT = gql`
+  {
+    id
+    title
+    deadlineAt
+    status
+    phase
+  }
+`;
+
 export interface Milestone {
   id: string;
   title: string;

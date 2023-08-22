@@ -318,7 +318,7 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> UI.assert_text(short_name(state.champion) <> " added Contract Signed")
+    |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
   end
 
   # ===========================================================================

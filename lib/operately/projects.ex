@@ -93,7 +93,7 @@ defmodule Operately.Projects do
 
       case result do
         {:ok, milestone} ->
-          {:ok, _} = Activities.submit_milestone_created(creator.id, milestone)
+          {:ok, _} = Updates.record_project_milestone_creation(creator, milestone)
           milestone
 
         {:error, changeset} ->

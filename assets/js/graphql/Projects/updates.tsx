@@ -1,6 +1,8 @@
 import * as fragments from "@/graphql/Fragments";
 import { gql, useQuery, useMutation } from "@apollo/client";
 
+import * as Milestones from "@/graphql/Projects/milestones";
+
 export const UPDATE_FRAGMENT = gql`
   {
     id
@@ -49,6 +51,10 @@ export const UPDATE_FRAGMENT = gql`
         champion ${fragments.PERSON}
         creator ${fragments.PERSON}
       }
+
+      ... on UpdateContentProjectMilestoneCreated {
+        milestone ${Milestones.FRAGEMNT}
+      }
     }
   }
 `;
@@ -76,9 +82,10 @@ export type UpdateMessageType =
   | "phase_change"
   | "health_change"
   | "review"
-  | "project_created";
+  | "project_created"
+  | "project_milestone_created";
 
-export interface BaseUpdate {
+export interface Update {
   id: string;
   insertedAt: Date;
   updatedAt: Date;
@@ -86,6 +93,17 @@ export interface BaseUpdate {
 
   messageType: UpdateMessageType;
   message: string;
+
+  content: ProjectMilestoneCreated | ProjectCreated;
+}
+
+export interface ProjectMilestoneCreated {
+  milestone: Milestones.Milestone;
+}
+
+export interface ProjectCreated {
+  champion: Person;
+  creator: Person;
 }
 
 export interface Review extends BaseUpdate {
