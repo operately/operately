@@ -17,7 +17,8 @@ defmodule Operately.Updates.Update do
       :health_change, 
       :phase_change, 
       :review,
-      :project_created
+      :project_created,
+      :project_milestone_created
     ]
 
     field :content, :map
@@ -54,19 +55,40 @@ defmodule Operately.Updates.Update do
   defp validate_content(changeset) do
     type = get_field(changeset, :type)
     content = get_field(changeset, :content)
+    schema = find_schema(type)
 
-    cond do
-      type == :project_created ->
-        change = Operately.Updates.Types.ProjectCreated.changeset(content)
-
-        if change.valid? do
-          changeset
-        else
-          add_error(changeset, :content, "invalid")
-        end
-      true -> 
-        changeset
+    if schema do
+      validate_content_on_schema(changeset, content, schema)
+    else
+      changeset
     end
+  end
+
+  defp validate_content_on_schema(changeset, content, schema) do
+    change = schema.changeset(content)
+
+    if change.valid? do
+      changeset
+    else
+      add_error(changeset, :content, format_error(change))
+    end
+  end
+
+  defp find_schema(type) do
+    case type do
+      :project_created ->
+        Operately.Updates.Types.ProjectCreated
+
+      :project_milestone_created ->
+        Operately.Updates.Types.ProjectMilestoneCreated
+
+      _ ->
+        nil
+    end
+  end
+
+  defp format_error(change) do
+    change.errors |> Enum.map(fn {key, value} -> "#{inspect(key)} #{inspect(value)}" end) |> Enum.join(", ")
   end
 
 end

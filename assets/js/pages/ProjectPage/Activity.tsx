@@ -30,7 +30,7 @@ export default function Activity({ project }): JSX.Element {
   );
 }
 
-export function ActivityList({ project, updates }: { project: Projects.Project; updates: Updates.BaseUpdate[] }) {
+export function ActivityList({ project, updates }: { project: Projects.Project; updates: Updates.Update[] }) {
   return (
     <div className="flex flex-col gap-4 relative">
       <div className="absolute border-l border-shade-2 top-3 bottom-3 z-10" style={{ left: "25px" }}></div>
@@ -44,7 +44,7 @@ export function ActivityList({ project, updates }: { project: Projects.Project; 
   );
 }
 
-function UpdateItem({ project, update }: { project: Projects.Project; update: Updates.BaseUpdate }) {
+function UpdateItem({ project, update }: { project: Projects.Project; update: Updates.Update }) {
   switch (update.messageType) {
     case "message":
       return null;
@@ -56,7 +56,10 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
       return <Review project={project} update={update as Updates.Review} />;
 
     case "project_created":
-      return <ProjectCreated project={project} update={update as Updates.ProjectCreated} />;
+      return <ProjectCreated project={project} update={update} />;
+
+    case "project_milestone_created":
+      return <ProjectMilestoneCreated project={project} update={update} />;
 
     default:
       console.log("Unknown update type: " + update.messageType);
@@ -140,7 +143,7 @@ function BigContainer({ person, time, children, tint = "gray" }) {
   );
 }
 
-function ProjectCreated({ project, update }: { project: Projects.Project; update: Updates.BaseUpdate }) {
+function ProjectCreated({ project, update }: { project: Projects.Project; update: Updates.Update }) {
   const content = update.content as Updates.UpdateContentProjectCreated;
 
   const champion = content.champion;
@@ -166,6 +169,25 @@ function ProjectCreated({ project, update }: { project: Projects.Project; update
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         created this project and assigned {who} as the champion.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectMilestoneCreated({ update }: { project: Projects.Project; update: Updates.Update }) {
+  const creator = update.author;
+
+  const content = update.content as Updates.ProjectMilestoneCreated;
+  const milestone = content.milestone.title;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        added <Icons.IconFlag2Filled size={16} className="text-yellow-400 inline-block -mt-1" />{" "}
+        <span className="font-extrabold text-white-1">{milestone}</span> milestone.
       </div>
     </SmallContainer>
   );

@@ -154,14 +154,7 @@ export const GET_PROJECT = gql`
       isPinned
 
       keyResources ${KeyResources.GQL_FRAGMENT}
-
-      milestones {
-        id
-        title
-        deadlineAt
-        status
-        phase
-      }
+      milestones ${Milestones.FRAGEMNT}
 
       champion {
         id

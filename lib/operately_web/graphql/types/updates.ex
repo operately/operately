@@ -80,6 +80,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
   union :update_content do
     types [
       :update_content_project_created,
+      :update_content_project_milestone_created,
     ]
 
     resolve_type fn %{type: type}, _ ->
@@ -101,6 +102,16 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
         person = Operately.People.get_person!(update.content["champion_id"])
 
         {:ok, person}
+      end
+    end
+  end
+
+  object :update_content_project_milestone_created do
+    field :milestone, non_null(:milestone) do
+      resolve fn update, _, _ ->
+        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"])
+
+        {:ok, milestone}
       end
     end
   end

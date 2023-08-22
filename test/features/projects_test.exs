@@ -20,7 +20,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.select_person(state.champion.full_name)
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
-    |> UI.assert_text("created this project and assigned")
+    |> UI.assert_text(short_name(state.champion) <> " created this project and assigned themselves as the champion")
   end
 
   feature "listing projects", state do
@@ -304,6 +304,23 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
+  feature "adding milestones to a project", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "milestones-card")
+    |> UI.click(testid: "add-milestone")
+    |> UI.fill(testid: "milestone-title", with: "Contract Signed")
+    |> UI.fill(placeholder: "Select date...", with: "June 17, 2023")
+    |> UI.click(testid: "save")
+
+    state
+    |> UI.assert_text("Contract Signed")
+
+    state
+    |> visit_show(state.project)
+    |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
@@ -397,6 +414,12 @@ defmodule Operately.Features.ProjectsTest do
 
   def change_phase(project, phase) do
     {:ok, _} = Operately.Projects.update_project(project, %{phase: phase})
+  end
+
+  def short_name(person) do
+    parts = String.split(person.full_name, " ")
+
+    Enum.at(parts, 0) <> " " <> String.first(Enum.at(parts, 1)) <> "."
   end
 
   # def click_new_project(state) do
