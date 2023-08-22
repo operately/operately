@@ -46,7 +46,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             updatable_id: args.input.updatable_id,
             author_id: context.current_account.person.id,
             type: args.input.message_type,
-            content: %{"message" => content},
+            content: %{
+              :message => content,
+              :old_health => previous_health,
+              :new_health => new_health
+            },
             previous_phase: previous_phase,
             new_phase: new_phase,
             previous_health: previous_health,

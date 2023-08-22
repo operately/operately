@@ -82,6 +82,9 @@ defmodule Operately.Updates.Update do
       :project_milestone_created ->
         Operately.Updates.Types.ProjectMilestoneCreated
 
+      :status_update ->
+        Operately.Updates.Types.StatusUpdate
+
       _ ->
         nil
     end

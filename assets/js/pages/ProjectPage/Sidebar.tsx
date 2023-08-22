@@ -70,6 +70,7 @@ export default function Sidebar({ project, isOpen, setOpen }) {
           <div
             className="bg-white-1/[3%] rounded py-2 px-4 hover:bg-shade-1 hover:shadow flex items-center gap-2 text-white-1/80 hover:text-white-1 cursor-pointer"
             onClick={gotoNewStatusUpdate}
+            data-test-id="add-status-update"
           >
             <Icons.IconReport size={16} />
             <span className="font-medium">Write a status update</span>

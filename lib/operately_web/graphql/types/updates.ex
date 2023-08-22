@@ -81,6 +81,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
     types [
       :update_content_project_created,
       :update_content_project_milestone_created,
+      :update_content_status_update
     ]
 
     resolve_type fn %{type: type}, _ ->
@@ -116,4 +117,23 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
     end
   end
 
+  object :update_content_status_update do
+    field :message, non_null(:string) do
+      resolve fn update, _, _ ->
+        {:ok, Jason.encode!(update.content["message"])}
+      end
+    end
+
+    field :old_health, non_null(:string) do
+      resolve fn update, _, _ ->
+        {:ok, update.content["old_health"] || ""}
+      end
+    end
+
+    field :new_health, non_null(:string) do
+      resolve fn update, _, _ ->
+        {:ok, update.content["new_health"] || ""}
+      end
+    end
+  end
 end

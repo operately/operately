@@ -38,6 +38,8 @@ defmodule Operately.UpdatesTest do
       valid_attrs = %{
         content: %{
           "message" => %{},
+          "old_health" => "on_track",
+          "new_health" => "on_track",
         },
         type: :status_update,
         updatable_id: "7488a646-e31f-11e4-aace-600308960662",
