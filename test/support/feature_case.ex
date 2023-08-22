@@ -44,7 +44,7 @@ defmodule Operately.FeatureCase do
     alias Wallaby.Browser
 
     def login(session) do
-      path = URI.encode("/accounts/auth/test_login?email=john@johnson.com")
+      path = URI.encode("/accounts/auth/test_login?email=john@johnson.com&full_name=John Johnson")
 
       session(session) |> Browser.visit(path)
     end

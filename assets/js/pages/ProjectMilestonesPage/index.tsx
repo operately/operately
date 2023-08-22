@@ -93,7 +93,7 @@ function Title({ onAddClick }) {
 
       <div>
         {editable && (
-          <Button variant="success" onClick={onAddClick}>
+          <Button variant="success" onClick={onAddClick} data-test-id="add-milestone">
             <Icons.IconPlus size={20} />
             Add
           </Button>
@@ -309,6 +309,7 @@ function AddMilestoneForm({ visible, onSubmit, onCancel }) {
             placeholder="ex. Contract Signed"
             value={value}
             onChange={setValue}
+            data-test-id="milestone-title"
           />
         </div>
 
@@ -321,7 +322,7 @@ function AddMilestoneForm({ visible, onSubmit, onCancel }) {
       </div>
 
       <div className="flex mt-8 gap-2">
-        <Button variant="success" disabled={disabled} onClick={save} loading={loading}>
+        <Button variant="success" disabled={disabled} onClick={save} loading={loading} data-test-id="save">
           <Icons.IconPlus size={20} />
           Add
         </Button>

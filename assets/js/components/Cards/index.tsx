@@ -3,7 +3,7 @@ import classnames from "classnames";
 
 import { Link } from "react-router-dom";
 
-export function Card({ children, linkTo }) {
+export function Card({ children, linkTo, ...props }) {
   return (
     <Link to={linkTo}>
       <div
@@ -17,6 +17,7 @@ export function Card({ children, linkTo }) {
         style={{
           height: "260px",
         }}
+        {...props}
       >
         {children}
       </div>

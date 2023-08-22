@@ -9,7 +9,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 export default function MilestonesCard({ project }) {
   return (
-    <Cards.Card linkTo={`/projects/${project.id}/milestones`}>
+    <Cards.Card linkTo={`/projects/${project.id}/milestones`} data-test-id="milestones-card">
       <Cards.Header>
         <div className="flex items-center gap-2">
           <Cards.Title>Milestones</Cards.Title>
