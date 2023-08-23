@@ -323,9 +323,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
           </Button>
         </div>
 
-        <div className="flex items-center border border-shade-2 px-2 py-1 rounded-lg">
-          <TipTapEditor.Toolbar editor={editor} />
-        </div>
+        <TipTapEditor.Toolbar editor={editor} variant="small" />
       </div>
     </div>
   );
