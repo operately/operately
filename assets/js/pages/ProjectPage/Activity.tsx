@@ -1,5 +1,7 @@
 import React from "react";
 
+import { useBoolState } from "@/utils/useBoolState";
+
 import * as Icons from "@tabler/icons-react";
 
 import * as Updates from "@/graphql/Projects/updates";
@@ -10,6 +12,10 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import ShortName from "@/components/ShortName";
 import RichContent from "@/components/RichContent";
+import Button from "@/components/Button";
+
+import * as TipTapEditor from "@/components/Editor";
+import * as Paper from "@/components/PaperContainer";
 
 export default function Activity({ project }): JSX.Element {
   const { data, loading, error } = Updates.useListUpdates({
@@ -103,7 +109,7 @@ const ContainerColors = {
   },
 };
 
-function BigContainer({ person, time, children, tint = "gray" }) {
+function BigContainer({ update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
 
   return (
@@ -131,18 +137,127 @@ function BigContainer({ person, time, children, tint = "gray" }) {
           <div className="mt-4 px-4 py-2">
             <div className="flex justify-between items-center">
               <Icons.IconMoodPlus size={24} className="text-white-2 cursor-pointer" />
-
-              <span className="text-white-2 font-medium">0 comments</span>
             </div>
 
-            <div
-              className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4"
-              data-test-id="add-comment"
-            >
-              Post a comment...
-            </div>
+            <Comments update={update} />
+
+            <CommentBox update={update} />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Comments({ update }) {
+  const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
+
+  return (
+    <div className="mt-8 flex flex-col">
+      {beforeAck.map((c) => (
+        <Comment key={c.id} comment={c} />
+      ))}
+
+      {afterAck.map((c) => (
+        <Comment key={c.id} comment={c} />
+      ))}
+    </div>
+  );
+}
+
+function Comment({ comment }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size="tiny" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="font-bold">{comment.author.fullName}</div>
+          <FormattedTime time={comment.insertedAt} format="short-date" />
+        </div>
+
+        <RichContent jsonContent={JSON.parse(comment.message)} />
+      </div>
+    </div>
+  );
+}
+
+function CommentBox({ update }) {
+  const [active, _, activate, deactivate] = useBoolState(false);
+
+  if (active) {
+    return <AddCommentActive update={update} onBlur={deactivate} onPost={deactivate} />;
+  } else {
+    return <AddCommentNonActive onClick={activate} />;
+  }
+}
+
+function AddCommentNonActive({ onClick }) {
+  return (
+    <div
+      className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4"
+      data-test-id="add-comment"
+      onClick={onClick}
+    >
+      Post a comment...
+    </div>
+  );
+}
+
+function AddCommentActive({ update, onBlur, onPost }) {
+  const [_, refetch] = Paper.useLoadedData();
+
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Write your comment here...",
+  });
+
+  const [post, { loading }] = Updates.usePostComment();
+
+  const handlePost = async () => {
+    if (!editor) return;
+    if (loading) return;
+
+    await post({
+      variables: {
+        input: {
+          updateId: update.id,
+          content: JSON.stringify(editor.getJSON()),
+        },
+      },
+    });
+
+    await onPost();
+    await refetch();
+  };
+
+  return (
+    <div>
+      <div className="bg-shade-1 text-white-1 rounded-lg">
+        <div className="flex items-center gap-1 border-b border-shade-2 px-4 py-1">
+          <TipTapEditor.Toolbar editor={editor} />
+        </div>
+
+        <div
+          className="mb-4 py-2 text-white-1 px-4"
+          style={{
+            minHeight: "200px",
+          }}
+        >
+          <TipTapEditor.EditorContent editor={editor} />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment">
+          <Icons.IconMail size={20} />
+          Post Comment
+        </Button>
+
+        <Button variant="secondary" onClick={onBlur}>
+          Cancel
+        </Button>
       </div>
     </div>
   );
@@ -156,7 +271,7 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
   const newHealth = content.newHealth;
 
   return (
-    <BigContainer person={update.author} time={update.insertedAt}>
+    <BigContainer update={update} person={update.author} time={update.insertedAt}>
       <RichContent jsonContent={message} />
 
       {oldHealth !== newHealth && (
@@ -308,7 +423,7 @@ function Review({ project, update }: { project: Projects.Project; update: Update
   const Message = handler.activityMessage(answers);
 
   return (
-    <BigContainer person={update.author} time={update.insertedAt}>
+    <BigContainer update={update} person={update.author} time={update.insertedAt}>
       <Message />
     </BigContainer>
   );

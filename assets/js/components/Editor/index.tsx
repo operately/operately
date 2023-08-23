@@ -39,6 +39,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
 
   return TipTap.useEditor({
     content: props.content,
+    autofocus: true,
     injectCSS: false,
     editorProps: {
       attributes: {

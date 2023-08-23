@@ -70,12 +70,6 @@ export interface UpdateContentProjectCreated {
   creator: Person;
 }
 
-export const LIST_UPDATES = gql`
-  query ListUpdates($filter: UpdatesFilter!) {
-    updates(filter: $filter) ${UPDATE_FRAGMENT}
-  }
-`;
-
 export const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) ${UPDATE_FRAGMENT}
@@ -101,6 +95,12 @@ export interface Update {
   message: string;
 
   content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate;
+
+  comments: Comment[];
+
+  acknowledgingPerson: Person;
+  acknowledged: boolean;
+  acknowledgedAt: Date;
 }
 
 export interface ProjectMilestoneCreated {
@@ -118,25 +118,13 @@ export interface StatusUpdate {
   newHealth: string;
 }
 
-export interface Review extends BaseUpdate {
+export interface Review extends Update {
   messageType: "review";
   previousPhase: string;
   newPhase: string;
-
-  comments: Comment[];
-
-  acknowledgingPerson: Person;
-  acknowledged: boolean;
-  acknowledgedAt: Date;
 }
 
-export interface HealthChange extends BaseUpdate {
-  comments: Comment[];
-
-  acknowledgingPerson: Person;
-  acknowledged: boolean;
-  acknowledgedAt: Date;
-
+export interface HealthChange extends Update {
   previousHealth: string;
   newHealth: string;
 }
@@ -163,6 +151,8 @@ interface Reaction {
   person: Person;
 }
 
+// POST A NEW UPDATE
+
 const POST_UPDATE = gql`
   mutation CreateUpdate($input: CreateUpdateInput!) {
     createUpdate(input: $input) {
@@ -175,6 +165,44 @@ export function usePostUpdateMutation(options = {}) {
   return useMutation(POST_UPDATE, options);
 }
 
+// LIST UPDATES
+
+export const LIST_UPDATES = gql`
+  query ListUpdates($filter: UpdatesFilter!) {
+    updates(filter: $filter) ${UPDATE_FRAGMENT}
+  }
+`;
+
 export function useListUpdates(options = {}) {
   return useQuery(LIST_UPDATES, options);
+}
+
+// POST A NEW COMMENT
+
+export const POST_COMMENT_MUTATION = gql`
+  mutation CreateComment($input: CreateCommentInput!) {
+    createComment(input: $input) {
+      id
+    }
+  }
+`;
+
+export function usePostComment(options = {}) {
+  return useMutation(POST_COMMENT_MUTATION, options);
+}
+
+// utils
+
+export function splitCommentsBeforeAndAfterAck(update: Update) {
+  const allComments = update.comments;
+  const ackTime = update.acknowledgedAt;
+
+  if (update.acknowledged) {
+    return {
+      beforeAck: allComments.filter((c) => c.insertedAt < ackTime),
+      afterAck: allComments.filter((c) => c.insertedAt >= ackTime),
+    };
+  } else {
+    return { beforeAck: update.comments, afterAck: [] };
+  }
 }
