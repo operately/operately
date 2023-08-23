@@ -6,6 +6,7 @@ agent:
     os_image: ubuntu2004
 blocks:
   - name: Tests
+    dependencies: []
     task:
       prologue:
         commands:
@@ -23,6 +24,7 @@ blocks:
             - cd assets && cache store && cd .. # cache node_packages
 
   - name: Docker Build
+    dependencies: []
     run:
       when: "branch = 'main'"
     task:
