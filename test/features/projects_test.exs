@@ -52,6 +52,7 @@ defmodule Operately.Features.ProjectsTest do
     add_key_resource(state.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
     add_key_resource(state.project, %{title: "Website", link: "https://operately.com", type: "generic"})
 
+    state
     |> visit_show(state.project)
     |> assert_has(Query.text("Key Resources"))
     |> assert_has(Query.text("Code Repository"))

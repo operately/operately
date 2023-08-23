@@ -19,6 +19,8 @@ SHELL := /bin/bash
 #
 .PHONY: test
 
+REPORTS_DIR ?= $(PWD)/testreports
+
 # If you want to run the tests that generate screenshots, you need to
 # set the SCREENSHOTS_DIR environment variable to a directory where
 # the screenshots will be saved.
@@ -140,7 +142,8 @@ dev.image.push:
 #
 
 test:
-	mkdir -p $(SCREENSHOTS_DIR)
+	@mkdir -p $(SCREENSHOTS_DIR)
+	@mkdir -p $(REPORTS_DIR)
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
 	elif [[ "$(FILE)" == test/* ]]; then \
