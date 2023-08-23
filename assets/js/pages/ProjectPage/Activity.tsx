@@ -117,7 +117,7 @@ function BigContainer({ update, person, time, children, tint = "gray" }) {
       <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
           <div className={"flex justify-between items-center"}>
-            <div className="px-2 py-2 flex items-center gap-2">
+            <div className="px-4 py-2 flex items-center gap-2">
               <Avatar person={person} size="tiny" />
               <span className="font-bold">{person.fullName}</span>
               <div className="border border-yellow-400/50 rounded-full px-1.5 py-0.5 text-yellow-400/70 text-xs font-medium">
@@ -126,22 +126,22 @@ function BigContainer({ update, person, time, children, tint = "gray" }) {
             </div>
 
             <div className="mr-3">
-              <span className="text-white-2">
+              <span className="text-white-2 text-sm">
                 <FormattedTime time={time} format="relative" />
               </span>
             </div>
           </div>
 
-          <div className="px-4 py-2 rounded-b-lg">{children}</div>
+          <div className="px-4">{children}</div>
 
-          <div className="mt-4 px-4 py-2">
+          <div className="px-4 py-2 mt-2">
             <div className="flex justify-between items-center">
-              <Icons.IconMoodPlus size={24} className="text-white-2 cursor-pointer" />
+              <Icons.IconMoodPlus size={16} className="text-white-2 cursor-pointer" />
             </div>
 
-            <Comments update={update} />
-
-            <CommentBox update={update} />
+            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2">
+              <Comments update={update} />
+            </div>
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@ function Comments({ update }) {
   const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
 
   return (
-    <div className="mt-8 flex flex-col">
+    <div className="flex flex-col">
       {beforeAck.map((c) => (
         <Comment key={c.id} comment={c} />
       ))}
@@ -161,24 +161,32 @@ function Comments({ update }) {
       {afterAck.map((c) => (
         <Comment key={c.id} comment={c} />
       ))}
+
+      <CommentBox update={update} />
     </div>
   );
 }
 
 function Comment({ comment }) {
   return (
-    <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">
+    <div className="flex items-start justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1">
       <div className="shrink-0">
         <Avatar person={comment.author} size="tiny" />
       </div>
 
       <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="font-bold">{comment.author.fullName}</div>
-          <FormattedTime time={comment.insertedAt} format="short-date" />
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
+            <span className="text-white-2 text-sm">
+              <FormattedTime time={comment.insertedAt} format="relative" />
+            </span>
+          </div>
         </div>
 
-        <RichContent jsonContent={JSON.parse(comment.message)} />
+        <div className="my-1">
+          <RichContent jsonContent={JSON.parse(comment.message)} />
+        </div>
       </div>
     </div>
   );
@@ -197,7 +205,7 @@ function CommentBox({ update }) {
 function AddCommentNonActive({ onClick }) {
   return (
     <div
-      className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4"
+      className="px-4 py-3 not-first:border-t border-dark-8 cursor-pointer"
       data-test-id="add-comment"
       onClick={onClick}
     >
@@ -210,7 +218,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
   const [_, refetch] = Paper.useLoadedData();
 
   const editor = TipTapEditor.useEditor({
-    placeholder: "Write your comment here...",
+    placeholder: "Post a comment...",
   });
 
   const [post, { loading }] = Updates.usePostComment();
@@ -233,31 +241,25 @@ function AddCommentActive({ update, onBlur, onPost }) {
   };
 
   return (
-    <div>
-      <div className="bg-shade-1 text-white-1 rounded-lg">
-        <div className="flex items-center gap-1 border-b border-shade-2 px-4 py-1">
-          <TipTapEditor.Toolbar editor={editor} />
-        </div>
-
-        <div
-          className="mb-4 py-2 text-white-1 px-4"
-          style={{
-            minHeight: "200px",
-          }}
-        >
-          <TipTapEditor.EditorContent editor={editor} />
-        </div>
+    <div className="px-4 py-3 not-first:border-t border-dark-8">
+      <div className="text-white-1" style={{ minHeight: "100px" }}>
+        <TipTapEditor.EditorContent editor={editor} />
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment">
-          <Icons.IconMail size={20} />
-          Post Comment
-        </Button>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
+            Post
+          </Button>
 
-        <Button variant="secondary" onClick={onBlur}>
-          Cancel
-        </Button>
+          <Button variant="secondary" onClick={onBlur} size="small">
+            Cancel
+          </Button>
+        </div>
+
+        <div className="flex items-center border border-shade-2 px-2 py-1 rounded-lg">
+          <TipTapEditor.Toolbar editor={editor} />
+        </div>
       </div>
     </div>
   );
@@ -272,17 +274,24 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
 
   return (
     <BigContainer update={update} person={update.author} time={update.insertedAt}>
-      <RichContent jsonContent={message} />
-
       {oldHealth !== newHealth && (
-        <div className="mt-4 bg-shade-1 rounded p-2">
-          <p className="font-medium">The project's health has changed.</p>
-          <div className="flex items-center gap-2 mt-2">
-            <ProjectIcons.IconForHealth health={oldHealth} /> <span className="capitalize">{oldHealth}</span> -&gt;
-            <ProjectIcons.IconForHealth health={newHealth} /> <span className="capitalize">{newHealth}</span>
+        <div className="flex">
+          <div className="mb-4">
+            <div className="flex items-center gap-2">
+              Project health changed from
+              <div className="bg-dark-2 rounded-lg px-2 py-1 flex items-center gap-2 text-sm">
+                <ProjectIcons.IconForHealth health={oldHealth} /> <span className="capitalize">{oldHealth}</span>
+              </div>
+              -&gt;
+              <div className="bg-dark-2 rounded-lg px-2 py-1 flex items-center gap-2 text-sm">
+                <ProjectIcons.IconForHealth health={newHealth} /> <span className="capitalize">{newHealth}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      <RichContent jsonContent={message} />
     </BigContainer>
   );
 }
@@ -339,7 +348,7 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
 
 function SmallContainer({ time, children }) {
   return (
-    <div className="flex items-center justify-between my-2 mr-1">
+    <div className="flex items-center justify-between my-2 mr-1 text-sm">
       <div
         className="w-5 h-5 bg-dark-3 rounded-full flex items-center justify-center"
         style={{
@@ -428,53 +437,6 @@ function Review({ project, update }: { project: Projects.Project; update: Update
     </BigContainer>
   );
 }
-
-// <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
-//   <div className="line-clamp-4">
-//     <RichContent jsonContent={activity.resource.message} />
-//   </div>
-// </div>
-
-// function ActivityItemUpdateAcknowledged({ activity }: { activity: Activities.Activity }) {
-//   const link = `/projects/${activity.scopeId}/updates/${activity.resource.id}`;
-
-//   return (
-//     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-//       <div className="flex items-center">
-//         <div className="font-bold">
-//           {activity.person.fullName} acknowledged the{" "}
-//           <Link to={link} className="font-semibold text-sky-400 underline underline-offset-2">
-//             Status Update
-//           </Link>
-//         </div>
-//       </div>
-//     </ActivityItemContainer>
-//   );
-// }
-
-// function ActivityItemCommentPost({ activity }: { activity: Activities.Activity }) {
-//   const eventData = activity.eventData as Activities.CommentPostEventData;
-//   const link = `/projects/${activity.scopeId}/updates/${eventData.updateId}`;
-
-//   return (
-//     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-//       <div className="flex items-center">
-//         <div className="font-bold">
-//           {activity.person.fullName} posted a comment on a{" "}
-//           <Link to={link} className="font-semibold text-sky-400 underline underline-offset-2">
-//             Status Update
-//           </Link>
-//         </div>
-//       </div>
-
-//       <div className="bg-shade-1 py-4 px-4 mt-4 rounded-[20px] max-w-3xl">
-//         <div className="line-clamp-4">
-//           <RichContent jsonContent={JSON.parse(activity.resource.message)} />
-//         </div>
-//       </div>
-//     </ActivityItemContainer>
-//   );
-// }
 
 function SectionTitle({ title }) {
   return <div className="font-bold flex items-center gap-2 py-4 border-t border-shade-1">{title}</div>;
