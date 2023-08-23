@@ -131,7 +131,7 @@ export function IconCanceled() {
 
 export function Champion({ person }): JSX.Element {
   if (!person) {
-    return <div className="flex items-center gap-2 text-white-2">No Champion</div>;
+    return <div className="flex items-center gap-2 text-white-2">&mdash;</div>;
   }
 
   const avatar = <Avatar person={person} size="tiny" />;
