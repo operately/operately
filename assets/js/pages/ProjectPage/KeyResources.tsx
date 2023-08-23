@@ -189,6 +189,7 @@ function EditResourceModal({ resource, refetch, isOpen, close }) {
 const GithubLinkRegex = new RegExp("^https://github.com/.*/.*$");
 const FigmaLinkRegex = new RegExp("^https://(.*).figma.com/.*$");
 const SlackLinkRegex = new RegExp("^https://.*.slack.com/.*$");
+const GoogleSheetLinkRegex = new RegExp("^https://docs.google.com/spreadsheets/d/.*$");
 
 function LinkIcon({ resource }: { resource: KeyResource }) {
   if (resource.link.match(GithubLinkRegex)) {
@@ -201,6 +202,10 @@ function LinkIcon({ resource }: { resource: KeyResource }) {
 
   if (resource.link.match(SlackLinkRegex)) {
     return <Icons.IconBrandSlack size={20} className="text-pink-400" />;
+  }
+
+  if (resource.link.match(GoogleSheetLinkRegex)) {
+    return <Icons.IconFileSpreadsheet size={20} className="text-pink-400" />;
   }
 
   return <Icons.IconLink size={20} className="text-pink-400" />;
