@@ -101,17 +101,16 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("This is a status update."))
   end
 
-  # feature "leave a comment on an update", state do
-  #   add_status_update(state.project, "This is a status update.")
+  feature "leave a comment on an update", state do
+    add_status_update(state.project, "This is a status update.")
 
-  #   state
-  #   |> visit_message_board(state.project)
-  #   |> UI.click(testid: "status-update")
-  #   |> UI.click(testid: "add-comment")
-  #   |> UI.fill_rich_text("This is a comment.")
-  #   |> UI.click(testid: "post-comment")
-  #   |> assert_has(Query.text("This is a comment."))
-  # end
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+    |> assert_has(Query.text("This is a comment."))
+  end
 
   feature "changing phase from pending -> execution and filling in the review", state do
     state
@@ -397,27 +396,29 @@ defmodule Operately.Features.ProjectsTest do
         type: :status_update,
         updatable_type: :project,
         updatable_id: project.id,
-        content: rich_text_paragraph(text),
+        content: %{
+          "message" => rich_text_paragraph(text),
+          "old_health" => "on-track",
+          "new_health" => "on-track",
+        },
         author_id: project.creator_id
       })
   end
 
   def rich_text_paragraph(text) do
     %{
-      "message" => %{
-        "type" => "doc",
-        "content" => [
-          %{
-            "type" => "paragraph",
-            "content" => [
-              %{
-                "text" => text,
-                "type" => "text"
-              }
-            ]
-          }
-        ]
-      }
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "paragraph",
+          "content" => [
+            %{
+              "text" => text,
+              "type" => "text"
+            }
+          ]
+        }
+      ]
     }
   end
 

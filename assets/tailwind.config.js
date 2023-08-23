@@ -61,5 +61,12 @@ module.exports = {
         ":root": extractColorVars(theme("colors")),
       });
     },
+    plugin(function ({ addVariant, e }) {
+      addVariant('not-first', ({ modifySelectors, separator }) => {
+        modifySelectors(({ className }) => {
+          return `.${e(`not-first${separator}${className}`)}:not(:first-child)`
+        })
+      })
+    }),
   ],
 };
