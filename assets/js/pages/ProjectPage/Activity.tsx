@@ -109,14 +109,15 @@ const ContainerColors = {
   },
 };
 
-function BigContainer({ update, person, time, children, tint = "gray" }) {
+function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
 
   return (
     <div className="flex items-start justify-between my-2">
       <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
-          <AckCTA update={update} />
+          <AckCTA update={update} project={project} />
+
           <div className={"flex justify-between items-center"}>
             <div className="px-4 py-2 flex items-center gap-2">
               <Avatar person={person} size="tiny" />
@@ -157,13 +158,17 @@ function AckMarker({ update }) {
   }
 }
 
-function AckCTA({ update }) {
+function AckCTA({ project, update }) {
+  const [{ me }] = Paper.useLoadedData();
+
   if (update.acknowledged) return null;
+  if (!project.reviewer) return null;
+  if (project.reviewer.id !== me.id) return null;
 
   return (
     <div className="px-4 py-3 mb-2 border-b border-dark-8 flex items-center justify-between font-bold">
       Waiting for your acknowledgement
-      <Button variant="success" size="tiny">
+      <Button variant="success" size="tiny" data-test-id="acknowledge-update">
         <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
         Acknowledge
       </Button>
@@ -295,7 +300,7 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
   const newHealth = content.newHealth;
 
   return (
-    <BigContainer update={update} person={update.author} time={update.insertedAt}>
+    <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
       {oldHealth !== newHealth && (
         <div className="flex">
           <div className="mb-4">
@@ -454,7 +459,7 @@ function Review({ project, update }: { project: Projects.Project; update: Update
   const Message = handler.activityMessage(answers);
 
   return (
-    <BigContainer update={update} person={update.author} time={update.insertedAt}>
+    <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
       <Message />
     </BigContainer>
   );

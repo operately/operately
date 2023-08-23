@@ -121,11 +121,11 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> assert_text("Wating for your acknowledgement")
+    |> assert_has(Query.text("Waiting for your acknowledgement"))
     |> UI.click(testid: "acknowledge-update")
-    |> refute_has(Query.text("Wating for your acknowledgement"))
+    |> refute_has(Query.text("Waiting for your acknowledgement"))
     |> assert_has(Query.css("[data-test-id='acknowledge-marker']"))
-    |> assert_text("John Wick acknowledged this update")
+    |> assert_text(state.champion.full_name <> " acknowledged this update")
   end
 
   feature "changing phase from pending -> execution and filling in the review", state do
