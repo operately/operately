@@ -272,14 +272,19 @@ function KeyResourcesForm({ title, setTitle, link, setLink, onSubmit, loading, b
     <div className="mt-8">
       <Forms.Form onSubmit={onSubmit} loading={loading} isValid={valid}>
         <Forms.TextInput
+          value={title}
+          onChange={setTitle}
+          label="Title"
+          placeholder="Give a title for this resource"
+          autoFocus
+        />
+
+        <Forms.TextInput
           value={link}
           onChange={setLink}
           label="URL"
           placeholder="Link to your resource (ex. Google Doc, Figma Link)"
-          autoFocus
         />
-
-        <Forms.TextInput value={title} onChange={setTitle} label="Title" placeholder="Give a title for this resource" />
 
         <Forms.SubmitArea>
           <Forms.SubmitButton data-test-id="save-key-resource">{buttonLabel}</Forms.SubmitButton>
