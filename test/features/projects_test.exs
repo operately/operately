@@ -102,7 +102,7 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   feature "leave a comment on an update", state do
-    add_status_update(state.project, "This is a status update.")
+    add_status_update(state.project, "This is a status update.", state.champion.id)
 
     state
     |> visit_show(state.project)
@@ -406,7 +406,7 @@ defmodule Operately.Features.ProjectsTest do
     """
   end
 
-  def add_status_update(project, text, author_id \\ nil) do
+  def add_status_update(project, text, author_id) do
     {:ok, _} =
       Operately.Updates.create_update(%{
         type: :status_update,
@@ -417,7 +417,7 @@ defmodule Operately.Features.ProjectsTest do
           "old_health" => "on-track",
           "new_health" => "on-track",
         },
-        author_id: author_id || project.champion_id,
+        author_id: author_id
       })
   end
 
