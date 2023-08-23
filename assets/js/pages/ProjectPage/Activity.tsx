@@ -162,7 +162,7 @@ function AckCTA({ update }) {
 
   return (
     <div className="px-4 py-3 mb-2 border-b border-dark-8 flex items-center justify-between font-bold">
-      Waiting for your acknowledgement.
+      Waiting for your acknowledgement
       <Button variant="success" size="tiny">
         <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
         Acknowledge
