@@ -135,7 +135,10 @@ function BigContainer({ person, time, children, tint = "gray" }) {
               <span className="text-white-2 font-medium">0 comments</span>
             </div>
 
-            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4">
+            <div
+              className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2 px-4 py-4"
+              data-test-id="add-comment"
+            >
               Post a comment...
             </div>
           </div>
