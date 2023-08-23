@@ -152,23 +152,35 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
 
 function AckMarker({ update }) {
   if (update.acknowledged) {
-    return <Icons.IconCircleCheckFilled size={16} className="text-green-400" />;
+    return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
   } else {
     return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
   }
 }
 
 function AckCTA({ project, update }) {
-  const [{ me }] = Paper.useLoadedData();
+  const [{ me }, refetch] = Paper.useLoadedData();
 
   if (update.acknowledged) return null;
   if (!project.reviewer) return null;
   if (project.reviewer.id !== me.id) return null;
 
+  const [ack, { loading }] = Updates.useAckUpdate();
+
+  const handleAck = async () => {
+    await ack({
+      variables: {
+        id: update.id,
+      },
+    });
+
+    await refetch();
+  };
+
   return (
     <div className="px-4 py-3 mb-2 border-b border-dark-8 flex items-center justify-between font-bold">
       Waiting for your acknowledgement
-      <Button variant="success" size="tiny" data-test-id="acknowledge-update">
+      <Button variant="success" size="tiny" data-test-id="acknowledge-update" loading={loading} onClick={handleAck}>
         <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
         Acknowledge
       </Button>
@@ -184,6 +196,8 @@ function Comments({ update }) {
       {beforeAck.map((c) => (
         <Comment key={c.id} comment={c} />
       ))}
+
+      <AckComment update={update} />
 
       {afterAck.map((c) => (
         <Comment key={c.id} comment={c} />
@@ -213,6 +227,31 @@ function Comment({ comment }) {
 
         <div className="my-1">
           <RichContent jsonContent={JSON.parse(comment.message)} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AckComment({ update }) {
+  if (!update.acknowledged) return null;
+
+  const person = update.acknowledgingPerson;
+
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1 bg-green-400/10">
+      <div className="shrink-0">
+        <Icons.IconCircleCheckFilled size={20} className="text-green-400" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-bold">{person.fullName} acknowledged this update</div>
+            <span className="text-white-2 text-sm">
+              <FormattedTime time={update.acknowledgedAt} format="relative" />
+            </span>
+          </div>
         </div>
       </div>
     </div>

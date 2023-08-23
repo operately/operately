@@ -124,7 +124,7 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("Waiting for your acknowledgement"))
     |> UI.click(testid: "acknowledge-update")
     |> refute_has(Query.text("Waiting for your acknowledgement"))
-    |> assert_has(Query.css("[data-test-id='acknowledge-marker']"))
+    |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
     |> assert_text(state.champion.full_name <> " acknowledged this update")
   end
 

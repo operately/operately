@@ -305,36 +305,6 @@ export function useReactMutation(entityType: string, entityID: string) {
   return [addReaction, status] as const;
 }
 
-export function useAckMutation(updateId: string) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation Acknowledge($id: ID!) {
-        acknowledge(id: $id) {
-          id
-        }
-      }
-    `,
-    {
-      refetchQueries: [
-        {
-          query: GET_STATUS_UPDATE,
-          variables: { id: updateId },
-        },
-      ],
-    },
-  );
-
-  const ack = () => {
-    return fun({
-      variables: {
-        id: updateId,
-      },
-    });
-  };
-
-  return [ack, status] as const;
-}
-
 export function useAddProject(options) {
   return useMutation(
     gql`
