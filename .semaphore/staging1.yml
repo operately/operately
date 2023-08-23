@@ -12,10 +12,11 @@ blocks:
       jobs:
         - name: "Deploy"
           commands:
+            - ssh-add /home/semaphore/.ssh/infra_deploy_key
             - checkout
-            - export DOCKER_TAG=$(shell git rev-parse --short HEAD)
+            - export DOCKER_TAG=$(git rev-parse --short HEAD)
             - cd /tmp
-            - git checkout git@github.com:/operately/infra
+            - git clone git@github.com:/operately/infra
             - cd infra
             - "make update.app.image TAG=${DOCKER_TAG}"
             - "make stg1.app.deploy"
