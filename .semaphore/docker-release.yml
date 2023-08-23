@@ -19,3 +19,9 @@ blocks:
             - docker pull operately/operately:latest
             - make docker.build
             - make docker.push
+
+promotions:
+  - name: Staging 1
+    pipeline_file: staging1.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
