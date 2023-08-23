@@ -61,7 +61,7 @@ export function Page() {
   };
 
   return (
-    <Paper.Root size="xxlarge">
+    <Paper.Root size="large">
       <div className="font-extrabold text-3xl mt-4 mb-8">Projects in {company.name}</div>
 
       <Paper.Body className="bg-dark-2" noPadding>
@@ -110,8 +110,13 @@ function ProjectList({ projects, headerVisibility }: { projects: Project[]; head
   const headers = [
     { id: "health", label: "", size: "w-3", visible: headerVisibility.health },
     { id: "phase", label: "", size: "w-3", visible: headerVisibility.phase },
-    { id: "title", label: "Title", size: "flex-1", visible: true },
-    { id: "milestone", label: "Next Milestone", size: "flex-1", visible: headerVisibility.nextMilestone },
+    { id: "title", label: "Title", size: "flex-1 truncate", visible: true },
+    {
+      id: "milestone",
+      label: "Next Milestone",
+      size: "flex-1 truncate",
+      visible: headerVisibility.nextMilestone,
+    },
     { id: "start", label: "Start Date", size: "w-24", visible: headerVisibility.startDate },
     { id: "due", label: "Due Date", size: "w-24", visible: headerVisibility.dueDate },
     { id: "champion", label: "Champion", size: "w-24", visible: headerVisibility.champion },
@@ -142,7 +147,7 @@ function NextMilestone({ project }) {
     return (
       <div className="flex items-center gap-2">
         <Icons.IconFlag3Filled size={16} className="text-yellow-400/80" />
-        {project.nextMilestone.title}
+        <span className="text-ellipsis">{project.nextMilestone.title}</span>
       </div>
     );
   }

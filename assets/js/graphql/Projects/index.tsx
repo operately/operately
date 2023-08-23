@@ -156,12 +156,8 @@ export const GET_PROJECT = gql`
       keyResources ${KeyResources.GQL_FRAGMENT}
       milestones ${Milestones.FRAGEMNT}
 
-      champion {
-        id
-        fullName
-        avatarUrl
-        title
-      }
+      champion ${fragments.PERSON}
+      reviewer ${fragments.PERSON}
 
       contributors ${fragments.CONTRIBUTOR}
 
@@ -307,36 +303,6 @@ export function useReactMutation(entityType: string, entityID: string) {
   };
 
   return [addReaction, status] as const;
-}
-
-export function useAckMutation(updateId: string) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation Acknowledge($id: ID!) {
-        acknowledge(id: $id) {
-          id
-        }
-      }
-    `,
-    {
-      refetchQueries: [
-        {
-          query: GET_STATUS_UPDATE,
-          variables: { id: updateId },
-        },
-      ],
-    },
-  );
-
-  const ack = () => {
-    return fun({
-      variables: {
-        id: updateId,
-      },
-    });
-  };
-
-  return [ack, status] as const;
 }
 
 export function useAddProject(options) {

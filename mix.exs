@@ -65,7 +65,8 @@ defmodule Operately.MixProject do
       # testing
       {:cabbage, "~> 0.3.6", only: :test},
       {:wallaby, "~> 0.30.0", runtime: false, only: :test},
-      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false}
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:junit_formatter, "~> 3.1", only: [:test]}
     ]
   end
 

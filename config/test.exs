@@ -49,3 +49,10 @@ config :operately, :start_query_counter, true
 config :operately, :restrict_entry, false
 
 config :operately, Oban, testing: :inline
+
+config :junit_formatter,
+  report_dir: "testreports",
+  report_file: "junit.xml", # Save output to "/tmp/junit.xml"
+  print_report_file: true, # Adds information about file location when suite finishes
+  include_filename?: true, # Include filename and file number for more insights
+  include_file_line?: true

@@ -109,23 +109,24 @@ const ContainerColors = {
   },
 };
 
-function BigContainer({ update, person, time, children, tint = "gray" }) {
+function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
 
   return (
     <div className="flex items-start justify-between my-2">
       <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
+          <AckCTA update={update} project={project} />
+
           <div className={"flex justify-between items-center"}>
             <div className="px-4 py-2 flex items-center gap-2">
               <Avatar person={person} size="tiny" />
               <span className="font-bold">{person.fullName}</span>
-              <div className="border border-yellow-400/50 rounded-full px-1.5 py-0.5 text-yellow-400/70 text-xs font-medium">
-                Champion
-              </div>
+              <div className="border border-white-3 rounded-full px-1.5 text-xs font-medium">Champion</div>
             </div>
 
-            <div className="mr-3">
+            <div className="mr-3 flex items-center gap-2">
+              <AckMarker update={update} />
               <span className="text-white-2 text-sm">
                 <FormattedTime time={time} format="relative" />
               </span>
@@ -135,16 +136,54 @@ function BigContainer({ update, person, time, children, tint = "gray" }) {
           <div className="px-4">{children}</div>
 
           <div className="px-4 py-2 mt-2">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-3">
               <Icons.IconMoodPlus size={16} className="text-white-2 cursor-pointer" />
             </div>
 
-            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2">
+            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 border-t-2 border-dark-5 text-white-2">
               <Comments update={update} />
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function AckMarker({ update }) {
+  if (update.acknowledged) {
+    return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
+  } else {
+    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
+  }
+}
+
+function AckCTA({ project, update }) {
+  const [{ me }, refetch] = Paper.useLoadedData();
+
+  if (update.acknowledged) return null;
+  if (!project.reviewer) return null;
+  if (project.reviewer.id !== me.id) return null;
+
+  const [ack, { loading }] = Updates.useAckUpdate();
+
+  const handleAck = async () => {
+    await ack({
+      variables: {
+        id: update.id,
+      },
+    });
+
+    await refetch();
+  };
+
+  return (
+    <div className="px-4 py-3 mb-2 border-b border-dark-8 flex items-center justify-between font-bold">
+      Waiting for your acknowledgement
+      <Button variant="success" size="tiny" data-test-id="acknowledge-update" loading={loading} onClick={handleAck}>
+        <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
+        Acknowledge
+      </Button>
     </div>
   );
 }
@@ -157,6 +196,8 @@ function Comments({ update }) {
       {beforeAck.map((c) => (
         <Comment key={c.id} comment={c} />
       ))}
+
+      <AckComment update={update} />
 
       {afterAck.map((c) => (
         <Comment key={c.id} comment={c} />
@@ -186,6 +227,31 @@ function Comment({ comment }) {
 
         <div className="my-1">
           <RichContent jsonContent={JSON.parse(comment.message)} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AckComment({ update }) {
+  if (!update.acknowledged) return null;
+
+  const person = update.acknowledgingPerson;
+
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1 bg-green-400/10">
+      <div className="shrink-0">
+        <Icons.IconCircleCheckFilled size={20} className="text-green-400" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-bold">{person.fullName} acknowledged this update</div>
+            <span className="text-white-2 text-sm">
+              <FormattedTime time={update.acknowledgedAt} format="relative" />
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -273,7 +339,7 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
   const newHealth = content.newHealth;
 
   return (
-    <BigContainer update={update} person={update.author} time={update.insertedAt}>
+    <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
       {oldHealth !== newHealth && (
         <div className="flex">
           <div className="mb-4">
@@ -432,7 +498,7 @@ function Review({ project, update }: { project: Projects.Project; update: Update
   const Message = handler.activityMessage(answers);
 
   return (
-    <BigContainer update={update} person={update.author} time={update.insertedAt}>
+    <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
       <Message />
     </BigContainer>
   );

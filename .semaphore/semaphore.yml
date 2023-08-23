@@ -14,6 +14,10 @@ blocks:
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
           - cp docker-compose.yml.ci docker-compose.yml # use a minimal docker compose for tests on CI
+      epilogue:
+        always:
+          commands:
+            - test-results publish testreports/junit.xml
       jobs:
         - name: mix test
           commands:

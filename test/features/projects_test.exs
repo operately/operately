@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectsTest do
   use Operately.FeatureCase
 
   import Operately.CompaniesFixtures
+  import Operately.PeopleFixtures
 
   setup session do
     company = company_fixture(%{name: "Test Org"})
@@ -9,7 +10,7 @@ defmodule Operately.Features.ProjectsTest do
     champion = UI.get_account().person
     project = create_project(company, champion)
 
-    {:ok, %{session: session, company: company.id, champion: champion, project: project}}
+    {:ok, %{session: session, company: company, champion: champion, project: project}}
   end
 
   feature "add project", state do
@@ -102,7 +103,7 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   feature "leave a comment on an update", state do
-    add_status_update(state.project, "This is a status update.")
+    add_status_update(state.project, "This is a status update.", state.champion.id)
 
     state
     |> visit_show(state.project)
@@ -110,6 +111,22 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
     |> assert_has(Query.text("This is a comment."))
+  end
+
+  feature "acknowledge a status update", state do
+    new_champion = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
+
+    change_champion(state.project, new_champion)
+    change_reviewer(state.project, state.champion)
+    add_status_update(state.project, "This is a status update.", new_champion.id)
+
+    state
+    |> visit_show(state.project)
+    |> assert_has(Query.text("Waiting for your acknowledgement"))
+    |> UI.click(testid: "acknowledge-update")
+    |> refute_has(Query.text("Waiting for your acknowledgement"))
+    |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
+    |> assert_text(state.champion.full_name <> " acknowledged this update")
   end
 
   feature "changing phase from pending -> execution and filling in the review", state do
@@ -390,7 +407,7 @@ defmodule Operately.Features.ProjectsTest do
     """
   end
 
-  def add_status_update(project, text) do
+  def add_status_update(project, text, author_id) do
     {:ok, _} =
       Operately.Updates.create_update(%{
         type: :status_update,
@@ -401,7 +418,7 @@ defmodule Operately.Features.ProjectsTest do
           "old_health" => "on-track",
           "new_health" => "on-track",
         },
-        author_id: project.creator_id
+        author_id: author_id
       })
   end
 
@@ -432,21 +449,22 @@ defmodule Operately.Features.ProjectsTest do
     Enum.at(parts, 0) <> " " <> String.first(Enum.at(parts, 1)) <> "."
   end
 
-  # def click_new_project(state) do
-  #   UI.click_link(state, "New Project")
-  # end
+  defp change_champion(project, champion) do
+    delete_contributors_with_role(project, "champion")
 
-  # def save(state) do
-  #   state
-  #   |> UI.click_button("Save")
-  #   |> UI.wait_for_page_to_load("/projects")
-  # end
+    {:ok, _} = Operately.Projects.create_contributor(%{person_id: champion.id, role: "champion", project_id: project.id})
+  end
 
-  # def set_name(state, name) do
-  #   UI.fill(state, "Name", with: name)
-  # end
+  defp change_reviewer(project, reviewer) do
+    delete_contributors_with_role(project, "reviewer")
 
-  # def assert_project_is_in_the_list(state, project) do
-  #   UI.assert_text(state, project)
-  # end
+    {:ok, _} = Operately.Projects.create_contributor(%{person_id: reviewer.id, role: "reviewer", project_id: project.id})
+  end
+
+  defp delete_contributors_with_role(project, role) do
+    Operately.Projects.list_project_contributors(project)
+    |> Enum.filter(fn contributor -> contributor.role == role end)
+    |> Enum.map(&Operately.Projects.delete_contributor(&1))
+  end
+
 end

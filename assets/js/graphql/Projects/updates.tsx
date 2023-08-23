@@ -191,6 +191,20 @@ export function usePostComment(options = {}) {
   return useMutation(POST_COMMENT_MUTATION, options);
 }
 
+// ACKNOWLEDGE AN UPDATE
+
+export const ACKNOWLEDGE_UPDATE = gql`
+  mutation Acknowledge($id: ID!) {
+    acknowledge(id: $id) {
+      id
+    }
+  }
+`;
+
+export function useAckUpdate(options = {}) {
+  return useMutation(ACKNOWLEDGE_UPDATE, options);
+}
+
 // utils
 
 export function splitCommentsBeforeAndAfterAck(update: Update) {

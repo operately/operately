@@ -40,3 +40,6 @@ screenshots
 
 # Don't store environment secrets in the repository
 .env
+
+# Ignore test reports
+testreports
