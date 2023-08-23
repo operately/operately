@@ -12,6 +12,7 @@ blocks:
       jobs:
         - name: "Deploy"
           commands:
+            - chmod 0600 /home/semaphore/.ssh/infra_deploy_key
             - ssh-add /home/semaphore/.ssh/infra_deploy_key
             - checkout
             - export DOCKER_TAG=$(git rev-parse --short HEAD)
