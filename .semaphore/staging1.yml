@@ -1,0 +1,24 @@
+version: v1.0
+name: Staging 1
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Deploy
+    task:
+      secrets:
+        - infra-repository-ssh-keys
+      jobs:
+        - name: "Deploy"
+          commands:
+            - checkout
+            - export DOCKER_TAG=$(shell git rev-parse --short HEAD)
+            - cd /tmp
+            - git checkout git@github.com:/operately/infra
+            - cd infra
+            - "make update.app.image TAG=${DOCKER_TAG}"
+            - "make stg1.app.deploy"
+            - git add .
+            - git commit -m "Release new app image operately/operately:${DOCKER_TAG} to staging"
+            - git push
