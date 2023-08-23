@@ -116,16 +116,16 @@ function BigContainer({ update, person, time, children, tint = "gray" }) {
     <div className="flex items-start justify-between my-2">
       <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
+          <AckCTA update={update} />
           <div className={"flex justify-between items-center"}>
             <div className="px-4 py-2 flex items-center gap-2">
               <Avatar person={person} size="tiny" />
               <span className="font-bold">{person.fullName}</span>
-              <div className="border border-yellow-400/50 rounded-full px-1.5 py-0.5 text-yellow-400/70 text-xs font-medium">
-                Champion
-              </div>
+              <div className="border border-white-3 rounded-full px-1.5 text-xs font-medium">Champion</div>
             </div>
 
-            <div className="mr-3">
+            <div className="mr-3 flex items-center gap-2">
+              <AckMarker update={update} />
               <span className="text-white-2 text-sm">
                 <FormattedTime time={time} format="relative" />
               </span>
@@ -135,16 +135,38 @@ function BigContainer({ update, person, time, children, tint = "gray" }) {
           <div className="px-4">{children}</div>
 
           <div className="px-4 py-2 mt-2">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-3">
               <Icons.IconMoodPlus size={16} className="text-white-2 cursor-pointer" />
             </div>
 
-            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 mt-3 border-t-2 border-dark-5 text-white-2">
+            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 border-t-2 border-dark-5 text-white-2">
               <Comments update={update} />
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function AckMarker({ update }) {
+  if (update.acknowledged) {
+    return <Icons.IconCircleCheckFilled size={16} className="text-green-400" />;
+  } else {
+    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
+  }
+}
+
+function AckCTA({ update }) {
+  if (update.acknowledged) return null;
+
+  return (
+    <div className="px-4 py-3 mb-2 border-b border-dark-8 flex items-center justify-between font-bold">
+      Waiting for your acknowledgement.
+      <Button variant="success" size="tiny">
+        <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
+        Acknowledge
+      </Button>
     </div>
   );
 }
