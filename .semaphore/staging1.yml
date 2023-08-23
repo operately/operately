@@ -8,7 +8,7 @@ blocks:
   - name: Deploy
     task:
       secrets:
-        - infra-repository-ssh-keys
+        - name: infra-repository-ssh-keys
       jobs:
         - name: "Deploy"
           commands:

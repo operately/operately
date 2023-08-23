@@ -22,8 +22,25 @@ blocks:
             - cache store
             - cd assets && cache store && cd .. # cache node_packages
 
+  - name: Docker Build
+    run:
+      when: "branch = 'main'"
+    task:
+      secrets:
+        - name: docker-push
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+      jobs:
+        - name: "Docker Release"
+          commands:
+            - docker pull operately/operately:latest
+            - make docker.build
+            - make docker.push
+
 promotions:
-  - name: Docker Image Release
-    pipeline_file: docker-release.yml
+  - name: Staging 1
+    pipeline_file: staging1.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
