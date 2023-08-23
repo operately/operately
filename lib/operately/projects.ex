@@ -73,7 +73,7 @@ defmodule Operately.Projects do
     query = from m in Milestone,
       where: m.project_id == ^project.id,
       where: m.status == ^:pending,
-      order_by: [asc: m.id],
+      order_by: [asc: m.deadline_at],
       limit: 1
 
     Repo.one(query)
