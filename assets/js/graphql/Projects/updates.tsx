@@ -47,6 +47,12 @@ export const UPDATE_FRAGMENT = gql`
     content {
       __typename
 
+      ... on UpdateContentStatusUpdate {
+        message
+        oldHealth
+        newHealth
+      }
+
       ... on UpdateContentProjectCreated {
         champion ${fragments.PERSON}
         creator ${fragments.PERSON}
@@ -94,7 +100,7 @@ export interface Update {
   messageType: UpdateMessageType;
   message: string;
 
-  content: ProjectMilestoneCreated | ProjectCreated;
+  content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate;
 }
 
 export interface ProjectMilestoneCreated {
@@ -104,6 +110,12 @@ export interface ProjectMilestoneCreated {
 export interface ProjectCreated {
   champion: Person;
   creator: Person;
+}
+
+export interface StatusUpdate {
+  message: string;
+  oldHealth: string;
+  newHealth: string;
 }
 
 export interface Review extends BaseUpdate {

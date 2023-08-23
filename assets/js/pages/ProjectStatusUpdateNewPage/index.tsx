@@ -170,11 +170,7 @@ function Editor({ project, title }) {
 
   const editor = TipTapEditor.useEditor({ placeholder: placeholder });
 
-  const [post] = Projects.usePostUpdate({
-    onCompleted: (data) => {
-      navigate(`/projects/${project.id}/updates/${data.createUpdate.id}`);
-    },
-  });
+  const [post] = Projects.usePostUpdate({ onCompleted: () => navigate(`/projects/${project.id}`) });
 
   const [health, setHealth] = React.useState<string>(newHealth || project.health);
   const [phase, setPhase] = React.useState<string>(newPhase || project.phase);
@@ -246,7 +242,7 @@ function FieldUpdates({ phase, health, setPhase, setHealth }) {
 
 function PostButton({ onClick }) {
   return (
-    <Button onClick={onClick} variant="success">
+    <Button onClick={onClick} variant="success" data-test-id="post-status-update">
       <Icons.IconMail size={20} />
       Post
     </Button>

@@ -6,6 +6,8 @@ defmodule Operately.UpdatesFixtures do
         type: :status_update,
         content: %{
           "message" => %{},
+          "old_health" => "on_track",
+          "new_health" => "on_track"
         },
         updatable_id: Ecto.UUID.generate(),
         updatable_type: :objective,

@@ -4,10 +4,12 @@ import * as Icons from "@tabler/icons-react";
 
 import * as Updates from "@/graphql/Projects/updates";
 import * as Projects from "@/graphql/Projects";
+import * as ProjectIcons from "@/components/ProjectIcons";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import ShortName from "@/components/ShortName";
+import RichContent from "@/components/RichContent";
 
 export default function Activity({ project }): JSX.Element {
   const { data, loading, error } = Updates.useListUpdates({
@@ -50,7 +52,7 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
       return null;
 
     case "status_update":
-      return null;
+      return <StatusUpdate project={project} update={update} />;
 
     case "review":
       return <Review project={project} update={update as Updates.Review} />;
@@ -140,6 +142,30 @@ function BigContainer({ person, time, children, tint = "gray" }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function StatusUpdate({ project, update }: { project: Projects.Project; update: Updates.Update }) {
+  const content = update.content as Updates.StatusUpdate;
+  const message = content.message;
+
+  const oldHealth = content.oldHealth;
+  const newHealth = content.newHealth;
+
+  return (
+    <BigContainer person={update.author} time={update.insertedAt}>
+      <RichContent jsonContent={message} />
+
+      {oldHealth !== newHealth && (
+        <div className="mt-4 bg-shade-1 rounded p-2">
+          <p className="font-medium">The project's health has changed.</p>
+          <div className="flex items-center gap-2 mt-2">
+            <ProjectIcons.IconForHealth health={oldHealth} /> <span className="capitalize">{oldHealth}</span> -&gt;
+            <ProjectIcons.IconForHealth health={newHealth} /> <span className="capitalize">{newHealth}</span>
+          </div>
+        </div>
+      )}
+    </BigContainer>
   );
 }
 
