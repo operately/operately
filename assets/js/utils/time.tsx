@@ -1,5 +1,9 @@
 import * as datefsn from "date-fns";
 
+export function today() {
+  return new Date();
+}
+
 export function epochZero() {
   return new Date(0);
 }
