@@ -54,7 +54,6 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> assert_has(Query.text("Key Resources"))
     |> assert_has(Query.text("Code Repository"))
     |> assert_has(Query.text("Website"))
   end

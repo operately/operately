@@ -22,20 +22,21 @@ interface Props {
 
 export default function KeyResources({ project, editable, refetch }: Props): JSX.Element {
   return (
-    <div className="flex flex-col gap-1 pt-4 relative">
+    <div className="flex flex-col gap-1 pt-2 relative">
       <Body project={project} refetch={refetch} editable={editable} />
     </div>
   );
 }
 
 function Body({ project, refetch, editable }: Props): JSX.Element {
-  if (project.keyResources.length === 0) return <EmptyState />;
-
   return (
-    <div className="flex flex-wrap gap-2 mt-1">
-      {project.keyResources.map((kr) => (
-        <Link resource={kr} key={kr.id} refetch={refetch} editable={editable} />
-      ))}
+    <div className="flex flex-wrap gap-2 mt-1 items-center">
+      {project.keyResources.length > 0 ? (
+        <Links project={project} refetch={refetch} editable={editable} />
+      ) : (
+        <EmptyState />
+      )}
+
       <div className="font-bold flex justify-between items-center">
         {editable && <AddResource project={project} refetch={refetch} />}
       </div>
@@ -45,6 +46,16 @@ function Body({ project, refetch, editable }: Props): JSX.Element {
 
 function EmptyState() {
   return <div className="text-white-2">No key resources.</div>;
+}
+
+function Links({ project, refetch, editable }: Props): JSX.Element {
+  return (
+    <>
+      {project.keyResources.map((kr) => (
+        <Link resource={kr} key={kr.id} refetch={refetch} editable={editable} />
+      ))}
+    </>
+  );
 }
 
 function Link({ resource, refetch, editable }: { resource: KeyResource; refetch: () => void; editable: boolean }) {
@@ -57,8 +68,13 @@ function Link({ resource, refetch, editable }: { resource: KeyResource; refetch:
         target="_blank"
         className="flex items-center gap-2 hover:bg-shade-1 pl-3 pr-2 py-2 transition-colors"
       >
-        <LinkIcon resource={resource} />
-        {resource.title}
+        <div className="shrink-0">
+          <LinkIcon resource={resource} />
+        </div>
+
+        <div style={{ maxWidth: "200px" }} className="truncate">
+          {resource.title}
+        </div>
       </a>
 
       {editable && <LinkOptions resource={resource} refetch={refetch} />}
@@ -242,11 +258,11 @@ function AddResource({ project, refetch }) {
   return (
     <>
       <div
-        className="text-white-2 hover:text-white-1 cursor-pointer"
+        className="text-white-2 hover:text-white-1 cursor-pointer bg-shade-1 rounded-lg p-2"
         onClick={openModal}
         data-test-id="add-key-resource"
       >
-        <Icons.IconPlus size={20} />
+        <Icons.IconPlus size={16} />
       </div>
 
       <Modal title={"Add a key resource"} isOpen={isModalOpen} hideModal={hideModal} minHeight="200px">
