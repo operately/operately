@@ -102,3 +102,7 @@ export function everyMondayBetween(start: Date, end: Date, inclusive = false) {
 export function add(date: Date, amount: number, unit: "days" | "weeks" | "months" | "years") {
   return datefsn.add(date, { [unit]: amount });
 }
+
+export function daysBetween(start: Date, end: Date) {
+  return datefsn.differenceInDays(end, start);
+}

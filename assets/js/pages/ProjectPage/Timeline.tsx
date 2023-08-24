@@ -213,19 +213,39 @@ function Timeline2({ project }) {
 
           <div className="bg-blue-100 absolute top-0 bottom-0 left-1/3 w-1"></div>
 
-          <TopMarker left="22%" />
-          <TopMarker left="41%" />
-          <TopMarker left="45%" />
-          <TopMarker left="80%" />
-          <TopMarker left="82%" />
-          <TopMarker left="90%" />
+          {project.milestones.map((milestone) => (
+            <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-3 mt-10 border-t border-dark-5 -mx-4 px-4">
+        <div className="flex items-center gap-2">
+          <Icons.IconMapPinFilled size={16} className="text-yellow-400" />
+          {project.nextMilestone?.title ? (
+            <span>
+              Next: <span className="text-white-1 font-bold">{project.nextMilestone?.title}</span>
+            </span>
+          ) : (
+            <span className="text-white-1/60 mt-1">No upcoming milestones</span>
+          )}
+        </div>
+
+        <div className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1">
+          <Icons.IconArrowDown size={16} stroke={2} />
+          Show all milestones
         </div>
       </div>
     </div>
   );
 }
 
-function TopMarker({ left }) {
+function MilestoneMarker({ milestone, lineStart, lineEnd }) {
+  const date = Time.parse(milestone.deadlineAt);
+  if (!date) return null;
+
+  const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+
   return (
     <div className="absolute flex flex-col items-center gap-1 pt-0.5" style={{ left: left, top: "-32px" }}>
       <Icons.IconMapPinFilled size={16} className="text-white-2" />

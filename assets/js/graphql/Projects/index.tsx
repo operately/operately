@@ -157,6 +157,7 @@ export const GET_PROJECT = gql`
 
       keyResources ${KeyResources.GQL_FRAGMENT}
       milestones ${Milestones.FRAGEMNT}
+      nextMilestone ${Milestones.FRAGEMNT}
 
       champion ${fragments.PERSON}
       reviewer ${fragments.PERSON}
