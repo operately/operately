@@ -5,6 +5,7 @@ import * as fragments from "@/graphql/Fragments";
 import * as Updates from "./updates";
 import * as KeyResources from "./key_resources";
 import * as Milestones from "./milestones";
+import * as PhaseHistory from "./phase_history";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -125,18 +126,14 @@ export interface Project {
   phase: ProjectPhase;
   health: ProjectHealth;
 
+  phaseHistory: PhaseHistory.PhaseHistory[];
   milestones: Milestones.Milestone[];
+  keyResources: KeyResources.KeyResource[];
+
   parents: Parent[];
   contributors: Contributor[];
   champion?: Person;
   reviewer?: Person;
-
-  pitch: Document;
-  plan: Document;
-  execution_review: Document;
-  retrospective: Document;
-
-  keyResources: KeyResources.KeyResource[];
 
   isPinned: boolean;
 }
@@ -155,55 +152,17 @@ export const GET_PROJECT = gql`
       health
       isPinned
 
+      phaseHistory ${PhaseHistory.GQL_FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
       milestones ${Milestones.FRAGEMNT}
       nextMilestone ${Milestones.FRAGEMNT}
 
+      contributors ${fragments.CONTRIBUTOR}
       champion ${fragments.PERSON}
       reviewer ${fragments.PERSON}
 
-      contributors ${fragments.CONTRIBUTOR}
-
       updates {
         id
-        title
-        message
-        messageType
-
-        previousPhase
-        newPhase
-
-        previousHealth
-        newHealth
-
-        insertedAt
-        updatedAt
-
-        author ${fragments.PERSON}
-
-        comments {
-          id
-          message
-          insertedAt
-          author ${fragments.PERSON}
-
-          reactions {
-            id
-            reactionType
-            person ${fragments.PERSON}
-          }
-        }
-
-        acknowledgingPerson ${fragments.PERSON}
-        acknowledged
-        acknowledgedAt
-
-        reactions {
-          id
-          reactionType
-          person ${fragments.PERSON}
-        }
-
       }
     }
   }

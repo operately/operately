@@ -17,8 +17,15 @@ import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 
+interface ActivityContextDescriptor {
+  project: Projects.Project;
+  refetch: () => Promise<any>;
+}
+
+const ActivityContext = React.createContext<ActivityContextDescriptor | null>(null);
+
 export default function Activity({ project }): JSX.Element {
-  const { data, loading, error } = Updates.useListUpdates({
+  const { data, loading, error, refetch } = Updates.useListUpdates({
     fetchPolicy: "network-only",
     variables: {
       filter: {
@@ -28,13 +35,15 @@ export default function Activity({ project }): JSX.Element {
   });
 
   return (
-    <div className="min-h-[350px] mt-12">
-      <SectionTitle title="Project Activity" />
+    <ActivityContext.Provider value={{ project, refetch }}>
+      <div className="min-h-[350px] mt-12">
+        <SectionTitle title="Project Activity" />
 
-      {loading && <div>Loading...</div>}
-      {error && <div>{error.message}</div>}
-      {data && <ActivityList updates={data.updates} project={project} />}
-    </div>
+        {loading && <div>Loading...</div>}
+        {error && <div>{error.message}</div>}
+        {data && <ActivityList updates={data.updates} project={project} />}
+      </div>
+    </ActivityContext.Provider>
   );
 }
 
@@ -159,7 +168,8 @@ function AckMarker({ update }) {
 }
 
 function AckCTA({ project, update }) {
-  const [{ me }, refetch] = Paper.useLoadedData();
+  const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
+  const [{ me }] = Paper.useLoadedData();
 
   if (update.acknowledged) return null;
   if (!project.reviewer) return null;
@@ -281,7 +291,7 @@ function AddCommentNonActive({ onClick }) {
 }
 
 function AddCommentActive({ update, onBlur, onPost }) {
-  const [_, refetch] = Paper.useLoadedData();
+  const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Post a comment...",

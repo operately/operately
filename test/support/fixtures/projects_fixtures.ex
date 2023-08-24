@@ -79,4 +79,20 @@ defmodule Operately.ProjectsFixtures do
 
     key_resource
   end
+
+  @doc """
+  Generate a phase_history.
+  """
+  def phase_history_fixture(attrs \\ %{}) do
+    {:ok, phase_history} =
+      attrs
+      |> Enum.into(%{
+        end_time: ~U[2023-08-24 09:36:00Z],
+        phase: :planning,
+        start_time: ~U[2023-08-24 09:36:00Z]
+      })
+      |> Operately.Projects.create_phase_history()
+
+    phase_history
+  end
 end
