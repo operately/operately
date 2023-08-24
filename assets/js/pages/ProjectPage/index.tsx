@@ -66,12 +66,62 @@ export function Page() {
 
       <Paper.Body minHeight="600px">
         <Header project={project} />
+        <Timeline2 />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Description me={me} project={project} />
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
-        <MilestonesCard project={project} />
         <Activity project={project} />
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function Timeline2() {
+  return (
+    <div className="mb-10">
+      <div className="flex items-center w-full rounded-lg relative">
+        <div className="overflow-hidden rounded h-8 flex items-center w-full">
+          <div className="w-1/3 flex items-center gap-0.5">
+            <div className="w-1/12 bg-yellow-400 h-8"></div>
+            <div className="w-11/12 bg-blue-400 h-8 text-dark-3 font-semibold flex items-center pl-2"></div>
+          </div>
+
+          <div className="w-2/3 bg-shade-1 h-8 text-sm flex items-center justify-end pr-2 text-white-2">
+            {" "}
+            No Due Date
+          </div>
+        </div>
+
+        <div className="bg-blue-100 absolute -top-0.5 -bottom-0.5 left-1/3 w-1"></div>
+
+        <div className="absolute rounded-full top-2 w-2 h-2" style={{ left: "1%" }}>
+          <Icons.IconFlag2Filled size={14} className="text-white-2" />
+        </div>
+
+        <div className="absolute rounded-full top-2 w-2 h-2" style={{ left: "20%" }}>
+          <Icons.IconFlag2Filled size={14} className="text-white-2" />
+        </div>
+
+        <div className="absolute rounded-full top-2 w-2 h-2" style={{ left: "26%" }}>
+          <Icons.IconFlag2Filled size={14} className="text-white-2" />
+        </div>
+
+        <div className="absolute rounded-full top-2 w-2 h-2" style={{ left: "80%" }}>
+          <Icons.IconFlag2Filled size={14} className="text-white-2" />
+        </div>
+      </div>
+
+      <div className="mb-4 flex items-center mt-4">
+        <div className="">Jun 17 -&gt; Oct 10</div>
+
+        <div className="mx-3">&middot;</div>
+
+        <div className="flex items-center gap-2">
+          Next:
+          <Icons.IconFlag2Filled size={16} className="text-yellow-400" />
+          Define Marketing KPIs
+        </div>
+      </div>
+    </div>
   );
 }
