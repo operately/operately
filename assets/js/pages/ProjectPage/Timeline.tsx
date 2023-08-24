@@ -171,19 +171,18 @@ function UnsetLink({ handleChange }) {
 }
 
 function Timeline2({ project }) {
-  const startDate = Time.parse(project.startedAt);
-  const dueDate = Time.parse(project.deadline);
+  const startDate = Time.parse(project.startedAt || project.insertedAt);
+  if (!startDate) throw new Error("Invalid start date");
 
-  if (!startDate || !dueDate) {
-    return null;
-  }
+  const dueDate = Time.parse(project.deadline || Time.add(startDate, 6, "months"));
+  if (!dueDate) throw new Error("Invalid due date");
 
   const lineStart = Time.closestMonday(startDate, "before");
   const lineEnd = Time.closestMonday(dueDate, "after");
 
   let markedDates = Time.everyMondayBetween(lineStart, lineEnd);
 
-  if (markedDates.length > 10) {
+  while (markedDates.length > 10) {
     markedDates = markedDates.filter((_, index) => index % 2 === 0);
   }
 

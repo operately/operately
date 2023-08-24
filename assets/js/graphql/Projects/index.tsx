@@ -11,6 +11,7 @@ export const LIST_PROJECTS = gql`
     projects(filters: $filters) {
       id
       name
+      insertedAt
       updatedAt
 
       startedAt
@@ -146,6 +147,7 @@ export const GET_PROJECT = gql`
       id
       name
       description
+      insertedAt
       startedAt
       deadline
       nextUpdateScheduledAt

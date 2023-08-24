@@ -98,3 +98,7 @@ export function everyMondayBetween(start: Date, end: Date, inclusive = false) {
 
   return mondays;
 }
+
+export function add(date: Date, amount: number, unit: "days" | "weeks" | "months" | "years") {
+  return datefsn.add(date, { [unit]: amount });
+}
