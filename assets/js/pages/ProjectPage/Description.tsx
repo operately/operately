@@ -41,7 +41,7 @@ export default function Description({ me, project }) {
 
   return (
     <Context.Provider value={{ me, project, editable, editLink, isClamped, isCondensed, toggleLines }}>
-      <div className="flex flex-col gap-1 border-y border-dark-5 py-4 relative">
+      <div className="flex flex-col gap-1 pb-4 relative border-b border-shade-1">
         <div className="font-bold flex justify-between items-center">
           About
           <EditButton />

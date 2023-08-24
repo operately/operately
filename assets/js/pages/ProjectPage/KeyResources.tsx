@@ -22,12 +22,7 @@ interface Props {
 
 export default function KeyResources({ project, editable, refetch }: Props): JSX.Element {
   return (
-    <div className="flex flex-col gap-1 mb-8 border-b border-dark-5 py-4 relative">
-      <div className="font-bold flex justify-between items-center">
-        Key Resources
-        {editable && <AddResource project={project} refetch={refetch} />}
-      </div>
-
+    <div className="flex flex-col gap-1 pt-4 relative">
       <Body project={project} refetch={refetch} editable={editable} />
     </div>
   );
@@ -41,6 +36,9 @@ function Body({ project, refetch, editable }: Props): JSX.Element {
       {project.keyResources.map((kr) => (
         <Link resource={kr} key={kr.id} refetch={refetch} editable={editable} />
       ))}
+      <div className="font-bold flex justify-between items-center">
+        {editable && <AddResource project={project} refetch={refetch} />}
+      </div>
     </div>
   );
 }

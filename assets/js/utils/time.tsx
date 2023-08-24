@@ -61,3 +61,40 @@ export function parseDateWithoutTime(date: string) {
 export function isCurrentYear(date: Date) {
   return date.getFullYear() === new Date().getFullYear();
 }
+
+export function startOfWeek(date: Date) {
+  return datefsn.startOfWeek(date);
+}
+
+export function endOfWeek(date: Date) {
+  return datefsn.endOfWeek(date);
+}
+
+export function closestMonday(date: Date, direction: "before" | "after") {
+  if (direction === "before") {
+    return datefsn.startOfWeek(date);
+  } else {
+    if (datefsn.isMonday(date)) {
+      return date;
+    } else {
+      return datefsn.startOfWeek(datefsn.addWeeks(date, 1));
+    }
+  }
+}
+
+export function everyMondayBetween(start: Date, end: Date, inclusive = false) {
+  let mondays = [] as Date[];
+
+  let current = start;
+
+  while (current <= end) {
+    mondays.push(current);
+    current = datefsn.addWeeks(current, 1);
+  }
+
+  if (!inclusive) {
+    mondays.pop();
+  }
+
+  return mondays;
+}
