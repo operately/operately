@@ -51,6 +51,8 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :name, non_null(:string)
     field :health, non_null(:string)
     field :phase, non_null(:string)
+
+    field :inserted_at, non_null(:date)
     field :updated_at, non_null(:date)
 
     field :started_at, :date

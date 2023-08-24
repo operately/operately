@@ -9,7 +9,6 @@ import Activity from "./Activity";
 import Header from "./Header";
 import Timeline from "./Timeline";
 import Description from "./Description";
-import MilestonesCard from "./MilestonesCard";
 import Sidebar from "./Sidebar";
 import KeyResources from "./KeyResources";
 
@@ -66,10 +65,14 @@ export function Page() {
 
       <Paper.Body minHeight="600px">
         <Header project={project} />
+
+        <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3 p-4 mb-8">
+          <Description me={me} project={project} />
+          <KeyResources editable={championOfProject} project={project} refetch={refetch} />
+        </div>
+
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
-        <Description me={me} project={project} />
-        <KeyResources editable={championOfProject} project={project} refetch={refetch} />
-        <MilestonesCard project={project} />
+
         <Activity project={project} />
       </Paper.Body>
     </Paper.Root>

@@ -28,7 +28,7 @@ export default function Activity({ project }): JSX.Element {
   });
 
   return (
-    <div className="min-h-[350px] py-8">
+    <div className="min-h-[350px] mt-12">
       <SectionTitle title="Project Activity" />
 
       {loading && <div>Loading...</div>}
@@ -503,5 +503,5 @@ function Review({ project, update }: { project: Projects.Project; update: Update
 }
 
 function SectionTitle({ title }) {
-  return <div className="font-bold flex items-center gap-2 py-4 border-t border-shade-1">{title}</div>;
+  return <div className="font-bold flex items-center gap-2 py-4 text-center">{title}</div>;
 }
