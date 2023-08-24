@@ -22,7 +22,7 @@ interface Props {
 
 export default function KeyResources({ project, editable, refetch }: Props): JSX.Element {
   return (
-    <div className="flex flex-col gap-1 pt-2 relative">
+    <div className="flex flex-col gap-1 pt-3 relative">
       <Body project={project} refetch={refetch} editable={editable} />
     </div>
   );
