@@ -41,8 +41,13 @@ defmodule Operately.Projects do
             champion_id
           )
 
-          project
+          {:ok, _} = create_phase_history(%{
+            project_id: project.id,
+            phase: project.phase,
+            start_time: DateTime.utc_now()
+          })
 
+          project
         {:error, changeset} ->
           Repo.rollback(changeset)
       end
@@ -293,5 +298,65 @@ defmodule Operately.Projects do
 
   def change_key_resource(%KeyResource{} = key_resource, attrs \\ %{}) do
     KeyResource.changeset(key_resource, attrs)
+  end
+
+  # Phase History
+
+  alias Operately.Projects.PhaseHistory
+
+  def list_project_phase_history(project) do
+    Operately.Repo.preload(project, :phase_history).phase_history
+  end
+
+  def get_phase_history!(id), do: Repo.get!(PhaseHistory, id)
+
+  def create_phase_history(attrs \\ %{}) do
+    %PhaseHistory{}
+    |> PhaseHistory.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_phase_history(%PhaseHistory{} = phase_history, attrs) do
+    phase_history
+    |> PhaseHistory.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_phase_history(%PhaseHistory{} = phase_history) do
+    Repo.delete(phase_history)
+  end
+
+  def change_phase_history(%PhaseHistory{} = phase_history, attrs \\ %{}) do
+    PhaseHistory.changeset(phase_history, attrs)
+  end
+
+  def find_first_phase_history(project_id) do
+    Repo.one(from ph in PhaseHistory,
+      where: ph.project_id == ^project_id,
+      where: ph.phase == ^:planning,
+      order_by: [asc: ph.start_time],
+      limit: 1)
+  end
+
+  def record_phase_history(project, old_phase, new_phase) do
+    Repo.transaction(fn ->
+      previous_phase_history = Repo.one(from ph in PhaseHistory,
+        where: ph.project_id == ^project.id,
+        where: ph.phase == ^old_phase,
+        where: is_nil(ph.end_time),
+        limit: 1)
+
+      if previous_phase_history do
+        previous_phase_history
+        |> PhaseHistory.changeset(%{end_time: DateTime.utc_now()})
+        |> Repo.update()
+      end
+      
+      {:ok, _} = create_phase_history(%{
+        project_id: project.id,
+        phase: new_phase,
+        start_time: DateTime.utc_now()
+      })
+    end)
   end
 end
