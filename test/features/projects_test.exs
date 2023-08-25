@@ -354,6 +354,24 @@ defmodule Operately.Features.ProjectsTest do
   #   |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
   # end
 
+  feature "mark upcomming milestone completed", state do
+    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
+
+    state
+    |> visit_show(state.project)
+    |> UI.find(testid: "timeline")
+    |> assert_has(Query.text("Contract Signed"))
+
+    state
+    |> UI.click(testid: "complete-milestone")
+
+    state
+    |> UI.find(testid: "timeline")
+    |> assert_has(Query.text("Website Launched"))
+    |> refute_has(Query.text("Contract Signed"))
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
@@ -473,6 +491,12 @@ defmodule Operately.Features.ProjectsTest do
     Operately.Projects.list_project_contributors(project)
     |> Enum.filter(fn contributor -> contributor.role == role end)
     |> Enum.map(&Operately.Projects.delete_contributor(&1))
+  end
+
+  defp add_milestone(project, creator, attrs) do
+    attrs = %{project_id: project.id} |> Map.merge(attrs)
+
+    {:ok, _} = Operately.Projects.create_milestone(creator, attrs)
   end
 
 end

@@ -30,6 +30,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   let meData = await client.query({
     query: Me.GET_ME,
+    fetchPolicy: "network-only",
   });
 
   return {
