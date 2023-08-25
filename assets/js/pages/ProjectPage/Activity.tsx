@@ -74,6 +74,7 @@ function NewMessage({ project }) {
       <div
         className="cursor-pointer border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex items-center gap-2"
         onClick={activate}
+        data-test-id="write-message"
       >
         <Avatar person={me} size="tiny" />
         Write a message...

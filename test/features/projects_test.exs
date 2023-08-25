@@ -92,6 +92,15 @@ defmodule Operately.Features.ProjectsTest do
     |> refute_has(Query.text("Code Repository"))
   end
 
+  feature "writing a message to the team", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "write-message")
+    |> UI.fill_rich_text("Hello team!")
+    |> UI.click(testid: "post-message")
+    |> assert_has(Query.text("Hello team!"))
+  end
+
   feature "submitting a status update", state do
     state
     |> visit_show(state.project)
