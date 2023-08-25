@@ -9,7 +9,10 @@ import * as SelectBox from "@/components/SilentSelectBox";
 import * as Projects from "@/graphql/Projects";
 import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
+import * as Milestones from "@/graphql/Projects/milestones";
 
+import Button from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 
@@ -187,7 +190,7 @@ function Timeline2({ project }) {
   }
 
   return (
-    <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3 p-4">
+    <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3 p-4" data-test-id="timeline">
       <div className="flex items-start gap-4 pb-3 border-b border-dark-5 -mx-4 px-4">
         <Dates />
         <Phase />
@@ -228,22 +231,76 @@ function Timeline2({ project }) {
       </div>
 
       <div className="flex items-center justify-between pt-3 mt-10 border-t border-dark-5 -mx-4 px-4">
-        <div className="flex items-center gap-2">
-          <Icons.IconMapPinFilled size={16} className="text-yellow-400" />
-          {project.nextMilestone?.title ? (
-            <span>
-              Next: <span className="text-white-1 font-bold">{project.nextMilestone?.title}</span>
-            </span>
-          ) : (
-            <span className="text-white-1/60 mt-1">No upcoming milestones</span>
-          )}
-        </div>
-
+        <NextMilestone project={project} />
         <div className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1">
           <Icons.IconArrowDown size={16} stroke={2} />
           Show all milestones
         </div>
       </div>
+    </div>
+  );
+}
+
+function NextMilestone({ project }) {
+  if (project.nextMilestone) {
+    return <ExistingNextMilestone project={project} />;
+  } else {
+    return <NoNextMilestones />;
+  }
+}
+
+function ExistingNextMilestone({ project }) {
+  const isOverdue = Time.parse(project.nextMilestone.deadlineAt) < Time.today();
+  const iconColor = isOverdue ? "text-red-400" : "text-yellow-400";
+  const label = isOverdue ? "Overdue" : "Next";
+
+  return (
+    <div className="flex items-center gap-2">
+      <Icons.IconMapPinFilled size={16} className={iconColor} />
+      <span>
+        {label}: <span className="text-white-1 font-bold">{project.nextMilestone.title}</span>
+      </span>
+
+      <CompleteMilestoneButton project={project} milestone={project.nextMilestone} />
+    </div>
+  );
+}
+
+function CompleteMilestoneButton({ project, milestone }) {
+  const [{ me }, refetch] = Paper.useLoadedData();
+  const [complete, { loading }] = Milestones.useSetStatus();
+
+  if (project.champion.id !== me.id) return null;
+
+  const handleComplete = async () => {
+    await complete({
+      variables: {
+        milestoneId: milestone.id,
+        status: "done",
+      },
+    });
+
+    await refetch();
+  };
+
+  return (
+    <Button
+      onClick={handleComplete}
+      loading={loading}
+      size="tiny"
+      variant="secondary"
+      data-test-id="complete-milestone"
+    >
+      Complete
+    </Button>
+  );
+}
+
+function NoNextMilestones() {
+  return (
+    <div className="flex items-center gap-2">
+      <Icons.IconMapPinFilled size={16} className="text-white-1/60" />
+      <span className="text-white-1/60">No upcoming milestones</span>
     </div>
   );
 }
@@ -322,10 +379,21 @@ function MilestoneMarker({ milestone, lineStart, lineEnd }) {
   const today = Time.today();
   const date = Time.parse(milestone.deadlineAt);
   if (!date) return null;
+  if (date < lineStart) return null;
+  if (date > lineEnd) return null;
 
   const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
   const isOverdue = date < today;
-  const color = isOverdue ? "text-red-400" : "text-white-1/60";
+
+  let color = "";
+
+  if (milestone.status === "done") {
+    color = "text-green-400";
+  } else if (isOverdue) {
+    color = "text-red-400";
+  } else {
+    color = "text-yellow-400";
+  }
 
   return (
     <div className="absolute flex flex-col items-center gap-1 pt-0.5" style={{ left: left, top: "-32px" }}>
