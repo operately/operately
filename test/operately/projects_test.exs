@@ -317,4 +317,76 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_key_resource(ctx.key_resource)
     end
   end
+
+  describe "project_phase_history" do
+    alias Operately.Projects.PhaseHistory
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{end_time: nil, phase: nil, start_time: nil}
+
+    setup ctx do
+      Operately.Repo.delete_all(PhaseHistory)
+
+      phase_history = phase_history_fixture(%{project_id: ctx.project.id})
+
+      {:ok, phase_history: phase_history}
+    end
+
+    test "list_project_phase_history/0 returns all project_phase_history", ctx do
+      assert Projects.list_project_phase_history(ctx.project) == [ctx.phase_history]
+    end
+
+    test "get_phase_history!/1 returns the phase_history with given id", ctx do
+      assert Projects.get_phase_history!(ctx.phase_history.id) == ctx.phase_history
+    end
+
+    test "create_phase_history/1 with valid data creates a phase_history", ctx do
+      valid_attrs = %{
+        end_time: ~U[2023-08-24 09:36:00Z], 
+        phase: :planning, 
+        start_time: ~U[2023-08-24 09:36:00Z],
+        project_id: ctx.project.id
+      }
+
+      assert {:ok, %PhaseHistory{} = phase_history} = Projects.create_phase_history(valid_attrs)
+      assert phase_history.end_time == ~U[2023-08-24 09:36:00Z]
+      assert phase_history.phase == :planning
+      assert phase_history.start_time == ~U[2023-08-24 09:36:00Z]
+      assert phase_history.project_id == ctx.project.id
+    end
+
+    test "create_phase_history/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_phase_history(@invalid_attrs)
+    end
+
+    test "update_phase_history/2 with valid data updates the phase_history", ctx do
+      update_attrs = %{
+        start_time: ~U[2023-08-25 09:36:00Z],
+        end_time: ~U[2023-08-25 09:36:00Z], 
+        phase: :execution, 
+        project_id: ctx.project.id
+      }
+
+      assert {:ok, %PhaseHistory{} = phase_history} = Projects.update_phase_history(ctx.phase_history, update_attrs)
+      assert phase_history.end_time == ~U[2023-08-25 09:36:00Z]
+      assert phase_history.phase == :execution
+      assert phase_history.start_time == ~U[2023-08-25 09:36:00Z]
+      assert phase_history.project_id == ctx.project.id
+    end
+
+    test "update_phase_history/2 with invalid data returns error changeset", ctx do
+      assert {:error, %Ecto.Changeset{}} = Projects.update_phase_history(ctx.phase_history, @invalid_attrs)
+      assert ctx.phase_history == Projects.get_phase_history!(ctx.phase_history.id)
+    end
+
+    test "delete_phase_history/1 deletes the phase_history", ctx do
+      assert {:ok, %PhaseHistory{}} = Projects.delete_phase_history(ctx.phase_history)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_phase_history!(ctx.phase_history.id) end
+    end
+
+    test "change_phase_history/1 returns a phase_history changeset", ctx do
+      assert %Ecto.Changeset{} = Projects.change_phase_history(ctx.phase_history)
+    end
+  end
 end

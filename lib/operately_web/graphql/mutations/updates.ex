@@ -35,6 +35,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
 
           if args.input[:phase] do
             Operately.Projects.update_project(project, %{phase: args.input.phase})
+            Operately.Projects.record_phase_history(project, previous_phase, new_phase)
           end
 
           if args.input[:health] do

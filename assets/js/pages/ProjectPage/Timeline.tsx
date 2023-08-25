@@ -12,7 +12,6 @@ import * as Icons from "@tabler/icons-react";
 
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
-import * as HoverCard from "@radix-ui/react-hover-card";
 
 interface ContextDescriptor {
   project: Projects.Project;
@@ -199,38 +198,32 @@ function Timeline2({ project }) {
         <div className="flex items-center w-full relative">
           <div className="relative w-full">
             <div className="overflow-hidden h-4 flex items-center w-full">
-              <div className="w-1/3 flex items-center gap-0.5"></div>
+              <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
-              <PhaseMarker
-                startedAt={project.startedAt || project.insertedAt}
-                finishedAt={null}
-                lineStart={lineStart}
-                lineEnd={lineEnd}
-                color="bg-yellow-400"
-              />
-
-              <PhaseMarker
-                startedAt={Time.closestMonday(startDate, "after")}
-                finishedAt={null}
-                lineStart={lineStart}
-                lineEnd={lineEnd}
-                color="bg-blue-400"
-              />
-
-              <div className="w-2/3 bg-shade-1 h-4 text-sm flex items-center justify-end text-white-2"></div>
+              {project.phaseHistory.map((phase) => (
+                <PhaseMarker
+                  key={phase.phase}
+                  phase={phase.phase}
+                  startedAt={phase.startTime}
+                  finishedAt={phase.endTime || Time.today()}
+                  lineStart={lineStart}
+                  lineEnd={lineEnd}
+                />
+              ))}
             </div>
 
             <StartMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
             <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
+            <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
             {markedDates.map((date, index) => (
               <DateLabel key={index} date={date} index={index} total={markedDates.length} />
             ))}
-          </div>
 
-          {project.milestones.map((milestone) => (
-            <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
-          ))}
+            {project.milestones.map((milestone) => (
+              <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -255,32 +248,74 @@ function Timeline2({ project }) {
   );
 }
 
-function PhaseMarker({ startedAt, finishedAt, lineStart, lineEnd, color }) {
+function ProjectDurationMarker({ project, lineStart, lineEnd }) {
+  const start = Time.parse(project.startedAt || lineStart);
+  const end = Time.parse(project.deadline || lineEnd);
+
+  if (!start || !end) return null;
+
+  const left = `${(Time.daysBetween(lineStart, start) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+  const width = `${(Time.daysBetween(start, end) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+
+  return <div className="bg-shade-1 h-4 relative" style={{ left, width }}></div>;
+}
+
+function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
+  if (phase === "paused") return null;
+  if (phase === "completed") return null;
+  if (phase === "canceled") return null;
+
   const start = Time.parse(startedAt) || Time.today();
   const end = Time.parse(finishedAt) || Time.today();
 
   const left = `${(Time.daysBetween(lineStart, start) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
   const width = `${(Time.daysBetween(start, end) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
 
-  const className = `h-4 absolute ${color}`;
+  let colorClass = "bg-green-400";
+  switch (phase) {
+    case "planning":
+      colorClass = "bg-gray-400";
+      break;
+    case "execution":
+      colorClass = "bg-yellow-400";
+      break;
+    case "control":
+      colorClass = "bg-green-400";
+      break;
+    default:
+      throw new Error("Invalid phase " + phase);
+  }
+
+  const className = `h-4 absolute ${colorClass}`;
 
   return (
     <div className={className} style={{ left: "calc(" + left + " + 1px)", width: "calc(" + width + " - 2px)" }}></div>
   );
 }
 
-function StartMarker({ project, lineStart, lineEnd }) {
-  const date = Time.parse(project.startedAt || project.insertedAt);
+function EndMarker({ project, lineStart, lineEnd }) {
+  const date = Time.parse(project.deadline);
+  if (!date) return null;
+
   const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-yellow-400 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+}
+
+function StartMarker({ project, lineStart, lineEnd }) {
+  const date = Time.parse(project.startedAt || project.insertedAt);
+  if (!date) return null;
+
+  const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+
+  return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
 }
 
 function TodayMarker({ lineStart, lineEnd }) {
   const today = Time.today();
   const left = `${(Time.daysBetween(lineStart, today) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-white-1 absolute top-0 bottom-0 w-1" style={{ left: left }}></div>;
+  return <div className="bg-indigo-400 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
 }
 
 function MilestoneMarker({ milestone, lineStart, lineEnd }) {

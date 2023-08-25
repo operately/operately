@@ -46,6 +46,13 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :link, non_null(:string)
   end
 
+  object :project_phase_history do
+    field :id, non_null(:id)
+    field :phase, non_null(:string)
+    field :start_time, non_null(:date)
+    field :end_time, :date
+  end
+
   object :project do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -58,6 +65,12 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :started_at, :date
     field :deadline, :date
     field :next_update_scheduled_at, :date
+
+    field :phase_history, list_of(:project_phase_history) do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.list_project_phase_history(project)}
+      end
+    end
 
     field :key_resources, list_of(:project_key_resource) do
       resolve fn project, _, _ ->
