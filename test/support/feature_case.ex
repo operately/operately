@@ -17,7 +17,7 @@ defmodule Operately.FeatureCase do
       use Wallaby.Feature, async: false
 
       setup data do
-        Wallaby.Browser.resize_window(data.session, 1920, 1200)
+        Wallaby.Browser.resize_window(data.session, 1920, 2000)
 
         :ok
       end

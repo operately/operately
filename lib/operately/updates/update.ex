@@ -76,6 +76,9 @@ defmodule Operately.Updates.Update do
 
   defp find_schema(type) do
     case type do
+      :message ->
+        Operately.Updates.Types.Message
+
       :project_created ->
         Operately.Updates.Types.ProjectCreated
 

@@ -79,6 +79,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
   union :update_content do
     types [
+      :update_content_message,
       :update_content_project_created,
       :update_content_project_milestone_created,
       :update_content_status_update
@@ -86,6 +87,14 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
     resolve_type fn %{type: type}, _ ->
       String.to_atom("update_content_#{type}") 
+    end
+  end
+
+  object :update_content_message do
+    field :message, non_null(:string) do
+      resolve fn update, _, _ ->
+        {:ok, Jason.encode!(update.content["message"])}
+      end
     end
   end
 

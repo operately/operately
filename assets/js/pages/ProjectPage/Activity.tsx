@@ -37,7 +37,7 @@ export default function Activity({ project }): JSX.Element {
   return (
     <ActivityContext.Provider value={{ project, refetch }}>
       <div className="min-h-[350px] mt-12">
-        <SectionTitle title="Project Activity" />
+        <SectionTitle />
 
         {loading && <div>Loading...</div>}
         {error && <div>{error.message}</div>}
@@ -52,6 +52,8 @@ export function ActivityList({ project, updates }: { project: Projects.Project; 
     <div className="flex flex-col gap-4 relative">
       <div className="absolute border-l border-shade-2 top-3 bottom-3 z-10" style={{ left: "25px" }}></div>
 
+      <NewMessage project={project} />
+
       {updates.map((update) => (
         <div key={update.id} className="z-20">
           <UpdateItem key={update.id} project={project} update={update} />
@@ -61,10 +63,78 @@ export function ActivityList({ project, updates }: { project: Projects.Project; 
   );
 }
 
+function NewMessage({ project }) {
+  const [active, _, activate, deactivate] = useBoolState(false);
+  const [{ me }] = Paper.useLoadedData() as Paper.LoadedData;
+
+  if (active) {
+    return <NewMessageActive project={project} onBlur={deactivate} onPost={deactivate} />;
+  } else {
+    return (
+      <div
+        className="cursor-pointer border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex items-center gap-2"
+        onClick={activate}
+        data-test-id="write-message"
+      >
+        <Avatar person={me} size="tiny" />
+        Write a message...
+      </div>
+    );
+  }
+}
+
+function NewMessageActive({ project, onBlur, onPost }) {
+  const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
+  const [post, { loading }] = Updates.usePostUpdateMutation();
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Write a message...",
+  });
+
+  const handlePost = async () => {
+    if (!editor) return;
+    if (loading) return;
+
+    await post({
+      variables: {
+        input: {
+          updatableId: project.id,
+          updatableType: "project",
+          content: JSON.stringify(editor.getJSON()),
+          messageType: "message",
+        },
+      },
+    });
+
+    await onPost();
+    await refetch();
+  };
+
+  return (
+    <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20">
+      <div className="text-white-1" style={{ minHeight: "100px" }}>
+        <TipTapEditor.EditorContent editor={editor} />
+      </div>
+
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
+            Post
+          </Button>
+          <Button variant="secondary" onClick={onBlur} size="small">
+            Cancel
+          </Button>
+        </div>
+
+        <TipTapEditor.Toolbar editor={editor} variant="small" />
+      </div>
+    </div>
+  );
+}
+
 function UpdateItem({ project, update }: { project: Projects.Project; update: Updates.Update }) {
   switch (update.messageType) {
     case "message":
-      return null;
+      return <Message project={project} update={update} />;
 
     case "status_update":
       return <StatusUpdate project={project} update={update} />;
@@ -120,12 +190,13 @@ const ContainerColors = {
 
 function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
+  const ackable = ["review", "status_update"].includes(update.messageType);
 
   return (
     <div className="flex items-start justify-between my-2">
       <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
-          <AckCTA update={update} project={project} />
+          {ackable && <AckCTA update={update} project={project} />}
 
           <div className={"flex justify-between items-center"}>
             <div className="px-4 py-2 flex items-center gap-2">
@@ -135,7 +206,7 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
             </div>
 
             <div className="mr-3 flex items-center gap-2">
-              <AckMarker update={update} />
+              {ackable && <AckMarker update={update} />}
               <span className="text-white-2 text-sm">
                 <FormattedTime time={time} format="relative" />
               </span>
@@ -339,6 +410,17 @@ function AddCommentActive({ update, onBlur, onPost }) {
   );
 }
 
+function Message({ project, update }: { project: Projects.Project; update: Updates.Update }) {
+  const content = update.content as Updates.Message;
+  const message = content.message;
+
+  return (
+    <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
+      <RichContent jsonContent={message} />
+    </BigContainer>
+  );
+}
+
 function StatusUpdate({ project, update }: { project: Projects.Project; update: Updates.Update }) {
   const content = update.content as Updates.StatusUpdate;
   const message = content.message;
@@ -512,6 +594,12 @@ function Review({ project, update }: { project: Projects.Project; update: Update
   );
 }
 
-function SectionTitle({ title }) {
-  return <div className="font-bold flex items-center gap-2 py-4 text-center">{title}</div>;
+function SectionTitle() {
+  return (
+    <div className="font-bold flex items-center gap-4 py-4 pb-8">
+      <div className="flex-1 bg-dark-8" style={{ height: "1px" }}></div>
+      <div className="font-bold text-xl">Activity</div>
+      <div className="flex-1 bg-dark-8" style={{ height: "1px" }}></div>
+    </div>
+  );
 }

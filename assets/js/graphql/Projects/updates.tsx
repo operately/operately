@@ -3,6 +3,24 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 
 import * as Milestones from "@/graphql/Projects/milestones";
 
+export const REACTION_FRAGMENT = gql`
+  {
+    id
+    reactionType
+    person ${fragments.PERSON}
+  }
+`;
+
+export const COMMENT_FRAGMENT = gql`
+  {
+    id
+    message
+    insertedAt
+    author ${fragments.PERSON}
+    reactions ${REACTION_FRAGMENT}
+  }
+`;
+
 export const UPDATE_FRAGMENT = gql`
   {
     id
@@ -14,29 +32,13 @@ export const UPDATE_FRAGMENT = gql`
     updatedAt
 
     author ${fragments.PERSON}
-
-    comments {
-      id
-      message
-      insertedAt
-      author ${fragments.PERSON}
-
-      reactions {
-        id
-        reactionType
-        person ${fragments.PERSON}
-      }
-    }
+    comments ${COMMENT_FRAGMENT}
 
     acknowledgingPerson ${fragments.PERSON}
     acknowledged
     acknowledgedAt
 
-    reactions {
-      id
-      reactionType
-      person ${fragments.PERSON}
-    }
+    reactions ${REACTION_FRAGMENT}
 
     previousPhase
     newPhase
@@ -45,7 +47,9 @@ export const UPDATE_FRAGMENT = gql`
     newHealth
 
     content {
-      __typename
+      ... on UpdateContentMessage {
+        message
+      }
 
       ... on UpdateContentStatusUpdate {
         message
@@ -94,13 +98,17 @@ export interface Update {
   messageType: UpdateMessageType;
   message: string;
 
-  content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate;
+  content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate | Message;
 
   comments: Comment[];
 
   acknowledgingPerson: Person;
   acknowledged: boolean;
   acknowledgedAt: Date;
+}
+
+export interface Message {
+  message: string;
 }
 
 export interface ProjectMilestoneCreated {
