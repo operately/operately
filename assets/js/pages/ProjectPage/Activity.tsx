@@ -190,7 +190,7 @@ const ContainerColors = {
 
 function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
-  const ackable = update.type === "status_update" || update.type === "review";
+  const ackable = ["review", "status_update"].includes(update.messageType);
 
   return (
     <div className="flex items-start justify-between my-2">
@@ -206,7 +206,7 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
             </div>
 
             <div className="mr-3 flex items-center gap-2">
-              <AckMarker update={update} />
+              {ackable && <AckMarker update={update} />}
               <span className="text-white-2 text-sm">
                 <FormattedTime time={time} format="relative" />
               </span>
