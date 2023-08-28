@@ -1,7 +1,7 @@
 import * as datefsn from "date-fns";
 
 export function today() {
-  return new Date();
+  return datefsn.startOfDay(new Date());
 }
 
 export function epochZero() {
@@ -109,4 +109,8 @@ export function add(date: Date, amount: number, unit: "days" | "weeks" | "months
 
 export function daysBetween(start: Date, end: Date) {
   return datefsn.differenceInDays(end, start);
+}
+
+export function secondsBetween(start: Date, end: Date) {
+  return datefsn.differenceInSeconds(end, start);
 }

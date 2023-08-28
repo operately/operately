@@ -386,18 +386,6 @@ function NoNextMilestones() {
   );
 }
 
-function ProjectDurationMarker({ project, lineStart, lineEnd }) {
-  const start = Time.parse(project.startedAt || lineStart);
-  const end = Time.parse(project.deadline || lineEnd);
-
-  if (!start || !end) return null;
-
-  const left = `${(Time.daysBetween(lineStart, start) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
-  const width = `${(Time.daysBetween(start, end) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
-
-  return <div className="bg-shade-1 relative" style={{ left, width, top: 0, bottom: 0 }}></div>;
-}
-
 function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
   if (phase === "paused") return null;
   if (phase === "completed") return null;
@@ -406,8 +394,8 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
   const start = Time.parse(startedAt) || Time.today();
   const end = Time.parse(finishedAt) || Time.today();
 
-  const left = `${(Time.daysBetween(lineStart, start) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
-  const width = `${(Time.daysBetween(start, end) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+  const left = `${(Time.secondsBetween(lineStart, start) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+  const width = `${(Time.secondsBetween(start, end) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
   let colorClass = "bg-green-400";
   switch (phase) {
@@ -437,11 +425,23 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
   );
 }
 
+function ProjectDurationMarker({ project, lineStart, lineEnd }) {
+  const start = Time.parse(project.startedAt || lineStart);
+  const end = Time.parse(project.deadline || lineEnd);
+
+  if (!start || !end) return null;
+
+  const left = `${(Time.secondsBetween(lineStart, start) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+  const width = `${(Time.secondsBetween(start, end) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+
+  return <div className="bg-shade-1 absolute" style={{ left, width, top: 0, bottom: 0 }}></div>;
+}
+
 function EndMarker({ project, lineStart, lineEnd }) {
   const date = Time.parse(project.deadline);
   if (!date) return null;
 
-  const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
   return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
 }
@@ -450,14 +450,14 @@ function StartMarker({ project, lineStart, lineEnd }) {
   const date = Time.parse(project.startedAt || project.insertedAt);
   if (!date) return null;
 
-  const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
   return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
 }
 
 function TodayMarker({ lineStart, lineEnd }) {
   const today = Time.today();
-  const left = `${(Time.daysBetween(lineStart, today) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+  const left = `${(Time.secondsBetween(lineStart, today) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
   return <div className="bg-indigo-400 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
 }
@@ -468,7 +468,7 @@ function MilestoneMarker({ milestone, lineStart, lineEnd }) {
   if (date < lineStart) return null;
   if (date > lineEnd) return null;
 
-  const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
+  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
   const color = milestonIconColor(milestone);
 
   return (
