@@ -245,11 +245,11 @@ function AckCTA({ project, update }) {
   const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
   const [{ me }] = Paper.useLoadedData();
 
+  const [ack, { loading }] = Updates.useAckUpdate();
+
   if (update.acknowledged) return null;
   if (!project.reviewer) return null;
   if (project.reviewer.id !== me.id) return null;
-
-  const [ack, { loading }] = Updates.useAckUpdate();
 
   const handleAck = async () => {
     await ack({
