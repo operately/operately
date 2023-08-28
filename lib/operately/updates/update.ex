@@ -18,7 +18,8 @@ defmodule Operately.Updates.Update do
       :phase_change, 
       :review,
       :project_created,
-      :project_milestone_created
+      :project_milestone_created,
+      :project_milestone_completed
     ]
 
     field :content, :map
@@ -84,6 +85,9 @@ defmodule Operately.Updates.Update do
 
       :project_milestone_created ->
         Operately.Updates.Types.ProjectMilestoneCreated
+
+      :project_milestone_completed -> 
+        Operately.Updates.Types.ProjectMilestoneCompleted
 
       :status_update ->
         Operately.Updates.Types.StatusUpdate

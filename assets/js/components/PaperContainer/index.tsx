@@ -178,8 +178,15 @@ export function RightToolbox({ children }) {
 }
 
 export function useLoadedData() {
+  const [fetchVersion, setFetchVersion] = React.useState(0);
+
   const data = useLoaderData();
   const { revalidate } = useRevalidator();
 
-  return [data, revalidate];
+  const refetch = React.useCallback(() => {
+    setFetchVersion((v) => v + 1);
+    revalidate();
+  }, [revalidate]);
+
+  return [data, refetch, fetchVersion];
 }

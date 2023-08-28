@@ -27,7 +27,7 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
-      <Timeline2 project={project} />
+      <Timeline2 project={project} refetch={refetch} />
     </Context.Provider>
   );
 }
@@ -173,7 +173,7 @@ function UnsetLink({ handleChange }) {
   );
 }
 
-function Timeline2({ project }) {
+function Timeline2({ project, refetch }) {
   const startDate = Time.parse(project.startedAt || project.insertedAt);
   if (!startDate) throw new Error("Invalid start date");
 
@@ -231,7 +231,7 @@ function Timeline2({ project }) {
       </div>
 
       <div className="flex items-center justify-between pt-3 mt-10 border-t border-dark-5 -mx-4 px-4">
-        <NextMilestone project={project} />
+        <NextMilestone project={project} refetch={refetch} />
         <div className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1">
           <Icons.IconArrowDown size={16} stroke={2} />
           Show all milestones
@@ -241,15 +241,15 @@ function Timeline2({ project }) {
   );
 }
 
-function NextMilestone({ project }) {
+function NextMilestone({ project, refetch }) {
   if (project.nextMilestone) {
-    return <ExistingNextMilestone project={project} />;
+    return <ExistingNextMilestone project={project} refetch={refetch} />;
   } else {
     return <NoNextMilestones />;
   }
 }
 
-function ExistingNextMilestone({ project }) {
+function ExistingNextMilestone({ project, refetch }) {
   const isOverdue = Time.parse(project.nextMilestone.deadlineAt) < Time.today();
   const iconColor = isOverdue ? "text-red-400" : "text-yellow-400";
   const label = isOverdue ? "Overdue" : "Next";
@@ -261,13 +261,13 @@ function ExistingNextMilestone({ project }) {
         {label}: <span className="text-white-1 font-bold">{project.nextMilestone.title}</span>
       </span>
 
-      <CompleteMilestoneButton project={project} milestone={project.nextMilestone} />
+      <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
     </div>
   );
 }
 
-function CompleteMilestoneButton({ project, milestone }) {
-  const [{ me }, refetch] = Paper.useLoadedData();
+function CompleteMilestoneButton({ project, milestone, refetch }) {
+  const [{ me }] = Paper.useLoadedData();
   const [complete, { loading }] = Milestones.useSetStatus();
 
   if (project.champion.id !== me.id) return null;

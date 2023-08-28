@@ -75,6 +75,20 @@ defmodule Operately.Updates do
     })
   end
 
+  def record_project_milestone_completed(person, milestone) do
+    create_update(%{
+      type: :project_milestone_completed,
+      author_id: person.id,
+      updatable_id: milestone.project_id,
+      updatable_type: :project,
+      content: %{
+        milestone_id: milestone.id,
+        milestone_title: milestone.title,
+        milestone_deadline: milestone.deadline_at
+      }
+    })
+  end
+
   def publish_update_added(update) do
     Absinthe.Subscription.publish(
       OperatelyWeb.Endpoint,

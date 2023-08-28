@@ -40,7 +40,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [data, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
+  const [data, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   const project = data.project;
   const me = data.me;
@@ -74,7 +74,7 @@ export function Page() {
 
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
 
-        <Activity project={project} />
+        <Activity project={project} key={fetchVersion} />
       </Paper.Body>
     </Paper.Root>
   );

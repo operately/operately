@@ -2,6 +2,7 @@ defmodule Operately.Updates.Types.ProjectCreated do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key false
   embedded_schema do
     field :creator_id, Ecto.UUID
     field :champion_id, Ecto.UUID

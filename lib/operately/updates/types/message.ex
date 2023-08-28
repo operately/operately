@@ -2,6 +2,7 @@ defmodule Operately.Updates.Types.Message do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key false
   embedded_schema do
     field :message, :map
   end
