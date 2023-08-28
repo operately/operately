@@ -128,13 +128,15 @@ defmodule Operately.Features.ProjectsTest do
     change_reviewer(state.project, state.champion)
     add_status_update(state.project, "This is a status update.", new_champion.id)
 
+    :timer.sleep(100) # give some time for the update to be created
+
     state
     |> visit_show(state.project)
-    |> assert_has(Query.text("Waiting for your acknowledgement"))
+    |> UI.assert_text("Waiting for your acknowledgement")
     |> UI.click(testid: "acknowledge-update")
-    |> refute_has(Query.text("Waiting for your acknowledgement"))
+    |> UI.refute_text("Waiting for your acknowledgement")
+    |> UI.assert_text(state.champion.full_name <> " acknowledged this update")
     |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
-    |> assert_text(state.champion.full_name <> " acknowledged this update")
   end
 
   feature "changing phase from pending -> execution and filling in the review", state do
