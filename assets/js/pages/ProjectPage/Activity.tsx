@@ -50,8 +50,7 @@ export default function Activity({ project }): JSX.Element {
 export function ActivityList({ project, updates }: { project: Projects.Project; updates: Updates.Update[] }) {
   return (
     <div className="flex flex-col gap-4 relative">
-      <div className="absolute border-l border-shade-1 top-3 bottom-3 z-10" style={{ left: "17px" }}></div>
-
+      <FeedLine />
       <NewMessage project={project} />
 
       {updates.map((update) => (
@@ -61,6 +60,10 @@ export function ActivityList({ project, updates }: { project: Projects.Project; 
       ))}
     </div>
   );
+}
+
+function FeedLine() {
+  return <div className="absolute border-l border-shade-2 top-3 bottom-3 z-10" style={{ left: "69px" }}></div>;
 }
 
 function NewMessage({ project }) {
@@ -75,10 +78,11 @@ function NewMessage({ project }) {
         <FeedAvatar person={me} />
 
         <div
-          className="cursor-pointer border rounded-lg border-dark-8 px-4 py-2 bg-dark-2 z-20 flex items-center gap-2 ml-4 flex-1"
+          className="cursor-pointer border rounded-lg border-dark-8 px-4 py-2 bg-dark-2 z-20 flex items-center gap-2 ml-4 flex-1 relative"
           onClick={activate}
           data-test-id="write-message"
         >
+          <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
           Write a message...
         </div>
       </div>
@@ -116,7 +120,9 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
     <div className="flex items-start">
       <FeedAvatar person={me} />
 
-      <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4">
+      <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4 relative">
+        <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
+
         <div className="text-white-1" style={{ minHeight: "100px" }}>
           <TipTapEditor.EditorContent editor={editor} />
         </div>
@@ -196,6 +202,8 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
       <FeedAvatar person={person} />
 
       <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3 ml-4" + " " + colors.border}>
+        <FeedAvatarCarrot fillColor="var(--color-dark-3)" />
+
         <div className="flex flex-col overflow-hidden">
           {ackable && <AckCTA update={update} project={project} />}
 
@@ -227,6 +235,29 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
         </div>
       </div>
     </div>
+  );
+}
+
+function FeedAvatarCarrot({ fillColor }) {
+  let width = 8;
+  let height = 20;
+
+  const points = [
+    [0, height / 2],
+    [width, 0],
+    [width, height],
+  ];
+
+  const pointsString = points.map(([x, y]) => `${x},${y}`).join(" ");
+
+  return (
+    <svg height={height} width={width - 1} className="absolute" style={{ left: -width + 1 + "px", top: "10px" }}>
+      <polygon
+        points={pointsString}
+        className={"fill-current stroke-current text-dark-8"}
+        style={{ fill: fillColor, strokeWidth: 1 }}
+      />
+    </svg>
   );
 }
 
@@ -523,14 +554,15 @@ function ProjectMilestoneCompleted({ update }: { project: Projects.Project; upda
 
 function SmallContainer({ time, children }) {
   return (
-    <div className="flex items-center justify-between my-2 mr-1 text-sm">
+    <div className="flex items-start justify-between my-2 mr-1 text-sm">
       <div
         className="bg-dark-3 rounded-full flex items-center justify-center"
         style={{
-          marginLeft: "3px",
-          marginRight: "10px",
+          marginLeft: "55px",
+          marginRight: "5px",
           width: "30px",
           height: "30px",
+          marginTop: "-5px",
         }}
       >
         <div className="w-2.5 h-2.5 bg-dark-8 border border-white-2 rounded-full"></div>
