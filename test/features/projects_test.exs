@@ -20,7 +20,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person(state.champion.full_name)
     |> UI.click(testid: "save")
-    |> UI.assert_text("Website Redesign")
+    |> UI.assert_text("Website Redsign")
     |> UI.assert_text(short_name(state.champion) <> " created this project and assigned themselves as the champion")
   end
 

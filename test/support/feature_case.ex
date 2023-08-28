@@ -19,7 +19,32 @@ defmodule Operately.FeatureCase do
       setup data do
         Wallaby.Browser.resize_window(data.session, 1920, 2000)
 
+        screenshots_before = Path.wildcard("/tmp/screenshots/*")
+
+        on_exit fn ->
+          screenshots_after = Path.wildcard("/tmp/screenshots/*")
+
+          list_screenshots(screenshots_before, screenshots_after)
+        end
+
         :ok
+      end
+
+      defp list_screenshots(screenshots_before, screenshots_after) do
+        diff = screenshots_after -- screenshots_before
+        sorted_by_time = Enum.sort(diff, fn a, b -> File.stat!(a).mtime > File.stat!(b).mtime end)
+
+        if sorted_by_time != [] do
+          IO.puts("")
+          IO.puts("")
+          IO.puts("Screenshots taken:")
+          IO.puts("")
+          Enum.each(sorted_by_time, fn path ->
+            filename = Path.basename(path)
+            log = "  -> http://localhost:8000/#{filename}"
+            IO.puts(log)
+          end)
+        end
       end
 
       defp select(session, option_name, from: select_name) do
