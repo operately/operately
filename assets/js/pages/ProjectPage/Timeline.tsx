@@ -396,7 +396,10 @@ function MilestoneMarker({ milestone, lineStart, lineEnd }) {
   }
 
   return (
-    <div className="absolute flex flex-col items-center gap-1 pt-0.5" style={{ left: left, top: "-32px" }}>
+    <div
+      className="absolute flex flex-col items-center justify-normal gap-1 pt-0.5"
+      style={{ left: left, top: "-32px", width: "0px" }}
+    >
       <Icons.IconMapPinFilled size={16} className={color} />
       <div className="h-1.5 bg-dark-8" style={{ width: "2px" }}></div>
     </div>
