@@ -363,6 +363,11 @@ defmodule Operately.Features.ProjectsTest do
     |> visit_show(state.project)
     |> UI.find(testid: "timeline")
     |> UI.click(testid: "show-all-milestones")
+
+    :timer.sleep(1000)
+
+    state
+    |> UI.find(testid: "timeline")
     |> assert_has(Query.text("Contract Signed"))
     |> assert_has(Query.text("Demo Day"))
     |> assert_has(Query.text("Website Launched"))

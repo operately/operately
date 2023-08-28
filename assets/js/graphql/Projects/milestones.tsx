@@ -25,14 +25,18 @@ export interface Milestone {
   };
 }
 
-export function sortByDeadline(milestones: Milestone[]) {
+export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
   let result: Milestone[] = [];
 
   return result.concat(milestones).sort((m1, m2) => {
     let d1 = +new Date(m1.deadlineAt);
     let d2 = +new Date(m2.deadlineAt);
 
-    return d1 - d2;
+    if (reverse) {
+      return d2 - d1;
+    } else {
+      return d1 - d2;
+    }
   });
 }
 

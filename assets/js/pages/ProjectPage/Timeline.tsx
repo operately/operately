@@ -1,6 +1,7 @@
 import React from "react";
 
 import { useNavigate } from "react-router-dom";
+import { useBoolState } from "@/utils/useBoolState";
 
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
@@ -27,8 +28,145 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
-      <Timeline2 project={project} refetch={refetch} />
+      <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
+        <div className="flex items-start gap-4 pb-3 border-b border-dark-5 p-4">
+          <Dates />
+          <Phase />
+          <Health />
+        </div>
+
+        <Calendar project={project} />
+        <MilestoneList project={project} refetch={refetch} />
+      </div>
     </Context.Provider>
+  );
+}
+
+function Calendar({ project }) {
+  const startDate = Time.parse(project.startedAt || project.insertedAt);
+  if (!startDate) throw new Error("Invalid start date");
+
+  const dueDate = Time.parse(project.deadline || Time.add(startDate, 6, "months"));
+  if (!dueDate) throw new Error("Invalid due date");
+
+  const lineStart = Time.closestMonday(startDate, "before");
+  const lineEnd = Time.closestMonday(dueDate, "after");
+
+  let markedDates = Time.everyMondayBetween(lineStart, lineEnd);
+
+  while (markedDates.length > 10) {
+    markedDates = markedDates.filter((_, index) => index % 2 === 0);
+  }
+
+  return (
+    <div className="p-4">
+      <div className="flex items-center w-full relative" style={{ height: "100px" }}>
+        {markedDates.map((date, index) => (
+          <DateLabel key={index} date={date} index={index} total={markedDates.length} />
+        ))}
+
+        <div className="absolute" style={{ top: "60px", bottom: "25px", left: 0, right: 0 }}>
+          <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
+
+          {project.phaseHistory.map((phase) => (
+            <PhaseMarker
+              key={phase.phase}
+              phase={phase.phase}
+              startedAt={phase.startTime}
+              finishedAt={phase.endTime || Time.today()}
+              lineStart={lineStart}
+              lineEnd={lineEnd}
+            />
+          ))}
+
+          <StartMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
+          <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
+          <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
+
+          {project.milestones.map((milestone) => (
+            <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MilestoneList({ project, refetch }) {
+  const [expanded, _, expand, collapse] = useBoolState(false);
+
+  return (
+    <div className="border-t border-dark-5 px-4 py-3">
+      {expanded ? (
+        <MilestoneListExpanded project={project} onCollapse={collapse} />
+      ) : (
+        <MilestoneListCollapsed project={project} refetch={refetch} onExpand={expand} />
+      )}
+    </div>
+  );
+}
+
+function MilestoneListCollapsed({ project, refetch, onExpand }) {
+  return (
+    <div className="flex items-center justify-between">
+      <NextMilestone project={project} refetch={refetch} />
+      <div
+        className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1"
+        onClick={onExpand}
+        data-test-id="show-all-milestones"
+      >
+        <Icons.IconArrowDown size={16} stroke={2} />
+        Show all milestones
+      </div>
+    </div>
+  );
+}
+
+function MilestoneListExpanded({ project, onCollapse }) {
+  const milestones = Milestones.sortByDeadline(project.milestones, { reverse: true });
+
+  return (
+    <div className="">
+      <div className="flex items-center border-b border-dark-5 pb-2">
+        <div className="font-semibold text-sm flex-1">Milestone</div>
+        <div className="font-semibold text-sm w-32">Due Date</div>
+        <div className="font-semibold text-sm w-32">Completed On</div>
+      </div>
+
+      {milestones.map((milestone: Milestones.Milestone) => (
+        <MilstoneListItem key={milestone.id} milestone={milestone} />
+      ))}
+
+      <div className="flex items-center justify-between -mb-3 -mx-4">
+        <div></div>
+
+        <div
+          className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1 px-4 py-3"
+          onClick={onCollapse}
+        >
+          <Icons.IconArrowUp size={16} stroke={2} />
+          Collapse
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MilstoneListItem({ milestone }) {
+  const iconColor = milestonIconColor(milestone);
+
+  return (
+    <div className="flex items-center text-sm border-b border-dark-5 py-2" key={milestone.id}>
+      <div className="flex items-center gap-2 flex-1 truncate">
+        <Icons.IconMapPinFilled size={16} className={iconColor} /> {milestone.title}
+      </div>
+
+      <div className="w-32">
+        <FormattedTime time={milestone.deadlineAt} format="short-date" />
+      </div>
+
+      <div className="w-32"></div>
+    </div>
   );
 }
 
@@ -173,74 +311,6 @@ function UnsetLink({ handleChange }) {
   );
 }
 
-function Timeline2({ project, refetch }) {
-  const startDate = Time.parse(project.startedAt || project.insertedAt);
-  if (!startDate) throw new Error("Invalid start date");
-
-  const dueDate = Time.parse(project.deadline || Time.add(startDate, 6, "months"));
-  if (!dueDate) throw new Error("Invalid due date");
-
-  const lineStart = Time.closestMonday(startDate, "before");
-  const lineEnd = Time.closestMonday(dueDate, "after");
-
-  let markedDates = Time.everyMondayBetween(lineStart, lineEnd);
-
-  while (markedDates.length > 10) {
-    markedDates = markedDates.filter((_, index) => index % 2 === 0);
-  }
-
-  return (
-    <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3 p-4" data-test-id="timeline">
-      <div className="flex items-start gap-4 pb-3 border-b border-dark-5 -mx-4 px-4">
-        <Dates />
-        <Phase />
-        <Health />
-      </div>
-
-      <div className="mb-6 pt-20">
-        <div className="flex items-center w-full relative">
-          <div className="relative w-full">
-            <div className="overflow-hidden h-4 flex items-center w-full">
-              <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-
-              {project.phaseHistory.map((phase) => (
-                <PhaseMarker
-                  key={phase.phase}
-                  phase={phase.phase}
-                  startedAt={phase.startTime}
-                  finishedAt={phase.endTime || Time.today()}
-                  lineStart={lineStart}
-                  lineEnd={lineEnd}
-                />
-              ))}
-            </div>
-
-            <StartMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-            <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
-            <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-
-            {markedDates.map((date, index) => (
-              <DateLabel key={index} date={date} index={index} total={markedDates.length} />
-            ))}
-
-            {project.milestones.map((milestone) => (
-              <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between pt-3 mt-10 border-t border-dark-5 -mx-4 px-4">
-        <NextMilestone project={project} refetch={refetch} />
-        <div className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1">
-          <Icons.IconArrowDown size={16} stroke={2} />
-          Show all milestones
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function NextMilestone({ project, refetch }) {
   if (project.nextMilestone) {
     return <ExistingNextMilestone project={project} refetch={refetch} />;
@@ -249,9 +319,20 @@ function NextMilestone({ project, refetch }) {
   }
 }
 
+function milestonIconColor(milestone: Milestones.Milestone) {
+  const deadline = Time.parse(milestone.deadlineAt);
+
+  if (milestone.status === "done") return "text-green-400";
+  if (!deadline) return "text-white-1/60";
+
+  const isOverdue = deadline < Time.today();
+
+  return isOverdue ? "text-red-400" : "text-yellow-400";
+}
+
 function ExistingNextMilestone({ project, refetch }) {
   const isOverdue = Time.parse(project.nextMilestone.deadlineAt) < Time.today();
-  const iconColor = isOverdue ? "text-red-400" : "text-yellow-400";
+  const iconColor = milestonIconColor(project.nextMilestone);
   const label = isOverdue ? "Overdue" : "Next";
 
   return (
@@ -314,7 +395,7 @@ function ProjectDurationMarker({ project, lineStart, lineEnd }) {
   const left = `${(Time.daysBetween(lineStart, start) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
   const width = `${(Time.daysBetween(start, end) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-shade-1 h-4 relative" style={{ left, width }}></div>;
+  return <div className="bg-shade-1 relative" style={{ left, width, top: 0, bottom: 0 }}></div>;
 }
 
 function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
@@ -343,10 +424,16 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
       throw new Error("Invalid phase " + phase);
   }
 
-  const className = `h-4 absolute ${colorClass}`;
-
   return (
-    <div className={className} style={{ left: "calc(" + left + " + 1px)", width: "calc(" + width + " - 2px)" }}></div>
+    <div
+      className={`absolute ${colorClass}`}
+      style={{
+        left: "calc(" + left + " + 1px)",
+        width: "calc(" + width + " - 2px)",
+        top: 0,
+        bottom: 0,
+      }}
+    ></div>
   );
 }
 
@@ -376,24 +463,13 @@ function TodayMarker({ lineStart, lineEnd }) {
 }
 
 function MilestoneMarker({ milestone, lineStart, lineEnd }) {
-  const today = Time.today();
   const date = Time.parse(milestone.deadlineAt);
   if (!date) return null;
   if (date < lineStart) return null;
   if (date > lineEnd) return null;
 
   const left = `${(Time.daysBetween(lineStart, date) / Time.daysBetween(lineStart, lineEnd)) * 100}%`;
-  const isOverdue = date < today;
-
-  let color = "";
-
-  if (milestone.status === "done") {
-    color = "text-green-400";
-  } else if (isOverdue) {
-    color = "text-red-400";
-  } else {
-    color = "text-white-1/60";
-  }
+  const color = milestonIconColor(milestone);
 
   return (
     <div
@@ -414,7 +490,7 @@ function DateLabel({ date, index, total }) {
   return (
     <div
       className="absolute flex items-start gap-1 break-keep border-x border-shade-1"
-      style={{ left: left, top: "-60px", width: width, height: "100px" }}
+      style={{ left: left, top: 0, bottom: 0, width: width, height: "100px" }}
     >
       <span className="text-xs text-white-2 whitespace-nowrap pl-2">{title}</span>
     </div>
