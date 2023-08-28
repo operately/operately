@@ -392,7 +392,7 @@ function MilestoneMarker({ milestone, lineStart, lineEnd }) {
   } else if (isOverdue) {
     color = "text-red-400";
   } else {
-    color = "text-yellow-400";
+    color = "text-white-1/60";
   }
 
   return (
