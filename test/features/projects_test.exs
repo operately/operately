@@ -354,22 +354,36 @@ defmodule Operately.Features.ProjectsTest do
   #   |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
   # end
 
+  feature "see all milestones", state do
+    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(state.project, state.champion, %{title: "Demo Day", deadline_at: ~N[2023-07-17 00:00:00]})
+    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
+
+    state
+    |> visit_show(state.project)
+    |> UI.find(testid: "timeline")
+    |> UI.click(testid: "show-all-milestones")
+
+    state
+    |> UI.assert_text("Contract Signed", testid: "timeline")
+    |> UI.assert_text("Demo Day", testid: "timeline")
+    |> UI.assert_text("Website Launched", testid: "timeline")
+  end
+
   feature "mark upcomming milestone completed", state do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     state
     |> visit_show(state.project)
-    |> UI.find(testid: "timeline")
-    |> assert_has(Query.text("Contract Signed"))
+    |> UI.assert_text("Contract Signed", testid: "timeline")
 
     state
     |> UI.click(testid: "complete-milestone")
 
     state
-    |> UI.find(testid: "timeline")
-    |> assert_has(Query.text("Website Launched"))
-    |> refute_has(Query.text("Contract Signed"))
+    |> UI.refute_text("Contract Signed", testid: "timeline")
+    |> UI.assert_text("Website Launched", testid: "timeline")
 
     state
     |> UI.assert_text(short_name(state.champion) <> " marked Contract Signed as completed")

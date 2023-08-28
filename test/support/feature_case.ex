@@ -129,6 +129,13 @@ defmodule Operately.FeatureCase do
       end)
     end
 
+    def refute_text(state, text, testid: id) do
+      session(state)
+      |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"), fn element ->
+        element |> Browser.refute_has(Query.text(text))
+      end)
+    end
+
     def assert_page(state, path) do
       require ExUnit.Assertions
 
