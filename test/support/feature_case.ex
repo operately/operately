@@ -129,6 +129,11 @@ defmodule Operately.FeatureCase do
       end)
     end
 
+    def refute_text(state, text) do
+      session(state)
+      |> Browser.refute_has(Query.text(text))
+    end
+
     def refute_text(state, text, testid: id) do
       session(state)
       |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"), fn element ->
