@@ -82,6 +82,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       :update_content_message,
       :update_content_project_created,
       :update_content_project_milestone_created,
+      :update_content_project_milestone_completed,
       :update_content_status_update
     ]
 
@@ -117,6 +118,16 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
   end
 
   object :update_content_project_milestone_created do
+    field :milestone, non_null(:milestone) do
+      resolve fn update, _, _ ->
+        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"])
+
+        {:ok, milestone}
+      end
+    end
+  end
+
+  object :update_content_project_milestone_completed do
     field :milestone, non_null(:milestone) do
       resolve fn update, _, _ ->
         milestone = Operately.Projects.get_milestone!(update.content["milestone_id"])

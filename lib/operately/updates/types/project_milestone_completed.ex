@@ -1,4 +1,4 @@
-defmodule Operately.Updates.Types.ProjectMilestoneCreated do
+defmodule Operately.Updates.Types.ProjectMilestoneCompleted do
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -65,6 +65,10 @@ export const UPDATE_FRAGMENT = gql`
       ... on UpdateContentProjectMilestoneCreated {
         milestone ${Milestones.FRAGEMNT}
       }
+
+      ... on UpdateContentProjectMilestoneCompleted {
+        milestone ${Milestones.FRAGEMNT}
+      }
     }
   }
 `;
@@ -87,7 +91,8 @@ export type UpdateMessageType =
   | "health_change"
   | "review"
   | "project_created"
-  | "project_milestone_created";
+  | "project_milestone_created"
+  | "project_milestone_completed";
 
 export interface Update {
   id: string;
@@ -98,7 +103,7 @@ export interface Update {
   messageType: UpdateMessageType;
   message: string;
 
-  content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate | Message;
+  content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate | Message | ProjectMilestoneCompleted;
 
   comments: Comment[];
 
@@ -112,6 +117,10 @@ export interface Message {
 }
 
 export interface ProjectMilestoneCreated {
+  milestone: Milestones.Milestone;
+}
+
+export interface ProjectMilestoneCompleted {
   milestone: Milestones.Milestone;
 }
 

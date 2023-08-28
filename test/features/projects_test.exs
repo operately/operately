@@ -371,8 +371,8 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("Website Launched"))
     |> refute_has(Query.text("Contract Signed"))
 
-    state.session
-    |> assert_has(Query.text(short_name(state.champion) <> " marked Contract Signed as completed"))
+    state
+    |> UI.assert_text(short_name(state.champion) <> " marked Contract Signed as completed")
   end
 
   # ===========================================================================

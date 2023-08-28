@@ -148,6 +148,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
     case "project_milestone_created":
       return <ProjectMilestoneCreated project={project} update={update} />;
 
+    case "project_milestone_completed":
+      return <ProjectMilestoneCompleted project={project} update={update} />;
+
     default:
       console.log("Unknown update type: " + update.messageType);
       return null;
@@ -495,8 +498,27 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
         <span className="font-extrabold text-white-1">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
-        added <Icons.IconFlag2Filled size={16} className="text-yellow-400 inline-block -mt-1" />{" "}
+        added <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
         <span className="font-extrabold text-white-1">{milestone}</span> milestone.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectMilestoneCompleted({ update }: { project: Projects.Project; update: Updates.Update }) {
+  const creator = update.author;
+
+  const content = update.content as Updates.ProjectMilestoneCompleted;
+  const milestone = content.milestone.title;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        marked <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
+        <span className="font-extrabold text-white-1">{milestone}</span> as completed.
       </div>
     </SmallContainer>
   );
