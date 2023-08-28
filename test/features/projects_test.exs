@@ -364,13 +364,10 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.find(testid: "timeline")
     |> UI.click(testid: "show-all-milestones")
 
-    :timer.sleep(1000)
-
     state
-    |> UI.find(testid: "timeline")
-    |> assert_has(Query.text("Contract Signed"))
-    |> assert_has(Query.text("Demo Day"))
-    |> assert_has(Query.text("Website Launched"))
+    |> UI.assert_text("Contract Signed", testid: "timeline")
+    |> UI.assert_text("Demo Day", testid: "timeline")
+    |> UI.assert_text("Website Launched", testid: "timeline")
   end
 
   feature "mark upcomming milestone completed", state do
@@ -379,16 +376,14 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> UI.find(testid: "timeline")
-    |> assert_has(Query.text("Contract Signed"))
+    |> UI.assert_text("Contract Signed", testid: "timeline")
 
     state
     |> UI.click(testid: "complete-milestone")
 
     state
-    |> UI.find(testid: "timeline")
-    |> assert_has(Query.text("Website Launched"))
-    |> refute_has(Query.text("Contract Signed"))
+    |> UI.refute_text("Contract Signed", testid: "timeline")
+    |> UI.assert_text("Website Launched", testid: "timeline")
 
     state
     |> UI.assert_text(short_name(state.champion) <> " marked Contract Signed as completed")
