@@ -354,6 +354,20 @@ defmodule Operately.Features.ProjectsTest do
   #   |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
   # end
 
+  feature "see all milestones", state do
+    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(state.project, state.champion, %{title: "Demo Day", deadline_at: ~N[2023-07-17 00:00:00]})
+    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
+
+    state
+    |> visit_show(state.project)
+    |> UI.find(testid: "timeline")
+    |> UI.click(testid: "show-all-milestones")
+    |> assert_has(Query.text("Contract Signed"))
+    |> assert_has(Query.text("Demo Day"))
+    |> assert_has(Query.text("Website Launched"))
+  end
+
   feature "mark upcomming milestone completed", state do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
