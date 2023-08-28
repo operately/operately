@@ -50,7 +50,7 @@ export default function Activity({ project }): JSX.Element {
 export function ActivityList({ project, updates }: { project: Projects.Project; updates: Updates.Update[] }) {
   return (
     <div className="flex flex-col gap-4 relative">
-      <div className="absolute border-l border-shade-2 top-3 bottom-3 z-10" style={{ left: "25px" }}></div>
+      <div className="absolute border-l border-shade-1 top-3 bottom-3 z-10" style={{ left: "17px" }}></div>
 
       <NewMessage project={project} />
 
@@ -68,22 +68,25 @@ function NewMessage({ project }) {
   const [{ me }] = Paper.useLoadedData() as Paper.LoadedData;
 
   if (active) {
-    return <NewMessageActive project={project} onBlur={deactivate} onPost={deactivate} />;
+    return <NewMessageActive project={project} onBlur={deactivate} onPost={deactivate} me={me} />;
   } else {
     return (
-      <div
-        className="cursor-pointer border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex items-center gap-2"
-        onClick={activate}
-        data-test-id="write-message"
-      >
-        <Avatar person={me} size="tiny" />
-        Write a message...
+      <div className="flex items-start">
+        <FeedAvatar person={me} />
+
+        <div
+          className="cursor-pointer border rounded-lg border-dark-8 px-4 py-2 bg-dark-2 z-20 flex items-center gap-2 ml-4 flex-1"
+          onClick={activate}
+          data-test-id="write-message"
+        >
+          Write a message...
+        </div>
       </div>
     );
   }
 }
 
-function NewMessageActive({ project, onBlur, onPost }) {
+function NewMessageActive({ project, onBlur, onPost, me }) {
   const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
   const [post, { loading }] = Updates.usePostUpdateMutation();
   const editor = TipTapEditor.useEditor({
@@ -110,22 +113,26 @@ function NewMessageActive({ project, onBlur, onPost }) {
   };
 
   return (
-    <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20">
-      <div className="text-white-1" style={{ minHeight: "100px" }}>
-        <TipTapEditor.EditorContent editor={editor} />
-      </div>
+    <div className="flex items-start">
+      <FeedAvatar person={me} />
 
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
-            Post
-          </Button>
-          <Button variant="secondary" onClick={onBlur} size="small">
-            Cancel
-          </Button>
+      <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4">
+        <div className="text-white-1" style={{ minHeight: "100px" }}>
+          <TipTapEditor.EditorContent editor={editor} />
         </div>
 
-        <TipTapEditor.Toolbar editor={editor} variant="small" />
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
+              Post
+            </Button>
+            <Button variant="secondary" onClick={onBlur} size="small">
+              Cancel
+            </Button>
+          </div>
+
+          <TipTapEditor.Toolbar editor={editor} variant="small" />
+        </div>
       </div>
     </div>
   );
@@ -155,25 +162,6 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
       console.log("Unknown update type: " + update.messageType);
       return null;
   }
-  // switch (activity.resourceType + "-" + activity.actionType) {
-  //   case "project-create":
-  //     return <ActivityItemProjectCreated activity={activity} />;
-  //   case "milestone-create":
-  //     return <ActivityItemMilestoneCreated activity={activity} />;
-  //   case "milestone-complete":
-  //     return <ActivityItemMilestoneCompleted activity={activity} />;
-  //   case "milestone-uncomplete":
-  //     return <ActivityItemMilestoneUnCompleted activity={activity} />;
-  //   case "update-post":
-  //     return <ActivityItemUpdatePost project={project} activity={activity} />;
-  //   case "update-acknowledge":
-  //     return <ActivityItemUpdateAcknowledged activity={activity} />;
-  //   case "comment-post":
-  //     return <ActivityItemCommentPost activity={activity} />;
-  //   default:
-  //     console.log("Unknown activity type: " + activity.resourceType + "-" + activity.actionType);
-  //     return null;
-  // }
 }
 
 const ContainerColors = {
@@ -191,19 +179,28 @@ const ContainerColors = {
   },
 };
 
+function FeedAvatar({ person }) {
+  return (
+    <div className="border border-dark-8 bg-dark-3 rounded-full flex items-center justify-center mt-1.5">
+      <Avatar person={person} size="small" />
+    </div>
+  );
+}
+
 function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
   const ackable = ["review", "status_update"].includes(update.messageType);
 
   return (
     <div className="flex items-start justify-between my-2">
-      <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3" + " " + colors.border}>
+      <FeedAvatar person={person} />
+
+      <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3 ml-4" + " " + colors.border}>
         <div className="flex flex-col overflow-hidden">
           {ackable && <AckCTA update={update} project={project} />}
 
           <div className={"flex justify-between items-center"}>
             <div className="px-4 py-2 flex items-center gap-2">
-              <Avatar person={person} size="tiny" />
               <span className="font-bold">{person.fullName}</span>
               <div className="border border-white-3 rounded-full px-1.5 text-xs font-medium">Champion</div>
             </div>
@@ -331,7 +328,7 @@ function AckComment({ update }) {
       <div className="flex-1">
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <div className="font-bold">{person.fullName} acknowledged this update</div>
+            <div>{person.fullName} acknowledged this update</div>
             <span className="text-white-2 text-sm">
               <FormattedTime time={update.acknowledgedAt} format="relative" />
             </span>
@@ -528,13 +525,15 @@ function SmallContainer({ time, children }) {
   return (
     <div className="flex items-center justify-between my-2 mr-1 text-sm">
       <div
-        className="w-5 h-5 bg-dark-3 rounded-full flex items-center justify-center"
+        className="bg-dark-3 rounded-full flex items-center justify-center"
         style={{
-          marginLeft: "15px",
-          marginRight: "15px",
+          marginLeft: "3px",
+          marginRight: "10px",
+          width: "30px",
+          height: "30px",
         }}
       >
-        <div className="w-2.5 h-2.5 border-2 border-white-2 rounded-full"></div>
+        <div className="w-2.5 h-2.5 bg-dark-8 border border-white-2 rounded-full"></div>
       </div>
 
       <div className="flex-1">{children}</div>
