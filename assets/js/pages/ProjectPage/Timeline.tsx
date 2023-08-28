@@ -327,7 +327,7 @@ function milestonIconColor(milestone: Milestones.Milestone) {
 
   const isOverdue = deadline < Time.today();
 
-  return isOverdue ? "text-red-400" : "text-yellow-400";
+  return isOverdue ? "text-red-400" : "text-white-1/60";
 }
 
 function ExistingNextMilestone({ project, refetch }) {
