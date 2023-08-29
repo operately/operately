@@ -2,6 +2,7 @@ import React from "react";
 
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
 
 import { generateHTML } from "@tiptap/html";
 
@@ -26,7 +27,7 @@ export default function RichContent({ jsonContent, className }: RichContentProps
     }
 
     const json = JSON.parse(jsonContent);
-    const html = generateHTML(json, [Mention, StarterKit]);
+    const html = generateHTML(json, [Mention, StarterKit, Link]);
 
     return <div className={"ProseMirror " + className} dangerouslySetInnerHTML={{ __html: html }} />;
   } catch (e) {

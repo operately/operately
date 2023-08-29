@@ -72,6 +72,22 @@ function RedoButton({ editor, iconSize }): JSX.Element {
   );
 }
 
+function LinkButton({ editor, iconSize }): JSX.Element {
+  const setLink = React.useCallback(() => {
+    if (editor.isActive("link")) {
+      editor.chain().focus().unsetLink().run();
+    } else {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: "https://" }).run();
+    }
+  }, [editor]);
+
+  return (
+    <MenuBarToggle onClick={setLink} isActive={editor.isActive("link")}>
+      <Icons.IconLink size={iconSize} />
+    </MenuBarToggle>
+  );
+}
+
 interface MenuBarProps {
   editor: any;
   variant: "small" | "large";
@@ -90,6 +106,10 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
+          <LinkButton editor={editor} iconSize={16} />
+        </div>
+
+        <div className="flex items-center border border-shade-2 rounded-lg">
           <UndoButton editor={editor} iconSize={16} />
           <RedoButton editor={editor} iconSize={16} />
         </div>
@@ -104,6 +124,10 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
           <BoldButton editor={editor} iconSize={20} />
           <ItalicButton editor={editor} iconSize={20} />
           <BulletListButton editor={editor} iconSize={20} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <LinkButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center gap-1">

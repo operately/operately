@@ -12,6 +12,7 @@
     "@tabler/icons-react": "^2.32.0",
     "@tiptap/extension-bullet-list": "^2.0.3",
     "@tiptap/extension-history": "^2.1.6",
+    "@tiptap/extension-link": "^2.1.7",
     "@tiptap/extension-list-item": "^2.0.3",
     "@tiptap/extension-mention": "^2.0.3",
     "@tiptap/extension-placeholder": "^2.0.3",

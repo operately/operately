@@ -123,7 +123,7 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
       <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4 relative">
         <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
 
-        <div className="text-white-1" style={{ minHeight: "100px" }}>
+        <div className="text-white-1" style={{ minHeight: "200px" }}>
           <TipTapEditor.EditorContent editor={editor} />
         </div>
 
@@ -139,6 +139,8 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
 
           <TipTapEditor.Toolbar editor={editor} variant="small" />
         </div>
+
+        <TipTapEditor.LinkEditForm editor={editor} />
       </div>
     </div>
   );
@@ -422,8 +424,8 @@ function AddCommentActive({ update, onBlur, onPost }) {
   };
 
   return (
-    <div className="px-4 py-3 not-first:border-t border-dark-8">
-      <div className="text-white-1" style={{ minHeight: "100px" }}>
+    <div className="px-4 py-3 not-first:border-t border-dark-8 overflow-hidden relative">
+      <div className="text-white-1" style={{ minHeight: "200px" }}>
         <TipTapEditor.EditorContent editor={editor} />
       </div>
 
@@ -440,6 +442,8 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
         <TipTapEditor.Toolbar editor={editor} variant="small" />
       </div>
+
+      <TipTapEditor.LinkEditForm editor={editor} />
     </div>
   );
 }
