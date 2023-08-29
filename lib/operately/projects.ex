@@ -125,6 +125,18 @@ defmodule Operately.Projects do
     end)
   end
 
+  def update_milestone_deadline(person, milestone, deadline) do
+    Repo.transaction(fn ->
+      old_deadline = milestone.deadline_at
+      new_deadline = deadline
+
+      {:ok, milestone} = update_milestone(milestone, %{deadline_at: deadline})
+      {:ok, _} = Updates.record_project_milestone_deadline_changed(person, milestone, old_deadline, new_deadline)
+
+      milestone
+    end)
+  end
+
   def update_milestone(%Milestone{} = milestone, attrs) do
     milestone
     |> Milestone.changeset(attrs)

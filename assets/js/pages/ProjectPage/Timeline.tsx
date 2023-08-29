@@ -135,7 +135,7 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
       </div>
 
       {milestones.map((milestone: Milestones.Milestone) => (
-        <MilstoneListItem key={milestone.id} milestone={milestone} project={project} refetch={refetch} />
+        <MilestoneListItem key={milestone.id} milestone={milestone} project={project} refetch={refetch} />
       ))}
 
       <div className="flex items-center justify-between -mb-3 -mx-4">
@@ -153,18 +153,19 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
   );
 }
 
-function MilstoneListItem({ milestone, project, refetch }) {
+function MilestoneListItem({ milestone, project, refetch }) {
   const iconColor = milestonIconColor(milestone);
 
   return (
-    <div className="flex items-center text-sm border-b border-dark-5 py-2" key={milestone.id}>
+    <div
+      className="flex items-center text-sm border-b border-dark-5 py-2 group hover:bg-shade-1 px-1"
+      key={milestone.id}
+    >
       <div className="flex items-center gap-2 flex-1 truncate">
         <Icons.IconMapPinFilled size={16} className={iconColor} /> {milestone.title}
       </div>
 
-      <div className="w-32">
-        <FormattedTime time={milestone.deadlineAt} format="short-date" />
-      </div>
+      <MilestoneListItemDueDate milestone={milestone} />
 
       <div className="w-32">
         {milestone.completedAt && <FormattedTime time={milestone.completedAt} format="short-date" />}
@@ -175,6 +176,30 @@ function MilstoneListItem({ milestone, project, refetch }) {
           <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
         )}
       </div>
+    </div>
+  );
+}
+
+function MilestoneListItemDueDate({ milestone }) {
+  const [update] = Milestones.useSetDeadline();
+
+  const change = (date: Date | null) => {
+    update({
+      variables: {
+        milestoneId: milestone.id,
+        deadlineAt: date ? Time.toDateWithoutTime(date) : null,
+      },
+    });
+  };
+
+  return (
+    <div className="w-32 flex items-center gap-2 cursor-pointer">
+      <DatePickerWithClear editable={true} selected={milestone.deadlineAt} onChange={change} clearable={false}>
+        <FormattedTime time={milestone.deadlineAt} format="short-date" />
+        <div className="opacity-0 group-hover:opacity-100">
+          <Icons.IconCalendarCog size={16} className="text-white-1/60" />
+        </div>
+      </DatePickerWithClear>
     </div>
   );
 }
@@ -280,7 +305,14 @@ function DueDate() {
   );
 }
 
-function DatePickerWithClear({ selected, onChange, editable = true, placeholder }) {
+function DatePickerWithClear({
+  selected,
+  onChange,
+  editable = true,
+  placeholder,
+  children = null,
+  clearable = true,
+}: any) {
   const [open, setOpen] = React.useState(false);
   const selectedDate = Time.parse(selected);
 
@@ -291,8 +323,12 @@ function DatePickerWithClear({ selected, onChange, editable = true, placeholder 
     setOpen(false);
   };
 
-  return (
-    <SelectBox.SelectBox editable={editable} activeValue={selectedDate} open={open} onOpenChange={setOpen}>
+  let trigger: JSX.Element | null = null;
+
+  if (children) {
+    trigger = <SelectBox.Trigger className="flex items-center gap-1">{children}</SelectBox.Trigger>;
+  } else {
+    trigger = (
       <SelectBox.Trigger className="flex items-center gap-1">
         {selectedDate ? (
           <FormattedTime time={selectedDate} format="short-date" />
@@ -300,10 +336,16 @@ function DatePickerWithClear({ selected, onChange, editable = true, placeholder 
           <span className="text-white-1/60">{placeholder}</span>
         )}
       </SelectBox.Trigger>
+    );
+  }
+
+  return (
+    <SelectBox.SelectBox editable={editable} activeValue={selectedDate} open={open} onOpenChange={setOpen}>
+      {trigger}
 
       <SelectBox.Popup>
         <DatePicker inline selected={selectedDate} onChange={handleChange} className="border-none"></DatePicker>
-        <UnsetLink handleChange={handleChange} />
+        {clearable && <UnsetLink handleChange={handleChange} />}
       </SelectBox.Popup>
     </SelectBox.SelectBox>
   );
