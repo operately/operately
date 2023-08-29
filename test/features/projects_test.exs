@@ -402,6 +402,17 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " marked Website Launched as completed")
   end
 
+  feature "change milestone deadline", state do
+    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "show-all-milestones")
+    |> UI.click(testid: "change-milestone-due-date")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
+    |> UI.assert_text(short_name(state.champion) <> " changed the due date for Contract Signed")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do

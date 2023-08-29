@@ -202,7 +202,7 @@ function MilestoneListItemDueDate({ milestone, refetch }) {
   };
 
   return (
-    <div className="w-32 flex items-center gap-2 cursor-pointer">
+    <div className="w-32 flex items-center gap-2 cursor-pointer" data-test-id="change-milestone-due-date">
       <DatePickerWithClear editable={editable} selected={milestone.deadlineAt} onChange={change} clearable={false}>
         <FormattedTime time={milestone.deadlineAt} format="short-date" />
         {editable && (

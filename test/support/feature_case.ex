@@ -216,6 +216,7 @@ defmodule Operately.FeatureCase do
         {:title, title} -> "[title=\"#{title}\"]" <> compose_css_query(rest)
         {:alt, alt} -> "[alt=\"#{alt}\"]" <> compose_css_query(rest)
         {:testid, id} -> "[data-test-id=\"#{id}\"]" <> compose_css_query(rest)
+        {:css, css} -> css
         _ -> raise "Unknown pattern #{inspect(p)}"
       end
     end
