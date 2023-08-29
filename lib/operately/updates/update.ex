@@ -77,9 +77,12 @@ defmodule Operately.Updates.Update do
   end
 
   defp find_schema(type) do
-    module = Macro.camelize(to_string(type))
-
-    String.to_existing_atom("Elixir.Operately.Updates.Types.#{module}")
+    if type in [nil, :message, :health_change, :phase_change, :review] do
+      nil
+    else
+      module = Macro.camelize(to_string(type))
+      String.to_existing_atom("Elixir.Operately.Updates.Types.#{module}")
+    end
   end
 
   defp format_error(change) do
