@@ -69,6 +69,12 @@ export const UPDATE_FRAGMENT = gql`
       ... on UpdateContentProjectMilestoneCompleted {
         milestone ${Milestones.FRAGMENT}
       }
+
+      ... on UpdateContentProjectMilestoneDeadlineChanged {
+        milestone ${Milestones.FRAGMENT}
+        oldDeadline
+        newDeadline
+      }
     }
   }
 `;
@@ -92,7 +98,16 @@ export type UpdateMessageType =
   | "review"
   | "project_created"
   | "project_milestone_created"
-  | "project_milestone_completed";
+  | "project_milestone_completed"
+  | "project_milestone_deadline_changed";
+
+export type Content =
+  | ProjectCreated
+  | StatusUpdate
+  | Message
+  | ProjectMilestoneCreated
+  | ProjectMilestoneCompleted
+  | ProjectMilestoneDeadlineChanged;
 
 export interface Update {
   id: string;
@@ -103,8 +118,7 @@ export interface Update {
   messageType: UpdateMessageType;
   message: string;
 
-  content: ProjectMilestoneCreated | ProjectCreated | StatusUpdate | Message | ProjectMilestoneCompleted;
-
+  content: Content;
   comments: Comment[];
 
   acknowledgingPerson: Person;
@@ -122,6 +136,12 @@ export interface ProjectMilestoneCreated {
 
 export interface ProjectMilestoneCompleted {
   milestone: Milestones.Milestone;
+}
+
+export interface ProjectMilestoneDeadlineChanged {
+  milestone: Milestones.Milestone;
+  oldDeadline: Date;
+  newDeadline: Date;
 }
 
 export interface ProjectCreated {

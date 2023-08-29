@@ -43,10 +43,16 @@ export default function Timeline({ project, refetch, editable }) {
 }
 
 function Calendar({ project }) {
-  const startDate = Time.parse(project.startedAt || project.insertedAt);
+  const milestones = Milestones.sortByDeadline(project.milestones);
+  const firstMilestone = Time.parse(milestones[0]?.deadlineAt || null);
+  const lastMilestone = Time.parse(milestones[milestones.length - 1]?.deadlineAt || null);
+  const projectStart = Time.parse(project.startedAt || project.insertedAt) || Time.today();
+  const projectEnd = Time.parse(project.deadline || Time.add(projectStart, 6, "months"));
+
+  const startDate = Time.earliest(projectStart, firstMilestone);
   if (!startDate) throw new Error("Invalid start date");
 
-  const dueDate = Time.parse(project.deadline || Time.add(startDate, 6, "months"));
+  const dueDate = Time.latest(projectEnd, lastMilestone);
   if (!dueDate) throw new Error("Invalid due date");
 
   const lineStart = Time.closestMonday(startDate, "before");
@@ -135,7 +141,7 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
       </div>
 
       {milestones.map((milestone: Milestones.Milestone) => (
-        <MilstoneListItem key={milestone.id} milestone={milestone} project={project} refetch={refetch} />
+        <MilestoneListItem key={milestone.id} milestone={milestone} project={project} refetch={refetch} />
       ))}
 
       <div className="flex items-center justify-between -mb-3 -mx-4">
@@ -153,18 +159,19 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
   );
 }
 
-function MilstoneListItem({ milestone, project, refetch }) {
+function MilestoneListItem({ milestone, project, refetch }) {
   const iconColor = milestonIconColor(milestone);
 
   return (
-    <div className="flex items-center text-sm border-b border-dark-5 py-2" key={milestone.id}>
+    <div
+      className="flex items-center text-sm border-b border-dark-5 py-2 group hover:bg-shade-1 px-1"
+      key={milestone.id}
+    >
       <div className="flex items-center gap-2 flex-1 truncate">
         <Icons.IconMapPinFilled size={16} className={iconColor} /> {milestone.title}
       </div>
 
-      <div className="w-32">
-        <FormattedTime time={milestone.deadlineAt} format="short-date" />
-      </div>
+      <MilestoneListItemDueDate milestone={milestone} refetch={refetch} />
 
       <div className="w-32">
         {milestone.completedAt && <FormattedTime time={milestone.completedAt} format="short-date" />}
@@ -175,6 +182,35 @@ function MilstoneListItem({ milestone, project, refetch }) {
           <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
         )}
       </div>
+    </div>
+  );
+}
+
+function MilestoneListItemDueDate({ milestone, refetch }) {
+  const editable = milestone.status !== "done";
+  const [update] = Milestones.useSetDeadline();
+
+  const change = async (date: Date | null) => {
+    await update({
+      variables: {
+        milestoneId: milestone.id,
+        deadlineAt: date ? Time.toDateWithoutTime(date) : null,
+      },
+    });
+
+    refetch();
+  };
+
+  return (
+    <div className="w-32 flex items-center gap-2 cursor-pointer" data-test-id="change-milestone-due-date">
+      <DatePickerWithClear editable={editable} selected={milestone.deadlineAt} onChange={change} clearable={false}>
+        <FormattedTime time={milestone.deadlineAt} format="short-date" />
+        {editable && (
+          <div className="opacity-0 group-hover:opacity-100">
+            <Icons.IconCalendarCog size={16} className="text-white-1/60" />
+          </div>
+        )}
+      </DatePickerWithClear>
     </div>
   );
 }
@@ -280,7 +316,14 @@ function DueDate() {
   );
 }
 
-function DatePickerWithClear({ selected, onChange, editable = true, placeholder }) {
+function DatePickerWithClear({
+  selected,
+  onChange,
+  editable = true,
+  placeholder,
+  children = null,
+  clearable = true,
+}: any) {
   const [open, setOpen] = React.useState(false);
   const selectedDate = Time.parse(selected);
 
@@ -291,8 +334,12 @@ function DatePickerWithClear({ selected, onChange, editable = true, placeholder 
     setOpen(false);
   };
 
-  return (
-    <SelectBox.SelectBox editable={editable} activeValue={selectedDate} open={open} onOpenChange={setOpen}>
+  let trigger: JSX.Element | null = null;
+
+  if (children) {
+    trigger = <SelectBox.Trigger className="flex items-center gap-1">{children}</SelectBox.Trigger>;
+  } else {
+    trigger = (
       <SelectBox.Trigger className="flex items-center gap-1">
         {selectedDate ? (
           <FormattedTime time={selectedDate} format="short-date" />
@@ -300,10 +347,16 @@ function DatePickerWithClear({ selected, onChange, editable = true, placeholder 
           <span className="text-white-1/60">{placeholder}</span>
         )}
       </SelectBox.Trigger>
+    );
+  }
+
+  return (
+    <SelectBox.SelectBox editable={editable} activeValue={selectedDate} open={open} onOpenChange={setOpen}>
+      {trigger}
 
       <SelectBox.Popup>
         <DatePicker inline selected={selectedDate} onChange={handleChange} className="border-none"></DatePicker>
-        <UnsetLink handleChange={handleChange} />
+        {clearable && <UnsetLink handleChange={handleChange} />}
       </SelectBox.Popup>
     </SelectBox.SelectBox>
   );

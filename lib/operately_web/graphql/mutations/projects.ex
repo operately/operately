@@ -260,6 +260,19 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       end
     end
 
+    field :set_milestone_deadline, non_null(:milestone) do
+      arg :milestone_id, non_null(:id)
+      arg :deadline_at, :date
+
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+        deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Projects.update_milestone_deadline(person, milestone, deadline)
+      end
+    end
+
     field :update_project_milestone, non_null(:milestone) do
       arg :milestone_id, non_null(:id)
       arg :title, non_null(:string)

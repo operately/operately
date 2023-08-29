@@ -133,6 +133,18 @@ export function useSetStatus(options = {}) {
   return useMutation(SET_MILESTONE_STATUS, options);
 }
 
+const SET_MILESTONE_DEADLINE = gql`
+  mutation SetMilestoneDeadline($milestoneId: ID!, $deadlineAt: Date) {
+    setMilestoneDeadline(milestoneId: $milestoneId, deadlineAt: $deadlineAt) {
+      id
+    }
+  }
+`;
+
+export function useSetDeadline(options = {}) {
+  return useMutation(SET_MILESTONE_DEADLINE, options);
+}
+
 const UPDATE_MILESTONE = gql`
   mutation UpdateProjectMilestone($milestoneId: ID!, $title: String!, $deadlineAt: Date) {
     updateProjectMilestone(milestoneId: $milestoneId, title: $title, deadlineAt: $deadlineAt) {

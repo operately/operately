@@ -19,7 +19,8 @@ defmodule Operately.Updates.Update do
       :review,
       :project_created,
       :project_milestone_created,
-      :project_milestone_completed
+      :project_milestone_completed,
+      :project_milestone_deadline_changed,
     ]
 
     field :content, :map
@@ -76,24 +77,11 @@ defmodule Operately.Updates.Update do
   end
 
   defp find_schema(type) do
-    case type do
-      :message ->
-        Operately.Updates.Types.Message
-
-      :project_created ->
-        Operately.Updates.Types.ProjectCreated
-
-      :project_milestone_created ->
-        Operately.Updates.Types.ProjectMilestoneCreated
-
-      :project_milestone_completed -> 
-        Operately.Updates.Types.ProjectMilestoneCompleted
-
-      :status_update ->
-        Operately.Updates.Types.StatusUpdate
-
-      _ ->
-        nil
+    if type in [nil, :message, :health_change, :phase_change, :review] do
+      nil
+    else
+      module = Macro.camelize(to_string(type))
+      String.to_existing_atom("Elixir.Operately.Updates.Types.#{module}")
     end
   end
 
