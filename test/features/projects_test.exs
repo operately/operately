@@ -399,7 +399,7 @@ defmodule Operately.Features.ProjectsTest do
     |> visit_show(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "complete-milestone")
-    |> UI.refute_text("Complete")
+    |> UI.assert_text(short_name(state.champion) <> " marked Website Launched as completed")
   end
 
   # ===========================================================================
