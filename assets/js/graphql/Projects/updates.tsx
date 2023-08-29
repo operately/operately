@@ -63,11 +63,11 @@ export const UPDATE_FRAGMENT = gql`
       }
 
       ... on UpdateContentProjectMilestoneCreated {
-        milestone ${Milestones.FRAGEMNT}
+        milestone ${Milestones.FRAGMENT}
       }
 
       ... on UpdateContentProjectMilestoneCompleted {
-        milestone ${Milestones.FRAGEMNT}
+        milestone ${Milestones.FRAGMENT}
       }
     }
   }

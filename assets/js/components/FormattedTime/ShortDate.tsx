@@ -13,7 +13,7 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
     },
   };
 
-  if (isToday(time) && !weekday) {
+  if (isToday(time) && weekday) {
     params["formatParams"]["val"]["hour"] = "numeric";
     params["formatParams"]["val"]["minute"] = "numeric";
   } else {
