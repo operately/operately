@@ -114,3 +114,27 @@ export function daysBetween(start: Date, end: Date) {
 export function secondsBetween(start: Date, end: Date) {
   return datefsn.differenceInSeconds(end, start);
 }
+
+export function earliest(...dates: (Date | null | undefined)[]) {
+  let earliest: Date | null = null;
+
+  dates.forEach((date) => {
+    if (date && (!earliest || date < earliest)) {
+      earliest = date;
+    }
+  });
+
+  return earliest;
+}
+
+export function latest(...dates: (Date | null | undefined)[]) {
+  let latest: Date | null = null;
+
+  dates.forEach((date) => {
+    if (date && (!latest || date > latest)) {
+      latest = date;
+    }
+  });
+
+  return latest;
+}

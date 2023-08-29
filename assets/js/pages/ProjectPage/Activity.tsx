@@ -164,6 +164,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
     case "project_milestone_completed":
       return <ProjectMilestoneCompleted project={project} update={update} />;
 
+    case "project_milestone_deadline_changed":
+      return <ProjectMilestoneDeadlineChanged project={project} update={update} />;
+
     default:
       console.log("Unknown update type: " + update.messageType);
       return null;
@@ -547,6 +550,26 @@ function ProjectMilestoneCompleted({ update }: { project: Projects.Project; upda
         </span>{" "}
         marked <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
         <span className="font-extrabold text-white-1">{milestone}</span> as completed.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectMilestoneDeadlineChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
+  const creator = update.author;
+
+  const content = update.content as Updates.ProjectMilestoneDeadlineChanged;
+  const milestone = content.milestone.title;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        changed the due date for <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
+        <span className="font-extrabold text-white-1">{milestone}</span> to{" "}
+        <FormattedTime time={content.newDeadline} format="short-date" />.
       </div>
     </SmallContainer>
   );

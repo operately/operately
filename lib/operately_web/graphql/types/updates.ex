@@ -139,13 +139,13 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
   end
 
   object :update_content_project_milestone_deadline_changed do
-    field :old_deadline, non_null(:datetime) do
+    field :old_deadline, :string do
       resolve fn update, _, _ ->
         {:ok, update.content["old_milestone_deadline"]}
       end
     end
 
-    field :new_deadline, non_null(:datetime) do
+    field :new_deadline, :string do
       resolve fn update, _, _ ->
         {:ok, update.content["new_milestone_deadline"]}
       end

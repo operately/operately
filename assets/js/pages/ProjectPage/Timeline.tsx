@@ -43,10 +43,16 @@ export default function Timeline({ project, refetch, editable }) {
 }
 
 function Calendar({ project }) {
-  const startDate = Time.parse(project.startedAt || project.insertedAt);
+  const milestones = Milestones.sortByDeadline(project.milestones);
+  const firstMilestone = Time.parse(milestones[0]?.deadlineAt || null);
+  const lastMilestone = Time.parse(milestones[milestones.length - 1]?.deadlineAt || null);
+  const projectStart = Time.parse(project.startedAt || project.insertedAt) || Time.today();
+  const projectEnd = Time.parse(project.deadline || Time.add(projectStart, 6, "months"));
+
+  const startDate = Time.earliest(projectStart, firstMilestone);
   if (!startDate) throw new Error("Invalid start date");
 
-  const dueDate = Time.parse(project.deadline || Time.add(startDate, 6, "months"));
+  const dueDate = Time.latest(projectEnd, lastMilestone);
   if (!dueDate) throw new Error("Invalid due date");
 
   const lineStart = Time.closestMonday(startDate, "before");
@@ -165,7 +171,7 @@ function MilestoneListItem({ milestone, project, refetch }) {
         <Icons.IconMapPinFilled size={16} className={iconColor} /> {milestone.title}
       </div>
 
-      <MilestoneListItemDueDate milestone={milestone} />
+      <MilestoneListItemDueDate milestone={milestone} refetch={refetch} />
 
       <div className="w-32">
         {milestone.completedAt && <FormattedTime time={milestone.completedAt} format="short-date" />}
@@ -180,25 +186,30 @@ function MilestoneListItem({ milestone, project, refetch }) {
   );
 }
 
-function MilestoneListItemDueDate({ milestone }) {
+function MilestoneListItemDueDate({ milestone, refetch }) {
+  const editable = milestone.status !== "done";
   const [update] = Milestones.useSetDeadline();
 
-  const change = (date: Date | null) => {
-    update({
+  const change = async (date: Date | null) => {
+    await update({
       variables: {
         milestoneId: milestone.id,
         deadlineAt: date ? Time.toDateWithoutTime(date) : null,
       },
     });
+
+    refetch();
   };
 
   return (
     <div className="w-32 flex items-center gap-2 cursor-pointer">
-      <DatePickerWithClear editable={true} selected={milestone.deadlineAt} onChange={change} clearable={false}>
+      <DatePickerWithClear editable={editable} selected={milestone.deadlineAt} onChange={change} clearable={false}>
         <FormattedTime time={milestone.deadlineAt} format="short-date" />
-        <div className="opacity-0 group-hover:opacity-100">
-          <Icons.IconCalendarCog size={16} className="text-white-1/60" />
-        </div>
+        {editable && (
+          <div className="opacity-0 group-hover:opacity-100">
+            <Icons.IconCalendarCog size={16} className="text-white-1/60" />
+          </div>
+        )}
       </DatePickerWithClear>
     </div>
   );
