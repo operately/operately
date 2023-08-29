@@ -2,6 +2,9 @@ import React from "react";
 
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
+import Button from "@/components/Button";
+
+import { EditorContext, Context } from "./index";
 
 function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
   let className = classnames("p-1 text-white-1 rounded", {
@@ -17,7 +20,7 @@ function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
 }
 
 function MenuBarButton({ children, onClick, disabled = false }): JSX.Element {
-  let className = classnames("p-1 text-white-1 rounded", {
+  let className = classnames("p-1 text-white-1 rounded text-xs", {
     "hover:bg-shade-1 cursor-pointer": !disabled,
     "text-dark-8": disabled,
   });
@@ -72,6 +75,36 @@ function RedoButton({ editor, iconSize }): JSX.Element {
   );
 }
 
+function LinkButton({ editor, iconSize }): JSX.Element {
+  const { setLinkEditActive } = React.useContext(EditorContext) as Context;
+
+  const setLink = React.useCallback(() => {
+    if (editor.isActive("link")) {
+      editor.chain().focus().unsetLink().run();
+    } else {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: "https://" }).run();
+      setLinkEditActive(true);
+    }
+  }, [editor]);
+
+  return (
+    <MenuBarToggle onClick={setLink} isActive={editor.isActive("link")}>
+      <Icons.IconLink size={iconSize} />
+    </MenuBarToggle>
+  );
+}
+
+function EditLinkButton({ editor }): JSX.Element {
+  const { setLinkEditActive } = React.useContext(EditorContext) as Context;
+  if (!editor.isActive("link")) return <></>;
+
+  return (
+    <Button onClick={() => setLinkEditActive(true)} size="tiny">
+      Edit Link
+    </Button>
+  );
+}
+
 interface MenuBarProps {
   editor: any;
   variant: "small" | "large";
@@ -84,9 +117,17 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
     return (
       <div className="flex items-center gap-2 rounded-lg">
         <div className="flex items-center border border-shade-2 rounded-lg">
+          <EditLinkButton editor={editor} iconSize={16} />
+        </div>
+
+        <div className="flex items-center border border-shade-2 rounded-lg">
           <BoldButton editor={editor} iconSize={16} />
           <ItalicButton editor={editor} iconSize={16} />
           <BulletListButton editor={editor} iconSize={16} />
+        </div>
+
+        <div className="flex items-center border border-shade-2 rounded-lg">
+          <LinkButton editor={editor} iconSize={16} />
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
@@ -104,6 +145,10 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
           <BoldButton editor={editor} iconSize={20} />
           <ItalicButton editor={editor} iconSize={20} />
           <BulletListButton editor={editor} iconSize={20} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <LinkButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center gap-1">

@@ -54,10 +54,6 @@ export function Page() {
           <Icons.IconClipboardList size={16} />
           {project.name}
         </Paper.NavItem>
-
-        <Icons.IconSlash size={16} />
-
-        <Paper.NavItem linkTo={`/projects/${project.id}/updates`}>Message Board</Paper.NavItem>
       </Paper.Navigation>
 
       <Paper.Body>
@@ -194,11 +190,15 @@ function Editor({ project, title }) {
   };
 
   return (
-    <div>
+    <TipTapEditor.Root>
       <TipTapEditor.Toolbar editor={editor} variant="large" />
 
-      <div className="mb-8 py-4 text-white-1 text-lg" style={{ minHeight: "300px" }}>
+      <div
+        className="mb-8 py-4 text-white-1 text-lg relative pb-8 border-b border-shade-3"
+        style={{ minHeight: "300px" }}
+      >
         <TipTapEditor.EditorContent editor={editor} />
+        <TipTapEditor.LinkEditForm editor={editor} />
       </div>
 
       {messageType === "status_update" && (
@@ -207,15 +207,15 @@ function Editor({ project, title }) {
 
       <div className="flex items-center gap-2">
         <PostButton onClick={submit} />
-        <CancelButton linkTo={`/projects/${project.id}/updates`} />
+        <CancelButton linkTo={`/projects/${project.id}`} />
       </div>
-    </div>
+    </TipTapEditor.Root>
   );
 }
 
 function FieldUpdates({ phase, health, setPhase, setHealth }) {
   return (
-    <div className="mb-8 pt-8 border-t border-shade-2">
+    <div className="mb-8">
       <p className="font-bold text-lg">Is there a change in the project's health or phase?</p>
       <p className="text-white-1/70">Please adjust the values below.</p>
 

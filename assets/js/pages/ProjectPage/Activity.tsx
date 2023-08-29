@@ -117,30 +117,34 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
   };
 
   return (
-    <div className="flex items-start">
-      <FeedAvatar person={me} />
+    <TipTapEditor.Root>
+      <div className="flex items-start">
+        <FeedAvatar person={me} />
 
-      <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4 relative">
-        <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
+        <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4 relative">
+          <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
 
-        <div className="text-white-1" style={{ minHeight: "100px" }}>
-          <TipTapEditor.EditorContent editor={editor} />
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
-              Post
-            </Button>
-            <Button variant="secondary" onClick={onBlur} size="small">
-              Cancel
-            </Button>
+          <div className="text-white-1" style={{ minHeight: "200px" }}>
+            <TipTapEditor.EditorContent editor={editor} />
           </div>
 
-          <TipTapEditor.Toolbar editor={editor} variant="small" />
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
+                Post
+              </Button>
+              <Button variant="secondary" onClick={onBlur} size="small">
+                Cancel
+              </Button>
+            </div>
+
+            <TipTapEditor.Toolbar editor={editor} variant="small" />
+          </div>
+
+          <TipTapEditor.LinkEditForm editor={editor} />
         </div>
       </div>
-    </div>
+    </TipTapEditor.Root>
   );
 }
 
@@ -422,25 +426,29 @@ function AddCommentActive({ update, onBlur, onPost }) {
   };
 
   return (
-    <div className="px-4 py-3 not-first:border-t border-dark-8">
-      <div className="text-white-1" style={{ minHeight: "100px" }}>
-        <TipTapEditor.EditorContent editor={editor} />
-      </div>
-
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
-            Post
-          </Button>
-
-          <Button variant="secondary" onClick={onBlur} size="small">
-            Cancel
-          </Button>
+    <TipTapEditor.Root>
+      <div className="px-4 py-3 not-first:border-t border-dark-8 overflow-hidden relative">
+        <div className="text-white-1" style={{ minHeight: "200px" }}>
+          <TipTapEditor.EditorContent editor={editor} />
         </div>
 
-        <TipTapEditor.Toolbar editor={editor} variant="small" />
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
+              Post
+            </Button>
+
+            <Button variant="secondary" onClick={onBlur} size="small">
+              Cancel
+            </Button>
+          </div>
+
+          <TipTapEditor.Toolbar editor={editor} variant="small" />
+        </div>
+
+        <TipTapEditor.LinkEditForm editor={editor} />
       </div>
-    </div>
+    </TipTapEditor.Root>
   );
 }
 

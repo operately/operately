@@ -5,9 +5,12 @@ import * as TipTap from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Mention from "@tiptap/extension-mention";
+import Link from "@tiptap/extension-link";
 
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
+
+import Button from "@/components/Button";
 
 export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]> | any[];
 
@@ -34,6 +37,19 @@ interface UseEditorProps {
   onBlur?: (data: OnBlurData) => void;
 }
 
+export interface Context {
+  linkEditActive: boolean;
+  setLinkEditActive: (active: boolean) => void;
+}
+
+export const EditorContext = React.createContext<Context | null>(null);
+
+export function Root({ children }): JSX.Element {
+  const [linkEditActive, setLinkEditActive] = React.useState(false);
+
+  return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
+}
+
 function useEditor(props: UseEditorProps): TipTap.Editor | null {
   const [_submitActive, setSubmitActive] = React.useState(false);
 
@@ -56,6 +72,9 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
           keepMarks: true,
           keepAttributes: false,
         },
+      }),
+      Link.configure({
+        openOnClick: false,
       }),
       Placeholder.configure({
         placeholder: props.placeholder,
@@ -85,5 +104,51 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
 }
 
 const EditorContent = TipTap.EditorContent;
+
+export function LinkEditForm({ editor }): JSX.Element {
+  const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext) as Context;
+  const [link, setLink] = React.useState(editor?.getAttributes("link")?.href || "");
+
+  const unlink = React.useCallback(() => {
+    editor.chain().focus().unsetLink().run();
+    setLinkEditActive(false);
+  }, [editor]);
+
+  const save = React.useCallback(() => {
+    editor.chain().focus().setLink({ href: link }).run();
+    setLinkEditActive(false);
+  }, [editor, link]);
+
+  if (!editor) return <></>;
+  if (!editor.isActive("link")) return <></>;
+  if (!linkEditActive) return <></>;
+
+  return (
+    <div className="absolute bottom-0 left-0 right-0 h-24 bg-dark-2 border-t border-shade-3">
+      <div className="p-4 flex flex-col gap-1 w-full h-full">
+        <label className="text-sm font-bold">Link URL:</label>
+
+        <div className="flex items-center gap-2">
+          <input
+            autoFocus
+            type="text"
+            className="flex-1 px-2 py-1 border border-indigo-400 rounded-lg text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 text-white-1"
+            value={link}
+            placeholder="ex. https://example.com"
+            onChange={(e) => setLink(e.target.value)}
+          />
+
+          <Button onClick={save} variant="success" size="small">
+            Save
+          </Button>
+
+          <Button onClick={unlink} variant="secondary" size="small">
+            Unlink
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export { useEditor, EditorContent, Toolbar };

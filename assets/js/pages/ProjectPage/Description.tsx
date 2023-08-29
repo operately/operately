@@ -1,11 +1,14 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useBoolState } from "@/utils/useBoolState";
+
 import RichContent from "@/components/RichContent";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/graphql/Projects";
+import * as TipTapEditor from "@/components/Editor";
 
 import { Truncate, useIsClamped } from "@/components/Truncate";
+import Button from "@/components/Button";
 
 const CondensedLineCount = 4;
 const ExpandedLineCount = 100;
@@ -15,6 +18,7 @@ interface ContextDescriptor {
   project: Projects.Project;
   editable: boolean;
   editLink?: () => void;
+  lines: number;
 
   isClamped?: boolean;
   isCondensed?: boolean;
@@ -23,11 +27,69 @@ interface ContextDescriptor {
 
 const Context = React.createContext<ContextDescriptor | null>(null);
 
-export default function Description({ me, project }) {
-  const navigate = useNavigate();
-  const editLink = () => navigate("/projects/" + project.id + "/description/edit");
+export default function Description({ me, project, refetch }) {
+  const [editing, _, activateEdit, deactivateEdit] = useBoolState(false);
+
+  return editing ? (
+    <Editor project={project} refetch={refetch} deactivateEdit={deactivateEdit} />
+  ) : (
+    <Display project={project} activateEdit={activateEdit} me={me} />
+  );
+}
+
+function Editor({ project, refetch, deactivateEdit }) {
+  const [post, { loading }] = Projects.useUpdateDescriptionMutation({
+    onCompleted: () => refetch(),
+  });
+
+  const submit = async () => {
+    if (!editor) return;
+
+    const content = editor.getJSON();
+
+    await post({
+      variables: { projectId: project.id, description: JSON.stringify(content) },
+    });
+
+    deactivateEdit();
+  };
+
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Write here...",
+    content: JSON.parse(project.description),
+  });
+
+  return (
+    <TipTapEditor.Root>
+      <div className="border rounded-t-lg border-dark-8 p-4 bg-dark-2 z-20 relative -mt-4 -mx-4">
+        <div className="text-white-1 mb-4" style={{ minHeight: "200px" }}>
+          <TipTapEditor.EditorContent editor={editor} />
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Button onClick={submit} variant="success" loading={loading}>
+              Save
+            </Button>
+            <Button variant="secondary" onClick={deactivateEdit}>
+              Cancel
+            </Button>
+          </div>
+
+          <TipTapEditor.Toolbar editor={editor} variant="small" />
+        </div>
+
+        <TipTapEditor.LinkEditForm editor={editor} />
+      </div>
+    </TipTapEditor.Root>
+  );
+}
+
+function Display({ me, project, activateEdit }) {
+  const editable = me.id === project.champion?.id;
 
   const [lines, setLines] = React.useState(CondensedLineCount);
+
   const toggleLines = () => {
     return setLines((lines) => {
       return lines === CondensedLineCount ? ExpandedLineCount : CondensedLineCount;
@@ -36,17 +98,15 @@ export default function Description({ me, project }) {
 
   const ref = React.useRef<HTMLDivElement>(null);
   const isClamped = useIsClamped(ref);
-  const editable = me.id === project.champion?.id;
   const isCondensed = isClamped && lines === CondensedLineCount;
 
   return (
-    <Context.Provider value={{ me, project, editable, editLink, isClamped, isCondensed, toggleLines }}>
+    <Context.Provider value={{ me, project, editable, isClamped, isCondensed, toggleLines, lines }}>
       <div className="flex flex-col gap-1 pb-4 relative border-b border-shade-1">
-        <div className="font-bold flex justify-between items-center">
+        <div className="font-bold flex gap-2 items-center">
           About
-          <EditButton />
+          <EditButton onClick={activateEdit} />
         </div>
-
         <div className="font-medium">
           <Truncate lines={lines} ref={ref}>
             <Body project={project} />
@@ -68,23 +128,13 @@ function Body({ project }) {
 }
 
 function EmptyDesctipion() {
-  const { editable, editLink } = React.useContext(Context) as ContextDescriptor;
-
-  if (editable) {
-    return (
-      <ActionLink onClick={editLink} data-test-id="write-project-description">
-        Write description...
-      </ActionLink>
-    );
-  } else {
-    return <span className="text-white-2">No description.</span>;
-  }
+  return <span className="text-white-2">No description.</span>;
 }
 
 function ToggleHeight() {
-  const { isCondensed, toggleLines, isClamped } = React.useContext(Context) as ContextDescriptor;
+  const { isCondensed, toggleLines, isClamped, lines } = React.useContext(Context) as ContextDescriptor;
 
-  if (!isClamped) return null;
+  if (!isClamped && lines === CondensedLineCount) return null;
 
   return (
     <div className="flex justify-center mt-2 absolute left-0 right-0 -bottom-2 text-white-2">
@@ -99,35 +149,18 @@ function ToggleHeight() {
   );
 }
 
-function EditButton() {
-  const { editable, editLink } = React.useContext(Context) as ContextDescriptor;
+function EditButton({ onClick }) {
+  const { editable } = React.useContext(Context) as ContextDescriptor;
 
   if (!editable) return null;
 
   return (
-    <div className="cursor-pointer hover:text-white-1 transition-all text-white-2" onClick={editLink}>
+    <div
+      className="cursor-pointer hover:text-white-1 transition-all text-white-2"
+      onClick={onClick}
+      data-test-id="edit-project-description"
+    >
       <Icons.IconEdit size={18} />
     </div>
-  );
-}
-
-function ActionLink({ onClick, children, variant = "primary", ...rest }) {
-  const variants = {
-    primary: "text-blue-400/90 hover:text-blue-400",
-    secondary: "text-white-1/80 hover:text-white",
-  };
-
-  return (
-    <a
-      className={
-        variants[variant] +
-        " " +
-        "font-medium cursor-pointer underline underline-offset-2 inline-flex items-center gap-1"
-      }
-      onClick={onClick}
-      {...rest}
-    >
-      {children}
-    </a>
   );
 }
