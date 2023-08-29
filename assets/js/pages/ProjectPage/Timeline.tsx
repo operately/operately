@@ -98,7 +98,7 @@ function MilestoneList({ project, refetch }) {
   return (
     <div className="border-t border-dark-5 px-4 py-3">
       {expanded ? (
-        <MilestoneListExpanded project={project} onCollapse={collapse} />
+        <MilestoneListExpanded project={project} refetch={refetch} onCollapse={collapse} />
       ) : (
         <MilestoneListCollapsed project={project} refetch={refetch} onExpand={expand} />
       )}
@@ -122,7 +122,7 @@ function MilestoneListCollapsed({ project, refetch, onExpand }) {
   );
 }
 
-function MilestoneListExpanded({ project, onCollapse }) {
+function MilestoneListExpanded({ project, onCollapse, refetch }) {
   const milestones = Milestones.sortByDeadline(project.milestones, { reverse: true });
 
   return (
@@ -131,10 +131,11 @@ function MilestoneListExpanded({ project, onCollapse }) {
         <div className="font-semibold text-sm flex-1">Milestone</div>
         <div className="font-semibold text-sm w-32">Due Date</div>
         <div className="font-semibold text-sm w-32">Completed On</div>
+        <div className="font-semibold text-sm w-24">Actions</div>
       </div>
 
       {milestones.map((milestone: Milestones.Milestone) => (
-        <MilstoneListItem key={milestone.id} milestone={milestone} />
+        <MilstoneListItem key={milestone.id} milestone={milestone} project={project} refetch={refetch} />
       ))}
 
       <div className="flex items-center justify-between -mb-3 -mx-4">
@@ -152,7 +153,7 @@ function MilestoneListExpanded({ project, onCollapse }) {
   );
 }
 
-function MilstoneListItem({ milestone }) {
+function MilstoneListItem({ milestone, project, refetch }) {
   const iconColor = milestonIconColor(milestone);
 
   return (
@@ -166,7 +167,13 @@ function MilstoneListItem({ milestone }) {
       </div>
 
       <div className="w-32">
-        {milestone.completedAt ? <FormattedTime time={milestone.completedAt} format="short-date" /> : null}
+        {milestone.completedAt && <FormattedTime time={milestone.completedAt} format="short-date" />}
+      </div>
+
+      <div className="w-24">
+        {milestone.status !== "done" && (
+          <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
+        )}
       </div>
     </div>
   );

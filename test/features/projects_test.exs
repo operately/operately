@@ -391,6 +391,17 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " marked Contract Signed as completed")
   end
 
+  feature "mark milestone completed in the expanded list", state do
+    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00], completed_at: ~N[2023-06-17 00:00:00], status: "done"})
+    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "show-all-milestones")
+    |> UI.click(testid: "complete-milestone")
+    |> UI.assert_text(short_name(state.champion) <> " marked Website Launched as completed")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
