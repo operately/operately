@@ -24,11 +24,7 @@ export const LIST_PROJECTS = gql`
       phase
       health
 
-      nextMilestone {
-        id
-        title
-        deadlineAt
-      }
+      nextMilestone ${Milestones.FRAGMENT}
 
       champion {
         id
@@ -154,8 +150,8 @@ export const GET_PROJECT = gql`
 
       phaseHistory ${PhaseHistory.GQL_FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
-      milestones ${Milestones.FRAGEMNT}
-      nextMilestone ${Milestones.FRAGEMNT}
+      milestones ${Milestones.FRAGMENT}
+      nextMilestone ${Milestones.FRAGMENT}
 
       contributors ${fragments.CONTRIBUTOR}
       champion ${fragments.PERSON}

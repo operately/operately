@@ -109,7 +109,7 @@ defmodule Operately.Projects do
 
   def complete_milestone(person, milestone) do
     Repo.transaction(fn ->
-      {:ok, milestone} = update_milestone(milestone, %{status: :done})
+      {:ok, milestone} = update_milestone(milestone, %{status: :done, completed_at: DateTime.utc_now()})
       {:ok, _} = Updates.record_project_milestone_completed(person, milestone)
 
       milestone
@@ -118,7 +118,7 @@ defmodule Operately.Projects do
 
   def uncomplete_milestone(person, milestone) do
     Repo.transaction(fn ->
-      {:ok, milestone} = update_milestone(milestone, %{status: :pending})
+      {:ok, milestone} = update_milestone(milestone, %{status: :pending, completed_at: nil})
       {:ok, _} = Activities.submit_milestone_uncompleted(person.id, milestone)
 
       milestone

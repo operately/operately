@@ -2,27 +2,24 @@ import { gql, useMutation } from "@apollo/client";
 
 type MilestoneStatus = "pending" | "done";
 
-export const FRAGEMNT = gql`
+export const FRAGMENT = gql`
   {
     id
     title
-    deadlineAt
     status
-    phase
+
+    deadlineAt
+    completedAt
   }
 `;
 
 export interface Milestone {
   id: string;
   title: string;
-  deadlineAt: string;
   status: MilestoneStatus;
-  phase: "concept" | "planning" | "execution" | "control";
 
-  project?: {
-    id: string;
-    name: string;
-  };
+  deadlineAt: string;
+  completedAt: string | null;
 }
 
 export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {

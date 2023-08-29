@@ -165,7 +165,9 @@ function MilstoneListItem({ milestone }) {
         <FormattedTime time={milestone.deadlineAt} format="short-date" />
       </div>
 
-      <div className="w-32"></div>
+      <div className="w-32">
+        {milestone.completedAt ? <FormattedTime time={milestone.completedAt} format="short-date" /> : null}
+      </div>
     </div>
   );
 }
