@@ -33,7 +33,7 @@ defmodule Operately.Features.ProjectsTest do
   feature "editing the project description", state do
     state
     |> visit_show(state.project)
-    |> click_write_description()
+    |> click_edit_description()
     |> UI.fill_rich_text(project_description())
     |> click_save()
 
@@ -423,8 +423,8 @@ defmodule Operately.Features.ProjectsTest do
     UI.visit(state, "/projects" <> "/" <> project.id)
   end
 
-  def click_write_description(state) do
-    UI.click(state, testid: "write-project-description")
+  def click_edit_description(state) do
+    UI.click(state, testid: "edit-project-description")
   end
 
   def expand_description(state) do

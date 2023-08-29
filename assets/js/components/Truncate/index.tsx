@@ -30,6 +30,16 @@ export function useIsClamped(ref: React.RefObject<HTMLDivElement>) {
     if (!ref.current) return setIsClamped(false);
 
     setIsClamped(ref.current.scrollHeight > ref.current.clientHeight);
+
+    const observer = new ResizeObserver(() => {
+      setIsClamped(ref.current!.scrollHeight > ref.current!.clientHeight);
+    });
+
+    observer.observe(ref.current);
+
+    return () => {
+      observer.disconnect();
+    };
   }, [ref]);
 
   return isClamped;
