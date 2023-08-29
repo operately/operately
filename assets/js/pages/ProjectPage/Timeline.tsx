@@ -365,13 +365,7 @@ function CompleteMilestoneButton({ project, milestone, refetch }) {
   };
 
   return (
-    <Button
-      onClick={handleComplete}
-      loading={loading}
-      size="tiny"
-      variant="secondary"
-      data-test-id="complete-milestone"
-    >
+    <Button onClick={handleComplete} loading={loading} size="tiny" variant="default" data-test-id="complete-milestone">
       Complete
     </Button>
   );

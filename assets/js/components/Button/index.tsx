@@ -12,36 +12,36 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const sizes = {
-  tiny: "px-1.5 py-0.5 text-xs gap-1",
-  small: "px-2 py-1 text-xs gap-1",
+  tiny: "px-2.5 py-1 text-xs gap-1",
+  small: "px-3 py-1.5 text-xs gap-1",
   base: "px-3 py-1.5 text-sm gap-2",
 };
 
 const variants = {
   default: {
-    base: "flex items-center",
-    color: "text-pink-400",
-    text: "font-bold",
-    border: "border border-pink-400 rounded-full",
-    hover: "hover:bg-pink-400/10",
+    base: "flex items-center transition-all duration-100",
+    color: "text-white-1 bg-dark-5",
+    text: "font-medium",
+    border: "border rounded border-indigo-400",
+    hover: "hover:text-white-1 hover:bg-indigo-500/30",
     disabled: "opacity-50 cursor-not-allowed",
   },
 
   success: {
-    base: "flex items-center",
-    color: "text-green-400",
-    text: "font-bold",
-    border: "border border-green-400 rounded-full",
-    hover: "hover:bg-green-400/10",
-    disabled: "opacity-50 cursor-not-allowed",
+    base: "flex items-center transition-all duration-100",
+    color: "text-white-1/100 bg-indigo-500",
+    text: "font-medium",
+    border: "rounded border border-indigo-400",
+    hover: "hover:text-white-1 hover:border-white-2",
+    disabled: "cursor-not-allowed text-white-1/60 bg-indigo-500/80",
   },
 
   secondary: {
-    base: "flex items-center",
-    color: "text-white-2",
-    text: "font-bold",
-    border: "border border-white-2 rounded-full",
-    hover: "hover:border-white-2 hover:text-white-1",
+    base: "flex items-center transition-all duration-100",
+    color: "text-white-1 bg-dark-5",
+    text: "font-medium",
+    border: "border border-shade-2 rounded",
+    hover: "hover:border-white-3 hover:text-white-1",
     disabled: "opacity-50 cursor-not-allowed",
   },
 
@@ -49,7 +49,7 @@ const variants = {
     base: "flex items-center",
     color: "text-yellow-400",
     text: "font-bold",
-    border: "border border-yellow-400 rounded-full",
+    border: "border border-yellow-400 rounded",
     hover: "hover:bg-yellow-400/10",
     disabled: "opacity-50 cursor-not-allowed",
   },
@@ -58,7 +58,7 @@ const variants = {
     base: "flex items-center",
     color: "text-red-400",
     text: "font-bold",
-    border: "border border-red-400 rounded-full",
+    border: "border border-red-400 rounded",
     hover: "hover:bg-red-400/10",
     disabled: "opacity-50 cursor-not-allowed",
   },
