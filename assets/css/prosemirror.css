@@ -101,6 +101,6 @@
 }
 
 .ProseMirror [data-type="mention"] {
-  color: var(--color-brand-1);
-  font-weight: 700;
+  font-weight: 500;
+  color: var(--color-sky-500);
 }

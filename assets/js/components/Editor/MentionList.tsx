@@ -1,4 +1,7 @@
-import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+
+import * as People from "@/graphql/People";
+import Avatar from "@/components/Avatar";
 
 /**
  *  This is a custom mention list component for tiptap.
@@ -23,102 +26,106 @@ import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'rea
 // The command is a function that will be called when the user selects an item.
 //
 interface MentionListProps {
-  items: Item[];
-  command: ({ id, label }: { id: string, label: string }) => void;
+  items: People.Person[];
+  command: ({ id, label }: { id: string; label: string }) => void;
 }
 
-interface Item {
-  id: string;
-  label: string;
-}
+const MentionList = forwardRef((props: MentionListProps, ref) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-const MentionList = forwardRef((props : MentionListProps, ref) => {
-  const [selectedIndex, setSelectedIndex] = useState(0)
-
-  const selectItem = (index : number) => {
+  const selectItem = (index: number) => {
     const item = props.items[index];
 
-    if(item) {
-      props.command(item);
+    if (item) {
+      props.command({ id: item.id, label: item.fullName });
     }
-  }
+  };
 
-  const nextIndex = (index : number) => {
+  const nextIndex = (index: number) => {
     return (index + 1) % props.items.length;
-  }
+  };
 
-  const prevIndex = (index : number) => {
+  const prevIndex = (index: number) => {
     return (index + props.items.length - 1) % props.items.length;
-  }
+  };
 
   const upHandler = () => {
-    setSelectedIndex(prevIndex(selectedIndex))
-  }
+    setSelectedIndex(prevIndex(selectedIndex));
+  };
 
   const downHandler = () => {
-    setSelectedIndex(nextIndex(selectedIndex))
-  }
+    setSelectedIndex(nextIndex(selectedIndex));
+  };
 
   const enterHandler = () => {
-    selectItem(selectedIndex)
-  }
+    selectItem(selectedIndex);
+  };
 
-  useEffect(() => setSelectedIndex(0), [props.items])
+  useEffect(() => setSelectedIndex(0), [props.items]);
 
   useImperativeHandle(ref, () => ({
     onKeyDown: ({ event }) => {
-      if (event.key === 'ArrowUp') {
-        upHandler()
-        return true
+      if (event.key === "ArrowUp") {
+        upHandler();
+        return true;
       }
 
-      if (event.key === 'ArrowDown') {
-        downHandler()
-        return true
+      if (event.key === "ArrowDown") {
+        downHandler();
+        return true;
       }
 
-      if (event.key === 'Enter') {
-        enterHandler()
-        return true
+      if (event.key === "Enter") {
+        enterHandler();
+        return true;
       }
 
-      return false
+      return false;
     },
-  }))
+  }));
 
   return (
-    <div className="flex flex-col border bg-white rounded">
-      {props.items.length > 0
-        ? <ItemList items={props.items} selectItem={selectItem} selectedIndex={selectedIndex} />
-        : <NoResult />}
+    <div className="flex flex-col border border-dark-5 rounded">
+      {props.items.length > 0 ? (
+        <ItemList items={props.items} selectItem={selectItem} selectedIndex={selectedIndex} />
+      ) : (
+        <NoResult />
+      )}
     </div>
-  )
-})
+  );
+});
 
 interface ItemListProps {
-  items: Item[];
-  selectItem: (index : number) => void;
+  items: People.Person[];
+  selectItem: (index: number) => void;
   selectedIndex: number;
 }
 
-function ItemList({items, selectItem, selectedIndex} : ItemListProps) : JSX.Element {
-  const baseClass = 'px-1 py-0.5 text-left';
-  const selectedClass = baseClass + ' bg-sky-200 text-black';
-  const unselectedClass = baseClass + ' text-stone-500 rounded hover:bg-sky-200 hover:text-black transition';
+function ItemList({ items, selectItem, selectedIndex }: ItemListProps): JSX.Element {
+  const baseClass = "px-1.5 py-1 text-left";
+  const selectedClass = baseClass + " bg-shade-3 text-white-1";
+  const unselectedClass = baseClass + " text-white-1 rounded hover:bg-shade-1 transition";
 
-  return <>
-    {items.map((item : Item, index : number) => (
-      <button
-        key={index}
-        className={index === selectedIndex ? selectedClass : unselectedClass}
-        onClick={() => selectItem(index)}
-      >{item.label}</button>
-    ))}
-  </>;
+  return (
+    <>
+      {items.map((item: People.Person, index: number) => (
+        <button
+          key={index}
+          className={index === selectedIndex ? selectedClass : unselectedClass}
+          onClick={() => selectItem(index)}
+        >
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Avatar person={item} size="tiny" />
+            {item.fullName}
+          </div>
+        </button>
+      ))}
+    </>
+  );
 }
 
-function NoResult() : JSX.Element {
-  return <div className="px-1 py-0.5 text-left">No result</div>;
+function NoResult(): JSX.Element {
+  return <div className="px-1.5 py-1 text-left">No result</div>;
 }
 
 export default MentionList;

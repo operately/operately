@@ -6,6 +6,7 @@ import * as Icons from "@tabler/icons-react";
 
 import * as Updates from "@/graphql/Projects/updates";
 import * as Projects from "@/graphql/Projects";
+import * as People from "@/graphql/People";
 import * as ProjectIcons from "@/components/ProjectIcons";
 
 import Avatar from "@/components/Avatar";
@@ -93,8 +94,11 @@ function NewMessage({ project }) {
 function NewMessageActive({ project, onBlur, onPost, me }) {
   const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
   const [post, { loading }] = Updates.usePostUpdateMutation();
+  const peopleSearch = People.usePeopleSearch();
+
   const editor = TipTapEditor.useEditor({
     placeholder: "Write a message...",
+    peopleSearch: peopleSearch,
   });
 
   const handlePost = async () => {
@@ -402,8 +406,11 @@ function AddCommentNonActive({ onClick }) {
 function AddCommentActive({ update, onBlur, onPost }) {
   const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
+  const peopleSearch = People.usePeopleSearch();
+
   const editor = TipTapEditor.useEditor({
     placeholder: "Post a comment...",
+    peopleSearch: peopleSearch,
   });
 
   const [post, { loading }] = Updates.usePostComment();
