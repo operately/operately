@@ -58,7 +58,7 @@ function ContributorList({ project }) {
             <ContributorAvatar key={c.id} contributor={c} />
           ))}
 
-          <ContributorAdd />
+          {project.permissions.canEditContributors && <ContributorAdd />}
         </div>
       </Link>
     </div>

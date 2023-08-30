@@ -12,12 +12,12 @@ import { ContributorSearch, RemoveButton, SaveButton, CancelButton, Responsibili
 export default function ContributorItem({
   contributor = undefined,
   role,
-  projectId,
+  project,
   refetch,
 }: {
   contributor: Contributors.Contributor | undefined;
   role: Contributors.ContributorRole;
-  projectId: string;
+  project: Projects.Project;
   refetch: any;
 }) {
   const [state, setState] = React.useState<"view" | "edit">("view");
@@ -31,9 +31,9 @@ export default function ContributorItem({
 
   if (state === "view") {
     if (contributor) {
-      return <Assignment contributor={contributor} onEdit={activateEdit} />;
+      return <Assignment project={project} contributor={contributor} onEdit={activateEdit} />;
     } else {
-      return <Placeholder role={role} onEdit={activateEdit} />;
+      return <Placeholder project={project} role={role} onEdit={activateEdit} />;
     }
   }
 
@@ -41,7 +41,7 @@ export default function ContributorItem({
     if (contributor) {
       return (
         <EditAssignment
-          projectId={projectId}
+          project={project}
           contributor={contributor}
           onSave={onChange}
           onRemove={onChange}
@@ -49,16 +49,17 @@ export default function ContributorItem({
         />
       );
     } else {
-      return <ChooseAssignment role={role} projectId={projectId} onSave={onChange} onClose={deactivateEdit} />;
+      return <ChooseAssignment role={role} projectId={project.id} onSave={onChange} onClose={deactivateEdit} />;
     }
   }
 
   throw new Error("Invalid state");
 }
 
-function Assignment({ contributor, onEdit }) {
+function Assignment({ project, contributor, onEdit }) {
   return (
     <ViewState
+      project={project}
       avatar={<ContributorAvatar contributor={contributor} />}
       name={contributor.person.fullName}
       responsibility={Contributors.responsibility(contributor, contributor.role)}
@@ -67,7 +68,7 @@ function Assignment({ contributor, onEdit }) {
   );
 }
 
-function Placeholder({ role, onEdit }) {
+function Placeholder({ project, role, onEdit }) {
   if (role !== "champion" && role !== "reviewer") {
     throw new Error("Only champion and reviewer roles are supported for ContributorItemPlaceholder");
   }
@@ -86,10 +87,10 @@ function Placeholder({ role, onEdit }) {
     responsibility = Contributors.REVIEWER_RESPONSIBILITY;
   }
 
-  return <ViewState avatar={avatar} name={name} responsibility={responsibility} onEdit={onEdit} />;
+  return <ViewState project={project} avatar={avatar} name={name} responsibility={responsibility} onEdit={onEdit} />;
 }
 
-function ViewState({ avatar, name, responsibility, onEdit }) {
+function ViewState({ project, avatar, name, responsibility, onEdit }) {
   return (
     <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn group">
       <div className="flex items-center gap-2">
@@ -101,19 +102,21 @@ function ViewState({ avatar, name, responsibility, onEdit }) {
         </div>
       </div>
 
-      <div className="shrink-0">
-        <div
-          className="rounded-full p-2 hover:bg-shade-2 transition-colors opacity-0 group-hover:opacity-100"
-          onClick={onEdit}
-        >
-          <Icons.IconPencil size={20} className="cursor-pointer text-white-2 hover:text-white-1 transition-colors" />
+      {project.permissions.canEditContributors && (
+        <div className="shrink-0">
+          <div
+            className="rounded-full p-2 hover:bg-shade-2 transition-colors opacity-0 group-hover:opacity-100"
+            onClick={onEdit}
+          >
+            <Icons.IconPencil size={20} className="cursor-pointer text-white-2 hover:text-white-1 transition-colors" />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-function EditAssignment({ contributor, projectId, onSave, onRemove, onClose }) {
+function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
   const [update, _s1] = Projects.useUpdateProjectContributorMutation(contributor.id);
   const [remove, _s2] = Projects.useRemoveProjectContributorMutation(contributor.id);
 
@@ -138,7 +141,7 @@ function EditAssignment({ contributor, projectId, onSave, onRemove, onClose }) {
     <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 py-8 -mt-2.5 mb-2.5">
       <ContributorSearch
         defaultValue={contributor.person}
-        projectID={projectId}
+        projectID={project.id}
         title={contributor.role}
         onSelect={setPersonID}
       />

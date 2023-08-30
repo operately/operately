@@ -371,4 +371,8 @@ defmodule Operately.Projects do
       })
     end)
   end
+
+  def get_permissions(project, person) do
+    Operately.Projects.Permissions.calculate_permissions(project, person)
+  end
 end

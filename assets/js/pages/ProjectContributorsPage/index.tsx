@@ -38,18 +38,20 @@ export function ProjectContributorsPage() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <Title projectID={projectId} />
+        <Title project={project} />
         <ContributorList project={project} refetch={refetch} />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Title({ projectID }) {
+function Title({ project }: { project: Project }) {
   const [addColabActive, setAddColabActive] = React.useState(false);
 
   const activateAddColab = () => setAddColabActive(true);
   const deactivateAddColab = () => setAddColabActive(false);
+
+  const showAddButton = project.permissions.canEditContributors && !addColabActive;
 
   return (
     <div className="rounded-t-[20px] pb-12">
@@ -59,10 +61,10 @@ function Title({ projectID }) {
           <div className="text-medium">People who are contributing to this project and their responsibilities.</div>
         </div>
 
-        {!addColabActive && <AddButton onClick={activateAddColab} />}
+        {showAddButton && <AddButton onClick={activateAddColab} />}
       </div>
 
-      {addColabActive && <AddContribForm close={deactivateAddColab} projectID={projectID} />}
+      {addColabActive && <AddContribForm close={deactivateAddColab} projectID={project.id} />}
     </div>
   );
 }
@@ -108,12 +110,12 @@ function ContributorList({ project, refetch }: { project: Project; refetch: any 
 
   return (
     <div className="flex flex-col">
-      <ContributorItem contributor={champion} role="champion" projectId={project.id} refetch={refetch} />
+      <ContributorItem contributor={champion} role="champion" project={project} refetch={refetch} />
 
-      <ContributorItem contributor={reviewer} role="reviewer" projectId={project.id} refetch={refetch} />
+      <ContributorItem contributor={reviewer} role="reviewer" project={project} refetch={refetch} />
 
       {contributors.map((c) => (
-        <ContributorItem key={c.id} contributor={c} role="contributor" projectId={project.id} refetch={refetch} />
+        <ContributorItem key={c.id} contributor={c} role="contributor" project={project} refetch={refetch} />
       ))}
     </div>
   );

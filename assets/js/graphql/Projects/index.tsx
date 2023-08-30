@@ -6,6 +6,7 @@ import * as Updates from "./updates";
 import * as KeyResources from "./key_resources";
 import * as Milestones from "./milestones";
 import * as PhaseHistory from "./phase_history";
+import * as Permissions from "./permissions";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -17,6 +18,8 @@ export const LIST_PROJECTS = gql`
 
       startedAt
       deadline
+
+      permissions ${Permissions.FRAGMENT}
 
       contributors ${fragments.CONTRIBUTOR}
       keyResources ${KeyResources.GQL_FRAGMENT}
@@ -39,6 +42,7 @@ export const LIST_PROJECTS = gql`
         avatarUrl
         title
       }
+
     }
   }
 `;
@@ -103,13 +107,6 @@ interface Contributor {
   responsibility: string;
 }
 
-interface Document {
-  id: string;
-  title: string;
-  content: string;
-  author: Person;
-}
-
 export type ProjectPhase = "planning" | "execution" | "control" | "completed" | "canceled" | "paused";
 export type ProjectHealth = "unknown" | "on_track" | "at_risk" | "off_track";
 
@@ -122,6 +119,7 @@ export interface Project {
   phase: ProjectPhase;
   health: ProjectHealth;
 
+  permissions: Permissions.Permissions;
   phaseHistory: PhaseHistory.PhaseHistory[];
   milestones: Milestones.Milestone[];
   keyResources: KeyResources.KeyResource[];
@@ -147,6 +145,8 @@ export const GET_PROJECT = gql`
       phase
       health
       isPinned
+
+      permissions ${Permissions.FRAGMENT}
 
       phaseHistory ${PhaseHistory.GQL_FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
