@@ -11,8 +11,9 @@ import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
 
 import Button from "@/components/Button";
+import * as People from "@/graphql/People";
 
-export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]> | any[];
+export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
 interface Person {
   id: string;
@@ -80,9 +81,6 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
         placeholder: props.placeholder,
       }),
       Mention.configure({
-        HTMLAttributes: {
-          class: "text-pink-400",
-        },
         suggestion: {
           render: () => new MentionPopup(),
           items: props.peopleSearch,

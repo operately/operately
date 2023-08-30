@@ -6,6 +6,7 @@ import RichContent from "@/components/RichContent";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/graphql/Projects";
 import * as TipTapEditor from "@/components/Editor";
+import * as People from "@/graphql/People";
 
 import { Truncate, useIsClamped } from "@/components/Truncate";
 import Button from "@/components/Button";
@@ -54,7 +55,10 @@ function Editor({ project, refetch, deactivateEdit }) {
     deactivateEdit();
   };
 
+  const peopleSearch = People.usePeopleSearch();
+
   const editor = TipTapEditor.useEditor({
+    peopleSearch: peopleSearch,
     placeholder: "Write here...",
     content: JSON.parse(project.description),
   });

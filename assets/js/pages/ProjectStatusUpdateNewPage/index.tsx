@@ -3,6 +3,7 @@ import React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/graphql/People";
 
 import { useNavigate } from "react-router-dom";
 
@@ -164,7 +165,12 @@ function Editor({ project, title }) {
       throw new Error(`Unknown message type: ${messageType}`);
   }
 
-  const editor = TipTapEditor.useEditor({ placeholder: placeholder });
+  const peopleSearch = People.usePeopleSearch();
+
+  const editor = TipTapEditor.useEditor({
+    placeholder: placeholder,
+    peopleSearch: peopleSearch,
+  });
 
   const [post] = Projects.usePostUpdate({ onCompleted: () => navigate(`/projects/${project.id}`) });
 
