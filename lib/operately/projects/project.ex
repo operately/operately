@@ -16,6 +16,7 @@ defmodule Operately.Projects.Project do
 
     field :description, :map
     field :name, :string
+    field :private, :boolean, default: false
 
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
@@ -51,6 +52,7 @@ defmodule Operately.Projects.Project do
       :retrospective_document_id,
       :company_id,
       :creator_id,
+      :private,
     ])
     |> validate_required([
       :name,
