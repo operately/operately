@@ -40,6 +40,11 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     end
   end
 
+  object :project_permissions do
+    field :can_view, non_null(:boolean)
+    field :can_edit_contributors, non_null(:boolean)
+  end
+
   object :project_key_resource do
     field :id, non_null(:id)
     field :title, non_null(:string)
@@ -65,6 +70,14 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :started_at, :date
     field :deadline, :date
     field :next_update_scheduled_at, :date
+
+    field :permissions, non_null(:project_permissions) do
+      resolve fn project, _, %{context: context} ->
+        person = context.current_account.person
+
+        {:ok, Operately.Projects.get_permissions(project, person)}
+      end
+    end
 
     field :phase_history, list_of(:project_phase_history) do
       resolve fn project, _, _ ->
