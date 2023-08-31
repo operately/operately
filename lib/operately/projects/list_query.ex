@@ -3,13 +3,24 @@ defmodule Operately.Projects.ListQuery do
 
   alias Operately.Projects.Project
 
-  def build(filters) do
+  def build(person, filters) do
     query = from p in Project
 
+    query = apply_visibility_filter(query, person)
     query = apply_group_filter(query, filters[:group_id], filters[:group_member_roles])
     query = apply_objective_filter(query, filters[:objective_id])
 
     query
+  end
+
+  defp apply_visibility_filter(query, person) do
+    from p in query,
+      as: :project,
+      where: not(p.private) 
+        or exists(
+        from c in Operately.Projects.Contributor, 
+          where: c.project_id == parent_as(:project).id and c.person_id == ^person.id
+      )
   end
 
   #

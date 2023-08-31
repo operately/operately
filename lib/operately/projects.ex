@@ -16,8 +16,8 @@ defmodule Operately.Projects do
     Repo.get!(Project, id)
   end
 
-  def list_projects(filters \\ %{}) do
-    Operately.Projects.ListQuery.build(filters) |> Repo.all()
+  def list_projects(person, filters \\ %{}) do
+    Operately.Projects.ListQuery.build(person, filters) |> Repo.all()
   end
 
   def create_project(attrs) do

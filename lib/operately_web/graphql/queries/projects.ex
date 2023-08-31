@@ -12,10 +12,11 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
     field :projects, list_of(:project) do
       arg :filters, :project_list_filters
 
-      resolve fn _, args, _ ->
+      resolve fn _, args, %{context: context} ->
+        person = context.current_account.person
         filters = Map.get(args, :filters, %{})
 
-        projects = Operately.Projects.list_projects(%{
+        projects = Operately.Projects.list_projects(person, %{
           group_id: filters[:group_id],
           group_member_roles: filters[:group_member_roles],
           objective_id: filters[:objective_id]
