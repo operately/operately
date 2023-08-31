@@ -35,7 +35,7 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
         person = context.current_account.person
         project = Operately.Projects.get_project!(args.id)
 
-        permissions = Operately.Projects.get_permission(person, project)
+        permissions = Operately.Projects.get_permissions(project, person)
 
         if permissions.can_view do
           {:ok, project}
