@@ -33,27 +33,21 @@ export function Page() {
 
   return (
     <Paper.Root size="small">
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects`}>
-          <Icons.IconClipboardList size={16} />
-          All Projects
-        </Paper.NavItem>
-      </Paper.Navigation>
+      <h1 className="mb-8 font-bold text-2xl text-center">Make a new project</h1>
 
       <Paper.Body minHeight="300px">
-        <h1 className="mb-8 font-bold text-2xl">New Project in {company.name}</h1>
-
-        <Form />
+        <Form company={company} />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Form() {
+function Form({ company }) {
   const navigate = useNavigate();
 
   const [projectName, setProjectName] = React.useState("");
   const [projectChampion, setProjectChampion] = React.useState(null);
+  const [visibility, setVisibility] = React.useState<string | null>("everyone");
 
   const [add, { loading }] = Projects.useAddProject({
     onCompleted: (data: any) => navigate(`/projects/${data?.createProject?.id}`),
@@ -64,6 +58,7 @@ function Form() {
       variables: {
         name: projectName,
         championId: projectChampion,
+        visibility,
       },
     });
   };
@@ -72,7 +67,7 @@ function Form() {
     navigate(`/projects`);
   };
 
-  const isValid = projectName.length > 0 && projectChampion !== null;
+  const isValid = projectName.length > 0 && projectChampion !== null && visibility !== null;
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid} onCancel={handleCancel}>
@@ -86,6 +81,16 @@ function Form() {
         />
 
         <ContributorSearch title="Choose a Project Champion" onSelect={setProjectChampion} />
+
+        <Forms.RadioGroup
+          label="Who can see this project?"
+          name="visibility"
+          defaultValue="everyone"
+          onChange={(v: string | null) => setVisibility(v)}
+        >
+          <Forms.Radio label={"Everyone at " + company.name} value="everyone" />
+          <Forms.Radio label={"Only people I invite"} value="invite" />
+        </Forms.RadioGroup>
       </div>
 
       <Forms.SubmitArea>

@@ -17,6 +17,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     field :create_project, non_null(:project) do
       arg :name, non_null(:string)
       arg :champion_id, non_null(:id)
+      arg :visibility, non_null(:string)
 
       resolve fn args, %{context: context} ->
         Operately.Repo.transaction(fn -> 
@@ -25,7 +26,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
           project_attrs = %{
             company_id: person.company_id,
             creator_id: person.id,
-            name: args.name
+            name: args.name,
+            private: args.visibility != "everyone"
           }
 
           champion_attrs = %{

@@ -127,3 +127,48 @@ export function Textarea({ value, onChange, ...props }) {
 
   return <textarea id="review-text" ref={textAreaRef} value={value} onChange={onChange} {...props} />;
 }
+
+interface RadioGroupContextDescriptor {
+  name: string;
+  checked: string | null;
+  changeChecked: (value: string) => void;
+}
+
+const RadioContext = React.createContext<RadioGroupContextDescriptor | null>(null);
+
+export function RadioGroup({ label, name, defaultValue, onChange, children }) {
+  const [checked, setChecked] = React.useState<string | null>(defaultValue);
+
+  const changeChecked = (value: string) => {
+    setChecked(value);
+    onChange(value);
+  };
+
+  return (
+    <div>
+      <RadioContext.Provider value={{ name, checked, changeChecked }}>
+        <label className="font-bold mb-1 block">{label}</label>
+
+        <div className="flex flex-col gap-2">{children}</div>
+      </RadioContext.Provider>
+    </div>
+  );
+}
+
+export function Radio({ label, value }) {
+  const { name, checked, changeChecked } = React.useContext(RadioContext) as RadioGroupContextDescriptor;
+
+  return (
+    <label className="flex items-center gap-2">
+      <input
+        type="radio"
+        className="w-4 h-4"
+        value={value}
+        onChange={() => changeChecked(value)}
+        checked={checked === value}
+        name={name}
+      />
+      {label}
+    </label>
+  );
+}
