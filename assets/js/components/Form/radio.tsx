@@ -60,7 +60,7 @@ function InputElement({ value, ...props }) {
       className={classnames(
         "before:content[''] peer relative h-4 w-4 cursor-pointer appearance-none",
         "rounded-full border border-white-2 text-white-1 transition-all",
-        "hover:border-white-1 hover:border-y-[1px] hover:border-x-[1px]",
+        "hover:border-white-2 hover:border-y-[2px] hover:border-x-[2px]",
         "checked:border-white-1 checked:border-y-[5px] checked:border-x-[5px]",
         "checked:hover:border-white-1 checked:hover:border-y-[4px] checked:hover:border-x-[4px]",
         "focus:outline-none focus:checked:border-white-1 focus:checked:border-y-[5px] focus:checked:border-x-[5px] focus:shadow-white",

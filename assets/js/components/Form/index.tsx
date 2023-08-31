@@ -5,6 +5,7 @@ export type Ref = HTMLFormElement;
 import Button from "@/components/Button";
 
 export * from "./radio";
+export * from "./select";
 
 interface Props {
   children?: React.ReactNode;

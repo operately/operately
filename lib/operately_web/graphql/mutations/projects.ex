@@ -5,6 +5,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     field :name, non_null(:string)
     field :champion_id, non_null(:id)
     field :visibility, non_null(:string)
+    field :creator_role, :string
   end
 
   input_object :add_key_resource_input do
@@ -45,6 +46,26 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
             project_attrs, 
             champion_attrs
           )
+
+          creator_role = args.input.creator_role
+
+          if creator_role && creator_role != "" do
+            if creator_role == "Reviewer" do
+              {:ok, _} = Operately.Projects.create_contributor(%{
+                project_id: project.id,
+                person_id: person.id,
+                responsibility: " ",
+                role: :reviewer
+              })
+            else
+              {:ok, _} = Operately.Projects.create_contributor(%{
+                project_id: project.id,
+                person_id: person.id,
+                responsibility: creator_role,
+                role: :contributor
+              })
+            end
+          end
 
           project
         end)
