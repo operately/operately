@@ -28,9 +28,6 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
           person = context.current_account.person
           private = args.input.visibility != "everyone"
 
-          IO.inspect(args.input)
-          IO.inspect(private)
-          
           project_attrs = %{
             company_id: person.company_id,
             creator_id: person.id,

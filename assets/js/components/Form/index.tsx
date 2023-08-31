@@ -155,7 +155,7 @@ export function RadioGroup({ label, name, defaultValue, onChange, children }) {
   );
 }
 
-export function Radio({ label, value }) {
+export function Radio({ label, value, ...props }) {
   const { name, checked, changeChecked } = React.useContext(RadioContext) as RadioGroupContextDescriptor;
 
   return (
@@ -167,6 +167,7 @@ export function Radio({ label, value }) {
         onChange={() => changeChecked(value)}
         checked={checked === value}
         name={name}
+        {...props}
       />
       {label}
     </label>

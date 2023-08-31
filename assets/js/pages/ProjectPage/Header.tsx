@@ -42,7 +42,7 @@ function PrivateIndicator({ project }) {
 
   return (
     <TextTooltip text="Private project. Visible only to contributors.">
-      <div className="mt-1">
+      <div className="mt-1" data-test-id="private-project-indicator">
         <Icons.IconLock size={20} />
       </div>
     </TextTooltip>

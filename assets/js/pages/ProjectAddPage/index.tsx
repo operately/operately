@@ -91,7 +91,7 @@ function Form({ company }) {
           onChange={(v: string | null) => setVisibility(v)}
         >
           <Forms.Radio label={"Everyone at " + company.name} value="everyone" />
-          <Forms.Radio label={"Only people I invite"} value="invite" />
+          <Forms.Radio label={"Only people I invite"} value="invite" data-test-id="invite-only" />
         </Forms.RadioGroup>
       </div>
 

@@ -31,10 +31,17 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
     field :project, :project do
       arg :id, non_null(:id)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
         project = Operately.Projects.get_project!(args.id)
 
-        {:ok, project}
+        permissions = Operately.Projects.get_permission(person, project)
+
+        if permissions.can_view do
+          {:ok, project}
+        else
+          {:ok, nil}
+        end
       end
     end
 

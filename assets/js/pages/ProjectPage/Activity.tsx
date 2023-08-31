@@ -513,7 +513,6 @@ function ProjectCreated({ project, update }: { project: Projects.Project; update
     <span className="font-extrabold text-white-1">themselves</span>
   ) : (
     <>
-      <Avatar person={champion} size="tiny" />{" "}
       <span className="font-extrabold text-white-1">
         <ShortName fullName={champion.fullName} />
       </span>

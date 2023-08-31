@@ -24,6 +24,21 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " created this project and assigned themselves as the champion")
   end
 
+  feature "add a private project", state do
+    champion = person_fixture(%{full_name: "Mary Poppins", title: "Head of Operations", company_id: state.company.id})
+
+    state
+    |> visit_index()
+    |> UI.click(testid: "add-project")
+    |> UI.fill(testid: "project-name-input", with: "Website Redesign")
+    |> UI.select_person(champion.full_name)
+    |> UI.click(testid: "invite-only")
+    |> UI.click(testid: "save")
+    |> UI.assert_text("Website Redesign")
+    |> UI.assert_text(short_name(state.champion) <> " created this project and assigned Mary P. as the champion")
+    |> UI.assert_has(testid: "private-project-indicator")
+  end
+
   feature "listing projects", state do
     state
     |> visit_index()
