@@ -33,7 +33,7 @@ export function Page() {
 
   return (
     <Paper.Root size="small">
-      <h1 className="mb-8 font-bold text-2xl text-center">Make a new project</h1>
+      <h1 className="mb-4 font-bold text-3xl text-center">Make a new project</h1>
 
       <Paper.Body minHeight="300px">
         <Form company={company} />
@@ -75,14 +75,14 @@ function Form({ company }) {
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid} onCancel={handleCancel}>
       <div className="flex flex-col gap-6">
         <Forms.TextInput
-          label="Project Name"
+          label="Name"
           value={projectName}
           onChange={setProjectName}
-          placeholder="ex. HR System Update"
+          placeholder="e.g. HR System Update"
           data-test-id="project-name-input"
         />
 
-        <ContributorSearch title="Choose a Project Champion" onSelect={setProjectChampion} />
+        <ContributorSearch title="Champion" onSelect={setProjectChampion} />
 
         <Forms.RadioGroup
           label="Who can see this project?"
@@ -90,8 +90,18 @@ function Form({ company }) {
           defaultValue="everyone"
           onChange={(v: string | null) => setVisibility(v)}
         >
-          <Forms.Radio label={"Everyone at " + company.name} value="everyone" />
-          <Forms.Radio label={"Only people I invite"} value="invite" data-test-id="invite-only" />
+          <Forms.RadioWithExplanation
+            label="All-Access"
+            explanation={"Anyone from " + company.name + " can see this project"}
+            value="everyone"
+          />
+
+          <Forms.RadioWithExplanation
+            label={"Invite-only"}
+            explanation={"Only people you invite can see this project"}
+            value="invite"
+            data-test-id="invite-only"
+          />
         </Forms.RadioGroup>
       </div>
 
@@ -112,7 +122,7 @@ function ContributorSearch({ title, onSelect }) {
       <div className="flex-1">
         <PeopleSearch
           onChange={(option) => onSelect(option.value)}
-          placeholder="Search by name or title..."
+          placeholder="Search person by name or title..."
           loader={loader}
         />
       </div>
