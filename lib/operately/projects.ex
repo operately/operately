@@ -20,38 +20,8 @@ defmodule Operately.Projects do
     Operately.Projects.ListQuery.build(person, filters) |> Repo.all()
   end
 
-  def create_project(attrs) do
-    create_project(attrs, nil)
-  end
-
-  def create_project(project_attrs, champion_attrs) do
-    project_attrs = Map.put(project_attrs, :next_update_scheduled_at, first_friday_from_today())
-
-    Repo.transaction(fn ->
-      result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
-
-      case result do
-        {:ok, project} -> 
-          {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
-          champion_id = if champion, do: champion.person_id, else: nil
-
-          {:ok, _} = Updates.record_project_creation(
-            project.creator_id, 
-            project.id, 
-            champion_id
-          )
-
-          {:ok, _} = create_phase_history(%{
-            project_id: project.id,
-            phase: project.phase,
-            start_time: DateTime.utc_now()
-          })
-
-          project
-        {:error, changeset} ->
-          Repo.rollback(changeset)
-      end
-    end)
+  def create_project(params) do
+    Operately.Projects.ProjectCreation.run(project_attrs, champion_attrs)
   end
 
   def update_project(%Project{} = project, attrs) do

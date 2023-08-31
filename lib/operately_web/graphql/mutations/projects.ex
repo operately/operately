@@ -25,50 +25,13 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :input, non_null(:create_project_input)
 
       resolve fn args, %{context: context} ->
-        Operately.Repo.transaction(fn -> 
-          person = context.current_account.person
-          private = args.input.visibility != "everyone"
-
-          project_attrs = %{
-            company_id: person.company_id,
-            creator_id: person.id,
-            name: args.input.name,
-            private: private,
-          }
-
-          champion_attrs = %{
-            person_id: args.input.champion_id,
-            responsibility: " ",
-            role: "champion"
-          }
-
-          {:ok, project} = Operately.Projects.create_project(
-            project_attrs, 
-            champion_attrs
-          )
-
-          creator_role = args.input.creator_role
-
-          if creator_role && creator_role != "" do
-            if creator_role == "Reviewer" do
-              {:ok, _} = Operately.Projects.create_contributor(%{
-                project_id: project.id,
-                person_id: person.id,
-                responsibility: " ",
-                role: :reviewer
-              })
-            else
-              {:ok, _} = Operately.Projects.create_contributor(%{
-                project_id: project.id,
-                person_id: person.id,
-                responsibility: creator_role,
-                role: :contributor
-              })
-            end
-          end
-
-          project
-        end)
+        Operately.Project.create_project(%Operately.Projects.ProjectCreation{
+          name: args.input.name,
+          champion_id: args.input.champion_id,
+          creator: context.current_account.person,
+          creator_role: args.input.creator_role,
+          visibility: args.input.visibility
+        })
       end
     end
 
