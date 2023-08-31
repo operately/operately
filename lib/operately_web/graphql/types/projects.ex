@@ -70,6 +70,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :started_at, :date
     field :deadline, :date
     field :next_update_scheduled_at, :date
+    field :private, non_null(:boolean)
 
     field :permissions, non_null(:project_permissions) do
       resolve fn project, _, %{context: context} ->

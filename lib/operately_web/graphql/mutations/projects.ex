@@ -1,6 +1,12 @@
 defmodule OperatelyWeb.GraphQL.Mutations.Projects do
   use Absinthe.Schema.Notation
 
+  input_object :create_project_input do
+    field :name, non_null(:string)
+    field :champion_id, non_null(:id)
+    field :visibility, non_null(:string)
+  end
+
   input_object :add_key_resource_input do
     field :project_id, non_null(:id)
     field :title, non_null(:string)
@@ -15,23 +21,25 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
   object :project_mutations do
     field :create_project, non_null(:project) do
-      arg :name, non_null(:string)
-      arg :champion_id, non_null(:id)
-      arg :visibility, non_null(:string)
+      arg :input, non_null(:create_project_input)
 
       resolve fn args, %{context: context} ->
         Operately.Repo.transaction(fn -> 
           person = context.current_account.person
+          private = args.input.visibility != "everyone"
+
+          IO.inspect(args.input)
+          IO.inspect(private)
           
           project_attrs = %{
             company_id: person.company_id,
             creator_id: person.id,
-            name: args.name,
-            private: args.visibility != "everyone"
+            name: args.input.name,
+            private: private,
           }
 
           champion_attrs = %{
-            person_id: args.champion_id,
+            person_id: args.input.champion_id,
             responsibility: " ",
             role: "champion"
           }

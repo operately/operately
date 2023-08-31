@@ -49,16 +49,18 @@ function Form({ company }) {
   const [projectChampion, setProjectChampion] = React.useState(null);
   const [visibility, setVisibility] = React.useState<string | null>("everyone");
 
-  const [add, { loading }] = Projects.useAddProject({
+  const [add, { loading }] = Projects.useCreateProject({
     onCompleted: (data: any) => navigate(`/projects/${data?.createProject?.id}`),
   });
 
   const handleSubmit = () => {
     add({
       variables: {
-        name: projectName,
-        championId: projectChampion,
-        visibility,
+        input: {
+          name: projectName,
+          championId: projectChampion,
+          visibility: visibility,
+        },
       },
     });
   };
