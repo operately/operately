@@ -9,8 +9,8 @@ defmodule Operately.Projects.Permissions do
     }
   end
 
-  defp can_view?(_project, _user) do
-    true
+  defp can_view?(project, user) do
+    is_public?(project) || is_contributor?(project, user)
   end
 
   defp can_edit_contributors?(project, user) do
@@ -19,6 +19,10 @@ defmodule Operately.Projects.Permissions do
 
   defp is_contributor?(project, user) do
     Enum.any?(project.contributors, fn c -> c.person_id == user.id end)
+  end
+
+  defp is_public?(project) do
+    !project.private
   end
 
 end
