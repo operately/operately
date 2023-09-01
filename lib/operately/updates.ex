@@ -33,7 +33,7 @@ defmodule Operately.Updates do
             project = Operately.Projects.get_project!(update.updatable_id)
 
             {:ok, _} = Operately.Projects.update_project(project, %{
-              next_update_scheduled_at: Operately.Projects.first_friday_from_today()
+              next_update_scheduled_at: Operately.Time.first_friday_from_today()
             })
           end
 
@@ -48,7 +48,7 @@ defmodule Operately.Updates do
     end)
   end
 
-  def record_project_creation(creator_id, project_id, champion_id) do
+  def record_project_creation(creator_id, project_id, champion_id, creator_role) do
     create_update(%{
       type: :project_created,
       author_id: creator_id,
@@ -56,7 +56,8 @@ defmodule Operately.Updates do
       updatable_type: :project,
       content: %{
         creator_id: creator_id,
-        champion_id: champion_id
+        champion_id: champion_id,
+        creator_role: creator_role
       }
     })
   end

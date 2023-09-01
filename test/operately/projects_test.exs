@@ -27,7 +27,7 @@ defmodule Operately.ProjectsTest do
     @invalid_attrs %{description: nil, name: nil}
 
     test "list_projects/0 returns all projects", ctx do
-      assert Projects.list_projects() == [ctx.project]
+      assert Projects.list_projects(ctx.person) == [ctx.project]
     end
 
     test "get_project!/1 returns the project with given id", ctx do
@@ -35,23 +35,15 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_project/2 with valid data creates a project", ctx do
-      project_attrs = %{
+      project_attrs = %Operately.Projects.ProjectCreation{
         name: "some name",
         company_id: ctx.company.id,
-        creator_id: ctx.person.id
+        creator_id: ctx.person.id,
+        champion_id: ctx.person.id,
       }
 
-      champion_attrs = %{
-        person_id: ctx.person.id,
-        role: "champion",
-      }
-
-      assert {:ok, %Project{} = project} = Projects.create_project(project_attrs, champion_attrs)
+      assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
       assert project.name == "some name"
-    end
-
-    test "create_project/2 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_project(@invalid_attrs)
     end
 
     test "update_project/2 with valid data updates the project", ctx do

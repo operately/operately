@@ -10,6 +10,9 @@ import ContributorAvatar, {
 import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
 import * as Contributors from "@/graphql/Projects/contributors";
+import * as Icons from "@tabler/icons-react";
+
+import { TextTooltip } from "@/components/Tooltip";
 
 interface HeaderProps {
   project: Project;
@@ -26,11 +29,23 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 
 function ProjectName({ project }) {
   return (
-    <div
-      className={classnames("text-center", "font-bold max-w-3xl mx-auto", "break-all", projectNameTextSize(project))}
-    >
+    <div className={classnames("flex gap-2 items-center", "font-bold", "break-all", projectNameTextSize(project))}>
       {project.name}
+
+      <PrivateIndicator project={project} />
     </div>
+  );
+}
+
+function PrivateIndicator({ project }) {
+  if (!project.private) return null;
+
+  return (
+    <TextTooltip text="Private project. Visible only to contributors.">
+      <div className="mt-1" data-test-id="private-project-indicator">
+        <Icons.IconLock size={20} />
+      </div>
+    </TextTooltip>
   );
 }
 
@@ -38,7 +53,7 @@ function projectNameTextSize(project: Project) {
   if (project.name.length > 40) {
     return "text-3xl";
   } else {
-    return "text-4xl";
+    return "text-3xl";
   }
 }
 
@@ -48,7 +63,7 @@ function ContributorList({ project }) {
   const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (
-    <div className="mt-4 flex items-center justify-center">
+    <div className="mt-4 flex items-center">
       <Link to={contributorsPath}>
         <div className="flex items-center justify-center gap-1.5 cursor-pointer">
           <Champion champion={champion} />

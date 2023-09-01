@@ -60,6 +60,7 @@ export const UPDATE_FRAGMENT = gql`
       ... on UpdateContentProjectCreated {
         champion ${fragments.PERSON}
         creator ${fragments.PERSON}
+        creatorRole
       }
 
       ... on UpdateContentProjectMilestoneCreated {
@@ -82,6 +83,7 @@ export const UPDATE_FRAGMENT = gql`
 export interface UpdateContentProjectCreated {
   champion: Person;
   creator: Person;
+  creatorRole?: string;
 }
 
 export const GET_STATUS_UPDATE = gql`

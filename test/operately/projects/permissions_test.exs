@@ -16,10 +16,28 @@ defmodule Operately.Projects.PermissionsTest do
   end
 
   describe "can_view" do
-    test "returns permissions for a project", ctx do
+    test "when the project is public it returns true", ctx do
       permissions = Permissions.calculate_permissions(ctx.project, ctx.person)
 
       assert permissions.can_view
+    end
+
+    test "when the project is private and the person is a contributor it returns true", ctx do
+      {:ok, project} = Operately.Projects.update_project(ctx.project, %{private: true})
+
+      permissions = Permissions.calculate_permissions(project, ctx.person)
+
+      assert permissions.can_view
+    end
+
+    test "when the project is private and the person is not a contributor it returns false", ctx do
+      {:ok, project} = Operately.Projects.update_project(ctx.project, %{private: true})
+
+      non_colab = person_fixture(company_id: ctx.company.id)
+
+      permissions = Permissions.calculate_permissions(project, non_colab)
+
+      refute permissions.can_view
     end
   end
 

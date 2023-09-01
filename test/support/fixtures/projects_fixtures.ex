@@ -8,14 +8,17 @@ defmodule Operately.ProjectsFixtures do
   Generate a project.
   """
   def project_fixture(attrs \\ %{}) do
-    {:ok, project} =
-      attrs
-      |> Enum.into(%{
-        name: "some name"
-      })
-      |> Operately.Projects.create_project(%{
-        person_id: attrs.creator_id,
-      })
+    attrs = Enum.into(attrs, %{})
+
+    attrs = Map.merge(%{
+      name: "some name",
+      visibility: "everyone",
+      champion_id: attrs[:champion_id] || attrs[:creator_id]
+    }, attrs)
+
+    attrs = struct!(Operately.Projects.ProjectCreation, attrs)
+
+    {:ok, project} = Operately.Projects.create_project(attrs)
 
     project
   end

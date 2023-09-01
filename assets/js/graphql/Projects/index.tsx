@@ -8,6 +8,8 @@ import * as Milestones from "./milestones";
 import * as PhaseHistory from "./phase_history";
 import * as Permissions from "./permissions";
 
+export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
+
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
     projects(filters: $filters) {
@@ -15,6 +17,7 @@ export const LIST_PROJECTS = gql`
       name
       insertedAt
       updatedAt
+      private
 
       startedAt
       deadline
@@ -42,7 +45,6 @@ export const LIST_PROJECTS = gql`
         avatarUrl
         title
       }
-
     }
   }
 `;
@@ -118,6 +120,7 @@ export interface Project {
   deadline: Date;
   phase: ProjectPhase;
   health: ProjectHealth;
+  private: boolean;
 
   permissions: Permissions.Permissions;
   phaseHistory: PhaseHistory.PhaseHistory[];
@@ -145,6 +148,7 @@ export const GET_PROJECT = gql`
       phase
       health
       isPinned
+      private
 
       permissions ${Permissions.FRAGMENT}
 
@@ -261,19 +265,6 @@ export function useReactMutation(entityType: string, entityID: string) {
   };
 
   return [addReaction, status] as const;
-}
-
-export function useAddProject(options) {
-  return useMutation(
-    gql`
-      mutation CreateProject($name: String!, $championId: ID!) {
-        createProject(name: $name, championId: $championId) {
-          id
-        }
-      }
-    `,
-    options,
-  );
 }
 
 export function useAddProjectContributorMutation(projectId: string) {

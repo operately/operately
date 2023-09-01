@@ -12,10 +12,11 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
     field :projects, list_of(:project) do
       arg :filters, :project_list_filters
 
-      resolve fn _, args, _ ->
+      resolve fn _, args, %{context: context} ->
+        person = context.current_account.person
         filters = Map.get(args, :filters, %{})
 
-        projects = Operately.Projects.list_projects(%{
+        projects = Operately.Projects.list_projects(person, %{
           group_id: filters[:group_id],
           group_member_roles: filters[:group_member_roles],
           objective_id: filters[:objective_id]
@@ -30,10 +31,17 @@ defmodule OperatelyWeb.GraphQL.Queries.Projects do
     field :project, :project do
       arg :id, non_null(:id)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
         project = Operately.Projects.get_project!(args.id)
 
-        {:ok, project}
+        permissions = Operately.Projects.get_permissions(project, person)
+
+        if permissions.can_view do
+          {:ok, project}
+        else
+          {:ok, nil}
+        end
       end
     end
 

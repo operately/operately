@@ -81,8 +81,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => 
     props.disabled ? variantValue.disabled : "",
   ].join(" ");
 
+  const type = submit ? "submit" : "button";
+
   const button = (
-    <button ref={ref} className={className} {...rest}>
+    <button type={type} ref={ref} className={className} {...rest}>
       <div className={props.loading ? "flex items-center gap-2 opacity-50" : "flex items-center gap-2 opacity-100"}>
         {children}
       </div>
