@@ -460,7 +460,7 @@ defmodule Operately.Features.ProjectsTest do
       company_id: company.id,
       name: "Live support",
       champion_id: champion.id,
-      creator: champion,
+      creator_id: champion.id,
       creator_role: nil,
       visibility: "everyone",
     }
