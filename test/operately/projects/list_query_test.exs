@@ -14,9 +14,9 @@ defmodule Operately.Projects.ListQueryTest do
       colaborator = person_fixture(company_id: company.id)
       non_colaborator = person_fixture(company_id: company.id)
 
-      project1 = project_fixture(%{company_id: company.id, private: false, creator_id: creator.id})
-      project2 = project_fixture(%{company_id: company.id, private: true, creator_id: creator.id})
-      project3 = project_fixture(%{company_id: company.id, private: true, creator_id: creator.id})
+      project1 = project_fixture(%{company_id: company.id, visibility: "everyone", creator_id: creator.id})
+      project2 = project_fixture(%{company_id: company.id, visibility: "invite-only", creator_id: creator.id})
+      project3 = project_fixture(%{company_id: company.id, visibility: "invite-only", creator_id: creator.id})
 
       {:ok, %{
         company: company,
