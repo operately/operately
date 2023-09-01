@@ -92,7 +92,19 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   );
 }
 
+//
+// Note about "no-referrer":
+//
+// I noticed an issue with referrer-policy: origin (default) and images from
+// googleusercontent.com. Sometimes, not always, the request will be blocked
+// with a status 403 code, resulting in rendering the fallback instead of the
+// requested image.
+//
+// Fixed based on this issue: https://github.com/chakra-ui/chakra-ui/issues/5909.
+//
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
+  if (!person) return <></>;
+
   const baseClass = "rounded-full overflow-hidden bg-white";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
