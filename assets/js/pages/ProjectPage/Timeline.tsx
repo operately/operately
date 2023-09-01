@@ -16,6 +16,7 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import Button from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
+import { TextTooltip } from "@/components/Tooltip";
 
 interface ContextDescriptor {
   project: Projects.Project;
@@ -28,8 +29,8 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
-      <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
-        <div className="flex items-start gap-4 pb-3 border-b border-dark-5 p-4">
+      <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
+        <div className="flex items-start gap-4 pb-3 border-b border-dark-8 p-4">
           <Dates />
           <Phase />
           <Health />
@@ -65,13 +66,13 @@ function Calendar({ project }) {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex items-center w-full relative" style={{ height: "100px" }}>
+    <div className="">
+      <div className="flex items-center w-full relative" style={{ height: "150px" }}>
         {markedDates.map((date, index) => (
           <DateLabel key={index} date={date} index={index} total={markedDates.length} />
         ))}
 
-        <div className="absolute" style={{ top: "60px", bottom: "25px", left: 0, right: 0 }}>
+        <div className="absolute" style={{ top: "90px", bottom: "40px", left: 0, right: 0 }}>
           <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           {project.phaseHistory.map((phase) => (
@@ -89,7 +90,7 @@ function Calendar({ project }) {
           <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
           <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
-          {project.milestones.map((milestone) => (
+          {project.milestones.map((milestone: Milestones.Milestone) => (
             <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
           ))}
         </div>
@@ -99,10 +100,10 @@ function Calendar({ project }) {
 }
 
 function MilestoneList({ project, refetch }) {
-  const [expanded, _, expand, collapse] = useBoolState(false);
+  const [expanded, _, expand, collapse] = useBoolState(true);
 
   return (
-    <div className="border-t border-dark-5 px-4 py-3">
+    <div className="border-t border-dark-8 py-3">
       {expanded ? (
         <MilestoneListExpanded project={project} refetch={refetch} onCollapse={collapse} />
       ) : (
@@ -114,10 +115,10 @@ function MilestoneList({ project, refetch }) {
 
 function MilestoneListCollapsed({ project, refetch, onExpand }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between px-4">
       <NextMilestone project={project} refetch={refetch} />
       <div
-        className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1"
+        className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1"
         onClick={onExpand}
         data-test-id="show-all-milestones"
       >
@@ -129,26 +130,28 @@ function MilestoneListCollapsed({ project, refetch, onExpand }) {
 }
 
 function MilestoneListExpanded({ project, onCollapse, refetch }) {
-  const milestones = Milestones.sortByDeadline(project.milestones, { reverse: true });
+  const milestones = Milestones.sortByDeadline(project.milestones, { reverse: false });
 
   return (
     <div className="">
-      <div className="flex items-center border-b border-dark-5 pb-2">
-        <div className="font-semibold text-sm flex-1">Milestone</div>
-        <div className="font-semibold text-sm w-32">Due Date</div>
-        <div className="font-semibold text-sm w-32">Completed On</div>
-        <div className="font-semibold text-sm w-24">Actions</div>
+      <div className="flex items-center border-b border-dark-5 pb-2 px-4">
+        <div className="font-semibold flex-1">Milestone</div>
+        <div className="font-semibold w-32 pl-1">Due On</div>
+        <div className="font-semibold w-32">Completed</div>
+        <div className="font-semibold w-16"></div>
       </div>
 
       {milestones.map((milestone: Milestones.Milestone) => (
         <MilestoneListItem key={milestone.id} milestone={milestone} project={project} refetch={refetch} />
       ))}
 
-      <div className="flex items-center justify-between -mb-3 -mx-4">
+      <MilestoneAdd project={project} refetch={refetch} />
+
+      <div className="flex items-center justify-between -mb-3">
         <div></div>
 
         <div
-          className="text-sm flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1 px-4 py-3"
+          className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1 px-4 py-3"
           onClick={onCollapse}
         >
           <Icons.IconArrowUp size={16} stroke={2} />
@@ -159,16 +162,102 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
   );
 }
 
-function MilestoneListItem({ milestone, project, refetch }) {
-  const iconColor = milestonIconColor(milestone);
+function MilestoneAdd({ project, refetch }) {
+  const [active, _, activate, deactivate] = useBoolState(false);
 
+  if (active) {
+    return <MilestoneAddActive project={project} refetch={refetch} deactivate={deactivate} />;
+  } else {
+    return <MilestoneAddNotActive activate={activate} />;
+  }
+}
+
+function MilestoneAddNotActive({ activate }) {
   return (
     <div
-      className="flex items-center text-sm border-b border-dark-5 py-2 group hover:bg-shade-1 px-1"
-      key={milestone.id}
+      className="flex items-center border-b border-dark-5 py-3 group hover:bg-shade-1 px-4 cursor-pointer"
+      onClick={activate}
     >
       <div className="flex items-center gap-2 flex-1 truncate">
-        <Icons.IconMapPinFilled size={16} className={iconColor} /> {milestone.title}
+        <Icons.IconPlus size={16} className={"text-white-1/60"} /> Add Milestone
+      </div>
+    </div>
+  );
+}
+
+function MilestoneAddActive({ project, refetch, deactivate }) {
+  const [name, setName] = React.useState("");
+  const [dueDate, setDueDate] = React.useState<Date | null>(null);
+  const [add, { loading }] = Milestones.useAddMilestone();
+
+  const handleSubmit = async () => {
+    if (!name || !dueDate) return;
+
+    await add({
+      variables: {
+        projectId: project.id,
+        title: name,
+        deadlineAt: Time.toDateWithoutTime(dueDate),
+      },
+    });
+
+    await deactivate();
+    await refetch();
+  };
+
+  const handleCancel = () => {
+    deactivate();
+  };
+
+  const valid = name.length > 0 && dueDate !== null;
+
+  return (
+    <div className="flex items-center border-b border-dark-5 py-2 cursor-pointer px-4">
+      <div className="flex items-center gap-2 flex-1 truncate">
+        <Icons.IconMapPinFilled size={16} className={"text-white-1/60"} />
+
+        <input
+          className="flex-1 bg-transparent outline-none placeholder:text-white-1/60"
+          placeholder="e.g. Design Review"
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
+
+      <div className="w-32 flex items-center">
+        <DatePickerWithClear
+          editable={true}
+          selected={dueDate}
+          onChange={setDueDate}
+          clearable={false}
+          placeholder="Due Date"
+        />
+      </div>
+
+      <div className="w-48 flex items-center gap-2 flex-row-reverse">
+        <Button onClick={handleCancel} size="tiny" variant="secondary">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} size="tiny" variant="default" disabled={!valid} loading={loading}>
+          Save
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function MilestoneListItem({ milestone, project, refetch }) {
+  const iconColor = milestoneIconColor(milestone);
+
+  return (
+    <div className="flex items-center border-b border-dark-5 py-2 group hover:bg-shade-1 px-4">
+      <div className="flex items-center gap-2 flex-1 truncate">
+        <div className="shink-0">
+          <Icons.IconMapPinFilled size={16} className={iconColor} />
+        </div>
+
+        {milestone.title}
       </div>
 
       <MilestoneListItemDueDate milestone={milestone} refetch={refetch} />
@@ -177,11 +266,36 @@ function MilestoneListItem({ milestone, project, refetch }) {
         {milestone.completedAt && <FormattedTime time={milestone.completedAt} format="short-date" />}
       </div>
 
-      <div className="w-24">
+      <div className="w-16 flex-row-reverse flex items-center gap-2">
+        <RemoveMilestoneButton milestone={milestone} refetch={refetch} />
+
         {milestone.status !== "done" && (
           <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
         )}
       </div>
+    </div>
+  );
+}
+
+function RemoveMilestoneButton({ milestone, refetch }) {
+  const [remove] = Milestones.useRemoveMilestone();
+
+  const handleRemove = async () => {
+    await remove({
+      variables: {
+        milestoneId: milestone.id,
+      },
+    });
+
+    await refetch();
+  };
+
+  return (
+    <div
+      className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-red-400/20 hover:text-red-400 text-white-1/60 cursor-pointer transition-colors"
+      onClick={handleRemove}
+    >
+      <Icons.IconTrash size={16} />
     </div>
   );
 }
@@ -202,7 +316,7 @@ function MilestoneListItemDueDate({ milestone, refetch }) {
   };
 
   return (
-    <div className="w-32 flex items-center gap-2 cursor-pointer" data-test-id="change-milestone-due-date">
+    <div className="w-32 flex items-center gap-2 cursor-pointer -mt-1" data-test-id="change-milestone-due-date">
       <DatePickerWithClear editable={editable} selected={milestone.deadlineAt} onChange={change} clearable={false}>
         <FormattedTime time={milestone.deadlineAt} format="short-date" />
         {editable && (
@@ -216,7 +330,7 @@ function MilestoneListItemDueDate({ milestone, refetch }) {
 }
 
 function Label({ title }) {
-  return <div className="font-bold text-sm ml-1">{title}</div>;
+  return <div className="font-bold ml-1">{title}</div>;
 }
 
 function Health() {
@@ -381,7 +495,7 @@ function NextMilestone({ project, refetch }) {
   }
 }
 
-function milestonIconColor(milestone: Milestones.Milestone) {
+function milestoneIconColor(milestone: Milestones.Milestone) {
   const deadline = Time.parse(milestone.deadlineAt);
 
   if (milestone.status === "done") return "text-green-400";
@@ -394,7 +508,7 @@ function milestonIconColor(milestone: Milestones.Milestone) {
 
 function ExistingNextMilestone({ project, refetch }) {
   const isOverdue = Time.parse(project.nextMilestone.deadlineAt) < Time.today();
-  const iconColor = milestonIconColor(project.nextMilestone);
+  const iconColor = milestoneIconColor(project.nextMilestone);
   const label = isOverdue ? "Overdue" : "Next";
 
   return (
@@ -411,7 +525,7 @@ function ExistingNextMilestone({ project, refetch }) {
 
 function CompleteMilestoneButton({ project, milestone, refetch }) {
   const [{ me }] = Paper.useLoadedData();
-  const [complete, { loading }] = Milestones.useSetStatus();
+  const [complete] = Milestones.useSetStatus();
 
   if (project.champion.id !== me.id) return null;
 
@@ -427,9 +541,11 @@ function CompleteMilestoneButton({ project, milestone, refetch }) {
   };
 
   return (
-    <Button onClick={handleComplete} loading={loading} size="tiny" variant="default" data-test-id="complete-milestone">
-      Complete
-    </Button>
+    <TextTooltip text="Mark as completed">
+      <div className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-green-400/20 hover:text-green-400 text-white-1/60 cursor-pointer transition-colors">
+        <Icons.IconCheck size={16} onClick={handleComplete} />
+      </div>
+    </TextTooltip>
   );
 }
 
@@ -525,14 +641,14 @@ function MilestoneMarker({ milestone, lineStart, lineEnd }) {
   if (date > lineEnd) return null;
 
   const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-  const color = milestonIconColor(milestone);
+  const color = milestoneIconColor(milestone);
 
   return (
     <div
       className="absolute flex flex-col items-center justify-normal gap-1 pt-0.5"
-      style={{ left: left, top: "-32px", width: "0px" }}
+      style={{ left: left, top: "-35px", width: "0px" }}
     >
-      <Icons.IconMapPinFilled size={16} className={color} />
+      <Icons.IconMapPinFilled size={20} className={color} />
       <div className="h-1.5 bg-dark-8" style={{ width: "2px" }}></div>
     </div>
   );
@@ -546,9 +662,9 @@ function DateLabel({ date, index, total }) {
   return (
     <div
       className="absolute flex items-start gap-1 break-keep border-x border-shade-1"
-      style={{ left: left, top: 0, bottom: 0, width: width, height: "100px" }}
+      style={{ left: left, top: 0, bottom: 0, width: width, height: "150px" }}
     >
-      <span className="text-xs text-white-2 whitespace-nowrap pl-2">{title}</span>
+      <span className="text-sm text-white-2 whitespace-nowrap pl-2 pt-2">{title}</span>
     </div>
   );
 }
