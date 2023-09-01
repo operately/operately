@@ -4,7 +4,7 @@ defmodule Operately.Projects.ProjectCreation do
   alias Operately.Updates
   alias Operately.Projects.Project
 
-  defstruct [:company_id, :name, :champion_id, :creator, :creator_role, :visibility]
+  defstruct [:company_id, :name, :champion_id, :creator_id, :creator_role, :visibility]
 
   def run(%__MODULE__{} = params) do
     Operately.Repo.transaction(fn -> 
@@ -23,7 +23,7 @@ defmodule Operately.Projects.ProjectCreation do
       :company_id => params.company_id,
       :name => params.name,
       :private => is_private(params.visibility),
-      :creator_id => params.creator.id,
+      :creator_id => params.creator_id,
       :started_at => DateTime.utc_now(),
       :next_update_scheduled_at => Operately.Time.first_friday_from_today(),
       :phase => :planning
@@ -47,13 +47,13 @@ defmodule Operately.Projects.ProjectCreation do
 
   defp assign_creator_role(project, %__MODULE__{} = params) do
     cond do
-      params.champion_id == params.creator.id ->
+      params.champion_id == params.creator_id ->
         {:ok, "Champion"}
 
       params.creator_role == "Reviewer" ->
         {:ok, _} = Projects.create_contributor(%{
           project_id: project.id,
-          person_id: params.creator.id,
+          person_id: params.creator_id,
           responsibility: " ",
           role: :reviewer
         })
@@ -63,7 +63,7 @@ defmodule Operately.Projects.ProjectCreation do
       true ->
         {:ok, _} = Projects.create_contributor(%{
           project_id: project.id,
-          person_id: params.creator.id,
+          person_id: params.creator_id,
           responsibility: params.creator_role,
           role: :contributor
         })

@@ -32,7 +32,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
           champion_id: args.input.champion_id,
           creator_role: args.input[:creator_role],
           visibility: args.input.visibility,
-          creator: person,
+          creator_id: person.id,
           company_id: person.company_id
         }
         |> Operately.Projects.create_project()
