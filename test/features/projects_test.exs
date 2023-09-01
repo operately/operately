@@ -21,7 +21,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.select_person(state.champion.full_name)
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
-    |> UI.assert_text(short_name(state.champion) <> " created this project and assigned themselves as the champion")
+    |> UI.assert_text(short_name(state.champion) <> " created this project and assigned themselves as the Champion")
   end
 
   feature "add a private project", state do
@@ -32,10 +32,11 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person(champion.full_name)
+    |> UI.select(testid: "your-role-input", option: "Reviewer")
     |> UI.click(testid: "invite-only")
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
-    |> UI.assert_text(short_name(state.champion) <> " created this project and assigned Mary P. as the champion")
+    |> UI.assert_text(short_name(state.champion) <> " created this project with Mary P. as the champion and themselves as a Reviewer")
     |> UI.assert_has(testid: "private-project-indicator")
   end
 
@@ -455,13 +456,16 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   defp create_project(company, champion) do
-    {:ok, project} = Operately.Projects.create_project(%{
-      name: "Live support",
+    params = %Operately.Projects.ProjectCreation{
       company_id: company.id,
-      creator_id: champion.id,
-    }, %{
-      person_id: champion.id, 
-    })
+      name: "Live support",
+      champion_id: champion.id,
+      creator: champion,
+      creator_role: nil,
+      visibility: "everyone",
+    }
+
+    {:ok, project} = Operately.Projects.create_project(params)
 
     project
   end

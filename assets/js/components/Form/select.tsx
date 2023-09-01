@@ -6,8 +6,10 @@ import CreatableSelect from "react-select/creatable";
 import classnames from "classnames";
 
 export function SelectBox({ label, value, onChange, options, allowEnteringNewValues, ...props }) {
+  const dataTestId = props["data-test-id"];
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-test-id={dataTestId}>
       <label className="font-bold mb-1 block">{label}</label>
       {allowEnteringNewValues ? (
         <CreatableSelect

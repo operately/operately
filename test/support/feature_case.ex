@@ -137,6 +137,12 @@ defmodule Operately.FeatureCase do
       |> Browser.send_keys([:enter])
     end
 
+    def select(state, testid: id, option: option_name) do
+      session(state)
+      |> UI.click(testid: id)
+      |> Browser.click(Query.text(option_name))
+    end
+
     def send_keys(state, keys) do
       session(state)
       |> Browser.send_keys(keys)

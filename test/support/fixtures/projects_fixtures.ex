@@ -8,14 +8,13 @@ defmodule Operately.ProjectsFixtures do
   Generate a project.
   """
   def project_fixture(attrs \\ %{}) do
-    {:ok, project} =
-      attrs
+    attrs = attrs
       |> Enum.into(%{
         name: "some name"
       })
-      |> Operately.Projects.create_project(%{
-        person_id: attrs.creator_id,
-      })
+      |> struct!(Operately.Projects.ProjectCreation)
+
+    {:ok, project} = Operately.Projects.create_project(attrs)
 
     project
   end
