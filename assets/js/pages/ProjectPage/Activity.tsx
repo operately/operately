@@ -501,31 +501,45 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
   );
 }
 
-function ProjectCreated({ project, update }: { project: Projects.Project; update: Updates.Update }) {
+function ProjectCreated({ update }: { update: Updates.Update }) {
   const content = update.content as Updates.UpdateContentProjectCreated;
 
-  const champion = content.champion;
-  const creator = content.creator;
+  const creatorIsChampion = content.creator.id === content.champion.id;
 
-  const creatorIsChampion = creator.id === champion.id;
-
-  const who = creatorIsChampion ? (
-    <span className="font-extrabold text-white-1">themselves</span>
-  ) : (
-    <>
-      <span className="font-extrabold text-white-1">
-        <ShortName fullName={champion.fullName} />
-      </span>
-    </>
+  const creator = (
+    <span className="font-extrabold text-white-1">
+      <ShortName fullName={content.creator.fullName} />
+    </span>
   );
+
+  const action = " created this project ";
+
+  const champion = (
+    <span className="font-extrabold text-white-1">
+      <ShortName fullName={content.champion.fullName} />
+    </span>
+  );
+
+  let assignements: string | JSX.Element = "";
+
+  if (creatorIsChampion) {
+    assignements = "and assigned themselves as the Champion";
+  } else if (content.creatorRole) {
+    assignements = (
+      <>
+        with {champion} as the champion and themselves as a {content.creatorRole}
+      </>
+    );
+  } else {
+    assignements = <> and assigned {champion} as the champion</>;
+  }
 
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
-          <ShortName fullName={creator.fullName} />
-        </span>{" "}
-        created this project and assigned {who} as the champion.
+        {creator}
+        {action}
+        {assignements}.
       </div>
     </SmallContainer>
   );

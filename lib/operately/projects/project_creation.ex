@@ -1,79 +1,82 @@
 defmodule Operately.Projects.ProjectCreation do
+  alias Operately.Repo
+  alias Operately.Projects
+  alias Operately.Updates
+  alias Operately.Projects.Project
+
   defstruct [:company_id, :name, :champion_id, :creator, :creator_role, :visibility]
 
   def run(%__MODULE__{} = params) do
+    Operately.Repo.transaction(fn -> 
+      {:ok, project} = create_project(params)
+      {:ok, champion} = assign_champion(project, params)
+      {:ok, creator_role} = assign_creator_role(project, params)
+      {:ok, _} = record_phase_history(project)
+      {:ok, _} = Updates.record_project_creation(project.creator_id, project.id, champion.person_id, creator_role)
+
+      project
+    end)
   end
 
-    # Operately.Repo.transaction(fn -> 
-    #   person = context.current_account.person
-    #   private = args.input.visibility != "everyone"
+  defp create_project(%__MODULE__{} = params) do
+    attrs = %{
+      :company_id => params.company_id,
+      :name => params.name,
+      :private => is_private(params.visibility),
+      :creator_id => params.creator.id,
+      :started_at => DateTime.utc_now(),
+      :next_update_scheduled_at => Operately.Time.first_friday_from_today(),
+      :phase => :planning
+    }
 
-    #   project_attrs = %{
-    #     company_id: person.company_id,
-    #     creator_id: person.id,
-    #     name: args.input.name,
-    #     private: private,
-    #   }
+    %Project{} |> Project.changeset(attrs) |> Repo.insert()
+  end
 
-    #   champion_attrs = %{
-    #     person_id: args.input.champion_id,
-    #     responsibility: " ",
-    #     role: "champion"
-    #   }
+  defp is_private(visibility) do
+    visibility != "everyone"
+  end
 
-    #   {:ok, project} = Operately.Projects.create_project(
-    #     project_attrs, 
-    #     champion_attrs
-    #   )
+  defp assign_champion(project, %__MODULE__{} = params) do
+    {:ok, _} = Operately.Projects.create_contributor(%{
+      project_id: project.id,
+      person_id: params.champion_id,
+      responsibility: " ",
+      role: :champion
+    })
+  end
 
-    #   creator_role = args.input.creator_role
+  defp assign_creator_role(project, %__MODULE__{} = params) do
+    cond do
+      params.champion_id == params.creator.id ->
+        {:ok, "Champion"}
 
-    #   if creator_role && creator_role != "" do
-    #     if creator_role == "Reviewer" do
-    #       {:ok, _} = Operately.Projects.create_contributor(%{
-    #         project_id: project.id,
-    #         person_id: person.id,
-    #         responsibility: " ",
-    #         role: :reviewer
-    #       })
-    #     else
-    #       {:ok, _} = Operately.Projects.create_contributor(%{
-    #         project_id: project.id,
-    #         person_id: person.id,
-    #         responsibility: creator_role,
-    #         role: :contributor
-    #       })
-    #     end
-    #   end
+      params.creator_role == "Reviewer" ->
+        {:ok, _} = Projects.create_contributor(%{
+          project_id: project.id,
+          person_id: params.creator.id,
+          responsibility: " ",
+          role: :reviewer
+        })
 
-    #   project
-    # end)
+        {:ok, "Reviewer"}
 
-    # project_attrs = Map.put(project_attrs, :next_update_scheduled_at, first_friday_from_today())
+      true ->
+        {:ok, _} = Projects.create_contributor(%{
+          project_id: project.id,
+          person_id: params.creator.id,
+          responsibility: params.creator_role,
+          role: :contributor
+        })
 
-    # Repo.transaction(fn ->
-    #   result = %Project{} |> Project.changeset(project_attrs) |> Repo.insert()
+        {:ok, params.creator_role}
+    end
+  end
 
-    #   case result do
-    #     {:ok, project} -> 
-    #       {:ok, champion} = create_contributor_if_provided(champion_attrs, project.id)
-    #       champion_id = if champion, do: champion.person_id, else: nil
-
-    #       {:ok, _} = Updates.record_project_creation(
-    #         project.creator_id, 
-    #         project.id, 
-    #         champion_id
-    #       )
-
-    #       {:ok, _} = create_phase_history(%{
-    #         project_id: project.id,
-    #         phase: project.phase,
-    #         start_time: DateTime.utc_now()
-    #       })
-
-    #       project
-    #     {:error, changeset} ->
-    #       Repo.rollback(changeset)
-    #   end
-    # end)
+  defp record_phase_history(project) do
+    {:ok, _} = Operately.Projects.create_phase_history(%{
+      project_id: project.id,
+      phase: project.phase,
+      start_time: DateTime.utc_now()
+    })
+  end
 end

@@ -25,13 +25,17 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :input, non_null(:create_project_input)
 
       resolve fn args, %{context: context} ->
-        Operately.Project.create_project(%Operately.Projects.ProjectCreation{
+        person = context.current_account.person
+
+        %Operately.Projects.ProjectCreation{
           name: args.input.name,
           champion_id: args.input.champion_id,
-          creator: context.current_account.person,
           creator_role: args.input.creator_role,
-          visibility: args.input.visibility
-        })
+          visibility: args.input.visibility,
+          creator: person,
+          company_id: person.company_id
+        }
+        |> Operately.Projects.create_project()
       end
     end
 
