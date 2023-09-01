@@ -99,7 +99,7 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
 
   return (
     <div title={person.fullName} className={className}>
-      <img src={person.avatarUrl} alt={person.fullName} />
+      <img src={person.avatarUrl} alt={person.fullName} referrerPolicy="no-referrer" />
     </div>
   );
 }
