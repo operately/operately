@@ -287,10 +287,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     field :remove_project_milestone, non_null(:milestone) do
       arg :milestone_id, non_null(:id)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
 
-        Operately.Projects.delete_milestone(milestone)
+        Operately.Projects.delete_milestone(person, milestone)
+
+        {:ok, milestone}
       end
     end
   end

@@ -3,6 +3,8 @@ defmodule Operately.Repo do
 
   import Ecto.Query
 
+
+
   def soft_delete_all(queryable) do
     update_all(queryable, set: [deleted_at: DateTime.utc_now()])
   end

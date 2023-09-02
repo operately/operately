@@ -169,6 +169,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
     case "project_milestone_created":
       return <ProjectMilestoneCreated project={project} update={update} />;
 
+    case "project_milestone_deleted":
+      return <ProjectMilestoneDeleted project={project} update={update} />;
+
     case "project_milestone_completed":
       return <ProjectMilestoneCompleted project={project} update={update} />;
 
@@ -558,6 +561,25 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         added <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
+        <span className="font-extrabold text-white-1">{milestone}</span> milestone.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectMilestoneDeleted({ update }: { project: Projects.Project; update: Updates.Update }) {
+  const creator = update.author;
+
+  const content = update.content as Updates.ProjectMilestoneDeleted;
+  const milestone = content.milestone.title;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        deleted the <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
         <span className="font-extrabold text-white-1">{milestone}</span> milestone.
       </div>
     </SmallContainer>

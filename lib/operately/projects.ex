@@ -40,9 +40,7 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Milestone
 
-  def get_milestone!(id) do
-    Repo.get!(Milestone, id)
-  end
+  def get_milestone!(id, opts \\ []), do: Repo.get!(Milestone, id, opts)
 
   def get_next_milestone(project) do
     query = from m in Milestone,
@@ -113,8 +111,12 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def delete_milestone(%Milestone{} = milestone) do
-    Repo.soft_delete(milestone)
+  def delete_milestone(person, %Milestone{} = milestone) do
+    Repo.transaction(fn ->
+      Repo.soft_delete(milestone)
+
+      {:ok, _} = Updates.record_project_milestone_deleted(person, milestone)
+    end)
   end
 
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do

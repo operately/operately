@@ -67,6 +67,10 @@ export const UPDATE_FRAGMENT = gql`
         milestone ${Milestones.FRAGMENT}
       }
 
+      ... on UpdateContentProjectMilestoneDeleted {
+        milestone ${Milestones.FRAGMENT}
+      }
+
       ... on UpdateContentProjectMilestoneCompleted {
         milestone ${Milestones.FRAGMENT}
       }
@@ -100,6 +104,7 @@ export type UpdateMessageType =
   | "review"
   | "project_created"
   | "project_milestone_created"
+  | "project_milestone_deleted"
   | "project_milestone_completed"
   | "project_milestone_deadline_changed";
 
@@ -108,6 +113,7 @@ export type Content =
   | StatusUpdate
   | Message
   | ProjectMilestoneCreated
+  | ProjectMilestoneDeleted
   | ProjectMilestoneCompleted
   | ProjectMilestoneDeadlineChanged;
 
@@ -133,6 +139,10 @@ export interface Message {
 }
 
 export interface ProjectMilestoneCreated {
+  milestone: Milestones.Milestone;
+}
+
+export interface ProjectMilestoneDeleted {
   milestone: Milestones.Milestone;
 }
 

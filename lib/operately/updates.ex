@@ -76,6 +76,18 @@ defmodule Operately.Updates do
     })
   end
 
+  def record_project_milestone_deleted(person, milestone) do
+    create_update(%{
+      type: :project_milestone_deleted,
+      author_id: person.id,
+      updatable_id: milestone.project_id,
+      updatable_type: :project,
+      content: %{
+        milestone_id: milestone.id,
+      }
+    })
+  end
+
   def record_project_milestone_completed(person, milestone) do
     create_update(%{
       type: :project_milestone_completed,

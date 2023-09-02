@@ -21,6 +21,7 @@ defmodule Operately.Updates.Update do
       :project_milestone_created,
       :project_milestone_completed,
       :project_milestone_deadline_changed,
+      :project_milestone_deleted
     ]
 
     field :content, :map

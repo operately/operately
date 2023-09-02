@@ -99,7 +99,7 @@ function Calendar({ project }) {
 }
 
 function MilestoneList({ project, refetch }) {
-  const [expanded, _, expand, collapse] = useBoolState(true);
+  const [expanded, _, expand, collapse] = useBoolState(false);
 
   return (
     <div className="border-t border-dark-8 py-3">

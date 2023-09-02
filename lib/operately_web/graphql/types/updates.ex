@@ -84,6 +84,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       :update_content_project_milestone_created,
       :update_content_project_milestone_completed,
       :update_content_project_milestone_deadline_changed,
+      :update_content_project_milestone_deleted,
       :update_content_status_update
     ]
 
@@ -127,7 +128,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
   object :update_content_project_milestone_created do
     field :milestone, non_null(:milestone) do
       resolve fn update, _, _ ->
-        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"])
+        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"], with_deleted: true)
 
         {:ok, milestone}
       end
@@ -137,7 +138,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
   object :update_content_project_milestone_completed do
     field :milestone, non_null(:milestone) do
       resolve fn update, _, _ ->
-        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"])
+        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"], with_deleted: true)
 
         {:ok, milestone}
       end
@@ -159,7 +160,17 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
     field :milestone, non_null(:milestone) do
       resolve fn update, _, _ ->
-        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"])
+        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"], with_deleted: true)
+
+        {:ok, milestone}
+      end
+    end
+  end
+
+  object :update_content_project_milestone_deleted do
+    field :milestone, non_null(:milestone) do
+      resolve fn update, _, _ ->
+        milestone = Operately.Projects.get_milestone!(update.content["milestone_id"], with_deleted: true)
 
         {:ok, milestone}
       end
