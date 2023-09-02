@@ -10,7 +10,6 @@ import * as SelectBox from "@/components/SilentSelectBox";
 import * as Projects from "@/graphql/Projects";
 import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";
-import * as Paper from "@/components/PaperContainer";
 import * as Milestones from "@/graphql/Projects/milestones";
 
 import Button from "@/components/Button";
@@ -165,6 +164,8 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
 function MilestoneAdd({ project, refetch }) {
   const [active, _, activate, deactivate] = useBoolState(false);
 
+  if (!project.permissions.canCreateMilestone) return null;
+
   if (active) {
     return <MilestoneAddActive project={project} refetch={refetch} deactivate={deactivate} />;
   } else {
@@ -267,7 +268,7 @@ function MilestoneListItem({ milestone, project, refetch }) {
       </div>
 
       <div className="w-16 flex-row-reverse flex items-center gap-2">
-        <RemoveMilestoneButton milestone={milestone} refetch={refetch} />
+        <RemoveMilestoneButton project={project} milestone={milestone} refetch={refetch} />
 
         {milestone.status !== "done" && (
           <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
@@ -277,8 +278,10 @@ function MilestoneListItem({ milestone, project, refetch }) {
   );
 }
 
-function RemoveMilestoneButton({ milestone, refetch }) {
+function RemoveMilestoneButton({ project, milestone, refetch }) {
   const [remove] = Milestones.useRemoveMilestone();
+
+  if (!project.permissions.canDeleteMilestone) return null;
 
   const handleRemove = async () => {
     await remove({
@@ -291,12 +294,14 @@ function RemoveMilestoneButton({ milestone, refetch }) {
   };
 
   return (
-    <div
-      className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-red-400/20 hover:text-red-400 text-white-1/60 cursor-pointer transition-colors"
-      onClick={handleRemove}
-    >
-      <Icons.IconTrash size={16} />
-    </div>
+    <TextTooltip text="Mark as completed" delayDuration={600}>
+      <div
+        className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-red-400/20 hover:text-red-400 text-white-1/60 cursor-pointer transition-colors"
+        onClick={handleRemove}
+      >
+        <Icons.IconTrash size={16} />
+      </div>
+    </TextTooltip>
   );
 }
 
@@ -523,11 +528,18 @@ function ExistingNextMilestone({ project, refetch }) {
   );
 }
 
-function CompleteMilestoneButton({ project, milestone, refetch }) {
-  const [{ me }] = Paper.useLoadedData();
+function CompleteMilestoneButton({
+  project,
+  milestone,
+  refetch,
+}: {
+  project: Projects.Project;
+  milestone: any;
+  refetch: () => void;
+}) {
   const [complete] = Milestones.useSetStatus();
 
-  if (project.champion.id !== me.id) return null;
+  if (!project.permissions.canEditMilestone) return null;
 
   const handleComplete = async () => {
     await complete({
@@ -541,7 +553,7 @@ function CompleteMilestoneButton({ project, milestone, refetch }) {
   };
 
   return (
-    <TextTooltip text="Mark as completed">
+    <TextTooltip text="Mark as completed" delayDuration={600}>
       <div className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-green-400/20 hover:text-green-400 text-white-1/60 cursor-pointer transition-colors">
         <Icons.IconCheck size={16} onClick={handleComplete} />
       </div>

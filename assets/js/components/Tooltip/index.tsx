@@ -5,12 +5,13 @@ import * as ReactTooltip from "@radix-ui/react-tooltip";
 interface TextTooltipProps {
   text: string;
   children: React.ReactNode;
+  delayDuration?: number;
 }
 
-export function TextTooltip({ text, children }: TextTooltipProps): JSX.Element {
+export function TextTooltip({ text, delayDuration, children }: TextTooltipProps): JSX.Element {
   return (
     <ReactTooltip.Provider>
-      <ReactTooltip.Root delayDuration={200}>
+      <ReactTooltip.Root delayDuration={delayDuration || 200}>
         <ReactTooltip.Trigger asChild>{children}</ReactTooltip.Trigger>
         <ReactTooltip.Content
           sideOffset={5}
