@@ -279,7 +279,7 @@ function MilestoneListItem({ project, milestone, refetch }) {
         <RemoveMilestoneButton project={project} milestone={milestone} refetch={refetch} />
 
         {milestone.status !== "done" && (
-          <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
+          <CompleteMilestoneButton project={project} milestone={milestone} refetch={refetch} />
         )}
       </div>
     </div>
@@ -291,7 +291,7 @@ function RemoveMilestoneButton({ project, milestone, refetch }) {
     onCompleted: refetch,
     variables: {
       milestoneId: milestone.id,
-    }
+    },
   });
 
   if (!project.permissions.canDeleteMilestone) return null;

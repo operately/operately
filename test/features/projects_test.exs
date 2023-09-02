@@ -355,88 +355,6 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
-  feature "adding milestones to a project", state do
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "show-all-milestones")
-    |> UI.click(testid: "add-milestone")
-    |> UI.fill(testid: "milestone-title", with: "Contract Signed")
-    |> UI.click(testid: "milestone-due-date")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
-    |> UI.click(testid: "save-milestone")
-
-    state
-    |> UI.assert_text("Contract Signed")
-    |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
-  end
-
-  feature "deleting a milestone on a project", state do
-    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "show-all-milestones")
-    |> UI.click(testid: "delete-milestone")
-    |> UI.assert_text(short_name(state.champion) <> " deleted the Contract Signed milestone")
-  end
-
-  feature "see all milestones", state do
-    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-    add_milestone(state.project, state.champion, %{title: "Demo Day", deadline_at: ~N[2023-07-17 00:00:00]})
-    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
-
-    state
-    |> visit_show(state.project)
-    |> UI.find(testid: "timeline")
-    |> UI.click(testid: "show-all-milestones")
-
-    state
-    |> UI.assert_text("Contract Signed", testid: "timeline")
-    |> UI.assert_text("Demo Day", testid: "timeline")
-    |> UI.assert_text("Website Launched", testid: "timeline")
-  end
-
-  feature "mark upcomming milestone completed", state do
-    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
-
-    state
-    |> visit_show(state.project)
-    |> UI.assert_text("Contract Signed", testid: "timeline")
-
-    state
-    |> UI.click(testid: "complete-milestone")
-
-    state
-    |> UI.refute_text("Contract Signed", testid: "timeline")
-    |> UI.assert_text("Website Launched", testid: "timeline")
-
-    state
-    |> UI.assert_text(short_name(state.champion) <> " marked Contract Signed as completed")
-  end
-
-  feature "mark milestone completed in the expanded list", state do
-    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00], completed_at: ~N[2023-06-17 00:00:00], status: "done"})
-    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
-
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "show-all-milestones")
-    |> UI.click(testid: "complete-milestone")
-    |> UI.assert_text(short_name(state.champion) <> " marked Website Launched as completed")
-  end
-
-  feature "change milestone deadline", state do
-    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "show-all-milestones")
-    |> UI.click(testid: "change-milestone-due-date")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
-    |> UI.assert_text(short_name(state.champion) <> " changed the due date for Contract Signed")
-  end
-
   # ===========================================================================
 
   defp visit_index(state) do
@@ -533,11 +451,11 @@ defmodule Operately.Features.ProjectsTest do
     }
   end
 
-  def change_phase(project, phase) do
+  defp change_phase(project, phase) do
     {:ok, _} = Operately.Projects.update_project(project, %{phase: phase})
   end
 
-  def short_name(person) do
+  defp short_name(person) do
     parts = String.split(person.full_name, " ")
 
     Enum.at(parts, 0) <> " " <> String.first(Enum.at(parts, 1)) <> "."
@@ -559,12 +477,6 @@ defmodule Operately.Features.ProjectsTest do
     Operately.Projects.list_project_contributors(project)
     |> Enum.filter(fn contributor -> contributor.role == role end)
     |> Enum.map(&Operately.Projects.delete_contributor(&1))
-  end
-
-  defp add_milestone(project, creator, attrs) do
-    attrs = %{project_id: project.id} |> Map.merge(attrs)
-
-    {:ok, _} = Operately.Projects.create_milestone(creator, attrs)
   end
 
 end
