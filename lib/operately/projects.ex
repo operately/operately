@@ -114,7 +114,7 @@ defmodule Operately.Projects do
   end
 
   def delete_milestone(%Milestone{} = milestone) do
-    Repo.delete(milestone)
+    Repo.soft_delete(milestone)
   end
 
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do

@@ -1,5 +1,6 @@
 defmodule Operately.Projects.Milestone do
   use Ecto.Schema
+  import Operately.SoftDelete.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -15,12 +16,13 @@ defmodule Operately.Projects.Milestone do
     field :completed_at, :naive_datetime
 
     timestamps()
+    soft_delete()
   end
 
   @doc false
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at])
+    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at])
     |> validate_required([:title])
   end
 end
