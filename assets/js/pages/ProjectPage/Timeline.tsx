@@ -12,10 +12,9 @@ import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";
 import * as Milestones from "@/graphql/Projects/milestones";
 
-import Button from "@/components/Button";
+import Button, { IconButton } from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
-import { TextTooltip } from "@/components/Tooltip";
 
 interface ContextDescriptor {
   project: Projects.Project;
@@ -178,6 +177,7 @@ function MilestoneAddNotActive({ activate }) {
     <div
       className="flex items-center border-b border-dark-5 py-3 group hover:bg-shade-1 px-4 cursor-pointer"
       onClick={activate}
+      data-test-id="add-milestone"
     >
       <div className="flex items-center gap-2 flex-1 truncate">
         <Icons.IconPlus size={16} className={"text-white-1/60"} /> Add Milestone
@@ -223,10 +223,11 @@ function MilestoneAddActive({ project, refetch, deactivate }) {
           autoFocus
           value={name}
           onChange={(e) => setName(e.target.value)}
+          data-test-id="milestone-title"
         />
       </div>
 
-      <div className="w-32 flex items-center">
+      <div className="w-32 flex items-center" data-test-id="milestone-due-date">
         <DatePickerWithClear
           editable={project.permissions.canEditMilestone}
           selected={dueDate}
@@ -240,7 +241,14 @@ function MilestoneAddActive({ project, refetch, deactivate }) {
         <Button onClick={handleCancel} size="tiny" variant="secondary">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} size="tiny" variant="default" disabled={!valid} loading={loading}>
+        <Button
+          onClick={handleSubmit}
+          size="tiny"
+          variant="default"
+          disabled={!valid}
+          loading={loading}
+          data-test-id="save-milestone"
+        >
           Save
         </Button>
       </div>
@@ -279,7 +287,12 @@ function MilestoneListItem({ project, milestone, refetch }) {
 }
 
 function RemoveMilestoneButton({ project, milestone, refetch }) {
-  const [remove] = Milestones.useRemoveMilestone();
+  const [remove] = Milestones.useRemoveMilestone({
+    onCompleted: refetch,
+    variables: {
+      milestoneId: milestone.id,
+    }
+  });
 
   if (!project.permissions.canDeleteMilestone) return null;
 
@@ -289,19 +302,16 @@ function RemoveMilestoneButton({ project, milestone, refetch }) {
         milestoneId: milestone.id,
       },
     });
-
-    await refetch();
   };
 
   return (
-    <TextTooltip text="Mark as completed" delayDuration={600}>
-      <div
-        className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-red-400/20 hover:text-red-400 text-white-1/60 cursor-pointer transition-colors"
-        onClick={handleRemove}
-      >
-        <Icons.IconTrash size={16} />
-      </div>
-    </TextTooltip>
+    <IconButton
+      tooltip="Delete milestone"
+      icon={<Icons.IconTrash size={16} />}
+      color="red"
+      onClick={handleRemove}
+      data-test-id="delete-milestone"
+    />
   );
 }
 
@@ -549,15 +559,17 @@ function CompleteMilestoneButton({
       },
     });
 
-    await refetch();
+    refetch();
   };
 
   return (
-    <TextTooltip text="Mark as completed" delayDuration={600}>
-      <div className="shrink-0 p-1.5 bg-shade-1 rounded hover:bg-green-400/20 hover:text-green-400 text-white-1/60 cursor-pointer transition-colors">
-        <Icons.IconCheck size={16} onClick={handleComplete} />
-      </div>
-    </TextTooltip>
+    <IconButton
+      tooltip="Mark as completed"
+      icon={<Icons.IconCheck size={16} />}
+      color="green"
+      onClick={handleComplete}
+      data-test-id="complete-milestone"
+    />
   );
 }
 
