@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 
+export * from "./IconButton";
+
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";
   size?: "small" | "base" | "tiny";

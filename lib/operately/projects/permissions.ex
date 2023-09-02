@@ -5,7 +5,11 @@ defmodule Operately.Projects.Permissions do
 
     %{
       can_view: can_view?(project, user),
-      can_edit_contributors: can_edit_contributors?(project, user)
+      can_edit_contributors: can_edit_contributors?(project, user),
+
+      can_create_milestone: can_create_milestone?(project, user),
+      can_delete_milestone: can_delete_milestone?(project, user),
+      can_edit_milestone: can_edit_milestone?(project, user)
     }
   end
 
@@ -13,9 +17,12 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
-  defp can_edit_contributors?(project, user) do
-    is_contributor?(project, user)
-  end
+  defp can_edit_contributors?(project, user), do: is_contributor?(project, user)
+  defp can_create_milestone?(project, user), do: is_contributor?(project, user)
+  defp can_delete_milestone?(project, user), do: is_contributor?(project, user)
+  defp can_edit_milestone?(project, user), do: is_contributor?(project, user)
+
+  # ---
 
   defp is_contributor?(project, user) do
     Enum.any?(project.contributors, fn c -> c.person_id == user.id end)

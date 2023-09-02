@@ -106,7 +106,7 @@ function Display({ me, project, activateEdit }) {
 
   return (
     <Context.Provider value={{ me, project, editable, isClamped, isCondensed, toggleLines, lines }}>
-      <div className="flex flex-col gap-1 pb-4 relative border-b border-shade-1">
+      <div className="flex flex-col gap-1 pb-4 relative border-b border-dark-8">
         <div className="font-bold flex gap-2 items-center">
           About
           <EditButton onClick={activateEdit} />

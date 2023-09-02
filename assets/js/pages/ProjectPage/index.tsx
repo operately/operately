@@ -67,7 +67,7 @@ export function Page() {
       <Paper.Body minHeight="600px">
         <Header project={project} />
 
-        <div className="border border-dark-5 rounded-lg shadow-lg bg-dark-3 p-4 mb-8">
+        <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 p-4 mb-8">
           <Description me={me} project={project} refetch={refetch} />
           <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         </div>

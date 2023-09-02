@@ -355,22 +355,30 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
-  # feature "adding milestones to a project", state do
-  #   state
-  #   |> visit_show(state.project)
-  #   |> UI.click(testid: "milestones-card")
-  #   |> UI.click(testid: "add-milestone")
-  #   |> UI.fill(testid: "milestone-title", with: "Contract Signed")
-  #   |> UI.fill(placeholder: "Select date...", with: "June 17, 2023")
-  #   |> UI.click(testid: "save")
+  feature "adding milestones to a project", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "show-all-milestones")
+    |> UI.click(testid: "add-milestone")
+    |> UI.fill(testid: "milestone-title", with: "Contract Signed")
+    |> UI.click(testid: "milestone-due-date")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
+    |> UI.click(testid: "save-milestone")
 
-  #   state
-  #   |> UI.assert_text("Contract Signed")
+    state
+    |> UI.assert_text("Contract Signed")
+    |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
+  end
 
-  #   state
-  #   |> visit_show(state.project)
-  #   |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
-  # end
+  feature "deleting a milestone on a project", state do
+    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "show-all-milestones")
+    |> UI.click(testid: "delete-milestone")
+    |> UI.assert_text(short_name(state.champion) <> " deleted the Contract Signed milestone")
+  end
 
   feature "see all milestones", state do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})

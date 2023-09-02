@@ -131,7 +131,7 @@ defmodule Operately.ProjectsTest do
     end
 
     test "delete_milestone/1 deletes the milestone", ctx do
-      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.milestone)
+      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.person, ctx.milestone)
       assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(ctx.milestone.id) end
     end
 
