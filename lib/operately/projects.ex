@@ -113,9 +113,11 @@ defmodule Operately.Projects do
 
   def delete_milestone(person, %Milestone{} = milestone) do
     Repo.transaction(fn ->
-      Repo.soft_delete(milestone)
-
       {:ok, _} = Updates.record_project_milestone_deleted(person, milestone)
+
+      {:ok, milestone} = Repo.soft_delete(milestone)
+
+      milestone
     end)
   end
 
