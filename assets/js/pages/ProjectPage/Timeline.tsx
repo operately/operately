@@ -74,9 +74,9 @@ function Calendar({ project }) {
         <div className="absolute" style={{ top: "90px", bottom: "40px", left: 0, right: 0 }}>
           <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
-          {project.phaseHistory.map((phase) => (
+          {project.phaseHistory.map((phase, index) => (
             <PhaseMarker
-              key={phase.phase}
+              key={index}
               phase={phase.phase}
               startedAt={phase.startTime}
               finishedAt={phase.endTime || Time.today()}
@@ -228,7 +228,7 @@ function MilestoneAddActive({ project, refetch, deactivate }) {
 
       <div className="w-32 flex items-center">
         <DatePickerWithClear
-          editable={true}
+          editable={project.permissions.canEditMilestone}
           selected={dueDate}
           onChange={setDueDate}
           clearable={false}
@@ -248,7 +248,7 @@ function MilestoneAddActive({ project, refetch, deactivate }) {
   );
 }
 
-function MilestoneListItem({ milestone, project, refetch }) {
+function MilestoneListItem({ project, milestone, refetch }) {
   const iconColor = milestoneIconColor(milestone);
 
   return (
@@ -261,7 +261,7 @@ function MilestoneListItem({ milestone, project, refetch }) {
         {milestone.title}
       </div>
 
-      <MilestoneListItemDueDate milestone={milestone} refetch={refetch} />
+      <MilestoneListItemDueDate project={project} milestone={milestone} refetch={refetch} />
 
       <div className="w-32">
         {milestone.completedAt && <FormattedTime time={milestone.completedAt} format="short-date" />}
@@ -305,8 +305,8 @@ function RemoveMilestoneButton({ project, milestone, refetch }) {
   );
 }
 
-function MilestoneListItemDueDate({ milestone, refetch }) {
-  const editable = milestone.status !== "done";
+function MilestoneListItemDueDate({ project, milestone, refetch }) {
+  const editable = milestone.status !== "done" && project.permissions.canEditMilestone;
   const [update] = Milestones.useSetDeadline();
 
   const change = async (date: Date | null) => {
