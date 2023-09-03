@@ -6,8 +6,11 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
   def run([module_name | fields]) do
     fields = parse_fields(fields)
 
+    IO.inspect(fields)
+
     gen_type_module(module_name, fields)
     gen_graphql_object_schema(module_name, fields)
+    gen_graphql_client(module_name, fields)
   end
 
   def gen_type_module(module_name, fields) do
@@ -44,7 +47,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
   def parse_fields(fields) do
     Enum.map(fields, fn(field) ->
       field = String.split(field, ":")
-      {String.to_atom(Enum.at(field, 0)), String.to_atom(Enum.at(field, 1))}
+      {Enum.at(field, 0), Enum.at(field, 1)}
     end)
   end
   
@@ -71,7 +74,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     """
   end
 
-  def graphql_type(:utc_datetime), do: "non_null(:string)"
+  def graphql_type("utc_datetime"), do: "non_null(:string)"
 
   def indent(string, indent) do
     string
@@ -85,6 +88,49 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
       end
     end)
     |> Enum.join("\n")
+  end
+
+  def ts_interface_field({field_name, field_type}) do
+    field_name = camelize(field_name, false)
+
+    "#{field_name}: #{ts_type(field_type)};"
+  end
+
+  def ts_type("utc_datetime"), do: "string"
+
+  def gen_graphql_client(module_name, fields) do
+    content1 = """
+    interface #{module_name} {
+      #{Enum.map(fields, &ts_interface_field/1) |> Enum.join("\n") |> indent(2)}
+    end
+    """
+
+    content2 = """
+    ... on UpdateContent#{module_name} {
+      #{Enum.map(fields, &graphql_client_field/1) |> Enum.join("\n") |> indent(2)}
+    }
+    """
+    
+    IO.puts(content1)
+    IO.puts(content2)
+  end
+
+  def graphql_client_field({field_name, _}) do
+    camelize(field_name, false)
+  end
+
+  defp camelize(string, first_letter \\ true) do
+    result = Macro.camelize(string)
+
+    if first_letter do
+      result
+    else
+      downcase_first_letter(result)
+    end
+  end
+
+  defp downcase_first_letter(string) do
+    String.downcase(String.at(string, 0)) <> String.slice(string, 1..-1)
   end
 
 end
