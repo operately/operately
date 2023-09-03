@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
 
       @primary_key false
       embedded_schema do
-        #{Enum.map(fields, &schema_field/1) |> Enum.join("\n    ")}
+        #{Enum.map(fields, &schema_field/1) |> Enum.join("\n") |> indent(4)}
       end
 
       def changeset(attrs) do
@@ -54,7 +54,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
 
     content = """
       object :#{full_object_name} do
-        #{Enum.map(fields, &graphql_field/1) |> indent(4)}
+        #{Enum.map(fields, &graphql_field/1) |> Enum.join("\n") |> indent(4)}
       end
     """
 
@@ -63,7 +63,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
 
   def graphql_field({field_name, field_type}) do
     """
-    field :#{field_name}, :non_null(#{field_type}) do
+    field :#{field_name}, #{graphql_type(field_type)} do
       resolve fn update, _, _ ->
         {:ok, update.content["#{field_name}"]}
       end
@@ -71,10 +71,19 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     """
   end
 
+  def graphql_type(:utc_datetime), do: "non_null(:string)"
+
   def indent(string, indent) do
     string
     |> String.split("\n")
-    |> Enum.map(fn(line) -> String.duplicate(" ", indent) <> line end)
+    |> Enum.with_index()
+    |> Enum.map(fn({line, index}) ->
+      if index == 0 do
+        line
+      else
+        String.duplicate(" ", indent) <> line
+      end
+    end)
     |> Enum.join("\n")
   end
 
