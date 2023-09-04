@@ -75,6 +75,19 @@ defmodule Operately.Updates do
     })
   end
 
+  def record_project_end_time_changed(person, project, old_end_time, new_end_time) do
+    create_update(%{
+      type: :project_end_time_changed,
+      author_id: person.id,
+      updatable_id: project.id,
+      updatable_type: :project,
+      content: %{
+        old_end_time: old_end_time,
+        new_end_time: new_end_time
+      }
+    })
+  end
+
   def record_project_milestone_creation(creator, milestone) do
     create_update(%{
       type: :project_milestone_created,
