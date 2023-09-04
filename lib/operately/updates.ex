@@ -88,15 +88,15 @@ defmodule Operately.Updates do
     })
   end
 
-  def record_project_contributor_added(person, project, contributor) do
+  def record_project_contributor_added(person, project_id, contributor) do
     create_update(%{
-      type: :project_end_time_changed,
+      type: :project_contributor_added,
       author_id: person.id,
-      updatable_id: project.id,
+      updatable_id: project_id,
       updatable_type: :project,
       content: %{
         contributor_id: contributor.person_id,
-        contributor_role: contributor.role
+        contributor_role: Atom.to_string(contributor.role)
       }
     })
   end

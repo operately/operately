@@ -140,7 +140,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
   # Types
 
   def graphql_type("utc_datetime"), do: "non_null(:string)"
-  def graphql_type("string"), do: "string"
+  def graphql_type("string"), do: ":string"
 
   def ts_type("utc_datetime"), do: "non_null(:string)"
   def ts_type("string"), do: "string"

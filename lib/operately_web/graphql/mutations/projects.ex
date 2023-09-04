@@ -218,7 +218,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
           {:ok, _} = Operately.Updates.record_project_contributor_added(
             person, 
-            contributor.project, 
+            args.project_id,
             contributor
           )
           
