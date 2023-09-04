@@ -10,9 +10,7 @@ defmodule OperatelyWeb.SchemaUtils do
       full_name = String.to_atom("Elixir.OperatelyWeb.GraphQL.Types.#{module_name}")
 
       quote do
-        if !Code.ensure_loaded?(unquote(full_name)) do
-          Code.require_file(unquote(file), unquote(folder))
-        end
+        Code.require_file(unquote(file), unquote(folder))
 
         import_types unquote(full_name)
       end

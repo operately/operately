@@ -21,6 +21,7 @@ defmodule Operately.Updates.Update do
       :project_start_time_changed,
       :project_end_time_changed,
       :project_contributor_added,
+      :project_contributor_removed,
       :project_milestone_created,
       :project_milestone_completed,
       :project_milestone_deadline_changed,

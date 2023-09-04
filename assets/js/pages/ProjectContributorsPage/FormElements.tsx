@@ -45,7 +45,7 @@ export function ResponsibilityInput({ value, onChange }) {
 export function RemoveButton({ onClick }) {
   return (
     <div className="flex gap-2">
-      <Button variant="danger" onClick={onClick}>
+      <Button variant="danger" onClick={onClick} data-test-id="remove-contributor">
         <Icons.IconX size={20} />
         Remove
       </Button>

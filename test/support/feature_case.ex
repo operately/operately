@@ -90,6 +90,16 @@ defmodule Operately.FeatureCase do
       state
     end
 
+    def hover(state, opts) do
+      {session, opts} = Keyword.pop(opts, :in)
+      context = session || session(state)
+      css_query = compose_css_query(opts)
+
+      context |> Browser.hover(Query.css(css_query))
+
+      state
+    end
+
     def assert_has(state, opts) do
       {session, opts} = Keyword.pop(opts, :in)
       context = session || session(state)

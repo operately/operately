@@ -9,7 +9,22 @@ import * as Projects from "@/graphql/Projects";
 
 import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
 
-export default function ContributorItem({
+interface Props {
+  project: Projects.Project;
+  contributor?: Contributors.Contributor;
+  role: Contributors.ContributorRole;
+  refetch: any;
+}
+
+export default function ContributorItem({ project, contributor, role, refetch }: Props) {
+  return (
+    <div data-test-id={`contributor-${contributor?.person.id}`}>
+      <ContributorItemContent contributor={contributor} role={role} project={project} refetch={refetch} />
+    </div>
+  );
+}
+
+export function ContributorItemContent({
   contributor = undefined,
   role,
   project,
@@ -107,6 +122,7 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
           <div
             className="rounded-full p-2 hover:bg-shade-2 transition-colors opacity-0 group-hover:opacity-100"
             onClick={onEdit}
+            data-test-id="edit-contributor"
           >
             <Icons.IconPencil size={20} className="cursor-pointer text-white-2 hover:text-white-1 transition-colors" />
           </div>

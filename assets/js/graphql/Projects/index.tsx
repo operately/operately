@@ -314,9 +314,7 @@ const UPDATE_PROJECT_CONTRIBUTOR = gql`
 `;
 
 export function useUpdateProjectContributorMutation(contribId: string) {
-  const [fun, status] = useMutation(UPDATE_PROJECT_CONTRIBUTOR, {
-    onCompleted: (data) => console.log(data),
-  });
+  const [fun, status] = useMutation(UPDATE_PROJECT_CONTRIBUTOR, {});
 
   const updateColab = (personId: string, responsibility: string) => {
     return fun({
