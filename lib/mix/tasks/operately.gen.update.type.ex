@@ -36,8 +36,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     end
     """
 
-    IO.puts(path)
-    IO.puts(content)
+    File.write!(path, content)
   end
 
   def schema_field({field_name, field_type}) do
@@ -67,8 +66,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     end
     """
 
-    IO.puts(file_path)
-    IO.puts(content)
+    File.write!(path, content)
   end
 
   def graphql_field({field_name, field_type}) do
@@ -118,6 +116,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     }
     """
     
+    IO.puts("Add this to assets/js/graphql/Projects/update_content.tsx")
     IO.puts(content1)
     IO.puts(content2)
   end
