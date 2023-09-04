@@ -170,6 +170,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
     case "project_start_time_changed":
       return <ProjectStartTimeChanged update={update} />;
 
+    case "project_end_time_changed":
+      return <ProjectEndTimeChanged update={update} />;
+
     case "project_milestone_created":
       return <ProjectMilestoneCreated project={project} update={update} />;
 
@@ -582,6 +585,22 @@ function ProjectStartTimeChanged({ update }: { project: Projects.Project; update
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         changed the project's start date to <FormattedTime time={content.newStartTime} format="short-date" />.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectEndTimeChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
+  const creator = update.author;
+  const content = update.content as UpdateContent.ProjectEndTimeChanged;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        changed the project's due date to <FormattedTime time={content.newEndTime} format="short-date" />.
       </div>
     </SmallContainer>
   );
