@@ -30,6 +30,7 @@ export function ResponsibilityInput({ value, onChange }) {
       <label className="font-bold mb-1 block">What are the responsibilities of this contributor?</label>
       <div className="flex-1">
         <input
+          data-test-id="contributor-responsibility-input"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
@@ -71,7 +72,7 @@ export function SaveButton({ disabled, onClick }) {
 
 export function AddContribButton({ disabled, onClick }) {
   return (
-    <Button variant="success" disabled={disabled} onClick={onClick}>
+    <Button variant="success" disabled={disabled} onClick={onClick} data-test-id="save-contributor">
       <Icons.IconPlus size={20} />
       Add Contributor
     </Button>

@@ -107,19 +107,22 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :due_date, :date
 
       resolve fn args, %{context: context} ->
-        person = context.current_account.person
-        project = Operately.Projects.get_project!(args.project_id)
-        {:ok, project} = Operately.Projects.update_project(project, %{deadline: parse_date(args.due_date)})
-        old_due_date = project.deadline
+        Operately.Repo.transaction(fn ->
+          person = context.current_account.person
+          project = Operately.Projects.get_project!(args.project_id)
 
-        {:ok, _} = Operately.Updates.record_project_end_time_changed(
-          person, 
-          project, 
-          old_due_date,
-          parse_date(args.due_date)
-        )
+          {:ok, project} = Operately.Projects.update_project(project, %{deadline: parse_date(args.due_date)})
+          old_due_date = project.deadline
 
-        {:ok, project}
+          {:ok, _} = Operately.Updates.record_project_end_time_changed(
+            person, 
+            project, 
+            old_due_date,
+            parse_date(args.due_date)
+          )
+
+          project
+        end)
       end
     end
 
@@ -202,13 +205,25 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :responsibility, non_null(:string)
       arg :role, non_null(:string)
 
-      resolve fn args, _ ->
-        Operately.Projects.create_contributor(%{
-          project_id: args.project_id,
-          person_id: args.person_id,
-          responsibility: args.responsibility,
-          role: args.role
-        })
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+
+        Operately.Repo.transaction(fn ->
+          {:ok, contributor} = Operately.Projects.create_contributor(%{
+            project_id: args.project_id,
+            person_id: args.person_id,
+            responsibility: args.responsibility,
+            role: args.role
+          })
+
+          {:ok, _} = Operately.Updates.record_project_contributor_added(
+            person, 
+            args.project_id,
+            contributor
+          )
+          
+          contributor
+        end)
       end
     end
 

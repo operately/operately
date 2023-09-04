@@ -88,6 +88,19 @@ defmodule Operately.Updates do
     })
   end
 
+  def record_project_contributor_added(person, project_id, contributor) do
+    create_update(%{
+      type: :project_contributor_added,
+      author_id: person.id,
+      updatable_id: project_id,
+      updatable_type: :project,
+      content: %{
+        contributor_id: contributor.person_id,
+        contributor_role: Atom.to_string(contributor.role)
+      }
+    })
+  end
+
   def record_project_milestone_creation(creator, milestone) do
     create_update(%{
       type: :project_milestone_created,
