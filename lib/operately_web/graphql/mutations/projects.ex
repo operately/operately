@@ -86,13 +86,14 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
           person = context.current_account.person
           project = Operately.Projects.get_project!(args.project_id)
           history = Operately.Projects.find_first_phase_history(args.project_id)
+          old_start_date = project.started_at
 
-          {:ok, _} = Operately.Projects.update_project(project, %{started_at: parse_date(args.start_date)})
+          {:ok, project} = Operately.Projects.update_project(project, %{started_at: parse_date(args.start_date)})
           {:ok, _} = Operately.Projects.update_phase_history(history, %{start_time: parse_date(args.start_date)})
           {:ok, _} = Operately.Updates.record_project_start_time_changed(
             person, 
             project, 
-            project.started_at,
+            old_start_date,
             parse_date(args.start_date)
           )
 
@@ -105,9 +106,20 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :project_id, non_null(:id)
       arg :due_date, :date
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
         project = Operately.Projects.get_project!(args.project_id)
-        Operately.Projects.update_project(project, %{deadline: parse_date(args.due_date)})
+        {:ok, project} = Operately.Projects.update_project(project, %{deadline: parse_date(args.due_date)})
+        old_due_date = project.deadline
+
+        {:ok, _} = Operately.Updates.record_project_end_time_changed(
+          person, 
+          project, 
+          old_due_date,
+          parse_date(args.due_date)
+        )
+
+        {:ok, project}
       end
     end
 

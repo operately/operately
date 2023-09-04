@@ -82,6 +82,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       :update_content_message,
       :update_content_project_created,
       :update_content_project_start_time_changed,
+      :update_content_project_end_time_changed,
       :update_content_project_milestone_created,
       :update_content_project_milestone_completed,
       :update_content_project_milestone_deadline_changed,

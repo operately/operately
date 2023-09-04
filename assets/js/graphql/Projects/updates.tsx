@@ -50,8 +50,6 @@ export const UPDATE_FRAGMENT = `
   }
 `;
 
-console.log(UPDATE_FRAGMENT);
-
 export const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {
     update(id: $id) ${UPDATE_FRAGMENT}

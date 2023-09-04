@@ -363,6 +363,14 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " changed the project's start date to")
   end
 
+  feature "changing the project's end date", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "edit-project-due-date")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--014")
+    |> UI.assert_text(short_name(state.champion) <> " changed the project's due date to")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do

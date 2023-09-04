@@ -439,7 +439,7 @@ function DueDate() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-test-id="edit-project-due-date">
       <DatePickerWithClear editable={editable} selected={project.deadline} onChange={change} placeholder="Due Date" />
     </div>
   );
