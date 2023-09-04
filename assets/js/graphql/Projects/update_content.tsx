@@ -1,5 +1,3 @@
-import { gql } from "@apollo/client";
-
 import * as fragments from "@/graphql/Fragments";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as People from "@/graphql/People";
@@ -14,6 +12,7 @@ export type UpdateMessageType =
   | "project_start_time_changed"
   | "project_end_time_changed"
   | "project_contributor_added"
+  | "project_contributor_removed"
   | "project_milestone_created"
   | "project_milestone_deleted"
   | "project_milestone_completed"
@@ -48,6 +47,10 @@ export const FRAGMENT = `
     }
 
     ... on UpdateContentProjectContributorAdded {
+      contributor ${fragments.PERSON}
+    }
+
+    ... on UpdateContentProjectContributorRemoved {
       contributor ${fragments.PERSON}
     }
 
@@ -128,6 +131,12 @@ export interface ProjectEndTimeChanged {
 }
 
 export interface ProjectContributorAdded {
+  contributor: People.Person;
+  contributorId: string;
+  contributorRole: string;
+}
+
+export interface ProjectContributorRemoved {
   contributor: People.Person;
   contributorId: string;
   contributorRole: string;

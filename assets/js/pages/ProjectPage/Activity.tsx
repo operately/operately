@@ -176,6 +176,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
     case "project_contributor_added":
       return <ProjectContributorAdded update={update} />;
 
+    case "project_contributor_removed":
+      return <ProjectContributorRemoved update={update} />;
+
     case "project_milestone_created":
       return <ProjectMilestoneCreated project={project} update={update} />;
 
@@ -624,6 +627,26 @@ function ProjectContributorAdded({ update }: { update: Updates.Update }) {
           <ShortName fullName={content.contributor.fullName} />
         </span>{" "}
         to the project.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectContributorRemoved({ update }: { update: Updates.Update }) {
+  const creator = update.author;
+  const content = update.content as UpdateContent.ProjectContributorRemoved;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        removed{" "}
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={content.contributor.fullName} />
+        </span>{" "}
+        from the project.
       </div>
     </SmallContainer>
   );

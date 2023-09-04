@@ -385,6 +385,22 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " added " <> short_name(contrib) <> " to the project.")
   end
 
+  feature "removing a project contributor", state do
+    contrib = person_fixture(%{full_name: "Michael Scott", title: "Manager", company_id: state.company.id})
+    add_contributor(state.project, contrib, "contributor")
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "project-contributors")
+    |> UI.hover(testid: "contributor-#{contrib.id}")
+    |> UI.click(testid: "edit-contributor")
+    |> UI.click(testid: "remove-contributor")
+
+    state
+    |> visit_show(state.project)
+    |> UI.assert_text(short_name(state.champion) <> " removed " <> short_name(contrib) <> " from the project.")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
@@ -491,16 +507,23 @@ defmodule Operately.Features.ProjectsTest do
     Enum.at(parts, 0) <> " " <> String.first(Enum.at(parts, 1)) <> "."
   end
 
+  defp add_contributor(project, person, role, responsibility \\ " ") do
+    {:ok, _} = Operately.Projects.create_contributor(%{
+      person_id: person.id, 
+      role: role, 
+      project_id: project.id, 
+      responsibility: responsibility
+    })
+  end
+
   defp change_champion(project, champion) do
     delete_contributors_with_role(project, "champion")
-
-    {:ok, _} = Operately.Projects.create_contributor(%{person_id: champion.id, role: "champion", project_id: project.id})
+    add_contributor(project, champion, "champion")
   end
 
   defp change_reviewer(project, reviewer) do
     delete_contributors_with_role(project, "reviewer")
-
-    {:ok, _} = Operately.Projects.create_contributor(%{person_id: reviewer.id, role: "reviewer", project_id: project.id})
+    add_contributor(project, reviewer, "reviewer")
   end
 
   defp delete_contributors_with_role(project, role) do
