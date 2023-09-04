@@ -2,7 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 
 type MilestoneStatus = "pending" | "done";
 
-export const FRAGMENT = gql`
+export const FRAGMENT = `
   {
     id
     title

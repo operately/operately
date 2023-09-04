@@ -5,6 +5,7 @@ import { useBoolState } from "@/utils/useBoolState";
 import * as Icons from "@tabler/icons-react";
 
 import * as Updates from "@/graphql/Projects/updates";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Projects from "@/graphql/Projects";
 import * as People from "@/graphql/People";
 import * as ProjectIcons from "@/components/ProjectIcons";
@@ -164,7 +165,10 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
       return <Review project={project} update={update as Updates.Review} />;
 
     case "project_created":
-      return <ProjectCreated project={project} update={update} />;
+      return <ProjectCreated update={update} />;
+
+    case "project_start_time_changed":
+      return <ProjectStartTimeChanged update={update} />;
 
     case "project_milestone_created":
       return <ProjectMilestoneCreated project={project} update={update} />;
@@ -551,7 +555,7 @@ function ProjectCreated({ update }: { update: Updates.Update }) {
 function ProjectMilestoneCreated({ update }: { project: Projects.Project; update: Updates.Update }) {
   const creator = update.author;
 
-  const content = update.content as Updates.ProjectMilestoneCreated;
+  const content = update.content as UpdateContent.ProjectMilestoneCreated;
   const milestone = content.milestone.title;
 
   return (
@@ -567,10 +571,26 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
   );
 }
 
+function ProjectStartTimeChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
+  const creator = update.author;
+  const content = update.content as UpdateContent.ProjectStartTimeChanged;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        changed the project's start date to <FormattedTime time={content.newStartTime} format="short-date" />.
+      </div>
+    </SmallContainer>
+  );
+}
+
 function ProjectMilestoneDeleted({ update }: { project: Projects.Project; update: Updates.Update }) {
   const creator = update.author;
 
-  const content = update.content as Updates.ProjectMilestoneDeleted;
+  const content = update.content as UpdateContent.ProjectMilestoneDeleted;
   const milestone = content.milestone.title;
 
   return (

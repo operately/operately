@@ -3,7 +3,7 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 
 import * as UpdateContent from "@/graphql/Projects/update_content";
 
-export const REACTION_FRAGMENT = gql`
+export const REACTION_FRAGMENT = `
   {
     id
     reactionType
@@ -11,7 +11,7 @@ export const REACTION_FRAGMENT = gql`
   }
 `;
 
-export const COMMENT_FRAGMENT = gql`
+export const COMMENT_FRAGMENT = `
   {
     id
     message
@@ -21,7 +21,7 @@ export const COMMENT_FRAGMENT = gql`
   }
 `;
 
-export const UPDATE_FRAGMENT = gql`
+export const UPDATE_FRAGMENT = `
   {
     id
     title
@@ -49,6 +49,8 @@ export const UPDATE_FRAGMENT = gql`
     content ${UpdateContent.FRAGMENT}
   }
 `;
+
+console.log(UPDATE_FRAGMENT);
 
 export const GET_STATUS_UPDATE = gql`
   query GetStatusUpdate($id: ID!) {

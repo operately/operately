@@ -17,7 +17,7 @@ export type UpdateMessageType =
   | "project_milestone_completed"
   | "project_milestone_deadline_changed";
 
-export const FRAGMENT = gql`
+export const FRAGMENT = `
   {
     ... on UpdateContentMessage {
       message

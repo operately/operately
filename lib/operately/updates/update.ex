@@ -18,6 +18,7 @@ defmodule Operately.Updates.Update do
       :phase_change, 
       :review,
       :project_created,
+      :project_start_time_changed,
       :project_milestone_created,
       :project_milestone_completed,
       :project_milestone_deadline_changed,
