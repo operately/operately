@@ -11,6 +11,7 @@ export type UpdateMessageType =
   | "health_change"
   | "review"
   | "project_created"
+  | "project_start_time_changed"
   | "project_milestone_created"
   | "project_milestone_deleted"
   | "project_milestone_completed"
@@ -32,6 +33,11 @@ export const FRAGMENT = gql`
       champion ${fragments.PERSON}
       creator ${fragments.PERSON}
       creatorRole
+    }
+
+    ... on UpdateContentProjectStartTimeChanged {
+      oldStartTime
+      newStartTime
     }
 
     ... on UpdateContentProjectMilestoneCreated {
@@ -58,6 +64,7 @@ export type Content =
   | Message
   | StatusUpdate
   | ProjectCreated
+  | ProjectStartTimeChanged
   | ProjectMilestoneCreated
   | ProjectMilestoneDeleted
   | ProjectMilestoneCompleted
@@ -95,4 +102,9 @@ export interface ProjectCreated {
   champion: People.Person;
   creator: People.Person;
   creatorRole?: string;
+}
+
+export interface ProjectStartTimeChanged {
+  oldStartTime: string;
+  newStartTime: string;
 }

@@ -6,8 +6,6 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
   def run([module_name | fields]) do
     fields = parse_fields(fields)
 
-    IO.inspect(fields)
-
     gen_type_module(module_name, fields)
     gen_graphql_object_schema(module_name, fields)
     gen_graphql_client(module_name, fields)
@@ -36,6 +34,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     end
     """
 
+    IO.puts "Generated #{path}"
     File.write!(path, content)
   end
 
@@ -54,7 +53,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     snake_case_module_name = Macro.underscore(module_name)
     full_object_name = "update_content_#{snake_case_module_name}"
     module_name = "UpdateContent#{module_name}"
-    file_path = Path.join(["lib", "operately_web", "graphql", "types", "update_content_#{snake_case_module_name}.ex"])
+    path = Path.join(["lib", "operately_web", "graphql", "types", "update_content_#{snake_case_module_name}.ex"])
 
     content = """
     defmodule OperatelyWeb.GraphQL.Types.#{module_name} do
@@ -66,6 +65,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     end
     """
 
+    IO.puts "Generated #{path}"
     File.write!(path, content)
   end
 
@@ -107,7 +107,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     content1 = """
     export interface #{module_name} {
       #{Enum.map(fields, &ts_interface_field/1) |> Enum.join("\n") |> indent(2)}
-    end
+    }
     """
 
     content2 = """
