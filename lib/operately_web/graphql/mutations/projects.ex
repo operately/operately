@@ -81,13 +81,20 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :project_id, non_null(:id)
       arg :start_date, :date
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
         Operately.Repo.transaction(fn ->
+          person = context.current_account.person
           project = Operately.Projects.get_project!(args.project_id)
           history = Operately.Projects.find_first_phase_history(args.project_id)
 
           {:ok, _} = Operately.Projects.update_project(project, %{started_at: parse_date(args.start_date)})
           {:ok, _} = Operately.Projects.update_phase_history(history, %{start_time: parse_date(args.start_date)})
+          {:ok, _} = Operately.Updates.record_project_start_time_changed(
+            person, 
+            project, 
+            project.started_at,
+            parse_date(args.start_date)
+          )
 
           project
         end)

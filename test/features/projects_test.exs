@@ -355,6 +355,14 @@ defmodule Operately.Features.ProjectsTest do
     :timer.sleep(1000) 
   end
 
+  feature "changing the project's start date", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "edit-project-start-date")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
+    |> UI.assert_text(short_name(state.champion) <> " changed the project's start date to")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do

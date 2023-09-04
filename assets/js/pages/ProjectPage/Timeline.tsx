@@ -413,7 +413,7 @@ function StartDate() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-test-id="edit-project-start-date">
       <DatePickerWithClear
         editable={editable}
         selected={project.startedAt}
