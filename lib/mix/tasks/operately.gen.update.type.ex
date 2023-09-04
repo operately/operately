@@ -54,13 +54,20 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
   def gen_graphql_object_schema(module_name, fields) do
     snake_case_module_name = Macro.underscore(module_name)
     full_object_name = "update_content_#{snake_case_module_name}"
+    module_name = "UpdateContent#{module_name}"
+    file_path = Path.join(["lib", "operately_web", "graphql", "types", "update_content_#{snake_case_module_name}.ex"])
 
     content = """
+    defmodule OperatelyWeb.GraphQL.Types.#{module_name} do
+      use Absinthe.Schema.Notation
+
       object :#{full_object_name} do
         #{Enum.map(fields, &graphql_field/1) |> Enum.join("\n") |> indent(4)}
       end
+    end
     """
 
+    IO.puts(file_path)
     IO.puts(content)
   end
 
@@ -100,7 +107,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
 
   def gen_graphql_client(module_name, fields) do
     content1 = """
-    interface #{module_name} {
+    export interface #{module_name} {
       #{Enum.map(fields, &ts_interface_field/1) |> Enum.join("\n") |> indent(2)}
     end
     """
