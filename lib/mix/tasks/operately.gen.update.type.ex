@@ -79,7 +79,6 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     """
   end
 
-  def graphql_type("utc_datetime"), do: "non_null(:string)"
 
   def indent(string, indent) do
     string
@@ -101,7 +100,6 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     "#{field_name}: #{ts_type(field_type)};"
   end
 
-  def ts_type("utc_datetime"), do: "string"
 
   def gen_graphql_client(module_name, fields) do
     content1 = """
@@ -125,7 +123,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     camelize(field_name, false)
   end
 
-  defp camelize(string, first_letter \\ true) do
+  def camelize(string, first_letter \\ true) do
     result = Macro.camelize(string)
 
     if first_letter do
@@ -138,5 +136,13 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
   defp downcase_first_letter(string) do
     String.downcase(String.at(string, 0)) <> String.slice(string, 1..-1)
   end
+
+  # Types
+
+  def graphql_type("utc_datetime"), do: "non_null(:string)"
+  def graphql_type("string"), do: "string"
+
+  def ts_type("utc_datetime"), do: "non_null(:string)"
+  def ts_type("string"), do: "string"
 
 end

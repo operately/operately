@@ -13,6 +13,7 @@ export type UpdateMessageType =
   | "project_created"
   | "project_start_time_changed"
   | "project_end_time_changed"
+  | "project_contributor_added"
   | "project_milestone_created"
   | "project_milestone_deleted"
   | "project_milestone_completed"
@@ -46,6 +47,11 @@ export const FRAGMENT = `
       newEndTime
     }
 
+    ... on UpdateContentProjectContributorAdded {
+      contributorId
+      contributorRole
+    }
+
     ... on UpdateContentProjectMilestoneCreated {
       milestone ${Milestones.FRAGMENT}
     }
@@ -72,6 +78,7 @@ export type Content =
   | ProjectCreated
   | ProjectStartTimeChanged
   | ProjectEndTimeChanged
+  | ProjectContributorAdded
   | ProjectMilestoneCreated
   | ProjectMilestoneDeleted
   | ProjectMilestoneCompleted
@@ -119,4 +126,9 @@ export interface ProjectStartTimeChanged {
 export interface ProjectEndTimeChanged {
   oldEndTime: string;
   newEndTime: string;
+}
+
+export interface ProjectContributorAdded {
+  contributorId: string;
+  contributorRole: string;
 }
