@@ -14,5 +14,4 @@ defmodule Operately.Updates.Types.ProjectCreated do
     |> cast(attrs, __schema__(:fields))
     |> validate_required([:champion_id, :creator_id, :creator_role])
   end
-
 end

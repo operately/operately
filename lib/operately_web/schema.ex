@@ -1,26 +1,12 @@
 defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
+  require OperatelyWeb.SchemaUtils
 
-  alias OperatelyWeb.GraphQL.{Types, Queries, Mutations}
+  alias OperatelyWeb.GraphQL.{Queries, Mutations}
 
   import_types Absinthe.Type.Custom
 
-  # Types
-  import_types Types.Activities
-  import_types Types.Assignments
-  import_types Types.Comments
-  import_types Types.Companies
-  import_types Types.Dashboards
-  import_types Types.Groups
-  import_types Types.KeyResults
-  import_types Types.Kpis
-  import_types Types.Milestones
-  import_types Types.Objectives
-  import_types Types.Person
-  import_types Types.Projects
-  import_types Types.Reactions
-  import_types Types.Tenets
-  import_types Types.Updates
+  OperatelyWeb.SchemaUtils.import_all_types "graphql/types"
 
   # Queries
   import_types Queries.Activities
