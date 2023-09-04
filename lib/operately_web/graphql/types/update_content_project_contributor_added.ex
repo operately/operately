@@ -13,5 +13,13 @@ defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectContributorAdded do
         {:ok, update.content["contributor_role"]}
       end
     end
+
+    field :contributor, non_null(:person) do
+      resolve fn update, _, _ ->
+        person = Operately.People.get_person!(update.content["contributor_id"])
+
+        {:ok, person}
+      end
+    end
   end
 end

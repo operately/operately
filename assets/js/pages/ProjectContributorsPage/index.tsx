@@ -98,7 +98,7 @@ function AddContribForm({ close, projectID }) {
 
 function AddButton({ onClick }) {
   return (
-    <Button variant="success" onClick={onClick}>
+    <Button variant="success" onClick={onClick} data-test-id="add-contributor-button">
       <Icons.IconPlus size={20} />
       Add Contributor
     </Button>

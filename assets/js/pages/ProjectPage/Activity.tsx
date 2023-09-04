@@ -173,6 +173,9 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
     case "project_end_time_changed":
       return <ProjectEndTimeChanged update={update} />;
 
+    case "project_contributor_added":
+      return <ProjectContributorAdded update={update} />;
+
     case "project_milestone_created":
       return <ProjectMilestoneCreated project={project} update={update} />;
 
@@ -574,7 +577,7 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
   );
 }
 
-function ProjectStartTimeChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
+function ProjectStartTimeChanged({ update }: { update: Updates.Update }) {
   const creator = update.author;
   const content = update.content as UpdateContent.ProjectStartTimeChanged;
 
@@ -590,7 +593,7 @@ function ProjectStartTimeChanged({ update }: { project: Projects.Project; update
   );
 }
 
-function ProjectEndTimeChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
+function ProjectEndTimeChanged({ update }: { update: Updates.Update }) {
   const creator = update.author;
   const content = update.content as UpdateContent.ProjectEndTimeChanged;
 
@@ -601,6 +604,26 @@ function ProjectEndTimeChanged({ update }: { project: Projects.Project; update: 
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         changed the project's due date to <FormattedTime time={content.newEndTime} format="short-date" />.
+      </div>
+    </SmallContainer>
+  );
+}
+
+function ProjectContributorAdded({ update }: { update: Updates.Update }) {
+  const creator = update.author;
+  const content = update.content as UpdateContent.ProjectContributorAdded;
+
+  return (
+    <SmallContainer time={update.insertedAt}>
+      <div className="text-white-4">
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={creator.fullName} />
+        </span>{" "}
+        added{" "}
+        <span className="font-extrabold text-white-1">
+          <ShortName fullName={content.contributor.fullName} />
+        </span>{" "}
+        to the project.
       </div>
     </SmallContainer>
   );

@@ -107,7 +107,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
       arg :due_date, :date
 
       resolve fn args, %{context: context} ->
-        Operationally.Repo.transaction(fn ->
+        Operately.Repo.transaction(fn ->
           person = context.current_account.person
           project = Operately.Projects.get_project!(args.project_id)
 

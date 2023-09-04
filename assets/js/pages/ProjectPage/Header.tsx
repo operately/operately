@@ -64,7 +64,7 @@ function ContributorList({ project }) {
 
   return (
     <div className="mt-4 flex items-center">
-      <Link to={contributorsPath}>
+      <Link to={contributorsPath} data-test-id="project-contributors">
         <div className="flex items-center justify-center gap-1.5 cursor-pointer">
           <Champion champion={champion} />
           <Reviewer reviewer={reviewer} />

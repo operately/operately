@@ -48,8 +48,7 @@ export const FRAGMENT = `
     }
 
     ... on UpdateContentProjectContributorAdded {
-      contributorId
-      contributorRole
+      contributor ${fragments.PERSON}
     }
 
     ... on UpdateContentProjectMilestoneCreated {
@@ -129,6 +128,7 @@ export interface ProjectEndTimeChanged {
 }
 
 export interface ProjectContributorAdded {
+  contributor: People.Person;
   contributorId: string;
   contributorRole: string;
 }

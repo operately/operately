@@ -371,6 +371,20 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " changed the project's due date to")
   end
 
+  feature "adding a project contributor", state do
+    contrib = person_fixture(%{full_name: "Michael Scott", title: "Manager", company_id: state.company.id})
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "project-contributors")
+    |> UI.click(testid: "add-contributor-button")
+    |> UI.select_person(contrib.full_name)
+    |> UI.fill(testid: "contributor-responsibility-input", with: "Lead the project")
+    |> UI.click(testid: "save-contributor")
+    |> visit_show(state.project)
+    |> UI.assert_text(short_name(state.champion) <> " added " <> short_name(contrib) <> " to the project.")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
