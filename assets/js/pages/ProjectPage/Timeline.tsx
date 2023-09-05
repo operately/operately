@@ -13,7 +13,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Milestones from "@/graphql/Projects/milestones";
 
 import Button, { IconButton } from "@/components/Button";
-import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
+import * as ProjectIcons from "@/components/ProjectIcons";
 
 interface ContextDescriptor {
   project: Projects.Project;
@@ -27,12 +27,9 @@ export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
       <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
-        <div className="flex items-start gap-4 pb-3 border-b border-dark-8 p-4">
-          <Dates />
-          <Phase />
-        </div>
-
+        <div className="font-bold px-4 py-3 border-b border-dark-8">Timeline</div>
         <Calendar project={project} />
+        <Phases project={project} />
         <MilestoneList project={project} refetch={refetch} />
       </div>
     </Context.Provider>
@@ -342,86 +339,92 @@ function MilestoneListItemDueDate({ project, milestone, refetch }) {
   );
 }
 
-function Label({ title }) {
-  return <div className="font-bold ml-1">{title}</div>;
+function Phases({ project }) {
+  const [expanded, _, expand, collapse] = useBoolState(true);
+
+  if (expanded) {
+    return <PhasesExpanded project={project} onCollapse={collapse} />;
+  } else {
+    return <PhasesCollapsed project={project} onExpand={expand} />;
+  }
 }
 
-function Phase() {
-  const { project, editable } = React.useContext(Context) as ContextDescriptor;
-  const navigate = useNavigate();
-
-  const handlePhaseChange = (phase: string) => {
-    navigate(`/projects/${project.id}/updates/new?messageType=phase_change&phase=${phase}`);
-  };
-
+function PhasesExpanded({ project, onCollapse }) {
   return (
-    <div className="flex flex-col">
-      <Label title="Phase" />
-      <ProjectPhaseSelector activePhase={project.phase} editable={editable} onSelected={handlePhaseChange} />
-    </div>
-  );
-}
+    <div className="border-t border-dark-8">
+      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
+        <div className="font-medium flex items-center gap-2 flex-1">Phase</div>
+        <div className="font-medium flex items-center gap-2 w-32">Started</div>
+        <div className="font-medium flex items-center gap-2 w-32">Due Date</div>
+        <div className="font-medium flex items-center gap-2 w-32">Completed</div>
+      </div>
 
-function ArrowRight() {
-  return <span className="mt-0.5">-&gt;</span>;
-}
+      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
+        <div className="flex items-center gap-2 flex-1">
+          <ProjectIcons.IconForPhase phase={"planning"} />
+          <div className="capitalize">Planning Phase</div>
+        </div>
 
-function Dates() {
-  return (
-    <div className="flex flex-col">
-      <Label title="Timeline" />
-      <div className="flex items-center">
-        <StartDate />
-        <ArrowRight />
-        <DueDate />
+        <div className="font-medium flex items-center gap-2 w-32">Jun 31</div>
+        <div className="font-medium flex items-center gap-2 w-32">Aug 15 </div>
+        <div className="font-medium flex items-center gap-2 w-32">Aug 19</div>
+      </div>
+
+      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
+        <div className="flex items-center gap-2 flex-1">
+          <ProjectIcons.IconForPhase phase={"execution"} />
+          <div className="capitalize">Execution Phase</div>
+        </div>
+
+        <div className="font-medium flex items-center gap-2 w-32">Jun 31</div>
+        <div className="font-medium flex items-center gap-2 w-32">Aug 15 </div>
+        <div className="font-medium flex items-center gap-2 w-32">Aug 19</div>
+      </div>
+
+      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
+        <div className="flex items-center gap-2 flex-1">
+          <ProjectIcons.IconForPhase phase={"control"} />
+          <div className="capitalize">Control Phase</div>
+        </div>
+
+        <div className="font-medium flex items-center gap-2 w-32">Jun 31</div>
+        <div className="font-medium flex items-center gap-2 w-32">Aug 15 </div>
+        <div className="font-medium flex items-center gap-2 w-32">Aug 19</div>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div></div>
+
+        <div
+          className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1 px-4 py-3"
+          onClick={onCollapse}
+        >
+          <Icons.IconArrowUp size={16} stroke={2} />
+          Collapse
+        </div>
       </div>
     </div>
   );
 }
 
-function StartDate() {
-  const { project, refetch, editable } = React.useContext(Context) as ContextDescriptor;
-
-  const [update] = Projects.useSetProjectStartDateMutation({ onCompleted: refetch });
-
-  const change = (date: Date | null) => {
-    update({
-      variables: {
-        projectId: project.id,
-        startDate: date ? Time.toDateWithoutTime(date) : null,
-      },
-    });
-  };
-
+function PhasesCollapsed({ project, onExpand }) {
   return (
-    <div className="flex flex-col" data-test-id="edit-project-start-date">
-      <DatePickerWithClear
-        editable={editable}
-        selected={project.startedAt}
-        onChange={change}
-        placeholder="Start Date"
-      />
-    </div>
-  );
-}
+    <div className="flex items-center justify-between border-t border-dark-8 py-3 px-4">
+      <div className="flex items-center gap-2">
+        <ProjectIcons.IconForPhase phase={project.phase} />
+        <div className="font-semibold capitalize">{project.phase} Phase</div>
+        <div className="text-white-2">&middot; Ongoing for 81 days</div>
+        <div className="text-white-2">&middot; Due date not set</div>
+      </div>
 
-function DueDate() {
-  const { project, refetch, editable } = React.useContext(Context) as ContextDescriptor;
-
-  const [update] = Projects.useSetProjectDueDateMutation({ onCompleted: refetch });
-
-  const change = (date: Date | null) => {
-    update({
-      variables: {
-        projectId: project.id,
-        dueDate: date ? Time.toDateWithoutTime(date) : null,
-      },
-    });
-  };
-
-  return (
-    <div className="flex flex-col" data-test-id="edit-project-due-date">
-      <DatePickerWithClear editable={editable} selected={project.deadline} onChange={change} placeholder="Due Date" />
+      <div
+        className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1"
+        data-test-id="show-all-phases"
+        onClick={onExpand}
+      >
+        <Icons.IconArrowDown size={16} stroke={2} />
+        Show all phases
+      </div>
     </div>
   );
 }
