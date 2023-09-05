@@ -28,6 +28,17 @@ export const FRAGMENT = `
       message
       oldHealth
       newHealth
+
+      nextMilestoneId
+      nextMilestoneTitle
+      nextMilestoneDueDate
+
+      phase
+      phaseStart
+      phaseEnd
+
+      projectStartTime
+      projectEndTime
     }
 
     ... on UpdateContentProjectCreated {
@@ -90,6 +101,17 @@ export interface StatusUpdate {
   message: string;
   oldHealth: string;
   newHealth: string;
+
+  nextMilestoneId?: string;
+  nextMilestoneTitle?: string;
+  nextMilestoneDueDate?: Date;
+
+  phase?: string;
+  phaseStart?: Date;
+  phaseEnd?: Date;
+
+  projectStartTime?: Date;
+  projectEndTime?: Date;
 }
 
 export interface Message {
