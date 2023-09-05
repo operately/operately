@@ -487,32 +487,45 @@ function Message({ project, update }: { project: Projects.Project; update: Updat
 }
 
 function StatusUpdate({ project, update }: { project: Projects.Project; update: Updates.Update }) {
-  const content = update.content as Updates.StatusUpdate;
-  const message = content.message;
-
-  const oldHealth = content.oldHealth;
-  const newHealth = content.newHealth;
+  const content = update.content as UpdateContent.StatusUpdate;
 
   return (
     <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
-      {oldHealth !== newHealth && (
-        <div className="flex">
-          <div className="mb-4">
-            <div className="flex items-center gap-2">
-              Project health changed from
-              <div className="bg-dark-2 rounded-lg px-2 py-1 flex items-center gap-2 text-sm">
-                <ProjectIcons.IconForHealth health={oldHealth} /> <span className="capitalize">{oldHealth}</span>
-              </div>
-              -&gt;
-              <div className="bg-dark-2 rounded-lg px-2 py-1 flex items-center gap-2 text-sm">
-                <ProjectIcons.IconForHealth health={newHealth} /> <span className="capitalize">{newHealth}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="font-bold">Status Update</div>
+      <RichContent jsonContent={content.message} />
 
-      <RichContent jsonContent={message} />
+      <div className="mt-4 flex flex-col gap-1 border-y border-dark-8 py-2">
+        {content.newHealth && (
+          <div className="flex items-center gap-1">
+            <span className="font-bold">Health:</span> <ProjectIcons.IconForHealth health={content.newHealth} />{" "}
+            <span className="capitalize">
+              {content.newHealth
+                .split("_")
+                .map((s) => s[0].toUpperCase() + s.slice(1))
+                .join(" ")}
+            </span>
+          </div>
+        )}
+
+        {content.phase && (
+          <div className="flex items-center gap-1">
+            <span className="font-bold">Current Phase:</span> {content.phase[0].toUpperCase() + content.phase.slice(1)}
+          </div>
+        )}
+
+        {content.nextMilestoneTitle && (
+          <div className="flex items-center gap-1">
+            <span className="font-bold">Upcomming Milestone:</span> {content.nextMilestoneTitle}
+          </div>
+        )}
+
+        {content.projectEndTime && (
+          <div className="flex items-center gap-1">
+            <span className="font-bold">Project Due Date:</span>{" "}
+            <FormattedTime time={content.projectEndTime} format="short-date" />
+          </div>
+        )}
+      </div>
     </BigContainer>
   );
 }

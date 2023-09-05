@@ -8,7 +8,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
     field :old_health, :string
     field :new_health, :string
 
-    field :next_milestone_id, :id
+    field :next_milestone_id, Ecto.UUID
     field :next_milestone_title, :string
     field :next_milestone_due_date, :utc_datetime
 
@@ -43,7 +43,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
       %{
         :next_milestone_id => next_milestone.id,
         :next_milestone_title => next_milestone.title,
-        :next_milestone_due_date => next_milestone.deadline,
+        :next_milestone_due_date => next_milestone.deadline_at
       }
     else
       %{}
