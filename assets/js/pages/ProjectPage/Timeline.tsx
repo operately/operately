@@ -13,7 +13,6 @@ import * as Icons from "@tabler/icons-react";
 import * as Milestones from "@/graphql/Projects/milestones";
 
 import Button, { IconButton } from "@/components/Button";
-import ProjectHealthSelector from "@/components/ProjectHealthSelector";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 
 interface ContextDescriptor {
@@ -31,7 +30,6 @@ export default function Timeline({ project, refetch, editable }) {
         <div className="flex items-start gap-4 pb-3 border-b border-dark-8 p-4">
           <Dates />
           <Phase />
-          <Health />
         </div>
 
         <Calendar project={project} />
@@ -346,23 +344,6 @@ function MilestoneListItemDueDate({ project, milestone, refetch }) {
 
 function Label({ title }) {
   return <div className="font-bold ml-1">{title}</div>;
-}
-
-function Health() {
-  const { project, editable } = React.useContext(Context) as ContextDescriptor;
-
-  const navigate = useNavigate();
-
-  const handleHealthChange = (phase: string) => {
-    navigate(`/projects/${project.id}/updates/new?messageType=health_change&health=${phase}`);
-  };
-
-  return (
-    <div className="flex flex-col">
-      <Label title="Health" />
-      <ProjectHealthSelector editable={editable} active={project.health} onSelected={handleHealthChange} />
-    </div>
-  );
 }
 
 function Phase() {
