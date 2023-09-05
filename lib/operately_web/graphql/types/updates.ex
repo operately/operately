@@ -79,7 +79,6 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
 
   union :update_content do
     types [
-      :update_content_message,
       :update_content_project_created,
       :update_content_project_start_time_changed,
       :update_content_project_end_time_changed,
@@ -89,7 +88,9 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       :update_content_project_milestone_completed,
       :update_content_project_milestone_deadline_changed,
       :update_content_project_milestone_deleted,
-      :update_content_status_update
+      :update_content_status_update,
+      :update_content_review,
+      :update_content_message
     ]
 
     resolve_type fn %{type: type}, _ ->

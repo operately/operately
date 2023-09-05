@@ -473,8 +473,8 @@ defmodule Operately.Features.ProjectsTest do
         updatable_id: project.id,
         content: %{
           "message" => rich_text_paragraph(text),
-          "old_health" => "on-track",
-          "new_health" => "on-track",
+          "old_health" => "on_track",
+          "new_health" => "on_track",
         },
         author_id: author_id
       })

@@ -340,7 +340,6 @@ const REMOVE_PROJECT_CONTRIBUTOR = gql`
 export function useRemoveProjectContributorMutation(contribId: string) {
   return useMutation(REMOVE_PROJECT_CONTRIBUTOR, {
     variables: { contribId: contribId },
-    onCompleted: (data) => console.log(data),
   });
 }
 
