@@ -46,17 +46,9 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             updatable_type: args.input.updatable_type,
             updatable_id: args.input.updatable_id,
             author_id: context.current_account.person.id,
+            title: title,
             type: args.input.message_type,
-            content: %{
-              :message => content,
-              :old_health => previous_health,
-              :new_health => new_health
-            },
-            previous_phase: previous_phase,
-            new_phase: new_phase,
-            previous_health: previous_health,
-            new_health: new_health,
-            title: title
+            content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
           })
 
           update
