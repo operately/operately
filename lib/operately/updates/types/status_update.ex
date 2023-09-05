@@ -11,6 +11,13 @@ defmodule Operately.Updates.Types.StatusUpdate do
     field :next_milestone_id, :id
     field :next_milestone_title, :string
     field :next_milestone_due_date, :utc_datetime
+
+    field :phase, :string
+    field :phase_start, :utc_datetime
+    field :phase_end, :utc_datetime
+
+    field :project_start_time, :utc_datetime
+    field :project_end_time, :utc_datetime
   end
 
   def changeset(attrs) do
@@ -23,6 +30,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
     Map.merge(
       build_milestone_info(project),
       build_health_info(project, new_health),
+      build_phase_info(project),
       %{:message => message}
     )
   end
@@ -47,6 +55,32 @@ defmodule Operately.Updates.Types.StatusUpdate do
     %{
       :old_health => previous_health,
       :new_health => new_health,
+    }
+  end
+
+  defp build_phase_info(project) do
+    phase_history = 
+      project
+      |> Operately.Projects.list_project_phase_history()
+      |> Enum.sort_by(& &1.inserted_at)
+
+    current_phase = Enum.at(phase_history, -1)
+
+    if current_phase do
+      %{
+        :phase => current_phase.phase,
+        :phase_start => current_phase.start_time,
+        :phase_end => current_phase.end_time,
+      }
+    else
+      %{}
+    end
+  end
+
+  defp build_project_info(project) do
+    %{
+      :project_start_time => project.start_time,
+      :project_end_time => project.end_time,
     }
   end
 
