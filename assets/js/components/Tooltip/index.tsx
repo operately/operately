@@ -15,7 +15,7 @@ export function TextTooltip({ text, delayDuration, children }: TextTooltipProps)
         <ReactTooltip.Trigger asChild>{children}</ReactTooltip.Trigger>
         <ReactTooltip.Content
           sideOffset={5}
-          className="bg-dark-1 shadow-lg rounded-lg p-4 text-white text-sm font-medium break-normal"
+          className="bg-dark-1 shadow-lg rounded-lg p-4 text-white text-sm font-medium break-normal border border-dark-8"
           style={{
             maxWidth: "250px",
           }}
