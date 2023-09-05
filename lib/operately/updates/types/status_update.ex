@@ -27,12 +27,13 @@ defmodule Operately.Updates.Types.StatusUpdate do
   end
 
   def build(project, new_health, message) do
-    Map.merge(
-      build_milestone_info(project),
-      build_health_info(project, new_health),
-      build_phase_info(project),
-      %{:message => message}
-    )
+    result = %{}
+    result = Map.merge(result, build_project_info(project))
+    result = Map.merge(result, build_health_info(project, new_health))
+    result = Map.merge(result, build_milestone_info(project))
+    result = Map.merge(result, build_phase_info(project))
+    result = Map.merge(result, %{:message => message})
+    result
   end
 
   defp build_milestone_info(project) do
@@ -68,7 +69,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
 
     if current_phase do
       %{
-        :phase => current_phase.phase,
+        :phase => Atom.to_string(current_phase.phase),
         :phase_start => current_phase.start_time,
         :phase_end => current_phase.end_time,
       }
@@ -79,8 +80,8 @@ defmodule Operately.Updates.Types.StatusUpdate do
 
   defp build_project_info(project) do
     %{
-      :project_start_time => project.start_time,
-      :project_end_time => project.end_time,
+      :project_start_time => project.started_at,
+      :project_end_time => project.deadline,
     }
   end
 
