@@ -354,43 +354,33 @@ function PhasesExpanded({ project, onCollapse }) {
     <div className="border-t border-dark-8">
       <div className="border-b border-dark-5 px-4 py-3 flex items-center">
         <div className="font-medium flex items-center gap-2 flex-1">Phase</div>
-        <div className="font-medium flex items-center gap-2 w-32">Started</div>
-        <div className="font-medium flex items-center gap-2 w-32">Due Date</div>
+        <div className="font-medium flex items-center gap-2 w-32 px-2">Started</div>
+        <div className="font-medium flex items-center gap-2 w-32 px-2">Due Date</div>
         <div className="font-medium flex items-center gap-2 w-32">Completed</div>
       </div>
 
-      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
-        <div className="flex items-center gap-2 flex-1">
-          <ProjectIcons.IconForPhase phase={"planning"} />
-          <div className="capitalize">Planning Phase</div>
+      {project.phaseHistory.map((phase, index) => (
+        <div key={index} className="border-b border-dark-5 px-4 py-3 flex items-center hover:bg-shade-1">
+          <div className="flex items-center gap-2 flex-1">
+            <ProjectIcons.IconForPhase phase={"planning"} />
+            <div className="capitalize">{phase.phase} Phase</div>
+          </div>
+
+          <div className="font-medium flex items-center gap-2 w-32 -m-1">
+            <DatePickerWithClear
+              editable={project.permissions.canEditPhase}
+              selected={null}
+              onChange={(date) => {}}
+              clearable={false}
+              placeholder="Due Date"
+            />
+          </div>
+          <div className="font-medium flex items-center gap-2 w-32 -m-1"></div>
+          <div className="font-medium flex items-center gap-2 w-32">
+            <FormattedTime time={phase.endTime} format="short-date" />
+          </div>
         </div>
-
-        <div className="font-medium flex items-center gap-2 w-32">Jun 31</div>
-        <div className="font-medium flex items-center gap-2 w-32">Aug 15 </div>
-        <div className="font-medium flex items-center gap-2 w-32">Aug 19</div>
-      </div>
-
-      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
-        <div className="flex items-center gap-2 flex-1">
-          <ProjectIcons.IconForPhase phase={"execution"} />
-          <div className="capitalize">Execution Phase</div>
-        </div>
-
-        <div className="font-medium flex items-center gap-2 w-32">Jun 31</div>
-        <div className="font-medium flex items-center gap-2 w-32">Aug 15 </div>
-        <div className="font-medium flex items-center gap-2 w-32">Aug 19</div>
-      </div>
-
-      <div className="border-b border-dark-5 px-4 py-3 flex items-center">
-        <div className="flex items-center gap-2 flex-1">
-          <ProjectIcons.IconForPhase phase={"control"} />
-          <div className="capitalize">Control Phase</div>
-        </div>
-
-        <div className="font-medium flex items-center gap-2 w-32">Jun 31</div>
-        <div className="font-medium flex items-center gap-2 w-32">Aug 15 </div>
-        <div className="font-medium flex items-center gap-2 w-32">Aug 19</div>
-      </div>
+      ))}
 
       <div className="flex items-center justify-between">
         <div></div>
@@ -512,7 +502,7 @@ function ExistingNextMilestone({ project, refetch }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Icons.IconMapPinFilled size={16} className={iconColor} />
+      <Icons.IconMapPinFilled size={20} className={iconColor} />
       <span>
         {label}: <span className="text-white-1 font-bold">{project.nextMilestone.title}</span>
       </span>
@@ -560,7 +550,7 @@ function CompleteMilestoneButton({
 function NoNextMilestones() {
   return (
     <div className="flex items-center gap-2">
-      <Icons.IconMapPinFilled size={16} className="text-white-1/60" />
+      <Icons.IconMapPinFilled size={20} className="text-white-1/60" />
       <span className="text-white-1/60">No upcoming milestones</span>
     </div>
   );

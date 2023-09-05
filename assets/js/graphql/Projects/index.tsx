@@ -152,7 +152,7 @@ export const GET_PROJECT = gql`
 
       permissions ${Permissions.FRAGMENT}
 
-      phaseHistory ${PhaseHistory.GQL_FRAGMENT}
+      phaseHistory ${PhaseHistory.FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
       milestones ${Milestones.FRAGMENT}
       nextMilestone ${Milestones.FRAGMENT}

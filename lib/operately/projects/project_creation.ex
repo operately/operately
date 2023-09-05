@@ -75,8 +75,18 @@ defmodule Operately.Projects.ProjectCreation do
   defp record_phase_history(project) do
     {:ok, _} = Operately.Projects.create_phase_history(%{
       project_id: project.id,
-      phase: project.phase,
+      phase: :planning,
       start_time: DateTime.utc_now()
+    })
+
+    {:ok, _} = Operately.Projects.create_phase_history(%{
+      project_id: project.id,
+      phase: :execution,
+    })
+
+    {:ok, _} = Operately.Projects.create_phase_history(%{
+      project_id: project.id,
+      phase: :control,
     })
   end
 end
