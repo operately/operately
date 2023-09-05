@@ -82,7 +82,7 @@ defmodule Operately.Updates.Update do
   end
 
   defp find_schema(type) do
-    if type in [nil, :message, :health_change, :phase_change, :review] do
+    if type in [nil, :health_change, :phase_change] do
       nil
     else
       module = Macro.camelize(to_string(type))

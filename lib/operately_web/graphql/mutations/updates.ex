@@ -21,38 +21,63 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, %{context: context} ->
-        Operately.Repo.transaction(fn -> 
-          content = Jason.decode!(args.input.content)
-          project = Operately.Projects.get_project!(args.input.updatable_id)
+        content = Jason.decode!(args.input.content)
+        project = Operately.Projects.get_project!(args.input.updatable_id)
 
-          title = args.input[:title] || ""
+        case args.input.message_type do
+          "status_update" ->
+            Operately.Repo.transaction(fn -> 
+              {:ok, _} = Operately.Projects.update_project(project, %{health: args.input.health})
 
-          previous_phase = Atom.to_string(project.phase)
-          new_phase = args.input[:phase] || previous_phase
+              {:ok, update} = Operately.Updates.create_update(%{
+                updatable_type: args.input.updatable_type,
+                updatable_id: args.input.updatable_id,
+                author_id: context.current_account.person.id,
+                title: "",
+                type: args.input.message_type,
+                content: Operately.Updates.Types.StatusUpdate.build(project, args.input.health, content)
+              })
 
-          previous_health = Atom.to_string(project.health)
-          new_health = args.input[:health] || previous_health
+              update
+            end)
 
-          if args.input[:phase] do
-            Operately.Projects.update_project(project, %{phase: args.input.phase})
-            Operately.Projects.record_phase_history(project, previous_phase, new_phase)
-          end
+          "review" ->
+            Operately.Repo.transaction(fn -> 
+              previous_phase = Atom.to_string(project.phase)
+              new_phase = args.input[:phase] || previous_phase
 
-          if args.input[:health] do
-            Operately.Projects.update_project(project, %{health: args.input.health})
-          end
+              {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)
+              {:ok, _} = Operately.Projects.update_project(project, %{phase: args.input.phase})
 
-          {:ok, update} = Operately.Updates.create_update(%{
-            updatable_type: args.input.updatable_type,
-            updatable_id: args.input.updatable_id,
-            author_id: context.current_account.person.id,
-            title: title,
-            type: args.input.message_type,
-            content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
-          })
+              {:ok, update} = Operately.Updates.create_update(%{
+                updatable_type: args.input.updatable_type,
+                updatable_id: args.input.updatable_id,
+                author_id: context.current_account.person.id,
+                title: "",
+                type: args.input.message_type,
+                content: Operately.Updates.Types.Review.build(content, previous_phase, new_phase)
+              })
 
-          update
-        end)
+              update
+            end)
+
+          "message" ->
+            Operately.Repo.transaction(fn -> 
+              {:ok, update} = Operately.Updates.create_update(%{
+                updatable_type: args.input.updatable_type,
+                updatable_id: args.input.updatable_id,
+                author_id: context.current_account.person.id,
+                title: "",
+                type: args.input.message_type,
+                content: Operately.Updates.Types.Message.build(content)
+              })
+
+              update
+            end)
+
+          _ ->
+            raise "Unknown message type"
+        end
       end
     end
 

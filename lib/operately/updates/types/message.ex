@@ -13,4 +13,10 @@ defmodule Operately.Updates.Types.Message do
     |> validate_required([:message])
   end
 
+  def build(message) do
+    %{
+      :message => message,
+    }
+  end
+
 end

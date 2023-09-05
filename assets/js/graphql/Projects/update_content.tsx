@@ -4,10 +4,10 @@ import * as People from "@/graphql/People";
 
 export type UpdateMessageType =
   | "message"
+  | "review"
   | "status_update"
   | "phase_change"
   | "health_change"
-  | "review"
   | "project_created"
   | "project_start_time_changed"
   | "project_end_time_changed"
@@ -22,6 +22,12 @@ export const FRAGMENT = `
   {
     ... on UpdateContentMessage {
       message
+    }
+
+    ... on UpdateContentReview {
+      message
+      previousPhase
+      newPhase
     }
 
     ... on UpdateContentStatusUpdate {
@@ -88,6 +94,7 @@ export const FRAGMENT = `
 export type Content =
   | Message
   | StatusUpdate
+  | Review
   | ProjectCreated
   | ProjectStartTimeChanged
   | ProjectEndTimeChanged
@@ -162,4 +169,10 @@ export interface ProjectContributorRemoved {
   contributor: People.Person;
   contributorId: string;
   contributorRole: string;
+}
+
+export interface Review {
+  message: string;
+  previousPhase: string;
+  newPhase: string;
 }

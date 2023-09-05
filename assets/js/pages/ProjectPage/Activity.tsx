@@ -18,6 +18,7 @@ import Button from "@/components/Button";
 
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
+import * as PhaseChange from "@/features/phase_change";
 
 interface ActivityContextDescriptor {
   project: Projects.Project;
@@ -162,7 +163,7 @@ function UpdateItem({ project, update }: { project: Projects.Project; update: Up
       return <StatusUpdate project={project} update={update} />;
 
     case "review":
-      return <Review project={project} update={update as Updates.Review} />;
+      return <Review project={project} update={update} />;
 
     case "project_created":
       return <ProjectCreated update={update} />;
@@ -747,65 +748,13 @@ function SmallContainer({ time, children }) {
   );
 }
 
-// function ActivityItemMilestoneCreated({ activity }: { activity: Activities.Activity }) {
-//   const eventData = activity.eventData as Activities.MilestoneCreateEventData;
-//   const link = `/projects/${activity.scopeId}/milestones`;
-//   const title = eventData.title;
+function Review({ project, update }: { project: Projects.Project; update: Updates.Update }) {
+  const content = update.content as UpdateContent.Review;
 
-//   return (
-//     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-//       <div className="font-semibold">
-//         {activity.person.fullName} added a milestone:
-//         <Link to={link} className="ml-1.5 font-semibold text-sky-400 underline underline-offset-2">
-//           {title}
-//         </Link>
-//       </div>
-//     </ActivityItemContainer>
-//   );
-// }
-
-// function ActivityItemMilestoneCompleted({ activity }: { activity: Activities.Activity }) {
-//   const link = `/projects/${activity.scopeId}/milestones`;
-//   const title = activity.resource.title;
-
-//   return (
-//     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-//       <div className="flex items-center gap-1.5 font-semibold">
-//         {activity.person.fullName} checked off:
-//         <Link to={link} className="font-semibold text-sky-400 underline underline-offset-2">
-//           {title}
-//         </Link>
-//       </div>
-//     </ActivityItemContainer>
-//   );
-// }
-
-// function ActivityItemMilestoneUnCompleted({ activity }: { activity: Activities.Activity }) {
-//   const link = `/projects/${activity.scopeId}/milestones`;
-//   const title = activity.resource.title;
-
-//   return (
-//     <ActivityItemContainer person={activity.person} time={activity.insertedAt}>
-//       <div className="flex items-center">
-//         <div className="font-bold">
-//           {activity.person.fullName} marked the{" "}
-//           <Link to={link} className="font-semibold text-blue-400 underline underline-offset-2">
-//             {title}
-//           </Link>{" "}
-//           as pending
-//         </div>
-//       </div>
-//     </ActivityItemContainer>
-//   );
-// }
-
-import * as PhaseChange from "@/features/phase_change";
-
-function Review({ project, update }: { project: Projects.Project; update: Updates.Review }) {
   const handler = PhaseChange.handler(
     project,
-    update.previousPhase as Projects.ProjectPhase,
-    update.newPhase as Projects.ProjectPhase,
+    content.previousPhase as Projects.ProjectPhase,
+    content.newPhase as Projects.ProjectPhase,
   );
 
   const answers = JSON.parse(update.message);
