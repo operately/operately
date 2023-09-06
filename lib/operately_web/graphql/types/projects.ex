@@ -60,7 +60,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :phase, non_null(:string)
     field :start_time, :date
     field :end_time, :date
-    field :due_date, :date
+    field :due_time, :date
   end
 
   object :project do

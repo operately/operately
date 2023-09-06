@@ -47,32 +47,37 @@ export default function Timeline({ project, refetch, editable }) {
   );
 }
 
-function EditTimeline({ project, refetch }) {
+function EditTimeline({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
   const [isOpen, _, open, close] = useBoolState(false);
+
+  console.log(project.phaseHistory);
 
   const planning = project.phaseHistory.find((phase) => phase.phase === "planning");
   const execution = project.phaseHistory.find((phase) => phase.phase === "execution");
   const control = project.phaseHistory.find((phase) => phase.phase === "control");
 
-  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(planning.dueDate);
-  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(execution.dueDate);
-  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(control.dueDate);
+  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(Time.parse(planning?.endTime || null));
+  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(Time.parse(execution?.endTime || null));
+  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(Time.parse(control?.endTime || null));
 
-  const [edit, { loading }] = Projects.useEditProjectTimeline();
+  const [edit, { loading }] = Projects.useEditProjectTimeline({
+    onCompleted: () => {
+      close();
+      refetch();
+    },
+  });
 
   const submit = async () => {
     await edit({
       variables: {
         input: {
           projectId: project.id,
-          planningDueDate: planningDueDate && Time.toDateWithoutTime(planningDueDate),
-          executionDueDate: executionDueDate && Time.toDateWithoutTime(executionDueDate),
-          controlDueDate: controlDueDate && Time.toDateWithoutTime(controlDueDate),
+          planningDueTime: planningDueDate && Time.toDateWithoutTime(planningDueDate),
+          executionDueTime: executionDueDate && Time.toDateWithoutTime(executionDueDate),
+          controlDueTime: controlDueDate && Time.toDateWithoutTime(controlDueDate),
         },
       },
     });
-
-    refetch();
   };
 
   return (

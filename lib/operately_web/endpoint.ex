@@ -51,5 +51,22 @@ defmodule OperatelyWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  if Application.compile_env(:operately, :dev_routes) do
+    plug :debug
+
+    defp debug(conn, _) do
+      Plug.Conn.register_before_send(conn, fn conn ->
+        body = inspect(conn.resp_body)
+
+        if String.contains?(body, "error") do
+          IO.inspect(body, label: "GQL ERROR")
+        end
+
+        conn
+      end)
+    end
+  end
+
   plug OperatelyWeb.Router
 end

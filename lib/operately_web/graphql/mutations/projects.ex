@@ -20,7 +20,37 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     field :link, non_null(:string)
   end
 
+  input_object :edit_project_timeline_input do
+    field :project_id, non_null(:id)
+    field :planning_due_time, :date
+    field :execution_due_time, :date
+    field :control_due_time, :date
+  end
+
   object :project_mutations do
+    field :edit_project_timeline, non_null(:project) do
+      arg :input, non_null(:edit_project_timeline_input)
+
+      resolve fn args, _ ->
+        Operately.Repo.transaction(fn ->
+          project = Operately.Projects.get_project!(args.input.project_id)
+          phases = Operately.Projects.list_project_phase_history(project)
+
+          planning = Enum.find(phases, fn phase -> phase.phase == :planning end)
+          execution = Enum.find(phases, fn phase -> phase.phase == :execution end)
+          control = Enum.find(phases, fn phase -> phase.phase == :control end)
+
+          {:ok, _} = Operately.Projects.update_phase_history(planning, %{due_time: parse_date(args.input.planning_due_time)})
+          {:ok, _} = Operately.Projects.update_phase_history(execution, %{due_time: parse_date(args.input.execution_due_time)})
+          {:ok, _} = Operately.Projects.update_phase_history(control, %{due_time: parse_date(args.input.control_due_time)})
+
+          {:ok, project} = Operately.Projects.update_project(project, %{deadline: parse_date(args.input.control_due_time)})
+
+          project
+        end)
+      end
+    end
+
     field :create_project, non_null(:project) do
       arg :input, non_null(:create_project_input)
 

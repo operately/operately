@@ -6,7 +6,14 @@ import * as Icons from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 
-export function Datepicker({ label, selected, onChange }) {
+interface DatepickerProps {
+  label?: string;
+  placeholder?: string;
+  selected: Date | null;
+  onChange: (date: Date | null) => void;
+}
+
+export function Datepicker({ label, placeholder, selected, onChange }: DatepickerProps) {
   const [open, setOpen] = React.useState(false);
 
   const handleChange = (date: Date | null) => {
@@ -25,7 +32,7 @@ export function Datepicker({ label, selected, onChange }) {
             {selected ? (
               <FormattedTime time={selected} format="short-date" />
             ) : (
-              <span className="text-white-2">Select a date</span>
+              <span className="text-white-2">{placeholder}</span>
             )}
           </div>
         </Popover.Trigger>
