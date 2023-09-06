@@ -15,6 +15,9 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import Button, { IconButton } from "@/components/Button";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 
+import Modal from "@/components/Modal";
+import * as Forms from "@/components/Form";
+
 interface ContextDescriptor {
   project: Projects.Project;
   refetch: () => void;
@@ -27,15 +30,53 @@ export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
       <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
-        <div className="flex items-start gap-4 pb-3 border-b border-dark-8 p-4">
-          <Dates />
-          <Phase />
+        <div className="flex items-center justify-between pb-3 border-b border-dark-8 p-4">
+          <div className="flex items-start gap-4">
+            <Dates />
+            <Phase />
+          </div>
+          <div>
+            <EditTimeline />
+          </div>
         </div>
 
         <Calendar project={project} />
         <MilestoneList project={project} refetch={refetch} />
       </div>
     </Context.Provider>
+  );
+}
+
+function EditTimeline() {
+  const [isOpen, _, open, close] = useBoolState(false);
+
+  const isValid = true;
+  const submit = () => {};
+  const loading = false;
+
+  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(null);
+  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(null);
+  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(null);
+
+  return (
+    <>
+      <Button variant="secondary" data-test-id="edit-project-timeline" onClick={open}>
+        Edit Timeline
+      </Button>
+
+      <Modal title={"Edit Timeline"} isOpen={isOpen} hideModal={close} minHeight="200px">
+        <Forms.Form onSubmit={submit} onCancel={close} isValid={isValid} loading={loading}>
+          <DatePicker selected={planningDueDate} onChange={setPlanningDueDate}></DatePicker>
+          <DatePicker selected={executionDueDate} onChange={setExecutionDueDate}></DatePicker>
+          <DatePicker selected={controlDueDate} onChange={setControlDueDate}></DatePicker>
+
+          <Forms.SubmitArea>
+            <Forms.SubmitButton>Save</Forms.SubmitButton>
+            <Forms.CancelButton>Cancel</Forms.CancelButton>
+          </Forms.SubmitArea>
+        </Forms.Form>
+      </Modal>
+    </>
   );
 }
 
