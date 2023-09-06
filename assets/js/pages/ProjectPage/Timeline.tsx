@@ -155,27 +155,42 @@ function Calendar({ project }) {
         <div className="absolute" style={{ top: "90px", bottom: "40px", left: 0, right: 0 }}>
           <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
-          {project.phaseHistory.map((phase, index) => (
-            <PhaseMarker
-              key={index}
-              phase={phase.phase}
-              startedAt={phase.startTime}
-              finishedAt={phase.endTime || Time.today()}
-              lineStart={lineStart}
-              lineEnd={lineEnd}
-            />
-          ))}
+          <PhaseMarkers project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           <StartMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-          <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
           <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           {project.milestones.map((milestone: Milestones.Milestone) => (
             <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
           ))}
         </div>
+
+        <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
       </div>
     </div>
+  );
+}
+
+function PhaseMarkers({ project, lineStart, lineEnd }: { project: Projects.Project; lineStart: Date; lineEnd: Date }) {
+  return (
+    <>
+      {project.phaseHistory.map((phase, index) => (
+        <PhaseMarker
+          key={index}
+          phase={phase.phase}
+          startedAt={
+            phase.startTime ||
+            project.phaseHistory[index - 1]?.endTime ||
+            project.phaseHistory[index - 1]?.dueTime ||
+            project.startedAt
+          }
+          finishedAt={phase.endTime || phase.dueTime}
+          transparent={phase.startTime === null}
+          lineStart={lineStart}
+          lineEnd={lineEnd}
+        />
+      ))}
+    </>
   );
 }
 
@@ -647,7 +662,7 @@ function NoNextMilestones() {
   );
 }
 
-function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
+function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd, transparent }) {
   if (phase === "paused") return null;
   if (phase === "completed") return null;
   if (phase === "canceled") return null;
@@ -681,6 +696,7 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
         width: "calc(" + width + " - 2px)",
         top: 0,
         bottom: 0,
+        opacity: transparent ? 0.3 : 1,
       }}
     ></div>
   );
@@ -704,7 +720,7 @@ function EndMarker({ project, lineStart, lineEnd }) {
 
   const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  return <div className="bg-white-1 absolute top-0 bottom-0" style={{ left: left, width: "2px" }}></div>;
 }
 
 function StartMarker({ project, lineStart, lineEnd }) {
@@ -713,14 +729,17 @@ function StartMarker({ project, lineStart, lineEnd }) {
 
   const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  return <div className="bg-white-1 absolute top-0 bottom-0" style={{ left: left, width: "2px" }}></div>;
 }
 
 function TodayMarker({ lineStart, lineEnd }) {
   const today = Time.today();
-  const left = `${(Time.secondsBetween(lineStart, today) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+  const tomorrow = Time.add(today, 1, "days");
 
-  return <div className="bg-indigo-400 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  const left = `${(Time.secondsBetween(lineStart, today) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+  const width = `${(Time.secondsBetween(today, tomorrow) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+
+  return <div className="bg-indigo-400/10 absolute top-0 bottom-0" style={{ left: left, width: width }}></div>;
 }
 
 function MilestoneMarker({ milestone, lineStart, lineEnd }) {
