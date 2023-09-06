@@ -20,8 +20,8 @@ export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }
 
-export function parse(date: string | Date | null) {
-  if (date === null) {
+export function parse(date: string | Date | null | undefined) {
+  if (date === null || date === undefined) {
     return null;
   }
 

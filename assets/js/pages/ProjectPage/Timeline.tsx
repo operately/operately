@@ -50,15 +50,15 @@ export default function Timeline({ project, refetch, editable }) {
 function EditTimeline({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
   const [isOpen, _, open, close] = useBoolState(false);
 
-  console.log(project.phaseHistory);
-
   const planning = project.phaseHistory.find((phase) => phase.phase === "planning");
   const execution = project.phaseHistory.find((phase) => phase.phase === "execution");
   const control = project.phaseHistory.find((phase) => phase.phase === "control");
 
-  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(Time.parse(planning?.endTime || null));
-  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(Time.parse(execution?.endTime || null));
-  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(Time.parse(control?.endTime || null));
+  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(Time.parse(planning?.dueTime));
+  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(Time.parse(execution?.dueTime));
+  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(Time.parse(control?.dueTime));
+
+  console.log(planningDueDate, executionDueDate, controlDueDate);
 
   const [edit, { loading }] = Projects.useEditProjectTimeline({
     onCompleted: () => {
