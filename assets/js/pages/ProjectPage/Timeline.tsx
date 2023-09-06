@@ -36,7 +36,7 @@ export default function Timeline({ project, refetch, editable }) {
             <Phase />
           </div>
           <div>
-            <EditTimeline />
+            <EditTimeline project={project} refetch={refetch} />
           </div>
         </div>
 
@@ -47,16 +47,29 @@ export default function Timeline({ project, refetch, editable }) {
   );
 }
 
-function EditTimeline() {
+function EditTimeline({ project, refetch }) {
   const [isOpen, _, open, close] = useBoolState(false);
-
-  const isValid = true;
-  const submit = () => {};
-  const loading = false;
 
   const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(null);
   const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(null);
   const [controlDueDate, setControlDueDate] = React.useState<Date | null>(null);
+
+  const [edit, { loading }] = Projects.useEditProjectTimeline();
+
+  const submit = async () => {
+    await edit({
+      variables: {
+        input: {
+          projectId: project.id,
+          planningDueDate: planningDueDate && Time.toDateWithoutTime(planningDueDate),
+          executionDueDate: executionDueDate && Time.toDateWithoutTime(executionDueDate),
+          controlDueDate: controlDueDate && Time.toDateWithoutTime(controlDueDate),
+        },
+      },
+    });
+
+    refetch();
+  };
 
   return (
     <>
@@ -65,10 +78,31 @@ function EditTimeline() {
       </Button>
 
       <Modal title={"Edit Timeline"} isOpen={isOpen} hideModal={close} minHeight="200px">
-        <Forms.Form onSubmit={submit} onCancel={close} isValid={isValid} loading={loading}>
-          <DatePicker selected={planningDueDate} onChange={setPlanningDueDate}></DatePicker>
-          <DatePicker selected={executionDueDate} onChange={setExecutionDueDate}></DatePicker>
-          <DatePicker selected={controlDueDate} onChange={setControlDueDate}></DatePicker>
+        <Forms.Form onSubmit={submit} onCancel={close} isValid={true} loading={loading}>
+          <div className="flex flex-col gap-2 mt-4">
+            <div className="flex items-center gap-2 border-b border-dark-5 font-bold pb-2">
+              <div className="w-32 forn-medium">Phase</div>
+              <div className="flex-1">Due Date</div>
+            </div>
+
+            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
+              <div className="w-32 forn-medium">Planning</div>
+
+              <Forms.Datepicker selected={planningDueDate} onChange={setPlanningDueDate} placeholder="Select Date" />
+            </div>
+
+            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
+              <div className="w-32 forn-medium">Execution</div>
+
+              <Forms.Datepicker selected={executionDueDate} onChange={setExecutionDueDate} placeholder="Select Date" />
+            </div>
+
+            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
+              <div className="w-32 forn-medium">Control</div>
+
+              <Forms.Datepicker selected={controlDueDate} onChange={setControlDueDate} placeholder="Select Date" />
+            </div>
+          </div>
 
           <Forms.SubmitArea>
             <Forms.SubmitButton>Save</Forms.SubmitButton>

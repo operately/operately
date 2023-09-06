@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 
 export * from "./radio";
 export * from "./select";
+export * from "./datepicker";
 
 interface Props {
   children?: React.ReactNode;
