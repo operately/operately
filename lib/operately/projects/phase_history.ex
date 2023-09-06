@@ -11,6 +11,7 @@ defmodule Operately.Projects.PhaseHistory do
 
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
+    field :due_date, :utc_datetime
 
     timestamps()
   end
@@ -19,6 +20,6 @@ defmodule Operately.Projects.PhaseHistory do
   def changeset(phase_history, attrs) do
     phase_history
     |> cast(attrs, [:phase, :start_time, :end_time, :project_id])
-    |> validate_required([:phase, :start_time, :project_id])
+    |> validate_required([:phase, :project_id])
   end
 end

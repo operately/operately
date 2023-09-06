@@ -58,8 +58,9 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
   object :project_phase_history do
     field :id, non_null(:id)
     field :phase, non_null(:string)
-    field :start_time, non_null(:date)
+    field :start_time, :date
     field :end_time, :date
+    field :due_date, :date
   end
 
   object :project do
