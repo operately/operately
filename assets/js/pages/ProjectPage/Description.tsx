@@ -153,18 +153,6 @@ function ToggleHeight() {
       </a>
     );
   }
-
-  return (
-    <div className="flex justify-center mt-2 absolute left-0 right-0 -bottom-2 text-white-2">
-      <div
-        className="bg-dark-5 px-4 rounded-lg hover:px-6 transition-all cursor-pointer"
-        onClick={toggleLines}
-        data-test-id="expand-project-description"
-      >
-        {isCondensed ? <Icons.IconChevronDown size={16} /> : <Icons.IconChevronUp size={16} />}
-      </div>
-    </div>
-  );
 }
 
 function EditButton({ onClick }) {

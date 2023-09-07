@@ -61,7 +61,7 @@ export function Page() {
           <Description me={me} project={project} refetch={refetch} />
         </div>
 
-        <div className="my-8">
+        <div className="mt-8 mb-4 pb-8 border-b border-dark-5 -mx-8 px-8">
           <h2 className="text-xl font-bold">Key Resources</h2>
           <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         </div>
