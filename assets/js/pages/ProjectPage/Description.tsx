@@ -106,12 +106,12 @@ function Display({ me, project, activateEdit }) {
 
   return (
     <Context.Provider value={{ me, project, editable, isClamped, isCondensed, toggleLines, lines }}>
-      <div className="flex flex-col gap-1 pb-4 relative border-b border-dark-8">
-        <div className="font-bold flex gap-2 items-center">
+      <div className="flex flex-col gap-1 pb-4 relative">
+        <div className="font-extrabold flex gap-2 items-center text-xl text-white-1">
           About
           <EditButton onClick={activateEdit} />
         </div>
-        <div className="font-medium">
+        <div className="">
           <Truncate lines={lines} ref={ref}>
             <Body project={project} />
           </Truncate>
@@ -139,6 +139,20 @@ function ToggleHeight() {
   const { isCondensed, toggleLines, isClamped, lines } = React.useContext(Context) as ContextDescriptor;
 
   if (!isClamped && lines === CondensedLineCount) return null;
+
+  if (isCondensed) {
+    return (
+      <a className="text-blue-400 underline mt-4 inline-block cursor-pointer" onClick={toggleLines}>
+        Read the whole description
+      </a>
+    );
+  } else {
+    return (
+      <a className="text-blue-400 underline mt-4 inline-block cursor-pointer" onClick={toggleLines}>
+        Collapse
+      </a>
+    );
+  }
 
   return (
     <div className="flex justify-center mt-2 absolute left-0 right-0 -bottom-2 text-white-2">

@@ -57,8 +57,12 @@ export function Page() {
 
         <Toolbar project={project} refetch={refetch} me={me} />
 
-        <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 p-4 mb-8 mt-8">
+        <div className="mt-8 mb-4 pb-4 border-b border-dark-5 -mx-8 px-8">
           <Description me={me} project={project} refetch={refetch} />
+        </div>
+
+        <div className="my-8">
+          <h2 className="text-xl font-bold">Key Resources</h2>
           <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         </div>
 
