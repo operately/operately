@@ -120,6 +120,7 @@ defmodule Operately.Features.ProjectsTest do
   feature "submitting a status update", state do
     state
     |> visit_show(state.project)
+    |> UI.click(testid: "champion-toolbar")
     |> UI.click(testid: "add-status-update")
     |> UI.fill_rich_text("This is a status update.")
     |> UI.click(testid: "post-status-update")

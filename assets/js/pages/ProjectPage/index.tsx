@@ -2,15 +2,14 @@ import React from "react";
 
 import { useDocumentTitle } from "@/layouts/header";
 
-import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
 import Activity from "./Activity";
 import Header from "./Header";
 import Timeline from "./Timeline";
 import Description from "./Description";
-import Sidebar from "./Sidebar";
 import KeyResources from "./KeyResources";
+import Toolbar from "./Toolbar";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -49,18 +48,14 @@ export function Page() {
 
   const championOfProject = project.champion?.id === me.id;
 
-  const [sidebarOpen, setSidebarOpen] = React.useState(championOfProject);
-
-  const sidebar = championOfProject ? (
-    <Sidebar project={project} isOpen={sidebarOpen} setOpen={setSidebarOpen} />
-  ) : null;
-
   return (
-    <Paper.Root size="medium" rightSidebar={sidebar} rightSidebarWidth={sidebarOpen ? "400px" : "0px"}>
+    <Paper.Root size="medium">
       <div className="p-8 border border-dark-3 bg-dark-3 rounded shadow-xl">
         <div className="bg-dark-2 p-8 -mx-8 -mt-8">
           <Header project={project} />
         </div>
+
+        <Toolbar project={project} refetch={refetch} me={me} />
 
         <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 p-4 mb-8 mt-8">
           <Description me={me} project={project} refetch={refetch} />

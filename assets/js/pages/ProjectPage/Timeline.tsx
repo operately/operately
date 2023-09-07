@@ -58,8 +58,6 @@ function EditTimeline({ project, refetch }: { project: Projects.Project; refetch
   const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(Time.parse(execution?.dueTime));
   const [controlDueDate, setControlDueDate] = React.useState<Date | null>(Time.parse(control?.dueTime));
 
-  console.log(planningDueDate, executionDueDate, controlDueDate);
-
   const [edit, { loading }] = Projects.useEditProjectTimeline({
     onCompleted: () => {
       close();
