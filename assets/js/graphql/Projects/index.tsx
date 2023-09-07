@@ -9,6 +9,7 @@ import * as PhaseHistory from "./phase_history";
 import * as Permissions from "./permissions";
 
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
+export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {

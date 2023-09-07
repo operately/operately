@@ -11,7 +11,7 @@ defmodule Operately.Projects.ProjectCreation do
       {:ok, project} = create_project(params)
       {:ok, champion} = assign_champion(project, params)
       {:ok, creator_role} = assign_creator_role(project, params)
-      {:ok, _} = record_phase_history(project)
+      {:ok, _} = record_phase_histories(project)
       {:ok, _} = Updates.record_project_creation(project.creator_id, project.id, champion.person_id, creator_role)
 
       project
@@ -72,11 +72,21 @@ defmodule Operately.Projects.ProjectCreation do
     end
   end
 
-  defp record_phase_history(project) do
+  defp record_phase_histories(project) do
     {:ok, _} = Operately.Projects.create_phase_history(%{
       project_id: project.id,
-      phase: project.phase,
+      phase: :planning,
       start_time: DateTime.utc_now()
+    })
+
+    {:ok, _} = Operately.Projects.create_phase_history(%{
+      project_id: project.id,
+      phase: :execution,
+    })
+
+    {:ok, _} = Operately.Projects.create_phase_history(%{
+      project_id: project.id,
+      phase: :control
     })
   end
 end

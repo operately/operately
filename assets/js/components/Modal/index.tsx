@@ -35,7 +35,7 @@ export default function Modal({ isOpen, hideModal, title, children, minHeight = 
         },
       }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 text-lg -mx-5 px-5 -mt-5 py-3 bg-dark-1 border-b border-shade-2">
         <h1 className="font-bold">{title}</h1>
 
         <div className="hover:cursor-pointer text-dark-8 hover:text-white-1 transition-colors" onClick={hideModal}>

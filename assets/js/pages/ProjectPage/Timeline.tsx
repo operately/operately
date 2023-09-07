@@ -15,6 +15,9 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import Button, { IconButton } from "@/components/Button";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 
+import Modal from "@/components/Modal";
+import * as Forms from "@/components/Form";
+
 interface ContextDescriptor {
   project: Projects.Project;
   refetch: () => void;
@@ -27,15 +30,96 @@ export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
       <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
-        <div className="flex items-start gap-4 pb-3 border-b border-dark-8 p-4">
-          <Dates />
-          <Phase />
+        <div className="flex items-center justify-between pb-3 border-b border-dark-8 p-4">
+          <div className="flex items-start gap-4">
+            <Dates />
+            <Phase />
+          </div>
+          <div>
+            <EditTimeline project={project} refetch={refetch} />
+          </div>
         </div>
 
         <Calendar project={project} />
         <MilestoneList project={project} refetch={refetch} />
       </div>
     </Context.Provider>
+  );
+}
+
+function EditTimeline({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
+  const [isOpen, _, open, close] = useBoolState(false);
+
+  const planning = project.phaseHistory.find((phase) => phase.phase === "planning");
+  const execution = project.phaseHistory.find((phase) => phase.phase === "execution");
+  const control = project.phaseHistory.find((phase) => phase.phase === "control");
+
+  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(Time.parse(planning?.dueTime));
+  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(Time.parse(execution?.dueTime));
+  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(Time.parse(control?.dueTime));
+
+  console.log(planningDueDate, executionDueDate, controlDueDate);
+
+  const [edit, { loading }] = Projects.useEditProjectTimeline({
+    onCompleted: () => {
+      close();
+      refetch();
+    },
+  });
+
+  const submit = async () => {
+    await edit({
+      variables: {
+        input: {
+          projectId: project.id,
+          planningDueTime: planningDueDate && Time.toDateWithoutTime(planningDueDate),
+          executionDueTime: executionDueDate && Time.toDateWithoutTime(executionDueDate),
+          controlDueTime: controlDueDate && Time.toDateWithoutTime(controlDueDate),
+        },
+      },
+    });
+  };
+
+  return (
+    <>
+      <Button variant="secondary" data-test-id="edit-project-timeline" onClick={open}>
+        Edit Timeline
+      </Button>
+
+      <Modal title={"Edit Timeline"} isOpen={isOpen} hideModal={close} minHeight="200px">
+        <Forms.Form onSubmit={submit} onCancel={close} isValid={true} loading={loading}>
+          <div className="flex flex-col gap-2 mt-4">
+            <div className="flex items-center gap-2 border-b border-dark-5 font-bold pb-2">
+              <div className="w-32 forn-medium">Phase</div>
+              <div className="flex-1">Due Date</div>
+            </div>
+
+            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
+              <div className="w-32 forn-medium">Planning</div>
+
+              <Forms.Datepicker selected={planningDueDate} onChange={setPlanningDueDate} placeholder="Select Date" />
+            </div>
+
+            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
+              <div className="w-32 forn-medium">Execution</div>
+
+              <Forms.Datepicker selected={executionDueDate} onChange={setExecutionDueDate} placeholder="Select Date" />
+            </div>
+
+            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
+              <div className="w-32 forn-medium">Control</div>
+
+              <Forms.Datepicker selected={controlDueDate} onChange={setControlDueDate} placeholder="Select Date" />
+            </div>
+          </div>
+
+          <Forms.SubmitArea>
+            <Forms.SubmitButton>Save</Forms.SubmitButton>
+            <Forms.CancelButton>Cancel</Forms.CancelButton>
+          </Forms.SubmitArea>
+        </Forms.Form>
+      </Modal>
+    </>
   );
 }
 
@@ -71,27 +155,42 @@ function Calendar({ project }) {
         <div className="absolute" style={{ top: "90px", bottom: "40px", left: 0, right: 0 }}>
           <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
-          {project.phaseHistory.map((phase, index) => (
-            <PhaseMarker
-              key={index}
-              phase={phase.phase}
-              startedAt={phase.startTime}
-              finishedAt={phase.endTime || Time.today()}
-              lineStart={lineStart}
-              lineEnd={lineEnd}
-            />
-          ))}
+          <PhaseMarkers project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           <StartMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-          <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
           <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           {project.milestones.map((milestone: Milestones.Milestone) => (
             <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
           ))}
         </div>
+
+        <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
       </div>
     </div>
+  );
+}
+
+function PhaseMarkers({ project, lineStart, lineEnd }: { project: Projects.Project; lineStart: Date; lineEnd: Date }) {
+  return (
+    <>
+      {project.phaseHistory.map((phase, index) => (
+        <PhaseMarker
+          key={index}
+          phase={phase.phase}
+          startedAt={
+            phase.startTime ||
+            project.phaseHistory[index - 1]?.endTime ||
+            project.phaseHistory[index - 1]?.dueTime ||
+            project.startedAt
+          }
+          finishedAt={phase.endTime || phase.dueTime}
+          transparent={phase.startTime === null}
+          lineStart={lineStart}
+          lineEnd={lineEnd}
+        />
+      ))}
+    </>
   );
 }
 
@@ -563,7 +662,7 @@ function NoNextMilestones() {
   );
 }
 
-function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
+function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd, transparent }) {
   if (phase === "paused") return null;
   if (phase === "completed") return null;
   if (phase === "canceled") return null;
@@ -597,6 +696,7 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
         width: "calc(" + width + " - 2px)",
         top: 0,
         bottom: 0,
+        opacity: transparent ? 0.3 : 1,
       }}
     ></div>
   );
@@ -620,7 +720,7 @@ function EndMarker({ project, lineStart, lineEnd }) {
 
   const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  return <div className="bg-white-1 absolute top-0 bottom-0" style={{ left: left, width: "2px" }}></div>;
 }
 
 function StartMarker({ project, lineStart, lineEnd }) {
@@ -629,14 +729,17 @@ function StartMarker({ project, lineStart, lineEnd }) {
 
   const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
 
-  return <div className="bg-white-1 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  return <div className="bg-white-1 absolute top-0 bottom-0" style={{ left: left, width: "2px" }}></div>;
 }
 
 function TodayMarker({ lineStart, lineEnd }) {
   const today = Time.today();
-  const left = `${(Time.secondsBetween(lineStart, today) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+  const tomorrow = Time.add(today, 1, "days");
 
-  return <div className="bg-indigo-400 absolute -top-1 -bottom-1" style={{ left: left, width: "2px" }}></div>;
+  const left = `${(Time.secondsBetween(lineStart, today) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+  const width = `${(Time.secondsBetween(today, tomorrow) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
+
+  return <div className="bg-indigo-400/10 absolute top-0 bottom-0" style={{ left: left, width: width }}></div>;
 }
 
 function MilestoneMarker({ milestone, lineStart, lineEnd }) {
