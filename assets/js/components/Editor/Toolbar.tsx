@@ -59,6 +59,17 @@ function BulletListButton({ editor, iconSize }): JSX.Element {
   );
 }
 
+function NumberListButton({ editor, iconSize }): JSX.Element {
+  return (
+    <MenuBarToggle
+      onClick={() => editor.chain().focus().toggleOrderedList().run()}
+      isActive={editor.isActive("orderedList")}
+    >
+      <Icons.IconListNumbers size={iconSize} />
+    </MenuBarToggle>
+  );
+}
+
 function UndoButton({ editor, iconSize }): JSX.Element {
   return (
     <MenuBarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
@@ -121,18 +132,22 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
-          <BoldButton editor={editor} iconSize={16} />
-          <ItalicButton editor={editor} iconSize={16} />
-          <BulletListButton editor={editor} iconSize={16} />
+          <BoldButton editor={editor} iconSize={20} />
+          <ItalicButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
-          <LinkButton editor={editor} iconSize={16} />
+          <BulletListButton editor={editor} iconSize={20} />
+          <NumberListButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
-          <UndoButton editor={editor} iconSize={16} />
-          <RedoButton editor={editor} iconSize={16} />
+          <LinkButton editor={editor} iconSize={20} />
+        </div>
+
+        <div className="flex items-center border border-shade-2 rounded-lg">
+          <UndoButton editor={editor} iconSize={20} />
+          <RedoButton editor={editor} iconSize={20} />
         </div>
       </div>
     );
@@ -144,7 +159,11 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         <div className="flex items-center gap-1">
           <BoldButton editor={editor} iconSize={20} />
           <ItalicButton editor={editor} iconSize={20} />
+        </div>
+
+        <div className="flex items-center gap-1">
           <BulletListButton editor={editor} iconSize={20} />
+          <NumberListButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center gap-2">
