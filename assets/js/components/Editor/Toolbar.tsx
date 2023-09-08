@@ -48,6 +48,14 @@ function ItalicButton({ editor, iconSize }): JSX.Element {
   );
 }
 
+function StrikeButton({ editor, iconSize }): JSX.Element {
+  return (
+    <MenuBarToggle onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive("strike")}>
+      <Icons.IconStrikethrough size={iconSize} />
+    </MenuBarToggle>
+  );
+}
+
 function BulletListButton({ editor, iconSize }): JSX.Element {
   return (
     <MenuBarToggle
@@ -145,6 +153,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         <div className="flex items-center border border-shade-2 rounded-lg">
           <BoldButton editor={editor} iconSize={20} />
           <ItalicButton editor={editor} iconSize={20} />
+          <StrikeButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
@@ -171,6 +180,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         <div className="flex items-center gap-1">
           <BoldButton editor={editor} iconSize={20} />
           <ItalicButton editor={editor} iconSize={20} />
+          <StrikeButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center gap-1">
