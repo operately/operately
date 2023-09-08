@@ -223,7 +223,7 @@ function FeedAvatar({ person }) {
 
 import * as Feed from "@/features/feed";
 
-function useAddReactForm(update: Updates.Update) {
+function useAddReactForm(entityID: string, entityType: "update" | "comment") {
   const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
   const [postReaction, status] = Updates.useReactMutation({
@@ -234,8 +234,8 @@ function useAddReactForm(update: Updates.Update) {
     submit: (type: string) => {
       postReaction({
         variables: {
-          entityID: update.id,
-          entityType: "update",
+          entityID: entityID,
+          entityType: entityType,
           type: type,
         },
       });
@@ -247,7 +247,7 @@ function useAddReactForm(update: Updates.Update) {
 function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
   const ackable = ["review", "status_update"].includes(update.messageType);
-  const addReactionForm = useAddReactForm(update);
+  const addReactionForm = useAddReactForm(update.id, "update");
 
   return (
     <div className="flex items-start justify-between my-2">
@@ -371,8 +371,14 @@ function Comments({ update }) {
 }
 
 function Comment({ comment }) {
+  const addReactionForm = useAddReactForm(comment.id, "comment");
+  const testId = "comment-" + comment.id;
+
   return (
-    <div className="flex items-start justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1">
+    <div
+      className="flex items-start justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1"
+      data-test-id={testId}
+    >
       <div className="shrink-0">
         <Avatar person={comment.author} size="tiny" />
       </div>
@@ -390,6 +396,8 @@ function Comment({ comment }) {
         <div className="my-1">
           <RichContent jsonContent={JSON.parse(comment.message)} />
         </div>
+
+        <Feed.Reactions reactions={comment.reactions} size={20} form={addReactionForm} />
       </div>
     </div>
   );

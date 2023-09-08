@@ -138,6 +138,19 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("This is a comment."))
   end
 
+  feature "react to a comment", state do
+    {:ok, update} = add_status_update(state.project, "This is a status update.", state.champion.id)
+    {:ok, comment} = add_comment(update, "This is a comment.", state.champion.id)
+
+    state
+    |> visit_show(state.project)
+    |> assert_has(Query.text("This is a comment."))
+    |> UI.find(testid: "comment-#{comment.id}")
+    |> UI.click(testid: "reactions-button")
+    |> UI.click(testid: "reaction-thumbs_up-button")
+    |> UI.assert_has(testid: "reaction-thumbs_up")
+  end
+
   feature "react to a status update", state do
     add_status_update(state.project, "This is a status update.", state.champion.id)
 
@@ -486,6 +499,17 @@ defmodule Operately.Features.ProjectsTest do
           "message" => rich_text_paragraph(text),
           "old_health" => "on_track",
           "new_health" => "on_track",
+        },
+        author_id: author_id
+      })
+  end
+
+  def add_comment(update, text, author_id) do
+    {:ok, _} =
+      Operately.Updates.create_comment(update, %{
+        update_id: update.id,
+        content: %{
+          "message" => Jason.encode!(rich_text_paragraph(text))
         },
         author_id: author_id
       })
