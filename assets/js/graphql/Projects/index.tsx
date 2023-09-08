@@ -134,6 +134,8 @@ export interface Project {
   reviewer?: Person;
 
   isPinned: boolean;
+
+  updates: Updates.Update[];
 }
 
 export const GET_PROJECT = gql`
@@ -162,9 +164,7 @@ export const GET_PROJECT = gql`
       champion ${fragments.PERSON}
       reviewer ${fragments.PERSON}
 
-      updates {
-        id
-      }
+      updates ${Updates.UPDATE_FRAGMENT}
     }
   }
 `;

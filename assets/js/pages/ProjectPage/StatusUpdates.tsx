@@ -6,132 +6,79 @@ import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import Button from "@/components/Button";
+import { useNavigate } from "react-router-dom";
+import * as Projects from "@/graphql/Projects";
+import * as Time from "@/utils/time";
 
-import * as ProjectQueries from "@/graphql/Projects";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 
-interface StatusUpdatesProps {
-  project: ProjectQueries.Project;
-}
+export default function StatusUpdates({ project, me, refetch }) {
+  const navigate = useNavigate();
+  const gotoNewStatusUpdate = () => navigate(`/projects/${project.id}/updates/new?messageType=status_update`);
 
-interface StatusUpdateProps {
-  linkTo: string;
-  person: ProjectQueries.Person;
-  title: string;
-  message: string | JSX.Element;
-  comments: number;
-  time: Date;
-}
-
-function AckStatus({ update }) {
-  if (update.acknowledged) {
-    return (
-      <div className="flex items-center text-sm text-green-400 gap-1">
-        <Icons.IconCircleCheckFilled size={16} />
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex items-center text-sm text-yellow-400 gap-1 font-medium">
-        <Icons.IconClockFilled size={16} />
-        Waiting for Acknowledgement
-      </div>
-    );
-  }
-}
-
-function StatusUpdate(props: StatusUpdateProps) {
   return (
-    <Link to={props.linkTo} className="flex items-start justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2">
-      <div className="flex items-start gap-4">
-        <div className="shrink-0">
-          <Avatar person={props.person} />
+    <div className="my-8">
+      <div className="font-extrabold text-lg text-white-1 leading-snug">Status Updates</div>
+      <div className="text-white-2 max-w-xl">Asking the champion for a status update every Friday.</div>
+
+      <LastStatusUpdate project={project} />
+
+      <div className="mt-4 flex items-center gap-4">
+        <Button variant="secondary" onClick={gotoNewStatusUpdate} data-test-id="add-status-update">
+          Post Status Update
+        </Button>
+        <a className="text-blue-400 underline cursor-pointer">See all status updates</a>
+      </div>
+    </div>
+  );
+}
+
+function LastStatusUpdate({ project }: { project: Projects.Project }) {
+  const lastUpdate = project.updates.filter((update) => update.messageType === "status_update")[0];
+  if (!lastUpdate) return null;
+
+  const content = lastUpdate.content as UpdateContent.StatusUpdate;
+
+  return (
+    <div className="flex flex-col rounded-lg bg-dark-3 mt-4 shadow-lg border border-shade-1">
+      <div className="flex items-start">
+        <div className="max-w-xl flex-1 p-4">
+          <div className="rounded-lg ">
+            <div className="font-bold text-white-1 mb-2">Last Update</div>
+            <RichContent jsonContent={lastUpdate.content["message"]} />
+          </div>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <div className="font-bold">
-              {props.person.fullName} shared a {props.title}
+        <div className="ml-4 p-4 text-sm flex flex-col gap-4 border-l border-shade-2 h-full">
+          <div className="">
+            <div className="font-bold text-white-1">Health</div>
+            <div>
+              {content.newHealth
+                .split("_")
+                .map((word) => word[0].toUpperCase() + word.slice(1))
+                .join(" ")}
             </div>
-            <AckStatus update={props.update} />
           </div>
-          <div className="line-clamp-4" style={{ maxWidth: "780px" }}>
-            {props.message}
+
+          <div className="">
+            <div className="font-bold text-white-1">Phase</div>
+            <div className="capitalize">{content.phase}</div>
           </div>
-        </div>
-      </div>
 
-      <div className="text-right w-32">
-        <FormattedTime time={props.time} format="short-date" />
-      </div>
-    </Link>
-  );
-}
+          <div className="">
+            <div className="font-bold text-white-1">Next Milestone</div>
+            <div className="capitalize">{content.nextMilestoneTitle || "No upcomming milestone"}</div>
+          </div>
 
-function StatusUpdateZeroState() {
-  return (
-    <div className="flex items-center justify-center text-white-2 gap-2 py-24">
-      <Icons.IconMessage2 size={24} />
-      Share the progress of the project with your team.
-    </div>
-  );
-}
+          <div className="">
+            <div className="font-bold text-white-1">Posted</div>
 
-function StatusUpdateList({ project, updates }) {
-  return (
-    <>
-      {updates.map((update) => (
-        <StatusUpdate
-          key={update.id}
-          linkTo={`/projects/${project.id}/updates/${update.id}`}
-          person={update.author}
-          title={"Status Update"}
-          message={<RichContent jsonContent={update.message} />}
-          comments={update.comments.length}
-          time={update.insertedAt}
-          update={update}
-        />
-      ))}
-    </>
-  );
-}
-
-export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
-  const project = props.project;
-  const postUpdateLink = `/projects/${project.id}/new_update`;
-  const updates = project.activities;
-
-  const isEmpty = updates.length === 0;
-
-  return (
-    <div className="px-16 rounded-b-[20px] py-8 bg-dark-2 min-h-[350px] border-t border-shade-1">
-      <div className="">
-        <div className="flex items-center justify-between gap-4">
-          <SeparatorLine />
-          <SectionTitle title="Project Activity" />
-          <SeparatorLine />
-        </div>
-
-        <div className="fadeIn">
-          {isEmpty ? <StatusUpdateZeroState /> : <StatusUpdateList project={project} updates={updates} />}
+            <div className="flex items-center gap-2">
+              <FormattedTime time={lastUpdate.insertedAt} format="relative" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-}
-
-function PostUpdateButton({ linkTo }) {
-  return (
-    <Button linkTo={linkTo}>
-      <Icons.IconMessage2 size={20} />
-      Post Update
-    </Button>
-  );
-}
-
-function SeparatorLine() {
-  return <div className="border-b border-white-2 flex-1"></div>;
-}
-
-function SectionTitle({ title }) {
-  return <div className="font-bold py-4 flex items-center gap-2 uppercase tracking-wide">{title}</div>;
 }

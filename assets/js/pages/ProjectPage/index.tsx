@@ -10,6 +10,7 @@ import Timeline from "./Timeline";
 import Description from "./Description";
 import KeyResources from "./KeyResources";
 import Toolbar from "./Toolbar";
+import StatusUpdates from "./StatusUpdates";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -55,13 +56,14 @@ export function Page() {
           <Header project={project} />
         </div>
 
-        <Toolbar project={project} refetch={refetch} me={me} />
         <Divider />
         <Description me={me} project={project} refetch={refetch} />
         <Divider />
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
+        <Divider />
+        <StatusUpdates project={project} refetch={refetch} />
         <Divider />
         <Activity project={project} key={fetchVersion} />
       </div>
