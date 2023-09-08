@@ -59,6 +59,17 @@ function BulletListButton({ editor, iconSize }): JSX.Element {
   );
 }
 
+function BlockquoteButton({ editor, iconSize }): JSX.Element {
+  return (
+    <MenuBarToggle
+      onClick={() => editor.chain().focus().toggleBlockquote().run()}
+      isActive={editor.isActive("blockquote")}
+    >
+      <Icons.IconBlockquote size={iconSize} />
+    </MenuBarToggle>
+  );
+}
+
 function NumberListButton({ editor, iconSize }): JSX.Element {
   return (
     <MenuBarToggle
@@ -128,7 +139,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
     return (
       <div className="flex items-center gap-2 rounded-lg">
         <div className="flex items-center border border-shade-2 rounded-lg">
-          <EditLinkButton editor={editor} iconSize={16} />
+          <EditLinkButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
@@ -142,6 +153,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
+          <BlockquoteButton editor={editor} iconSize={20} />
           <LinkButton editor={editor} iconSize={20} />
         </div>
 
@@ -167,6 +179,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         </div>
 
         <div className="flex items-center gap-2">
+          <BlockquoteButton editor={editor} iconSize={20} />
           <LinkButton editor={editor} iconSize={20} />
         </div>
 
