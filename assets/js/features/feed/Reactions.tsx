@@ -1,50 +1,57 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
+import { useBoolState } from "@/utils/useBoolState";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";
+import * as Icons from "@tabler/icons-react";
+
+import * as Updates from "@/graphql/Projects/updates";
 
 const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
 
-export default function Reactions({ reactions, addReactionMutation, size, onNewReaction }) {
-  const [addReaction, _status] = addReactionMutation;
+interface ReactionsProps {
+  reactions: Updates.Reaction[];
+  size: number;
+  form: any;
+}
 
+export function Reactions({ reactions, form, size }: ReactionsProps): JSX.Element {
   return (
-    <div className="flex items-start gap-2 flex-wrap">
+    <div className="flex items-start gap-2 flex-wrap mb-2">
       {reactions.map((reaction, index) => (
         <Reaction key={index} reaction={reaction} size={size} />
       ))}
 
-      <AddReaction size={size} addReaction={addReaction} onNewReaction={onNewReaction} />
+      <AddReaction size={size} form={form} />
     </div>
   );
 }
 
 function Reaction({ reaction, size }) {
+  const testId = `reaction-${reaction.reactionType}`;
   return (
-    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-lg p-1">
+    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-lg p-1" data-test-id={testId}>
       <Avatar person={reaction.person} size={AvatarSize.Tiny} />
       <ReactionIcon size={size} type={reaction.reactionType} />
     </div>
   );
 }
 
-function AddReaction({ size, addReaction, onNewReaction }) {
-  const [active, setActive] = React.useState(false);
+function AddReaction({ size, form }) {
+  const [active, _, activate, deactivate] = useBoolState(false);
 
   const handleAddReaction = (type: string) => {
-    setActive(false);
-    addReaction(type);
-    onNewReaction();
+    deactivate();
+    form.submit(type);
   };
 
   return (
-    <div className="rounded-lg bg-shade-2 p-1">
+    <div className="rounded-lg bg-shade-2 p-1" data-test-id="reactions-button">
       <div className="flex items-center gap-3 transition-all">
         {active ? (
           <ReactionPallete size={size} handleAddReaction={handleAddReaction} />
         ) : (
-          <AddReactionZeroState size={size} onClick={() => setActive(true)} />
+          <AddReactionZeroState size={size} onClick={activate} />
         )}
       </div>
     </div>
@@ -63,7 +70,12 @@ function ReactionPallete({ size, handleAddReaction }) {
   return (
     <div className="flex gap-2 items-center">
       {PossibleReactionTypes.map((type) => (
-        <div key={type} className="hover:text-pink-400 cursor-pointer" onClick={() => handleAddReaction(type)}>
+        <div
+          key={type}
+          className="hover:text-pink-400 cursor-pointer"
+          onClick={() => handleAddReaction(type)}
+          data-test-id={`reaction-${type}-button`}
+        >
           <ReactionIcon size={size} type={type} />
         </div>
       ))}

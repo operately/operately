@@ -144,8 +144,8 @@ defmodule Operately.Features.ProjectsTest do
     state
     |> visit_show(state.project)
     |> UI.click(testid: "reactions-button")
-    |> UI.click(testid: "reaction-like-button")
-    |> UI.assert_has(testid: "reaction-like")
+    |> UI.click(testid: "reaction-thumbs_up-button")
+    |> UI.assert_has(testid: "reaction-thumbs_up")
   end
 
   feature "acknowledge a status update", state do
