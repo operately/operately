@@ -221,9 +221,33 @@ function FeedAvatar({ person }) {
   );
 }
 
+import * as Feed from "@/features/feed";
+
+function useAddReactForm(update: Updates.Update) {
+  const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
+
+  const [postReaction, status] = Updates.useReactMutation({
+    onCompleted: () => refetch(),
+  });
+
+  return {
+    submit: (type: string) => {
+      postReaction({
+        variables: {
+          entityID: update.id,
+          entityType: "update",
+          type: type,
+        },
+      });
+    },
+    loading: status.loading,
+  };
+}
+
 function BigContainer({ project, update, person, time, children, tint = "gray" }) {
   const colors = ContainerColors[tint];
   const ackable = ["review", "status_update"].includes(update.messageType);
+  const addReactionForm = useAddReactForm(update);
 
   return (
     <div className="flex items-start justify-between my-2">
@@ -252,9 +276,7 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
           <div className="px-4">{children}</div>
 
           <div className="px-4 py-2 mt-2">
-            <div className="flex justify-between items-center mb-3">
-              <Icons.IconMoodPlus size={16} className="text-white-2 cursor-pointer" />
-            </div>
+            <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
 
             <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 border-t-2 border-dark-5 text-white-2">
               <Comments update={update} />

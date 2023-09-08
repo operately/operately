@@ -71,6 +71,8 @@ export interface Update {
   acknowledgingPerson: Person;
   acknowledged: boolean;
   acknowledgedAt: Date;
+
+  reactions: Reaction[];
 }
 
 interface Comment {
@@ -89,7 +91,7 @@ export interface Person {
   avatarUrl: string;
 }
 
-interface Reaction {
+export interface Reaction {
   id: string;
   reactionType: string;
   person: Person;
@@ -163,4 +165,17 @@ export function splitCommentsBeforeAndAfterAck(update: Update) {
   } else {
     return { beforeAck: update.comments, afterAck: [] };
   }
+}
+
+export const REACTION_TYPES = ["thumbs_up", "thumbs_down", "heart", "rocket"];
+export const ADD_REACTION = gql`
+  mutation AddReaction($entityID: ID!, $entityType: String!, $type: String!) {
+    addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
+      id
+    }
+  }
+`;
+
+export function useReactMutation(options = {}) {
+  return useMutation(ADD_REACTION, options);
 }

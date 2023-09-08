@@ -138,6 +138,16 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("This is a comment."))
   end
 
+  feature "react to a status update", state do
+    add_status_update(state.project, "This is a status update.", state.champion.id)
+
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "reactions-button")
+    |> UI.click(testid: "reaction-thumbs_up-button")
+    |> UI.assert_has(testid: "reaction-thumbs_up")
+  end
+
   feature "acknowledge a status update", state do
     new_champion = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
 
