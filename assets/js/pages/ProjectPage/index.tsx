@@ -50,22 +50,24 @@ export function Page() {
 
   return (
     <Paper.Root size="medium">
-      <div className="p-8 border border-dark-3 bg-dark-3 rounded shadow-xl">
+      <div className="p-8 border border-dark-3 bg-dark-2 rounded shadow-xl">
         <div className="bg-dark-2 p-8 -mx-8 -mt-8">
           <Header project={project} />
         </div>
 
         <Toolbar project={project} refetch={refetch} me={me} />
-
-        <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 p-4 mb-8 mt-8">
-          <Description me={me} project={project} refetch={refetch} />
-          <KeyResources editable={championOfProject} project={project} refetch={refetch} />
-        </div>
-
+        <Description me={me} project={project} refetch={refetch} />
+        <Divider />
+        <KeyResources editable={championOfProject} project={project} refetch={refetch} />
+        <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
-
+        <Divider />
         <Activity project={project} key={fetchVersion} />
       </div>
     </Paper.Root>
   );
+}
+
+function Divider() {
+  return <div className="-mx-8 border-t border-dark-5" />;
 }
