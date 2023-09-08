@@ -27,10 +27,7 @@ function ChampionToolbarOpen({ project, onClose }) {
   const gotoNewStatusUpdate = () => navigate(`/projects/${project.id}/updates/new?messageType=status_update`);
 
   return (
-    <div
-      className="bg-dark-2 border-y border-shade-2 shadow-lg px-8 py-4 -mx-8 cursor-default"
-      data-test-id="champion-toolbar"
-    >
+    <div className="bg-dark-2 border-y border-shade-2 px-8 py-4 -mx-8 cursor-default" data-test-id="champion-toolbar">
       <div className="flex items-center gap-1" onClick={onClose}>
         <Icons.IconChevronDown className="text-white-2 -ml-5 block" size={16} />
         <div className="font-semibold">Champion's Toolbar</div>
@@ -52,7 +49,7 @@ function ChampionToolbarOpen({ project, onClose }) {
 function ChampionToolbarClosed({ onOpen }) {
   return (
     <div
-      className="flex items-center gap-1 bg-dark-2 border-y border-shade-2 shadow-lg px-8 py-4 -mx-8 cursor-default"
+      className="flex items-center gap-1 bg-dark-2 border-y border-shade-2 px-8 py-4 -mx-8 cursor-default"
       onClick={onOpen}
       data-test-id="champion-toolbar"
     >

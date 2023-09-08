@@ -65,7 +65,7 @@ function Editor({ project, refetch, deactivateEdit }) {
 
   return (
     <TipTapEditor.Root>
-      <div className="border rounded-t-lg border-dark-8 p-4 bg-dark-2 z-20 relative -mt-4 -mx-4">
+      <div className="z-20 relative my-8">
         <div className="text-white-1 mb-4" style={{ minHeight: "200px" }}>
           <TipTapEditor.EditorContent editor={editor} />
         </div>
@@ -106,9 +106,9 @@ function Display({ me, project, activateEdit }) {
 
   return (
     <Context.Provider value={{ me, project, editable, isClamped, isCondensed, toggleLines, lines }}>
-      <div className="flex flex-col gap-1 pb-4 relative border-b border-dark-8">
-        <div className="font-bold flex gap-2 items-center">
-          About
+      <div className="flex flex-col gap-1 relative py-8">
+        <div className="flex gap-2 items-center mb-2">
+          <div className="font-extrabold text-lg text-white-1">Description</div>
           <EditButton onClick={activateEdit} />
         </div>
         <div className="font-medium">
@@ -140,17 +140,23 @@ function ToggleHeight() {
 
   if (!isClamped && lines === CondensedLineCount) return null;
 
-  return (
-    <div className="flex justify-center mt-2 absolute left-0 right-0 -bottom-2 text-white-2">
-      <div
-        className="bg-dark-5 px-4 rounded-lg hover:px-6 transition-all cursor-pointer"
+  if (isCondensed) {
+    return (
+      <a
+        className="text-blue-400 underline cursor-pointer inline-block mt-4"
         onClick={toggleLines}
         data-test-id="expand-project-description"
       >
-        {isCondensed ? <Icons.IconChevronDown size={16} /> : <Icons.IconChevronUp size={16} />}
-      </div>
-    </div>
-  );
+        Read the full description
+      </a>
+    );
+  } else {
+    return (
+      <a className="text-blue-400 underline cursor-pointer inline-block mt-4" onClick={toggleLines}>
+        Collapse
+      </a>
+    );
+  }
 }
 
 function EditButton({ onClick }) {

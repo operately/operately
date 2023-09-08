@@ -22,7 +22,10 @@ interface Props {
 
 export default function KeyResources({ project, editable, refetch }: Props): JSX.Element {
   return (
-    <div className="flex flex-col gap-1 pt-3 relative">
+    <div className="flex flex-col gap-1 relative my-8">
+      <div className="font-extrabold text-lg text-white-1 leading-none">Key Resources</div>
+      <div className="text-white-2 max-w-xl">Links to documents, spreadsheets, design assets...</div>
+
       <Body project={project} refetch={refetch} editable={editable} />
     </div>
   );
@@ -30,7 +33,7 @@ export default function KeyResources({ project, editable, refetch }: Props): JSX
 
 function Body({ project, refetch, editable }: Props): JSX.Element {
   return (
-    <div className="flex flex-wrap gap-2 mt-1 items-center">
+    <div className="flex flex-wrap gap-2 mt-4 items-center">
       {project.keyResources.length > 0 ? (
         <Links project={project} refetch={refetch} editable={editable} />
       ) : (
@@ -62,7 +65,7 @@ function Link({ resource, refetch, editable }: { resource: KeyResource; refetch:
   const href = resource.link.startsWith("http") ? resource.link : `https://${resource.link}`;
 
   return (
-    <div className="font-medium bg-shade-1 flex items-center rounded-lg cursor-pointer text-sm overflow-hidden">
+    <div className="font-medium bg-shade-1 flex items-center rounded-lg cursor-pointer overflow-hidden">
       <a
         href={href}
         target="_blank"
@@ -94,8 +97,8 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
   return (
     <Popover.Root open={popoverOpen} onOpenChange={changePopoverOpen}>
       <Popover.Trigger asChild>
-        <div className="text-white-2 hover:bg-shade-1 pr-1 pl-1 py-2" data-test-id="key-resource-options">
-          <Icons.IconDotsVertical size={16} />
+        <div className="text-white-2 hover:bg-shade-1 pr-1 pl-1 py-2.5" data-test-id="key-resource-options">
+          <Icons.IconDotsVertical size={20} strokeWidth={1.5} />
         </div>
       </Popover.Trigger>
 
@@ -125,7 +128,7 @@ function EditResourceLinkOption({ onClick }) {
       onClick={onClick}
       data-test-id="edit-key-resource"
     >
-      <Icons.IconPencil size={16} className="text-white-1" />
+      <Icons.IconPencil size={24} className="text-white-1" />
       Edit
     </div>
   );
@@ -262,7 +265,7 @@ function AddResource({ project, refetch }) {
         onClick={openModal}
         data-test-id="add-key-resource"
       >
-        <Icons.IconPlus size={16} />
+        <Icons.IconPlus size={24} strokeWidth={1.5} />
       </div>
 
       <Modal title={"Add a key resource"} isOpen={isModalOpen} hideModal={hideModal} minHeight="200px">

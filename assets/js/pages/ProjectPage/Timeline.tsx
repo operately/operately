@@ -29,19 +29,23 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
-      <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3" data-test-id="timeline">
-        <div className="flex items-center justify-between pb-3 border-b border-dark-8 p-4">
-          <div className="flex items-start gap-4">
-            <Dates />
-            <Phase />
-          </div>
-          <div>
-            <EditTimeline project={project} refetch={refetch} />
-          </div>
-        </div>
+      <div className="my-8">
+        <div className="font-extrabold text-lg text-white-1 leading-none">Timeline</div>
 
-        <Calendar project={project} />
-        <MilestoneList project={project} refetch={refetch} />
+        <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 my-4" data-test-id="timeline">
+          <div className="flex items-center justify-between pb-3 border-b border-dark-8 p-4">
+            <div className="flex items-start gap-4">
+              <Dates />
+              <Phase />
+            </div>
+            <div>
+              <EditTimeline project={project} refetch={refetch} />
+            </div>
+          </div>
+
+          <Calendar project={project} />
+          <MilestoneList project={project} refetch={refetch} />
+        </div>
       </div>
     </Context.Provider>
   );
