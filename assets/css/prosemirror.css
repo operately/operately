@@ -104,3 +104,10 @@
   font-weight: 500;
   color: var(--color-sky-500);
 }
+
+.ProseMirror blockquote {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--color-white-1);
+}
