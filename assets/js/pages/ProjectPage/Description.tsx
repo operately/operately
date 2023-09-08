@@ -108,7 +108,7 @@ function Display({ me, project, activateEdit }) {
     <Context.Provider value={{ me, project, editable, isClamped, isCondensed, toggleLines, lines }}>
       <div className="flex flex-col gap-1 relative py-8">
         <div className="flex gap-2 items-center mb-2">
-          <div className="font-extrabold text-lg text-white-1">Project Description</div>
+          <div className="font-extrabold text-lg text-white-1">Description</div>
           <EditButton onClick={activateEdit} />
         </div>
         <div className="font-medium">
@@ -142,7 +142,11 @@ function ToggleHeight() {
 
   if (isCondensed) {
     return (
-      <a className="text-blue-400 underline cursor-pointer inline-block mt-4" onClick={toggleLines}>
+      <a
+        className="text-blue-400 underline cursor-pointer inline-block mt-4"
+        onClick={toggleLines}
+        data-test-id="expand-project-description"
+      >
         Read the full description
       </a>
     );

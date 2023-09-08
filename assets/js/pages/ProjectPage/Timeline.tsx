@@ -30,7 +30,7 @@ export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
       <div className="my-8">
-        <div className="font-bold text-lg text-white-1 leading-none">Timeline</div>
+        <div className="font-extrabold text-lg text-white-1 leading-none">Timeline</div>
 
         <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 my-4" data-test-id="timeline">
           <div className="flex items-center justify-between pb-3 border-b border-dark-8 p-4">

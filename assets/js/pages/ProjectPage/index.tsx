@@ -56,6 +56,7 @@ export function Page() {
         </div>
 
         <Toolbar project={project} refetch={refetch} me={me} />
+        <Divider />
         <Description me={me} project={project} refetch={refetch} />
         <Divider />
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
