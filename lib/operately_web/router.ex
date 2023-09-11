@@ -31,6 +31,18 @@ defmodule OperatelyWeb.Router do
     pipe_through [:browser, :redirect_if_account_is_authenticated]
 
     get "/accounts/log_in", AccountSessionController, :new
+
+    # In feature tests, we use the following route to log in as a user
+    # during feature tests. The route is not available in production.
+    #
+    # The route accepts one query parameter, `email`, which is the
+    # email address of the user to log in as.
+    if Application.compile_env(:operately, :test_routes) do
+      get "/accounts/auth/test_login", AccountOauthController, :test_login
+    end
+    if Application.compile_env(:operately, :dev_routes) do
+      get "/accounts/auth/dev_login", AccountOauthController, :dev_login
+    end
   end
 
   scope "/", OperatelyWeb do
@@ -62,14 +74,6 @@ defmodule OperatelyWeb.Router do
 
   if Application.compile_env(:operately, :dev_routes) do
     scope "/" do
-      # In feature tests, we use the following route to log in as a user
-      # during feature tests. The route is not available in production.
-      #
-      # The route accepts one query parameter, `email`, which is the
-      # email address of the user to log in as.
-      get "/accounts/auth/test_login", OperatelyWeb.AccountOauthController, :test_login
-      get "/accounts/auth/dev_login", OperatelyWeb.AccountOauthController, :dev_login
-
       forward "/sent_emails", Bamboo.SentEmailViewerPlug
     end
   end
