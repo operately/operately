@@ -405,6 +405,10 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.select_person(contrib.full_name)
     |> UI.fill(testid: "contributor-responsibility-input", with: "Lead the project")
     |> UI.click(testid: "save-contributor")
+
+    :timer.sleep(200)
+
+    state
     |> visit_show(state.project)
     |> UI.assert_text(short_name(state.champion) <> " added " <> short_name(contrib) <> " to the project.")
   end
