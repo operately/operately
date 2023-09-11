@@ -1,1 +1,5 @@
 Here are your assignments for today:
+<%= Enum.map @assignment_groups, fn group -> %>
+<%= group.name %>
+<%= assignments_to_text(group.assignments) %>
+<% end %>

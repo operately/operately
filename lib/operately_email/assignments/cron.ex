@@ -32,9 +32,8 @@ defmodule OperatelyEmail.Assignments.Cron do
     if result == [] do
       IO.puts("No assignments for #{person.account.email}")
     else
-      {:ok, email} = OperatelyEmail.Emails.assignments(person, result)
-
-      OperatelyEmail.Mailer.deliver_now(email)
+      OperatelyEmail.Emails.assignments(person, result)
+      |> OperatelyEmail.Mailer.deliver_now()
     end
   end
 end
