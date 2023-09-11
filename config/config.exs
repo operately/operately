@@ -80,7 +80,7 @@ config :operately, Oban,
     {Oban.Plugins.Pruner, max_age: 300},    
     {Oban.Plugins.Cron,
      crontab: [
-       {"0 * * * *", OperatelyEmail.HourlyWorker},
+       {"0 8 * * *", OperatelyEmail.Assignments.Cron}
      ]}
   ],
   queues: [
@@ -90,6 +90,8 @@ config :operately, Oban,
 
 config :operately, OperatelyEmail.Mailer,
   adapter: Bamboo.LocalAdapter
+
+config :operately, notification_email: System.get_env("NOTIFICATION_EMAIL")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
