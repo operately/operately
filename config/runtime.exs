@@ -48,8 +48,14 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  host = System.get_env("OPERATELY_HOST")
   port = String.to_integer(System.get_env("PORT") || "4000")
+
+  if host == nil do
+    raise """
+    environment variable OPERATELY_HOST is missing.
+    """
+  end
 
   config :operately, OperatelyWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
