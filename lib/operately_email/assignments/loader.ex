@@ -1,47 +1,9 @@
-defmodule OperatelyEmail.Email do
-  alias Operately.{People, Projects}
+defmodule OperatelyEmail.Assignments.Loader do
+  import Ecto.Query
   alias Operately.Repo
+  alias Operately.Projects.Project
 
-  def assignments_email(person) do
-    import Bamboo.Email
-
-    company = Repo.preload(person, [:company]).company
-    account = Repo.preload(person, [:account]).account
-
-    assignment_groups = assignments(person)
-
-    if Enum.empty?(assignment_groups) do
-      :no_assignments
-    else
-      assigns = %{
-        company: company,
-        assignment_groups: assignment_groups
-      }
-
-      {:ok, new_email(
-        to: account.email,
-        from: {org_name(company), from_email()},
-        subject: "#{org_name(company)}: Your assignments for today",
-        html_body: OperatelyEmail.Views.Assignments.html(assigns),
-        text_body: OperatelyEmail.Views.Assignments.text(assigns)
-      )}
-    end
-  end
-
-  defp from_email do
-    Application.get_env(:operately, :notification_email)
-  end
-
-  defp org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  def assignments(person) do
-    import Ecto.Query
-    alias Operately.Repo
-    alias Operately.Projects.Project
-    alias Operately.Projects.Milestone
-
+  def load(person) do
     projects = Repo.all(
       from p in Project,
         join: a in assoc(p, :contributors),
@@ -125,5 +87,4 @@ defmodule OperatelyEmail.Email do
     end
     |> DateTime.to_date()
   end
-
 end

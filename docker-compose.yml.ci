@@ -19,7 +19,7 @@ services:
       - DB_HOST=db
       - DB_USERNAME=postgres
       - DB_PASSWORD=keyboard-cat
-      - NOTIFICATION_EMAIL="notifications@locahost.ci"
+      - NOTIFICATION_EMAIL=notifications@locahost.ci
     env_file:
       - .env
 
