@@ -168,7 +168,7 @@ defmodule Operately.Features.ProjectsTest do
     change_reviewer(state.project, state.champion)
     add_status_update(state.project, "This is a status update.", new_champion.id)
 
-    :timer.sleep(100) # give some time for the update to be created
+    :timer.sleep(200) # give some time for the update to be created
 
     state
     |> visit_show(state.project)
