@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <title>Assignments</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+
+      h1 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="padding: 10px 20px;">
+      <table width="100%" style="background:#fff;margin:0;padding:0;border:0;border-collapse:collapse;border-spacing:0; max-width: 40em">
+        <tr style="font-size: 22px; font-family: sans-serif; font-weight: 900;">
+          <td>
+            <%= @company.name %>
+          </td>
+        </tr>
+        <tr style="font-size: 22px; font-family: sans-serif; font-weight: 800;">
+          <td>
+            Here are your assignments
+          </td>
+        </tr>
+        <tr style="height: 20px">
+          <td></td>
+        </tr>
+        <tr style="height: 20px; border-top: 1px solid #ccc;">
+          <td></td>
+        </tr>
+
+        <%= Enum.map @assignment_groups, fn group -> %>
+          <tr style="font-size: 17px; font-family: sans-serif; font-weight: 800;">
+            <td><%= group.name %></td>
+          </tr>
+
+          <%= Enum.map group.assignments, fn assignment -> %>
+            <%= case assignment.type do %>
+            <% :status_update -> %>
+              <tr style="font-size: 17px; font-family: sans-serif; height: 30px;">
+                <td><span><a href="<%= assignment.link %>">Post a Status Update</a> <span style="color: #999999"><%= assignment.due %></span></td> 
+              <tr>
+            <% :milestone -> %>
+              <tr style="font-size: 17px; font-family: sans-serif; height: 30px;">
+                <td><span><a href="<%= assignment.link %>">Complete the <%= assignment.name %> milestone</a> <span style="color: #999999"><%= assignment.due %></span></td> 
+              <tr>
+            <% _ -> %>
+              <tr style="font-size: 17px; font-family: sans-serif; height: 30px;">
+              <tr>
+          <% end %>
+        <% end %>
+      </table>
+    </div>
+  </body>
+</html>

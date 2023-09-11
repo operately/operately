@@ -4,7 +4,15 @@ defmodule OperatelyEmail.Mailer do
   end
 
   defp adapter do
-    Bamboo.SendGridAdapter
+    cond do
+      Application.get_env(:operately, :dev_routes) ->
+        IO.inspect("sending to local")
+        Bamboo.LocalAdapter
+      Application.get_env(:operately, :test_routes) ->
+        Bamboo.TestAdapter
+      true ->
+        Bamboo.SendGridAdapter
+    end
   end
 
   defp config() do

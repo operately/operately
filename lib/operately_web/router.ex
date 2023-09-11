@@ -44,19 +44,6 @@ defmodule OperatelyWeb.Router do
   scope "/", OperatelyWeb do
     pipe_through [:browser]
 
-    # In Wallaby, we use the following route to log in as a user
-    # during feature tests. The route is not available in production.
-    #
-    # The route accepts one query parameter, `email`, which is the
-    # email address of the user to log in as.
-    if Application.compile_env(:operately, :test_routes) do
-      get "/accounts/auth/test_login", AccountOauthController, :test_login
-    end
-
-    if Application.compile_env(:operately, :dev_routes) do
-      get "/accounts/auth/dev_login", AccountOauthController, :dev_login
-    end
-
     delete "/accounts/log_out", AccountSessionController, :delete
     get "/accounts/confirm", AccountConfirmationController, :new
     post "/accounts/confirm", AccountConfirmationController, :create
@@ -73,27 +60,24 @@ defmodule OperatelyWeb.Router do
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Schema
   end
 
+  if Application.compile_env(:operately, :dev_routes) do
+    scope "/" do
+      # In feature tests, we use the following route to log in as a user
+      # during feature tests. The route is not available in production.
+      #
+      # The route accepts one query parameter, `email`, which is the
+      # email address of the user to log in as.
+      get "/accounts/auth/test_login", OperatelyWeb.AccountOauthController, :test_login
+      get "/accounts/auth/dev_login", OperatelyWeb.AccountOauthController, :dev_login
+
+      forward "/sent_emails", Bamboo.SentEmailViewerPlug
+    end
+  end
+
   scope "/", OperatelyWeb do
     pipe_through [:browser, :require_authenticated_account]
 
     get "/*page", PageController, :index
-  end
-
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:operately, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :browser
-
-      live_dashboard "/dashboard", metrics: OperatelyWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
   end
 
 end
