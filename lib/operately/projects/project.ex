@@ -13,6 +13,7 @@ defmodule Operately.Projects.Project do
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
     has_many :phase_history, Operately.Projects.PhaseHistory, foreign_key: :project_id
+    has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
 
     field :description, :map
     field :name, :string

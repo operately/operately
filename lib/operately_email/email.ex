@@ -1,25 +1,21 @@
 defmodule OperatelyEmail.Email do
-  import Bamboo.Email
-
   alias Operately.{People, Projects}
   alias Operately.Repo
 
   def assignments_email(person) do
+    import Bamboo.Email
+
     company = Repo.preload(person, [:company]).company
     account = Repo.preload(person, [:account]).account
 
-    pending_assignments = People.get_assignments(
-      person,
-      DateTime.from_unix!(0),
-      DateTime.utc_now()
-    )
+    assignment_groups = assignments(person)
 
-    if Enum.empty?(pending_assignments) do
+    if Enum.empty?(assignment_groups) do
       :no_assignments
     else
       assigns = %{
         company: company,
-        assignments: pending_assignments
+        assignment_groups: assignment_groups
       }
 
       {:ok, new_email(
@@ -33,31 +29,101 @@ defmodule OperatelyEmail.Email do
   end
 
   defp from_email do
-    "notification@operately.com"
+    Application.get_env(:operately, :notification_email)
   end
 
   defp org_name(company) do
     "Operately (#{company.name})"
   end
 
-  # defp relative_due(due) do
-  #   due = if due.__struct__ == NaiveDateTime do
-  #     due |> DateTime.from_naive!("Etc/UTC")
-  #   else
-  #     due
-  #   end
+  def assignments(person) do
+    import Ecto.Query
+    alias Operately.Repo
+    alias Operately.Projects.Project
+    alias Operately.Projects.Milestone
 
-  #   today = DateTime.utc_now() |> DateTime.to_date()
-  #   datetime_date = due |> DateTime.to_date()
+    projects = Repo.all(
+      from p in Project,
+        join: a in assoc(p, :contributors),
+        where: a.person_id == ^person.id and a.role == :champion,
+        preload: [:milestones]
+    )
 
-  #   case Date.compare(datetime_date, today) do
-  #     :lt ->
-  #       days_ago = Date.diff(today, datetime_date)
+    projects |> Enum.map(fn project ->
+      %{
+        name: project.name,
+        assignments: status_updates(project) ++ milestones(project)
+      }
+    end)
+    |> Enum.filter(fn assignment_group -> 
+      !Enum.empty?(assignment_group.assignments) 
+    end)
+  end
 
-  #       "was due #{days_ago} days ago"
-  #     :eq ->
-  #       "is due today"
-  #   end
-  # end
+  defp status_updates(project) do
+    if project.next_update_scheduled_at < DateTime.utc_now() do
+      [
+        %{
+          type: :status_update,
+          due: relative_due(project.next_update_scheduled_at),
+          url: project_status_update_url(project),
+          name: "Status Update"
+        }
+      ]
+    else
+      []
+    end
+  end
+
+  defp milestones(project) do
+    project.milestones
+    |> Enum.filter(fn m -> milestone_due?(m) end)
+    |> Enum.map(fn milestone ->
+      %{
+        type: :milestone,
+        due: relative_due(milestone.deadline_at),
+        url: project_milestone_url(project),
+        name: milestone.title
+      }
+    end)
+  end
+
+  defp project_status_update_url(project) do
+    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/updates/new?messageType=status_update"
+  end
+
+  defp project_milestone_url(project) do
+    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
+  end
+
+  defp milestone_due?(milestone) do
+    today = DateTime.utc_now() |> DateTime.to_date()
+    due = normalize_date(milestone.deadline_at)
+
+    Date.compare(due, today) in [:lt, :eq]
+  end
+
+  defp relative_due(due) do
+    today = DateTime.utc_now() |> DateTime.to_date()
+    due = normalize_date(due)
+
+    case Date.compare(due, today) do
+      :lt ->
+        days_ago = Date.diff(today, due)
+
+        "was due #{days_ago} days ago"
+      :eq ->
+        "is due today"
+    end
+  end
+
+  defp normalize_date(date) do
+    if date.__struct__ == NaiveDateTime do
+      date |> DateTime.from_naive!("Etc/UTC")
+    else
+      date
+    end
+    |> DateTime.to_date()
+  end
 
 end

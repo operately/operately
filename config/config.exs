@@ -91,6 +91,9 @@ config :operately, Oban,
 config :operately, OperatelyEmail.Mailer,
   adapter: Bamboo.LocalAdapter
 
+config :operately, OperatelyEmail.Email,
+  notification_email: System.get_env("NOTIFICATION_EMAIL")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
