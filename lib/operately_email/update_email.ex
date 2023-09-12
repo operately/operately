@@ -1,7 +1,8 @@
 defmodule OperatelyEmail.UpdateEmail do
   use Oban.Worker
 
-  def perform(%{update_id: update_id}) do
+  def perform(job) do
+    update_id = job.args["update_id"]
     update = Operately.Updates.get_update!(update_id)
     recipients = recipients(update)
 
