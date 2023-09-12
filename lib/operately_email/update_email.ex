@@ -23,8 +23,8 @@ defmodule OperatelyEmail.UpdateEmail do
       from p in Operately.People.Person, 
         join: c in Operately.Projects.Contributor, on: c.person_id == p.id, 
         where: c.project_id == ^update.updatable_id,
-        where: p.id != ^update.author_id
-    )
+        where: p.id != ^update.author_id,
+        where: not is_nil(p.email))
   end
 
   def compose(update, recipient) do
@@ -46,7 +46,7 @@ defmodule OperatelyEmail.UpdateEmail do
     new_email(
       to: recipient.email,
       from: sender(company),
-      subject: subject(company, author, project),
+      subject: subject(company, short_name, project),
       html_body: OperatelyEmail.Views.Update.html(assigns),
       text_body: OperatelyEmail.Views.Update.text(assigns)
     )
