@@ -17,7 +17,7 @@ interface ReactionsProps {
 
 export function Reactions({ reactions, form, size }: ReactionsProps): JSX.Element {
   return (
-    <div className="flex items-start gap-2 flex-wrap mb-2">
+    <div className="flex items-start gap-2 flex-wrap">
       {reactions.map((reaction, index) => (
         <Reaction key={index} reaction={reaction} size={size} />
       ))}
@@ -30,7 +30,7 @@ export function Reactions({ reactions, form, size }: ReactionsProps): JSX.Elemen
 function Reaction({ reaction, size }) {
   const testId = `reaction-${reaction.reactionType}`;
   return (
-    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-lg p-1" data-test-id={testId}>
+    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-full p-1 pr-1.5" data-test-id={testId}>
       <Avatar person={reaction.person} size={AvatarSize.Tiny} />
       <ReactionIcon size={size} type={reaction.reactionType} />
     </div>
@@ -46,7 +46,7 @@ function AddReaction({ size, form }) {
   };
 
   return (
-    <div className="rounded-lg bg-shade-2 p-1" data-test-id="reactions-button">
+    <div className="rounded-full bg-shade-2 p-1 hover:scale-105" data-test-id="reactions-button">
       <div className="flex items-center gap-3 transition-all">
         {active ? (
           <ReactionPallete size={size} handleAddReaction={handleAddReaction} />
@@ -68,7 +68,7 @@ function AddReactionZeroState({ size, onClick }) {
 
 function ReactionPallete({ size, handleAddReaction }) {
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center px-1">
       {PossibleReactionTypes.map((type) => (
         <div
           key={type}
@@ -86,13 +86,13 @@ function ReactionPallete({ size, handleAddReaction }) {
 function ReactionIcon({ size, type }) {
   switch (type) {
     case "thumbs_up":
-      return <Icons.IconThumbUpFilled size={size} className="text-blue-500" />;
+      return <Icons.IconThumbUpFilled size={size} className="text-yellow-500" />;
     case "heart":
       return <Icons.IconHeartFilled size={size} className="text-red-500" />;
     case "thumbs_down":
-      return <Icons.IconThumbDownFilled size={size} className="text-blue-500" />;
+      return <Icons.IconThumbDownFilled size={size} className="text-yellow-500" />;
     case "rocket":
-      return <Icons.IconRocket size={size} className="text-pink-400" />;
+      return <Icons.IconRocket size={size} className="text-green-500" />;
     default:
       return null;
   }

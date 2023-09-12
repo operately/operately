@@ -39,7 +39,7 @@ export default function Activity({ project }): JSX.Element {
 
   return (
     <ActivityContext.Provider value={{ project, refetch }}>
-      <div className="min-h-[350px] mt-12">
+      <div className="min-h-[350px] mt-4">
         <SectionTitle />
 
         {loading && <div>Loading...</div>}
@@ -244,7 +244,17 @@ function useAddReactForm(entityID: string, entityType: "update" | "comment") {
   };
 }
 
-function BigContainer({ project, update, person, time, children, tint = "gray" }) {
+function BigContainer({
+  project,
+  update,
+  person,
+  time,
+  children,
+  tint = "gray",
+  title = null,
+}: {
+  title: string | null;
+}) {
   const colors = ContainerColors[tint];
   const ackable = ["review", "status_update"].includes(update.messageType);
   const addReactionForm = useAddReactForm(update.id, "update");
@@ -260,10 +270,14 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
           {ackable && <AckCTA update={update} project={project} />}
 
           <div className={"flex justify-between items-center"}>
-            <div className="px-4 py-2 flex items-center gap-2">
-              <span className="font-bold">{person.fullName}</span>
-              <div className="border border-white-3 rounded-full px-1.5 text-xs font-medium">Champion</div>
-            </div>
+            {title ? (
+              <div className="font-bold px-4 py-2">{title}</div>
+            ) : (
+              <div className="px-4 py-2 flex items-center gap-2">
+                <span className="font-bold">{person.fullName}</span>
+                <div className="border border-white-3 rounded-full px-1.5 text-xs font-medium">Champion</div>
+              </div>
+            )}
 
             <div className="mr-3 flex items-center gap-2">
               {ackable && <AckMarker update={update} />}
@@ -276,7 +290,9 @@ function BigContainer({ project, update, person, time, children, tint = "gray" }
           <div className="px-4">{children}</div>
 
           <div className="px-4 py-2 mt-2">
-            <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+            <div className="mb-3">
+              <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+            </div>
 
             <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 border-t-2 border-dark-5 text-white-2">
               <Comments update={update} />
@@ -521,42 +537,57 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
   const content = update.content as UpdateContent.StatusUpdate;
 
   return (
-    <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
-      <div className="font-bold">Status Update</div>
+    <BigContainer
+      update={update}
+      person={update.author}
+      time={update.insertedAt}
+      project={project}
+      title="Status Update"
+    >
       <RichContent jsonContent={content.message} />
 
-      <div className="mt-4 flex flex-col gap-1 border-y border-dark-8 py-2">
-        {content.newHealth && (
-          <div className="flex items-center gap-1">
-            <span className="font-bold">Health:</span> <ProjectIcons.IconForHealth health={content.newHealth} />{" "}
-            <span className="capitalize">
-              {content.newHealth
-                .split("_")
-                .map((s) => s[0].toUpperCase() + s.slice(1))
-                .join(" ")}
-            </span>
-          </div>
-        )}
+      <details className="mt-4">
+        <summary className="list-none">
+          <a className="text-white-2 underline cursor-pointer">Show project details</a>
+        </summary>
 
-        {content.phase && (
-          <div className="flex items-center gap-1">
-            <span className="font-bold">Current Phase:</span> {content.phase[0].toUpperCase() + content.phase.slice(1)}
-          </div>
-        )}
+        <div className="border border-dark-5 rounded mt-4 text-sm">
+          {content.newHealth && (
+            <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+              <span className="font-medium w-32">Health</span> <ProjectIcons.IconForHealth health={content.newHealth} />{" "}
+              <span className="capitalize">
+                {content.newHealth
+                  .split("_")
+                  .map((s) => s[0].toUpperCase() + s.slice(1))
+                  .join(" ")}
+              </span>
+            </div>
+          )}
 
-        {content.nextMilestoneTitle && (
-          <div className="flex items-center gap-1">
-            <span className="font-bold">Upcomming Milestone:</span> {content.nextMilestoneTitle}
-          </div>
-        )}
+          {content.phase && (
+            <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+              <span className="font-medium w-32">Current Phase</span>{" "}
+              <ProjectIcons.IconForPhase phase={content.phase} />{" "}
+              {content.phase[0].toUpperCase() + content.phase.slice(1)}
+            </div>
+          )}
 
-        {content.projectEndTime && (
-          <div className="flex items-center gap-1">
-            <span className="font-bold">Project Due Date:</span>{" "}
-            <FormattedTime time={content.projectEndTime} format="short-date" />
-          </div>
-        )}
-      </div>
+          {content.nextMilestoneTitle && (
+            <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+              <span className="font-medium w-32">Next Milestone</span>
+              <Icons.IconMapPinFilled size={20} className="text-white-1/60 inline-block" /> {content.nextMilestoneTitle}
+            </div>
+          )}
+
+          {content.projectEndTime && (
+            <div className="flex items-center gap-1 not-last:border-b border-dark-5 p-2">
+              <span className="font-medium w-32">Project Due Date</span>{" "}
+              <Icons.IconCalendarFilled size={20} className="text-white-1/60 inline-block" />{" "}
+              <FormattedTime time={content.projectEndTime} format="short-date" />
+            </div>
+          )}
+        </div>
+      </details>
     </BigContainer>
   );
 }
@@ -737,7 +768,7 @@ function ProjectMilestoneCompleted({ update }: { project: Projects.Project; upda
 function ProjectMilestoneDeadlineChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
   const creator = update.author;
 
-  const content = update.content as Updates.ProjectMilestoneDeadlineChanged;
+  const content = update.content as UpdateContent.ProjectMilestoneDeadlineChanged;
   const milestone = content.milestone.title;
 
   return (
@@ -761,7 +792,7 @@ function SmallContainer({ time, children }) {
         className="bg-dark-3 rounded-full flex items-center justify-center"
         style={{
           marginLeft: "55px",
-          marginRight: "5px",
+          marginRight: "10px",
           width: "30px",
           height: "30px",
           marginTop: "-5px",
@@ -798,11 +829,5 @@ function Review({ project, update }: { project: Projects.Project; update: Update
 }
 
 function SectionTitle() {
-  return (
-    <div className="font-bold flex items-center gap-4 py-4 pb-8">
-      <div className="flex-1 bg-dark-8" style={{ height: "1px" }}></div>
-      <div className="font-bold text-xl">Activity</div>
-      <div className="flex-1 bg-dark-8" style={{ height: "1px" }}></div>
-    </div>
-  );
+  return <div className="font-bold text-lg flex items-center gap-4 py-4 pb-8">Activity</div>;
 }
