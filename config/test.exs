@@ -56,3 +56,5 @@ config :junit_formatter,
   print_report_file: true, # Adds information about file location when suite finishes
   include_filename?: true, # Include filename and file number for more insights
   include_file_line?: true
+
+config :operately, notification_email: "test@localhost"

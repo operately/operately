@@ -19,6 +19,7 @@ defmodule Operately.PeopleFixtures do
         full_name: "some full_name",
         handle: unique_person_handle(),
         title: "some title",
+        email: "some-email@localhost",
         send_daily_summary: true,
         notify_on_mention: true,
         notify_about_assignments: true
