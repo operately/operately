@@ -42,4 +42,11 @@ defmodule Operately.People.Person do
     |> validate_required([:full_name, :company_id])
     |> unique_constraint(:handle)
   end
+
+  def short_name(person) do
+    [first_name, last_name] = String.split(person.full_name, " ")
+    last_name_initial = String.first(last_name)
+
+    "#{first_name} #{last_name_initial}."
+  end
 end

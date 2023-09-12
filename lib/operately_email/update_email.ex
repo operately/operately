@@ -33,11 +33,12 @@ defmodule OperatelyEmail.UpdateEmail do
     author = Operately.Repo.preload(update, :author).author
     company = Operately.Repo.preload(author, :company).company
     project = Operately.Projects.get_project!(update.updatable_id)
+    short_name = Operately.People.Person.short_name(author)
 
     assigns = %{
       company: company,
-      title: subject(company, author, project),
-      author: short_name(author),
+      title: subject(company, short_name, project),
+      author: short_name,
       project: project,
       project_url: project_url(project),
     }
@@ -58,15 +59,8 @@ defmodule OperatelyEmail.UpdateEmail do
     }
   end
 
-  def subject(company, author, project) do
-    "#{org_name(company)}: #{short_name(author)} posted an update for #{project.name}"
-  end
-
-  def short_name(author) do
-    [first_name, last_name] = String.split(author.first_name, " ")
-    last_name_initial = String.first(last_name)
-
-    "#{first_name} #{last_name_initial}."
+  def subject(company, short_name, project) do
+    "#{org_name(company)}: #{short_name} posted an update for #{project.name}"
   end
 
   def org_name(company) do
