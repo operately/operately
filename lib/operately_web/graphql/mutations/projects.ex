@@ -379,7 +379,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
 
       resolve fn args, %{context: context} ->
         person = context.current_account.person
-        Operately.Projects.archive_project(person, args.project_id)
+        project = Operately.Projects.get_project!(args.project_id)
+
+        Operately.Projects.archive_project(person, project)
+
+        {:ok, project}
       end
     end
   end

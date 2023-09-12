@@ -10,6 +10,7 @@ import * as Permissions from "./permissions";
 
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
+export { ARCHIVE_PROJECT, useArchiveProject, useArchiveForm } from "./mutations/archive";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
