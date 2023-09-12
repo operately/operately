@@ -41,4 +41,21 @@ defmodule Operately.UpdatesFixtures do
 
     reaction
   end
+
+  def rich_text_fixture(message) do
+    %{
+      type: :doc,
+      content: [
+        %{
+          type: :paragraph,
+          content: [
+            %{
+              type: :text,
+              text: message
+            }
+          ]
+        }
+      ]
+    }
+  end
 end

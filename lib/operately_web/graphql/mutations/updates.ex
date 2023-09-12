@@ -21,59 +21,21 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, %{context: context} ->
+        author = context.current_account.person
         content = Jason.decode!(args.input.content)
-        project = Operately.Projects.get_project!(args.input.updatable_id)
 
         case args.input.message_type do
           "status_update" ->
-            Operately.Repo.transaction(fn -> 
-              {:ok, _} = Operately.Projects.update_project(project, %{health: args.input.health})
-
-              {:ok, update} = Operately.Updates.create_update(%{
-                updatable_type: args.input.updatable_type,
-                updatable_id: args.input.updatable_id,
-                author_id: context.current_account.person.id,
-                title: "",
-                type: args.input.message_type,
-                content: Operately.Updates.Types.StatusUpdate.build(project, args.input.health, content)
-              })
-
-              update
-            end)
+            project = Operately.Projects.get_project!(args.input.updatable_id)
+            Operately.Updates.record_status_update(author, project, args.input.health, content)
 
           "review" ->
-            Operately.Repo.transaction(fn -> 
-              previous_phase = Atom.to_string(project.phase)
-              new_phase = args.input[:phase] || previous_phase
-
-              {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)
-              {:ok, _} = Operately.Projects.update_project(project, %{phase: args.input.phase})
-
-              {:ok, update} = Operately.Updates.create_update(%{
-                updatable_type: args.input.updatable_type,
-                updatable_id: args.input.updatable_id,
-                author_id: context.current_account.person.id,
-                title: "",
-                type: args.input.message_type,
-                content: Operately.Updates.Types.Review.build(content, previous_phase, new_phase)
-              })
-
-              update
-            end)
+            project = Operately.Projects.get_project!(args.input.updatable_id)
+            Operately.Updates.record_review(author, project, args.input.phase, content)
 
           "message" ->
-            Operately.Repo.transaction(fn -> 
-              {:ok, update} = Operately.Updates.create_update(%{
-                updatable_type: args.input.updatable_type,
-                updatable_id: args.input.updatable_id,
-                author_id: context.current_account.person.id,
-                title: "",
-                type: args.input.message_type,
-                content: Operately.Updates.Types.Message.build(content)
-              })
-
-              update
-            end)
+            project = Operately.Projects.get_project!(args.input.updatable_id)
+            Operately.Updates.record_message(author, project, content)
 
           _ ->
             raise "Unknown message type"
