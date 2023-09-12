@@ -1,6 +1,7 @@
 defmodule Operately.Projects.Project do
   use Ecto.Schema
   import Ecto.Changeset
+  import Operately.SoftDelete.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -32,6 +33,7 @@ defmodule Operately.Projects.Project do
     belongs_to :retrospective, Operately.Projects.Document, foreign_key: :retrospective_document_id
 
     timestamps()
+    soft_delete()
   end
 
   @doc false
@@ -54,6 +56,7 @@ defmodule Operately.Projects.Project do
       :company_id,
       :creator_id,
       :private,
+      :deleted_at,
     ])
     |> validate_required([
       :name,

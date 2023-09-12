@@ -1,7 +1,7 @@
 defmodule Operately.Projects.Milestone do
   use Ecto.Schema
-  import Operately.SoftDelete.Schema
   import Ecto.Changeset
+  import Operately.SoftDelete.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
