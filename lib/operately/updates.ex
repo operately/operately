@@ -24,30 +24,60 @@ defmodule Operately.Updates do
   def get_update!(id), do: Repo.get!(Update, id)
 
   def create_update(attrs \\ %{}) do
-    Repo.transaction(fn ->
-      result = %Update{} |> Update.changeset(attrs) |> Repo.insert()
+    %Update{} |> Update.changeset(attrs) |> Repo.insert()
+  end
 
-      case result do
-        {:ok, update} ->
-          if update.updatable_type == :project do
-            project = Operately.Projects.get_project!(update.updatable_id)
+  def record_status_update(author, project, new_health, content) do
+    Operately.Repo.transaction(fn -> 
+      {:ok, update} = create_update(%{
+        updatable_type: :project,
+        updatable_id: project.id,
+        author_id: author.id,
+        title: "",
+        type: :status_update,
+        content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
+      })
 
-            {:ok, _} = Operately.Projects.update_project(project, %{
-              next_update_scheduled_at: Operately.Time.first_friday_from_today()
-            })
-          end
+      {:ok, _} = Operately.Projects.update_project(project, %{
+        health: new_health,
+        next_update_scheduled_at: Operately.Time.first_friday_from_today()
+      })
 
-          {:ok, _} = Operately.Activities.submit_update_posted(update)
-          :ok = publish_update_added(update)
+      {:ok, _} = OperatelyEmail.UpdateEmail.new(%{update_id: update.id}) |> Oban.insert()
 
-          schedule_notification(update)
-
-          update
-        {:error, e} ->
-          Repo.rollback(e)
-          e
-      end
+      update
     end)
+  end
+
+  def record_review(author, project, new_phase, content) do
+    Operately.Repo.transaction(fn -> 
+      previous_phase = Atom.to_string(project.phase)
+
+      {:ok, update} = create_update(%{
+        updatable_type: :project,
+        updatable_id: project.id,
+        author_id: author.id,
+        title: "",
+        type: :review,
+        content: Operately.Updates.Types.Review.build(content, previous_phase, new_phase)
+      })
+
+      {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)
+      {:ok, _} = Operately.Projects.update_project(project, %{phase: new_phase})
+
+      update
+    end)
+  end
+
+  def record_message(author, project, content) do
+    create_update(%{
+      updatable_type: :project,
+      updatable_id: project.id,
+      author_id: author.id,
+      title: "",
+      type: :message,
+      content: Operately.Updates.Types.Message.build(content)
+    })
   end
 
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
@@ -291,6 +321,5 @@ defmodule Operately.Updates do
   end
 
   defp schedule_notification(update) do
-    OperatelyEmail.UpdateEmail.new(%{update_id: update.id}) |> Oban.insert()
   end
 end
