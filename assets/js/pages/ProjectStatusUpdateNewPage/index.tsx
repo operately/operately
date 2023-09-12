@@ -10,10 +10,10 @@ import { useNavigate } from "react-router-dom";
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
+import * as UpdateContent from "@/graphql/Projects/updates_content";
 
 import Button from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
-import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 import * as PhaseChange from "@/features/phase_change";
 
 export async function loader({ params }) {
@@ -28,7 +28,7 @@ export async function loader({ params }) {
 
 interface ContextDescriptor {
   project: Projects.Project;
-  messageType: Updates.UpdateMessageType;
+  messageType: UpdateContent.MessageType;
   currentPhase?: string;
   newPhase?: Projects.ProjectPhase | null;
   newHealth?: string | null;
@@ -207,9 +207,7 @@ function Editor({ project, title }) {
         <TipTapEditor.LinkEditForm editor={editor} />
       </div>
 
-      {messageType === "status_update" && (
-        <FieldUpdates phase={phase} health={health} setPhase={setPhase} setHealth={setHealth} />
-      )}
+      {messageType === "status_update" && <FieldUpdates health={health} setHealth={setHealth} />}
 
       <div className="flex items-center gap-2">
         <PostButton onClick={submit} />
@@ -219,20 +217,13 @@ function Editor({ project, title }) {
   );
 }
 
-function FieldUpdates({ phase, health, setPhase, setHealth }) {
+function FieldUpdates({ health, setHealth }) {
   return (
     <div className="mb-8">
-      <p className="font-bold text-lg">Is there a change in the project's health or phase?</p>
-      <p className="text-white-1/70">Please adjust the values below.</p>
+      <p className="font-bold text-lg">Is there a change in the project's health?</p>
+      <p className="text-white-1/70">Please adjust the value below.</p>
 
       <div className="py-4 flex items-start gap-4">
-        <div>
-          <p className="font-bold ml-1">Phase</p>
-          <div className="flex items-center gap-2">
-            <ProjectPhaseSelector activePhase={phase} editable={true} onSelected={setPhase} />
-          </div>
-        </div>
-
         <div>
           <p className="font-bold ml-1">Health</p>
           <div className="flex items-center gap-2">
