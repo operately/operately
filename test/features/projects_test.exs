@@ -430,6 +430,19 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text(short_name(state.champion) <> " removed " <> short_name(contrib) <> " from the project.")
   end
 
+  feature "archive a project", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "champion-toolbar")
+    |> UI.click(testid: "archive-project-button")
+
+    :timer.sleep(200)
+
+    state
+    |> visit_index()
+    |> refute_has(Query.text(state.project.name))
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
@@ -520,31 +533,11 @@ defmodule Operately.Features.ProjectsTest do
       })
   end
 
-  def rich_text_paragraph(text) do
-    %{
-      "type" => "doc",
-      "content" => [
-        %{
-          "type" => "paragraph",
-          "content" => [
-            %{
-              "text" => text,
-              "type" => "text"
-            }
-          ]
-        }
-      ]
-    }
-  end
+  defp short_name(person), do: Operately.People.Person.short_name(person)
+  defp rich_text_paragraph(text), do: Operately.UpdatesFixtures.rich_text_fixture(text)
 
   defp change_phase(project, phase) do
     {:ok, _} = Operately.Projects.update_project(project, %{phase: phase})
-  end
-
-  defp short_name(person) do
-    parts = String.split(person.full_name, " ")
-
-    Enum.at(parts, 0) <> " " <> String.first(Enum.at(parts, 1)) <> "."
   end
 
   defp add_contributor(project, person, role, responsibility \\ " ") do

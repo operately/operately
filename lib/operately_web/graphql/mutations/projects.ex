@@ -373,5 +373,18 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
         {:ok, milestone}
       end
     end
+
+    field :archive_project, non_null(:project) do
+      arg :project_id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+        project = Operately.Projects.get_project!(args.project_id)
+
+        Operately.Projects.archive_project(person, project)
+
+        {:ok, project}
+      end
+    end
   end
 end

@@ -3,7 +3,22 @@ defmodule Operately.Repo do
 
   import Ecto.Query
 
-
+  #
+  # Soft Delete
+  #
+  # Soft delete is a way to mark records as deleted without actually deleting them.
+  # This is useful for auditing purposes and to prevent accidental deletion of records.
+  # This module provides a way to soft delete records by adding a deleted_at column
+  # to the schema and overriding the query operations to exclude soft deleted records
+  # by default.
+  #
+  # To load soft deleted records, pass the :with_deleted option as true to the query
+  # operation.
+  #
+  # Example:
+  #
+  #   Repo.all((from p in Post, where: p.id == 1), with_deleted: true)
+  #
 
   def soft_delete_all(queryable) do
     update_all(queryable, set: [deleted_at: DateTime.utc_now()])

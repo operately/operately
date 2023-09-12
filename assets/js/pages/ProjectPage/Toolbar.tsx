@@ -3,6 +3,7 @@ import Button from "@/components/Button";
 import { useBoolState } from "@/utils/useBoolState";
 import * as Icons from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
+import * as Projects from "@/graphql/Projects";
 
 export default function Toolbar({ project, refetch, me }) {
   if (project.champion?.id === me.id) {
@@ -26,6 +27,16 @@ function ChampionToolbarOpen({ project, onClose }) {
   const navigate = useNavigate();
   const gotoNewStatusUpdate = () => navigate(`/projects/${project.id}/updates/new?messageType=status_update`);
 
+  const archiveForm = Projects.useArchiveForm({
+    variables: {
+      projectId: project.id,
+    },
+    onSuccess: () => {
+      onClose();
+      navigate("/projects");
+    },
+  });
+
   return (
     <div className="bg-dark-2 border-y border-shade-2 px-8 py-4 -mx-8 cursor-default" data-test-id="champion-toolbar">
       <div className="flex items-center gap-1" onClick={onClose}>
@@ -40,7 +51,15 @@ function ChampionToolbarOpen({ project, onClose }) {
           Write a status update
         </Button>
         <Button variant="secondary">Complete the {project.phase} phase</Button>
-        <Button variant="secondary">Archive this project</Button>
+
+        <Button
+          variant="secondary"
+          onClick={archiveForm.submit}
+          loading={archiveForm.loading}
+          data-test-id="archive-project-button"
+        >
+          Archive this project
+        </Button>
       </div>
     </div>
   );
