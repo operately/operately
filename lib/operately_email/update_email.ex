@@ -41,6 +41,7 @@ defmodule OperatelyEmail.UpdateEmail do
       author: short_name,
       project: project,
       project_url: project_url(project),
+      content: update.content
     }
 
     new_email(

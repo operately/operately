@@ -17,6 +17,8 @@ defmodule Operately.Application do
       {Oban, Application.fetch_env!(:operately, Oban)}
     ]
 
+    :ok = Oban.Telemetry.attach_default_logger()
+
     children = configure_query_counter(children)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
