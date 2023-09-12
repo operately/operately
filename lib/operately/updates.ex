@@ -319,7 +319,4 @@ defmodule Operately.Updates do
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
   end
-
-  defp schedule_notification(update) do
-  end
 end
