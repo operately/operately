@@ -29,7 +29,7 @@
 
         <tr style="height: 20px">
           <td>
-            Content TODO 
+            <%= Prosemirror2Html.convert(@content["message"]) %>
           </td>
         </tr>
       </table>

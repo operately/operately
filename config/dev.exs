@@ -81,3 +81,5 @@ config :phoenix, :plug_init_mode, :runtime
 config :swoosh, :api_client, false
 
 config :operately, :start_query_counter, true
+
+config :operately, notification_email: "test@localhost"

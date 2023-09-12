@@ -1,5 +1,3 @@
 <%= @author %> posted a status update for <%= @project.name %>
 
-Content TODO
-
 Link: <%= @project_url %>

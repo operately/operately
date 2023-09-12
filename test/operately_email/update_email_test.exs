@@ -32,6 +32,10 @@ defmodule OperatelyEmail.UpdateEmailTest do
     assert_email_delivered_with(to: [{nil, ctx.contributor2.email}])
   end
 
+  #
+  # Helpers
+  #
+
   defp add_contibutor(project, responsibility) do
     person = person_fixture(%{company_id: project.company_id})
 
