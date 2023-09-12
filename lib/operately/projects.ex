@@ -30,8 +30,15 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def delete_project(%Project{} = project) do
-    Repo.delete(project)
+  def archive_project(_person, %Project{} = project) do
+    Repo.transaction(fn ->
+      {:ok, _} = delete_project(project)
+      project
+    end)
+  end
+
+  defp delete_project(%Project{} = project) do
+    Repo.soft_delete(project)
   end
 
   def change_project(%Project{} = project, attrs \\ %{}) do
