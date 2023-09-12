@@ -39,7 +39,8 @@ defmodule OperatelyEmail.Assignments.Loader do
 
   defp milestones(project) do
     project.milestones
-    |> Enum.filter(fn m -> milestone_due?(m) end)
+    |> Enum.filter(&milestone_due?/1)
+    |> Enum.filter(&milestone_pending?/1)
     |> Enum.map(fn milestone ->
       %{
         type: :milestone,
@@ -63,6 +64,10 @@ defmodule OperatelyEmail.Assignments.Loader do
     due = normalize_date(milestone.deadline_at)
 
     Date.compare(due, today) in [:lt, :eq]
+  end
+
+  defp milestone_pending?(milestone) do
+    milestone.status == :pending
   end
 
   defp relative_due(due) do
