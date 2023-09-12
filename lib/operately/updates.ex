@@ -40,6 +40,8 @@ defmodule Operately.Updates do
           {:ok, _} = Operately.Activities.submit_update_posted(update)
           :ok = publish_update_added(update)
 
+          schedule_notification(update)
+
           update
         {:error, e} ->
           Repo.rollback(e)
@@ -286,5 +288,9 @@ defmodule Operately.Updates do
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
+  end
+
+  defp schedule_notification(update) do
+    OperatelyEmail.UpdateEmail.new(%{update_id: update.id}) |> Oban.insert()
   end
 end
