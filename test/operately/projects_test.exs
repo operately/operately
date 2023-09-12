@@ -58,9 +58,10 @@ defmodule Operately.ProjectsTest do
       assert ctx.project == Projects.get_project!(ctx.project.id)
     end
 
-    test "delete_project/1 deletes the project", ctx do
-      assert {:ok, %Project{}} = Projects.delete_project(ctx.project)
+    test "archive_project/1 archives the project", ctx do
+      assert {:ok, %Project{}} = Projects.archive_project(ctx.person, ctx.project)
       assert_raise Ecto.NoResultsError, fn -> Projects.get_project!(ctx.project.id) end
+      assert hd(Operately.Repo.all((from p in Project, where: p.id == ^ctx.project.id), with_deleted: true)).id == ctx.project.id
     end
 
     test "change_project/1 returns a project changeset", ctx do
