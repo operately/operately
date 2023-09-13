@@ -144,16 +144,22 @@ defmodule Operately.Updates do
   end
 
   def record_project_contributor_added(person, project_id, contributor) do
-    create_update(%{
-      type: :project_contributor_added,
-      author_id: person.id,
-      updatable_id: project_id,
-      updatable_type: :project,
-      content: %{
-        contributor_id: contributor.person_id,
-        contributor_role: Atom.to_string(contributor.role)
-      }
-    })
+    Operately.Repo.transaction(fn ->
+      {:ok, update} = create_update(%{
+        type: :project_contributor_added,
+        author_id: person.id,
+        updatable_id: project_id,
+        updatable_type: :project,
+        content: %{
+          contributor_id: contributor.person_id,
+          contributor_role: Atom.to_string(contributor.role)
+        }
+      })
+
+      {:ok, _} = OperatelyEmail.ProjectContributorAddedEmail.new(%{update_id: update.id}) |> Oban.insert()
+      
+      update
+    end)
   end
 
   def record_project_contributor_removed(person, project_id, contributor) do

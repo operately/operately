@@ -194,7 +194,7 @@ function ChooseAssignment({ role, projectId, onSave, onClose }) {
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-8 px-8 py-8 -mt-2.5 mb-2.5">
+    <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 py-8 -mt-2.5 mb-2.5">
       <ContributorSearch projectID={projectId} title={role} onSelect={setPersonID} />
 
       <div className="flex justify-between mt-8">
