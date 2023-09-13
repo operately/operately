@@ -12,6 +12,23 @@ defmodule Operately.Updates do
     Repo.all(Update)
   end
 
+  def list_people_who_should_be_notified(update) do
+    alias Operately.People.Person
+    alias Operately.Projects.Contributor
+
+    if update.updatable_type == :project do
+      query = from p in Person,
+        join: c in Contributor, on: c.person_id == p.id, 
+        where: c.project_id == ^update.updatable_id,
+        where: p.id != ^update.author_id,
+        where: not is_nil(p.email) and p.notify_about_assignments
+
+      Repo.all(query)
+    else
+      []
+    end
+  end
+
   def list_updates(updatable_id, updatable_type) do
     query = from u in Update,
       where: u.updatable_id == ^updatable_id,
@@ -81,17 +98,23 @@ defmodule Operately.Updates do
   end
 
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
-    create_update(%{
-      type: :project_created,
-      author_id: creator_id,
-      updatable_id: project_id,
-      updatable_type: :project,
-      content: %{
-        creator_id: creator_id,
-        champion_id: champion_id,
-        creator_role: creator_role
-      }
-    })
+    Operately.Repo.transaction(fn ->
+      {:ok, update} = create_update(%{
+        type: :project_created,
+        author_id: creator_id,
+        updatable_id: project_id,
+        updatable_type: :project,
+        content: %{
+          creator_id: creator_id,
+          champion_id: champion_id,
+          creator_role: creator_role
+        }
+      })
+
+      {:ok, _} = OperatelyEmail.ProjectCreatedEmail.new(%{update_id: update.id}) |> Oban.insert()
+
+      update
+    end)
   end
 
   def record_project_start_time_changed(person, project, old_start_time, new_start_time) do

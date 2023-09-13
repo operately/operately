@@ -138,6 +138,13 @@ defmodule Operately.Projects do
     Repo.get!(Contributor, id)
   end
 
+  def get_contributor_role!(project, person_id) do
+    Repo.one(from c in Contributor,
+      where: c.project_id == ^project.id,
+      where: c.person_id == ^person_id,
+      select: c.role)
+  end
+
   def get_person_by_role(project, role) do
     query = from p in Person,
       inner_join: c in Contributor, on: c.person_id == p.id,

@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.UpdateEmail do
+defmodule OperatelyEmail.ProjectCreatedEmail do
   use Oban.Worker
 
   def perform(job) do
@@ -23,22 +23,24 @@ defmodule OperatelyEmail.UpdateEmail do
     company = Operately.Repo.preload(author, :company).company
     project = Operately.Projects.get_project!(update.updatable_id)
     short_name = Operately.People.Person.short_name(author)
+    role = Operately.Projects.get_contributor_role!(project, recipient.id) |> stringify_role()
+    author_role = Operately.Projects.get_contributor_role!(project, author.id) |> stringify_role()
 
     assigns = %{
-      company: company,
-      title: subject(company, short_name, project),
+      title: subject(company, short_name, project, role),
       author: short_name,
+      role: role,
+      author_role: author_role,
       project: project,
-      project_url: project_url(project),
-      content: update.content
+      url: project_url(project)
     }
 
     new_email(
       to: recipient.email,
       from: sender(company),
-      subject: subject(company, short_name, project),
-      html_body: OperatelyEmail.Views.Update.html(assigns),
-      text_body: OperatelyEmail.Views.Update.text(assigns)
+      subject: subject(company, short_name, project, role),
+      html_body: OperatelyEmail.Views.ProjectCreated.html(assigns),
+      text_body: OperatelyEmail.Views.ProjectCreated.text(assigns)
     )
   end
 
@@ -49,8 +51,8 @@ defmodule OperatelyEmail.UpdateEmail do
     }
   end
 
-  def subject(company, short_name, project) do
-    "#{org_name(company)}: #{short_name} posted an update for #{project.name}"
+  def subject(company, short_name, project, role) do
+    "#{org_name(company)}: #{short_name} created the #{project.name} project in Operately and assigned you as the #{role}"
   end
 
   def org_name(company) do
@@ -59,5 +61,13 @@ defmodule OperatelyEmail.UpdateEmail do
 
   def project_url(project) do
     OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
+  end
+
+  def stringify_role(role) do
+    case role do
+      :champion -> "Champion"
+      :reviewer -> "Reviewer"
+      :contributor -> "Contributor"
+    end
   end
 end

@@ -1,0 +1,3 @@
+<%= @author %> created the <%= @project.name %> project and assigned you as the <%= @role %>.
+
+Link: <%= @url %>
