@@ -9,7 +9,5 @@ defmodule OperatelyEmail.Views.ProjectCreated do
   # Utils for rendering the text version of the email
   #
 
-  def cta_button(url, text) do
-    "<a href='#{url}' style='cursor: pointer; font-family: sans-serif; font-weight: 600; padding: 10px 20px; background: #16a34a; color: white; border-radius: 6px; text-decoration: none;'>#{text}</a>"
-  end
+  def cta_button(url, text), do: OperatelyEmail.Views.ProjectContributorAdded.cta_button(url, text)
 end

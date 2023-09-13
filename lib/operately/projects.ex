@@ -134,6 +134,10 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Contributor
 
+  def get_contributor!(person_id: person_id, project_id: project_id) do
+    Repo.one(from c in Contributor, where: c.person_id == ^person_id and c.project_id == ^project_id)
+  end
+
   def get_contributor!(id) do
     Repo.get!(Contributor, id)
   end
