@@ -199,10 +199,7 @@ function Editor({ project, title }) {
     <TipTapEditor.Root>
       <TipTapEditor.Toolbar editor={editor} variant="large" />
 
-      <div
-        className="mb-8 py-4 text-white-1 text-lg relative pb-8 border-b border-shade-3"
-        style={{ minHeight: "300px" }}
-      >
+      <div className="mb-8 py-2 text-white-1 text-lg relative border-b border-shade-3" style={{ minHeight: "350px" }}>
         <TipTapEditor.EditorContent editor={editor} />
         <TipTapEditor.LinkEditForm editor={editor} />
       </div>

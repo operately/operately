@@ -18,18 +18,30 @@
   text-decoration: underline;
 }
 
+.ProseMirror > ul:first-child, ul:last-child, ol:first-child, ol:last-child {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .ProseMirror ul {
   padding: 0;
-  padding-left: 36px;
+  padding-left: 1.5em;
   list-style: unset;
-  margin-top: 0px;
-  margin-bottom: 24px;
-  margin-top: 24px;
+  margin-bottom: 1em;
+  margin-top: 1em;
 }
 
 .ProseMirror li {
-  margin-bottom: 6px;
-  margin-top: 6px;
+  margin-bottom: 0.3em;
+  margin-top: 0.3em;
+}
+
+.ProseMirror li ul {
+  padding: 0;
+  padding-left: 1.5em;
+  list-style: unset;
+  margin-bottom: 0em;
+  margin-top: 0em;
 }
 
 .ProseMirror ol {
