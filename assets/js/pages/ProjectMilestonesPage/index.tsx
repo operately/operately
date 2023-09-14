@@ -75,10 +75,79 @@ export function Page() {
         <Context.Provider value={{ project, refetch, editable }}>
           <Title onAddClick={showForm} />
           <AddMilestoneForm visible={formVisible} onCancel={hideForm} onSubmit={refetchAndHideForm} />
+          <ProjectPhases />
+          <Timeline />
           <Content />
         </Context.Provider>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function Timeline() {
+  const { project } = React.useContext(Context) as ContextValue;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <div className="text-2xl font-extrabold ">Timeline</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mt-4">
+        {project.milestones.map((milestone) => (
+          <div key={milestone.id} className="border border-dark-8 p-4 rounded">
+            <div className="mb-4">
+              <div className="text-white-1 font-bold capitalize">{milestone.title}</div>
+            </div>
+
+            <div className="text-white-1 flex items-center justify-between text-sm">
+              <div className="font-bold w-20">Due Date</div>
+              <FormattedTime time={milestone.deadlineAt} format="long-date" />
+            </div>
+
+            <div className="text-white-1 flex items-center justify-between text-sm">
+              <div className="font-bold w-20">Completed</div>
+              <FormattedTime time={milestone.completedAt} format="long-date" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProjectPhases() {
+  const { project } = React.useContext(Context) as ContextValue;
+
+  return (
+    <div>
+      <div className="grid grid-cols-3 gap-4 mt-4">
+        {project.phaseHistory.map((phase) => (
+          <div key={phase.id} className="border border-dark-8 p-4 rounded">
+            <div className="mb-4">
+              <div className="text-white-1 font-bold capitalize">{phase.phase}</div>
+            </div>
+
+            <div className="text-white-1 flex items-center justify-between text-sm">
+              <div className="font-bold w-20">Started</div>
+              <FormattedTime time={phase.dueTime} format="long-date" />
+            </div>
+
+            <div className="text-white-1 flex items-center justify-between text-sm">
+              <div className="font-bold w-20">Due Date</div>
+              {phase.dueTime ? <FormattedTime time={phase.dueTime} format="long-date" /> : "Not Set"}
+            </div>
+
+            <div className="text-white-1 flex items-center justify-between text-sm">
+              <div className="font-bold w-20">Completed</div>
+              <FormattedTime time={phase.endTime} format="long-date" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -126,19 +195,47 @@ function MilestoneList() {
     milestones.filter((m) => m.status === "done"),
   ];
 
-  const showCompletedSeperator = pending.length > 0 && completed.length > 0;
+  const [showCompleted, setShowCompleted] = React.useState(false);
 
   return (
     <div className="flex flex-col mb-8 gap-2">
-      {pending.map((m) => (
-        <Item key={m.id} milestone={m} />
-      ))}
+      {pending.length > 0 && <h2 className="font-bold mt-12">Milestones</h2>}
 
-      {showCompletedSeperator && <h2 className="font-bold mt-12">Completed</h2>}
+      <div>
+        {pending.map((m) => (
+          <Item key={m.id} milestone={m} />
+        ))}
+      </div>
 
-      {completed.map((m) => (
-        <Item key={m.id} milestone={m} />
-      ))}
+      {showCompleted ? (
+        <div>
+          <h2 className="font-bold mt-12 mb-2 flex items-center gap-1.5">
+            Completed Milestones &middot;
+            <span
+              className="text-white-2 text-sm underline underline-offset-2 cursor-pointer"
+              onClick={() => setShowCompleted(false)}
+            >
+              Hide
+            </span>
+          </h2>
+          <div>
+            {completed.map((m) => (
+              <Item key={m.id} milestone={m} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        completed.length > 0 && (
+          <div className="flex">
+            <span
+              className="text-white-2 text-sm underline underline-offset-2 cursor-pointer"
+              onClick={() => setShowCompleted(true)}
+            >
+              {completed.length} completed
+            </span>
+          </div>
+        )
+      )}
     </div>
   );
 }
@@ -242,33 +339,44 @@ function ItemShow({ milestone, onEditClick }) {
     });
   };
 
+  const labelWidth = milestone.status === "done" ? "w-28" : "w-18";
+
   return (
-    <div className="flex items-center bg-white-1/[3%] px-4 py-2 rounded-lg gap-2">
-      {editable && (
-        <div className="shrink-0 cursor-pointer" onClick={toggleComplete}>
-          {milestone.status === "done" ? (
-            <Icons.IconSquareCheck size={20} className="text-green-400" />
-          ) : (
-            <Icons.IconSquare size={20} className="text-white-1" />
+    <div className="flex justify-between items-center first:border-t border-b border-dark-5 py-3">
+      <div className="flex items-start gap-3">
+        <div>
+          <div className="flex-1 font-bold text-sky-400 underline mb-1">{milestone.title}</div>
+
+          <div className="shrink-0 text-sm flex items-center gap-2">
+            <div className={"text-white-1" + " " + labelWidth}>Due Date</div>{" "}
+            <span className="font-bold">
+              <FormattedTime time={milestone.deadlineAt} format="long-date" />
+            </span>
+          </div>
+
+          {milestone.status === "done" && (
+            <div className="shrink-0 text-sm flex items-center gap-2">
+              <div className={"text-white-1" + " " + labelWidth}>Completed On</div>{" "}
+              <span className="font-bold">
+                <FormattedTime time={milestone.completedAt} format="long-date" />
+              </span>
+            </div>
           )}
         </div>
-      )}
-
-      <div className="shrink-0">
-        <Icons.IconFlag3Filled size={16} className="text-yellow-400" />
       </div>
 
-      <div className="flex-1 font-medium">{milestone.title}</div>
-
-      <div className="shrink-0">
-        <FormattedTime time={milestone.deadlineAt} format="long-date" />
+      <div>
+        {editable && milestone.status === "pending" && (
+          <Button variant="secondary" size="small" onClick={toggleComplete}>
+            Mark as Complete
+          </Button>
+        )}
+        {milestone.status === "done" && (
+          <div className="h-full p-2">
+            <Icons.IconCheck size={32} stroke={5} strokeLinecap="square" className="text-green-400" />
+          </div>
+        )}
       </div>
-
-      {editable && (
-        <div className="shrink-0 pl-2" onClick={onEditClick}>
-          <Icons.IconPencil size={16} className="text-white-2 hover:text-white-1 cursor-pointer" />
-        </div>
-      )}
     </div>
   );
 }
