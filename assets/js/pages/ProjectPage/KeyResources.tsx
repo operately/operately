@@ -128,7 +128,7 @@ function EditResourceLinkOption({ onClick }) {
       onClick={onClick}
       data-test-id="edit-key-resource"
     >
-      <Icons.IconPencil size={24} className="text-white-1" />
+      <Icons.IconPencil size={16} className="text-white-1" />
       Edit
     </div>
   );
