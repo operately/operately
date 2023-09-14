@@ -29,21 +29,28 @@ const Context = React.createContext<ContextDescriptor | null>(null);
 export default function Timeline({ project, refetch, editable }) {
   return (
     <Context.Provider value={{ project, refetch, editable }}>
-      <div className="my-8">
-        <div className="font-extrabold text-lg text-white-1 leading-none">Timeline</div>
+      <div className="my-8" data-test-id="timeline">
+        <div className="flex items-start justify-between">
+          <div className="font-extrabold text-lg text-white-1 leading-none">Timeline</div>
+          <div>
+            <EditTimeline project={project} refetch={refetch} />
+          </div>
+        </div>
 
-        <div className="border border-dark-8 rounded-lg shadow-lg bg-dark-3 my-4" data-test-id="timeline">
-          <div className="flex items-center justify-between pb-3 border-b border-dark-8 p-4">
-            <div className="flex items-start gap-4">
+        <div className="" data-test-id="timeline">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
               <Dates />
               <Phase />
             </div>
-            <div>
-              <EditTimeline project={project} refetch={refetch} />
-            </div>
           </div>
+        </div>
 
+        <div className="rounded-lg shadow-lg bg-dark-3 my-4">
           <Calendar project={project} />
+        </div>
+
+        <div className="rounded-lg shadow-lg bg-dark-3 my-4">
           <MilestoneList project={project} refetch={refetch} />
         </div>
       </div>
@@ -141,20 +148,22 @@ function Calendar({ project }) {
   const lineStart = Time.closestMonday(startDate, "before");
   const lineEnd = Time.closestMonday(dueDate, "after");
 
-  let markedDates = Time.everyMondayBetween(lineStart, lineEnd);
+  let markedDates: Date[] = [];
 
-  while (markedDates.length > 10) {
-    markedDates = markedDates.filter((_, index) => index % 2 === 0);
+  if (Time.daysBetween(lineStart, lineEnd) < 45) {
+    markedDates = Time.everyMondayBetween(lineStart, lineEnd);
+  } else {
+    markedDates = Time.everyMonthBetween(lineStart, lineEnd);
   }
 
   return (
     <div className="">
-      <div className="flex items-center w-full relative" style={{ height: "150px" }}>
+      <div className="flex items-center w-full relative" style={{ height: "200px" }}>
         {markedDates.map((date, index) => (
           <DateLabel key={index} date={date} index={index} total={markedDates.length} />
         ))}
 
-        <div className="absolute" style={{ top: "90px", bottom: "40px", left: 0, right: 0 }}>
+        <div className="absolute" style={{ top: "100px", height: "25px", left: 0, right: 0 }}>
           <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           <PhaseMarkers project={project} lineStart={lineStart} lineEnd={lineEnd} />
@@ -200,7 +209,7 @@ function MilestoneList({ project, refetch }) {
   const [expanded, _, expand, collapse] = useBoolState(false);
 
   return (
-    <div className="border-t border-dark-8 py-3">
+    <div className="py-3">
       {expanded ? (
         <MilestoneListExpanded project={project} refetch={refetch} onCollapse={collapse} />
       ) : (
@@ -457,7 +466,6 @@ function Phase() {
 
   return (
     <div className="flex flex-col">
-      <Label title="Phase" />
       <ProjectPhaseSelector activePhase={project.phase} editable={editable} onSelected={handlePhaseChange} />
     </div>
   );
@@ -470,7 +478,6 @@ function ArrowRight() {
 function Dates() {
   return (
     <div className="flex flex-col">
-      <Label title="Timeline" />
       <div className="flex items-center">
         <StartDate />
         <ArrowRight />
@@ -772,7 +779,7 @@ function DateLabel({ date, index, total }) {
   return (
     <div
       className="absolute flex items-start gap-1 break-keep border-x border-shade-1"
-      style={{ left: left, top: 0, bottom: 0, width: width, height: "150px" }}
+      style={{ left: left, top: 0, bottom: 0, width: width, height: "100%" }}
     >
       <span className="text-sm text-white-2 whitespace-nowrap pl-2 pt-2">{title}</span>
     </div>

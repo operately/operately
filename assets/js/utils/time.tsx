@@ -103,6 +103,23 @@ export function everyMondayBetween(start: Date, end: Date, inclusive = false) {
   return mondays;
 }
 
+export function everyMonthBetween(start: Date, end: Date, inclusive = false) {
+  let months = [] as Date[];
+
+  let current = start;
+
+  while (current <= end) {
+    months.push(current);
+    current = datefsn.addMonths(current, 1);
+  }
+
+  if (!inclusive) {
+    months.pop();
+  }
+
+  return months;
+}
+
 export function add(date: Date, amount: number, unit: "days" | "weeks" | "months" | "years") {
   return datefsn.add(date, { [unit]: amount });
 }
