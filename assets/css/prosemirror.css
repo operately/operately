@@ -108,10 +108,6 @@
   /* color: var(--color-brand-1); */
 }
 
-.ProseMirror p + p {
-  margin-top: 1rem;
-}
-
 .ProseMirror [data-type="mention"] {
   font-weight: 500;
   color: var(--color-sky-500);
@@ -122,4 +118,32 @@
   margin-right: 0;
   padding-left: 1rem;
   border-left: 3px solid var(--color-white-1);
+}
+
+.ProseMirror .blob-container {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  max-width: 80%;
+  color: var(--color-white-2);
+}
+
+.ProseMirror .blob-container .footer {
+  text-align: center;
+  color: var(--color-white-2);
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.ProseMirror .blob-container .footer .remove {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 0.5em;
+}
+
+.ProseMirror .blob-container img {
+  border: 1px solid var(--color-dark-5);
+  border-radius: 0.5em;
+  overflow: hidden;
 }
