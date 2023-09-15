@@ -15,6 +15,7 @@ import * as Milestones from "@/graphql/Projects/milestones";
 
 import Button, { IconButton } from "@/components/Button";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
+import { TextTooltip } from "@/components/Tooltip";
 
 import Modal from "@/components/Modal";
 import * as Forms from "@/components/Form";
@@ -38,7 +39,7 @@ export default function Timeline({ project, refetch, editable }) {
           </div>
         </div>
 
-        <div className="" data-test-id="timeline">
+        <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Dates />
@@ -166,7 +167,7 @@ function Calendar({ project }) {
         <DateLabels resolution={resolution} lineStart={lineStart} lineEnd={lineEnd} />
         <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
 
-        <div className="absolute" style={{ top: "70px", height: "50px", left: 0, right: 0 }}>
+        <div className="absolute" style={{ top: "90px", height: "40px", left: 0, right: 0 }}>
           <PhaseMarkers project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
           {project.milestones.map((milestone: Milestones.Milestone) => (
@@ -709,7 +710,9 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd, transpa
       }}
     >
       <span className="mt-1 ml-1.5 uppercase text-xs font-bold truncate inline-block">{phase}</span>
-      <span className="ml-1.5 text-dark-2 text-xs font-medium truncate inline-block">Jun 7 - Sep 10</span>
+      <span className="ml-1.5 text-dark-2 text-xs font-medium truncate inline-block">
+        <FormattedTime time={startedAt} format="short-date" /> - <FormattedTime time={finishedAt} format="short-date" />
+      </span>
     </div>
   );
 }
@@ -772,13 +775,22 @@ function MilestoneMarker({ milestone, lineStart, lineEnd }) {
   const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
   const color = milestoneIconColor(milestone);
 
-  return (
-    <div
-      className="absolute flex flex-col items-center justify-normal gap-1 pt-0.5"
-      style={{ left: left, top: "30px", width: "0px" }}
-    >
-      <Icons.IconCircleFilled size={10} className={color} />
+  const tooltip = (
+    <div>
+      <div className="uppercase text-xs text-white-2">MILESTONE</div>
+      <div className="font-bold">{milestone.title}</div>
     </div>
+  );
+
+  return (
+    <TextTooltip text={tooltip}>
+      <div
+        className="absolute flex flex-col items-center justify-normal gap-1 pt-0.5"
+        style={{ left: left, top: "-25px", width: "0px" }}
+      >
+        <Icons.IconCircleFilled size={16} className={color} />
+      </div>
+    </TextTooltip>
   );
 }
 
