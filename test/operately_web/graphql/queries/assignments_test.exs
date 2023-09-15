@@ -8,7 +8,11 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
   setup ctx do
     project = project_fixture(%{
       company_id: ctx.company.id,
-      creator_id: ctx.person.id
+      creator_id: ctx.person.id,
+    })
+
+    {:ok, project} = Operately.Projects.update_project(project, %{
+      next_update_scheduled_at: DateTime.utc_now() |> DateTime.add(-2, :day)
     })
 
     contributor_fixture(%{
