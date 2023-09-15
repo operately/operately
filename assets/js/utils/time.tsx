@@ -103,6 +103,31 @@ export function everyMondayBetween(start: Date, end: Date, inclusive = false) {
   return mondays;
 }
 
+export function firstOfMonth(date: Date) {
+  return datefsn.startOfMonth(date);
+}
+
+export function lastOfMonth(date: Date) {
+  return datefsn.endOfMonth(date);
+}
+
+export function everyFirstOfMonthBetween(start: Date, end: Date, inclusive = false) {
+  let firsts = [] as Date[];
+
+  let current = start;
+
+  while (current <= end) {
+    firsts.push(current);
+    current = datefsn.addMonths(current, 1);
+  }
+
+  if (!inclusive) {
+    firsts.pop();
+  }
+
+  return firsts;
+}
+
 export function add(date: Date, amount: number, unit: "days" | "weeks" | "months" | "years") {
   return datefsn.add(date, { [unit]: amount });
 }
