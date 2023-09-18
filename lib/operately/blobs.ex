@@ -32,7 +32,9 @@ defmodule Operately.Blobs do
 
   def get_singed_upload_url(%Blob{} = blob) do
     host = OperatelyWeb.Endpoint.url()
+    path = "#{blob.company_id}-#{blob.id}"
+    token = Operately.Blobs.Tokens.gen_upload_token(path)
 
-    "#{host}/blobs/#{blob.company_id}-#{blob.id}"
+    "#{host}/blobs/#{path}?token=#{token}"
   end
 end
