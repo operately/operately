@@ -16,7 +16,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Blobs do
           company_id: person.company_id,
           author_id: person.id,
           status: :pending,
-          filename: args.input.name
+          filename: args.input.filename
         })
       end 
     end

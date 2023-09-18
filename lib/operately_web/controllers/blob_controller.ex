@@ -1,15 +1,11 @@
 defmodule OperatelyWeb.BlobController do
   use OperatelyWeb, :controller
 
-  def create(conn, %{"file" => %Plug.Upload{} = file_params}) do
+  def create(conn, %{"path" => path, "file" => %Plug.Upload{} = file_params}) do
     source = file_params.path
-    destination = "/media/#{file_params.filename}"
+    destination = "/media/#{path}"
 
-    IO.inspect(file_params)
-    IO.inspect(source)
-    IO.inspect(destination)
-
-    :ok = File.cp(file_params.path, "/media/#{file_params.filename}")
+    :ok = File.cp(source, destination)
 
     conn
     |> put_status(:ok)

@@ -18,7 +18,6 @@ export interface BlobInput {
 const CREATE_BLOB_MUTATION = gql`
   mutation CreateBlob($input: BlobInput!) {
     createBlob(input: $input) {
-      id
       signedUploadUrl
     }
   }

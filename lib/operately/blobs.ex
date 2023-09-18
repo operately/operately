@@ -31,11 +31,8 @@ defmodule Operately.Blobs do
   end
 
   def get_singed_upload_url(%Blob{} = blob) do
-    scheme = "http"
-    host = blob.host
-    company = blob.bucket
-    id = blob.id
+    host = OperatelyWeb.Endpoint.url()
 
-    "#{scheme}://#{host}/#{company}-#{id}"
+    "#{host}/blobs/#{blob.company_id}-#{blob.id}"
   end
 end

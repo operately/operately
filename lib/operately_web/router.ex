@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Router do
     put "/accounts/settings", AccountSettingsController, :update
     get "/accounts/settings/confirm_email/:token", AccountSettingsController, :confirm_email
 
-    post "/blobs", BlobController, :create
+    post "/blobs/*path", BlobController, :create
   end
 
   scope "/", OperatelyWeb do
