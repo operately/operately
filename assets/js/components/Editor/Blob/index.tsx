@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 
 import { Node } from "@tiptap/core";
 import { NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from "@tiptap/react";
@@ -7,35 +6,9 @@ import { NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from "@tiptap
 import { Plugin } from "prosemirror-state";
 import * as Icons from "@tabler/icons-react";
 
-export type UploadFn = (image: File) => Promise<{ data: { path: string } }>;
+import { ImageUploader, MultipartImageUpoader } from "./ImageUploader";
 
-function csrftoken(): string | null {
-  let element = document.querySelector("meta[name='csrf-token']");
-
-  if (element) {
-    return element.getAttribute("content");
-  } else {
-    return null;
-  }
-}
-
-function axiosMultipart() {
-  let req = axios.create();
-
-  req.defaults.headers.common["Content-Type"] = "multipart/form-data";
-  req.defaults.headers.common["x-csrf-token"] = csrftoken();
-
-  return req;
-}
-
-function uploadImage(file: File): Promise<any> {
-  const form = new FormData();
-  form.append("file", file);
-
-  return axiosMultipart().post("/blobs", form);
-}
-
-export const createImageExtension = (uploadFn: UploadFn) => {
+export const createImageExtension = (uploader: ImageUploader) => {
   return Node.create({
     name: "blob",
     inline: true,
@@ -89,7 +62,7 @@ export const createImageExtension = (uploadFn: UploadFn) => {
     },
 
     addProseMirrorPlugins() {
-      return [dropImagePlugin(uploadFn)];
+      return [dropImagePlugin(uploader)];
     },
   });
 };
@@ -138,7 +111,7 @@ function EditableImageView({ node, deleteNode, updateAttributes }) {
   );
 }
 
-export const dropImagePlugin = (upload: UploadFn) => {
+export const dropImagePlugin = (uploader: ImageUploader) => {
   return new Plugin({
     props: {
       handlePaste(view, event, slice) {
@@ -151,8 +124,8 @@ export const dropImagePlugin = (upload: UploadFn) => {
           if (item.type.indexOf("image") === 0) {
             event.preventDefault();
 
-            if (upload && image) {
-              upload(image).then((src) => {
+            if (image) {
+              uploader.upload(image).then((src) => {
                 const node = schema.nodes.image.create({
                   src: src,
                 });
@@ -200,26 +173,15 @@ export const dropImagePlugin = (upload: UploadFn) => {
           if (!blobSchema) return false;
 
           images.forEach(async (image) => {
-            const reader = new FileReader();
+            const res = await uploader.upload(image);
+            const node = blobSchema.create({
+              src: res.data.path,
+              title: image.name,
+              alt: image.name,
+            });
 
-            if (upload) {
-              const res = await upload(image);
-              const node = blobSchema.create({
-                src: res.data.path,
-                title: image.name,
-                alt: image.name,
-              });
-
-              const transaction = view.state.tr.insert(coordinates.pos, node);
-              view.dispatch(transaction);
-            } else {
-              reader.onload = (readerEvent) => {
-                const node = blobSchema.create({ src: readerEvent.target?.result });
-                const transaction = view.state.tr.insert(coordinates.pos, node);
-                view.dispatch(transaction);
-              };
-              reader.readAsDataURL(image);
-            }
+            const transaction = view.state.tr.insert(coordinates.pos, node);
+            view.dispatch(transaction);
           });
 
           return true;
@@ -229,4 +191,4 @@ export const dropImagePlugin = (upload: UploadFn) => {
   });
 };
 
-export default createImageExtension(uploadImage);
+export default createImageExtension(new MultipartImageUpoader());
