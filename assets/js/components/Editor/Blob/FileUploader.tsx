@@ -8,11 +8,11 @@ export type UploadResponse = {
   };
 };
 
-export interface ImageUploader {
-  upload: (image: File) => Promise<UploadResponse>;
+export interface FileUploader {
+  upload: (file: File) => Promise<UploadResponse>;
 }
 
-export class MultipartImageUpoader implements ImageUploader {
+export class MultipartFileUpoader implements FileUploader {
   private form: FormData;
   private axiosInstance: any;
 
