@@ -9,7 +9,8 @@ defmodule Operately.Blobs.Tokens do
   end
 
   def validate(operation, path, token) do
-    with {:ok, decoded} <- decrypt_raw(token),
+    with {:ok, decoded} <- decode_url_64(token),
+         {:ok, decoded} <- decrypt_raw(decoded),
          {:ok, decoded} <- Jason.decode(decoded),
          {:ok, _} <- validate_operation(operation, decoded),
          {:ok, _} <- validate_path(path, decoded),
@@ -79,22 +80,30 @@ defmodule Operately.Blobs.Tokens do
 
     {ciphertext, tag} = :crypto.crypto_one_time_aead(@cipher, secret_key, iv, val, @aad, true)
 
-    :base64.encode(iv <> tag <> ciphertext)
+    Base.url_encode64(iv <> tag <> ciphertext)
   end
 
   defp decrypt_raw(ciphertext) do
     secret_key = :base64.decode(key())
-    ciphertext = :base64.decode(ciphertext)
 
     iv = binary_part(ciphertext, 0, @iv_size)
     tag = binary_part(ciphertext, @iv_size, @tag_size)
     ciphertext = binary_part(ciphertext, @iv_size + @tag_size, byte_size(ciphertext) - @iv_size - @tag_size)
 
     {:ok, :crypto.crypto_one_time_aead(@cipher, secret_key, iv, ciphertext, @aad, tag, false)}
+  rescue
+    _ -> {:error, :invalid_token}
   end
 
   defp expires_at_timestamp(amount, unit) do
     DateTime.utc_now() |> DateTime.add(amount, unit) |> DateTime.to_unix()
+  end
+
+  defp decode_url_64(val) do
+    case Base.url_decode64(val) do
+      {:ok, decoded} -> {:ok, decoded}
+      _ -> {:error, :invalid_token}
+    end
   end
 
 end

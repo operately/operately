@@ -27,12 +27,8 @@ export const createDropFilePlugin = (uploader: FileUploader) => {
           if (!blobSchema) return false;
 
           images.forEach(async (image) => {
-            const res = await uploader.upload(image);
-            const node = blobSchema.create({
-              src: res.data.path,
-              title: image.name,
-              alt: image.name,
-            });
+            const path = await uploader.upload(image);
+            const node = blobSchema.create({ src: path, title: image.name, alt: image.name });
 
             const transaction = view.state.tr.insert(coordinates.pos, node);
             view.dispatch(transaction);

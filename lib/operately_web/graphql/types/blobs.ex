@@ -6,6 +6,12 @@ defmodule OperatelyWeb.GraphQL.Types.Blobs do
     field :status, non_null(:string)
     field :filename, non_null(:string)
 
+    field :url, non_null(:string) do
+      resolve fn blob, _, _ ->
+        {:ok, "/blobs/#{blob.id}"}
+      end
+    end
+
     field :signed_upload_url, non_null(:string) do
       resolve fn blob, _, _ ->
         {:ok, Operately.Blobs.get_singed_upload_url(blob)}

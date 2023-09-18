@@ -7,6 +7,7 @@ export interface Blob {
   author: People.Person;
   status: string;
   filename: string;
+  url: string;
 
   signedUploadUrl: string;
 }
@@ -18,6 +19,7 @@ export interface BlobInput {
 const CREATE_BLOB_MUTATION = gql`
   mutation CreateBlob($input: BlobInput!) {
     createBlob(input: $input) {
+      url
       signedUploadUrl
     }
   }

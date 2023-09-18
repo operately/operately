@@ -3,25 +3,21 @@ import axios from "axios";
 import csrftoken from "@/utils/csrf_token";
 import { CreateBlob } from "@/graphql/Blobs";
 
-export type UploadResponse = {
-  data: {
-    path: string;
-  };
-};
-
 export interface FileUploader {
-  upload: (file: File) => Promise<UploadResponse>;
+  upload: (file: File) => Promise<string>;
 }
 
 export class MultipartFileUpoader implements FileUploader {
-  async upload(file: File): Promise<UploadResponse> {
+  async upload(file: File): Promise<string> {
     const blob = await CreateBlob({ filename: file.name });
     const signedUploadUrl = blob.data.createBlob.signedUploadUrl;
 
-    return this.uploadFile(file, signedUploadUrl);
+    await this.uploadFile(file, signedUploadUrl);
+
+    return blob.data.createBlob.url;
   }
 
-  private uploadFile(file: File, signedUploadUrl: string): Promise<UploadResponse> {
+  private uploadFile(file: File, signedUploadUrl: string): Promise<string> {
     const form = new FormData();
     const client = axios.create();
 

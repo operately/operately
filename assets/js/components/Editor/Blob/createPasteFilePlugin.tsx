@@ -15,8 +15,8 @@ export const createPasteFilePlugin = (uploader: FileUploader) => {
             event.preventDefault();
 
             if (image) {
-              uploader.upload(image).then((src) => {
-                const node = schema.nodes.image.create({ src: src });
+              uploader.upload(image).then((path) => {
+                const node = schema.nodes.image.create({ src: path });
                 const transaction = view.state.tr.replaceSelectionWith(node);
                 view.dispatch(transaction);
               });

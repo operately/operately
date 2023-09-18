@@ -30,11 +30,19 @@ defmodule Operately.Blobs do
     Blob.changeset(blob, attrs)
   end
 
+  def get_signed_get_url(%Blob{} = blob) do
+    host = OperatelyWeb.Endpoint.url()
+    path = "#{blob.company_id}-#{blob.id}"
+    token = Operately.Blobs.Tokens.gen_get_token(path)
+
+    "#{host}/media/#{path}?token=#{token}"
+  end
+
   def get_singed_upload_url(%Blob{} = blob) do
     host = OperatelyWeb.Endpoint.url()
     path = "#{blob.company_id}-#{blob.id}"
     token = Operately.Blobs.Tokens.gen_upload_token(path)
 
-    "#{host}/blobs/#{path}?token=#{token}"
+    "#{host}/media/#{path}?token=#{token}"
   end
 end
