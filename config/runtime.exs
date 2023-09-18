@@ -20,6 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :operately, OperatelyWeb.Endpoint, server: true
 end
 
+config :operately, :blob_token_secret_key, System.get_env("OPERATELY_BLOB_TOKEN_SECRET_KEY")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

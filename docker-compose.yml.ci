@@ -20,6 +20,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=keyboard-cat
       - NOTIFICATION_EMAIL=notifications@locahost.ci
+      - OPERATELY_BLOB_TOKEN_SECRET_KEY=qvGQYiBxnZZRo9qtwvVwUV8rUWBZgJ10q0Gm3X8dJL8=
     env_file:
       - .env
 

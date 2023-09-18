@@ -11,6 +11,7 @@ services:
     user: ${USER_ID}:${GROUP_ID}
     volumes:
       - ./:/home/dev/app
+      - ./media:/media
     ports:
       - "127.0.0.1:4000:4000"
     depends_on:

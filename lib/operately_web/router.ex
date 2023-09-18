@@ -51,6 +51,8 @@ defmodule OperatelyWeb.Router do
     get "/accounts/settings", AccountSettingsController, :edit
     put "/accounts/settings", AccountSettingsController, :update
     get "/accounts/settings/confirm_email/:token", AccountSettingsController, :confirm_email
+
+    get "/blobs/:id", BlobController, :get
   end
 
   scope "/", OperatelyWeb do
@@ -64,7 +66,10 @@ defmodule OperatelyWeb.Router do
 
     get "/accounts/auth/:provider", AccountOauthController, :request
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback
+
   end
+
+  forward "/media", OperatelyLocalMediaStorage.Plug
 
   scope "/api" do
     pipe_through [:api, :require_authenticated_account, :graphql]

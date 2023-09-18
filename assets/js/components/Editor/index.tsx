@@ -6,12 +6,12 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Mention from "@tiptap/extension-mention";
 import Link from "@tiptap/extension-link";
+import Dropcursor from "@tiptap/extension-dropcursor";
 
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
-
 import Button from "@/components/Button";
-import * as People from "@/graphql/People";
+import Blob from "./Blob";
 
 export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
@@ -74,6 +74,8 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
           keepAttributes: false,
         },
       }),
+      Dropcursor,
+      Blob,
       Link.configure({
         openOnClick: false,
       }),
