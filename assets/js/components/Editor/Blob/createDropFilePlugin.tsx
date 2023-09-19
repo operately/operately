@@ -5,7 +5,21 @@ export const createDropFilePlugin = (uploader: FileUploader) => {
   return new Plugin({
     props: {
       handleDOMEvents: {
+        dragover: (view, _event) => {
+          view.dom.classList.add("dragover");
+        },
+
+        dragleave: (view, _event) => {
+          view.dom.classList.remove("dragover");
+        },
+
+        dragend: (view, _event) => {
+          view.dom.classList.remove("dragover");
+        },
+
         drop: (view, event) => {
+          view.dom.classList.remove("dragover");
+
           if (!isThereAnyFileInEvent(event)) return false;
 
           const images = Array.from(event.dataTransfer?.files ?? []).filter((file) => /image/i.test(file.type));

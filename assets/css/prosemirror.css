@@ -2,6 +2,25 @@
   word-break: break-word;
 }
 
+.ProseMirror.dragover {
+  position: relative;
+}
+
+.ProseMirror.dragover::after {
+  content: "Drop your files to add them";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0em;
+  left: 0em;
+  width: 100%;
+  height: 100%;
+  color: var(--color-green-400);
+  border: 2px dashed var(--color-green-400);
+  background-color: rgba(0,255,0,0.1);
+}
+
 .ProseMirror hr {
   height: 1px;
   background-color: var(--color-dark-8);

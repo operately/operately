@@ -6,7 +6,6 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Mention from "@tiptap/extension-mention";
 import Link from "@tiptap/extension-link";
-import Dropcursor from "@tiptap/extension-dropcursor";
 
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
@@ -36,6 +35,7 @@ interface UseEditorProps {
   content?: any;
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
+  className?: string;
 }
 
 export interface Context {
@@ -60,7 +60,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
     injectCSS: false,
     editorProps: {
       attributes: {
-        class: "focus:outline-none",
+        class: "focus:outline-none" + " " + props.className,
       },
     },
     extensions: [
@@ -74,7 +74,6 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
           keepAttributes: false,
         },
       }),
-      Dropcursor,
       Blob,
       Link.configure({
         openOnClick: false,
