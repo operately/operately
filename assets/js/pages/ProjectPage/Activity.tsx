@@ -101,6 +101,7 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
   const editor = TipTapEditor.useEditor({
     placeholder: "Write a message...",
     peopleSearch: peopleSearch,
+    className: "min-h-[200px] p-4",
   });
 
   const handlePost = async () => {
@@ -127,14 +128,12 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
       <div className="flex items-start">
         <FeedAvatar person={me} />
 
-        <div className="border rounded-lg border-dark-8 p-4 bg-dark-2 z-20 flex-1 ml-4 relative">
+        <div className="border rounded-lg border-dark-8 bg-dark-2 z-20 flex-1 ml-4 relative">
           <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
 
-          <div className="text-white-1" style={{ minHeight: "200px" }}>
-            <TipTapEditor.EditorContent editor={editor} className="border border-red-400" />
-          </div>
+          <TipTapEditor.EditorContent editor={editor} />
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
               <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
                 Post
@@ -474,6 +473,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
   const editor = TipTapEditor.useEditor({
     placeholder: "Post a comment...",
     peopleSearch: peopleSearch,
+    className: "min-h-[200px] p-4",
   });
 
   const [post, { loading }] = Updates.usePostComment();
@@ -497,12 +497,10 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
   return (
     <TipTapEditor.Root>
-      <div className="px-4 py-3 not-first:border-t border-dark-8 overflow-hidden relative">
-        <div className="text-white-1" style={{ minHeight: "200px" }}>
-          <TipTapEditor.EditorContent editor={editor} />
-        </div>
+      <div className="not-first:border-t border-dark-8 overflow-hidden relative">
+        <TipTapEditor.EditorContent editor={editor} />
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center m-4">
           <div className="flex items-center gap-2">
             <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
               Post
