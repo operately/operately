@@ -9,8 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
-import * as Updates from "@/graphql/Projects/updates";
-import * as UpdateContent from "@/graphql/Projects/updates_content";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 
 import Button from "@/components/Button";
 import ProjectHealthSelector from "@/components/ProjectHealthSelector";
@@ -28,7 +27,7 @@ export async function loader({ params }) {
 
 interface ContextDescriptor {
   project: Projects.Project;
-  messageType: UpdateContent.MessageType;
+  messageType: UpdateContent.UpdateMessageType;
   currentPhase?: string;
   newPhase?: Projects.ProjectPhase | null;
   newHealth?: string | null;
@@ -170,6 +169,7 @@ function Editor({ project, title }) {
   const editor = TipTapEditor.useEditor({
     placeholder: placeholder,
     peopleSearch: peopleSearch,
+    className: "min-h-[350px] py-2",
   });
 
   const [post] = Projects.usePostUpdate({ onCompleted: () => navigate(`/projects/${project.id}`) });
@@ -199,7 +199,7 @@ function Editor({ project, title }) {
     <TipTapEditor.Root>
       <TipTapEditor.Toolbar editor={editor} variant="large" />
 
-      <div className="mb-8 py-2 text-white-1 text-lg relative border-b border-shade-3" style={{ minHeight: "350px" }}>
+      <div className="mb-8 text-white-1 text-lg relative border-b border-shade-2" style={{ minHeight: "350px" }}>
         <TipTapEditor.EditorContent editor={editor} />
         <TipTapEditor.LinkEditForm editor={editor} />
       </div>

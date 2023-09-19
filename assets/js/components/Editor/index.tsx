@@ -36,6 +36,7 @@ interface UseEditorProps {
   content?: any;
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
+  className?: string;
 }
 
 export interface Context {
@@ -60,7 +61,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
     injectCSS: false,
     editorProps: {
       attributes: {
-        class: "focus:outline-none",
+        class: "focus:outline-none" + " " + props.className,
       },
     },
     extensions: [

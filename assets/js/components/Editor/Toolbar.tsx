@@ -100,7 +100,7 @@ function UndoButton({ editor, iconSize }): JSX.Element {
 function RedoButton({ editor, iconSize }): JSX.Element {
   return (
     <MenuBarButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
-      <Icons.IconArrowForward size={iconSize} />
+      <Icons.IconArrowForwardUp size={iconSize} />
     </MenuBarButton>
   );
 }
@@ -176,26 +176,24 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
 
   if (variant === "large") {
     return (
-      <div className="flex items-center gap-3 border-y border-shade-2 py-1 mt-4 -mx-2">
-        <div className="flex items-center gap-1">
-          <BoldButton editor={editor} iconSize={20} />
-          <ItalicButton editor={editor} iconSize={20} />
-          <StrikeButton editor={editor} iconSize={20} />
-        </div>
+      <div className="flex items-center gap-3 border-y border-shade-2 py-1 mt-4">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center gap-1">
+            <BoldButton editor={editor} iconSize={20} />
+            <ItalicButton editor={editor} iconSize={20} />
+            <StrikeButton editor={editor} iconSize={20} />
 
-        <div className="flex items-center gap-1">
-          <BulletListButton editor={editor} iconSize={20} />
-          <NumberListButton editor={editor} iconSize={20} />
-        </div>
+            <BulletListButton editor={editor} iconSize={20} />
+            <NumberListButton editor={editor} iconSize={20} />
 
-        <div className="flex items-center gap-2">
-          <BlockquoteButton editor={editor} iconSize={20} />
-          <LinkButton editor={editor} iconSize={20} />
-        </div>
+            <BlockquoteButton editor={editor} iconSize={20} />
+            <LinkButton editor={editor} iconSize={20} />
+          </div>
 
-        <div className="flex items-center gap-1">
-          <UndoButton editor={editor} iconSize={20} />
-          <RedoButton editor={editor} iconSize={20} />
+          <div className="flex items-center gap-1">
+            <UndoButton editor={editor} iconSize={20} />
+            <RedoButton editor={editor} iconSize={20} />
+          </div>
         </div>
       </div>
     );

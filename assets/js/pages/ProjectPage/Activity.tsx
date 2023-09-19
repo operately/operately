@@ -131,7 +131,7 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
           <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
 
           <div className="text-white-1" style={{ minHeight: "200px" }}>
-            <TipTapEditor.EditorContent editor={editor} />
+            <TipTapEditor.EditorContent editor={editor} className="border border-red-400" />
           </div>
 
           <div className="flex justify-between items-center">
