@@ -1,13 +1,56 @@
-import { MultipartFileUpoader } from "./FileUploader";
+import { Node } from "@tiptap/core";
+import { EditableImageView } from "./EditableImageView";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+import { DropFilePlugin } from "./DropFilePlugin";
+import { PasteFilePlugin } from "./PasteFilePlugin";
 
-import { createBlobExtension } from "./createBlobExtension";
-import { createDropFilePlugin } from "./createDropFilePlugin";
-import { createPasteFilePlugin } from "./createPasteFilePlugin";
+const BlobExtension = Node.create({
+  name: "blob",
+  inline: true,
+  group: "inline",
+  draggable: true,
 
-const uploader = new MultipartFileUpoader();
-const dropFilePlugin = createDropFilePlugin(uploader);
-const pasteFilePlugin = createPasteFilePlugin(uploader);
+  addAttributes: () => ({
+    src: {},
+    alt: { default: null },
+    title: { default: null },
+    id: { default: null },
+    status: { default: "uploading" },
+    progress: { default: 0 },
+  }),
 
-const BlobExtension = createBlobExtension([dropFilePlugin, pasteFilePlugin]);
+  parseHTML: () => [
+    {
+      tag: "img[src]",
+      getAttrs: (dom) => {
+        if (typeof dom === "string") return {};
+        const element = dom as HTMLImageElement;
+
+        return {
+          src: element.getAttribute("src"),
+          title: element.getAttribute("title"),
+          alt: element.getAttribute("alt"),
+        };
+      },
+    },
+  ],
+
+  renderHTML: ({ HTMLAttributes }) => {
+    return [
+      "div",
+      { class: "blob-container" },
+      ["img", HTMLAttributes],
+      ["div", { class: "footer" }, ["span", { class: "title" }, HTMLAttributes.alt]],
+    ];
+  },
+
+  addNodeView: () => {
+    return ReactNodeViewRenderer(EditableImageView);
+  },
+
+  addProseMirrorPlugins() {
+    return [PasteFilePlugin, DropFilePlugin];
+  },
+});
 
 export default BlobExtension;
