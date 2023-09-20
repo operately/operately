@@ -51,6 +51,14 @@ export function EditableImageView({ node, deleteNode, updateAttributes }) {
         </NodeViewContent>
       </div>
 
+      {node.attrs.status === "uploading" && (
+        <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+          <div className="bg-dark-1 rounded-xl text-white-1 font-medium w-32 h-5 overflow-hidden">
+            <div className="bg-green-400 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
+          </div>
+        </div>
+      )}
+
       <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
         <Icons.IconTrash onClick={deleteNode} size={16} className="text-white-1" />
       </div>
