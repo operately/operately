@@ -1,48 +1,10 @@
-import { Plugin } from "prosemirror-state";
-import { FileUploader } from "./FileUploader";
+import { FileUploader, MultipartFileUpoader } from "./FileUploader";
 
-export const createDropFilePlugin = (uploader: FileUploader) => {
-  return new Plugin({
-    props: {
-      handleDOMEvents: {
-        dragover: (view, _event) => {
-          view.dom.classList.add("dragover");
-        },
-
-        dragleave: (view, _event) => {
-          view.dom.classList.remove("dragover");
-        },
-
-        dragend: (view, _event) => {
-          view.dom.classList.remove("dragover");
-        },
-
-        drop: (view, event) => {
-          view.dom.classList.remove("dragover");
-
-          if (!isThereAnyFileInEvent(event)) return false;
-
-          const images = Array.from(event.dataTransfer?.files ?? []).filter((file) => /image/i.test(file.type));
-
-          if (images.length === 0) {
-            return false;
-          }
-
-          event.preventDefault();
-
-          const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
-          if (!coordinates) return false;
-
-          images.forEach(async (image) => {
-            handleUpload(image, view, coordinates.pos, uploader);
-          });
-
-          return true;
-        },
-      },
-    },
+export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | FileList; pos: number; view: any }) {
+  Array.from(files).forEach(async (file) => {
+    handleUpload(file, view, pos, new MultipartFileUpoader());
   });
-};
+}
 
 async function handleUpload(file: File, view: any, pos: any, uploader: FileUploader) {
   const id = generateUniqueId();
@@ -57,10 +19,6 @@ async function handleUpload(file: File, view: any, pos: any, uploader: FileUploa
 
   // Step 3: Update the node with the final path.
   updateNodeAttrs(id, { src: path, status: "uploaded" }, view);
-}
-
-function isThereAnyFileInEvent(event: DragEvent) {
-  return event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length;
 }
 
 function generateUniqueId() {

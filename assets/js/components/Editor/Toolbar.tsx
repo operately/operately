@@ -5,6 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import Button from "@/components/Button";
 
 import { EditorContext, Context } from "./index";
+import { AddBlobsEditorCommand } from "./Blob/AddBlobsEditorCommand";
 
 function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
   let className = classnames("p-1 text-white-1 rounded", {
@@ -124,6 +125,42 @@ function LinkButton({ editor, iconSize }): JSX.Element {
   );
 }
 
+function AttachmentButton({ editor, iconSize }): JSX.Element {
+  let ref = React.useRef<HTMLInputElement | null>(null);
+
+  const handleClick = React.useCallback(() => {
+    if (ref.current) ref.current.click();
+  }, [ref]);
+
+  const addBlob = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files) return;
+      if (e.target.files.length === 0) return;
+
+      AddBlobsEditorCommand({
+        files: e.target.files,
+        pos: editor.state.selection.from,
+        view: editor.view,
+      });
+    },
+    [editor],
+  );
+
+  return (
+    <MenuBarButton onClick={handleClick}>
+      <input
+        multiple
+        type="file"
+        id="file"
+        style={{ display: "none" }}
+        onChange={addBlob}
+        ref={(r: any) => (ref.current = r)}
+      />
+      <Icons.IconPaperclip size={iconSize} />
+    </MenuBarButton>
+  );
+}
+
 function EditLinkButton({ editor }): JSX.Element {
   const { setLinkEditActive } = React.useContext(EditorContext) as Context;
   if (!editor.isActive("link")) return <></>;
@@ -164,6 +201,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         <div className="flex items-center border border-shade-2 rounded-lg">
           <BlockquoteButton editor={editor} iconSize={20} />
           <LinkButton editor={editor} iconSize={20} />
+          <AttachmentButton editor={editor} iconSize={20} />
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
@@ -188,6 +226,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
 
             <BlockquoteButton editor={editor} iconSize={20} />
             <LinkButton editor={editor} iconSize={20} />
+            <AttachmentButton editor={editor} iconSize={20} />
           </div>
 
           <div className="flex items-center gap-1">
