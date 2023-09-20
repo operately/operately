@@ -73,6 +73,7 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
           keepMarks: true,
           keepAttributes: false,
         },
+        dropcursor: false,
       }),
       Blob,
       Link.configure({
