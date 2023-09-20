@@ -13,6 +13,9 @@ export const createBlobExtension = (plugins: any[]) => {
       src: {},
       alt: { default: null },
       title: { default: null },
+      id: { default: null },
+      status: { default: "uploading" },
+      progress: { default: 0 },
     }),
 
     parseHTML: () => [
@@ -38,17 +41,6 @@ export const createBlobExtension = (plugins: any[]) => {
         ["img", HTMLAttributes],
         ["div", { class: "footer" }, ["span", { class: "title" }, HTMLAttributes.alt]],
       ];
-    },
-
-    // @ts-ignore
-    addCommands() {
-      return (attrs) => (state, dispatch) => {
-        const { selection } = state;
-        const position = selection.$cursor ? selection.$cursor.pos : selection.$to.pos;
-        const node = this.type.create(attrs);
-        const transaction = state.tr.insert(position, node);
-        dispatch(transaction);
-      };
     },
 
     addNodeView: () => {

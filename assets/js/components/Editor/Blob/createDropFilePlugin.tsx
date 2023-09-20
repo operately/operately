@@ -30,22 +30,11 @@ export const createDropFilePlugin = (uploader: FileUploader) => {
 
           event.preventDefault();
 
-          const { schema } = view.state;
-          const coordinates = view.posAtCoords({
-            left: event.clientX,
-            top: event.clientY,
-          });
+          const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
           if (!coordinates) return false;
 
-          const blobSchema = schema.nodes.blob;
-          if (!blobSchema) return false;
-
           images.forEach(async (image) => {
-            const path = await uploader.upload(image);
-            const node = blobSchema.create({ src: path, title: image.name, alt: image.name });
-
-            const transaction = view.state.tr.insert(coordinates.pos, node);
-            view.dispatch(transaction);
+            handleUpload(image, view, coordinates.pos, uploader);
           });
 
           return true;
@@ -55,6 +44,70 @@ export const createDropFilePlugin = (uploader: FileUploader) => {
   });
 };
 
+async function handleUpload(file: File, view: any, pos: any, uploader: FileUploader) {
+  const id = generateUniqueId();
+
+  // Step 1: Add a placeholder node before uploading the file.
+  createNode(id, file, view, pos);
+
+  // Step 2: Start the upload process and hook up progress updates.
+  const path = await uploader.upload(file, (progress) => {
+    updateNodeAttrs(id, { progress: progress }, view);
+  });
+
+  // Step 3: Update the node with the final path.
+  updateNodeAttrs(id, { src: path, status: "uploaded" }, view);
+}
+
 function isThereAnyFileInEvent(event: DragEvent) {
   return event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length;
+}
+
+function generateUniqueId() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+function createNode(id: string, file: File, view: any, pos: any) {
+  const { schema } = view.state;
+  const blobSchema = schema.nodes.blob;
+
+  let node = blobSchema.create({
+    id: id,
+    src: URL.createObjectURL(file),
+    title: file.name,
+    alt: file.name,
+    status: "uploading",
+  });
+
+  const transaction = view.state.tr.insert(pos, node);
+  view.dispatch(transaction);
+}
+
+function updateNodeAttrs(id: string, attrs: any, view: any) {
+  const n = findNode(id, view.state.doc);
+  if (!n.node) return;
+  if (!n.pos) return;
+
+  const transaction = view.state.tr;
+
+  Object.keys(attrs).forEach((key) => {
+    transaction.setNodeAttribute(n.pos, key, attrs[key]);
+  });
+
+  view.dispatch(transaction);
+}
+
+function findNode(id: string, doc: any) {
+  var result = { node: null, pos: null };
+
+  doc.descendants((node: any, pos: any) => {
+    if (node.attrs.id === id) {
+      result.node = node;
+      result.pos = pos;
+
+      return false; // stop searching
+    }
+  });
+
+  return result;
 }
