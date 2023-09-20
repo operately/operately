@@ -5,35 +5,44 @@ export const DropFilePlugin = new Plugin({
   props: {
     handleDOMEvents: {
       dragover: (view, _event) => {
+        if (!view.editable) return false;
+        console.log(view.editable);
+
         view.dom.classList.add("dragover");
+        return true;
       },
 
       dragleave: (view, event) => {
+        if (!view.editable) return false;
+
         if (event.target === view.dom) {
           view.dom.classList.remove("dragover");
         }
+        return true;
       },
 
       dragend: (view, _event) => {
+        if (!view.editable) return false;
+
         view.dom.classList.remove("dragover");
+        return true;
       },
 
       drop: (view, event) => {
+        if (!view.editable) return false;
+
         view.dom.classList.remove("dragover");
-
-        if (!isThereAnyFileInEvent(event)) return false;
-
-        const images = Array.from(event.dataTransfer?.files ?? []).filter((file) => /image/i.test(file.type));
-
-        if (images.length === 0) return false;
-
-        event.preventDefault();
 
         const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
         if (!coordinates) return false;
 
+        const files = event.dataTransfer?.files;
+        if (!files) return false;
+
+        event.preventDefault();
+
         AddBlobsEditorCommand({
-          files: images,
+          files: files,
           pos: coordinates.pos,
           view: view,
         });
@@ -43,7 +52,3 @@ export const DropFilePlugin = new Plugin({
     },
   },
 });
-
-function isThereAnyFileInEvent(event: DragEvent) {
-  return event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length;
-}

@@ -1,8 +1,9 @@
 import { Node } from "@tiptap/core";
-import { EditableImageView } from "./EditableImageView";
 import { ReactNodeViewRenderer } from "@tiptap/react";
+
 import { DropFilePlugin } from "./DropFilePlugin";
 import { PasteFilePlugin } from "./PasteFilePlugin";
+import { BlobView } from "./BlobView";
 
 const BlobExtension = Node.create({
   name: "blob",
@@ -16,6 +17,8 @@ const BlobExtension = Node.create({
     title: { default: null },
     id: { default: null },
     status: { default: "uploading" },
+    filetype: { default: null },
+    filesize: { default: null },
     progress: { default: 0 },
   }),
 
@@ -45,7 +48,7 @@ const BlobExtension = Node.create({
   },
 
   addNodeView: () => {
-    return ReactNodeViewRenderer(EditableImageView);
+    return ReactNodeViewRenderer(BlobView);
   },
 
   addProseMirrorPlugins() {

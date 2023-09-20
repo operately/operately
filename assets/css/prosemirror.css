@@ -156,14 +156,13 @@
   margin-top: 3px;
 }
 
-.ProseMirror .blob-container .footer .remove {
-  text-decoration: underline;
-  cursor: pointer;
-  margin-left: 0.5em;
-}
-
 .ProseMirror .blob-container img {
   border: 1px solid var(--color-dark-5);
   border-radius: 0.5em;
   overflow: hidden;
+}
+
+.ProseMirror .blob-container a {
+  color: var(--color-white-2);
+  text-decoration: underline;
 }

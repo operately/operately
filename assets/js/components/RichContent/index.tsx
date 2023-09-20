@@ -1,11 +1,10 @@
 import React from "react";
 
-import Mention from "@tiptap/extension-mention";
-import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import Blob from "@/components/Editor/Blob";
+// import Mention from "@tiptap/extension-mention";
+// import StarterKit from "@tiptap/starter-kit";
+// import Link from "@tiptap/extension-link";
 
-import { generateHTML } from "@tiptap/html";
+// import { generateHTML } from "@tiptap/html";
 
 /*
  * This is a function that takes a JSON string and returns a React component.
@@ -17,23 +16,15 @@ interface RichContentProps {
   className?: string;
 }
 
+import * as TipTapEditor from "@/components/Editor";
+
 export default function RichContent({ jsonContent, className }: RichContentProps): JSX.Element {
-  try {
-    if (jsonContent === null || jsonContent === "null") {
-      return <div className={"ProseMirror " + className}></div>;
-    }
+  const editor = TipTapEditor.useEditor({
+    content: JSON.parse(jsonContent),
+    editable: false,
+  });
 
-    if (jsonContent === undefined) {
-      return <div className={"ProseMirror " + className}>Content not available.</div>;
-    }
-
-    const json = JSON.parse(jsonContent);
-    const html = generateHTML(json, [Mention, StarterKit, Link, Blob]);
-
-    return <div className={"ProseMirror " + className} dangerouslySetInnerHTML={{ __html: html }} />;
-  } catch (e) {
-    throw jsonContent;
-  }
+  return <TipTapEditor.EditorContent editor={editor} className={"ProseMirror " + className} />;
 }
 
 RichContent.defaultProps = {
