@@ -8,8 +8,10 @@ export const DropFilePlugin = new Plugin({
         view.dom.classList.add("dragover");
       },
 
-      dragleave: (view, _event) => {
-        view.dom.classList.remove("dragover");
+      dragleave: (view, event) => {
+        if (event.target === view.dom) {
+          view.dom.classList.remove("dragover");
+        }
       },
 
       dragend: (view, _event) => {

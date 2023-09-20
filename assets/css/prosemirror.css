@@ -9,7 +9,7 @@
 .ProseMirror.dragover::after {
   content: "Drop your files to add them";
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: center;
   position: absolute;
   top: 0em;
@@ -19,6 +19,7 @@
   color: var(--color-green-400);
   border: 2px dashed var(--color-green-400);
   background-color: rgba(0,255,0,0.1);
+  padding-bottom: 1em;
 }
 
 .ProseMirror hr {
