@@ -36,6 +36,7 @@ interface UseEditorProps {
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
   className?: string;
+  editable?: boolean;
 }
 
 export interface Context {
@@ -54,9 +55,12 @@ export function Root({ children }): JSX.Element {
 function useEditor(props: UseEditorProps): TipTap.Editor | null {
   const [_submitActive, setSubmitActive] = React.useState(false);
 
+  const editable = props.editable === undefined ? true : props.editable;
+
   return TipTap.useEditor({
+    editable: editable,
     content: props.content,
-    autofocus: true,
+    autofocus: editable,
     injectCSS: false,
     editorProps: {
       attributes: {

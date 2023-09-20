@@ -1,9 +1,13 @@
 import { FileUploader, MultipartFileUpoader } from "./FileUploader";
 
 export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | FileList; pos: number; view: any }) {
+  if (!view.editable) return false;
+
   Array.from(files).forEach(async (file) => {
     handleUpload(file, view, pos, new MultipartFileUpoader());
   });
+
+  return true;
 }
 
 async function handleUpload(file: File, view: any, pos: any, uploader: FileUploader) {
@@ -35,6 +39,8 @@ function createNode(id: string, file: File, view: any, pos: any) {
     title: file.name,
     alt: file.name,
     status: "uploading",
+    filetype: file.type,
+    filesize: file.size,
   });
 
   const transaction = view.state.tr.insert(pos, node);
