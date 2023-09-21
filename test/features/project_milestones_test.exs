@@ -100,8 +100,11 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     state
     |> visit_page(state.project)
+    |> UI.find(testid: "timeline")
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "milestone-link-#{milestone.id}")
+
+    state
     |> UI.assert_page("/projects/#{state.project.id}/milestones/#{milestone.id}")
     |> UI.assert_text("Contract Signed")
   end
