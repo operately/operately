@@ -10,6 +10,7 @@ export const FRAGMENT = `
 
     deadlineAt
     completedAt
+    description
   }
 `;
 
@@ -26,6 +27,7 @@ export interface Milestone {
 
   deadlineAt: string;
   completedAt: string | null;
+  description: string | null;
 }
 
 export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
@@ -173,4 +175,16 @@ const REMOVE_MILESTONE = gql`
 
 export function useRemoveMilestone(options = {}) {
   return useMutation(REMOVE_MILESTONE, options);
+}
+
+const UPDATE_MILESTONE_DESCRIPTION = gql`
+  mutation UpdateMilestoneDescription($input: UpdateMilestoneDescriptionInput!) {
+    updateMilestoneDescription(input: $input) {
+      id
+    }
+  }
+`;
+
+export function useUpdateDescription(options = {}) {
+  return useMutation(UPDATE_MILESTONE_DESCRIPTION, options);
 }

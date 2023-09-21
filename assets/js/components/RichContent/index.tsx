@@ -24,6 +24,12 @@ export default function RichContent({ jsonContent, className }: RichContentProps
     editable: false,
   });
 
+  React.useEffect(() => {
+    if (!editor) return;
+
+    editor.commands.setContent(JSON.parse(jsonContent));
+  }, [jsonContent]);
+
   return <TipTapEditor.EditorContent editor={editor} className={"ProseMirror " + className} />;
 }
 
