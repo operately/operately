@@ -6,6 +6,7 @@ import { useBoolState } from "@/utils/useBoolState";
 
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
+import { Link } from "react-router-dom";
 
 import * as SelectBox from "@/components/SilentSelectBox";
 import * as Projects from "@/graphql/Projects";
@@ -375,7 +376,13 @@ function MilestoneListItem({ project, milestone, refetch }) {
           <Icons.IconMapPinFilled size={16} className={iconColor} />
         </div>
 
-        {milestone.title}
+        <Link
+          className="underline"
+          to={`/projects/${project.id}/milestones/${milestone.id}`}
+          data-test-id={`milestone-link-${milestone.id}`}
+        >
+          {milestone.title}
+        </Link>
       </div>
 
       <MilestoneListItemDueDate project={project} milestone={milestone} refetch={refetch} />

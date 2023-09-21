@@ -54,6 +54,7 @@ defmodule Operately.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ueberauth, "~> 0.7"},
       {:ueberauth_google, "~> 0.10"},
+      {:inflex, "~> 2.0.0"},
 
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},

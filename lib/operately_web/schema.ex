@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Schema do
   import_types Absinthe.Type.Custom
 
   OperatelyWeb.SchemaUtils.import_all_types "graphql/types"
+  OperatelyWeb.SchemaUtils.import_all_queries "graphql/queries"
 
   # Queries
   import_types Queries.Activities
@@ -16,6 +17,7 @@ defmodule OperatelyWeb.Schema do
   import_types Queries.Objectives
   import_types Queries.People
   import_types Queries.Projects
+  import_types Queries.Milestones
   import_types Queries.Updates
 
   # Mutations
@@ -61,6 +63,7 @@ defmodule OperatelyWeb.Schema do
     import_fields :objective_queries
     import_fields :people_queries
     import_fields :project_queries
+    import_fields :milestone_queries
     import_fields :update_queries
 
     field :kpis, list_of(:kpi) do

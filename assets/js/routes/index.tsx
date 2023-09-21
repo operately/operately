@@ -17,6 +17,7 @@ import { AccountNotificationSettingsPage } from "@/pages/AccountNotificationSett
 import * as ProjectPage from "@/pages/ProjectPage";
 import * as ProjectListPage from "@/pages/ProjectListPage";
 import * as ProjectMilestonesPage from "@/pages/ProjectMilestonesPage";
+import * as ProjectMilestonePage from "@/pages/ProjectMilestonePage";
 import * as ProjectStatusUpdateNewPage from "@/pages/ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "@/pages/ProjectStatusUpdatePage";
 import * as ProjectAddPage from "../pages/ProjectAddPage";
@@ -70,12 +71,13 @@ const routes = createBrowserRouter([
       pageRoute("/groups/:id/members", GroupMembersPage),
       pageRoute("/projects", ProjectListPage),
       pageRoute("/projects/new", ProjectAddPage),
+      pageRoute("/projects/:project_id/updates/new", ProjectStatusUpdateNewPage),
+      pageRoute("/projects/:project_id/milestones", ProjectMilestonesPage),
+      pageRoute("/projects/:project_id/milestones/:id", ProjectMilestonePage),
       {
         path: "/projects/:project_id/contributors",
         element: <ProjectContributorsPage />,
       },
-      pageRoute("/projects/:project_id/updates/new", ProjectStatusUpdateNewPage),
-      pageRoute("/projects/:project_id/milestones", ProjectMilestonesPage),
       {
         path: "/projects/:project_id/documentation/*",
         element: <ProjectDocumentationPage />,

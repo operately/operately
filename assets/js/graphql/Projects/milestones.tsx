@@ -13,6 +13,12 @@ export const FRAGMENT = `
   }
 `;
 
+export const GET_MILESTONE = gql`
+  query GetMilestone($id: ID!) {
+    milestone(id: $id) ${FRAGMENT}
+  }
+`;
+
 export interface Milestone {
   id: string;
   title: string;
