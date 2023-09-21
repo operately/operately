@@ -99,7 +99,7 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
   const [post, { loading }] = Updates.usePostUpdateMutation();
   const peopleSearch = People.usePeopleSearch();
 
-  const editor = TipTapEditor.useEditor({
+  const { editor, submittable } = TipTapEditor.useEditor({
     placeholder: "Write a message...",
     peopleSearch: peopleSearch,
     className: "min-h-[200px] p-4",
@@ -107,6 +107,7 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
 
   const handlePost = async () => {
     if (!editor) return;
+    if (!submittable) return;
     if (loading) return;
 
     await post({
@@ -136,8 +137,15 @@ function NewMessageActive({ project, onBlur, onPost, me }) {
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
-              <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-message" size="small">
-                Post
+              <Button
+                onClick={handlePost}
+                loading={loading}
+                variant="success"
+                data-test-id="post-message"
+                size="small"
+                disabled={!submittable}
+              >
+                {submittable ? "Post" : "Uploading..."}
               </Button>
               <Button variant="secondary" onClick={onBlur} size="small">
                 Cancel
@@ -471,7 +479,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
   const peopleSearch = People.usePeopleSearch();
 
-  const editor = TipTapEditor.useEditor({
+  const { editor, submittable } = TipTapEditor.useEditor({
     placeholder: "Post a comment...",
     peopleSearch: peopleSearch,
     className: "min-h-[200px] p-4",
@@ -481,6 +489,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
   const handlePost = async () => {
     if (!editor) return;
+    if (!submittable) return;
     if (loading) return;
 
     await post({
@@ -503,8 +512,15 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
         <div className="flex justify-between items-center m-4">
           <div className="flex items-center gap-2">
-            <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
-              Post
+            <Button
+              onClick={handlePost}
+              loading={loading}
+              variant="success"
+              data-test-id="post-comment"
+              size="small"
+              disabled={!submittable}
+            >
+              {submittable ? "Post" : "Uploading..."}
             </Button>
 
             <Button variant="secondary" onClick={onBlur} size="small">

@@ -10,7 +10,7 @@ import Link from "@tiptap/extension-link";
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
 import Button from "@/components/Button";
-import Blob from "./Blob";
+import Blob, { isUploadInProgress } from "./Blob";
 
 export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
@@ -52,12 +52,12 @@ export function Root({ children }): JSX.Element {
   return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
 }
 
-function useEditor(props: UseEditorProps): TipTap.Editor | null {
-  const [_submitActive, setSubmitActive] = React.useState(false);
+function useEditor(props: UseEditorProps): { editor: any; submittable: boolean } {
+  const [submittable, setSubmittable] = React.useState(true);
 
   const editable = props.editable === undefined ? true : props.editable;
 
-  return TipTap.useEditor({
+  const editor = TipTap.useEditor({
     editable: editable,
     content: props.content,
     autofocus: editable,
@@ -101,10 +101,12 @@ function useEditor(props: UseEditorProps): TipTap.Editor | null {
         html: editor.getHTML(),
       });
     },
-    onUpdate: ({ editor }) => {
-      setSubmitActive(editor.state.doc.textContent.length > 0);
+    onUpdate: (props) => {
+      setSubmittable(!isUploadInProgress(props.editor.state.doc));
     },
   });
+
+  return { editor: editor, submittable: submittable };
 }
 
 const EditorContent = TipTap.EditorContent;

@@ -141,7 +141,7 @@ function DescriptionFilled({ milestone, onEdit }) {
 function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   const peopleSearch = People.usePeopleSearch();
 
-  const editor = TipTapEditor.useEditor({
+  const { editor, submittable } = TipTapEditor.useEditor({
     placeholder: "Write here...",
     content: JSON.parse(milestone.description || "{}"),
     editable: true,
@@ -153,6 +153,7 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
 
   const handlePost = async () => {
     if (!editor) return;
+    if (!submittable) return;
     if (loading) return;
 
     await post({
@@ -177,11 +178,12 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
             <Button
               onClick={handlePost}
               loading={loading}
+              disabled={!submittable}
               variant="success"
               data-test-id="save-milestone-description"
               size="small"
             >
-              Save
+              {submittable ? "Save" : "Uploading..."}
             </Button>
 
             <Button variant="secondary" size="small" onClick={onCancel}>

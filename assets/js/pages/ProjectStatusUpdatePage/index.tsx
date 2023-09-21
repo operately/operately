@@ -4,6 +4,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
 
+import * as People from "@/graphql/People";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
@@ -279,16 +280,19 @@ function AddCommentNonActive({ me, onClick }) {
 }
 
 function AddCommentActive({ update, onBlur, onPost }) {
+  const peopleSearch = People.usePeopleSearch();
   const [_, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
 
-  const editor = TipTapEditor.useEditor({
+  const { editor, submittable } = TipTapEditor.useEditor({
     placeholder: "Write your comment here...",
+    peopleSearch: peopleSearch,
   });
 
   const [postComment, { loading }] = usePostCommentMutation(update.id);
 
   const handlePost = async () => {
     if (!editor) return;
+    if (!submittable) return;
     if (loading) return;
 
     await postComment(editor.getJSON());
@@ -301,7 +305,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
     <div>
       <div className="bg-shade-1 text-white-1 rounded-lg">
         <div className="flex items-center gap-1 border-b border-shade-2 px-4 py-1">
-          <TipTapEditor.Toolbar editor={editor} />
+          <TipTapEditor.Toolbar editor={editor} variant="large" />
         </div>
 
         <div
@@ -315,26 +319,15 @@ function AddCommentActive({ update, onBlur, onPost }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <PostButton onClick={handlePost} />
-        <CancelButton onClick={onBlur} />
+        <Button onClick={handlePost} variant="success" data-test-id="post-comment" disabled={!submittable}>
+          <Icons.IconMail size={20} />
+          {submittable ? "Post Comment" : "Uploading..."}
+        </Button>
+
+        <Button variant="secondary" onClick={onBlur}>
+          Cancel
+        </Button>
       </div>
     </div>
-  );
-}
-
-function PostButton({ onClick }) {
-  return (
-    <Button onClick={onClick} variant="success" data-test-id="post-comment">
-      <Icons.IconMail size={20} />
-      Post Comment
-    </Button>
-  );
-}
-
-function CancelButton({ onClick }) {
-  return (
-    <Button variant="secondary" onClick={onClick}>
-      Cancel
-    </Button>
   );
 }

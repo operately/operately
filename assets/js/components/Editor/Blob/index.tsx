@@ -5,6 +5,21 @@ import { DropFilePlugin } from "./DropFilePlugin";
 import { PasteFilePlugin } from "./PasteFilePlugin";
 import { BlobView } from "./BlobView";
 
+export function isUploadInProgress(doc: any) {
+  let result = false;
+
+  doc.descendants((node: any) => {
+    if (node.type.name === "blob" && node.attrs.status === "uploading") {
+      result = true;
+      return false; // stop searching, we found what we're looking for
+    }
+
+    return true;
+  });
+
+  return result;
+}
+
 const BlobExtension = Node.create({
   name: "blob",
   inline: true,
