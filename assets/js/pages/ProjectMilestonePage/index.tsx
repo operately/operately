@@ -112,7 +112,11 @@ function Description({ milestone, refetch }) {
 function DescriptionZeroState({ onEdit }) {
   return (
     <div className="border-y border-dark-5 my-4 py-2 min-h-[200px]">
-      <span className="text-white-2">Add extra details or attach a file.</span>{" "}
+      <span className="text-white-2">
+        No description provided. Add details, attach files, or link to external resources.
+      </span>
+      <br />
+      <br />
       <a className="text-white-2 underline cursor-pointer" onClick={onEdit} data-test-id="write-milestone-description">
         Write Description
       </a>
