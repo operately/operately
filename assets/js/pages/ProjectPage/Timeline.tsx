@@ -6,7 +6,7 @@ import { useBoolState } from "@/utils/useBoolState";
 
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
-import { Link } from "react-router-dom";
+import { MilestoneLink } from "@/routes/Links";
 
 import * as SelectBox from "@/components/SilentSelectBox";
 import * as Projects from "@/graphql/Projects";
@@ -376,13 +376,9 @@ function MilestoneListItem({ project, milestone, refetch }) {
           <Icons.IconMapPinFilled size={16} className={iconColor} />
         </div>
 
-        <Link
-          className="underline"
-          to={`/projects/${project.id}/milestones/${milestone.id}`}
-          data-test-id={`milestone-link-${milestone.id}`}
-        >
+        <MilestoneLink projectID={project.id} milestoneID={milestone.id}>
           {milestone.title}
-        </Link>
+        </MilestoneLink>
       </div>
 
       <MilestoneListItemDueDate project={project} milestone={milestone} refetch={refetch} />
@@ -627,7 +623,10 @@ function ExistingNextMilestone({ project, refetch }) {
     <div className="flex items-center gap-2">
       <Icons.IconMapPinFilled size={16} className={iconColor} />
       <span>
-        {label}: <span className="text-white-1 font-bold">{project.nextMilestone.title}</span>
+        {label}:{" "}
+        <MilestoneLink projectID={project.id} milestoneID={project.nextMilestone.id}>
+          {project.nextMilestone.title}
+        </MilestoneLink>
       </span>
 
       <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />

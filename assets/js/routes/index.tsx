@@ -73,7 +73,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/new", ProjectAddPage),
       pageRoute("/projects/:project_id/updates/new", ProjectStatusUpdateNewPage),
       pageRoute("/projects/:project_id/milestones", ProjectMilestonesPage),
-      pageRoute("/projects/:project_id/milestones/:id", ProjectMilestonePage),
+      pageRoute("/projects/:projectID/milestones/:id", ProjectMilestonePage),
       {
         path: "/projects/:project_id/contributors",
         element: <ProjectContributorsPage />,

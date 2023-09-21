@@ -19,6 +19,7 @@ import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 import * as PhaseChange from "@/features/phase_change";
+import { MilestoneLink } from "@/routes/Links";
 
 interface ActivityContextDescriptor {
   project: Projects.Project;
@@ -521,7 +522,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 }
 
 function Message({ project, update }: { project: Projects.Project; update: Updates.Update }) {
-  const content = update.content as Updates.Message;
+  const content = update.content as UpdateContent.Message;
   const message = content.message;
 
   return (
@@ -591,7 +592,7 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
 }
 
 function ProjectCreated({ update }: { update: Updates.Update }) {
-  const content = update.content as Updates.UpdateContentProjectCreated;
+  const content = update.content as UpdateContent.ProjectCreated;
 
   const creatorIsChampion = content.creator.id === content.champion.id;
 
@@ -635,10 +636,10 @@ function ProjectCreated({ update }: { update: Updates.Update }) {
 }
 
 function ProjectMilestoneCreated({ update }: { project: Projects.Project; update: Updates.Update }) {
-  const creator = update.author;
+  const { project } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
+  const creator = update.author;
   const content = update.content as UpdateContent.ProjectMilestoneCreated;
-  const milestone = content.milestone.title;
 
   return (
     <SmallContainer time={update.insertedAt}>
@@ -647,7 +648,14 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         added <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
-        <span className="font-extrabold text-white-1">{milestone}</span> milestone.
+        <MilestoneLink
+          className="font-extrabold text-white-1 undeline"
+          projectID={project.id}
+          milestoneID={content.milestone.id}
+        >
+          {content.milestone.title}
+        </MilestoneLink>{" "}
+        milestone.
       </div>
     </SmallContainer>
   );
@@ -725,11 +733,11 @@ function ProjectContributorRemoved({ update }: { update: Updates.Update }) {
   );
 }
 
-function ProjectMilestoneDeleted({ update }: { project: Projects.Project; update: Updates.Update }) {
-  const creator = update.author;
+function ProjectMilestoneDeleted({ update }: { update: Updates.Update }) {
+  const { project } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
+  const creator = update.author;
   const content = update.content as UpdateContent.ProjectMilestoneDeleted;
-  const milestone = content.milestone.title;
 
   return (
     <SmallContainer time={update.insertedAt}>
@@ -738,17 +746,24 @@ function ProjectMilestoneDeleted({ update }: { project: Projects.Project; update
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         deleted the <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
-        <span className="font-extrabold text-white-1">{milestone}</span> milestone.
+        <MilestoneLink
+          className="font-extrabold text-white-1 undeline"
+          projectID={project.id}
+          milestoneID={content.milestone.id}
+        >
+          {content.milestone.title}
+        </MilestoneLink>{" "}
+        milestone.
       </div>
     </SmallContainer>
   );
 }
 
-function ProjectMilestoneCompleted({ update }: { project: Projects.Project; update: Updates.Update }) {
-  const creator = update.author;
+function ProjectMilestoneCompleted({ update }: { update: Updates.Update }) {
+  const { project } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
-  const content = update.content as Updates.ProjectMilestoneCompleted;
-  const milestone = content.milestone.title;
+  const creator = update.author;
+  const content = update.content as UpdateContent.ProjectMilestoneCompleted;
 
   return (
     <SmallContainer time={update.insertedAt}>
@@ -757,17 +772,24 @@ function ProjectMilestoneCompleted({ update }: { project: Projects.Project; upda
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         marked <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
-        <span className="font-extrabold text-white-1">{milestone}</span> as completed.
+        <MilestoneLink
+          className="font-extrabold text-white-1 undeline"
+          projectID={project.id}
+          milestoneID={content.milestone.id}
+        >
+          {content.milestone.title}
+        </MilestoneLink>{" "}
+        as completed.
       </div>
     </SmallContainer>
   );
 }
 
-function ProjectMilestoneDeadlineChanged({ update }: { project: Projects.Project; update: Updates.Update }) {
-  const creator = update.author;
+function ProjectMilestoneDeadlineChanged({ update }: { update: Updates.Update }) {
+  const { project } = React.useContext(ActivityContext) as ActivityContextDescriptor;
 
+  const creator = update.author;
   const content = update.content as UpdateContent.ProjectMilestoneDeadlineChanged;
-  const milestone = content.milestone.title;
 
   return (
     <SmallContainer time={update.insertedAt}>
@@ -776,8 +798,14 @@ function ProjectMilestoneDeadlineChanged({ update }: { project: Projects.Project
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         changed the due date for <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
-        <span className="font-extrabold text-white-1">{milestone}</span> to{" "}
-        <FormattedTime time={content.newDeadline} format="short-date" />.
+        <MilestoneLink
+          className="font-extrabold text-white-1 undeline"
+          projectID={project.id}
+          milestoneID={content.milestone.id}
+        >
+          {content.milestone.title}
+        </MilestoneLink>{" "}
+        to <FormattedTime time={content.newDeadline} format="short-date" />.
       </div>
     </SmallContainer>
   );

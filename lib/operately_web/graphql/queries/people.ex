@@ -1,8 +1,7 @@
 defmodule OperatelyWeb.GraphQL.Queries.People do
   use Absinthe.Schema.Notation
 
-  object :people_queries do
-
+  object :person_queries do
     field :me, :person do
       resolve fn _, _, %{context: context} ->
         {:ok, context.current_account.person}

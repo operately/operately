@@ -2,23 +2,12 @@ defmodule OperatelyWeb.Schema do
   use Absinthe.Schema
   require OperatelyWeb.SchemaUtils
 
-  alias OperatelyWeb.GraphQL.{Queries, Mutations}
+  alias OperatelyWeb.GraphQL.{Mutations}
 
   import_types Absinthe.Type.Custom
 
   OperatelyWeb.SchemaUtils.import_all_types "graphql/types"
   OperatelyWeb.SchemaUtils.import_all_queries "graphql/queries"
-
-  # Queries
-  import_types Queries.Activities
-  import_types Queries.Assignments
-  import_types Queries.Companies
-  import_types Queries.KeyResults
-  import_types Queries.Objectives
-  import_types Queries.People
-  import_types Queries.Projects
-  import_types Queries.Milestones
-  import_types Queries.Updates
 
   # Mutations
   import_types Mutations.Dashboards
@@ -53,90 +42,6 @@ defmodule OperatelyWeb.Schema do
     field :name, non_null(:string)
     field :value, non_null(:string)
     field :type, non_null(:string)
-  end
-
-  query do
-    import_fields :activity_queries
-    import_fields :assignment_queries
-    import_fields :company_queries
-    import_fields :key_result_queries
-    import_fields :objective_queries
-    import_fields :people_queries
-    import_fields :project_queries
-    import_fields :milestone_queries
-    import_fields :update_queries
-
-    field :kpis, list_of(:kpi) do
-      resolve fn _, _, _ ->
-        kpis = Operately.Kpis.list_kpis()
-
-        {:ok, kpis}
-      end
-    end
-
-    field :kpi, :kpi do
-      arg :id, non_null(:id)
-
-      resolve fn args, _ ->
-        kpi = Operately.Kpis.get_kpi!(args.id)
-
-        {:ok, kpi}
-      end
-    end
-
-    field :groups, list_of(:group) do
-      resolve fn _, _, _ ->
-        groups = Operately.Groups.list_groups()
-
-        {:ok, groups}
-      end
-    end
-
-    field :group, :group do
-      arg :id, non_null(:id)
-
-      resolve fn args, _ ->
-        group = Operately.Groups.get_group!(args.id)
-
-        {:ok, group}
-      end
-    end
-
-    field :tenets, list_of(:tenet) do
-      resolve fn _, _, _ ->
-        tenets = Operately.Tenets.list_tenets()
-
-        {:ok, tenets}
-      end
-    end
-
-    field :tenet, :tenet do
-      arg :id, non_null(:id)
-
-      resolve fn args, _ ->
-        tenet = Operately.Tenets.get_tenet!(args.id)
-
-        {:ok, tenet}
-      end
-    end
-
-    field :potential_group_members, list_of(:person) do
-      arg :group_id, non_null(:id)
-      arg :query, :string
-      arg :exclude_ids, list_of(:id)
-      arg :limit, :integer
-
-      resolve fn args, _ ->
-        people = Operately.Groups.list_potential_members(
-          args.group_id,
-          args.query,
-          args.exclude_ids,
-          args.limit
-        )
-
-        {:ok, people}
-      end
-    end
   end
 
   mutation do
