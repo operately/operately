@@ -150,7 +150,7 @@ function DescriptionEdit({ milestone, onSave, onCancel }) {
     await post({
       variables: {
         input: {
-          milestoneID: milestone.id,
+          id: milestone.id,
           content: JSON.stringify(editor.getJSON()),
         },
       },

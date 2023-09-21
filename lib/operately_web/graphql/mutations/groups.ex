@@ -1,6 +1,19 @@
 defmodule OperatelyWeb.GraphQL.Mutations.Groups do
   use Absinthe.Schema.Notation
 
+  input_object :contact_input do
+    field :name, non_null(:string)
+    field :value, non_null(:string)
+    field :type, non_null(:string)
+  end
+
+  object :group_contact do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :type, non_null(:string)
+    field :value, non_null(:string)
+  end
+
   object :group_mutations do
     field :create_group, :group do
       arg :name, non_null(:string)
@@ -34,6 +47,36 @@ defmodule OperatelyWeb.GraphQL.Mutations.Groups do
         group = Operately.Groups.get_group(args.group_id)
 
         Operately.Groups.remove_member(group, args.member_id)
+
+        {:ok, group}
+      end
+    end
+
+    field :set_group_mission, :group do
+      arg :group_id, non_null(:id)
+      arg :mission, non_null(:string)
+
+      resolve fn args, _ ->
+        group = Operately.Groups.get_group!(args.group_id)
+        {:ok, _} = Operately.Groups.set_mission(group, args.mission)
+
+        {:ok, group}
+      end
+    end
+
+    field :add_group_contact, :group do
+      arg :group_id, non_null(:id)
+      arg :contact, non_null(:contact_input)
+
+      resolve fn args, _ ->
+        group = Operately.Groups.get_group!(args.group_id)
+
+        {:ok, _} = Operately.Groups.add_contact(
+          group,
+          args.contact.name,
+          args.contact.value,
+          args.contact.type
+        )
 
         {:ok, group}
       end

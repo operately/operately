@@ -15,6 +15,8 @@ defmodule Operately.Projects.Milestone do
     field :deadline_at, :naive_datetime
     field :completed_at, :naive_datetime
 
+    field :description, :map
+
     timestamps()
     soft_delete()
   end
@@ -22,7 +24,7 @@ defmodule Operately.Projects.Milestone do
   @doc false
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at])
+    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description])
     |> validate_required([:title])
   end
 end

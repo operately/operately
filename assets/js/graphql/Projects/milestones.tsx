@@ -10,6 +10,7 @@ export const FRAGMENT = `
 
     deadlineAt
     completedAt
+    description
   }
 `;
 
@@ -26,6 +27,7 @@ export interface Milestone {
 
   deadlineAt: string;
   completedAt: string | null;
+  description: string | null;
 }
 
 export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
