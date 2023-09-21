@@ -28,7 +28,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let milestoneDate = await client.query({
+  let milestoneData = await client.query({
     query: Milestones.GET_MILESTONE,
     variables: { id: params.id },
     fetchPolicy: "network-only",
@@ -41,18 +41,18 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   return {
     project: projectData.data.project,
-    milestone: milestoneDate.data.milestone,
+    milestone: milestoneData.data.milestone,
     me: meData.data.me,
   };
 }
 
 export function Page() {
-  const [{ project, milestone, me }, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
+  const [{ project, milestone }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   useDocumentTitle(`${milestone.title} - ${project.name}`);
 
   return (
-    <Paper.Root>
+    <Paper.Root key={fetchVersion}>
       <Paper.Navigation>
         <Paper.NavItem linkTo={`/projects/${project.id}`}>
           <Icons.IconClipboardList size={16} />
@@ -75,7 +75,7 @@ export function Page() {
           )}
         </DetailList>
 
-        <Description milestone={milestone} />
+        <Description milestone={milestone} refetch={refetch} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -95,11 +95,11 @@ function DetailListItem({ title, value }) {
   );
 }
 
-function Description({ milestone }) {
+function Description({ milestone, refetch }) {
   const [editing, _, setEditing, setNotEditing] = useBoolState(false);
 
   if (editing) {
-    return <DescriptionEdit milestone={milestone} onSave={setNotEditing} onCancel={setNotEditing} />;
+    return <DescriptionEdit milestone={milestone} onSave={setNotEditing} onCancel={setNotEditing} refetch={refetch} />;
   } else {
     if (milestone.description) {
       return <DescriptionFilled milestone={milestone} onEdit={setEditing} />;
@@ -134,9 +134,7 @@ function DescriptionFilled({ milestone, onEdit }) {
   );
 }
 
-function DescriptionEdit({ milestone, onSave, onCancel }) {
-  const [_, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
-
+function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   const peopleSearch = People.usePeopleSearch();
 
   const editor = TipTapEditor.useEditor({
@@ -162,8 +160,8 @@ function DescriptionEdit({ milestone, onSave, onCancel }) {
       },
     });
 
+    await onSave();
     refetch();
-    onSave();
   };
 
   return (
