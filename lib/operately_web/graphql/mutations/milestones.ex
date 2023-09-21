@@ -87,10 +87,10 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
       arg :input, non_null(:update_milestone_description_input)
 
       resolve fn args, _ ->
-        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+        milestone = Operately.Projects.get_milestone!(args.input.id)
 
         Operately.Projects.update_milestone(milestone, %{
-          description: args.input.description
+          description: Jason.decode!(args.input.description)
         })
       end
     end

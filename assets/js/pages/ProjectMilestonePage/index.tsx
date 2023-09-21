@@ -102,7 +102,7 @@ function Description({ milestone }) {
     return <DescriptionEdit milestone={milestone} onSave={setNotEditing} onCancel={setNotEditing} />;
   } else {
     if (milestone.description) {
-      return <DescriptionFilled milestone={milestone} />;
+      return <DescriptionFilled milestone={milestone} onEdit={setEditing} />;
     } else {
       return <DescriptionZeroState onEdit={setEditing} />;
     }
@@ -120,10 +120,16 @@ function DescriptionZeroState({ onEdit }) {
   );
 }
 
-function DescriptionFilled({ milestone }) {
+function DescriptionFilled({ milestone, onEdit }) {
   return (
-    <div className="border-y border-dark-5 my-4 py-2 min-h-[200px]">
-      <RichContent jsonContent={milestone.description} className="border-y border-dark-5 my-4 py-2" />
+    <div className="border-y border-dark-5 my-4 py-2 min-h-[200px] relative">
+      <RichContent jsonContent={milestone.description} />
+
+      <div className="absolute top-2 right-0" onClick={onEdit}>
+        <Button variant="secondary" size="tiny" onClick={() => {}}>
+          Edit
+        </Button>
+      </div>
     </div>
   );
 }
@@ -137,7 +143,7 @@ function DescriptionEdit({ milestone, onSave, onCancel }) {
     placeholder: "Write here...",
     content: JSON.parse(milestone.description || "{}"),
     editable: true,
-    className: "border-y border-dark-5 my-4 py-2 min-h-[200px]",
+    className: "py-2 min-h-[200px]",
     peopleSearch: peopleSearch,
   });
 
@@ -151,32 +157,34 @@ function DescriptionEdit({ milestone, onSave, onCancel }) {
       variables: {
         input: {
           id: milestone.id,
-          content: JSON.stringify(editor.getJSON()),
+          description: JSON.stringify(editor.getJSON()),
         },
       },
     });
 
-    await onSave();
     refetch();
+    onSave();
   };
 
   return (
-    <TipTapEditor.Root>
-      <TipTapEditor.EditorContent editor={editor} />;
-      <div className="flex justify-between items-center m-4">
-        <div className="flex items-center gap-2">
-          <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
-            Save
-          </Button>
+    <div className="border border-dark-5 bg-dark-2 rounded my-4 px-4 p-4 pt-2 relative overflow-hidden">
+      <TipTapEditor.Root>
+        <TipTapEditor.EditorContent editor={editor} className="min-h-[200px]" />
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center gap-2">
+            <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
+              Save
+            </Button>
 
-          <Button variant="secondary" size="small" onClick={onCancel}>
-            Cancel
-          </Button>
+            <Button variant="secondary" size="small" onClick={onCancel}>
+              Cancel
+            </Button>
+          </div>
+
+          <TipTapEditor.Toolbar editor={editor} variant="small" />
         </div>
-
-        <TipTapEditor.Toolbar editor={editor} variant="small" />
-      </div>
-      <TipTapEditor.LinkEditForm editor={editor} />
-    </TipTapEditor.Root>
+        <TipTapEditor.LinkEditForm editor={editor} />
+      </TipTapEditor.Root>
+    </div>
   );
 }
