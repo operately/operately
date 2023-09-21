@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   use Operately.FeatureCase
 
   import Operately.CompaniesFixtures
+  alias Operately.People.Person
 
   setup session do
     company = company_fixture(%{name: "Test Org"})
@@ -24,7 +25,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     state
     |> UI.assert_text("Contract Signed")
-    |> UI.assert_text(short_name(state.champion) <> " added Contract Signed milestone")
+    |> UI.assert_text(Person.short_name(state.champion) <> " added Contract Signed milestone")
   end
 
   feature "deleting a milestone on a project", state do
@@ -34,7 +35,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> visit_page(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "delete-milestone")
-    |> UI.assert_text(short_name(state.champion) <> " deleted the Contract Signed milestone")
+    |> UI.assert_text(Person.short_name(state.champion) <> " deleted the Contract Signed milestone")
   end
 
   feature "see all milestones", state do
@@ -69,7 +70,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.assert_text("Website Launched", testid: "timeline")
 
     state
-    |> UI.assert_text(short_name(state.champion) <> " marked Contract Signed as completed")
+    |> UI.assert_text(Person.short_name(state.champion) <> " marked Contract Signed as completed")
   end
 
   feature "mark milestone completed in the expanded list", state do
@@ -80,7 +81,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> visit_page(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "complete-milestone")
-    |> UI.assert_text(short_name(state.champion) <> " marked Website Launched as completed")
+    |> UI.assert_text(Person.short_name(state.champion) <> " marked Website Launched as completed")
   end
 
   feature "change milestone deadline", state do
@@ -91,7 +92,21 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "change-milestone-due-date")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
-    |> UI.assert_text(short_name(state.champion) <> " changed the due date for Contract Signed")
+    |> UI.assert_text(Person.short_name(state.champion) <> " changed the due date for Contract Signed")
+  end
+
+  feature "visiting the milestone page", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_page(state.project)
+    |> UI.find(testid: "timeline")
+    |> UI.click(testid: "show-all-milestones")
+    |> UI.click(testid: "milestone-link-#{milestone.id}")
+
+    state
+    |> UI.assert_page("/projects/#{state.project.id}/milestones/#{milestone.id}")
+    |> UI.assert_text("Contract Signed")
   end
 
   # ===========================================================================
@@ -100,12 +115,6 @@ defmodule Operately.Features.ProjectMilestonesTest do
     attrs = %{project_id: project.id} |> Map.merge(attrs)
 
     {:ok, _} = Operately.Projects.create_milestone(creator, attrs)
-  end
-
-  defp short_name(person) do
-    parts = String.split(person.full_name, " ")
-
-    Enum.at(parts, 0) <> " " <> String.first(Enum.at(parts, 1)) <> "."
   end
 
   defp visit_page(state, project), do: UI.visit(state, "/projects" <> "/" <> project.id)
