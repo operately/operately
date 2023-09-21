@@ -39,12 +39,21 @@ export default function Description({ me, project, refetch }) {
 }
 
 function Editor({ project, refetch, deactivateEdit }) {
+  const peopleSearch = People.usePeopleSearch();
+
+  const { editor, submittable } = TipTapEditor.useEditor({
+    peopleSearch: peopleSearch,
+    placeholder: "Write here...",
+    content: JSON.parse(project.description),
+  });
+
   const [post, { loading }] = Projects.useUpdateDescriptionMutation({
     onCompleted: () => refetch(),
   });
 
   const submit = async () => {
     if (!editor) return;
+    if (!submittable) return;
 
     const content = editor.getJSON();
 
@@ -55,14 +64,6 @@ function Editor({ project, refetch, deactivateEdit }) {
     deactivateEdit();
   };
 
-  const peopleSearch = People.usePeopleSearch();
-
-  const editor = TipTapEditor.useEditor({
-    peopleSearch: peopleSearch,
-    placeholder: "Write here...",
-    content: JSON.parse(project.description),
-  });
-
   return (
     <TipTapEditor.Root>
       <div className="z-20 relative my-8">
@@ -72,8 +73,8 @@ function Editor({ project, refetch, deactivateEdit }) {
 
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <Button onClick={submit} variant="success" loading={loading}>
-              Save
+            <Button onClick={submit} variant="success" loading={loading} disabled={!submittable}>
+              {submittable ? "Save" : "Uploading..."}
             </Button>
             <Button variant="secondary" onClick={deactivateEdit}>
               Cancel

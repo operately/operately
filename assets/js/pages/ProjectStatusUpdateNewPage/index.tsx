@@ -166,7 +166,7 @@ function Editor({ project, title }) {
 
   const peopleSearch = People.usePeopleSearch();
 
-  const editor = TipTapEditor.useEditor({
+  const { editor, submittable } = TipTapEditor.useEditor({
     placeholder: placeholder,
     peopleSearch: peopleSearch,
     className: "min-h-[350px] py-2",
@@ -179,6 +179,7 @@ function Editor({ project, title }) {
 
   const submit = () => {
     if (!editor) return;
+    if (!submittable) return;
 
     post({
       variables: {
@@ -207,8 +208,13 @@ function Editor({ project, title }) {
       {messageType === "status_update" && <FieldUpdates health={health} setHealth={setHealth} />}
 
       <div className="flex items-center gap-2">
-        <PostButton onClick={submit} />
-        <CancelButton linkTo={`/projects/${project.id}`} />
+        <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={!submittable}>
+          <Icons.IconMail size={20} />
+          {submittable ? "Post" : "Uploading..."}
+        </Button>
+        <Button variant="secondary" linkTo={`/projects/${project.id}`}>
+          Cancel
+        </Button>
       </div>
     </TipTapEditor.Root>
   );
@@ -229,22 +235,5 @@ function FieldUpdates({ health, setHealth }) {
         </div>
       </div>
     </div>
-  );
-}
-
-function PostButton({ onClick }) {
-  return (
-    <Button onClick={onClick} variant="success" data-test-id="post-status-update">
-      <Icons.IconMail size={20} />
-      Post
-    </Button>
-  );
-}
-
-function CancelButton({ linkTo }) {
-  return (
-    <Button variant="secondary" linkTo={linkTo}>
-      Cancel
-    </Button>
   );
 }

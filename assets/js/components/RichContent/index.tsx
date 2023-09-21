@@ -19,7 +19,7 @@ interface RichContentProps {
 import * as TipTapEditor from "@/components/Editor";
 
 export default function RichContent({ jsonContent, className }: RichContentProps): JSX.Element {
-  const editor = TipTapEditor.useEditor({
+  const { editor } = TipTapEditor.useEditor({
     content: JSON.parse(jsonContent),
     editable: false,
   });
