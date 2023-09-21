@@ -109,6 +109,35 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.assert_text("Contract Signed")
   end
 
+  feature "adding a description", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> UI.visit("/projects/#{state.project.id}/milestones/#{milestone.id}")
+    |> UI.click(testid: "write-milestone-description")
+    |> UI.fill_rich_text("This is a description")
+    |> UI.click(testid: "save-milestone-description")
+    |> assert_text("This is a description")
+  end
+
+  feature "editing the description", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{
+      title: "Contract Signed", 
+      deadline_at: ~N[2023-06-17 00:00:00],
+      description: Operately.UpdatesFixtures.rich_text_fixture("This is a description")
+    })
+
+    state
+    |> UI.visit("/projects/#{state.project.id}/milestones/#{milestone.id}")
+    |> assert_text("This is a description")
+
+    state
+    |> UI.click(testid: "edit-milestone-description")
+    |> UI.fill_rich_text("This is a NEW description")
+    |> UI.click(testid: "save-milestone-description")
+    |> assert_text("This is a NEW description")
+  end
+
   # ===========================================================================
 
   defp add_milestone(project, creator, attrs) do

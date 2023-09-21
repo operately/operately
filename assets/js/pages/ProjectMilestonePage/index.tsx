@@ -113,7 +113,7 @@ function DescriptionZeroState({ onEdit }) {
   return (
     <div className="border-y border-dark-5 my-4 py-2 min-h-[200px]">
       <span className="text-white-2">Add extra details or attach a file.</span>{" "}
-      <a className="text-white-2 underline cursor-pointer" onClick={onEdit}>
+      <a className="text-white-2 underline cursor-pointer" onClick={onEdit} data-test-id="write-milestone-description">
         Write Description
       </a>
     </div>
@@ -125,8 +125,8 @@ function DescriptionFilled({ milestone, onEdit }) {
     <div className="border-y border-dark-5 my-4 py-2 min-h-[200px] relative">
       <RichContent jsonContent={milestone.description} />
 
-      <div className="absolute top-2 right-0" onClick={onEdit}>
-        <Button variant="secondary" size="tiny" onClick={() => {}}>
+      <div className="absolute top-2 right-0">
+        <Button variant="secondary" size="tiny" onClick={onEdit} data-test-id="edit-milestone-description">
           Edit
         </Button>
       </div>
@@ -170,7 +170,13 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
         <TipTapEditor.EditorContent editor={editor} className="min-h-[200px]" />
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-2">
-            <Button onClick={handlePost} loading={loading} variant="success" data-test-id="post-comment" size="small">
+            <Button
+              onClick={handlePost}
+              loading={loading}
+              variant="success"
+              data-test-id="save-milestone-description"
+              size="small"
+            >
               Save
             </Button>
 
