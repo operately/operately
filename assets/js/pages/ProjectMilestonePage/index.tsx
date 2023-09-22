@@ -209,7 +209,10 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   };
 
   return (
-    <div className="border border-dark-5 bg-dark-2 rounded px-4 p-4 pt-2 relative overflow-hidden">
+    <div
+      className="border border-dark-5 bg-dark-2 rounded px-4 p-4 pt-2 relative overflow-hidden"
+      data-test-id="milestone-description-editor"
+    >
       <TipTapEditor.Root>
         <TipTapEditor.EditorContent editor={editor} className="min-h-[200px]" />
         <div className="flex justify-between items-center mt-4">

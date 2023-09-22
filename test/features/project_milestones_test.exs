@@ -115,7 +115,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     state
     |> UI.visit("/projects/#{state.project.id}/milestones/#{milestone.id}")
     |> UI.click(testid: "write-milestone-description")
-    |> UI.fill_rich_text("This is a description")
+    |> UI.fill_rich_text(testid: "milestone-description-editor", with: "This is a description")
     |> UI.click(testid: "save-milestone-description")
     |> assert_text("This is a description")
   end
@@ -134,7 +134,9 @@ defmodule Operately.Features.ProjectMilestonesTest do
     state
     |> UI.hover(testid: "milestone-description")
     |> UI.click(testid: "edit-milestone-description")
-    |> UI.fill_rich_text("This is a NEW description")
+
+    state
+    |> UI.fill_rich_text(testid: "milestone-description-editor", with: "This is a NEW description")
     |> UI.click(testid: "save-milestone-description")
     |> assert_text("This is a NEW description")
   end

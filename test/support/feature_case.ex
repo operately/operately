@@ -133,9 +133,16 @@ defmodule Operately.FeatureCase do
       |> Browser.fill_in(Query.css("[data-test-id=\"#{id}\"]"), with: value)
     end
 
-    def fill_rich_text(state, message) do
+    def fill_rich_text(state, message) when is_binary(message) do
       session(state)
       |> Browser.find(Query.css(".ProseMirror[contenteditable=true]"), fn element ->
+        element |> Browser.send_keys(message)
+      end)
+    end
+
+    def fill_rich_text(state, testid: id, with: message) when is_binary(message) do
+      session(state)
+      |> Browser.find(Query.css("[data-test-id=\"#{id}\"] .ProseMirror[contenteditable=true]"), fn element ->
         element |> Browser.send_keys(message)
       end)
     end
