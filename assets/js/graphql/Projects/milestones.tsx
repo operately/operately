@@ -3,8 +3,8 @@ import * as Comments from "./comments";
 
 type MilestoneStatus = "pending" | "done";
 
-export function fragment() {
-  return `{
+export const FRAGMENT = `
+  {
     id
     title
     status
@@ -18,12 +18,12 @@ export function fragment() {
       action
       comment ${Comments.FRAGMENT}
     }
-  }`;
-}
+  }
+`;
 
 export const GET_MILESTONE = gql`
   query GetMilestone($id: ID!) {
-    milestone(id: $id) ${fragment()}
+    milestone(id: $id) ${FRAGMENT}
   }
 `;
 
