@@ -80,7 +80,6 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
 
       resolve fn args, %{context: context} ->
         person = context.current_account.person
-
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
 
         Operately.Projects.delete_milestone(person, milestone)
@@ -105,15 +104,18 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
       arg :input, non_null(:post_milestone_comment_input)
 
       resolve fn args, %{context: context} ->
+        action = args.input.action
         person = context.current_account.person
-        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+        milestone = Operately.Projects.get_milestone!(args.input.milestone_id)
 
         Operately.Comments.create_milestone_comment(
           person,
           milestone, 
-          args.milestone.action, 
+          action,
           %{
-            content: args.content,
+            content: %{
+              "message" => Jason.decode!(args.input.content),
+            },
             author_id: person.id,
           }
         )

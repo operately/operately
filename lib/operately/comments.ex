@@ -9,6 +9,10 @@ defmodule Operately.Comments do
     Repo.all(MilestoneComment)
   end
 
+  def list_milestone_comments(milestone_id) do
+    Repo.all(from mc in MilestoneComment, where: mc.milestone_id == ^milestone_id, preload: [:comment])
+  end
+
   def get_milestone_comment!(id), do: Repo.get!(MilestoneComment, id)
 
   def create_milestone_comment(person, milestone, action, comment_attrs = %{}) do
@@ -23,13 +27,13 @@ defmodule Operately.Comments do
 
       if action == "complete" do
         {:ok, _} = Operately.Projects.complete_milestone(person, milestone)
-        {:ok, milestone_comment}
       end
 
       if action == "reopen" do
         {:ok, _} = Operately.Projects.uncomplete_milestone(person, milestone)
-        {:ok, milestone_comment}
       end
+
+      milestone_comment
     end)
   end
 

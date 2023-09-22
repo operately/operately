@@ -1,25 +1,9 @@
 import * as fragments from "@/graphql/Fragments";
 import { gql, useQuery, useMutation } from "@apollo/client";
 
+import * as Comments from "./comments";
+import * as Reactions from "./reactions";
 import * as UpdateContent from "@/graphql/Projects/update_content";
-
-export const REACTION_FRAGMENT = `
-  {
-    id
-    reactionType
-    person ${fragments.PERSON}
-  }
-`;
-
-export const COMMENT_FRAGMENT = `
-  {
-    id
-    message
-    insertedAt
-    author ${fragments.PERSON}
-    reactions ${REACTION_FRAGMENT}
-  }
-`;
 
 export const UPDATE_FRAGMENT = `
   {
@@ -32,13 +16,13 @@ export const UPDATE_FRAGMENT = `
     updatedAt
 
     author ${fragments.PERSON}
-    comments ${COMMENT_FRAGMENT}
+    comments ${Comments.FRAGMENT}
 
     acknowledgingPerson ${fragments.PERSON}
     acknowledged
     acknowledgedAt
 
-    reactions ${REACTION_FRAGMENT}
+    reactions ${Reactions.FRAGMENT}
 
     previousPhase
     newPhase

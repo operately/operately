@@ -1,9 +1,10 @@
 import { gql, useMutation } from "@apollo/client";
+import * as Comments from "./comments";
 
 type MilestoneStatus = "pending" | "done";
 
-export const FRAGMENT = `
-  {
+export function fragment() {
+  return `{
     id
     title
     status
@@ -11,12 +12,18 @@ export const FRAGMENT = `
     deadlineAt
     completedAt
     description
-  }
-`;
+
+    comments {
+      id
+      action
+      comment ${Comments.FRAGMENT}
+    }
+  }`;
+}
 
 export const GET_MILESTONE = gql`
   query GetMilestone($id: ID!) {
-    milestone(id: $id) ${FRAGMENT}
+    milestone(id: $id) ${fragment()}
   }
 `;
 

@@ -1,6 +1,8 @@
 import React from "react";
 import * as Icons from "@tabler/icons-react";
 
+import * as Time from "@/utils/time";
+
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as People from "@/graphql/People";
@@ -67,7 +69,7 @@ export function Page() {
 
       <Paper.Body>
         <div className="flex items-center gap-4">
-          <div className="w-28 flex flex-row-reverse">
+          <div className="w-32 flex flex-row-reverse">
             <Icons.IconMapPinFilled size={24} />
           </div>
 
@@ -82,6 +84,7 @@ export function Page() {
           <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
         </DetailList>
 
+        <h1 className="mt-16"></h1>
         <Separator />
 
         <Comments milestone={milestone} refetch={refetch} />
@@ -127,7 +130,7 @@ function DetailList({ children }) {
 function DetailListItem({ title, value }) {
   return (
     <div className="flex items-start gap-4 pt-2 mt-2">
-      <div className="font-extrabold text-white-1 w-28 flex flex-row-reverse">{title}</div>
+      <div className="font-extrabold text-white-1 w-32 flex flex-row-reverse">{title}</div>
 
       <div className="flex-1">{value}</div>
     </div>
@@ -236,7 +239,63 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
 }
 
 function Comments({ milestone, refetch }) {
-  return <></>;
+  return (
+    <>
+      {milestone.comments.map((comment) => (
+        <Comment key={comment.id} comment={comment} refetch={refetch} />
+      ))}
+    </>
+  );
+}
+
+function Comment({ comment }) {
+  return (
+    <div className="border-b border-dark-5">
+      <div className="flex items-start gap-4 py-4 ">
+        <div className="w-32 flex justify-between items-center pl-2">
+          <div className="text-white-2 text-xs">
+            <div className="uppercase">
+              {Time.isToday(Time.parseISO(comment.comment.insertedAt)) ? (
+                "Today"
+              ) : (
+                <FormattedTime time={comment.comment.insertedAt} format="short-date" />
+              )}
+            </div>
+
+            <div className="">
+              <FormattedTime time={comment.comment.insertedAt} format="time-only" />
+            </div>
+          </div>
+
+          <Avatar person={comment.comment.author} size="large" />
+        </div>
+        <div className="flex-1 pr-2">
+          <div className="text-white-1 font-bold">{comment.comment.author.fullName}</div>
+
+          <RichContent jsonContent={comment.comment.message} />
+        </div>
+      </div>
+      {comment.action === "complete" && (
+        <div className="flex items-center gap-4 pb-4">
+          <div className="w-32 flex justify-between items-center pl-2">
+            <div></div>
+            <Icons.IconCircleCheck size={20} className="text-purple-500" />
+          </div>
+          <div className="flex-1 pr-2 font-semibold text-purple-300">Milestone Completed</div>
+        </div>
+      )}
+
+      {comment.action === "reopen" && (
+        <div className="flex items-center gap-4 pb-4">
+          <div className="w-32 flex justify-between items-center pl-2">
+            <div></div>
+            <Icons.IconRefresh size={20} className="text-emerald-600" />
+          </div>
+          <div className="flex-1 pr-2 font-semibold text-emerald-300">Milestone Re-Opened</div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function AddComment({ milestone, refetch, me }) {
@@ -248,7 +307,16 @@ function AddComment({ milestone, refetch, me }) {
 
   const [post, { loading }] = Milestones.usePostComment();
 
-  const submit = async (action: "comment" | "complete") => {
+  const action = milestone.status === "done" ? "reopen" : "complete";
+  const actionMessage = action === "reopen" ? "Re-open" : "Complete";
+  const actionIcon =
+    action === "reopen" ? (
+      <Icons.IconRefresh size={16} className="text-emerald-600" />
+    ) : (
+      <Icons.IconCheck size={16} className="text-purple-500" />
+    );
+
+  const submit = async (action: "none" | "complete" | "reopen") => {
     if (!editor) return;
     if (!submittable) return;
     if (loading) return;
@@ -280,14 +348,14 @@ function AddComment({ milestone, refetch, me }) {
       </TipTapEditor.Root>
 
       <div className="flex flex-row-reverse gap-2 mt-3 mr-1">
-        <Button variant="success" disabled={!submittable} onClick={() => submit("comment")}>
+        <Button variant="success" disabled={!submittable} onClick={() => submit("none")}>
           {submittable ? "Comment" : "Uploading..."}
         </Button>
 
         {submittable && (
-          <Button variant="secondary" onClick={() => submit("complete")}>
-            <Icons.IconChecks size={16} />
-            {empty ? "Complete Milestone" : "Complete with comment"}
+          <Button variant="secondary" onClick={() => submit(action)}>
+            {actionIcon}
+            {empty ? actionMessage + " Milestone" : actionMessage + " with comment"}
           </Button>
         )}
       </div>

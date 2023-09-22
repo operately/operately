@@ -2,11 +2,11 @@ import React from "react";
 import { gql, useQuery, useMutation, useApolloClient, ApolloClient, QueryResult } from "@apollo/client";
 
 import * as fragments from "@/graphql/Fragments";
-import * as Updates from "./updates";
 import * as KeyResources from "./key_resources";
 import * as Milestones from "./milestones";
 import * as PhaseHistory from "./phase_history";
 import * as Permissions from "./permissions";
+import * as Updates from "./updates";
 
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
@@ -32,7 +32,7 @@ export const LIST_PROJECTS = gql`
       phase
       health
 
-      nextMilestone ${Milestones.FRAGMENT}
+      nextMilestone ${Milestones.fragment()}
 
       champion {
         id
@@ -156,8 +156,8 @@ export const GET_PROJECT = gql`
 
       phaseHistory ${PhaseHistory.GQL_FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
-      milestones ${Milestones.FRAGMENT}
-      nextMilestone ${Milestones.FRAGMENT}
+      milestones ${Milestones.fragment()}
+      nextMilestone ${Milestones.fragment()}
 
       contributors ${fragments.CONTRIBUTOR}
       champion ${fragments.PERSON}
