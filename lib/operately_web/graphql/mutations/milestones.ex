@@ -108,12 +108,15 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
         person = context.current_account.person
         milestone = Operately.Projects.get_milestone!(args.milestone_id)
 
-        Operately.Updates.create_comment(%{
-          parent_id: milestone.id,
-          parent_type: "milestone",
-          content: args.content,
-          author_id: person.id,
-        })
+        Operately.Comments.create_milestone_comment(
+          person,
+          milestone, 
+          args.milestone.action, 
+          %{
+            content: args.content,
+            author_id: person.id,
+          }
+        )
       end
     end
   end
