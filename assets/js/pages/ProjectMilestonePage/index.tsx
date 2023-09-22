@@ -282,7 +282,7 @@ function Comment({ comment }) {
         <div className="flex items-center gap-4 pb-4">
           <div className="w-32 flex justify-between items-center pl-2">
             <div></div>
-            <Icons.IconCircleCheck size={20} className="text-purple-500" />
+            <Icons.IconCircleCheck size={20} className="text-purple-400" />
           </div>
           <div className="flex-1 pr-2 font-semibold text-purple-300">Milestone Completed</div>
         </div>
@@ -339,7 +339,7 @@ function AddComment({ milestone, refetch, me }) {
 
   const avatar = <Avatar person={me} size="small" />;
   const commentBox = (
-    <div>
+    <div data-test-id="milestone-comment-editor">
       <TipTapEditor.Root>
         <div className="bg-dark-2 rounded relative">
           <TipTapEditor.EditorContent editor={editor} />
@@ -351,12 +351,12 @@ function AddComment({ milestone, refetch, me }) {
       </TipTapEditor.Root>
 
       <div className="flex flex-row-reverse gap-2 mt-3 mr-1">
-        <Button variant="success" disabled={!submittable} onClick={() => submit("none")}>
+        <Button variant="success" disabled={!submittable} onClick={() => submit("none")} data-test-id="post-comment">
           {submittable ? "Comment" : "Uploading..."}
         </Button>
 
         {submittable && (
-          <Button variant="secondary" onClick={() => submit(action)}>
+          <Button variant="secondary" onClick={() => submit(action)} data-test-id={action + "-and-comment"}>
             {actionIcon}
             {empty ? actionMessage + " Milestone" : actionMessage + " with comment"}
           </Button>

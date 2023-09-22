@@ -15,7 +15,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
   feature "adding milestones to a project", state do
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "add-milestone")
     |> UI.fill(testid: "milestone-title", with: "Contract Signed")
@@ -32,7 +32,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "delete-milestone")
     |> UI.assert_text(Person.short_name(state.champion) <> " deleted the Contract Signed milestone")
@@ -44,7 +44,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.find(testid: "timeline")
     |> UI.click(testid: "show-all-milestones")
 
@@ -59,7 +59,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.assert_text("Contract Signed", testid: "timeline")
 
     state
@@ -78,7 +78,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "complete-milestone")
     |> UI.assert_text(Person.short_name(state.champion) <> " marked Website Launched as completed")
@@ -88,7 +88,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "change-milestone-due-date")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
@@ -99,7 +99,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     state
-    |> visit_page(state.project)
+    |> visit_project_page(state.project)
     |> UI.find(testid: "timeline")
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "milestone-link-#{milestone.id}")
@@ -128,7 +128,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     })
 
     state
-    |> UI.visit("/projects/#{state.project.id}/milestones/#{milestone.id}")
+    |> visit_page(state.project, milestone)
     |> assert_text("This is a description")
 
     state
@@ -141,6 +141,38 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> assert_text("This is a NEW description")
   end
 
+  feature "write a comment", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_page(state.project, milestone)
+    |> UI.fill_rich_text(testid: "milestone-comment-editor", with: "This is a comment")
+    |> UI.click(testid: "post-comment")
+    |> assert_text("This is a comment")
+  end
+
+  feature "write a comment and complete the milestone", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_page(state.project, milestone)
+    |> UI.fill_rich_text(testid: "milestone-comment-editor", with: "This is a comment")
+    |> UI.click(testid: "complete-and-comment")
+    |> assert_text("This is a comment")
+    |> assert_text("Milestone Completed")
+  end
+
+  feature "write a comment and re-open the milestone", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00], completed_at: ~N[2023-06-17 00:00:00], status: "done"})
+
+    state
+    |> visit_page(state.project, milestone)
+    |> UI.fill_rich_text(testid: "milestone-comment-editor", with: "This is a comment")
+    |> UI.click(testid: "reopen-and-comment")
+    |> assert_text("This is a comment")
+    |> assert_text("Milestone Re-Opened")
+  end
+
   # ===========================================================================
 
   defp add_milestone(project, creator, attrs) do
@@ -149,7 +181,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
     {:ok, _} = Operately.Projects.create_milestone(creator, attrs)
   end
 
-  defp visit_page(state, project), do: UI.visit(state, "/projects" <> "/" <> project.id)
+  defp visit_page(state, project, milestone), do: UI.visit(state, "/projects" <> "/" <> project.id <> "/milestones" <> "/" <> milestone.id)
+  defp visit_project_page(state, project), do: UI.visit(state, "/projects" <> "/" <> project.id)
 
   defp create_project(company, champion) do
     params = %Operately.Projects.ProjectCreation{
