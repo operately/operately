@@ -11,6 +11,7 @@ import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import * as TipTapEditor from "@/components/Editor";
 import Button, { IconButton } from "@/components/Button";
+import Avatar from "@/components/Avatar";
 
 import { useDocumentTitle } from "@/layouts/header";
 import { useBoolState } from "@/utils/useBoolState";
@@ -47,7 +48,11 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [{ project, milestone }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [{ project, milestone, me }, refetch, fetchVersion] = Paper.useLoadedData() as [
+    LoaderResult,
+    () => void,
+    number,
+  ];
 
   useDocumentTitle(`${milestone.title} - ${project.name}`);
 
@@ -78,6 +83,10 @@ export function Page() {
         </DetailList>
 
         <Separator />
+
+        <Comments milestone={milestone} refetch={refetch} />
+
+        <AddComment milestone={milestone} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -223,5 +232,71 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
         <TipTapEditor.LinkEditForm editor={editor} />
       </TipTapEditor.Root>
     </div>
+  );
+}
+
+function Comments({ milestone, refetch }) {
+  return <></>;
+}
+
+function AddComment({ milestone, refetch, me }) {
+  const { editor, submittable, focused, empty } = TipTapEditor.useEditor({
+    peopleSearch: People.usePeopleSearch(),
+    placeholder: "Leave a comment...",
+    className: "px-2 py-1.5 min-h-[150px]",
+  });
+
+  const [post, { loading }] = Milestones.usePostComment();
+
+  const submit = async (action: "comment" | "complete") => {
+    if (!editor) return;
+    if (!submittable) return;
+    if (loading) return;
+
+    await post({
+      variables: {
+        input: {
+          milestoneID: milestone.id,
+          content: JSON.stringify(editor.getJSON()),
+          action: action,
+        },
+      },
+    });
+
+    await refetch();
+  };
+
+  const avatar = <Avatar person={me} size="small" />;
+  const commentBox = (
+    <div>
+      <TipTapEditor.Root>
+        <div className="bg-dark-2 rounded relative">
+          <TipTapEditor.EditorContent editor={editor} />
+          <div className={"p-2 flex flex-row-reverse" + " " + (focused ? "opacity-100" : "opacity-0")}>
+            <TipTapEditor.Toolbar editor={editor} variant="small" />
+          </div>
+          <TipTapEditor.LinkEditForm editor={editor} />
+        </div>
+      </TipTapEditor.Root>
+
+      <div className="flex flex-row-reverse gap-2 mt-3 mr-1">
+        <Button variant="success" disabled={!submittable} onClick={() => submit("comment")}>
+          {submittable ? "Comment" : "Uploading..."}
+        </Button>
+
+        {submittable && (
+          <Button variant="secondary" onClick={() => submit("complete")}>
+            <Icons.IconChecks size={16} />
+            {empty ? "Complete Milestone" : "Complete with comment"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <DetailList>
+      <DetailListItem title={avatar} value={commentBox} />
+    </DetailList>
   );
 }

@@ -6,6 +6,12 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
     field :description, :string
   end
 
+  input_object :post_milestone_comment_input do
+    field :milestone_id, non_null(:id)
+    field :content, non_null(:string)
+    field :action, non_null(:string)
+  end
+
   object :milestone_mutations do
     field :add_project_milestone, non_null(:milestone) do
       arg :project_id, non_null(:id)
@@ -91,6 +97,22 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
 
         Operately.Projects.update_milestone(milestone, %{
           description: Jason.decode!(args.input.description)
+        })
+      end
+    end
+
+    field :post_milestone_comment, non_null(:milestone_comment) do
+      arg :input, non_null(:post_milestone_comment_input)
+
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+        milestone = Operately.Projects.get_milestone!(args.milestone_id)
+
+        Operately.Updates.create_comment(%{
+          parent_id: milestone.id,
+          parent_type: "milestone",
+          content: args.content,
+          author_id: person.id,
         })
       end
     end

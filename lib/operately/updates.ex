@@ -276,29 +276,8 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
-  def create_comment(update, attrs) do
-    Repo.transaction(fn ->
-      result = %Comment{} |> Comment.changeset(attrs) |> Repo.insert()
-
-      case result do
-        {:ok, comment} ->
-          {:ok, _} = Operately.Activities.submit_comment_posted(comment, update)
-          :ok = publish_comment_added(comment)
-
-          comment
-
-        {:error, e} ->
-          Repo.rollback(e)
-          e
-      end
-    end)
-  end
-
-  def publish_comment_added(comment) do
-    Absinthe.Subscription.publish(
-      OperatelyWeb.Endpoint,
-      comment,
-      comment_added: "*")
+  def create_comment(attrs) do
+    %Comment{} |> Comment.changeset(attrs) |> Repo.insert()
   end
 
   def update_comment(%Comment{} = comment, attrs) do

@@ -352,32 +352,4 @@ defmodule Operately.Projects do
   def get_permissions(project, person) do
     Operately.Projects.Permissions.calculate_permissions(project, person)
   end
-
-  alias Operately.Projects.ProjectMilestoneComment
-
-  def list_project_milestone_comments do
-    Repo.all(ProjectMilestoneComment)
-  end
-
-  def get_project_milestone_comment!(id), do: Repo.get!(ProjectMilestoneComment, id)
-
-  def create_project_milestone_comment(attrs \\ %{}) do
-    %ProjectMilestoneComment{}
-    |> ProjectMilestoneComment.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_project_milestone_comment(%ProjectMilestoneComment{} = project_milestone_comment, attrs) do
-    project_milestone_comment
-    |> ProjectMilestoneComment.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_project_milestone_comment(%ProjectMilestoneComment{} = project_milestone_comment) do
-    Repo.delete(project_milestone_comment)
-  end
-
-  def change_project_milestone_comment(%ProjectMilestoneComment{} = project_milestone_comment, attrs \\ %{}) do
-    ProjectMilestoneComment.changeset(project_milestone_comment, attrs)
-  end
 end
