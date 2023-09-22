@@ -10,7 +10,7 @@ import * as Paper from "@/components/PaperContainer";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import * as TipTapEditor from "@/components/Editor";
-import Button from "@/components/Button";
+import Button, { IconButton } from "@/components/Button";
 
 import { useDocumentTitle } from "@/layouts/header";
 import { useBoolState } from "@/utils/useBoolState";
@@ -61,36 +61,66 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <div className="text-3xl font-bold leading-none">{milestone.title}</div>
+        <div className="flex items-center gap-4">
+          <div className="w-28 flex flex-row-reverse">
+            <Icons.IconMapPinFilled size={24} />
+          </div>
+
+          <div className="text-2xl font-extrabold text-white-1">{milestone.title}</div>
+        </div>
+
+        <Separator />
 
         <DetailList>
-          <DetailListItem title="Status" value={milestone.status === "pending" ? "Open" : "Completed"} />
+          <DetailListItem title="Status" value={<StatusBadge milestone={milestone} />} />
           <DetailListItem title="Due Date" value={<FormattedTime time={milestone.deadlineAt} format="short-date" />} />
-
-          {milestone.status === "done" && (
-            <DetailListItem
-              title="Completed"
-              value={<FormattedTime time={milestone.completedAt} format="short-date" />}
-            />
-          )}
+          <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
         </DetailList>
 
-        <Description milestone={milestone} refetch={refetch} />
+        <Separator />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
+function StatusBadge({ milestone }) {
+  if (milestone.status === "pending") {
+    if (Milestones.isOverdue(milestone)) {
+      return (
+        <div className="bg-red-600 rounded font-bold text-white-1 px-1 text-sm inline-block uppercase tracking-wide -my-0.5">
+          Overdue
+        </div>
+      );
+    } else {
+      return (
+        <div className="bg-emerald-600 rounded font-bold text-white-1 px-1 text-sm inline-block uppercase tracking-wide -my-0.5">
+          Upcoming
+        </div>
+      );
+    }
+  } else {
+    return (
+      <div className="bg-purple-500 rounded font-bold text-white-1 px-1 text-sm inline-block uppercase tracking-wide -my-0.5">
+        Completed
+      </div>
+    );
+  }
+}
+
+function Separator() {
+  return <div className="border-b border-dark-5 mt-4" />;
+}
+
 function DetailList({ children }) {
-  return <div className="flex flex-col gap-1 my-4">{children}</div>;
+  return <div className="flex flex-col">{children}</div>;
 }
 
 function DetailListItem({ title, value }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="font-bold w-24">{title}:</div>
+    <div className="flex items-start gap-4 pt-2 mt-2">
+      <div className="font-extrabold text-white-1 w-28 flex flex-row-reverse">{title}</div>
 
-      <div className="font-medium">{value}</div>
+      <div className="flex-1">{value}</div>
     </div>
   );
 }
@@ -111,28 +141,25 @@ function Description({ milestone, refetch }) {
 
 function DescriptionZeroState({ onEdit }) {
   return (
-    <div className="border-y border-dark-5 my-4 py-2 min-h-[200px]">
-      <span className="text-white-2">
-        No description provided. Add details, attach files, or link to external resources.
-      </span>
-      <br />
-      <br />
-      <a className="text-white-2 underline cursor-pointer" onClick={onEdit} data-test-id="write-milestone-description">
-        Write Description
-      </a>
-    </div>
+    <a className="text-white-2 font-normal cursor-pointer" onClick={onEdit} data-test-id="write-milestone-description">
+      Add details or attach files...
+    </a>
   );
 }
 
 function DescriptionFilled({ milestone, onEdit }) {
   return (
-    <div className="border-y border-dark-5 my-4 py-2 min-h-[200px] relative">
+    <div className="relative group" data-test-id="milestone-description">
       <RichContent jsonContent={milestone.description} />
 
-      <div className="absolute top-2 right-0">
-        <Button variant="secondary" size="tiny" onClick={onEdit} data-test-id="edit-milestone-description">
-          Edit
-        </Button>
+      <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <IconButton
+          color="green"
+          tooltip="Edit description"
+          onClick={onEdit}
+          icon={<Icons.IconEdit size={16} />}
+          data-test-id="edit-milestone-description"
+        ></IconButton>
       </div>
     </div>
   );
@@ -170,7 +197,7 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   };
 
   return (
-    <div className="border border-dark-5 bg-dark-2 rounded my-4 px-4 p-4 pt-2 relative overflow-hidden">
+    <div className="border border-dark-5 bg-dark-2 rounded px-4 p-4 pt-2 relative overflow-hidden">
       <TipTapEditor.Root>
         <TipTapEditor.EditorContent editor={editor} className="min-h-[200px]" />
         <div className="flex justify-between items-center mt-4">
