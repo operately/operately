@@ -382,4 +382,58 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_phase_history(ctx.phase_history)
     end
   end
+
+  describe "project_milestone_comments" do
+    alias Operately.Projects.ProjectMilestoneComment
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{content: nil}
+
+    test "list_project_milestone_comments/0 returns all project_milestone_comments" do
+      project_milestone_comment = project_milestone_comment_fixture()
+      assert Projects.list_project_milestone_comments() == [project_milestone_comment]
+    end
+
+    test "get_project_milestone_comment!/1 returns the project_milestone_comment with given id" do
+      project_milestone_comment = project_milestone_comment_fixture()
+      assert Projects.get_project_milestone_comment!(project_milestone_comment.id) == project_milestone_comment
+    end
+
+    test "create_project_milestone_comment/1 with valid data creates a project_milestone_comment" do
+      valid_attrs = %{content: %{}}
+
+      assert {:ok, %ProjectMilestoneComment{} = project_milestone_comment} = Projects.create_project_milestone_comment(valid_attrs)
+      assert project_milestone_comment.content == %{}
+    end
+
+    test "create_project_milestone_comment/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_project_milestone_comment(@invalid_attrs)
+    end
+
+    test "update_project_milestone_comment/2 with valid data updates the project_milestone_comment" do
+      project_milestone_comment = project_milestone_comment_fixture()
+      update_attrs = %{content: %{}}
+
+      assert {:ok, %ProjectMilestoneComment{} = project_milestone_comment} = Projects.update_project_milestone_comment(project_milestone_comment, update_attrs)
+      assert project_milestone_comment.content == %{}
+    end
+
+    test "update_project_milestone_comment/2 with invalid data returns error changeset" do
+      project_milestone_comment = project_milestone_comment_fixture()
+      assert {:error, %Ecto.Changeset{}} = Projects.update_project_milestone_comment(project_milestone_comment, @invalid_attrs)
+      assert project_milestone_comment == Projects.get_project_milestone_comment!(project_milestone_comment.id)
+    end
+
+    test "delete_project_milestone_comment/1 deletes the project_milestone_comment" do
+      project_milestone_comment = project_milestone_comment_fixture()
+      assert {:ok, %ProjectMilestoneComment{}} = Projects.delete_project_milestone_comment(project_milestone_comment)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_project_milestone_comment!(project_milestone_comment.id) end
+    end
+
+    test "change_project_milestone_comment/1 returns a project_milestone_comment changeset" do
+      project_milestone_comment = project_milestone_comment_fixture()
+      assert %Ecto.Changeset{} = Projects.change_project_milestone_comment(project_milestone_comment)
+    end
+  end
 end
