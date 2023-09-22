@@ -132,6 +132,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> assert_text("This is a description")
 
     state
+    |> UI.hover(testid: "milestone-description")
     |> UI.click(testid: "edit-milestone-description")
     |> UI.fill_rich_text("This is a NEW description")
     |> UI.click(testid: "save-milestone-description")
