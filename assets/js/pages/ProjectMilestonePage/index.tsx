@@ -1,6 +1,8 @@
 import React from "react";
 import * as Icons from "@tabler/icons-react";
 
+import * as Time from "@/utils/time";
+
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as People from "@/graphql/People";
@@ -11,6 +13,7 @@ import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import * as TipTapEditor from "@/components/Editor";
 import Button, { IconButton } from "@/components/Button";
+import Avatar from "@/components/Avatar";
 
 import { useDocumentTitle } from "@/layouts/header";
 import { useBoolState } from "@/utils/useBoolState";
@@ -47,7 +50,11 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [{ project, milestone }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [{ project, milestone, me }, refetch, fetchVersion] = Paper.useLoadedData() as [
+    LoaderResult,
+    () => void,
+    number,
+  ];
 
   useDocumentTitle(`${milestone.title} - ${project.name}`);
 
@@ -62,7 +69,7 @@ export function Page() {
 
       <Paper.Body>
         <div className="flex items-center gap-4">
-          <div className="w-28 flex flex-row-reverse">
+          <div className="w-32 flex flex-row-reverse">
             <Icons.IconMapPinFilled size={24} />
           </div>
 
@@ -77,7 +84,12 @@ export function Page() {
           <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
         </DetailList>
 
+        <h1 className="mt-16"></h1>
         <Separator />
+
+        <Comments milestone={milestone} refetch={refetch} />
+
+        <AddComment milestone={milestone} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -118,7 +130,7 @@ function DetailList({ children }) {
 function DetailListItem({ title, value }) {
   return (
     <div className="flex items-start gap-4 pt-2 mt-2">
-      <div className="font-extrabold text-white-1 w-28 flex flex-row-reverse">{title}</div>
+      <div className="font-extrabold text-white-1 w-32 flex flex-row-reverse">{title}</div>
 
       <div className="flex-1">{value}</div>
     </div>
@@ -197,7 +209,10 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   };
 
   return (
-    <div className="border border-dark-5 bg-dark-2 rounded px-4 p-4 pt-2 relative overflow-hidden">
+    <div
+      className="border border-dark-5 bg-dark-2 rounded px-4 p-4 pt-2 relative overflow-hidden"
+      data-test-id="milestone-description-editor"
+    >
       <TipTapEditor.Root>
         <TipTapEditor.EditorContent editor={editor} className="min-h-[200px]" />
         <div className="flex justify-between items-center mt-4">
@@ -223,5 +238,136 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
         <TipTapEditor.LinkEditForm editor={editor} />
       </TipTapEditor.Root>
     </div>
+  );
+}
+
+function Comments({ milestone, refetch }) {
+  return (
+    <>
+      {milestone.comments.map((comment) => (
+        <Comment key={comment.id} comment={comment} refetch={refetch} />
+      ))}
+    </>
+  );
+}
+
+function Comment({ comment }) {
+  return (
+    <div className="border-b border-dark-5">
+      <div className="flex items-start gap-4 py-4 ">
+        <div className="w-32 flex justify-between items-center pl-2">
+          <div className="text-white-2 text-xs">
+            <div className="uppercase">
+              {Time.isToday(Time.parseISO(comment.comment.insertedAt)) ? (
+                "Today"
+              ) : (
+                <FormattedTime time={comment.comment.insertedAt} format="short-date" />
+              )}
+            </div>
+
+            <div className="">
+              <FormattedTime time={comment.comment.insertedAt} format="time-only" />
+            </div>
+          </div>
+
+          <Avatar person={comment.comment.author} size="large" />
+        </div>
+        <div className="flex-1 pr-2">
+          <div className="text-white-1 font-bold">{comment.comment.author.fullName}</div>
+
+          <RichContent jsonContent={comment.comment.message} />
+        </div>
+      </div>
+      {comment.action === "complete" && (
+        <div className="flex items-center gap-4 pb-4">
+          <div className="w-32 flex justify-between items-center pl-2">
+            <div></div>
+            <Icons.IconCircleCheck size={20} className="text-purple-400" />
+          </div>
+          <div className="flex-1 pr-2 font-semibold text-purple-300">Milestone Completed</div>
+        </div>
+      )}
+
+      {comment.action === "reopen" && (
+        <div className="flex items-center gap-4 pb-4">
+          <div className="w-32 flex justify-between items-center pl-2">
+            <div></div>
+            <Icons.IconRefresh size={20} className="text-emerald-600" />
+          </div>
+          <div className="flex-1 pr-2 font-semibold text-emerald-300">Milestone Re-Opened</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AddComment({ milestone, refetch, me }) {
+  const { editor, submittable, focused, empty } = TipTapEditor.useEditor({
+    peopleSearch: People.usePeopleSearch(),
+    placeholder: "Leave a comment...",
+    className: "px-2 py-1.5 min-h-[150px]",
+  });
+
+  const [post, { loading }] = Milestones.usePostComment();
+
+  const action = milestone.status === "done" ? "reopen" : "complete";
+  const actionMessage = action === "reopen" ? "Re-open" : "Complete";
+  const actionIcon =
+    action === "reopen" ? (
+      <Icons.IconRefresh size={16} className="text-emerald-600" />
+    ) : (
+      <Icons.IconCheck size={16} className="text-purple-500" />
+    );
+
+  const submit = async (action: "none" | "complete" | "reopen") => {
+    if (!editor) return;
+    if (!submittable) return;
+    if (loading) return;
+
+    await post({
+      variables: {
+        input: {
+          milestoneID: milestone.id,
+          content: JSON.stringify(editor.getJSON()),
+          action: action,
+        },
+      },
+    });
+
+    await refetch();
+  };
+
+  const avatar = <Avatar person={me} size="small" />;
+  const commentBox = (
+    <div data-test-id="milestone-comment-editor">
+      <TipTapEditor.Root>
+        <div className="bg-dark-2 rounded relative">
+          <TipTapEditor.EditorContent editor={editor} />
+          <div className={"p-2 flex flex-row-reverse" + " " + (focused ? "opacity-100" : "opacity-0")}>
+            <TipTapEditor.Toolbar editor={editor} variant="small" />
+          </div>
+          <TipTapEditor.LinkEditForm editor={editor} />
+        </div>
+      </TipTapEditor.Root>
+
+      <div className="flex flex-row-reverse gap-2 mt-3 mr-1">
+        <Button variant="success" disabled={!submittable} onClick={() => submit("none")} data-test-id="post-comment">
+          {submittable ? "Comment" : "Uploading..."}
+        </Button>
+
+        {submittable && (
+          <Button variant="secondary" onClick={() => submit(action)} data-test-id={action + "-and-comment"}>
+            {actionIcon}
+            {empty ? actionMessage + " Milestone" : actionMessage + " with comment"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <DetailList>
+      <DetailListItem title={avatar} value={commentBox} />
+    </DetailList>
   );
 }

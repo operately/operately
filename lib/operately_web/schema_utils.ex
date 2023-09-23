@@ -7,9 +7,11 @@ defmodule OperatelyWeb.SchemaUtils do
       [name, _ext] = String.split(file, ".")
       module_name = Macro.camelize(name)
 
+      full_path = Path.join([folder, file])
       full_name = String.to_atom("Elixir.OperatelyWeb.GraphQL.Types.#{module_name}")
 
       quote do
+        Code.compile_file(unquote(full_path))
         import_types unquote(full_name)
       end
     end)

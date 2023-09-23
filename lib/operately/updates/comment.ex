@@ -6,7 +6,7 @@ defmodule Operately.Updates.Comment do
   @foreign_key_type :binary_id
   schema "comments" do
     belongs_to :update, Operately.Updates.Update
-    belongs_to :author, Operately.Accounts.User
+    belongs_to :author, Operately.People.Person
 
     field :content, :map
 
@@ -17,6 +17,6 @@ defmodule Operately.Updates.Comment do
   def changeset(comment, attrs) do
     comment
     |> cast(attrs, __schema__(:fields))
-    |> validate_required([:content, :update_id, :author_id])
+    |> validate_required([:content, :author_id])
   end
 end

@@ -13,5 +13,17 @@ defmodule OperatelyWeb.GraphQL.Types.Milestones do
         {:ok, milestone.description && Jason.encode!(milestone.description)}
       end
     end
+
+    field :comments, list_of(:milestone_comment) do
+      resolve fn milestone, _, _ ->
+        {:ok, Operately.Comments.list_milestone_comments(milestone.id)}
+      end
+    end
+  end
+
+  object :milestone_comment do
+    field :id, non_null(:id)
+    field :action, non_null(:string)
+    field :comment, non_null(:comment)
   end
 end

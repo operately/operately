@@ -1,4 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
+import * as Comments from "./comments";
 
 type MilestoneStatus = "pending" | "done";
 
@@ -11,6 +12,12 @@ export const FRAGMENT = `
     deadlineAt
     completedAt
     description
+
+    comments {
+      id
+      action
+      comment ${Comments.FRAGMENT}
+    }
   }
 `;
 
@@ -187,4 +194,16 @@ const UPDATE_MILESTONE_DESCRIPTION = gql`
 
 export function useUpdateDescription(options = {}) {
   return useMutation(UPDATE_MILESTONE_DESCRIPTION, options);
+}
+
+const POST_MILESTONE_COMMENT = gql`
+  mutation PostMilestoneComment($input: PostMilestoneCommentInput!) {
+    postMilestoneComment(input: $input) {
+      id
+    }
+  }
+`;
+
+export function usePostComment(options = {}) {
+  return useMutation(POST_MILESTONE_COMMENT, options);
 }

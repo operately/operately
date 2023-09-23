@@ -52,8 +52,10 @@ export function Root({ children }): JSX.Element {
   return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
 }
 
-function useEditor(props: UseEditorProps): { editor: any; submittable: boolean } {
+function useEditor(props: UseEditorProps): { editor: any; submittable: boolean; focused: boolean; empty: boolean } {
   const [submittable, setSubmittable] = React.useState(true);
+  const [focused, setFocused] = React.useState(false);
+  const [empty, setEmpty] = React.useState(true);
 
   const editable = props.editable === undefined ? true : props.editable;
 
@@ -93,7 +95,12 @@ function useEditor(props: UseEditorProps): { editor: any; submittable: boolean }
         },
       }),
     ],
+    onFocus() {
+      setFocused(true);
+    },
     onBlur: ({ editor }) => {
+      setFocused(false);
+
       if (!props.onBlur) return;
 
       props.onBlur({
@@ -103,10 +110,11 @@ function useEditor(props: UseEditorProps): { editor: any; submittable: boolean }
     },
     onUpdate: (props) => {
       setSubmittable(!isUploadInProgress(props.editor.state.doc));
+      setEmpty(props.editor.state.doc.childCount === 1 && props.editor.state.doc.firstChild?.childCount === 0);
     },
   });
 
-  return { editor: editor, submittable: submittable };
+  return { editor: editor, submittable: submittable, focused: focused, empty: empty };
 }
 
 const EditorContent = TipTap.EditorContent;
