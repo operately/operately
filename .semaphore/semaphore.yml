@@ -26,6 +26,9 @@ blocks:
             - make test
             - cache store
             - cd assets && cache store && cd .. # cache node_packages
+        - name: license check
+          commands:
+            - make test.license.check
 
   - name: Docker Build
     dependencies: []
@@ -44,18 +47,6 @@ blocks:
             - docker pull operately/operately:latest
             - make docker.build
             - make docker.push
-
-  - name: License Check
-    dependencies: []
-    task:
-      jobs:
-        - name: "Check"
-          commands:
-            - checkout
-            - curl -L https://github.com/pivotal/LicenseFinder/blob/v7.1.0/dlf > /tmp/dlf
-            - chmod +x /tmp/dlf
-            - sudo mv /tmp/dlf /usr/local/bin/dlf
-            - dlf
 
 promotions:
   - name: Staging 1
