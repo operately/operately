@@ -17,7 +17,7 @@ blocks:
       epilogue:
         always:
           commands:
-            - test-results publish testreports/junit.xml
+            - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
       jobs:
         - name: mix test
           commands:
