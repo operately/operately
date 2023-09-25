@@ -45,6 +45,18 @@ blocks:
             - make docker.build
             - make docker.push
 
+  - name: License Check
+    dependencies: []
+    task:
+      jobs:
+        - name: "Check"
+          commands:
+            - checkout
+            - curl -L https://github.com/pivotal/LicenseFinder/blob/v7.1.0/dlf > /tmp/dlf
+            - chmod +x /tmp/dlf
+            - sudo mv /tmp/dlf /usr/local/bin/dlf
+            - dlf
+
 promotions:
   - name: Staging 1
     pipeline_file: staging1.yml
