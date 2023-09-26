@@ -1,0 +1,183 @@
+---
+- - :permit
+  - MIT
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:23:16.223970472 Z
+- - :permit
+  - Apache 2.0
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:23:24.911184392 Z
+- - :permit
+  - ISC
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:25:03.587662408 Z
+- - :permit
+  - BSD
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:25:08.710442169 Z
+- - :permit
+  - Simplified BSD
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:29:53.095279255 Z
+- - :permit
+  - WTFPL
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:37:49.440494845 Z
+- - :permit
+  - New BSD
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2023-09-25 14:41:40.593917094 Z
+- - :approve
+  - absinthe_graphql_ws
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/geometerio/absinthe_graphql_ws/blob/main/LICENSE.md
+      the package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:44:45.086633592 Z
+- - :approve
+  - react-select
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/JedWatson/react-select/blob/master/LICENSE the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:48:08.349966921 Z
+- - :approve
+  - dnd-kit
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/clauderic/dnd-kit/blob/master/LICENSE the package
+      is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:48:41.439419156 Z
+- - :approve
+  - "@tiptap/suggestion"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:49:32.602010084 Z
+- - :approve
+  - "@tiptap/starter-kit"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:49:51.389785227 Z
+- - :approve
+  - "@tiptap/pm"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:50:17.590838869 Z
+- - :approve
+  - "@tiptap/extension-bullet-list"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:52.553980331 Z
+- - :approve
+  - "@tiptap/extension-dropcursor"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:52.890303502 Z
+- - :approve
+  - "@tiptap/extension-history"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:53.227256256 Z
+- - :approve
+  - "@tiptap/extension-image"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:53.563972635 Z
+- - :approve
+  - "@tiptap/extension-link"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:53.898123399 Z
+- - :approve
+  - "@tiptap/extension-list-item"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:54.232878661 Z
+- - :approve
+  - "@tiptap/extension-mention"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:54.571898618 Z
+- - :approve
+  - "@tiptap/extension-placeholder"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:54.906444798 Z
+- - :approve
+  - "@tiptap/extension-text-style"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:55.239845525 Z
+- - :approve
+  - "@tiptap/html"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:55.574632706 Z
+- - :approve
+  - "@radix-ui/react-popover"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/radix-ui/primitives/blob/main/LICENSE the package
+      is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:55.911479130 Z
+- - :approve
+  - "@radix-ui/react-dropdown-menu"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/radix-ui/primitives/blob/main/LICENSE the package
+      is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:56.250683880 Z
+- - :approve
+  - "@radix-ui/react-dialog"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/radix-ui/primitives/blob/main/LICENSE the package
+      is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:53:56.585978353 Z
+- - :approve
+  - "@tiptap/react"
+  - :who: Igor Sarcevic
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2023-09-25 14:55:16.398108371 Z

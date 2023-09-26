@@ -17,7 +17,8 @@ blocks:
       epilogue:
         always:
           commands:
-            - test-results publish testreports/junit.xml
+            - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
+            - '[ -d screenshots ] && artifact push job screenshots'
       jobs:
         - name: mix test
           commands:
@@ -26,6 +27,9 @@ blocks:
             - make test
             - cache store
             - cd assets && cache store && cd .. # cache node_packages
+        - name: license check
+          commands:
+            - make test.license.check
 
   - name: Docker Build
     dependencies: []

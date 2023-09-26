@@ -179,6 +179,10 @@ test.assets.compile:
 test.screenshots.clear:
 	rm -rf $(SCREENSHOTS_DIR)/*
 
+test.license.check:
+	bundle install
+	bash scripts/license-check.sh
+
 #
 # Building a docker image
 #
