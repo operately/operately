@@ -18,6 +18,7 @@ blocks:
         always:
           commands:
             - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
+            - '[ -d screenshots ] && artifact push job screenshots'
       jobs:
         - name: mix test
           commands:
