@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.Emails do
+defmodule OperatelyEmail.AssignmentsEmail do
   alias Operately.Repo
   import Bamboo.Email
 
@@ -6,7 +6,18 @@ defmodule OperatelyEmail.Emails do
   # Sending out an email to remind people of their assignments.
   # The scheduler of this email is located in OperatelyEmail.Assignments.Cron
   #
-  def assignments(person, assignment_groups) do
+
+  def send(person) do
+    result = OperatelyEmail.Assignments.Loader.load(person)
+
+    if result == [] do
+      IO.puts("No assignments for #{person.account.email}")
+    else
+      compose(person, result) |> OperatelyEmail.Mailer.deliver_now()
+    end
+  end
+
+  def compose(person, assignment_groups) do
     company = Repo.preload(person, [:company]).company
     account = Repo.preload(person, [:account]).account
 

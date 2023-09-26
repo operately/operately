@@ -7,13 +7,13 @@ defmodule OperatelyEmail.Assignments.Cron do
   @impl Oban.Worker
   def perform(_) do
     people_who_want_assignment_emails() 
-    |> Enum.each(&send/1)
+    |> Enum.each(&OperatelyEmail.AssignmentsEmail.send/1)
 
     :ok
   end
 
   def people_who_want_assignment_emails do
-    import Ecto.Query
+    import Ecto.Query, only: [from: 2]
 
     from(
       p in Person,
@@ -26,14 +26,4 @@ defmodule OperatelyEmail.Assignments.Cron do
     |> Repo.preload([:company])
   end
 
-  def send(person) do
-    result = OperatelyEmail.Assignments.Loader.load(person)
-
-    if result == [] do
-      IO.puts("No assignments for #{person.account.email}")
-    else
-      OperatelyEmail.Emails.assignments(person, result)
-      |> OperatelyEmail.Mailer.deliver_now()
-    end
-  end
 end
