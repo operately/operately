@@ -19,3 +19,11 @@ describe("Time.parse", () => {
     expect(Time.parse(null)).toBeNull();
   });
 });
+
+describe("Time.toDateWithoutTime", () => {
+  it("converts to a date without time", () => {
+    let date = Time.parse("Wed Sep 27 2023 00:00:00")!;
+
+    expect(Time.toDateWithoutTime(date)).toEqual("2023-09-27");
+  });
+});

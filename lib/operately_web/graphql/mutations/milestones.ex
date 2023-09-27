@@ -95,7 +95,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
         milestone = Operately.Projects.get_milestone!(args.input.id)
 
         Operately.Projects.update_milestone(milestone, %{
-          description: Jason.decode!(args.input.description)
+          description: args.input.description && Jason.decode!(args.input.description)
         })
       end
     end

@@ -55,7 +55,11 @@ export function isPast(date: Date) {
 }
 
 export function toDateWithoutTime(date: Date) {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
 
 export function parseDateWithoutTime(date: string) {

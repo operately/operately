@@ -1,5 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import * as Comments from "./comments";
+import * as Time from "@/utils/time";
 
 type MilestoneStatus = "pending" | "done";
 
@@ -111,7 +112,7 @@ export function groupByPhase(milestones: Milestone[]) {
 
 export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
-  let now = +new Date();
+  let now = Time.today();
 
   return deadline < now;
 }

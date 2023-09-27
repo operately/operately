@@ -13,7 +13,7 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
     },
   };
 
-  if (isToday(time) && weekday) {
+  if (isToday(time) && !weekday) {
     params["formatParams"]["val"]["hour"] = "numeric";
     params["formatParams"]["val"]["minute"] = "numeric";
   } else {
@@ -55,7 +55,7 @@ function isToday(date: Date) {
 }
 
 function isYesterday(date: Date) {
-  const yesteday = new Date(new Date() - 86400000);
+  const yesteday = new Date(+new Date() - 86400000);
 
   return isSameDay(date, yesteday);
 }
