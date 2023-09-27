@@ -62,15 +62,17 @@ defmodule OperatelyWeb.SchemaUtils do
     results = Enum.map(files, fn file ->
       [name, _ext] = String.split(file, ".")
       module_name = Macro.camelize(name)
+      full_path = Path.join([folder, file])
 
       module = String.to_atom("Elixir.OperatelyWeb.GraphQL.Mutations.#{module_name}")
       field = String.to_atom(Inflex.singularize(name) <> "_mutations")
       
-      {module, field}
+      {module, field, full_path}
     end)
 
-    modules = Enum.map(results, fn {module, _} -> module end)
-    fields = Enum.map(results, fn {_, field} -> field end)
+    modules = Enum.map(results, fn {module, _, _} -> module end)
+    fields = Enum.map(results, fn {_, field, _} -> field end)
+    full_paths = Enum.map(results, fn {_, _, full_path} -> full_path end)
 
     imports = Enum.map(modules, fn module ->
       quote do
@@ -84,7 +86,14 @@ defmodule OperatelyWeb.SchemaUtils do
       end
     end)
 
+    compiles = Enum.map(full_paths, fn full_path ->
+      quote do
+        Code.compile_file(unquote(full_path))
+      end
+    end)
+
     quote do
+      unquote(compiles)
       unquote(imports)
 
       mutation do

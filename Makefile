@@ -142,8 +142,8 @@ dev.image.push:
 #
 
 test:
-	@mkdir -p $(SCREENSHOTS_DIR)
-	@mkdir -p $(REPORTS_DIR)
+	mkdir -p $(SCREENSHOTS_DIR)
+	mkdir -p $(REPORTS_DIR)
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
 	elif [[ "$(FILE)" == test/* ]]; then \

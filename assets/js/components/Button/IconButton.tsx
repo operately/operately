@@ -8,6 +8,7 @@ interface IconButtonProps {
   icon: JSX.Element;
   color: keyof typeof IconButtonColors;
   onClick?: () => void;
+  size: keyof typeof paddings;
 }
 
 const IconButtonColors = {
@@ -15,16 +16,31 @@ const IconButtonColors = {
   red: "text-white-1/60 bg-shade-1 hover:bg-red-400/20 hover:text-red-400",
 };
 
+const paddings = {
+  sm: "p-1",
+  md: "p-1.5",
+  lg: "p-2",
+};
+
 export function IconButton(props: IconButtonProps) {
-  const { tooltip, icon, color, ...rest } = props;
+  const { tooltip, icon, color, size, ...rest } = props;
 
   const colorClasses = IconButtonColors[color];
+  const padding = paddings[size];
 
   return (
     <TextTooltip text={tooltip} delayDuration={600}>
-      <div className={classnames("shrink-0 p-1.5 rounded cursor-pointer transition-colors", colorClasses)} {...rest}>
+      <div
+        className={classnames("shrink-0 p-1 rounded cursor-pointer transition-colors", colorClasses, padding)}
+        {...rest}
+      >
         {icon}
       </div>
     </TextTooltip>
   );
 }
+
+IconButton.defaultProps = {
+  color: "green",
+  size: "md",
+};

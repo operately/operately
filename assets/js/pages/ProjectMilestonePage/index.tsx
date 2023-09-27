@@ -14,6 +14,8 @@ import RichContent from "@/components/RichContent";
 import * as TipTapEditor from "@/components/Editor";
 import Button, { IconButton } from "@/components/Button";
 import Avatar from "@/components/Avatar";
+import * as Popover from "@radix-ui/react-popover";
+import DatePicker from "react-datepicker";
 
 import { useDocumentTitle } from "@/layouts/header";
 import { useBoolState } from "@/utils/useBoolState";
@@ -80,11 +82,10 @@ export function Page() {
 
         <DetailList>
           <DetailListItem title="Status" value={<StatusBadge milestone={milestone} />} />
-          <DetailListItem title="Due Date" value={<FormattedTime time={milestone.deadlineAt} format="short-date" />} />
+          <DetailListItem title="Due Date" value={<DueDate milestone={milestone} />} />
           <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
         </DetailList>
 
-        <h1 className="mt-16"></h1>
         <Separator />
 
         <Comments milestone={milestone} refetch={refetch} />
@@ -153,7 +154,11 @@ function Description({ milestone, refetch }) {
 
 function DescriptionZeroState({ onEdit }) {
   return (
-    <a className="text-white-2 font-normal cursor-pointer" onClick={onEdit} data-test-id="write-milestone-description">
+    <a
+      className="text-white-2 font-normal cursor-pointer hover:bg-dark-4 p-1.5 -m-1.5 w-full block"
+      onClick={onEdit}
+      data-test-id="write-milestone-description"
+    >
       Add details or attach files...
     </a>
   );
@@ -161,12 +166,15 @@ function DescriptionZeroState({ onEdit }) {
 
 function DescriptionFilled({ milestone, onEdit }) {
   return (
-    <div className="relative group" data-test-id="milestone-description">
-      <RichContent jsonContent={milestone.description} />
+    <div className="relative group hover:bg-dark-4 p-1.5 -m-1.5" data-test-id="milestone-description">
+      <div style={{ width: "calc(100% - 2rem)" }}>
+        <RichContent jsonContent={milestone.description} />
+      </div>
 
-      <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="absolute top-1.5 right-1 opacity-0 group-hover:opacity-100">
         <IconButton
           color="green"
+          size="sm"
           tooltip="Edit description"
           onClick={onEdit}
           icon={<Icons.IconEdit size={16} />}
@@ -180,7 +188,7 @@ function DescriptionFilled({ milestone, onEdit }) {
 function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   const peopleSearch = People.usePeopleSearch();
 
-  const { editor, submittable } = TipTapEditor.useEditor({
+  const { editor, submittable, empty } = TipTapEditor.useEditor({
     placeholder: "Write here...",
     content: JSON.parse(milestone.description || "{}"),
     editable: true,
@@ -195,11 +203,13 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
     if (!submittable) return;
     if (loading) return;
 
+    const content = empty ? null : JSON.stringify(editor.getJSON());
+
     await post({
       variables: {
         input: {
           id: milestone.id,
-          description: JSON.stringify(editor.getJSON()),
+          description: content,
         },
       },
     });
@@ -324,11 +334,13 @@ function AddComment({ milestone, refetch, me }) {
     if (!submittable) return;
     if (loading) return;
 
+    const content = empty ? null : JSON.stringify(editor.getJSON());
+
     await post({
       variables: {
         input: {
           milestoneID: milestone.id,
-          content: JSON.stringify(editor.getJSON()),
+          content: content,
           action: action,
         },
       },
@@ -370,4 +382,85 @@ function AddComment({ milestone, refetch, me }) {
       <DetailListItem title={avatar} value={commentBox} />
     </DetailList>
   );
+}
+
+function DueDate({ milestone }) {
+  const [_, refetch] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [open, setOpen] = React.useState(false);
+
+  let deadline = Time.parseISO(milestone.deadlineAt);
+
+  const [update] = Milestones.useSetDeadline();
+
+  const change = async (date: Date | null) => {
+    const deadline = date ? Time.toDateWithoutTime(date) : null;
+
+    await update({
+      variables: {
+        milestoneId: milestone.id,
+        deadlineAt: deadline,
+      },
+    });
+
+    setOpen(false);
+    refetch();
+  };
+
+  return (
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger asChild>
+        <div
+          className="hover:bg-dark-4 -m-1.5 p-1.5 relative group cursor-pointer w-full outline-none"
+          onClick={() => setOpen(true)}
+          data-test-id="change-milestone-due-date"
+        >
+          <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
+          <TextSeparator />
+          <DueDateExplanation milestone={milestone} />
+        </div>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className="outline-red-400 border border-dark-8" align="start">
+          <DatePicker inline selected={deadline} onChange={change} className="border-none"></DatePicker>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+function DueDateExplanation({ milestone }) {
+  const deadline = Time.parseISO(milestone.deadlineAt);
+  const color = Milestones.isOverdue(milestone) ? "text-red-400" : "text-emerald-400";
+
+  return (
+    <span className={color}>
+      <TimeToDueDate dueDate={deadline} />
+    </span>
+  );
+}
+
+function TimeToDueDate({ dueDate }: { dueDate: Date }) {
+  const days = Time.daysBetween(Time.today(), dueDate);
+
+  if (days < -365) return <>Overdue for more than a year</>;
+  if (days < -60) return <>Overdue for more than {-Math.round(days / 30)} months</>;
+  if (days < -30) return <>Overdue for more than a month</>;
+  if (days < -14) return <>Overdue for more than {-Math.round(days / 7)} weeks</>;
+  if (days < -1) return <>Overdue {-days} days</>;
+  if (days === -1) return <>Overdue 1 day</>;
+  if (days === 0) return <>Due today</>;
+  if (days === 1) return <>Due tomorrow</>;
+  if (days < 7) return <>Due in {days} days</>;
+  if (days < 14) return <>Due in a week</>;
+  if (days < 30) return <>Due in {Math.round(days / 7)} weeks</>;
+  if (days < 60) return <>Due in a month</>;
+  if (days < 365) return <>Due in {Math.round(days / 30)} months</>;
+  if (days < 730) return <>Due in a year</>;
+
+  return <>Due {Math.round(days / 365)} years</>;
+}
+
+function TextSeparator() {
+  return <span className="mx-1">&middot;</span>;
 }

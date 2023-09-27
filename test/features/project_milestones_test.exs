@@ -4,6 +4,9 @@ defmodule Operately.Features.ProjectMilestonesTest do
   import Operately.CompaniesFixtures
   alias Operately.People.Person
 
+  @timeline_section UI.query(testid: "timeline")
+  @complete_button UI.query(testid: "complete-and-comment")
+
   setup session do
     company = company_fixture(%{name: "Test Org"})
     session = session |> UI.login()
@@ -54,9 +57,6 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.assert_text("Website Launched", testid: "timeline")
   end
 
-  @timeline_section UI.query(testid: "timeline")
-  @complete_button UI.query(testid: "complete-and-comment")
-
   feature "mark upcomming milestone completed", state do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
@@ -82,6 +82,19 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "change-milestone-due-date")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
+    |> UI.assert_text(Person.short_name(state.champion) <> " changed the due date for Contract Signed")
+  end
+
+  feature "change milestone deadline on the milestone page", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_page(state.project, milestone)
+    |> UI.click(testid: "change-milestone-due-date")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
+
+    state
+    |> visit_project_page(state.project)
     |> UI.assert_text(Person.short_name(state.champion) <> " changed the due date for Contract Signed")
   end
 

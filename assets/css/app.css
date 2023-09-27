@@ -21,3 +21,7 @@ body {
 .h-full {
   height: 100%;
 }
+
+:focus-visible {
+  outline: none;
+}
