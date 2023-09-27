@@ -90,7 +90,6 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     state
     |> visit_page(state.project, milestone)
-    |> UI.click(testid: "show-all-milestones")
     |> UI.click(testid: "change-milestone-due-date")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
 
