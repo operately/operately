@@ -99,17 +99,4 @@ defmodule Operately.ProjectsFixtures do
     phase_history
   end
 
-  @doc """
-  Generate a project_milestone_comment.
-  """
-  def project_milestone_comment_fixture(attrs \\ %{}) do
-    {:ok, project_milestone_comment} =
-      attrs
-      |> Enum.into(%{
-        content: %{}
-      })
-      |> Operately.Projects.create_project_milestone_comment()
-
-    project_milestone_comment
-  end
 end

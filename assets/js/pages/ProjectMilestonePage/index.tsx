@@ -412,6 +412,7 @@ function DueDate({ milestone }) {
         <div
           className="hover:bg-dark-4 -m-1.5 p-1.5 relative group cursor-pointer w-full outline-none"
           onClick={() => setOpen(true)}
+          data-test-id="change-milestone-due-date"
         >
           <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
           <TextSeparator />

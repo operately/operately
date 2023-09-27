@@ -8,7 +8,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
 
   input_object :post_milestone_comment_input do
     field :milestone_id, non_null(:id)
-    field :content, non_null(:string)
+    field :content, :string
     field :action, non_null(:string)
   end
 
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
           action,
           %{
             content: %{
-              "message" => Jason.decode!(args.input.content),
+              "message" => args.input.content && Jason.decode!(args.input.content),
             },
             author_id: person.id,
           }
