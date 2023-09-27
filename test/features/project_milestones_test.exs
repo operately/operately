@@ -54,34 +54,24 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.assert_text("Website Launched", testid: "timeline")
   end
 
+  @timeline_section UI.query(testid: "timeline")
+  @complete_button UI.query(testid: "complete-and-comment")
+
   feature "mark upcomming milestone completed", state do
     add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
     add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     state
     |> visit_project_page(state.project)
-    |> UI.assert_text("Contract Signed", testid: "timeline")
-
-    state
-    |> UI.click(testid: "complete-milestone")
-
-    state
-    |> UI.refute_text("Contract Signed", testid: "timeline")
-    |> UI.assert_text("Website Launched", testid: "timeline")
-
-    state
-    |> UI.assert_text(Person.short_name(state.champion) <> " marked Contract Signed as completed")
-  end
-
-  feature "mark milestone completed in the expanded list", state do
-    add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00], completed_at: ~N[2023-06-17 00:00:00], status: "done"})
-    add_milestone(state.project, state.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
-
-    state
+    |> UI.find(@timeline_section, fn section ->
+      section
+      |> UI.assert_text("Contract Signed")
+      |> UI.click_link("Contract Signed")
+    end)
+    |> UI.click(@complete_button)
+    |> assert_text("Milestone Completed")
     |> visit_project_page(state.project)
-    |> UI.click(testid: "show-all-milestones")
-    |> UI.click(testid: "complete-milestone")
-    |> UI.assert_text(Person.short_name(state.champion) <> " marked Website Launched as completed")
+    |> UI.assert_text(Person.short_name(state.champion) <> " marked Contract Signed as completed")
   end
 
   feature "change milestone deadline", state do

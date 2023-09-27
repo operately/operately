@@ -80,6 +80,10 @@ defmodule Operately.FeatureCase do
       |> Operately.Repo.preload(:person)
     end
 
+    def click(state, %Wallaby.Query{} = query) do
+      session(state) |> Browser.click(query)
+    end
+
     def click(state, opts) do
       {session, opts} = Keyword.pop(opts, :in)
       context = session || session(state)
@@ -209,6 +213,18 @@ defmodule Operately.FeatureCase do
 
     def find(state, testid: id) do
       session(state) |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"))
+    end
+
+    def find(state, %Wallaby.Query{} = query, callback) do
+      section = session(state) |> Browser.find(query)
+
+      callback.(section)
+
+      state
+    end
+
+    def query(testid: id) do
+      Query.css("[data-test-id=\"#{id}\"]")
     end
 
     def wait_for_page_to_load(state, path) do

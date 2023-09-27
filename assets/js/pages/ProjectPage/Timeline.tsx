@@ -223,7 +223,7 @@ function MilestoneList({ project, refetch }) {
 
 function MilestoneListCollapsed({ project, refetch, onExpand }) {
   return (
-    <div className="flex items-center justify-between px-4">
+    <div className="flex items-end justify-between px-4">
       <NextMilestone project={project} refetch={refetch} />
       <div
         className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1"
@@ -389,10 +389,6 @@ function MilestoneListItem({ project, milestone, refetch }) {
 
       <div className="w-16 flex-row-reverse flex items-center gap-2">
         <RemoveMilestoneButton project={project} milestone={milestone} refetch={refetch} />
-
-        {milestone.status !== "done" && (
-          <CompleteMilestoneButton project={project} milestone={milestone} refetch={refetch} />
-        )}
       </div>
     </div>
   );
@@ -615,21 +611,34 @@ function milestoneIconColor(milestone: Milestones.Milestone) {
 }
 
 function ExistingNextMilestone({ project, refetch }) {
-  const isOverdue = Time.parse(project.nextMilestone.deadlineAt) < Time.today();
+  const nextMilestone = project.nextMilestone;
+  if (!nextMilestone) return null;
+
+  const deadline = Time.parse(nextMilestone.deadlineAt);
+  if (!deadline) return null;
+
+  const isOverdue = deadline < Time.today();
   const iconColor = milestoneIconColor(project.nextMilestone);
-  const label = isOverdue ? "Overdue" : "Next";
 
   return (
-    <div className="flex items-center gap-2">
-      <Icons.IconMapPinFilled size={16} className={iconColor} />
-      <span>
-        {label}:{" "}
-        <MilestoneLink projectID={project.id} milestoneID={project.nextMilestone.id}>
+    <div>
+      <span className="text-white-2 uppercase text-xs leading-none tracking-wide">NEXT MILESTONE</span>
+      <div className="flex items-center gap-1">
+        <Icons.IconMapPinFilled size={16} className={iconColor} />
+        <MilestoneLink
+          projectID={project.id}
+          milestoneID={project.nextMilestone.id}
+          className="decoration-white-2 hover:decoration-white-1"
+        >
           {project.nextMilestone.title}
         </MilestoneLink>
-      </span>
-
-      <CompleteMilestoneButton project={project} milestone={project.nextMilestone} refetch={refetch} />
+        <span className="mx-1">&middot;</span>
+        {isOverdue ? (
+          <div className="text-red-400">{Time.daysBetween(deadline, Time.today())} days overdue</div>
+        ) : (
+          <div className="text-white-2">due in {Time.daysBetween(Time.today(), deadline)} days</div>
+        )}
+      </div>
     </div>
   );
 }
