@@ -80,11 +80,10 @@ export function Page() {
 
         <DetailList>
           <DetailListItem title="Status" value={<StatusBadge milestone={milestone} />} />
-          <DetailListItem title="Due Date" value={<FormattedTime time={milestone.deadlineAt} format="short-date" />} />
+          <DetailListItem title="Due Date" value={<DueDate milestone={milestone} />} />
           <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
         </DetailList>
 
-        <h1 className="mt-16"></h1>
         <Separator />
 
         <Comments milestone={milestone} refetch={refetch} />
@@ -161,10 +160,12 @@ function DescriptionZeroState({ onEdit }) {
 
 function DescriptionFilled({ milestone, onEdit }) {
   return (
-    <div className="relative group" data-test-id="milestone-description">
-      <RichContent jsonContent={milestone.description} />
+    <div className="relative group hover:bg-dark-4 p-1.5 -m-1.5" data-test-id="milestone-description">
+      <div style={{ width: "calc(100% - 2rem)" }}>
+        <RichContent jsonContent={milestone.description} />
+      </div>
 
-      <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100">
         <IconButton
           color="green"
           tooltip="Edit description"
@@ -369,5 +370,54 @@ function AddComment({ milestone, refetch, me }) {
     <DetailList>
       <DetailListItem title={avatar} value={commentBox} />
     </DetailList>
+  );
+}
+
+function DueDate({ milestone }) {
+  const [editing, _, setEditing, setNotEditing] = useBoolState(false);
+
+  if (editing) {
+    return <DueDateEdit milestone={milestone} onSave={setNotEditing} onCancel={setNotEditing} />;
+  } else {
+    return <DueDateFilled milestone={milestone} onEdit={setEditing} />;
+  }
+}
+
+function DueDateFilled({ milestone, onEdit }) {
+  let description: JSX.Element | null = null;
+  let isOverdue = Milestones.isOverdue(milestone);
+  let deadline = Time.parseISO(milestone.deadlineAt);
+
+  if (isOverdue) {
+    description = (
+      <>
+        {" "}
+        &middot; <span className="text-red-400">Overdue for {Time.daysBetween(deadline, Time.today())} days</span>
+      </>
+    );
+  } else {
+    if (Time.isToday(milestone.deadlineAt)) {
+      description = (
+        <>
+          {" "}
+          &middot; <span className="text-emerald-400">Due today</span>
+        </>
+      );
+    } else {
+      description = (
+        <>
+          {" "}
+          &middot;{" "}
+          <span className="text-emerald-400">Due in {Time.daysBetween(Time.today(), milestone.deadlineAt)} days</span>
+        </>
+      );
+    }
+  }
+
+  return (
+    <div className="hover:bg-dark-4 -m-1.5 p-1.5">
+      <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
+      {description}
+    </div>
   );
 }
