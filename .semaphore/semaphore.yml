@@ -23,6 +23,8 @@ blocks:
       jobs:
         - name: mix test
           commands:
+            - mkdir -p screeenshots
+            - sudo chmod -R 777 screeenshots
             - make test.seed.env
             - make test.setup
             - make test

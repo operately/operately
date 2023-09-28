@@ -174,6 +174,10 @@ defmodule Operately.Features.ProjectsTest do
     |> visit_show(state.project)
     |> UI.assert_text("Waiting for your acknowledgement")
     |> UI.click(testid: "acknowledge-update")
+
+    :timer.sleep(200) # give some time for the ack to propagate
+
+    state
     |> UI.refute_text("Waiting for your acknowledgement")
     |> UI.assert_text(state.champion.full_name <> " acknowledged this update")
     |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))

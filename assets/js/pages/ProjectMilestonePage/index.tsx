@@ -70,12 +70,12 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <div className="flex items-center gap-4">
-          <div className="w-32 flex flex-row-reverse">
+        <div className="flex items-start gap-4">
+          <div className="w-32 flex flex-row-reverse shrink-0 mt-1">
             <Icons.IconMapPinFilled size={24} />
           </div>
 
-          <div className="text-2xl font-extrabold text-white-1">{milestone.title}</div>
+          <MilestoneName milestone={milestone} />
         </div>
 
         <Separator />
@@ -463,4 +463,81 @@ function TimeToDueDate({ dueDate }: { dueDate: Date }) {
 
 function TextSeparator() {
   return <span className="mx-1">&middot;</span>;
+}
+
+function MilestoneName({ milestone }) {
+  const [editing, _, activate, deactivate] = useBoolState(false);
+
+  if (editing) {
+    return <MilestoneNameEdit onSave={deactivate} milestone={milestone} onCancel={deactivate} />;
+  } else {
+    return <MilestoneNameFilled startEditing={activate} milestone={milestone} />;
+  }
+}
+
+function MilestoneNameFilled({ milestone, startEditing }) {
+  return (
+    <div
+      className="text-2xl font-extrabold text-white-1 hover:bg-shade-1 flex-1 cursor-pointer -m-1.5 p-1.5"
+      onClick={startEditing}
+      data-test-id="edit-milestone-title"
+    >
+      {milestone.title}
+    </div>
+  );
+}
+
+function MilestoneNameEdit({ milestone, onSave, onCancel }) {
+  const [_, refetch] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [update] = Milestones.useUpdateTitle();
+  const [title, setTitle] = React.useState(milestone.title);
+
+  const handleSave = async () => {
+    await update({
+      variables: {
+        input: {
+          id: milestone.id,
+          title: title,
+        },
+      },
+    });
+
+    refetch();
+    onSave();
+  };
+
+  return (
+    <div className="flex items-center gap-2 w-full bg-shade-1 -m-1.5 p-1.5">
+      <input
+        type="text"
+        className="text-2xl font-extrabold border-none outline-none bg-transparent w-full text-white-1 p-0 flex-1 block focus:ring-0"
+        defaultValue={milestone.title}
+        title={title}
+        onChange={(e) => setTitle(e.target.value)}
+        autoFocus
+        data-test-id="milestone-title-input"
+        onKeyUp={(e) => {
+          if (e.key === "Enter") {
+            handleSave();
+          }
+        }}
+      />
+
+      <IconButton
+        color="green"
+        tooltip="Save"
+        onClick={handleSave}
+        icon={<Icons.IconCheck size={16} />}
+        data-test-id="save-milestone-title"
+      ></IconButton>
+
+      <IconButton
+        color="red"
+        tooltip="Cancel"
+        onClick={onCancel}
+        icon={<Icons.IconX size={16} />}
+        data-test-id="cancel-edit-milestone-title"
+      ></IconButton>
+    </div>
+  );
 }

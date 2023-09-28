@@ -176,6 +176,17 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> assert_text("Milestone Re-Opened")
   end
 
+  feature "rename a milestone", state do
+    {:ok, milestone} = add_milestone(state.project, state.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+
+    state
+    |> visit_page(state.project, milestone)
+    |> UI.click(testid: "edit-milestone-title")
+    |> UI.fill(testid: "milestone-title-input", with: "Contract Signed 2")
+    |> UI.click(testid: "save-milestone-title")
+    |> assert_text("Contract Signed 2")
+  end
+
   # ===========================================================================
 
   defp add_milestone(project, creator, attrs) do

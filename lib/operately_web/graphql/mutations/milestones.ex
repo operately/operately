@@ -12,6 +12,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
     field :action, non_null(:string)
   end
 
+  input_object :update_milestone_title_input do
+    field :id, non_null(:id)
+    field :title, non_null(:string)
+  end
+
   object :milestone_mutations do
     field :add_project_milestone, non_null(:milestone) do
       arg :project_id, non_null(:id)
@@ -85,6 +90,18 @@ defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
         Operately.Projects.delete_milestone(person, milestone)
 
         {:ok, milestone}
+      end
+    end
+
+    field :update_milestone_title, non_null(:milestone) do
+      arg :input, non_null(:update_milestone_title_input)
+
+      resolve fn args, _ ->
+        milestone = Operately.Projects.get_milestone!(args.input.id)
+
+        Operately.Projects.update_milestone(milestone, %{
+          title: args.input.title
+        })
       end
     end
 
