@@ -1,4 +1,4 @@
-![Operately](/docs/images/logo-white.svg#gh-light-mode-only)
+# Operately
 
 <h4>
   <a href="https://operately.com/">Masterplan</a> |
