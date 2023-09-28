@@ -71,7 +71,7 @@ export function Page() {
 
       <Paper.Body>
         <div className="flex items-start gap-4">
-          <div className="w-32 flex flex-row-reverse shrink-0">
+          <div className="w-32 flex flex-row-reverse shrink-0 mt-1">
             <Icons.IconMapPinFilled size={24} />
           </div>
 
