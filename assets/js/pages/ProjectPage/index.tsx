@@ -8,6 +8,7 @@ import Activity from "./Activity";
 import Header from "./Header";
 import Timeline from "./Timeline";
 import Description from "./Description";
+import Reviews from "./Reviews";
 import KeyResources from "./KeyResources";
 import Toolbar from "./Toolbar";
 
@@ -62,6 +63,8 @@ export function Page() {
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
+        <Divider />
+        <Reviews project={project} />
         <Divider />
         <Activity project={project} key={fetchVersion} />
       </div>
