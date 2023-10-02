@@ -16,6 +16,7 @@ import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
 import { Spacer } from "@/components/Spacer";
+import { TextSeparator } from "@/components/TextSeparator";
 
 import { useDocumentTitle } from "@/layouts/header";
 
@@ -68,11 +69,16 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
-        <div className="flex flex-col items-center -mt-4">
+        <div className="flex flex-col items-center">
           <div className="text-white-1 text-2xl font-extrabold">{title}</div>
-          <div className="flex flex-row gap-2 items-center mt-3 text-white-1 font-medium">
-            <Avatar person={review.author} size="tiny" /> {review.author.fullName} &middot;{" "}
+          <div className="flex gap-0.5 flex-row items-center mt-1 text-white-1 font-medium">
+            <div className="flex items-center gap-2">
+              <Avatar person={review.author} size="tiny" /> {review.author.fullName}
+            </div>
+            <TextSeparator />
             <FormattedTime time={review.insertedAt} format="short-date" />
+            <TextSeparator />
+            <Acknowledgement review={review} />
           </div>
         </div>
 
@@ -101,4 +107,17 @@ function Content({ project, review }: { project: Projects.Project; review: Updat
 
 function capitalCase(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function Acknowledgement({ review }: { review: Updates.Update }) {
+  if (review.acknowledgedAt) {
+    return (
+      <span className="flex items-center gap-1">
+        <Icons.IconCircleCheck size={16} className="text-green-400" />
+        Acknowledged by {review.acknowledgingPerson.fullName}
+      </span>
+    );
+  } else {
+    return <span className="flex items-center gap-1">Not acknowledged</span>;
+  }
 }
