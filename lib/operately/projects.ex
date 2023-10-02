@@ -361,7 +361,7 @@ defmodule Operately.Projects do
 
   def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
 
-  def create_review_request(attrs \\ %{}) do
+  def create_review_request(author, attrs) do
     %ReviewRequest{}
     |> ReviewRequest.changeset(attrs)
     |> Repo.insert()

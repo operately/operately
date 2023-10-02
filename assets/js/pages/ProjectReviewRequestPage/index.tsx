@@ -3,6 +3,7 @@ import * as Icons from "@tabler/icons-react";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
+import * as ProjectReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 import * as Me from "@/graphql/Me";
 import * as Paper from "@/components/PaperContainer";
@@ -12,6 +13,7 @@ import Button from "@/components/Button";
 import { Spacer } from "@/components/Spacer";
 
 import { useDocumentTitle } from "@/layouts/header";
+import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -37,6 +39,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
+  const navigate = useNavigate();
   const [{ project }] = Paper.useLoadedData() as [LoaderResult];
 
   useDocumentTitle("Request Project Review");
@@ -49,7 +52,23 @@ export function Page() {
     className: "min-h-[350px] py-2 px-1",
   });
 
-  const loading = false;
+  const [createRequest, { loading }] = ProjectReviewRequests.useCreateRequest({
+    onCompleted: () => navigate(`/projects/${project.id}`),
+  });
+
+  const submit = async () => {
+    if (!submittable) return;
+    if (!editor) return;
+
+    await createRequest({
+      variables: {
+        input: {
+          projectID: project.id,
+          content: JSON.stringify(editor.getJSON()),
+        },
+      },
+    });
+  };
 
   return (
     <Paper.Root>
@@ -78,7 +97,13 @@ export function Page() {
 
         <Spacer size={4} />
 
-        <Button variant="success" disabled={!submittable} loading={loading} data-test-id="request-review-submit-button">
+        <Button
+          variant="success"
+          disabled={!submittable}
+          loading={loading}
+          data-test-id="request-review-submit-button"
+          onClick={submit}
+        >
           {submittable ? "Submit Request" : "Uploading..."}
         </Button>
       </Paper.Body>

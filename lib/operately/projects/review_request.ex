@@ -5,9 +5,10 @@ defmodule Operately.Projects.ReviewRequest do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "project_review_requests" do
+    belongs_to :project, Operately.Projects.Project
+    belongs_to :author, Operately.People.Person
+
     field :content, :map
-    field :project_id, :binary_id
-    field :author_id, :binary_id
 
     timestamps()
   end
@@ -15,7 +16,7 @@ defmodule Operately.Projects.ReviewRequest do
   @doc false
   def changeset(review_request, attrs) do
     review_request
-    |> cast(attrs, [:content])
-    |> validate_required([:content])
+    |> cast(attrs, [:content, :project_id, :author_id])
+    |> validate_required([:content, :project_id, :author_id])
   end
 end
