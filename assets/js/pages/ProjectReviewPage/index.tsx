@@ -15,6 +15,7 @@ import { AnswersView } from "@/features/phase_change/activity_view";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+import Button from "@/components/Button";
 
 import { Spacer } from "@/components/Spacer";
 import { TextSeparator } from "@/components/TextSeparator";
@@ -75,6 +76,8 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body>
+        <AckCTA project={project} update={review} refetch={refetch} me={me} />
+
         <div className="flex flex-col items-center">
           <div className="text-white-1 text-2xl font-extrabold">{title}</div>
           <div className="flex gap-0.5 flex-row items-center mt-1 text-white-1 font-medium">
@@ -133,4 +136,42 @@ function Acknowledgement({ review }: { review: Updates.Update }) {
   } else {
     return <span className="flex items-center gap-1">Not acknowledged</span>;
   }
+}
+
+function AckCTA({
+  project,
+  update,
+  refetch,
+  me,
+}: {
+  project: Projects.Project;
+  update: Updates.Update;
+  refetch: () => void;
+  me: People.Person;
+}) {
+  const [ack, { loading }] = Updates.useAckUpdate();
+
+  if (update.acknowledged) return null;
+  if (!project.reviewer) return null;
+  if (project.reviewer.id !== me.id) return null;
+
+  const handleAck = async () => {
+    await ack({
+      variables: {
+        id: update.id,
+      },
+    });
+
+    refetch();
+  };
+
+  return (
+    <div className="px-4 py-3 mb-2 border-b border-dark-8 flex items-center justify-between font-bold">
+      Waiting for your acknowledgement
+      <Button variant="success" size="tiny" data-test-id="acknowledge-update" loading={loading} onClick={handleAck}>
+        <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
+        Acknowledge
+      </Button>
+    </div>
+  );
 }
