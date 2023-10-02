@@ -382,4 +382,58 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_phase_history(ctx.phase_history)
     end
   end
+
+  describe "project_review_requests" do
+    alias Operately.Projects.ReviewRequest
+
+    import Operately.ProjectsFixtures
+
+    @invalid_attrs %{content: nil}
+
+    test "list_project_review_requests/0 returns all project_review_requests" do
+      review_request = review_request_fixture()
+      assert Projects.list_project_review_requests() == [review_request]
+    end
+
+    test "get_review_request!/1 returns the review_request with given id" do
+      review_request = review_request_fixture()
+      assert Projects.get_review_request!(review_request.id) == review_request
+    end
+
+    test "create_review_request/1 with valid data creates a review_request" do
+      valid_attrs = %{content: %{}}
+
+      assert {:ok, %ReviewRequest{} = review_request} = Projects.create_review_request(valid_attrs)
+      assert review_request.content == %{}
+    end
+
+    test "create_review_request/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_review_request(@invalid_attrs)
+    end
+
+    test "update_review_request/2 with valid data updates the review_request" do
+      review_request = review_request_fixture()
+      update_attrs = %{content: %{}}
+
+      assert {:ok, %ReviewRequest{} = review_request} = Projects.update_review_request(review_request, update_attrs)
+      assert review_request.content == %{}
+    end
+
+    test "update_review_request/2 with invalid data returns error changeset" do
+      review_request = review_request_fixture()
+      assert {:error, %Ecto.Changeset{}} = Projects.update_review_request(review_request, @invalid_attrs)
+      assert review_request == Projects.get_review_request!(review_request.id)
+    end
+
+    test "delete_review_request/1 deletes the review_request" do
+      review_request = review_request_fixture()
+      assert {:ok, %ReviewRequest{}} = Projects.delete_review_request(review_request)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_review_request!(review_request.id) end
+    end
+
+    test "change_review_request/1 returns a review_request changeset" do
+      review_request = review_request_fixture()
+      assert %Ecto.Changeset{} = Projects.change_review_request(review_request)
+    end
+  end
 end

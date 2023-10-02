@@ -352,4 +352,32 @@ defmodule Operately.Projects do
   def get_permissions(project, person) do
     Operately.Projects.Permissions.calculate_permissions(project, person)
   end
+
+  alias Operately.Projects.ReviewRequest
+
+  def list_project_review_requests do
+    Repo.all(ReviewRequest)
+  end
+
+  def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
+
+  def create_review_request(attrs \\ %{}) do
+    %ReviewRequest{}
+    |> ReviewRequest.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_review_request(%ReviewRequest{} = review_request, attrs) do
+    review_request
+    |> ReviewRequest.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_review_request(%ReviewRequest{} = review_request) do
+    Repo.delete(review_request)
+  end
+
+  def change_review_request(%ReviewRequest{} = review_request, attrs \\ %{}) do
+    ReviewRequest.changeset(review_request, attrs)
+  end
 end
