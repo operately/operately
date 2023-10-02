@@ -3,10 +3,13 @@ import React from "react";
 import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Icons from "@tabler/icons-react";
+import * as Project from "@/graphql/Projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
+
+import { useNavigate } from "react-router-dom";
 
 export default function Reviews({ project }) {
   return (
@@ -48,29 +51,35 @@ function ReviewList({ project }) {
     return <ReviewEmptyState />;
   }
 
-  return <ReviewTable reviews={reviews} />;
+  return <ReviewTable reviews={reviews} project={project} />;
 }
 
 function ReviewEmptyState() {
   return <div className="text-white-2">No reviews have been submitted for this project.</div>;
 }
 
-function ReviewTable({ reviews }: { reviews: Updates.Update[] }) {
+function ReviewTable({ reviews, project }: { reviews: Updates.Update[]; project: Project.Project }) {
   return (
     <div className="flex flex-col gap-1 my-3">
       {reviews.map((review) => (
-        <ReviewRow key={review.id} review={review} />
+        <ReviewRow key={review.id} review={review} project={project} />
       ))}
     </div>
   );
 }
 
-function ReviewRow({ review }: { review: Updates.Update }) {
+function ReviewRow({ review, project }: { review: Updates.Update; project: Project.Project }) {
+  const navigate = useNavigate();
+  const navigateToReview = () => navigate(`/projects/${project.id}/reviews/${review.id}`);
+
   const content = review.content as UpdateContent.Review;
   const author = review.author;
 
   return (
-    <div className="flex flex-row justify-between items-center bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer">
+    <div
+      className="flex flex-row justify-between items-center bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer"
+      onClick={navigateToReview}
+    >
       <div className="flex gap-2 items-center">
         <Avatar person={author} size="tiny" />
         <div className="font-medium text-white-1 capitalize">
