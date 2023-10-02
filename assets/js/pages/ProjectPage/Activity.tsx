@@ -19,6 +19,8 @@ import Button from "@/components/Button";
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 import * as PhaseChange from "@/features/phase_change";
+import * as Feed from "@/features/feed";
+
 import { MilestoneLink } from "@/routes/Links";
 
 interface ActivityContextDescriptor {
@@ -228,8 +230,6 @@ function FeedAvatar({ person }) {
     </div>
   );
 }
-
-import * as Feed from "@/features/feed";
 
 function useAddReactForm(entityID: string, entityType: "update" | "comment") {
   const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;

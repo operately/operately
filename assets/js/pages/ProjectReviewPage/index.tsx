@@ -8,6 +8,7 @@ import * as Me from "@/graphql/Me";
 import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Paper from "@/components/PaperContainer";
+import * as Feed from "@/features/feed";
 
 import * as PhaseChange from "@/features/phase_change";
 import { AnswersView } from "@/features/phase_change/activity_view";
@@ -52,12 +53,14 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [{ project, review }, _refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [{ project, review }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   const content = review.content as UpdateContent.Review;
   const title = `${capitalCase(content.previousPhase)} to ${capitalCase(content.newPhase)} Review`;
 
   useDocumentTitle(`${title} - ${project.name}`);
+
+  const addReactionForm = useAddReactForm(review.id, "update", refetch);
 
   return (
     <Paper.Root key={fetchVersion}>
@@ -85,6 +88,8 @@ export function Page() {
         <Spacer size={4} />
         <Content project={project} review={review} />
         <Spacer size={4} />
+
+        <Feed.Reactions reactions={review.reactions} size={20} form={addReactionForm} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -120,4 +125,21 @@ function Acknowledgement({ review }: { review: Updates.Update }) {
   } else {
     return <span className="flex items-center gap-1">Not acknowledged</span>;
   }
+}
+
+function useAddReactForm(entityID: string, entityType: "update" | "comment", onCompleted?: () => void) {
+  const [postReaction, status] = Updates.useReactMutation({ onCompleted: onCompleted });
+
+  return {
+    submit: (type: string) => {
+      postReaction({
+        variables: {
+          entityID: entityID,
+          entityType: entityType,
+          type: type,
+        },
+      });
+    },
+    loading: status.loading,
+  };
 }
