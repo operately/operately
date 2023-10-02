@@ -52,10 +52,4 @@ export class Review extends Handler {
       </>
     );
   }
-
-  answersView(answers: Answers): React.FC {
-    const questions = this.questions();
-
-    return () => <AnswersView questions={questions} answers={answers} />;
-  }
 }

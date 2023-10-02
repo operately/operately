@@ -20,6 +20,9 @@ import { Spacer } from "@/components/Spacer";
 import { TextSeparator } from "@/components/TextSeparator";
 
 import { useDocumentTitle } from "@/layouts/header";
+import { useAddReaction } from "./useAddReaction";
+
+import { CommentSection } from "./CommentSection";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -53,14 +56,14 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [{ project, review }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [{ project, review, me }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   const content = review.content as UpdateContent.Review;
   const title = `${capitalCase(content.previousPhase)} to ${capitalCase(content.newPhase)} Review`;
 
   useDocumentTitle(`${title} - ${project.name}`);
 
-  const addReactionForm = useAddReactForm(review.id, "update", refetch);
+  const addReactionForm = useAddReaction(review.id, "update", refetch);
 
   return (
     <Paper.Root key={fetchVersion}>
@@ -90,6 +93,11 @@ export function Page() {
         <Spacer size={4} />
 
         <Feed.Reactions reactions={review.reactions} size={20} form={addReactionForm} />
+
+        <Spacer size={4} />
+
+        <div className="text-white-1 font-extrabold border-b border-shade-2 pb-2">Comments</div>
+        <CommentSection update={review} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -125,21 +133,4 @@ function Acknowledgement({ review }: { review: Updates.Update }) {
   } else {
     return <span className="flex items-center gap-1">Not acknowledged</span>;
   }
-}
-
-function useAddReactForm(entityID: string, entityType: "update" | "comment", onCompleted?: () => void) {
-  const [postReaction, status] = Updates.useReactMutation({ onCompleted: onCompleted });
-
-  return {
-    submit: (type: string) => {
-      postReaction({
-        variables: {
-          entityID: entityID,
-          entityType: entityType,
-          type: type,
-        },
-      });
-    },
-    loading: status.loading,
-  };
 }
