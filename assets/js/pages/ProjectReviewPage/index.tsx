@@ -9,8 +9,13 @@ import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Paper from "@/components/PaperContainer";
 
+import * as PhaseChange from "@/features/phase_change";
+import { AnswersView } from "@/features/phase_change/activity_view";
+
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+
+import { Spacer } from "@/components/Spacer";
 
 import { useDocumentTitle } from "@/layouts/header";
 
@@ -46,7 +51,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [{ project, review, me }, _refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [{ project, review }, _refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   const content = review.content as UpdateContent.Review;
   const title = `${capitalCase(content.previousPhase)} to ${capitalCase(content.newPhase)} Review`;
@@ -70,9 +75,28 @@ export function Page() {
             <FormattedTime time={review.insertedAt} format="short-date" />
           </div>
         </div>
+
+        <Spacer size={4} />
+        <Content project={project} review={review} />
+        <Spacer size={4} />
       </Paper.Body>
     </Paper.Root>
   );
+}
+
+function Content({ project, review }: { project: Projects.Project; review: Updates.Update }) {
+  const content = review.content as UpdateContent.Review;
+
+  const handler = PhaseChange.handler(
+    project,
+    content.previousPhase as Projects.ProjectPhase,
+    content.newPhase as Projects.ProjectPhase,
+  );
+
+  const answers = JSON.parse(review.message);
+  const questions = handler.questions();
+
+  return <AnswersView questions={questions} answers={answers} />;
 }
 
 function capitalCase(str: string) {
