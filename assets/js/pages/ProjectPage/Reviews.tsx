@@ -12,6 +12,9 @@ import Button from "@/components/Button";
 import { useNavigate } from "react-router-dom";
 
 export default function Reviews({ project }) {
+  const navigate = useNavigate();
+  const navigateToRequestReview = () => navigate(`/projects/${project.id}/reviews/request`);
+
   return (
     <div className="flex flex-col gap-1 relative my-8">
       <div className="font-extrabold text-lg text-white-1 leading-none">Project Reviews</div>
@@ -24,7 +27,9 @@ export default function Reviews({ project }) {
       </div>
 
       <div>
-        <Button variant="secondary">Request impromptu review</Button>
+        <Button variant="secondary" data-test-id="request-review-button" onClick={navigateToRequestReview}>
+          Request impromptu review
+        </Button>
       </div>
     </div>
   );
