@@ -366,7 +366,9 @@ defmodule Operately.Projects do
   def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
   def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
 
-  def create_review_request(_author, attrs) do
+  def create_review_request(author, attrs) do
+    attrs = Map.merge(attrs, %{author_id: author.id})
+
     %ReviewRequest{}
     |> ReviewRequest.changeset(attrs)
     |> Repo.insert()
