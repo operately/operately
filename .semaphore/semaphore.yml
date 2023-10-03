@@ -10,6 +10,7 @@ blocks:
     task:
       prologue:
         commands:
+          - export DOCKER_BUILDKIT=1
           - checkout
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
