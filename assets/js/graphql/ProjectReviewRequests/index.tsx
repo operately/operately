@@ -23,3 +23,17 @@ const CREATE_REVIEW_REQUEST = gql`
 export function useCreateRequest(options = {}) {
   return useMutation(CREATE_REVIEW_REQUEST, options);
 }
+
+export interface ReviewRequest {
+  id: string;
+  content: string;
+  insertedAt: string;
+  updatedAt: string;
+  author: People.Person;
+}
+
+export const GET_REQUEST = gql`
+  query GetProjectReviewRequest($id: ID!) {
+    projectReviewRequest(id: $id) ${FRAGMENT}
+  }
+`;

@@ -25,7 +25,9 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.click(testid: "request-review-button")
     |> UI.fill_rich_text("The project was paused for a while, let's review it before we continue.")
     |> UI.click(testid: "request-review-submit-button")
-    |> UI.assert_text("Review requested by #{reviewer.full_name}")
+    |> UI.assert_text("Request For Impromptu Review")
+    |> UI.click(testid: "request-review-link")
+    |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
   end
 
   #

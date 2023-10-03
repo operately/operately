@@ -121,6 +121,8 @@ export interface Project {
   reviewer?: Person;
 
   isPinned: boolean;
+
+  reviewRequests: ReviewRequests.ReviewRequest[];
 }
 
 export const GET_PROJECT = gql`
@@ -436,4 +438,16 @@ export function useUpdateDescriptionMutation(options = {}) {
     `,
     options,
   );
+}
+
+export function hasReviewRequest(project: Project): boolean {
+  return project.reviewRequests.length > 0;
+}
+
+export function getReviewRequest(project: Project): ReviewRequests.ReviewRequest | null {
+  if (project.reviewRequests[0]) {
+    return project.reviewRequests[0];
+  } else {
+    return null;
+  }
 }

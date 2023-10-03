@@ -364,6 +364,7 @@ defmodule Operately.Projects do
   end
 
   def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
+  def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
 
   def create_review_request(_author, attrs) do
     %ReviewRequest{}
