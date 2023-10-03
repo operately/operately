@@ -7,6 +7,8 @@ import * as Milestones from "./milestones";
 import * as PhaseHistory from "./phase_history";
 import * as Permissions from "./permissions";
 import * as Updates from "./updates";
+import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
+import * as People from "@/graphql/People";
 
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
@@ -20,33 +22,17 @@ export const LIST_PROJECTS = gql`
       insertedAt
       updatedAt
       private
-
       startedAt
       deadline
-
-      permissions ${Permissions.FRAGMENT}
-
-      contributors ${fragments.CONTRIBUTOR}
-      keyResources ${KeyResources.GQL_FRAGMENT}
-
       phase
       health
-
+      permissions ${Permissions.FRAGMENT}
+      contributors ${fragments.CONTRIBUTOR}
+      keyResources ${KeyResources.GQL_FRAGMENT}
       nextMilestone ${Milestones.FRAGMENT}
-
-      champion {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-
-      reviewer {
-        id
-        fullName
-        avatarUrl
-        title
-      }
+      reviewRequests ${ReviewRequests.FRAGMENT}
+      champion ${People.FRAGMENT}
+      reviewer ${People.FRAGMENT}
     }
   }
 `;
@@ -157,15 +143,13 @@ export const GET_PROJECT = gql`
       phaseHistory ${PhaseHistory.GQL_FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
       milestones ${Milestones.FRAGMENT}
-      nextMilestone ${Milestones.FRAGMENT}
 
       contributors ${fragments.CONTRIBUTOR}
-      champion ${fragments.PERSON}
-      reviewer ${fragments.PERSON}
+      champion ${People.FRAGMENT}
+      reviewer ${People.FRAGMENT}
 
-      updates {
-        id
-      }
+      nextMilestone ${Milestones.FRAGMENT}
+      reviewRequests ${ReviewRequests.FRAGMENT}
     }
   }
 `;

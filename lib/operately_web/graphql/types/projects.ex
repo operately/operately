@@ -77,6 +77,12 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
     field :next_update_scheduled_at, :date
     field :private, non_null(:boolean)
 
+    field :review_requests, list_of(:project_review_request) do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.list_project_review_requests(project)}
+      end
+    end
+
     field :permissions, non_null(:project_permissions) do
       resolve fn project, _, %{context: context} ->
         person = context.current_account.person

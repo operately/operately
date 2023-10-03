@@ -1,6 +1,15 @@
 import React from "react";
 import { gql, ApolloClient, useQuery, useApolloClient } from "@apollo/client";
 
+export const FRAGMENT = `
+  {
+    id
+    fullName
+    title
+    avatarUrl
+  }
+`;
+
 export interface Person {
   id: string;
   fullName: string;
