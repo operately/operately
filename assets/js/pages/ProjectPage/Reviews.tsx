@@ -8,6 +8,9 @@ import * as Project from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
+import RichContent from "@/components/RichContent";
+
+import { Spacer } from "@/components/Spacer";
 
 import { useNavigate } from "react-router-dom";
 
@@ -21,10 +24,9 @@ export default function Reviews({ project }) {
       <div className="text-white-2 max-w-xl">Assessments of the state of the project after each project phase.</div>
 
       <ReviewList project={project} />
+      <NextReviewSchedule project={project} />
 
-      <div className="mb-2">
-        <NextReviewSchedule project={project} />
-      </div>
+      <Spacer size={0.25} />
 
       <div>
         <Button variant="secondary" data-test-id="request-review-button" onClick={navigateToRequestReview}>
@@ -108,29 +110,51 @@ function AckMarker({ update }) {
 }
 
 function NextReviewSchedule({ project }) {
-  if (project.phase === "completed") {
-    return <div></div>;
-  }
-
   const currentPhase = project.phaseHistory.find((phase) => phase.phase === project.phase);
 
-  if (!currentPhase) {
-    return <div></div>;
+  if (project.phase === "completed") return <div></div>;
+  if (!currentPhase) return <div></div>;
+
+  if (project.reviewRequests[0]) {
+    return <NextReviewScheduleBasedOnRequest project={project} reviewRequest={project.reviewRequests[0]} />;
   }
 
   if (!currentPhase.dueTime) {
-    return (
-      <div className="flex gap-2 items-center max-w-lg text-white-2">
-        The next review is scheduled for when the {currentPhase.phase} phase is completed. Currently, no due date is
-        set.
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex gap-2 items-center max-w-lg text-white-2">
-        The next review is scheduled for <FormattedTime time={currentPhase.dueTime} format="short-date" /> when the{" "}
-        {currentPhase.phase} phase is scheduled to end.
-      </div>
-    );
+    return <NextReviewScheduleBasedOnPhaseWithNoDueDate project={project} currentPhase={currentPhase} />;
   }
+
+  return <NextReviewScheduleBasedOnPhaseWithDueDate project={project} currentPhase={currentPhase} />;
+}
+
+function NextReviewScheduleBasedOnRequest({ project, reviewRequest }) {
+  return (
+    <div className="bg-dark-4 p-2 rounded border-l-4 border-blue-400">
+      <div className="flex gap-2 items-center text-white-2">
+        <Avatar person={reviewRequest.author} size="tiny" />{" "}
+        <span className="font-bold text-white-1">{reviewRequest.author.fullName}</span> requested a project review on{" "}
+        <FormattedTime time={reviewRequest.insertedAt} format="short-date" />
+      </div>
+
+      <div className="p-2 pb-0">
+        <RichContent jsonContent={reviewRequest.content} />
+      </div>
+    </div>
+  );
+}
+
+function NextReviewScheduleBasedOnPhaseWithNoDueDate({ project, currentPhase }) {
+  return (
+    <div className="flex gap-2 items-center max-w-lg text-white-2">
+      The next review is scheduled for when the {currentPhase.phase} phase is completed. Currently, no due date is set.
+    </div>
+  );
+}
+
+function NextReviewScheduleBasedOnPhaseWithDueDate({ project, currentPhase }) {
+  return (
+    <div className="flex gap-2 items-center max-w-lg text-white-2">
+      The next review is scheduled for <FormattedTime time={currentPhase.dueTime} format="short-date" /> when the{" "}
+      {currentPhase.phase} phase is scheduled to end.
+    </div>
+  );
 }
