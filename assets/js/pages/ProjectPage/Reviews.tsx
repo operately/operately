@@ -9,6 +9,8 @@ import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
 
+import { Spacer } from "@/components/Spacer";
+
 import { useNavigate } from "react-router-dom";
 
 export default function Reviews({ project }) {
@@ -17,16 +19,33 @@ export default function Reviews({ project }) {
       <div className="font-extrabold text-lg text-white-1 leading-none">Project Reviews</div>
       <div className="text-white-2 max-w-xl">Assessments of the state of the project after each project phase.</div>
 
+      <Spacer size={0.25} />
       <ReviewList project={project} />
 
-      <div className="mb-2">
-        <NextReviewSchedule project={project} />
-      </div>
+      <Spacer size={0.25} />
+      <NextReviewSchedule project={project} />
+
+      <Spacer size={0.25} />
 
       <div>
-        <Button variant="secondary">Request impromptu review</Button>
+        <RequestReviewButton project={project} />
       </div>
     </div>
+  );
+}
+
+function RequestReviewButton({ project }) {
+  const navigate = useNavigate();
+  const navigateToRequestReview = () => navigate(`/projects/${project.id}/reviews/request/new`);
+
+  if (Project.hasReviewRequest(project)) {
+    return null;
+  }
+
+  return (
+    <Button variant="secondary" data-test-id="request-review-button" onClick={navigateToRequestReview}>
+      Request impromptu review
+    </Button>
   );
 }
 
@@ -60,7 +79,7 @@ function ReviewEmptyState() {
 
 function ReviewTable({ reviews, project }: { reviews: Updates.Update[]; project: Project.Project }) {
   return (
-    <div className="flex flex-col gap-1 my-3">
+    <div className="flex flex-col gap-1">
       {reviews.map((review) => (
         <ReviewRow key={review.id} review={review} project={project} />
       ))}
@@ -103,29 +122,62 @@ function AckMarker({ update }) {
 }
 
 function NextReviewSchedule({ project }) {
-  if (project.phase === "completed") {
-    return <div></div>;
-  }
-
   const currentPhase = project.phaseHistory.find((phase) => phase.phase === project.phase);
 
-  if (!currentPhase) {
-    return <div></div>;
+  if (project.phase === "completed") return <div></div>;
+  if (!currentPhase) return <div></div>;
+
+  if (Project.hasReviewRequest(project)) {
+    return <NextReviewScheduleBasedOnRequest project={project} reviewRequest={project.reviewRequests[0]} />;
   }
 
   if (!currentPhase.dueTime) {
-    return (
-      <div className="flex gap-2 items-center max-w-lg text-white-2">
-        The next review is scheduled for when the {currentPhase.phase} phase is completed. Currently, no due date is
-        set.
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex gap-2 items-center max-w-lg text-white-2">
-        The next review is scheduled for <FormattedTime time={currentPhase.dueTime} format="short-date" /> when the{" "}
-        {currentPhase.phase} phase is scheduled to end.
-      </div>
-    );
+    return <NextReviewScheduleBasedOnPhaseWithNoDueDate currentPhase={currentPhase} />;
   }
+
+  return <NextReviewScheduleBasedOnPhaseWithDueDate currentPhase={currentPhase} />;
+}
+
+function NextReviewScheduleBasedOnRequest({ project, reviewRequest }) {
+  const navigate = useNavigate();
+
+  const path = `/projects/${project.id}/reviews/request/${reviewRequest.id}`;
+  const author = reviewRequest.author;
+  const time = reviewRequest.insertedAt;
+
+  const navigateToReviewRequest = () => navigate(path);
+
+  return (
+    <div
+      className="flex flex-row justify-between items-center p-2 rounded cursor-pointer bg-blue-600 hover:bg-blue-500 transition-colors"
+      onClick={navigateToReviewRequest}
+      data-test-id="request-review-link"
+    >
+      <div className="flex gap-2 items-center">
+        <Avatar person={author} size="tiny" />
+        <div className="font-medium text-white-1 capitalize">Request for Impromptu Review</div>
+      </div>
+      <div className="flex gap-2 items-center text-sm">
+        <FormattedTime time={time} format="short-date-with-weekday-relative" />
+        <Icons.IconArrowRight size={20} />
+      </div>
+    </div>
+  );
+}
+
+function NextReviewScheduleBasedOnPhaseWithNoDueDate({ currentPhase }) {
+  return (
+    <div className="flex gap-2 items-center max-w-lg text-white-2">
+      The next review is scheduled for when the {currentPhase.phase} phase is completed. Currently, no due date is set.
+    </div>
+  );
+}
+
+function NextReviewScheduleBasedOnPhaseWithDueDate({ currentPhase }) {
+  return (
+    <div className="flex gap-2 items-center max-w-lg text-white-2">
+      The next review is scheduled for <FormattedTime time={currentPhase.dueTime} format="short-date" /> when the{" "}
+      {currentPhase.phase} phase is scheduled to end.
+    </div>
+  );
 }
