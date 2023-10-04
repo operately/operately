@@ -128,3 +128,7 @@ export function usePerson(id: string) {
     variables: { id },
   });
 }
+
+export function firstName(person: Person) {
+  return person.fullName.split(" ")[0];
+}

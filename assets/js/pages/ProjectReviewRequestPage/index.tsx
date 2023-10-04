@@ -64,7 +64,7 @@ export function Page() {
 
       <Paper.Body>
         <div className="flex flex-col items-center">
-          <div className="text-white-1 text-2xl font-extrabold">Impromptu Review Request</div>
+          <div className="text-white-1 text-3xl font-extrabold">Impromptu Review Request</div>
           <div className="flex gap-0.5 flex-row items-center mt-1 text-white-1 font-medium">
             <div className="flex items-center gap-2">
               <Avatar person={request.author} size="tiny" /> {request.author.fullName}
@@ -74,18 +74,32 @@ export function Page() {
           </div>
         </div>
 
-        <Spacer />
+        <Spacer size={4} />
 
-        <div className="text-lg border-y border-shade-1 py-3">
-          <RichContent jsonContent={request.content} />
+        <RichContent jsonContent={request.content} className="text-white-1 text-lg" />
+
+        <Separator spaceTop={4} spaceBottom={4} />
+
+        <div className="flex justify-center">
+          <Button variant="success" data-test-id="write-review-button" size="lg">
+            Start Project Review -&gt;
+          </Button>
         </div>
-
-        <Spacer size={2} />
-
-        <Button variant="success" data-test-id="write-review-button">
-          Write Review
-        </Button>
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function Separator({ spaceTop, spaceBottom }) {
+  const line = <div className="border-t border-dark-5 w-full" />;
+  const top = spaceTop ? <Spacer size={spaceTop} /> : null;
+  const bottom = spaceBottom ? <Spacer size={spaceBottom} /> : null;
+
+  return (
+    <>
+      {top}
+      {line}
+      {bottom}
+    </>
   );
 }

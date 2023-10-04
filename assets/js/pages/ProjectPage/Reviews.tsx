@@ -4,6 +4,7 @@ import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Icons from "@tabler/icons-react";
 import * as Project from "@/graphql/Projects";
+import * as People from "@/graphql/People";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -155,7 +156,7 @@ function NextReviewScheduleBasedOnRequest({ project, reviewRequest }) {
     >
       <div className="flex gap-2 items-center">
         <Avatar person={author} size="tiny" />
-        <div className="font-medium text-white-1 capitalize">Request for Impromptu Review</div>
+        <div className="font-medium text-white-1">{People.firstName(author)} requested an Impromptu Review</div>
       </div>
       <div className="flex gap-2 items-center text-sm">
         <FormattedTime time={time} format="short-date-with-weekday-relative" />

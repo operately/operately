@@ -6,7 +6,7 @@ export * from "./IconButton";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";
-  size?: "small" | "base" | "tiny";
+  size?: "small" | "base" | "tiny" | "lg";
   linkTo?: string;
   disabled?: boolean;
   submit?: boolean;
@@ -17,6 +17,7 @@ const sizes = {
   tiny: "px-2.5 py-1 text-xs gap-1",
   small: "px-3 py-1.5 text-xs gap-1",
   base: "px-3 py-1.5 text-sm gap-2",
+  lg: "px-6 py-2 text gap-2",
 };
 
 const variants = {
@@ -31,10 +32,10 @@ const variants = {
 
   success: {
     base: "flex items-center transition-all duration-100",
-    color: "text-white-1/100 bg-indigo-500",
+    color: "text-dark-2 bg-green-400",
     text: "font-medium",
-    border: "rounded border border-indigo-400",
-    hover: "hover:text-white-1 hover:border-white-2",
+    border: "rounded",
+    hover: "hover:bg-green-400/90 transition-all duration-400",
     disabled: "cursor-not-allowed text-white-1/60 bg-indigo-500/80",
   },
 

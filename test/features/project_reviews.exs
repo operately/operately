@@ -25,7 +25,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.click(testid: "request-review-button")
     |> UI.fill_rich_text("The project was paused for a while, let's review it before we continue.")
     |> UI.click(testid: "request-review-submit-button")
-    |> UI.assert_text("Request For Impromptu Review")
+    |> UI.assert_text(first_name(reviewer) <> " requested an Impromptu Review")
     |> UI.click(testid: "request-review-link")
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
   end
@@ -76,5 +76,9 @@ defmodule Operately.Features.ProjectReviewsTest do
     Operately.Projects.list_project_contributors(project)
     |> Enum.filter(fn contributor -> contributor.role == role end)
     |> Enum.map(&Operately.Projects.delete_contributor(&1))
+  end
+
+  defp first_name(person) do
+    String.split(person.full_name, " ") |> List.first()
   end
 end
