@@ -43,19 +43,6 @@ defmodule Operately.UpdatesFixtures do
   end
 
   def rich_text_fixture(message) do
-    %{
-      type: :doc,
-      content: [
-        %{
-          type: :paragraph,
-          content: [
-            %{
-              type: :text,
-              text: message
-            }
-          ]
-        }
-      ]
-    }
+    Operately.Support.RichText.rich_text(message)
   end
 end
