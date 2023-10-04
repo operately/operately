@@ -115,7 +115,7 @@ function Form({ company, me }) {
           />
         )}
 
-        <Forms.RadioGroup
+        <Forms.RadioGroupWithLabel
           label="Who can see this project?"
           name="visibility"
           defaultValue="everyone"
@@ -133,7 +133,7 @@ function Form({ company, me }) {
             value="invite"
             data-test-id="invite-only"
           />
-        </Forms.RadioGroup>
+        </Forms.RadioGroupWithLabel>
       </div>
 
       <Forms.SubmitArea>

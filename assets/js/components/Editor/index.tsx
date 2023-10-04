@@ -14,6 +14,8 @@ import Blob, { isUploadInProgress } from "./Blob";
 
 export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
+export type Editor = TipTap.Editor;
+
 interface Person {
   id: string;
   fullName: string;
