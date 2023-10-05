@@ -2,9 +2,9 @@ defmodule OperatelyWeb.GraphQL.Types.UpdateContentReview do
   use Absinthe.Schema.Notation
 
   object :update_content_review do
-    field :message, non_null(:string) do
+    field :survey, non_null(:string) do
       resolve fn update, _, _ ->
-        {:ok, Jason.encode!(update.content["message"])}
+        {:ok, Jason.encode!(update.content["survey"])}
       end
     end
 

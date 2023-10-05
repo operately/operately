@@ -10,8 +10,7 @@ import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Paper from "@/components/PaperContainer";
 import * as Feed from "@/features/feed";
 
-import * as PhaseChange from "@/features/phase_change";
-import { AnswersView } from "@/features/phase_change/activity_view";
+import { SurveyAnswers } from "@/components/Survey";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -66,6 +65,9 @@ export function Page() {
 
   const addReactionForm = useAddReaction(review.id, "update", refetch);
 
+  const previousPhase = content.previousPhase;
+  const newPhase = content.newPhase;
+
   return (
     <Paper.Root key={fetchVersion}>
       <Paper.Navigation>
@@ -92,7 +94,17 @@ export function Page() {
         </div>
 
         <Spacer size={4} />
-        <Content project={project} review={review} />
+
+        <div className="text-white-1">The project has moved to a new phase</div>
+        <div className="flex items-center gap-1 font-bold">
+          <span className="text-white-1 capitalize">{previousPhase}</span>
+          <Icons.IconArrowRight size={16} />
+          <span className="text-white-1 capitalize">{newPhase}</span>
+        </div>
+
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+
+        <Content review={review} />
         <Spacer size={4} />
 
         <Feed.Reactions reactions={review.reactions} size={20} form={addReactionForm} />
@@ -106,19 +118,11 @@ export function Page() {
   );
 }
 
-function Content({ project, review }: { project: Projects.Project; review: Updates.Update }) {
+function Content({ review }: { review: Updates.Update }) {
   const content = review.content as UpdateContent.Review;
+  const answers = JSON.parse(content.survey)["answers"];
 
-  const handler = PhaseChange.handler(
-    project,
-    content.previousPhase as Projects.ProjectPhase,
-    content.newPhase as Projects.ProjectPhase,
-  );
-
-  const answers = JSON.parse(review.message);
-  const questions = handler.questions();
-
-  return <AnswersView questions={questions} answers={answers} />;
+  return <SurveyAnswers answers={answers} />;
 }
 
 function capitalCase(str: string) {

@@ -17,7 +17,8 @@ config :operately, Operately.Repo,
   database: "operately_test",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 10
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
@@ -58,3 +59,6 @@ config :junit_formatter,
   include_file_line?: true
 
 config :operately, notification_email: "test@localhost"
+config :operately, :sandbox, Ecto.Adapters.SQL.Sandbox
+
+config :wallaby, otp_app: :operately

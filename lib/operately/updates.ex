@@ -76,7 +76,7 @@ defmodule Operately.Updates do
         author_id: author.id,
         title: "",
         type: :review,
-        content: Operately.Updates.Types.Review.build(content, previous_phase, new_phase)
+        content: Operately.Updates.Types.Review.build(content["survey"], content["previousPhase"], content["newPhase"])
       })
 
       {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)

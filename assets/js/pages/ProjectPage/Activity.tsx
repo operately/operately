@@ -18,10 +18,10 @@ import Button from "@/components/Button";
 
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
-import * as PhaseChange from "@/features/phase_change";
 import * as Feed from "@/features/feed";
 
 import { MilestoneLink } from "@/routes/Links";
+import { SurveyAnswers } from "@/components/Survey";
 
 interface ActivityContextDescriptor {
   project: Projects.Project;
@@ -853,21 +853,91 @@ function SmallContainer({ time, children }) {
 
 function Review({ project, update }: { project: Projects.Project; update: Updates.Update }) {
   const content = update.content as UpdateContent.Review;
+  const previousPhase = content.previousPhase;
+  const newPhase = content.newPhase;
 
-  const handler = PhaseChange.handler(
-    project,
-    content.previousPhase as Projects.ProjectPhase,
-    content.newPhase as Projects.ProjectPhase,
-  );
+  const survey = content.survey && JSON.parse(content.survey);
+  if (!survey) return null;
 
-  const answers = JSON.parse(update.message);
-  const Message = handler.activityMessage(answers);
+  const answers = survey.answers;
+  if (!answers) return null;
 
   return (
     <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
-      <Message />
+      <ReviewTitle previousPhase={previousPhase} newPhase={newPhase} />
+      <SurveyAnswers answers={answers} />
     </BigContainer>
   );
+}
+
+function ReviewTitle({ previousPhase, newPhase }) {
+  if (newPhase === "completed") {
+    return (
+      <>
+        <div className="text-white-1">The project was completed.</div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Retrospective</div>
+      </>
+    );
+  }
+
+  if (newPhase === "canceled") {
+    return (
+      <>
+        <div className="text-white-1">The project was canceled.</div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Retrospective</div>
+      </>
+    );
+  }
+
+  if (newPhase === "paused") {
+    return (
+      <>
+        <div className="text-white-1">The project was paused.</div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  if (previousPhase === "paused") {
+    return (
+      <>
+        <div className="text-white-1">
+          The project was unpaused and moved to the <span className="font-bold capitalize">{newPhase}</span> phase.
+        </div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  const phases = ["planning", "execution", "control", "completed", "canceled"];
+  const oldIndex = phases.indexOf(previousPhase);
+  const newIndex = phases.indexOf(newPhase);
+
+  if (oldIndex < newIndex) {
+    return (
+      <>
+        <div className="text-white-1">
+          The project has moved to the <span className="font-bold capitalize">{newPhase}</span> phase.
+        </div>
+
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  if (oldIndex > newIndex) {
+    return (
+      <>
+        <div className="text-white-1">
+          The project reverted to the <span className="font-bold capitalize">{newPhase}</span> phase.
+        </div>
+
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  throw new Error("Unknown phase transition: " + previousPhase + " -> " + newPhase);
 }
 
 function SectionTitle() {

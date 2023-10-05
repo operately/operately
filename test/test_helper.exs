@@ -6,4 +6,3 @@ Application.put_env(:wallaby, :screenshot_on_failure, true)
 
 ExUnit.configure(formatters: [JUnitFormatter, ExUnit.CLIFormatter])
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(Operately.Repo, :manual)

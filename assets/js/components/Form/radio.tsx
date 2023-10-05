@@ -10,7 +10,7 @@ interface RadioGroupContextDescriptor {
 
 const RadioContext = React.createContext<RadioGroupContextDescriptor | null>(null);
 
-export function RadioGroup({ label, name, defaultValue, onChange, children }) {
+export function RadioGroup({ name, defaultValue, onChange, children }) {
   const [checked, setChecked] = React.useState<string | null>(defaultValue);
 
   const changeChecked = (value: string) => {
@@ -18,14 +18,17 @@ export function RadioGroup({ label, name, defaultValue, onChange, children }) {
     onChange(value);
   };
 
-  return (
-    <div>
-      <RadioContext.Provider value={{ name, checked, changeChecked }}>
-        <label className="font-bold mb-4 block">{label}</label>
+  return <RadioContext.Provider value={{ name, checked, changeChecked }}>{children}</RadioContext.Provider>;
+}
 
+export function RadioGroupWithLabel({ label, name, defaultValue, onChange, children }) {
+  return (
+    <RadioGroup name={name} defaultValue={defaultValue} onChange={onChange}>
+      <div>
+        <label className="font-bold mb-4 block">{label}</label>
         <div className="flex flex-col gap-2">{children}</div>
-      </RadioContext.Provider>
-    </div>
+      </div>
+    </RadioGroup>
   );
 }
 
@@ -59,14 +62,13 @@ function InputElement({ value, ...props }) {
       type="radio"
       className={classnames(
         "before:content[''] peer relative h-4 w-4 cursor-pointer appearance-none",
-        "rounded-full border border-white-2 text-white-1 transition-all",
-        "hover:border-white-2 hover:border-y-[2px] hover:border-x-[2px]",
-        "checked:border-white-1 checked:border-y-[5px] checked:border-x-[5px]",
-        "checked:hover:border-white-1 checked:hover:border-y-[4px] checked:hover:border-x-[4px]",
-        "focus:outline-none focus:checked:border-white-1 focus:checked:border-y-[5px] focus:checked:border-x-[5px] focus:shadow-white",
+        "rounded-full border border-shade-3 bg-shade-1 text-white-1 transition-all",
+        "hover:border-blue-400 hover:border-y-[2px] hover:border-x-[2px]",
+        "checked:border-blue-400 checked:border-y-[3px] checked:border-x-[3px] checked:bg-shade-1",
+        "checked:hover:border-blue-400 checked:hover:border-y-[4px] checked:hover:border-x-[4px] checked:hover:bg-shade-1",
+        "focus:outline-none focus:checked:border-blue-400 focus:checked:border-y-[5px] focus:checked:border-x-[5px] focus:shadow-white focus:checked:bg-shade-1",
       )}
       style={{
-        background: "transparent",
         backgroundImage: "none",
         boxShadow: "none",
       }}
