@@ -18,10 +18,10 @@ import Button from "@/components/Button";
 
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
-import * as PhaseChange from "@/features/phase_change";
 import * as Feed from "@/features/feed";
 
 import { MilestoneLink } from "@/routes/Links";
+import { SurveyAnswers } from "@/components/Survey";
 
 interface ActivityContextDescriptor {
   project: Projects.Project;
@@ -853,19 +853,26 @@ function SmallContainer({ time, children }) {
 
 function Review({ project, update }: { project: Projects.Project; update: Updates.Update }) {
   const content = update.content as UpdateContent.Review;
+  const previousPhase = content.previousPhase;
+  const newPhase = content.newPhase;
 
-  const handler = PhaseChange.handler(
-    project,
-    content.previousPhase as Projects.ProjectPhase,
-    content.newPhase as Projects.ProjectPhase,
-  );
+  const survey = content.survey && JSON.parse(content.survey);
+  if (!survey) return null;
 
-  const answers = JSON.parse(update.message);
-  const Message = handler.activityMessage(answers);
+  const answers = survey.answers;
+  if (!answers) return null;
 
   return (
     <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
-      <Message />
+      <div className="text-white-1">The project has moved to a new phase</div>
+      <div className="flex items-center gap-1 font-bold">
+        <span className="text-white-1 capitalize">{previousPhase}</span>
+        <Icons.IconArrowRight size={16} />
+        <span className="text-white-1 capitalize">{newPhase}</span>
+      </div>
+
+      <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      <SurveyAnswers answers={answers} />
     </BigContainer>
   );
 }

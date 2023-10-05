@@ -80,7 +80,9 @@ function Form({ project, oldPhase, newPhase }): JSX.Element {
           content: JSON.stringify({
             previousPhase: oldPhase,
             newPhase: newPhase,
-            survey: answers,
+            survey: {
+              answers: answers,
+            },
           }),
         },
       },

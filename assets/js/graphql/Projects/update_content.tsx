@@ -25,7 +25,7 @@ export const FRAGMENT = `
     }
 
     ... on UpdateContentReview {
-      message
+      survey
       previousPhase
       newPhase
     }
@@ -172,7 +172,7 @@ export interface ProjectContributorRemoved {
 }
 
 export interface Review {
-  message: string;
+  survey: string;
   previousPhase: string;
   newPhase: string;
 }

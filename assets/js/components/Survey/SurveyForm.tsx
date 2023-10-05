@@ -46,6 +46,7 @@ export function SurveyForm({ questions, onSubmit, onCancel, loading }: SurveyFor
             id: s.id,
             type: "yes-no-with-comments",
             title: s.title,
+            question: s.question,
             answer: s.answer === "yes" ? "yes" : "no",
             comments: JSON.stringify(s.commentsEditor.getJSON())!,
           } as YesNoWithCommentsAnswer;
@@ -53,6 +54,8 @@ export function SurveyForm({ questions, onSubmit, onCancel, loading }: SurveyFor
           return {
             id: s.id,
             type: "text-area",
+            title: s.title,
+            question: s.question,
             answer: JSON.stringify(s.answerEditor.getJSON())!,
           } as TextAreaAnswer;
       }
