@@ -136,7 +136,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     reviewer = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
     change_reviewer(state.project, reviewer)
 
-    {:ok, request} = Operately.Projects.create_review_request(reviewer, %{
+    {:ok, _} = Operately.Projects.create_review_request(reviewer, %{
       project_id: state.project.id,
       content: rich_text("The project was paused for a while, let's review it before we continue.")
     })
@@ -145,34 +145,14 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> visit_page(state.project)
     |> UI.click(testid: "request-review-link")
     |> UI.click(testid: "submit-review-button")
-
-    state
-    |> UI.find(testid: "section-schedule")
-    |> UI.click(testid: "schedule-yes")
-    |> UI.fill(testid: "schedule-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
-
-    state
-    |> UI.find(testid: "section-costs")
-    |> UI.click(testid: "costs-yes")
-    |> UI.fill(testid: "costs-comments", with: "Yes, the planning phase was completed within budget.")
-
-    state
-    |> UI.find(testid: "section-deliverables")
-    |> UI.fill(testid: "deliverables-answer", with: "- Deliverable 1\n- Deliverable 2\n- Deliverable 3")
-
-    state
-    |> UI.find(testid: "section-team")
-    |> UI.click(testid: "team-yes")
-    |> UI.fill(testid: "team-comments", with: "The team was not staffed with suitable roles because of X, Y, and Z.")
-
-    state
-    |> UI.find(testid: "section-risks")
-    |> UI.click(testid: "risks-yes")
-    |> UI.fill(testid: "risks-comments", with: "The project was not completed on schedule because of X, Y, and Z.")
-
-    state
-    |> UI.scroll_to(testid: "submit")
-    |> UI.click(testid: "submit")
+    |> fill_survey([
+      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"costs", "yes", "Yes, the execution phase was completed within budget."},
+      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
+      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
+    ])
+    |> UI.assert_text("The review was submitted")
   end
 
   #

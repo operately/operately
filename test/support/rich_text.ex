@@ -8,7 +8,7 @@ defmodule Operately.Support.RichText do
           content: [
             %{
               type: :text,
-              text: message
+              text: text
             }
           ]
         }

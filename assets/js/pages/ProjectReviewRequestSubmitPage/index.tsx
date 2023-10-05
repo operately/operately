@@ -7,10 +7,14 @@ import * as ProjectReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 import * as Me from "@/graphql/Me";
 import * as Paper from "@/components/PaperContainer";
+import * as Updates from "@/graphql/Projects/updates";
 
 import { Spacer } from "@/components/Spacer";
 
 import { useDocumentTitle } from "@/layouts/header";
+
+import { SurveyForm, Answer, yesNoQuestion } from "@/components/Survey";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -61,7 +65,51 @@ export function Page() {
         <div className="text-white-1 text-3xl font-extrabold">Project Review</div>
 
         <Spacer size={4} />
+
+        <Form project={project} reviewRequest={request} />
       </Paper.Body>
     </Paper.Root>
+  );
+}
+
+function Form({ project, reviewRequest }): JSX.Element {
+  const navigateToProject = useNavigateTo(`/projects/${project.id}`);
+
+  const questions = [
+    yesNoQuestion("schedule", "Schedule", `Is the project on schedule?`),
+    yesNoQuestion("costs", "Costs", `Is the project within budget?`),
+    yesNoQuestion("team", "Team", "Is the team staffed with suitable roles?"),
+    yesNoQuestion("risks", "Risks", "Are there any outstanding project risks?"),
+  ];
+
+  const [post, { loading }] = Updates.usePostUpdateMutation({
+    onCompleted: () => {
+      navigateToProject();
+    },
+  });
+
+  const handleSubmit = (answers: Answer[]) => {
+    post({
+      variables: {
+        input: {
+          updatableType: "project",
+          updatableId: project.id,
+          messageType: "review",
+          phase: project.phase,
+          reviewRequestID: reviewRequest.id,
+          content: JSON.stringify({
+            survey: {
+              answers: answers,
+            },
+          }),
+        },
+      },
+    });
+  };
+
+  return (
+    <div className="mt-8">
+      <SurveyForm questions={questions} onSubmit={handleSubmit} onCancel={navigateToProject} loading={loading} />
+    </div>
   );
 }
