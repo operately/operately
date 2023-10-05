@@ -864,17 +864,80 @@ function Review({ project, update }: { project: Projects.Project; update: Update
 
   return (
     <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
-      <div className="text-white-1">The project has moved to a new phase</div>
-      <div className="flex items-center gap-1 font-bold">
-        <span className="text-white-1 capitalize">{previousPhase}</span>
-        <Icons.IconArrowRight size={16} />
-        <span className="text-white-1 capitalize">{newPhase}</span>
-      </div>
-
-      <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      <ReviewTitle previousPhase={previousPhase} newPhase={newPhase} />
       <SurveyAnswers answers={answers} />
     </BigContainer>
   );
+}
+
+function ReviewTitle({ previousPhase, newPhase }) {
+  if (newPhase === "completed") {
+    return (
+      <>
+        <div className="text-white-1">The project was completed.</div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Retrospective</div>
+      </>
+    );
+  }
+
+  if (newPhase === "canceled") {
+    return (
+      <>
+        <div className="text-white-1">The project was canceled.</div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Retrospective</div>
+      </>
+    );
+  }
+
+  if (newPhase === "paused") {
+    return (
+      <>
+        <div className="text-white-1">The project was paused.</div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  if (previousPhase === "paused") {
+    return (
+      <>
+        <div className="text-white-1">
+          The project was unpaused and moved to the <span className="font-bold capitalize">{newPhase}</span> phase.
+        </div>
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  const phases = ["planning", "execution", "control", "completed", "canceled"];
+  const oldIndex = phases.indexOf(previousPhase);
+  const newIndex = phases.indexOf(newPhase);
+
+  if (oldIndex < newIndex) {
+    return (
+      <>
+        <div className="text-white-1">
+          The project has moved to the <span className="font-bold capitalize">{newPhase}</span> phase.
+        </div>
+
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  if (oldIndex > newIndex) {
+    return (
+      <>
+        <div className="text-white-1">
+          The project reverted to the <span className="font-bold capitalize">{newPhase}</span> phase.
+        </div>
+
+        <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
+      </>
+    );
+  }
+
+  throw new Error("Unknown phase transition: " + previousPhase + " -> " + newPhase);
 }
 
 function SectionTitle() {

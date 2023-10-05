@@ -57,13 +57,16 @@ function retrospectiveQuestions() {
 }
 
 function pauseQuestions() {
-  return [textAreaQuestion("reason", "Reason", "Why was the project paused?")];
+  return [
+    textAreaQuestion("why-are-you-pausing", "Why are you pausing this project?", ""),
+    textAreaQuestion("when-will-you-resume", "Why will you resume this project?", ""),
+  ];
 }
 
 function restartQuestions() {
-  return [textAreaQuestion("why-are-you-restarting", "", "Why are you restarting this project?")];
+  return [textAreaQuestion("why-are-you-restarting", "Why are you restarting this project?", "")];
 }
 
 function revertPhaseQuestions(_oldPhase: string, newPhase: string) {
-  return [textAreaQuestion("why-are-you-switching-back", "", "Why are you switching back to " + newPhase + "?")];
+  return [textAreaQuestion("why-are-you-switching-back", "Why are you switching back to " + newPhase + "?", "")];
 }

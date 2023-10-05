@@ -65,13 +65,13 @@ export function SurveyForm({ questions, onSubmit, onCancel, loading }: SurveyFor
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} data-test-id="submit-area">
       {states.map((s) => (
         <SurveyQuestion key={s.id} state={s} />
       ))}
 
       <div className="flex items-center gap-2 mt-8">
-        <Button variant="success" type="submit" disabled={!ready} loading={loading}>
+        <Button variant="success" type="submit" disabled={!ready} loading={loading} data-test-id="submit-button">
           {loading ? "Submitting..." : ready ? "Submit" : "Uploading..."}
         </Button>
 
@@ -97,7 +97,7 @@ function SurveyQuestion({ state }: { state: State }): JSX.Element {
 
 function YesNoQuestionWithComments({ state }: { state: YesNoWithCommentsState }) {
   const id = state.id;
-  const testId = "question" + id;
+  const testId = "question-" + id;
 
   if (!state.commentsEditor) return <></>;
 
@@ -123,7 +123,7 @@ function YesNoQuestionWithComments({ state }: { state: YesNoWithCommentsState })
 }
 
 function TextAreaQuestion({ state }: { state: TextAreaState }) {
-  const testId = "question" + state.id;
+  const testId = "question-" + state.id;
 
   if (!state.answerEditor) return <></>;
 

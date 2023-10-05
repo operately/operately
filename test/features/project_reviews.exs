@@ -30,6 +30,108 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
   end
 
+  feature "changing phase from pending -> execution and filling in the review", state do
+    state 
+    |> visit_page(state.project)
+    |> initiate_phase_change(:execution)
+    |> fill_survey([
+      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"costs", "yes", "Yes, the execution phase was completed within budget."},
+      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
+      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
+    ])
+
+    state
+    |> UI.assert_text("The project has moved to the Execution phase")
+  end
+
+  feature "changing phase from execution -> control and filling in the review", state do
+    change_phase(state.project, :execution)
+
+    state 
+    |> visit_page(state.project)
+    |> initiate_phase_change(:control)
+    |> fill_survey([
+      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"costs", "yes", "Yes, the execution phase was completed within budget."},
+      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
+      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
+    ])
+
+    state
+    |> UI.assert_text("The project has moved to the Control phase")
+  end
+
+  feature "changing phase from control -> completed and filling in a retrospective", state do
+    change_phase(state.project, :control)
+
+    state
+    |> visit_page(state.project)
+    |> initiate_phase_change(:completed)
+    |> fill_survey([
+      {"what-went-well", "The project was completed on schedule."},
+      {"what-could-be-better", "The project could have been completed on budget."},
+      {"what-we-learned", "We learned that we need to improve our budgeting process."},
+    ])
+
+    state
+    |> UI.assert_text("The project was completed")
+  end
+
+  feature "changing phase from control -> canceled and filling in a retrospective", state do
+    change_phase(state.project, :control)
+
+    state
+    |> visit_page(state.project)
+    |> initiate_phase_change(:canceled)
+    |> fill_survey([
+      {"what-went-well", "The project was completed on schedule."},
+      {"what-could-be-better", "The project could have been completed on budget."},
+      {"what-we-learned", "We learned that we need to improve our budgeting process."},
+    ])
+
+    state
+    |> UI.assert_text("The project was canceled")
+  end
+
+  feature "pausing a project", state do
+    state
+    |> visit_page(state.project)
+    |> initiate_phase_change(:paused)
+    |> fill_survey([
+      {"why-are-you-pausing", "We are pausing the project because of X, Y, and Z."},
+      {"when-will-you-resume", "We will resume the project on X date."},
+    ])
+    |> UI.assert_text("The project was paused")
+  end
+
+  feature "changing phase from control -> planning and filling in a the questions", state do
+    change_phase(state.project, :control)
+
+    state
+    |> visit_page(state.project)
+    |> initiate_phase_change(:planning)
+    |> fill_survey([
+      {"why-are-you-switching-back", "We are switching back to the planning phase because of X, Y, and Z."}
+    ])
+    |> UI.assert_text("The project reverted to the Planning phase")
+  end
+
+  feature "changing phase from completed -> planning and filling in a the questions", state do
+    change_phase(state.project, :completed)
+
+    state
+    |> visit_page(state.project)
+    |> initiate_phase_change(:planning)
+    |> fill_survey([
+      {"why-are-you-restarting", "We are restarting the project because of X, Y, and Z."}
+    ])
+    |> UI.assert_text("The project reverted to the Planning phase")
+  end
+
+
   #
   # Helpers
   #
@@ -80,5 +182,36 @@ defmodule Operately.Features.ProjectReviewsTest do
 
   defp first_name(person) do
     String.split(person.full_name, " ") |> List.first()
+  end
+
+  defp fill_survey(state, answers) do
+    Enum.each(answers, fn answer ->
+      case answer do
+        {question, answer, comment} ->
+          state
+          |> UI.find(testid: "question-#{question}")
+          |> UI.click(testid: "question-#{question}-#{answer}")
+          |> UI.fill_rich_text(comment)
+
+        {question, answer} ->
+          state
+          |> UI.find(testid: "question-#{question}")
+          |> UI.fill_rich_text(answer)
+      end
+    end)
+
+    state
+    |> UI.scroll_to(testid: "submit-area")
+    |> UI.click(testid: "submit-button")
+  end
+
+  defp change_phase(project, phase) do
+    {:ok, _} = Operately.Projects.update_project(project, %{phase: phase})
+  end
+
+  defp initiate_phase_change(state, phase) do
+    state
+    |> UI.click(testid: "phase-selector")
+    |> UI.click(testid: "phase-#{phase}")
   end
 end
