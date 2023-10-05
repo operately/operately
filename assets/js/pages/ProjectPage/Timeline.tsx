@@ -461,7 +461,7 @@ function Phase() {
   const navigate = useNavigate();
 
   const handlePhaseChange = (phase: string) => {
-    navigate(`/projects/${project.id}/updates/new?messageType=phase_change&phase=${phase}`);
+    navigate(`/projects/${project.id}/phase_change/${phase}`);
   };
 
   return (
