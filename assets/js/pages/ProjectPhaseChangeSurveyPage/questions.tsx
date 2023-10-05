@@ -35,7 +35,7 @@ export function getPhaseChangeQuestions(oldPhase: string, newPhase: string) {
     throw new Error(`No phase change questions for ${key}`);
   }
 
-  return mapper(oldPhase);
+  return mapper(oldPhase, newPhase);
 }
 
 function phaseCompletedQuestions(oldPhase: string) {

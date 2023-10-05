@@ -10,7 +10,9 @@ import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 
 import { SurveyForm, Answer } from "@/components/Survey";
+
 import { getPhaseChangeQuestions } from "./questions";
+import { getTitle } from "./titles";
 
 export async function loader({ params }) {
   let res = await client.query({
@@ -52,7 +54,7 @@ function Title({ oldPhase, newPhase }) {
         {oldPhase} <Icons.IconArrowRight size={16} /> {newPhase}
       </div>
       <div className="text-4xl font-bold mx-auto">
-        <span className="capitalize">Project Review</span>
+        <span className="capitalize">{getTitle(oldPhase, newPhase)}</span>
       </div>
     </div>
   );
