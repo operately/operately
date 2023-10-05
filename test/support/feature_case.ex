@@ -1,20 +1,13 @@
 defmodule Operately.FeatureCase do
-  @moduledoc """
-  This module defines the test case to be used by
-  features inside of test/features.
+  use ExUnit.CaseTemplate
 
-  Such tests rely on the database being reset between
-  each test. This is done by using the `async: false`
-  option in the `use Cabbage.Feature` macro.
-  """
-
-  defmacro __using__(_opts) do
+  defmacro __using__(_) do
     quote do
+      use ExUnit.Case, async: false
+      use Wallaby.Feature
+
       alias Operately.Repo
       alias Operately.FeatureCase.UI
-
-      use Operately.DataCase, async: false
-      use Wallaby.Feature, async: false
 
       setup data do
         Wallaby.Browser.resize_window(data.session, 1920, 2000)
