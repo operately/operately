@@ -5,6 +5,7 @@ defmodule Operately.FeatureCase do
     quote do
       use ExUnit.Case, async: false
       use Wallaby.Feature
+      use Bamboo.Test, shared: true
 
       alias Operately.Repo
       alias Operately.FeatureCase.UI
@@ -232,6 +233,10 @@ defmodule Operately.FeatureCase do
       end)
 
       state
+    end
+
+    def assert_email_sent(_state, title, to: to) do
+      Bamboo.Test.assert_email_delivered_with(to: [{nil, to}], subject: title)
     end
 
     #

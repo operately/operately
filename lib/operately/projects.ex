@@ -159,6 +159,10 @@ defmodule Operately.Projects do
     Repo.one(query)
   end
 
+  def get_champion(project) do
+    get_person_by_role(project, :champion)
+  end
+
   def list_project_contributors(project) do
     query = (from c in Contributor, where: c.project_id == ^project.id)
     
@@ -371,11 +375,15 @@ defmodule Operately.Projects do
   def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
 
   def create_review_request(author, attrs) do
-    attrs = Map.merge(attrs, %{author_id: author.id})
+    Repo.transaction(fn ->
+      attrs = Map.merge(attrs, %{author_id: author.id})
 
-    %ReviewRequest{}
-    |> ReviewRequest.changeset(attrs)
-    |> Repo.insert()
+      {:ok, request} = %ReviewRequest{} |> ReviewRequest.changeset(attrs) |> Repo.insert()
+
+      {:ok, _} = OperatelyEmail.ProjectReviewRequestEmail.new(%{request_id: request.id}) |> Oban.insert()
+
+      request
+    end)
   end
 
   def update_review_request(%ReviewRequest{} = review_request, attrs) do

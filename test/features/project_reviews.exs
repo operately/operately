@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectReviewsTest do
   use Operately.FeatureCase
 
+  alias Operately.People.Person
+
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.Support.RichText
@@ -29,6 +31,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text(first_name(reviewer) <> " requested an Impromptu Review")
     |> UI.click(testid: "request-review-link")
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
+    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(reviewer)} requested a review for #{state.project.name}", to: champion.email)
   end
 
   feature "submit a requested review", state do
