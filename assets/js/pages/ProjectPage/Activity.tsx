@@ -864,13 +864,44 @@ function Review({ project, update }: { project: Projects.Project; update: Update
 
   return (
     <BigContainer update={update} person={update.author} time={update.insertedAt} project={project}>
-      <ReviewTitle previousPhase={previousPhase} newPhase={newPhase} />
+      <ReviewTitle update={update} previousPhase={previousPhase} newPhase={newPhase} />
       <SurveyAnswers answers={answers} />
     </BigContainer>
   );
 }
 
-function ReviewTitle({ previousPhase, newPhase }) {
+function ReviewTitle({ update, previousPhase, newPhase }) {
+  const content = update.content as UpdateContent.Review;
+  const reason = content.reviewReason;
+
+  if (reason === "review_request") {
+    return <ReviewTitleReviewRequest />;
+  }
+
+  if (reason === "phase_change") {
+    return <ReviewTitlePhaseChange previousPhase={previousPhase} newPhase={newPhase} />;
+  }
+
+  throw new Error("Unknown review reason: " + reason);
+}
+
+function ReviewTitleReviewRequest() {
+  return (
+    <>
+      <div className="mt-4 border-b border-dark-8 uppercase text-sm pb-2 mb-2">PROJECT REVIEW</div>
+    </>
+  );
+}
+
+function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
+  if (previousPhase === newPhase) {
+    return (
+      <>
+        <div className="mt-4 border-b border-dark-8 uppercase text-sm pb-2 mb-2">PROJECT REVIEW</div>
+      </>
+    );
+  }
+
   if (newPhase === "completed") {
     return (
       <>

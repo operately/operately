@@ -8,6 +8,8 @@ export const FRAGMENT = `
     content
     insertedAt
     updatedAt
+    status
+    reviewId
     author ${People.FRAGMENT}
   }
 `;
@@ -30,6 +32,8 @@ export interface ReviewRequest {
   insertedAt: string;
   updatedAt: string;
   author: People.Person;
+  status: "pending" | "completed";
+  reviewId: string | null;
 }
 
 export const GET_REQUEST = gql`

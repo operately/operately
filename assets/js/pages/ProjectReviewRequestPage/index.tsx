@@ -12,10 +12,13 @@ import Button from "@/components/Button";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+
 import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
+import { Separator } from "@/components/Separator";
 
 import { useDocumentTitle } from "@/layouts/header";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -81,25 +84,30 @@ export function Page() {
         <Separator spaceTop={4} spaceBottom={4} />
 
         <div className="flex justify-center">
-          <Button variant="success" data-test-id="write-review-button" size="lg">
-            Start Project Review -&gt;
-          </Button>
+          {request.status === "pending" && <StartReviewButton project={project} request={request} />}
+          {request.status === "completed" && <ReviewLink project={project} request={request} />}
         </div>
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Separator({ spaceTop, spaceBottom }) {
-  const line = <div className="border-t border-dark-5 w-full" />;
-  const top = spaceTop ? <Spacer size={spaceTop} /> : null;
-  const bottom = spaceBottom ? <Spacer size={spaceBottom} /> : null;
+function StartReviewButton({ project, request }) {
+  const navigateToSubmitPage = useNavigateTo(`/projects/${project.id}/reviews/request/${request.id}/submit`);
 
   return (
-    <>
-      {top}
-      {line}
-      {bottom}
-    </>
+    <Button variant="success" data-test-id="write-review-button" size="lg" onClick={navigateToSubmitPage}>
+      Start Project Review <Icons.IconArrowRight size={20} />
+    </Button>
+  );
+}
+
+function ReviewLink({ project, request }) {
+  const navigateToReviewPage = useNavigateTo(`/projects/${project.id}/reviews/${request.reviewId}`);
+
+  return (
+    <Button variant="success" data-test-id="write-review-button" size="lg" onClick={navigateToReviewPage}>
+      View Submitted Review <Icons.IconArrowRight size={20} />
+    </Button>
   );
 }

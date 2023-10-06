@@ -66,7 +66,7 @@ defmodule Operately.Updates do
     end)
   end
 
-  def record_review(author, project, new_phase, content) do
+  def record_review(author, project, new_phase, content, review_request_id) do
     Operately.Repo.transaction(fn -> 
       previous_phase = Atom.to_string(project.phase)
 
@@ -76,11 +76,25 @@ defmodule Operately.Updates do
         author_id: author.id,
         title: "",
         type: :review,
-        content: Operately.Updates.Types.Review.build(content["survey"], content["previousPhase"], content["newPhase"])
+        content: Operately.Updates.Types.Review.build(
+          content["survey"], 
+          content["previousPhase"], 
+          content["newPhase"],
+          review_request_id
+        )
       })
+
+      if review_request_id do
+        request = Operately.Projects.get_review_request!(review_request_id)
+        {:ok, _} = Operately.Projects.update_review_request(request, %{
+          status: :completed,
+          update_id: update.id
+        })
+      end
 
       {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)
       {:ok, _} = Operately.Projects.update_project(project, %{phase: new_phase})
+      {:ok, _} = OperatelyEmail.ProjectReviewSubmittedEmail.new(%{review_id: update.id}) |> Oban.insert()
 
       update
     end)

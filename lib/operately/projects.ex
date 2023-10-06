@@ -159,6 +159,14 @@ defmodule Operately.Projects do
     Repo.one(query)
   end
 
+  def get_champion(project) do
+    get_person_by_role(project, :champion)
+  end
+
+  def get_reviewer(project) do
+    get_person_by_role(project, :reviewer)
+  end
+
   def list_project_contributors(project) do
     query = (from c in Contributor, where: c.project_id == ^project.id)
     
@@ -363,15 +371,28 @@ defmodule Operately.Projects do
     Repo.all(from rr in ReviewRequest, where: rr.project_id == ^project.id)
   end
 
+  def list_pending_project_review_requests(project) do
+    Repo.all(from rr in ReviewRequest, where: rr.project_id == ^project.id, where: rr.status == ^:pending)
+  end
+
   def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
   def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
 
   def create_review_request(author, attrs) do
-    attrs = Map.merge(attrs, %{author_id: author.id})
+    Repo.transaction(fn ->
+      attrs = Map.merge(attrs, %{author_id: author.id})
 
-    %ReviewRequest{}
-    |> ReviewRequest.changeset(attrs)
-    |> Repo.insert()
+      result = %ReviewRequest{} |> ReviewRequest.changeset(attrs) |> Repo.insert()
+
+      case result do
+        {:ok, request} ->
+          {:ok, _} = OperatelyEmail.ProjectReviewRequestEmail.new(%{request_id: request.id}) |> Oban.insert()
+
+          request
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
   end
 
   def update_review_request(%ReviewRequest{} = review_request, attrs) do

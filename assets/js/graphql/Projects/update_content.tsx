@@ -28,6 +28,8 @@ export const FRAGMENT = `
       survey
       previousPhase
       newPhase
+      reviewReason
+      reviewRequestId
     }
 
     ... on UpdateContentStatusUpdate {
@@ -175,4 +177,5 @@ export interface Review {
   survey: string;
   previousPhase: string;
   newPhase: string;
+  reviewReason: string;
 }

@@ -1,8 +1,11 @@
 defmodule Operately.Features.ProjectReviewsTest do
   use Operately.FeatureCase
 
+  alias Operately.People.Person
+
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import Operately.Support.RichText
 
   setup session do
     company = company_fixture(%{name: "Test Org"})
@@ -28,6 +31,44 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text(first_name(reviewer) <> " requested an Impromptu Review")
     |> UI.click(testid: "request-review-link")
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
+    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(reviewer)} requested a review for #{state.project.name}", to: champion.email)
+  end
+
+  feature "submit a requested review", state do
+    reviewer = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
+    change_reviewer(state.project, reviewer)
+
+    {:ok, _} = Operately.Projects.create_review_request(reviewer, %{
+      project_id: state.project.id,
+      content: rich_text("The project was paused for a while, let's review it before we continue.")
+    })
+
+    state
+    |> visit_page(state.project)
+    |> UI.click(testid: "request-review-link")
+    |> UI.click(testid: "write-review-button")
+    |> fill_survey([
+      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"costs", "yes", "Yes, the execution phase was completed within budget."},
+      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
+      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+    ])
+
+    # The review is submitted and the user is redirected to the review page
+    state
+    |> UI.assert_text("Impromptu Project Review")
+    |> UI.assert_text("This review was requested by #{first_name(reviewer)}")
+    |> UI.click(testid: "review-request-link")
+    |> UI.assert_text("View Submitted Review")
+
+    # The review request should be marked as completed
+    state
+    |> visit_page(state.project)
+    |> UI.refute_text("Request Review")
+
+    # assert that the reviewew received an email
+    state
+    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.champion)} submitted a review for #{state.project.name}", to: reviewer.email)
   end
 
   feature "changing phase from pending -> execution and filling in the review", state do
@@ -131,7 +172,6 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project reverted to the Planning phase")
   end
 
-
   #
   # Helpers
   #
@@ -165,12 +205,12 @@ defmodule Operately.Features.ProjectReviewsTest do
   end
 
   defp change_champion(project, champion) do
-    delete_contributors_with_role(project, "champion")
+    delete_contributors_with_role(project, :champion)
     add_contributor(project, champion, "champion")
   end
 
   defp change_reviewer(project, reviewer) do
-    delete_contributors_with_role(project, "reviewer")
+    delete_contributors_with_role(project, :reviewer)
     add_contributor(project, reviewer, "reviewer")
   end
 

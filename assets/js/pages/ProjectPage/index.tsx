@@ -64,7 +64,7 @@ export function Page() {
         <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Divider />
-        <Reviews project={project} />
+        <Reviews me={me} project={project} />
         <Divider />
         <Activity project={project} key={fetchVersion} />
       </div>

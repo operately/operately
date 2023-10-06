@@ -1,6 +1,8 @@
 import React from "react";
 import * as Icons from "@tabler/icons-react";
 
+import { Link } from "react-router-dom";
+import { useQuery } from "@apollo/client";
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as People from "@/graphql/People";
@@ -9,6 +11,7 @@ import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Paper from "@/components/PaperContainer";
 import * as Feed from "@/features/feed";
+import * as ProjectReviewRequests from "@/graphql/ProjectReviewRequests";
 
 import { SurveyAnswers } from "@/components/Survey";
 
@@ -59,9 +62,9 @@ export function Page() {
   const [{ project, review, me }, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   const content = review.content as UpdateContent.Review;
-  const title = `${capitalCase(content.previousPhase)} to ${capitalCase(content.newPhase)} Review`;
+  const title = buildTitle(content);
 
-  useDocumentTitle(`${title} - ${project.name}`);
+  useDocumentTitle(title);
 
   const addReactionForm = useAddReaction(review.id, "update", refetch);
 
@@ -95,17 +98,16 @@ export function Page() {
 
         <Spacer size={4} />
 
-        <div className="text-white-1">The project has moved to a new phase</div>
-        <div className="flex items-center gap-1 font-bold">
-          <span className="text-white-1 capitalize">{previousPhase}</span>
-          <Icons.IconArrowRight size={16} />
-          <span className="text-white-1 capitalize">{newPhase}</span>
-        </div>
+        {content.reviewReason === "phase_change" && (
+          <PhaseChangeDescription previousPhase={previousPhase} newPhase={newPhase} />
+        )}
 
         <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
 
         <Content review={review} />
         <Spacer size={4} />
+
+        {content.reviewReason === "review_request" && <ReviewRequestDescription project={project} review={content} />}
 
         <Feed.Reactions reactions={review.reactions} size={20} form={addReactionForm} />
 
@@ -176,6 +178,53 @@ function AckCTA({
         <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
         Acknowledge
       </Button>
+    </div>
+  );
+}
+
+function buildTitle(review: UpdateContent.Review) {
+  if (review.reviewReason === "review_request") {
+    return "Impromptu Project Review";
+  } else {
+    return `${capitalCase(review.previousPhase)} to ${capitalCase(review.newPhase)} Review`;
+  }
+}
+
+function PhaseChangeDescription({ previousPhase, newPhase }) {
+  return (
+    <>
+      <div className="text-white-1">The project has moved to a new phase</div>
+      <div className="flex items-center gap-1 font-bold">
+        <span className="text-white-1 capitalize">{previousPhase}</span>
+        <Icons.IconArrowRight size={16} />
+        <span className="text-white-1 capitalize">{newPhase}</span>
+      </div>
+    </>
+  );
+}
+
+function ReviewRequestDescription({ project, review }) {
+  let { data, loading, error } = useQuery(ProjectReviewRequests.GET_REQUEST, {
+    variables: { id: review.reviewRequestId },
+    fetchPolicy: "network-only",
+  });
+
+  if (loading) return null;
+  if (error) throw error;
+
+  let request = data.projectReviewRequest as ProjectReviewRequests.ReviewRequest;
+
+  return (
+    <div className="mb-4">
+      This review was{" "}
+      <Link
+        to={`/projects/${project.id}/reviews/request/${request.id}`}
+        className="text-blue-400 underline cursor-pointer"
+        data-test-id="review-request-link"
+      >
+        requested
+      </Link>{" "}
+      by {People.firstName(request.author)}.
     </div>
   );
 }

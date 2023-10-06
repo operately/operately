@@ -36,7 +36,7 @@ const variants = {
     text: "font-medium",
     border: "rounded",
     hover: "hover:bg-green-400/90 transition-all duration-400",
-    disabled: "cursor-not-allowed text-white-1/60 bg-indigo-500/80",
+    disabled: "cursor-not-allowed text-white-1/60 bg-green-400/50",
   },
 
   secondary: {

@@ -20,9 +20,11 @@ import * as ProjectMilestonesPage from "@/pages/ProjectMilestonesPage";
 import * as ProjectMilestonePage from "@/pages/ProjectMilestonePage";
 import * as ProjectStatusUpdateNewPage from "@/pages/ProjectStatusUpdateNewPage";
 import * as ProjectReviewPage from "@/pages/ProjectReviewPage";
+
 import * as ProjectReviewRequestNewPage from "@/pages/ProjectReviewRequestNewPage";
 import * as ProjectReviewRequestPage from "@/pages/ProjectReviewRequestPage";
 import * as ProjectPhaseChangeSurveyPage from "@/pages/ProjectPhaseChangeSurveyPage";
+import * as ProjectReviewRequestSubmitPage from "@/pages/ProjectReviewRequestSubmitPage";
 import * as ProjectStatusUpdatePage from "@/pages/ProjectStatusUpdatePage";
 import * as ProjectAddPage from "../pages/ProjectAddPage";
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
@@ -80,6 +82,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/milestones/:id", ProjectMilestonePage),
       pageRoute("/projects/:projectID/reviews/request/new", ProjectReviewRequestNewPage),
       pageRoute("/projects/:projectID/reviews/request/:id", ProjectReviewRequestPage),
+      pageRoute("/projects/:projectID/reviews/request/:id/submit", ProjectReviewRequestSubmitPage),
       pageRoute("/projects/:projectID/reviews/:id", ProjectReviewPage),
       pageRoute("/projects/:projectID/phase_change/:newPhase", ProjectPhaseChangeSurveyPage),
       {

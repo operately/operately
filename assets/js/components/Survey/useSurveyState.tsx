@@ -12,6 +12,7 @@ export interface YesNoWithCommentsState {
   answer: "yes" | "no" | null;
   setAnswer: (answer: "yes" | "no" | null) => void;
   commentsEditor: TipTapEditor.Editor;
+  uploading: boolean;
   ready: boolean;
   focused: boolean;
 }
@@ -22,6 +23,7 @@ export interface TextAreaState {
   title: string;
   question: string;
   answerEditor: TipTapEditor.Editor;
+  uploading: boolean;
   ready: boolean;
   focused: boolean;
 }
@@ -60,7 +62,8 @@ function useYesNoQuestionState(question: Question): YesNoWithCommentsState {
     answer: answer,
     setAnswer: setAnswer,
     commentsEditor: editor,
-    ready: submittable,
+    uploading: submittable,
+    ready: answer !== null,
     focused: focused,
   };
 }
@@ -81,7 +84,8 @@ function useTextAreaQuestionState(question: Question): TextAreaState {
     title: question.title,
     question: question.question,
     answerEditor: editor,
-    ready: submittable,
+    uploading: submittable,
+    ready: editor.state.doc.textContent.length > 0,
     focused: focused,
   };
 }

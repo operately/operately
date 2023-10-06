@@ -9,6 +9,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
     field :health, :string
     field :message_type, :string
     field :title, :string
+    field :review_request_id, :string
   end
 
   input_object :create_comment_input do
@@ -30,8 +31,9 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             Operately.Updates.record_status_update(author, project, args.input.health, content)
 
           "review" ->
+            review_request_id = args.input.review_request_id
             project = Operately.Projects.get_project!(args.input.updatable_id)
-            Operately.Updates.record_review(author, project, args.input.phase, content)
+            Operately.Updates.record_review(author, project, args.input.phase, content, review_request_id)
 
           "message" ->
             project = Operately.Projects.get_project!(args.input.updatable_id)
