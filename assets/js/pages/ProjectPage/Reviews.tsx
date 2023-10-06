@@ -103,7 +103,7 @@ function ReviewRow({ review, project }: { review: Updates.Update; project: Proje
       <div className="flex gap-2 items-center">
         <Avatar person={author} size="tiny" />
         <div className="font-medium text-white-1 capitalize">
-          {content.previousPhase} to {content.newPhase} Review
+          <ReviewTitle review={content} />
         </div>
       </div>
       <div className="flex gap-2 items-center text-sm">
@@ -112,6 +112,18 @@ function ReviewRow({ review, project }: { review: Updates.Update; project: Proje
       </div>
     </div>
   );
+}
+
+function ReviewTitle({ review }) {
+  if (review.reviewReason === "review_request") {
+    return <>Impromptu Review</>;
+  } else {
+    return (
+      <>
+        {review.previousPhase} to {review.newPhase} Review
+      </>
+    );
+  }
 }
 
 function AckMarker({ update }) {

@@ -9,7 +9,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
     field :health, :string
     field :message_type, :string
     field :title, :string
-    field :review_request_id, :id
+    field :review_request_id, :string
   end
 
   input_object :create_comment_input do

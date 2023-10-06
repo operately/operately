@@ -31,6 +31,31 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
   end
 
+  feature "submit a requested review", state do
+    reviewer = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
+    change_reviewer(state.project, reviewer)
+
+    {:ok, _} = Operately.Projects.create_review_request(reviewer, %{
+      project_id: state.project.id,
+      content: rich_text("The project was paused for a while, let's review it before we continue.")
+    })
+
+    state
+    |> visit_page(state.project)
+    |> UI.click(testid: "request-review-link")
+    |> UI.click(testid: "write-review-button")
+    |> fill_survey([
+      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"costs", "yes", "Yes, the execution phase was completed within budget."},
+      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
+      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+    ])
+
+    state
+    |> UI.assert_text("Impromptu Project Review")
+    |> UI.assert_text("This review was requested by #{first_name(reviewer)}")
+  end
+
   feature "changing phase from pending -> execution and filling in the review", state do
     state 
     |> visit_page(state.project)
@@ -130,29 +155,6 @@ defmodule Operately.Features.ProjectReviewsTest do
       {"why-are-you-restarting", "We are restarting the project because of X, Y, and Z."}
     ])
     |> UI.assert_text("The project reverted to the Planning phase")
-  end
-
-  feature "submit a requested review", state do
-    reviewer = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
-    change_reviewer(state.project, reviewer)
-
-    {:ok, _} = Operately.Projects.create_review_request(reviewer, %{
-      project_id: state.project.id,
-      content: rich_text("The project was paused for a while, let's review it before we continue.")
-    })
-
-    state
-    |> visit_page(state.project)
-    |> UI.click(testid: "request-review-link")
-    |> UI.click(testid: "submit-review-button")
-    |> fill_survey([
-      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
-      {"costs", "yes", "Yes, the execution phase was completed within budget."},
-      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
-      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
-      {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
-    ])
-    |> UI.assert_text("The review was submitted")
   end
 
   #

@@ -14,7 +14,7 @@ import { Spacer } from "@/components/Spacer";
 import { useDocumentTitle } from "@/layouts/header";
 
 import { SurveyForm, Answer, yesNoQuestion } from "@/components/Survey";
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -73,7 +73,8 @@ export function Page() {
 }
 
 function Form({ project, reviewRequest }): JSX.Element {
-  const navigateToProject = useNavigateTo(`/projects/${project.id}`);
+  const navigate = useNavigate();
+  const navigateToProject = () => navigate(`/projects/${project.id}`);
 
   const questions = [
     yesNoQuestion("schedule", "Schedule", `Is the project on schedule?`),
@@ -83,8 +84,9 @@ function Form({ project, reviewRequest }): JSX.Element {
   ];
 
   const [post, { loading }] = Updates.usePostUpdateMutation({
-    onCompleted: () => {
-      navigateToProject();
+    onCompleted: (res) => {
+      const id = res.createUpdate.id;
+      navigate(`/projects/${project.id}/reviews/${id}`);
     },
   });
 
@@ -96,8 +98,10 @@ function Form({ project, reviewRequest }): JSX.Element {
           updatableId: project.id,
           messageType: "review",
           phase: project.phase,
-          reviewRequestID: reviewRequest.id,
+          reviewRequestId: reviewRequest.id,
           content: JSON.stringify({
+            previousPhase: project.phase,
+            newPhase: project.phase,
             survey: {
               answers: answers,
             },

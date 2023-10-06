@@ -5,10 +5,10 @@ defmodule Operately.Updates.Types.Review do
   @primary_key false
   embedded_schema do
     field :survey, :map
-    field :review_reason, Ecto.Enum, values: [:phase_change]
+    field :review_reason, Ecto.Enum, values: [:phase_change, :review_request]
     field :previous_phase, :string
     field :new_phase, :string
-    field :review_request_id, :id
+    field :review_request_id, :string
   end
 
   def changeset(attrs) do
@@ -29,9 +29,9 @@ defmodule Operately.Updates.Types.Review do
 
   defp review_reason(review_request_id) do
     if review_request_id do
-      :phase_change
+      "review_request"
     else
-      :review_request
+      "phase_change"
     end
   end
 end

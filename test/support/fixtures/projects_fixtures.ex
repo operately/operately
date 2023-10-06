@@ -98,19 +98,4 @@ defmodule Operately.ProjectsFixtures do
 
     phase_history
   end
-
-
-  @doc """
-  Generate a review_request.
-  """
-  def review_request_fixture(attrs \\ %{}) do
-    {:ok, review_request} =
-      attrs
-      |> Enum.into(%{
-        content: %{}
-      })
-      |> Operately.Projects.create_review_request()
-
-    review_request
-  end
 end

@@ -19,5 +19,17 @@ defmodule OperatelyWeb.GraphQL.Types.UpdateContentReview do
         {:ok, update.content["new_phase"] || update.new_phase}
       end
     end
+
+    field :review_reason, :string do
+      resolve fn update, _, _ ->
+        {:ok, update.content["review_reason"]}
+      end
+    end
+
+    field :review_request_id, :string do
+      resolve fn update, _, _ ->
+        {:ok, update.content["review_request_id"]}
+      end
+    end
   end
 end
