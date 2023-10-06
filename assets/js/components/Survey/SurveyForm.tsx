@@ -31,7 +31,10 @@ interface SurveyFormProps {
 
 export function SurveyForm({ questions, onSubmit, onCancel, loading }: SurveyFormProps): JSX.Element {
   const states = useSurveyState(questions);
+
   const ready = states.every((s) => s.ready);
+  const uploading = states.some((s) => s.uploading);
+  const buttonTitle = uploading ? "Uploading..." : "Submit";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,8 +73,14 @@ export function SurveyForm({ questions, onSubmit, onCancel, loading }: SurveyFor
       ))}
 
       <div className="flex items-center gap-2 mt-8">
-        <Button variant="success" type="submit" disabled={!ready} loading={loading} data-test-id="submit-button">
-          {loading ? "Submitting..." : ready ? "Submit" : "Uploading..."}
+        <Button
+          variant="success"
+          type="submit"
+          disabled={!ready || uploading}
+          loading={loading}
+          data-test-id="submit-button"
+        >
+          {buttonTitle}
         </Button>
 
         <Button variant="secondary" onClick={onCancel}>
