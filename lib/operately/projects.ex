@@ -382,11 +382,16 @@ defmodule Operately.Projects do
     Repo.transaction(fn ->
       attrs = Map.merge(attrs, %{author_id: author.id})
 
-      {:ok, request} = %ReviewRequest{} |> ReviewRequest.changeset(attrs) |> Repo.insert()
+      result = %ReviewRequest{} |> ReviewRequest.changeset(attrs) |> Repo.insert()
 
-      {:ok, _} = OperatelyEmail.ProjectReviewRequestEmail.new(%{request_id: request.id}) |> Oban.insert()
+      case result do
+        {:ok, request} ->
+          {:ok, _} = OperatelyEmail.ProjectReviewRequestEmail.new(%{request_id: request.id}) |> Oban.insert()
 
-      request
+          request
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
     end)
   end
 

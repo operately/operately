@@ -386,13 +386,14 @@ defmodule Operately.ProjectsTest do
   describe "project_review_requests" do
     alias Operately.Projects.ReviewRequest
     import Operately.ProjectsFixtures
+    import Operately.Support.RichText
 
     setup do
       company = company_fixture()
       author = person_fixture(company_id: company.id)
       project = project_fixture(%{company_id: company.id, creator_id: author.id})
 
-      {:ok, review_request} = Operately.Projects.create_review_request(author, %{project_id: project.id, content: %{}})
+      {:ok, review_request} = Operately.Projects.create_review_request(author, %{project_id: project.id, content: rich_text("hello")})
 
       {:ok, author: author, review_request: review_request, project: project}
     end
@@ -406,10 +407,10 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_review_request/1 with valid data creates a review_request", ctx do
-      valid_attrs = %{project_id: ctx.project.id, content: %{}}
+      valid_attrs = %{project_id: ctx.project.id, content: rich_text("hello")}
 
       assert {:ok, %ReviewRequest{} = review_request} = Projects.create_review_request(ctx.author, valid_attrs)
-      assert review_request.content == %{}
+      assert review_request.content == rich_text("hello")
     end
 
     test "create_review_request/1 with invalid data returns error changeset", ctx do
@@ -419,10 +420,10 @@ defmodule Operately.ProjectsTest do
     test "update_review_request/2 with valid data updates the review_request", ctx do
       assert {:ok, %ReviewRequest{} = review_request} = Projects.update_review_request(ctx.review_request, %{
         project_id: ctx.project.id,
-        content: %{}
+        content: rich_text("How are you?"),
       })
 
-      assert review_request.content == %{}
+      assert review_request.content == rich_text("How are you?")
     end
 
     test "update_review_request/2 with invalid data returns error changeset", ctx do

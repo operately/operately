@@ -14,5 +14,7 @@ defmodule Operately.Support.RichText do
         }
       ]
     }
+    |> Jason.encode!() 
+    |> Jason.decode!()
   end
 end
