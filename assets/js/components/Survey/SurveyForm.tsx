@@ -31,7 +31,6 @@ interface SurveyFormProps {
 
 export function SurveyForm({ questions, onSubmit, onCancel, loading }: SurveyFormProps): JSX.Element {
   const states = useSurveyState(questions);
-
   const ready = states.every((s) => s.ready);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

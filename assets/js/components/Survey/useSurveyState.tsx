@@ -60,7 +60,7 @@ function useYesNoQuestionState(question: Question): YesNoWithCommentsState {
     answer: answer,
     setAnswer: setAnswer,
     commentsEditor: editor,
-    ready: submittable,
+    ready: submittable && answer !== null,
     focused: focused,
   };
 }
@@ -81,7 +81,7 @@ function useTextAreaQuestionState(question: Question): TextAreaState {
     title: question.title,
     question: question.question,
     answerEditor: editor,
-    ready: submittable,
+    ready: submittable && editor.state.doc.textContent.length > 0,
     focused: focused,
   };
 }
