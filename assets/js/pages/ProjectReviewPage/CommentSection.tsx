@@ -49,7 +49,7 @@ function Comment({ comment, refetch }) {
 
   return (
     <div
-      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-shade-2 text-white-1"
+      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-shade-2 text-white-1 bg-shade-1 px-3"
       data-test-id={testId}
     >
       <div className="shrink-0">
@@ -82,7 +82,7 @@ function AckComment({ update }) {
   const person = update.acknowledgingPerson;
 
   return (
-    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-shade-2 text-white-1 bg-green-400/10">
+    <div className="flex items-center justify-between gap-3 py-3 px-3 text-white-1 bg-green-400/10">
       <div className="shrink-0">
         <Icons.IconCircleCheckFilled size={20} className="text-green-400" />
       </div>
@@ -119,7 +119,7 @@ function CommentBox({ update, refetch, me }) {
 function AddCommentNonActive({ onClick, me }) {
   return (
     <div
-      className="py-3 not-first:border-t border-dark-8 cursor-pointer flex items-center gap-3"
+      className="py-3 not-first:border-t border-dark-8 cursor-pointer flex items-center gap-3 bg-shade-1 px-3"
       data-test-id="add-comment"
       onClick={onClick}
     >
@@ -159,7 +159,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
   return (
     <TipTapEditor.Root>
-      <div className="not-first:border-t border-dark-8 overflow-hidden relative">
+      <div className="not-first:border-t border-dark-8 overflow-hidden relative bg-shade-1">
         <TipTapEditor.EditorContent editor={editor} />
 
         <div className="flex justify-between items-center m-4">
