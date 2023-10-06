@@ -79,7 +79,7 @@ defmodule OperatelyWeb.GraphQL.Types.Projects do
 
     field :review_requests, list_of(:project_review_request) do
       resolve fn project, _, _ ->
-        {:ok, Operately.Projects.list_project_review_requests(project)}
+        {:ok, Operately.Projects.list_pending_project_review_requests(project)}
       end
     end
 

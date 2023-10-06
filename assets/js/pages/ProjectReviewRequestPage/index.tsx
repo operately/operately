@@ -84,7 +84,8 @@ export function Page() {
         <Separator spaceTop={4} spaceBottom={4} />
 
         <div className="flex justify-center">
-          <StartReviewButton project={project} request={request} />
+          {request.status === "pending" && <StartReviewButton project={project} request={request} />}
+          {request.status === "completed" && <ReviewLink project={project} request={request} />}
         </div>
       </Paper.Body>
     </Paper.Root>
@@ -97,6 +98,16 @@ function StartReviewButton({ project, request }) {
   return (
     <Button variant="success" data-test-id="write-review-button" size="lg" onClick={navigateToSubmitPage}>
       Start Project Review <Icons.IconArrowRight size={20} />
+    </Button>
+  );
+}
+
+function ReviewLink({ project, request }) {
+  const navigateToReviewPage = useNavigateTo(`/projects/${project.id}/reviews/${request.reviewId}`);
+
+  return (
+    <Button variant="success" data-test-id="write-review-button" size="lg" onClick={navigateToReviewPage}>
+      View Submitted Review <Icons.IconArrowRight size={20} />
     </Button>
   );
 }

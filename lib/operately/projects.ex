@@ -363,6 +363,10 @@ defmodule Operately.Projects do
     Repo.all(from rr in ReviewRequest, where: rr.project_id == ^project.id)
   end
 
+  def list_pending_project_review_requests(project) do
+    Repo.all(from rr in ReviewRequest, where: rr.project_id == ^project.id, where: rr.status == ^:pending)
+  end
+
   def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
   def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
 

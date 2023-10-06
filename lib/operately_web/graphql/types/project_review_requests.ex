@@ -6,6 +6,13 @@ defmodule OperatelyWeb.GraphQL.Types.ProjectReviewRequests do
 
     field :inserted_at, non_null(:date)
     field :updated_at, non_null(:date)
+    field :status, non_null(:string)
+
+    field :review_id, :string do
+      resolve fn req, _, _ ->
+        {:ok, req.update_id}
+      end
+    end
 
     field :content, non_null(:string) do
       resolve fn req, _, _ ->

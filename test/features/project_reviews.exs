@@ -51,9 +51,17 @@ defmodule Operately.Features.ProjectReviewsTest do
       {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
     ])
 
+    # The review is submitted and the user is redirected to the review page
     state
     |> UI.assert_text("Impromptu Project Review")
     |> UI.assert_text("This review was requested by #{first_name(reviewer)}")
+    |> UI.click(testid: "review-request-link")
+    |> UI.assert_text("View Submitted Review")
+
+    # The review request should be marked as completed
+    state
+    |> visit_page(state.project)
+    |> UI.refute_text("Request Review")
   end
 
   feature "changing phase from pending -> execution and filling in the review", state do

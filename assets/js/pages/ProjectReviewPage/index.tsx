@@ -220,6 +220,7 @@ function ReviewRequestDescription({ project, review }) {
       <Link
         to={`/projects/${project.id}/reviews/request/${request.id}`}
         className="text-blue-400 underline cursor-pointer"
+        data-test-id="review-request-link"
       >
         requested
       </Link>{" "}
