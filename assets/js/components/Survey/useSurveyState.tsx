@@ -45,7 +45,7 @@ export function useSurveyState(questions: Question[]): State[] {
 function useYesNoQuestionState(question: Question): YesNoWithCommentsState {
   const peopleSearch = People.usePeopleSearch();
 
-  let { editor, submittable, focused } = TipTapEditor.useEditor({
+  let { editor, uploading, focused } = TipTapEditor.useEditor({
     placeholder: "Leave a comment...",
     peopleSearch: peopleSearch,
     className: "px-2 py-1 min-h-[4em]",
@@ -62,7 +62,7 @@ function useYesNoQuestionState(question: Question): YesNoWithCommentsState {
     answer: answer,
     setAnswer: setAnswer,
     commentsEditor: editor,
-    uploading: submittable,
+    uploading: uploading,
     ready: answer !== null,
     focused: focused,
   };
@@ -71,7 +71,7 @@ function useYesNoQuestionState(question: Question): YesNoWithCommentsState {
 function useTextAreaQuestionState(question: Question): TextAreaState {
   const peopleSearch = People.usePeopleSearch();
 
-  let { editor, submittable, focused } = TipTapEditor.useEditor({
+  let { editor, uploading, focused, empty } = TipTapEditor.useEditor({
     placeholder: "Write your answer...",
     peopleSearch: peopleSearch,
     className: "px-2 py-1 min-h-[4em]",
@@ -84,8 +84,8 @@ function useTextAreaQuestionState(question: Question): TextAreaState {
     title: question.title,
     question: question.question,
     answerEditor: editor,
-    uploading: submittable,
-    ready: editor.state.doc.textContent.length > 0,
+    uploading: uploading,
+    ready: !empty,
     focused: focused,
   };
 }
