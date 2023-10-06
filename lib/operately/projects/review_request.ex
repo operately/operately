@@ -7,8 +7,10 @@ defmodule Operately.Projects.ReviewRequest do
   schema "project_review_requests" do
     belongs_to :project, Operately.Projects.Project
     belongs_to :author, Operately.People.Person
+    belongs_to :update, Operately.Updates.Update
 
     field :content, :map
+    field :status, Ecto.Enum, values: [:pending, :completed, :withdrawn], default: :pending
 
     timestamps()
   end
@@ -16,7 +18,7 @@ defmodule Operately.Projects.ReviewRequest do
   @doc false
   def changeset(review_request, attrs) do
     review_request
-    |> cast(attrs, [:content, :project_id, :author_id])
+    |> cast(attrs, [:content, :project_id, :author_id, :update_id, :status])
     |> validate_required([:content, :project_id, :author_id])
   end
 end
