@@ -65,6 +65,10 @@ defmodule Operately.Features.ProjectReviewsTest do
     state
     |> visit_page(state.project)
     |> UI.refute_text("Request Review")
+
+    # assert that the reviewew received an email
+    state
+    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.champion)} submitted a review for #{state.project.name}", to: reviewer.email)
   end
 
   feature "changing phase from pending -> execution and filling in the review", state do
@@ -201,12 +205,12 @@ defmodule Operately.Features.ProjectReviewsTest do
   end
 
   defp change_champion(project, champion) do
-    delete_contributors_with_role(project, "champion")
+    delete_contributors_with_role(project, :champion)
     add_contributor(project, champion, "champion")
   end
 
   defp change_reviewer(project, reviewer) do
-    delete_contributors_with_role(project, "reviewer")
+    delete_contributors_with_role(project, :reviewer)
     add_contributor(project, reviewer, "reviewer")
   end
 

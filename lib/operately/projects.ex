@@ -163,6 +163,10 @@ defmodule Operately.Projects do
     get_person_by_role(project, :champion)
   end
 
+  def get_reviewer(project) do
+    get_person_by_role(project, :reviewer)
+  end
+
   def list_project_contributors(project) do
     query = (from c in Contributor, where: c.project_id == ^project.id)
     

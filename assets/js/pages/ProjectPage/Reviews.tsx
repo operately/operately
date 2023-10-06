@@ -14,7 +14,7 @@ import { Spacer } from "@/components/Spacer";
 
 import { useNavigate } from "react-router-dom";
 
-export default function Reviews({ project }) {
+export default function Reviews({ me, project }) {
   return (
     <div className="flex flex-col gap-1 relative my-8">
       <div className="font-extrabold text-lg text-white-1 leading-none">Project Reviews</div>
@@ -26,16 +26,12 @@ export default function Reviews({ project }) {
       <Spacer size={0.25} />
       <NextReviewSchedule project={project} />
 
-      <Spacer size={0.25} />
-
-      <div>
-        <RequestReviewButton project={project} />
-      </div>
+      <RequestReviewButton me={me} project={project} />
     </div>
   );
 }
 
-function RequestReviewButton({ project }) {
+function RequestReviewButton({ me, project }) {
   const navigate = useNavigate();
   const navigateToRequestReview = () => navigate(`/projects/${project.id}/reviews/request/new`);
 
@@ -43,10 +39,19 @@ function RequestReviewButton({ project }) {
     return null;
   }
 
+  if (me.id !== project.reviewer?.id) {
+    return null;
+  }
+
   return (
-    <Button variant="secondary" data-test-id="request-review-button" onClick={navigateToRequestReview}>
-      Request impromptu review
-    </Button>
+    <>
+      <Spacer size={0.25} />
+      <div>
+        <Button variant="secondary" data-test-id="request-review-button" onClick={navigateToRequestReview}>
+          Request impromptu review
+        </Button>
+      </div>
+    </>
   );
 }
 

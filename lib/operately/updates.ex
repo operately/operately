@@ -94,6 +94,7 @@ defmodule Operately.Updates do
 
       {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)
       {:ok, _} = Operately.Projects.update_project(project, %{phase: new_phase})
+      {:ok, _} = OperatelyEmail.ProjectReviewSubmittedEmail.new(%{review_id: update.id}) |> Oban.insert()
 
       update
     end)

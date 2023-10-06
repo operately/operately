@@ -236,7 +236,18 @@ defmodule Operately.FeatureCase do
     end
 
     def assert_email_sent(_state, title, to: to) do
-      Bamboo.Test.assert_email_delivered_with(to: [{nil, to}], subject: title)
+      {:messages, messages} = Process.info(self(), :messages)
+
+      emails = Enum.filter(messages, fn m ->
+        case m do
+          {:delivered_email, _} -> true
+          _ -> false
+        end
+      end)
+
+      subject_to_pairs = Enum.map(emails, fn {:delivered_email, email} -> {email.subject, elem(hd(email.to), 1)} end)
+
+      assert {title, to} in subject_to_pairs
     end
 
     #

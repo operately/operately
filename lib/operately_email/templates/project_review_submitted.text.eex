@@ -1,0 +1,3 @@
+<%= @author %> submitted a project review for <%= @project.name %>.
+
+Link: <%= @cta_url %>
