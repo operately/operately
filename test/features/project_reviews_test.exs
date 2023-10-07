@@ -7,43 +7,43 @@ defmodule Operately.Features.ProjectReviewsTest do
   import Operately.PeopleFixtures
   import Operately.Support.RichText
 
-  setup session do
+  setup data do
     company = company_fixture(%{name: "Test Org"})
-    session = session |> UI.login()
-    champion = UI.get_account().person
-    project = create_project(company, champion)
+    champion = person_fixture_with_account(%{company_id: company.id})
+    reviewer = person_fixture_with_account(%{company_id: company.id})
+    project = create_project(company, champion: champion, reviewer: reviewer)
 
-    {:ok, %{session: session, company: company, champion: champion, project: project}}
+    state = %{session: data.session, company: company, champion: champion, project: project, reviewer: reviewer}
+
+    state = if data[:login_as] == :champion, do: UI.login_as(state, champion), else: state
+    state = if data[:login_as] == :reviewer, do: UI.login_as(state, reviewer), else: state
+
+    {:ok, state}
   end
 
+  @tag login_as: :reviewer
   feature "request a review", state do
-    champion = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
-    reviewer = state.champion
-
-    change_champion(state.project, champion)
-    change_reviewer(state.project, reviewer)
-
     state
+    |> UI.login_as(state.reviewer)
     |> visit_page(state.project)
     |> UI.click(testid: "request-review-button")
     |> UI.fill_rich_text("The project was paused for a while, let's review it before we continue.")
     |> UI.click(testid: "request-review-submit-button")
-    |> UI.assert_text(first_name(reviewer) <> " requested an Impromptu Review")
+    |> UI.assert_text(first_name(state.reviewer) <> " requested an Impromptu Review")
     |> UI.click(testid: "request-review-link")
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
-    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(reviewer)} requested a review for #{state.project.name}", to: champion.email)
+    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.reviewer)} requested a review for #{state.project.name}", to: state.champion.email)
   end
 
+  @tag login_as: :champion
   feature "submit a requested review", state do
-    reviewer = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
-    change_reviewer(state.project, reviewer)
-
-    {:ok, _} = Operately.Projects.create_review_request(reviewer, %{
+    {:ok, _} = Operately.Projects.create_review_request(state.reviewer, %{
       project_id: state.project.id,
       content: rich_text("The project was paused for a while, let's review it before we continue.")
     })
 
     state
+    |> UI.login_as(state.champion)
     |> visit_page(state.project)
     |> UI.click(testid: "request-review-link")
     |> UI.click(testid: "write-review-button")
@@ -57,7 +57,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     # The review is submitted and the user is redirected to the review page
     state
     |> UI.assert_text("Impromptu Project Review")
-    |> UI.assert_text("This review was requested by #{first_name(reviewer)}")
+    |> UI.assert_text("This review was requested by #{first_name(state.reviewer)}")
     |> UI.click(testid: "review-request-link")
     |> UI.assert_text("View Submitted Review")
 
@@ -68,9 +68,10 @@ defmodule Operately.Features.ProjectReviewsTest do
 
     # assert that the reviewew received an email
     state
-    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.champion)} submitted a review for #{state.project.name}", to: reviewer.email)
+    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.champion)} submitted a review for #{state.project.name}", to: state.reviewer.email)
   end
 
+  @tag login_as: :champion
   feature "changing phase from pending -> execution and filling in the review", state do
     state 
     |> visit_page(state.project)
@@ -87,6 +88,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project has moved to the Execution phase")
   end
 
+  @tag login_as: :champion
   feature "changing phase from execution -> control and filling in the review", state do
     change_phase(state.project, :execution)
 
@@ -105,6 +107,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project has moved to the Control phase")
   end
 
+  @tag login_as: :champion
   feature "changing phase from control -> completed and filling in a retrospective", state do
     change_phase(state.project, :control)
 
@@ -121,6 +124,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project was completed")
   end
 
+  @tag login_as: :champion
   feature "changing phase from control -> canceled and filling in a retrospective", state do
     change_phase(state.project, :control)
 
@@ -137,6 +141,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project was canceled")
   end
 
+  @tag login_as: :champion
   feature "pausing a project", state do
     state
     |> visit_page(state.project)
@@ -148,6 +153,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project was paused")
   end
 
+  @tag login_as: :champion
   feature "changing phase from control -> planning and filling in a the questions", state do
     change_phase(state.project, :control)
 
@@ -160,6 +166,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> UI.assert_text("The project reverted to the Planning phase")
   end
 
+  @tag login_as: :champion
   feature "changing phase from completed -> planning and filling in a the questions", state do
     change_phase(state.project, :completed)
 
@@ -180,7 +187,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     UI.visit(state, "/projects" <> "/" <> project.id)
   end
 
-  defp create_project(company, champion) do
+  defp create_project(company, champion: champion, reviewer: reviewer) do
     params = %Operately.Projects.ProjectCreation{
       company_id: company.id,
       name: "Live support",
@@ -192,32 +199,14 @@ defmodule Operately.Features.ProjectReviewsTest do
 
     {:ok, project} = Operately.Projects.create_project(params)
 
-    project
-  end
-
-  defp add_contributor(project, person, role, responsibility \\ " ") do
     {:ok, _} = Operately.Projects.create_contributor(%{
-      person_id: person.id, 
-      role: role, 
-      project_id: project.id, 
-      responsibility: responsibility
+      person_id: reviewer.id,
+      role: :reviewer,
+      project_id: project.id,
+      responsibility: " "
     })
-  end
 
-  defp change_champion(project, champion) do
-    delete_contributors_with_role(project, :champion)
-    add_contributor(project, champion, "champion")
-  end
-
-  defp change_reviewer(project, reviewer) do
-    delete_contributors_with_role(project, :reviewer)
-    add_contributor(project, reviewer, "reviewer")
-  end
-
-  defp delete_contributors_with_role(project, role) do
-    Operately.Projects.list_project_contributors(project)
-    |> Enum.filter(fn contributor -> contributor.role == role end)
-    |> Enum.map(&Operately.Projects.delete_contributor(&1))
+    project
   end
 
   defp first_name(person) do

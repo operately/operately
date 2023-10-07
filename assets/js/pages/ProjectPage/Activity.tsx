@@ -42,7 +42,7 @@ export default function Activity({ project }): JSX.Element {
 
   return (
     <ActivityContext.Provider value={{ project, refetch }}>
-      <div className="min-h-[350px] mt-4">
+      <div className="min-h-[350px] mt-4" data-test-id="project-page-activity-section">
         <SectionTitle />
 
         {loading && <div>Loading...</div>}

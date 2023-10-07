@@ -68,6 +68,14 @@ defmodule Operately.FeatureCase do
       session(session) |> Browser.visit(path)
     end
 
+    def login_as(state, person) do
+      path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
+
+      res = session(state) |> Browser.visit(path)
+
+      Map.put(state, :session, res)
+    end
+
     def get_account() do
       Operately.People.Account
       |> Operately.Repo.get_by(email: "john@johnson.com")

@@ -29,6 +29,15 @@ defmodule Operately.PeopleFixtures do
     person
   end
 
+  def person_fixture_with_account(attrs \\ %{}) do
+    email = attrs[:email] || unique_account_email()
+    password = attrs[:password] || valid_account_password()
+
+    account = account_fixture(%{email: email, password: password})
+
+    person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
+  end
+
   def unique_account_email, do: "account#{System.unique_integer()}@example.com"
   def valid_account_password, do: "hello world!"
 

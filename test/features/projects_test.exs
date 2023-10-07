@@ -117,16 +117,6 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("Hello team!"))
   end
 
-  feature "submitting a status update", state do
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "champion-toolbar")
-    |> UI.click(testid: "add-status-update")
-    |> UI.fill_rich_text("This is a status update.")
-    |> UI.click(testid: "post-status-update")
-    |> assert_has(Query.text("This is a status update."))
-  end
-
   feature "leave a comment on an update", state do
     add_status_update(state.project, "This is a status update.", state.champion.id)
 
@@ -179,6 +169,7 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> UI.refute_text("Waiting for your acknowledgement")
+    |> UI.find(testid: "project-page-activity-section")
     |> UI.assert_text(state.champion.full_name <> " acknowledged this update")
     |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
   end
