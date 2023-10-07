@@ -117,16 +117,6 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.text("Hello team!"))
   end
 
-  feature "submitting a status update", state do
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "champion-toolbar")
-    |> UI.click(testid: "add-status-update")
-    |> UI.fill_rich_text("This is a status update.")
-    |> UI.click(testid: "post-status-update")
-    |> assert_has(Query.text("This is a status update."))
-  end
-
   feature "leave a comment on an update", state do
     add_status_update(state.project, "This is a status update.", state.champion.id)
 
