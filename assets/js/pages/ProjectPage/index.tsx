@@ -9,6 +9,7 @@ import Header from "./Header";
 import Timeline from "./Timeline";
 import Description from "./Description";
 import Reviews from "./Reviews";
+import StatusUpdates from "./StatusUpdates";
 import KeyResources from "./KeyResources";
 import Toolbar from "./Toolbar";
 
@@ -63,6 +64,8 @@ export function Page() {
         <KeyResources editable={championOfProject} project={project} refetch={refetch} />
         <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
+        <Divider />
+        <StatusUpdates me={me} project={project} />
         <Divider />
         <Reviews me={me} project={project} />
         <Divider />

@@ -1,137 +1,120 @@
 import React from "react";
 
+import * as Updates from "@/graphql/Projects/updates";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Icons from "@tabler/icons-react";
-import { Link } from "react-router-dom";
-import RichContent from "@/components/RichContent";
-import Avatar from "@/components/Avatar";
+import * as Project from "@/graphql/Projects";
+
 import FormattedTime from "@/components/FormattedTime";
-import Button from "@/components/Button";
+import Avatar from "@/components/Avatar";
+import { Spacer } from "@/components/Spacer";
 
-import * as ProjectQueries from "@/graphql/Projects";
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import classnames from "classnames";
 
-interface StatusUpdatesProps {
-  project: ProjectQueries.Project;
+export default function Reviews({ me, project }) {
+  return (
+    <div className="flex flex-col gap-1 relative my-8">
+      <div className="font-extrabold text-lg text-white-1 leading-none">Status Updates</div>
+      <div className="text-white-2 max-w-xl">Asking the champion of the project for an update, every Friday.</div>
+
+      <Spacer size={0.25} />
+      <List project={project} />
+
+      <Spacer size={0.25} />
+      <NextUpdateSchedule project={project} />
+    </div>
+  );
 }
 
-interface StatusUpdateProps {
-  linkTo: string;
-  person: ProjectQueries.Person;
-  title: string;
-  message: string | JSX.Element;
-  comments: number;
-  time: Date;
+function List({ project }) {
+  const { updates, loading, error } = useStatusUpdates({ project });
+
+  if (loading) return <div></div>;
+  if (error) return <div></div>;
+
+  return (
+    <div className="flex flex-col gap-1">
+      {updates.map((update) => (
+        <ListItem key={update.id} update={update} project={project} />
+      ))}
+    </div>
+  );
 }
 
-function AckStatus({ update }) {
+function ListItem({ update, project }: { update: Updates.Update; project: Project.Project }) {
+  const navigateToUpdate = useNavigateTo(`/projects/${project.id}/status_updates/${update.id}`);
+
+  const content = update.content as UpdateContent.StatusUpdate;
+  const author = update.author;
+
+  return (
+    <div
+      className="flex flex-row justify-between items-center bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer"
+      onClick={navigateToUpdate}
+    >
+      <div className="flex gap-2 items-center">
+        <Avatar person={author} size="tiny" />
+        <div className="font-medium text-white-1 capitalize">
+          Update for <FormattedTime time={update.insertedAt} format="long-date" />
+        </div>
+      </div>
+      <div className="flex gap-2 items-center text-sm">
+        <HealthIndicator health={content.newHealth} />
+        <AckMarker update={update} />
+      </div>
+    </div>
+  );
+}
+
+function AckMarker({ update }) {
   if (update.acknowledged) {
-    return (
-      <div className="flex items-center text-sm text-green-400 gap-1">
-        <Icons.IconCircleCheckFilled size={16} />
-      </div>
-    );
+    return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
   } else {
-    return (
-      <div className="flex items-center text-sm text-yellow-400 gap-1 font-medium">
-        <Icons.IconClockFilled size={16} />
-        Waiting for Acknowledgement
-      </div>
-    );
+    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
   }
 }
 
-function StatusUpdate(props: StatusUpdateProps) {
+function NextUpdateSchedule({ project }) {
   return (
-    <Link to={props.linkTo} className="flex items-start justify-between my-2 hover:bg-shade-1 p-1 rounded -ml-2">
-      <div className="flex items-start gap-4">
-        <div className="shrink-0">
-          <Avatar person={props.person} />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <div className="font-bold">
-              {props.person.fullName} shared a {props.title}
-            </div>
-            <AckStatus update={props.update} />
-          </div>
-          <div className="line-clamp-4" style={{ maxWidth: "780px" }}>
-            {props.message}
-          </div>
-        </div>
-      </div>
-
-      <div className="text-right w-32">
-        <FormattedTime time={props.time} format="short-date" />
-      </div>
-    </Link>
-  );
-}
-
-function StatusUpdateZeroState() {
-  return (
-    <div className="flex items-center justify-center text-white-2 gap-2 py-24">
-      <Icons.IconMessage2 size={24} />
-      Share the progress of the project with your team.
+    <div className="text-white-2">
+      Next update scheduled for{" "}
+      <FormattedTime time={project.nextUpdateScheduledAt} format="short-date-with-weekday-relative" />.
     </div>
   );
 }
 
-function StatusUpdateList({ project, updates }) {
-  return (
-    <>
-      {updates.map((update) => (
-        <StatusUpdate
-          key={update.id}
-          linkTo={`/projects/${project.id}/updates/${update.id}`}
-          person={update.author}
-          title={"Status Update"}
-          message={<RichContent jsonContent={update.message} />}
-          comments={update.comments.length}
-          time={update.insertedAt}
-          update={update}
-        />
-      ))}
-    </>
-  );
+function HealthIndicator({ health }) {
+  const colors = {
+    on_track: "text-green-400",
+    at_risk: "text-yellow-400",
+    off_track: "text-red-400",
+  };
+
+  const color = colors[health];
+  const title = health.replace("_", " ");
+  const className = classnames("bg-shade-2 rounded-full px-2 pt-0.5 text-xs uppercase font-medium", color);
+
+  return <div className={className}>{title}</div>;
 }
 
-export default function StatusUpdates(props: StatusUpdatesProps): JSX.Element {
-  const project = props.project;
-  const postUpdateLink = `/projects/${project.id}/new_update`;
-  const updates = project.activities;
+function useStatusUpdates({ project }): { updates: Updates.Update[]; loading: boolean; error: any } {
+  const { data, loading, error } = Updates.useListUpdates({
+    fetchPolicy: "network-only",
+    variables: {
+      filter: {
+        projectId: project.id,
+      },
+    },
+  });
 
-  const isEmpty = updates.length === 0;
+  if (loading) {
+    return { loading, error, updates: [] };
+  }
 
-  return (
-    <div className="px-16 rounded-b-[20px] py-8 bg-dark-2 min-h-[350px] border-t border-shade-1">
-      <div className="">
-        <div className="flex items-center justify-between gap-4">
-          <SeparatorLine />
-          <SectionTitle title="Project Activity" />
-          <SeparatorLine />
-        </div>
+  let updates = data.updates as Updates.Update[];
+  updates = Updates.filterByType(updates, "status_update");
+  updates = Updates.sortByDate(updates);
 
-        <div className="fadeIn">
-          {isEmpty ? <StatusUpdateZeroState /> : <StatusUpdateList project={project} updates={updates} />}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PostUpdateButton({ linkTo }) {
-  return (
-    <Button linkTo={linkTo}>
-      <Icons.IconMessage2 size={20} />
-      Post Update
-    </Button>
-  );
-}
-
-function SeparatorLine() {
-  return <div className="border-b border-white-2 flex-1"></div>;
-}
-
-function SectionTitle({ title }) {
-  return <div className="font-bold py-4 flex items-center gap-2 uppercase tracking-wide">{title}</div>;
+  return { updates: updates, loading, error };
 }

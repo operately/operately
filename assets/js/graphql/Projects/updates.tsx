@@ -163,3 +163,11 @@ export const ADD_REACTION = gql`
 export function useReactMutation(options = {}) {
   return useMutation(ADD_REACTION, options);
 }
+
+export function sortByDate(updates: Update[]): Update[] {
+  return updates.sort((a, b) => (a.insertedAt < b.insertedAt ? -1 : 1));
+}
+
+export function filterByType(updates: Update[], type: UpdateContent.UpdateMessageType): Update[] {
+  return updates.filter((update) => update.messageType === type);
+}
