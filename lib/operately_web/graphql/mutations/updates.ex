@@ -31,7 +31,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             Operately.Updates.record_status_update(author, project, args.input.health, content)
 
           "review" ->
-            review_request_id = args.input.review_request_id
+            review_request_id = args.input[:review_request_id]
             project = Operately.Projects.get_project!(args.input.updatable_id)
             Operately.Updates.record_review(author, project, args.input.phase, content, review_request_id)
 

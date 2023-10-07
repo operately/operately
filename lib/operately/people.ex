@@ -205,7 +205,8 @@ defmodule Operately.People do
 
     get_account_by_email(attrs.email)
     |> case do
-      %Account{} = account -> {:ok, account}
+      %Account{} = account -> 
+        {:ok, account}
       _ -> create_account(attrs)
     end
     |> case do
