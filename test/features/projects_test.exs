@@ -169,6 +169,7 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> UI.refute_text("Waiting for your acknowledgement")
+    |> UI.find(testid: "project-page-activity-section")
     |> UI.assert_text(state.champion.full_name <> " acknowledged this update")
     |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
   end
