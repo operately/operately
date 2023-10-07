@@ -7,6 +7,7 @@ import * as Project from "@/graphql/Projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+import Button from "@/components/Button";
 import { Spacer } from "@/components/Spacer";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -23,6 +24,8 @@ export default function Reviews({ me, project }) {
 
       <Spacer size={0.25} />
       <NextUpdateSchedule project={project} />
+
+      <WriteUpdate project={project} me={me} />
     </div>
   );
 }
@@ -117,4 +120,20 @@ function useStatusUpdates({ project }): { updates: Updates.Update[]; loading: bo
   updates = Updates.sortByDate(updates);
 
   return { updates: updates, loading, error };
+}
+
+function WriteUpdate({ project, me }) {
+  const navigateToNewUpdate = useNavigateTo(`/projects/${project.id}/updates/new?messageType=status_update`);
+
+  if (project.champion?.id !== me.id) {
+    return null;
+  }
+
+  return (
+    <div>
+      <Button variant="secondary" onClick={navigateToNewUpdate} data-test-id="add-status-update">
+        Write a status update
+      </Button>
+    </div>
+  );
 }
