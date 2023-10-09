@@ -172,7 +172,9 @@ function Editor({ project, title }) {
     className: "min-h-[350px] py-2",
   });
 
-  const [post] = Projects.usePostUpdate({ onCompleted: () => navigate(`/projects/${project.id}`) });
+  const [post] = Projects.usePostUpdate({
+    onCompleted: (data) => navigate(`/projects/${project.id}/status_updates/${data.createUpdate.id}`),
+  });
 
   const [health, setHealth] = React.useState<string>(newHealth || project.health);
   const [phase, setPhase] = React.useState<string>(newPhase || project.phase);
