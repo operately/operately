@@ -3,30 +3,37 @@ import React from "react";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
-
 import * as People from "@/graphql/People";
-import Avatar, { AvatarSize } from "@/components/Avatar";
-import Button from "@/components/Button";
-import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
+
+import Avatar from "@/components/Avatar";
+import Button from "@/components/Button";
 import RichContent from "@/components/RichContent";
-import { useMe } from "@/graphql/Me";
-
-import { usePostCommentMutation } from "@/graphql/Projects";
-
-import Reactions from "./Reactions";
 
 import * as Me from "@/graphql/Me";
 import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 import client from "@/graphql/client";
 
+import { TextSeparator } from "@/components/TextSeparator";
+import { Spacer } from "@/components/Spacer";
+import { useAddReaction } from "./useAddReaction";
+import * as Feed from "@/features/feed";
+import { CommentSection } from "./CommentSection";
+
 interface LoaderData {
-  update: any;
-  me: any;
+  project: Projects.Project;
+  update: Updates.Update;
+  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderData> {
+  let projectDate = await client.query({
+    query: Projects.GET_PROJECT,
+    variables: { id: params.projectID },
+    fetchPolicy: "network-only",
+  });
+
   let updateData = await client.query({
     query: Updates.GET_STATUS_UPDATE,
     variables: { id: params.id },
@@ -35,42 +42,55 @@ export async function loader({ params }): Promise<LoaderData> {
 
   let meData = await client.query({
     query: Me.GET_ME,
+    fetchPolicy: "network-only",
   });
 
   return {
+    project: projectDate.data.project,
     update: updateData.data.update,
     me: meData.data.me,
   };
 }
 
 export function Page() {
-  const [{ update, me }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
+  const [{ project, update, me }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
 
-  const addReactionMutation = Projects.useReactMutation("update", update.id);
+  const addReactionForm = useAddReaction(update.id, "update", refetch);
 
   return (
     <Paper.Root>
-      <Navigation project={update.project} />
+      <Navigation project={project} />
 
       <Paper.Body>
-        <AckBanner me={me} update={update} champion={update.project.champion} reviewer={update.project.reviewer} />
+        <AckCTA project={project} update={update} refetch={refetch} me={me} />
+
+        <div className="flex flex-col items-center">
+          <div className="text-white-1 text-2xl font-extrabold">Status Update</div>
+          <div className="flex gap-0.5 flex-row items-center mt-1 text-white-1 font-medium">
+            <div className="flex items-center gap-2">
+              <Avatar person={update.author} size="tiny" /> {update.author.fullName}
+            </div>
+            <TextSeparator />
+            <FormattedTime time={update.insertedAt} format="short-date" />
+            <TextSeparator />
+            <Acknowledgement update={update} />
+          </div>
+        </div>
+
+        <Spacer size={4} />
 
         <div className="fadeIn">
-          <Header update={update} />
-
           <div className="my-4 mb-8 text-lg">
             <RichContent jsonContent={update.message} />
           </div>
 
-          <Reactions
-            addReactionMutation={addReactionMutation}
-            size={20}
-            reactions={update.reactions}
-            onNewReaction={() => refetch()}
-          />
-
-          <Comments update={update} onNewReaction={() => refetch()} />
+          <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
         </div>
+
+        <Spacer size={4} />
+
+        <div className="text-white-1 font-extrabold border-b border-shade-2 pb-2">Comments</div>
+        <CommentSection update={update} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -83,251 +103,57 @@ function Navigation({ project }) {
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>
-
-      <Paper.NavSeparator />
-
-      <Paper.NavItem linkTo={`/projects/${project.id}/updates`}> Message Board</Paper.NavItem>
     </Paper.Navigation>
   );
 }
 
-function AckButton({ update }) {
-  const [ack, _status] = Projects.useAckMutation(update.id);
-
-  return (
-    <Button variant="attention" onClick={() => ack()}>
-      <Icons.IconCheck size={20} />
-      Acknowledge
-    </Button>
-  );
-}
-
-function AckBanner({ me, reviewer, update, champion }) {
-  if (update.messageType === "message") return null;
+function AckCTA({
+  project,
+  update,
+  refetch,
+  me,
+}: {
+  project: Projects.Project;
+  update: Updates.Update;
+  refetch: () => void;
+  me: People.Person;
+}) {
+  const [ack, { loading }] = Updates.useAckUpdate();
 
   if (update.acknowledged) return null;
-  if (!reviewer) return null;
+  if (!project.reviewer) return null;
+  if (project.reviewer.id !== me.id) return null;
 
-  let content = <></>;
-
-  if (me.id === reviewer.id) {
-    content = (
-      <>
-        <div className="flex items-center gap-2">
-          <Icons.IconClock size={20} />
-          {champion.fullName} is waiting for you to acknowledge this update
-        </div>
-        <AckButton update={update} />
-      </>
-    );
-  } else {
-    content = (
-      <>
-        <Icons.IconClock size={20} />
-        Waiting for {reviewer.fullName} to acknowledge this update
-      </>
-    );
-  }
-
-  return (
-    <div className="-mx-12 -mt-10 py-4 px-8 bg-shade-1 rounded-t font-semibold text-yellow-400 flex items-center justify-center gap-2">
-      {content}
-    </div>
-  );
-}
-
-function Header({ update }) {
-  return (
-    <div>
-      <div className="flex items-center mb-4 mt-2">
-        <div className="flex items-center gap-2 py-4">
-          <Avatar person={update.author} size={AvatarSize.Small} />
-          <div className="font-bold">{update.author.fullName}</div>
-          <div>
-            <span>posted an update on</span> <FormattedTime time={update.insertedAt} format="short-date" />
-          </div>
-        </div>
-      </div>
-
-      <Title update={update} />
-    </div>
-  );
-}
-
-function Title({ update }) {
-  if (update.messageType === "message") {
-    return <div className="text-3xl font-bold">{update.title}</div>;
-  }
-
-  if (update.messageType === "status_update") {
-    return <div className="text-3xl font-bold">Status Update</div>;
-  }
-
-  if (update.messageType === "phase_change") {
-    return <div className="text-3xl font-bold">Phase Change</div>;
-  }
-
-  if (update.messageType === "health_change") {
-    return <div className="text-3xl font-bold">Health Change</div>;
-  }
-
-  throw new Error("Unknown message type " + update.messageType);
-}
-
-function splitCommentsBeforeAndAfterAck(update) {
-  const allComments = update.comments;
-  const ackTime = update.acknowledgedAt;
-
-  if (update.acknowledged) {
-    return {
-      beforeAck: allComments.filter((c) => c.insertedAt < ackTime),
-      afterAck: allComments.filter((c) => c.insertedAt >= ackTime),
-    };
-  } else {
-    return { beforeAck: update.comments, afterAck: [] };
-  }
-}
-
-function Comments({ update, onNewReaction }) {
-  const { data } = useMe();
-  const { beforeAck, afterAck } = splitCommentsBeforeAndAfterAck(update);
-
-  return (
-    <div className="mt-8 flex flex-col">
-      {beforeAck.map((c) => (
-        <Comment key={c.id} comment={c} onNewReaction={onNewReaction} />
-      ))}
-
-      {update.acknowledged && <AckComment update={update} />}
-
-      {afterAck.map((c) => (
-        <Comment key={c.id} comment={c} onNewReaction={onNewReaction} />
-      ))}
-
-      <AddComment me={data.me} update={update} />
-    </div>
-  );
-}
-
-function Comment({ comment, onNewReaction }) {
-  const addReactionMutation = Projects.useReactMutation("comment", comment.id);
-
-  return (
-    <div className="flex items-start justify-between gap-3 py-4 border-t border-shade-2 text-white-1">
-      <div className="shrink-0">
-        <Avatar person={comment.author} size={AvatarSize.Normal} />
-      </div>
-
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="font-bold">{comment.author.fullName}</div>
-          <FormattedTime time={comment.insertedAt} format="short-date" />
-        </div>
-
-        <RichContent jsonContent={JSON.parse(comment.message)} />
-
-        <div className="mt-2">
-          <Reactions
-            reactions={comment.reactions}
-            size={20}
-            addReactionMutation={addReactionMutation}
-            onNewReaction={onNewReaction}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AckComment({ update }) {
-  return (
-    <div className="flex items-center justify-between py-4 border-t border-shade-2 font-bold relative">
-      <div className="flex items-center gap-3">
-        <Avatar person={update.acknowledgingPerson} size={AvatarSize.Normal} />
-        <span>{update.acknowledgingPerson.fullName} has acknowledged this update</span>
-        <Icons.IconCircleCheckFilled size={24} className="text-green-400" />
-      </div>
-      <FormattedTime time={update.acknowledgedAt} format="short-date" />
-    </div>
-  );
-}
-
-function AddComment({ me, update }) {
-  const [active, setActive] = React.useState(false);
-
-  const activate = () => setActive(true);
-  const deactivate = () => setActive(false);
-
-  if (active) {
-    return <AddCommentActive onBlur={deactivate} onPost={deactivate} update={update} />;
-  } else {
-    return <AddCommentNonActive me={me} onClick={activate} />;
-  }
-}
-
-function AddCommentNonActive({ me, onClick }) {
-  return (
-    <div
-      className="flex items-center gap-3 py-4 border-t border-shade-2 text-white-2 cursor-pointer"
-      onClick={onClick}
-      data-test-id="add-comment"
-    >
-      <Avatar person={me} size={AvatarSize.Normal} />
-
-      <div className="text-white-2">Leave a comment&hellip;</div>
-    </div>
-  );
-}
-
-function AddCommentActive({ update, onBlur, onPost }) {
-  const peopleSearch = People.usePeopleSearch();
-  const [_, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
-
-  const { editor, submittable } = TipTapEditor.useEditor({
-    placeholder: "Write your comment here...",
-    peopleSearch: peopleSearch,
-  });
-
-  const [postComment, { loading }] = usePostCommentMutation(update.id);
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (!submittable) return;
-    if (loading) return;
-
-    await postComment(editor.getJSON());
-    await onPost();
+  const handleAck = async () => {
+    await ack({
+      variables: {
+        id: update.id,
+      },
+    });
 
     refetch();
   };
 
   return (
-    <div>
-      <div className="bg-shade-1 text-white-1 rounded-lg">
-        <div className="flex items-center gap-1 border-b border-shade-2 px-4 py-1">
-          <TipTapEditor.Toolbar editor={editor} variant="large" />
-        </div>
-
-        <div
-          className="mb-4 py-2 text-white-1 px-4"
-          style={{
-            minHeight: "200px",
-          }}
-        >
-          <TipTapEditor.EditorContent editor={editor} />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Button onClick={handlePost} variant="success" data-test-id="post-comment" disabled={!submittable}>
-          <Icons.IconMail size={20} />
-          {submittable ? "Post Comment" : "Uploading..."}
-        </Button>
-
-        <Button variant="secondary" onClick={onBlur}>
-          Cancel
-        </Button>
-      </div>
+    <div className="px-4 py-3 bg-shade-1 flex items-center justify-between font-bold -mt-4 mb-8 rounded">
+      Waiting for your acknowledgement
+      <Button variant="success" size="tiny" data-test-id="acknowledge-update" loading={loading} onClick={handleAck}>
+        <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
+        Acknowledge
+      </Button>
     </div>
   );
+}
+
+function Acknowledgement({ update }: { update: Updates.Update }) {
+  if (update.acknowledgedAt) {
+    return (
+      <span className="flex items-center gap-1">
+        <Icons.IconCircleCheck size={16} className="text-green-400" />
+        Acknowledged by {update.acknowledgingPerson.fullName}
+      </span>
+    );
+  } else {
+    return <span className="flex items-center gap-1">Not acknowledged</span>;
+  }
 }
