@@ -20,6 +20,8 @@ import { Spacer } from "@/components/Spacer";
 import { useAddReaction } from "./useAddReaction";
 import * as Feed from "@/features/feed";
 import { CommentSection } from "./CommentSection";
+import * as UpdateContent from "@/graphql/Projects/update_content";
+import * as ProjectIcons from "@/components/ProjectIcons";
 
 interface LoaderData {
   project: Projects.Project;
@@ -78,18 +80,15 @@ export function Page() {
         </div>
 
         <Spacer size={4} />
+        <RichContent jsonContent={update.message} className="text-lg" />
 
-        <div className="fadeIn">
-          <div className="my-4 mb-8 text-lg">
-            <RichContent jsonContent={update.message} />
-          </div>
+        <Spacer size={2} />
+        <Details update={update} />
 
-          <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
-        </div>
+        <Spacer size={2} />
+        <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
 
         <Spacer size={4} />
-
-        <div className="text-white-1 font-extrabold border-b border-shade-2 pb-2">Comments</div>
         <CommentSection update={update} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
@@ -156,4 +155,46 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
   } else {
     return <span className="flex items-center gap-1">Not acknowledged</span>;
   }
+}
+
+function Details({ update }) {
+  const content = update.content as UpdateContent.StatusUpdate;
+
+  return (
+    <div className="border border-dark-5 rounded">
+      {content.newHealth && (
+        <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+          <span className="font-medium w-40">Health</span> <ProjectIcons.IconForHealth health={content.newHealth} />{" "}
+          <span className="capitalize">
+            {content.newHealth
+              .split("_")
+              .map((s) => s[0].toUpperCase() + s.slice(1))
+              .join(" ")}
+          </span>
+        </div>
+      )}
+
+      {content.phase && (
+        <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+          <span className="font-medium w-40">Current Phase</span> <ProjectIcons.IconForPhase phase={content.phase} />{" "}
+          {content.phase[0].toUpperCase() + content.phase.slice(1)}
+        </div>
+      )}
+
+      {content.nextMilestoneTitle && (
+        <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+          <span className="font-medium w-40">Next Milestone</span>
+          <Icons.IconMapPinFilled size={20} className="text-white-1/60 inline-block" /> {content.nextMilestoneTitle}
+        </div>
+      )}
+
+      {content.projectEndTime && (
+        <div className="flex items-center gap-1 not-last:border-b border-dark-5 p-2">
+          <span className="font-medium w-40">Project Due Date</span>{" "}
+          <Icons.IconCalendarFilled size={20} className="text-white-1/60 inline-block" />{" "}
+          <FormattedTime time={content.projectEndTime} format="short-date" />
+        </div>
+      )}
+    </div>
+  );
 }

@@ -27,19 +27,22 @@ export function CommentSection({
   const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
 
   return (
-    <div className="flex flex-col">
-      {beforeAck.map((c) => (
-        <Comment key={c.id} comment={c} refetch={refetch} />
-      ))}
+    <>
+      <div className="text-white-1 font-extrabold border-b border-shade-2 pb-2">Comments</div>
+      <div className="flex flex-col">
+        {beforeAck.map((c) => (
+          <Comment key={c.id} comment={c} refetch={refetch} />
+        ))}
 
-      <AckComment update={update} />
+        <AckComment update={update} />
 
-      {afterAck.map((c) => (
-        <Comment key={c.id} comment={c} refetch={refetch} />
-      ))}
+        {afterAck.map((c) => (
+          <Comment key={c.id} comment={c} refetch={refetch} />
+        ))}
 
-      <CommentBox update={update} refetch={refetch} me={me} />
-    </div>
+        <CommentBox update={update} refetch={refetch} me={me} />
+      </div>
+    </>
   );
 }
 
