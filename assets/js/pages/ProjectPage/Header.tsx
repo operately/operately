@@ -29,14 +29,32 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 
 function ProjectName({ project }) {
   return (
-    <div className="flex items-end justify-between">
+    <div className="flex items-center justify-between">
       <div className={classnames("flex gap-2 items-center", "font-bold", "break-all", "text-3xl", "text-white-1")}>
         {project.name}
 
         <PrivateIndicator project={project} />
       </div>
+
+      <div>
+        <HealthIndicator health={project.health} />
+      </div>
     </div>
   );
+}
+
+function HealthIndicator({ health }) {
+  const colors = {
+    on_track: "text-green-400",
+    at_risk: "text-yellow-400",
+    off_track: "text-red-400",
+  };
+
+  const color = colors[health];
+  const title = health.replace("_", " ");
+  const className = classnames("bg-shade-2 rounded-full px-3 py-1 text-sm uppercase font-medium", color);
+
+  return <div className={className}>{title}</div>;
 }
 
 function PrivateIndicator({ project }) {
