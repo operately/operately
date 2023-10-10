@@ -40,9 +40,20 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
           execution = Enum.find(phases, fn phase -> phase.phase == :execution end)
           control = Enum.find(phases, fn phase -> phase.phase == :control end)
 
-          {:ok, _} = Operately.Projects.update_phase_history(planning, %{due_time: parse_date(args.input.planning_due_time)})
-          {:ok, _} = Operately.Projects.update_phase_history(execution, %{due_time: parse_date(args.input.execution_due_time)})
-          {:ok, _} = Operately.Projects.update_phase_history(control, %{due_time: parse_date(args.input.control_due_time)})
+          {:ok, _} = Operately.Projects.update_phase_history(planning, %{
+            start_time: project.started_at,
+            due_time: parse_date(args.input.planning_due_time)
+          })
+
+          {:ok, _} = Operately.Projects.update_phase_history(execution, %{
+            start_time: parse_date(args.input.planning_due_time),
+            due_time: parse_date(args.input.execution_due_time)
+          })
+
+          {:ok, _} = Operately.Projects.update_phase_history(control, %{
+            start_time: parse_date(args.input.execution_due_time),
+            due_time: parse_date(args.input.control_due_time
+          )})
 
           {:ok, project} = Operately.Projects.update_project(project, %{deadline: parse_date(args.input.control_due_time)})
 
