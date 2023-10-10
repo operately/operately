@@ -687,7 +687,7 @@ function NoNextMilestones() {
   );
 }
 
-function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd, transparent }) {
+function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
   if (phase === "paused") return null;
   if (phase === "completed") return null;
   if (phase === "canceled") return null;
@@ -713,21 +713,23 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd, transpa
       throw new Error("Invalid phase " + phase);
   }
 
+  const completedWidth =
+    end < Time.today()
+      ? "100%"
+      : `${(Time.secondsBetween(start, Time.today()) / Time.secondsBetween(start, end)) * 100}%`;
+
   return (
-    <div
-      className={`absolute text-sm text-dark-1 flex flex-col rounded ${colorClass}`}
-      style={{
-        left: "calc(" + left + " + 1px)",
-        width: "calc(" + width + " - 2px)",
-        top: 0,
-        bottom: 0,
-        opacity: transparent ? 0.3 : 1,
-      }}
-    >
-      <span className="mt-1 ml-1.5 uppercase text-xs font-bold truncate inline-block">{phase}</span>
-      <span className="ml-1.5 text-dark-2 text-xs font-medium truncate inline-block">
-        <FormattedTime time={startedAt} format="short-date" /> - <FormattedTime time={finishedAt} format="short-date" />
-      </span>
+    <div className="absolute" style={{ left: left, width: width, top: 0, bottom: 0 }}>
+      <div className={`absolute inset-0 ${colorClass} opacity-30`}></div>
+      <div className={`absolute ${colorClass}`} style={{ left: 0, top: 0, bottom: 0, width: completedWidth }}></div>
+
+      <div className="relative text-sm text-dark-1 flex flex-col rounded">
+        <span className="mt-1 ml-1.5 uppercase text-xs font-bold truncate inline-block">{phase}</span>
+        <span className="ml-1.5 text-dark-2 text-xs font-medium truncate inline-block">
+          <FormattedTime time={startedAt} format="short-date" /> -{" "}
+          <FormattedTime time={finishedAt} format="short-date" />
+        </span>
+      </div>
     </div>
   );
 }
