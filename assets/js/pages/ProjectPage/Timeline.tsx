@@ -683,12 +683,15 @@ function NoNextMilestones() {
 }
 
 function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
+  const start = Time.parse(startedAt);
+  const end = Time.parse(finishedAt);
+
+  if (!start) return null;
+  if (!end) return null;
+
   if (phase === "paused") return null;
   if (phase === "completed") return null;
   if (phase === "canceled") return null;
-
-  const start = Time.parse(startedAt) || Time.today();
-  const end = Time.parse(finishedAt) || Time.today();
 
   const left = `${(Time.secondsBetween(lineStart, start) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
   const width = `${(Time.secondsBetween(start, end) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
