@@ -13,16 +13,11 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
     },
   };
 
-  if (isToday(time) && !weekday) {
-    params["formatParams"]["val"]["hour"] = "numeric";
-    params["formatParams"]["val"]["minute"] = "numeric";
-  } else {
-    params["formatParams"]["val"]["day"] = "numeric";
-    params["formatParams"]["val"]["month"] = "short";
+  params["formatParams"]["val"]["day"] = "numeric";
+  params["formatParams"]["val"]["month"] = "short";
 
-    if (!Time.isCurrentYear(time)) {
-      params["formatParams"]["val"]["year"] = "numeric";
-    }
+  if (!Time.isCurrentYear(time)) {
+    params["formatParams"]["val"]["year"] = "numeric";
   }
 
   let prefix = "";
