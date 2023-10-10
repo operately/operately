@@ -23,6 +23,7 @@ function OptionsDropdown({ project, closeOptions }) {
   return (
     <div className="absolute right-0 top-0 z-50 shadow-lg bg-blue-400 w-[250px] text-dark-1 font-medium flex flex-col">
       <CloseOptions onClick={closeOptions} />
+      <EditProjectName project={project} />
       <ArchiveProject project={project} />
     </div>
   );
@@ -44,6 +45,19 @@ function ArchiveProject({ project }) {
       title="Archive this project"
       onClick={archiveForm.submit}
       dataTestId="archive-project-button"
+    />
+  );
+}
+
+function EditProjectName({ project }) {
+  const navigateToEdit = useNavigateTo(`/projects/${project.id}/edit/name`);
+
+  return (
+    <Option
+      icon={<Icons.IconEdit size={20} />}
+      title="Edit project name"
+      onClick={navigateToEdit}
+      dataTestId="edit-project-name-button"
     />
   );
 }

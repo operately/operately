@@ -27,7 +27,22 @@ defmodule OperatelyWeb.GraphQL.Mutations.Projects do
     field :control_due_time, :date
   end
 
+  input_object :edit_project_name_input do
+    field :project_id, non_null(:id)
+    field :name, non_null(:string)
+  end
+
   object :project_mutations do
+    field :edit_project_name, non_null(:project) do
+      arg :input, non_null(:edit_project_name_input)
+
+      resolve fn args, _ ->
+        project = Operately.Projects.get_project!(args.input.project_id)
+
+        Operately.Projects.update_project(project, %{name: args.input.name})
+      end
+    end
+
     field :edit_project_timeline, non_null(:project) do
       arg :input, non_null(:edit_project_timeline_input)
 

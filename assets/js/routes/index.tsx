@@ -26,6 +26,7 @@ import * as ProjectPhaseChangeSurveyPage from "@/pages/ProjectPhaseChangeSurveyP
 import * as ProjectReviewRequestSubmitPage from "@/pages/ProjectReviewRequestSubmitPage";
 import * as ProjectStatusUpdatePage from "@/pages/ProjectStatusUpdatePage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
+import * as ProjectEditProjectNamePage from "@/pages/ProjectEditProjectNamePage";
 
 import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
 import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
@@ -86,6 +87,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/reviews/:id", ProjectReviewPage),
       pageRoute("/projects/:projectID/phase_change/:newPhase", ProjectPhaseChangeSurveyPage),
       pageRoute("/projects/:projectID/status_updates/:id", ProjectStatusUpdatePage),
+      pageRoute("/projects/:projectID/edit/name", ProjectEditProjectNamePage),
       {
         path: "/projects/:project_id/contributors",
         element: <ProjectContributorsPage />,

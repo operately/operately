@@ -12,6 +12,7 @@ import * as People from "@/graphql/People";
 
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
+export { EDIT_PROJECT_NAME, useEditProjectName } from "./mutations/edit_name";
 export { ARCHIVE_PROJECT, useArchiveProject, useArchiveForm } from "./mutations/archive";
 
 export const LIST_PROJECTS = gql`
