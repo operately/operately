@@ -163,7 +163,7 @@ function Calendar({ project }) {
   }
 
   return (
-    <div className="">
+    <div className="overflow-hidden">
       <div className="flex items-center w-full relative" style={{ height: "200px" }}>
         <DateLabels resolution={resolution} lineStart={lineStart} lineEnd={lineEnd} />
         <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
@@ -179,10 +179,6 @@ function Calendar({ project }) {
     </div>
   );
 }
-
-// <ProjectDurationMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-// <StartMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
-// <EndMarker project={project} lineStart={lineStart} lineEnd={lineEnd} />
 
 function PhaseMarkers({ project, lineStart, lineEnd }: { project: Projects.Project; lineStart: Date; lineEnd: Date }) {
   return (
@@ -734,36 +730,6 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
   );
 }
 
-function ProjectDurationMarker({ project, lineStart, lineEnd }) {
-  const start = Time.parse(project.startedAt || lineStart);
-  const end = Time.parse(project.deadline || lineEnd);
-
-  if (!start || !end) return null;
-
-  const left = `${(Time.secondsBetween(lineStart, start) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-  const width = `${(Time.secondsBetween(start, end) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-
-  return <div className="bg-shade-1 absolute" style={{ left, width, top: 0, bottom: 0 }}></div>;
-}
-
-function EndMarker({ project, lineStart, lineEnd }) {
-  const date = Time.parse(project.deadline);
-  if (!date) return null;
-
-  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-
-  return <div className="bg-white-1 absolute top-0 bottom-0" style={{ left: left, width: "2px" }}></div>;
-}
-
-function StartMarker({ project, lineStart, lineEnd }) {
-  const date = Time.parse(project.startedAt || project.insertedAt);
-  if (!date) return null;
-
-  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-
-  return <div className="bg-white-1 absolute top-0 bottom-0" style={{ left: left, width: "2px" }}></div>;
-}
-
 function TodayMarker({ lineStart, lineEnd }) {
   const today = Time.today();
   const tomorrow = Time.add(today, 1, "days");
@@ -777,7 +743,7 @@ function TodayMarker({ lineStart, lineEnd }) {
       style={{ left: left, width: width }}
     >
       <span className="whitespace-nowrap bg-dark-5 px-1.5 py-1 rounded">
-        Today, <FormattedTime time={today} format="short-date" />
+        <FormattedTime time={today} format="short-date-with-weekday-relative" />
       </span>
     </div>
   );
