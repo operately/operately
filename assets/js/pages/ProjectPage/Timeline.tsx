@@ -194,7 +194,6 @@ function PhaseMarkers({ project, lineStart, lineEnd }: { project: Projects.Proje
             project.startedAt
           }
           finishedAt={phase.endTime || phase.dueTime}
-          transparent={phase.startTime === null}
           lineStart={lineStart}
           lineEnd={lineEnd}
         />
@@ -709,10 +708,15 @@ function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
       throw new Error("Invalid phase " + phase);
   }
 
-  const completedWidth =
-    end < Time.today()
-      ? "100%"
-      : `${(Time.secondsBetween(start, Time.today()) / Time.secondsBetween(start, end)) * 100}%`;
+  let completedWidth = "0%";
+
+  if (start < Time.today()) {
+    if (end < Time.today()) {
+      completedWidth = "100%";
+    } else {
+      completedWidth = `${(Time.secondsBetween(start, Time.today()) / Time.secondsBetween(start, end)) * 100}%`;
+    }
+  }
 
   return (
     <div className="absolute" style={{ left: left, width: width, top: 0, bottom: 0 }}>
