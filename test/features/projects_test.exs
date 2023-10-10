@@ -238,6 +238,19 @@ defmodule Operately.Features.ProjectsTest do
     |> refute_has(Query.text(state.project.name))
   end
 
+  feature "rename a project", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "edit-project-name-button")
+    |> UI.fill(testid: "project-name-input", with: "New Name")
+    |> UI.click(testid: "save")
+
+    state
+    |> visit_show(state.project)
+    |> UI.assert_text("New Name")
+  end
+
   # ===========================================================================
 
   defp visit_index(state) do
