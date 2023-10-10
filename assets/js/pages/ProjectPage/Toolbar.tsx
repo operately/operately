@@ -46,8 +46,6 @@ function ChampionToolbarOpen({ project, onClose }) {
       <div className="text-white-2 text-sm mb-4">Tools for managing the project. Only you can see this.</div>
 
       <div className="flex items-center gap-2">
-        <Button variant="secondary">Complete the {project.phase} phase</Button>
-
         <Button
           variant="secondary"
           onClick={archiveForm.submit}
