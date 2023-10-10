@@ -60,6 +60,7 @@ function Form({ project }) {
     edit({
       variables: {
         input: {
+          projectId: project.id,
           name: projectName,
         },
       },
