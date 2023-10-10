@@ -228,7 +228,7 @@ defmodule Operately.Features.ProjectsTest do
   feature "archive a project", state do
     state
     |> visit_show(state.project)
-    |> UI.click(testid: "champion-toolbar")
+    |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "archive-project-button")
 
     :timer.sleep(200)

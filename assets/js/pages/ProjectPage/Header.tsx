@@ -13,6 +13,7 @@ import * as Contributors from "@/graphql/Projects/contributors";
 import * as Icons from "@tabler/icons-react";
 
 import { TextTooltip } from "@/components/Tooltip";
+import Options from "./Options";
 
 interface HeaderProps {
   project: Project;
@@ -20,7 +21,7 @@ interface HeaderProps {
 
 export default function Header({ project }: HeaderProps): JSX.Element {
   return (
-    <div className="relative">
+    <div>
       <ProjectName project={project} />
       <ContributorList project={project} />
     </div>
@@ -36,8 +37,9 @@ function ProjectName({ project }) {
         <PrivateIndicator project={project} />
       </div>
 
-      <div>
+      <div className="flex gap-4 items-center">
         <HealthIndicator health={project.health} />
+        <Options project={project} />
       </div>
     </div>
   );

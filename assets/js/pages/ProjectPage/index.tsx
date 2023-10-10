@@ -11,7 +11,6 @@ import Description from "./Description";
 import Reviews from "./Reviews";
 import StatusUpdates from "./StatusUpdates";
 import KeyResources from "./KeyResources";
-import Toolbar from "./Toolbar";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -57,7 +56,6 @@ export function Page() {
           <Header project={project} />
         </div>
 
-        <Toolbar project={project} refetch={refetch} me={me} />
         <Divider />
         <Description me={me} project={project} refetch={refetch} />
         <Divider />
