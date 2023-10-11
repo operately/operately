@@ -7,12 +7,12 @@ import * as GroupListPage from "@/pages/GroupListPage";
 import * as GroupAddPage from "@/pages/GroupAddPage";
 import * as GroupMembersPage from "@/pages/GroupMembersPage";
 
-import { HomePage } from "@/pages/HomePage";
-import { MyAssignmentsPage } from "@/pages/MyAssignmentsPage";
+import * as HomePage from "@/pages/HomePage";
+import * as MyAssignmentsPage from "@/pages/MyAssignmentsPage";
 
-import { AccountPage } from "@/pages/AccountPage";
-import { AccountEditProfilePage } from "@/pages/AccountEditProfilePage";
-import { AccountNotificationSettingsPage } from "@/pages/AccountNotificationSettingsPage";
+import * as AccountPage from "@/pages/AccountPage";
+import * as AccountEditProfilePage from "@/pages/AccountEditProfilePage";
+import * as AccountNotificationSettingsPage from "@/pages/AccountNotificationSettingsPage";
 
 import * as ProjectPage from "@/pages/ProjectPage";
 import * as ProjectListPage from "@/pages/ProjectListPage";
@@ -27,59 +27,34 @@ import * as ProjectReviewRequestSubmitPage from "@/pages/ProjectReviewRequestSub
 import * as ProjectStatusUpdatePage from "@/pages/ProjectStatusUpdatePage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import * as ProjectEditProjectNamePage from "@/pages/ProjectEditProjectNamePage";
+import * as ProjectContributorsPage from "@/pages/ProjectContributorsPage";
 
-import { ProjectContributorsPage } from "@/pages/ProjectContributorsPage";
-import { ProjectDocumentationPage } from "@/pages/ProjectDocumentationPage";
-
-import { TenetListPage, TenetListPageLoader } from "../pages/TenetListPage";
-
-import { KpiPage, KpiPageLoader } from "../pages/KpiPage";
-import { KpiListPage, KpiListPageLoader } from "../pages/KpiListPage";
-
-import { ObjectivePage } from "../pages/ObjectivePage";
-import { ObjectiveListPage, ObjectiveListPageLoader } from "../pages/ObjectiveListPage";
-
-import ProfilePage from "../pages/ProfilePage";
-
-import NotFoundPage from "../pages/NotFoundPage";
-import { CompanyPage } from "../pages/Company";
+import * as NotFoundPage from "@/pages/NotFoundPage";
 
 import { createBrowserRouter } from "react-router-dom";
-import { loaderWithApollo, pageRoute } from "./utils";
+import { pageRoute } from "./utils";
 
 const routes = createBrowserRouter([
   {
     path: "/",
     element: <DefaultLayout />,
     children: [
-      {
-        path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "/account",
-        element: <AccountPage />,
-      },
-      {
-        path: "/account/profile",
-        element: <AccountEditProfilePage />,
-      },
-      {
-        path: "/account/notifications",
-        element: <AccountNotificationSettingsPage />,
-      },
-      {
-        path: "/home/my-assignments",
-        element: <MyAssignmentsPage />,
-      },
+      pageRoute("/", HomePage),
+      pageRoute("/home/my-assignments", MyAssignmentsPage),
+
+      pageRoute("/account", AccountPage),
+      pageRoute("/account/profile", AccountEditProfilePage),
+      pageRoute("/account/notifications", AccountNotificationSettingsPage),
+
       pageRoute("/groups", GroupListPage),
       pageRoute("/groups/new", GroupAddPage),
       pageRoute("/groups/:id", GroupPage),
       pageRoute("/groups/:id/members", GroupMembersPage),
+
       pageRoute("/projects", ProjectListPage),
       pageRoute("/projects/new", ProjectAddPage),
-      pageRoute("/projects/:project_id/updates/new", ProjectStatusUpdateNewPage),
-      pageRoute("/projects/:project_id/milestones", ProjectMilestonesPage),
+      pageRoute("/projects/:projectID/updates/new", ProjectStatusUpdateNewPage),
+      pageRoute("/projects/:projectID/milestones", ProjectMilestonesPage),
       pageRoute("/projects/:projectID/milestones/:id", ProjectMilestonePage),
       pageRoute("/projects/:projectID/reviews/request/new", ProjectReviewRequestNewPage),
       pageRoute("/projects/:projectID/reviews/request/:id", ProjectReviewRequestPage),
@@ -88,55 +63,9 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/phase_change/:newPhase", ProjectPhaseChangeSurveyPage),
       pageRoute("/projects/:projectID/status_updates/:id", ProjectStatusUpdatePage),
       pageRoute("/projects/:projectID/edit/name", ProjectEditProjectNamePage),
-      {
-        path: "/projects/:project_id/contributors",
-        element: <ProjectContributorsPage />,
-      },
-      {
-        path: "/projects/:project_id/documentation/*",
-        element: <ProjectDocumentationPage />,
-      },
-      pageRoute("/projects/:id/*", ProjectPage),
-      {
-        path: "/tenets",
-        loader: loaderWithApollo(TenetListPageLoader),
-        element: <TenetListPage />,
-      },
-      {
-        path: "/tenets/:id",
-        element: <ObjectiveListPage />,
-      },
-      {
-        path: "/kpis",
-        loader: loaderWithApollo(KpiListPageLoader),
-        element: <KpiListPage />,
-      },
-      {
-        path: "/kpis/:id",
-        loader: loaderWithApollo(KpiPageLoader),
-        element: <KpiPage />,
-      },
-      {
-        path: "/objectives",
-        loader: loaderWithApollo(ObjectiveListPageLoader),
-        element: <ObjectiveListPage />,
-      },
-      {
-        path: "/objectives/:id",
-        element: <ObjectivePage />,
-      },
-      {
-        path: "/people/:id",
-        element: <ProfilePage />,
-      },
-      {
-        path: "/company",
-        element: <CompanyPage />,
-      },
-      {
-        path: "*",
-        element: <NotFoundPage />,
-      },
+      pageRoute("/projects/:projectID/contributors", ProjectContributorsPage),
+      pageRoute("/projects/:id", ProjectPage),
+      pageRoute("*", NotFoundPage),
     ],
   },
 ]);

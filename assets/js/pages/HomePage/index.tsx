@@ -12,6 +12,10 @@ import { MyProjectsCard } from "./MyProjectsCard";
 import { PinnedProjectCard } from "./PinnedProjectCard";
 import Button from "@/components/Button";
 
+export async function loader(): Promise<null> {
+  return null;
+}
+
 import classnames from "classnames";
 
 import { motion } from "framer-motion";
@@ -36,7 +40,7 @@ interface ContextDescriptor {
 
 const Context = React.createContext<ContextDescriptor>({});
 
-export function HomePage() {
+export function Page() {
   const [editing, setEditing] = React.useState(false);
 
   const meData = useMe();

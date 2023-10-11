@@ -1,5 +1,9 @@
-import React from 'react';
+import React from "react";
 
-export default function NotFoundPage() {
+export async function loader(): Promise<null> {
+  return null;
+}
+
+export function Page() {
   return <div>PageNotFound</div>;
 }

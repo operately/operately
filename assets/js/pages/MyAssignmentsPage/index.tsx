@@ -4,7 +4,11 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import { AssignmentList } from "@/components/AssignmentList";
 
-export function MyAssignmentsPage() {
+export async function loader(): Promise<null> {
+  return null;
+}
+
+export function Page() {
   return (
     <Paper.Root size="large">
       <Paper.Navigation>

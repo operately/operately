@@ -5,7 +5,11 @@ import Avatar from "@/components/Avatar";
 import { useMe, useUpdateNotificationsSettings } from "@/graphql/Me";
 import * as Forms from "@/components/Form";
 
-export function AccountNotificationSettingsPage() {
+export async function loader(): Promise<null> {
+  return null;
+}
+
+export function Page() {
   const { data } = useMe();
 
   if (!data) return null;

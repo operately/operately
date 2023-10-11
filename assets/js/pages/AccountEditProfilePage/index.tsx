@@ -9,7 +9,11 @@ import { useMe } from "@/graphql/Me";
 
 import * as Forms from "@/components/Form";
 
-export function AccountEditProfilePage() {
+export async function loader(): Promise<null> {
+  return null;
+}
+
+export function Page() {
   const { data } = useMe();
 
   if (!data) {

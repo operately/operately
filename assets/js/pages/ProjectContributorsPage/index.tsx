@@ -1,37 +1,38 @@
 import React from "react";
 
-import { useParams } from "react-router-dom";
-import { useProject } from "@/graphql/Projects";
-import { Project } from "@/graphql/Projects";
-
+import client from "@/graphql/client";
+import * as Projects from "@/graphql/Projects";
+import * as Contributors from "@/graphql/Projects/contributors";
 import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
 
 import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton } from "./FormElements";
 import ContributorItem from "./ContributorItem";
 import Button from "@/components/Button";
 
-import * as Projects from "@/graphql/Projects";
-import * as Contributors from "@/graphql/Projects/contributors";
-import * as Paper from "@/components/PaperContainer";
+interface LoaderData {
+  project: Projects.Project;
+}
 
-export function ProjectContributorsPage() {
-  const params = useParams();
-  const projectId = params["project_id"];
+export async function loader({ params }): Promise<LoaderData> {
+  let projectData = await client.query({
+    query: Projects.GET_PROJECT,
+    variables: { id: params.projectID },
+    fetchPolicy: "network-only",
+  });
 
-  if (!projectId) return <p className="mt-16">Unable to find project</p>;
+  return {
+    project: projectData.data.project,
+  };
+}
 
-  const { loading, error, data, refetch } = useProject(projectId);
-
-  if (loading) return <p className="mt-16">Loading...</p>;
-  if (error) return <p className="mt-16">Error : {error.message}</p>;
-  if (!data) return <p className="mt-16">Can't find project</p>;
-
-  const project = data.project;
+export function Page() {
+  const [{ project }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
 
   return (
     <Paper.Root>
       <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${projectId}`}>
+        <Paper.NavItem linkTo={`/projects/${project.id}`}>
           <Icons.IconClipboardList size={16} />
           {project.name}
         </Paper.NavItem>
@@ -45,7 +46,7 @@ export function ProjectContributorsPage() {
   );
 }
 
-function Title({ project }: { project: Project }) {
+function Title({ project }: { project: Projects.Project }) {
   const [addColabActive, setAddColabActive] = React.useState(false);
 
   const activateAddColab = () => setAddColabActive(true);
@@ -105,7 +106,7 @@ function AddButton({ onClick }) {
   );
 }
 
-function ContributorList({ project, refetch }: { project: Project; refetch: any }) {
+function ContributorList({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
   const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (

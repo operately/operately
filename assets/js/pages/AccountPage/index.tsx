@@ -8,7 +8,11 @@ import { logOut } from "@/graphql/Me";
 import { PuffLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 
-export function AccountPage() {
+export async function loader(): Promise<null> {
+  return null;
+}
+
+export function Page() {
   return (
     <Paper.Root size="small">
       <Paper.Body minHeight="500px">

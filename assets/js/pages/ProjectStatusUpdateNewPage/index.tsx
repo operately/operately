@@ -18,7 +18,7 @@ import * as PhaseChange from "@/features/phase_change";
 export async function loader({ params }) {
   let res = await client.query({
     query: Projects.GET_PROJECT,
-    variables: { id: params["project_id"] },
+    variables: { id: params.projectID },
     fetchPolicy: "network-only",
   });
 
