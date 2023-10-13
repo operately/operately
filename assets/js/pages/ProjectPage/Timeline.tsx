@@ -49,7 +49,14 @@ export default function Timeline({ project, refetch, editable }) {
         </div>
 
         <div className="rounded-lg shadow-lg bg-dark-3 my-4">
-          <ProjectLifecycleGraph project={project} />
+          <ProjectLifecycleGraph
+            milestones={project.milestones}
+            projectStart={Time.parse(project.startedAt)}
+            projectEnd={Time.parse(project.phaseHistory.find((phase) => phase.phase === "control")?.dueTime)}
+            planningDue={project.phaseHistory.find((phase) => phase.phase === "planning")?.dueTime || null}
+            executionDue={project.phaseHistory.find((phase) => phase.phase === "execution")?.dueTime || null}
+            controlDue={project.phaseHistory.find((phase) => phase.phase === "control")?.dueTime || null}
+          />
         </div>
 
         <div className="rounded-lg shadow-lg bg-dark-3 my-4">
