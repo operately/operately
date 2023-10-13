@@ -1,6 +1,5 @@
 import React from "react";
 
-import classnames from "classnames";
 import { useNavigate } from "react-router-dom";
 import { useBoolState } from "@/utils/useBoolState";
 
@@ -16,7 +15,7 @@ import * as Milestones from "@/graphql/Projects/milestones";
 
 import Button, { IconButton } from "@/components/Button";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
-import { TextTooltip } from "@/components/Tooltip";
+import { ProjectLifecycleGraph } from "@/components/ProjectLifecycleGraph";
 
 import Modal from "@/components/Modal";
 import * as Forms from "@/components/Form";
@@ -50,7 +49,14 @@ export default function Timeline({ project, refetch, editable }) {
         </div>
 
         <div className="rounded-lg shadow-lg bg-dark-3 my-4">
-          <Calendar project={project} />
+          <ProjectLifecycleGraph
+            milestones={project.milestones}
+            projectStart={Time.parse(project.startedAt)}
+            projectEnd={Time.parse(project.phaseHistory.find((phase) => phase.phase === "control")?.dueTime)}
+            planningDue={project.phaseHistory.find((phase) => phase.phase === "planning")?.dueTime || null}
+            executionDue={project.phaseHistory.find((phase) => phase.phase === "execution")?.dueTime || null}
+            controlDue={project.phaseHistory.find((phase) => phase.phase === "control")?.dueTime || null}
+          />
         </div>
 
         <div className="rounded-lg shadow-lg bg-dark-3 my-4">
@@ -131,73 +137,6 @@ function EditTimeline({ project, refetch }: { project: Projects.Project; refetch
           </Forms.SubmitArea>
         </Forms.Form>
       </Modal>
-    </>
-  );
-}
-
-function Calendar({ project }) {
-  const milestones = Milestones.sortByDeadline(project.milestones);
-  const firstMilestone = Time.parse(milestones[0]?.deadlineAt || null);
-  const lastMilestone = Time.parse(milestones[milestones.length - 1]?.deadlineAt || null);
-  const projectStart = Time.parse(project.startedAt || project.insertedAt) || Time.today();
-  const projectEnd = Time.parse(project.deadline || Time.add(projectStart, 6, "months"));
-
-  const startDate = Time.earliest(projectStart, firstMilestone);
-  if (!startDate) throw new Error("Invalid start date");
-
-  const dueDate = Time.latest(projectEnd, lastMilestone);
-  if (!dueDate) throw new Error("Invalid due date");
-
-  let resolution: "weeks" | "months" = "weeks";
-  let lineStart: Date | null = startDate;
-  let lineEnd: Date | null = dueDate;
-
-  if (Time.daysBetween(startDate, dueDate) > 6 * 7) {
-    resolution = "months";
-    lineStart = Time.firstOfMonth(startDate);
-    lineEnd = Time.lastOfMonth(dueDate);
-  } else {
-    resolution = "weeks";
-    lineStart = Time.closestMonday(startDate, "before");
-    lineEnd = Time.closestMonday(dueDate, "after");
-  }
-
-  return (
-    <div className="overflow-hidden">
-      <div className="flex items-center w-full relative" style={{ height: "200px" }}>
-        <DateLabels resolution={resolution} lineStart={lineStart} lineEnd={lineEnd} />
-        <TodayMarker lineStart={lineStart} lineEnd={lineEnd} />
-
-        <div className="absolute" style={{ top: "90px", height: "40px", left: 0, right: 0 }}>
-          <PhaseMarkers project={project} lineStart={lineStart} lineEnd={lineEnd} />
-
-          {project.milestones.map((milestone: Milestones.Milestone) => (
-            <MilestoneMarker key={milestone.id} milestone={milestone} lineStart={lineStart} lineEnd={lineEnd} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PhaseMarkers({ project, lineStart, lineEnd }: { project: Projects.Project; lineStart: Date; lineEnd: Date }) {
-  return (
-    <>
-      {project.phaseHistory.map((phase, index) => (
-        <PhaseMarker
-          key={index}
-          phase={phase.phase}
-          startedAt={
-            phase.startTime ||
-            project.phaseHistory[index - 1]?.endTime ||
-            project.phaseHistory[index - 1]?.dueTime ||
-            project.startedAt
-          }
-          finishedAt={phase.endTime || phase.dueTime}
-          lineStart={lineStart}
-          lineEnd={lineEnd}
-        />
-      ))}
     </>
   );
 }
@@ -447,25 +386,6 @@ function MilestoneListItemDueDate({ project, milestone, refetch }) {
   );
 }
 
-function Label({ title }) {
-  return <div className="font-bold ml-1">{title}</div>;
-}
-
-function Phase() {
-  const { project, editable } = React.useContext(Context) as ContextDescriptor;
-  const navigate = useNavigate();
-
-  const handlePhaseChange = (phase: string) => {
-    navigate(`/projects/${project.id}/phase_change/${phase}`);
-  };
-
-  return (
-    <div className="flex flex-col">
-      <ProjectPhaseSelector activePhase={project.phase} editable={editable} onSelected={handlePhaseChange} />
-    </div>
-  );
-}
-
 function ArrowRight() {
   return <span className="mt-0.5">-&gt;</span>;
 }
@@ -682,145 +602,21 @@ function NoNextMilestones() {
   );
 }
 
-function PhaseMarker({ phase, startedAt, finishedAt, lineStart, lineEnd }) {
-  const start = Time.parse(startedAt);
-  const end = Time.parse(finishedAt);
-
-  if (!start) return null;
-  if (!end) return null;
-
-  if (phase === "paused") return null;
-  if (phase === "completed") return null;
-  if (phase === "canceled") return null;
-
-  const left = `${(Time.secondsBetween(lineStart, start) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-  const width = `${(Time.secondsBetween(start, end) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-
-  let colorClass = "bg-green-400";
-  switch (phase) {
-    case "planning":
-      colorClass = "bg-gray-400";
-      break;
-    case "execution":
-      colorClass = "bg-yellow-400";
-      break;
-    case "control":
-      colorClass = "bg-green-400";
-      break;
-    default:
-      throw new Error("Invalid phase " + phase);
-  }
-
-  let completedWidth = "0%";
-
-  if (start < Time.today()) {
-    if (end < Time.today()) {
-      completedWidth = "100%";
-    } else {
-      completedWidth = `${(Time.secondsBetween(start, Time.today()) / Time.secondsBetween(start, end)) * 100}%`;
-    }
-  }
-
-  return (
-    <div className="absolute" style={{ left: left, width: width, top: 0, bottom: 0 }}>
-      <div className={`absolute inset-0 ${colorClass} opacity-30`}></div>
-      <div className={`absolute ${colorClass}`} style={{ left: 0, top: 0, bottom: 0, width: completedWidth }}></div>
-
-      <div className="relative text-sm text-dark-1 flex flex-col rounded">
-        <span className="mt-1 ml-1.5 uppercase text-xs font-bold truncate inline-block">{phase}</span>
-        <span className="ml-1.5 text-dark-2 text-xs font-medium truncate inline-block">
-          <FormattedTime time={startedAt} format="short-date" /> -{" "}
-          <FormattedTime time={finishedAt} format="short-date" />
-        </span>
-      </div>
-    </div>
-  );
+function Label({ title }) {
+  return <div className="font-bold ml-1">{title}</div>;
 }
 
-function TodayMarker({ lineStart, lineEnd }) {
-  const today = Time.today();
-  const tomorrow = Time.add(today, 1, "days");
+function Phase() {
+  const { project, editable } = React.useContext(Context) as ContextDescriptor;
+  const navigate = useNavigate();
 
-  const left = `${(Time.secondsBetween(lineStart, today) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-  const width = `${(Time.secondsBetween(today, tomorrow) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-
-  return (
-    <div
-      className="bg-dark-5 absolute top-0 bottom-0 text-xs text-white-2 break-keep flex justify-center items-end pb-2"
-      style={{ left: left, width: width }}
-    >
-      <span className="whitespace-nowrap bg-dark-5 px-1.5 py-1 rounded">
-        <FormattedTime time={today} format="short-date-with-weekday-relative" />
-      </span>
-    </div>
-  );
-}
-
-function MilestoneMarker({ milestone, lineStart, lineEnd }) {
-  const date = Time.parse(milestone.deadlineAt);
-  if (!date) return null;
-  if (date < lineStart) return null;
-  if (date > lineEnd) return null;
-
-  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-  const color = milestoneIconColor(milestone);
-
-  const tooltip = (
-    <div>
-      <div className="uppercase text-xs text-white-2">MILESTONE</div>
-      <div className="font-bold">{milestone.title}</div>
-    </div>
-  );
+  const handlePhaseChange = (phase: string) => {
+    navigate(`/projects/${project.id}/phase_change/${phase}`);
+  };
 
   return (
-    <TextTooltip text={tooltip}>
-      <div
-        className="absolute flex flex-col items-center justify-normal gap-1 pt-0.5"
-        style={{ left: left, top: "-25px", width: "0px" }}
-      >
-        <Icons.IconCircleFilled size={16} className={color} />
-      </div>
-    </TextTooltip>
-  );
-}
-
-function DateLabels({ resolution, lineStart, lineEnd }) {
-  let markedDates: Date[] = [];
-
-  switch (resolution) {
-    case "weeks":
-      markedDates = Time.everyMondayBetween(lineStart, lineEnd);
-      break;
-    case "months":
-      markedDates = Time.everyFirstOfMonthBetween(lineStart, lineEnd, true);
-      break;
-    default:
-      throw new Error("Invalid resolution " + resolution);
-  }
-
-  return (
-    <>
-      {markedDates.map((date, index) => (
-        <DateLabel key={index} date={date} lineStart={lineStart} lineEnd={lineEnd} />
-      ))}
-    </>
-  );
-}
-
-function DateLabel({ date, lineStart, lineEnd }) {
-  const title = <FormattedTime time={date} format="short-date" />;
-  const left = `${(Time.secondsBetween(lineStart, date) / Time.secondsBetween(lineStart, lineEnd)) * 100}%`;
-  const showLine = left !== "0%";
-
-  return (
-    <div
-      className={classnames({
-        "absolute flex items-start gap-1 break-keep": true,
-        "border-x border-shade-1": showLine,
-      })}
-      style={{ left: left, top: 0, bottom: 0, width: 0, height: "100%" }}
-    >
-      <span className="text-sm text-white-2 whitespace-nowrap pl-2 pt-2">{title}</span>
+    <div className="flex flex-col">
+      <ProjectPhaseSelector activePhase={project.phase} editable={editable} onSelected={handlePhaseChange} />
     </div>
   );
 }
