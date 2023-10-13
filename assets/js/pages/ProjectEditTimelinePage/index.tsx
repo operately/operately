@@ -182,7 +182,7 @@ function DateSelector({ date, onChange, minDate, maxDate }) {
           onClick={() => setOpen(true)}
           data-test-id="change-milestone-due-date"
         >
-          {date ? <FormattedTime time={date} format="short-date" /> : "Not set"}
+          {date ? <FormattedTime time={date} format="short-date-with-weekday" /> : "Not set"}
         </div>
       </Popover.Trigger>
 
