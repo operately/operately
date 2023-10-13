@@ -142,7 +142,7 @@ export function Page() {
         />
 
         <div className="mt-8 flex items-center gap-2">
-          <Button type="submit" variant="success" onClick={save} loading={loading}>
+          <Button type="submit" variant="success" onClick={save} loading={loading} data-test-id="save">
             Save
           </Button>
           <Button type="button" variant="secondary" linkTo={`/projects/${project.id}`}>
@@ -165,6 +165,7 @@ function Phases({ dates, setDates }) {
   return (
     <div className="flex flex-col gap-2">
       <PhaseDatesForm
+        testID="planning"
         phaseName="Planning Phase"
         startTime={dates.projectStart}
         dueDate={dates.planningDue}
@@ -176,6 +177,7 @@ function Phases({ dates, setDates }) {
         maxDue={dates.executionDue}
       />
       <PhaseDatesForm
+        testID="execution"
         phaseName="Execution Phase"
         startTime={dates.planningDue}
         dueDate={dates.executionDue}
@@ -187,6 +189,7 @@ function Phases({ dates, setDates }) {
         maxDue={dates.controlDue}
       />
       <PhaseDatesForm
+        testID="control"
         phaseName="Control Phase"
         startTime={dates.executionDue}
         dueDate={dates.controlDue}
@@ -201,26 +204,48 @@ function Phases({ dates, setDates }) {
   );
 }
 
-function PhaseDatesForm({ phaseName, startTime, dueDate, setStart, setDue, minStart, maxStart, minDue, maxDue }) {
+function PhaseDatesForm({
+  phaseName,
+  startTime,
+  dueDate,
+  setStart,
+  setDue,
+  minStart,
+  maxStart,
+  minDue,
+  maxDue,
+  testID,
+}) {
   return (
     <div className="flex items-center">
       <div className="w-40">{phaseName}</div>
 
       <div className="flex items-center gap-2 flex-1">
         <div className="w-40">
-          <DateSelector date={startTime} onChange={setStart} minDate={minStart} maxDate={maxStart} />
+          <DateSelector
+            date={startTime}
+            onChange={setStart}
+            minDate={minStart}
+            maxDate={maxStart}
+            testID={testID + "-start"}
+          />
         </div>
         <Icons.IconArrowRight size={16} className="shrink-0" />
         <div className="w-40">
-          <DateSelector date={dueDate} onChange={setDue} minDate={minDue} maxDate={maxDue} />
+          <DateSelector date={dueDate} onChange={setDue} minDate={minDue} maxDate={maxDue} testID={testID + "-due"} />
         </div>
       </div>
     </div>
   );
 }
 
-function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set" }) {
+function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testID }) {
   const [open, setOpen] = React.useState(false);
+
+  const onChangeDate = React.useCallback((date: Date) => {
+    setOpen(false);
+    onChange(date);
+  }, []);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -228,7 +253,7 @@ function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set
         <div
           className="bg-dark-4 hover:bg-dark-6 rounded px-2 py-1 relative group cursor-pointer w-full outline-none"
           onClick={() => setOpen(true)}
-          data-test-id="change-milestone-due-date"
+          data-test-id={testID}
         >
           {date ? <FormattedTime time={date} format="short-date" /> : placeholder}
         </div>
@@ -239,7 +264,7 @@ function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set
           <DatePicker
             inline
             selected={date}
-            onChange={onChange}
+            onChange={onChangeDate}
             minDate={minDate}
             maxDate={maxDate}
             className="border-none"

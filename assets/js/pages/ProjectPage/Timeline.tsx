@@ -17,9 +17,6 @@ import Button, { IconButton } from "@/components/Button";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 import { ProjectLifecycleGraph } from "@/components/ProjectLifecycleGraph";
 
-import Modal from "@/components/Modal";
-import * as Forms from "@/components/Form";
-
 interface ContextDescriptor {
   project: Projects.Project;
   refetch: () => void;
@@ -42,7 +39,6 @@ export default function Timeline({ project, refetch, editable }) {
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Dates />
               <Phase />
             </div>
           </div>
