@@ -16,19 +16,17 @@ interface ProjectLifecycleGraphProps {
   planningDue: Date | null;
   executionDue: Date | null;
   controlDue: Date | null;
+  milestones: Milestones.Milestone[];
 }
 
 export function ProjectLifecycleGraph(props: ProjectLifecycleGraphProps) {
-  const milestones = []; // Milestones.sortByDeadline(project.milestones);
+  const milestones = Milestones.sortByDeadline(props.milestones);
 
   const firstMilestone = Time.parse(milestones[0]?.deadlineAt || null);
   const lastMilestone = Time.parse(milestones[milestones.length - 1]?.deadlineAt || null);
 
-  const startDate = props.projectStart || Time.today();
-  if (!startDate) throw new Error("Invalid start date");
-
-  const dueDate = props.controlDue || Time.add(startDate, 1, "months");
-  if (!dueDate) throw new Error("Invalid due date");
+  const startDate = Time.earliest(props.projectStart, firstMilestone) || Time.today();
+  const dueDate = Time.latest(props.projectEnd, lastMilestone) || Time.today();
 
   let resolution: "weeks" | "months" = "weeks";
   let lineStart: Date | null = startDate;
