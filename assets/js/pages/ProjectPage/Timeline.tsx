@@ -17,9 +17,6 @@ import Button, { IconButton } from "@/components/Button";
 import ProjectPhaseSelector from "@/components/ProjectPhaseSelector";
 import { ProjectLifecycleGraph } from "@/components/ProjectLifecycleGraph";
 
-import Modal from "@/components/Modal";
-import * as Forms from "@/components/Form";
-
 interface ContextDescriptor {
   project: Projects.Project;
   refetch: () => void;
@@ -35,14 +32,13 @@ export default function Timeline({ project, refetch, editable }) {
         <div className="flex items-start justify-between">
           <div className="font-extrabold text-lg text-white-1 leading-none">Timeline</div>
           <div>
-            <EditTimeline project={project} refetch={refetch} />
+            <EditTimeline project={project} />
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Dates />
               <Phase />
             </div>
           </div>
@@ -67,77 +63,11 @@ export default function Timeline({ project, refetch, editable }) {
   );
 }
 
-function EditTimeline({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
-  const [isOpen, _, open, close] = useBoolState(false);
-
-  const planning = project.phaseHistory.find((phase) => phase.phase === "planning");
-  const execution = project.phaseHistory.find((phase) => phase.phase === "execution");
-  const control = project.phaseHistory.find((phase) => phase.phase === "control");
-
-  const [planningDueDate, setPlanningDueDate] = React.useState<Date | null>(Time.parse(planning?.dueTime));
-  const [executionDueDate, setExecutionDueDate] = React.useState<Date | null>(Time.parse(execution?.dueTime));
-  const [controlDueDate, setControlDueDate] = React.useState<Date | null>(Time.parse(control?.dueTime));
-
-  const [edit, { loading }] = Projects.useEditProjectTimeline({
-    onCompleted: () => {
-      close();
-      refetch();
-    },
-  });
-
-  const submit = async () => {
-    await edit({
-      variables: {
-        input: {
-          projectId: project.id,
-          planningDueTime: planningDueDate && Time.toDateWithoutTime(planningDueDate),
-          executionDueTime: executionDueDate && Time.toDateWithoutTime(executionDueDate),
-          controlDueTime: controlDueDate && Time.toDateWithoutTime(controlDueDate),
-        },
-      },
-    });
-  };
-
+function EditTimeline({ project }) {
   return (
-    <>
-      <Button variant="secondary" data-test-id="edit-project-timeline" onClick={open}>
-        Edit Timeline
-      </Button>
-
-      <Modal title={"Edit Timeline"} isOpen={isOpen} hideModal={close} minHeight="200px">
-        <Forms.Form onSubmit={submit} onCancel={close} isValid={true} loading={loading}>
-          <div className="flex flex-col gap-2 mt-4">
-            <div className="flex items-center gap-2 border-b border-dark-5 font-bold pb-2">
-              <div className="w-32 forn-medium">Phase</div>
-              <div className="flex-1">Due Date</div>
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
-              <div className="w-32 forn-medium">Planning</div>
-
-              <Forms.Datepicker selected={planningDueDate} onChange={setPlanningDueDate} placeholder="Select Date" />
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
-              <div className="w-32 forn-medium">Execution</div>
-
-              <Forms.Datepicker selected={executionDueDate} onChange={setExecutionDueDate} placeholder="Select Date" />
-            </div>
-
-            <div className="flex items-center gap-2 border-b border-dark-5 pb-2">
-              <div className="w-32 forn-medium">Control</div>
-
-              <Forms.Datepicker selected={controlDueDate} onChange={setControlDueDate} placeholder="Select Date" />
-            </div>
-          </div>
-
-          <Forms.SubmitArea>
-            <Forms.SubmitButton>Save</Forms.SubmitButton>
-            <Forms.CancelButton>Cancel</Forms.CancelButton>
-          </Forms.SubmitArea>
-        </Forms.Form>
-      </Modal>
-    </>
+    <Button variant="secondary" data-test-id="edit-project-timeline" linkTo={`/projects/${project.id}/edit/timeline`}>
+      Edit Timeline
+    </Button>
   );
 }
 

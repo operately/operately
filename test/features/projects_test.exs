@@ -174,22 +174,6 @@ defmodule Operately.Features.ProjectsTest do
     |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
   end
 
-  feature "changing the project's start date", state do
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "edit-project-start-date")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
-    |> UI.assert_text(short_name(state.champion) <> " changed the project's start date to")
-  end
-
-  feature "changing the project's end date", state do
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "edit-project-due-date")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--014")
-    |> UI.assert_text(short_name(state.champion) <> " changed the project's due date to")
-  end
-
   feature "adding a project contributor", state do
     contrib = person_fixture(%{full_name: "Michael Scott", title: "Manager", company_id: state.company.id})
 
@@ -249,6 +233,21 @@ defmodule Operately.Features.ProjectsTest do
     state
     |> visit_show(state.project)
     |> UI.assert_text("New Name")
+  end
+
+  feature "edit project timeline", state do
+    state
+    |> visit_show(state.project)
+    |> UI.click(testid: "edit-project-timeline")
+    |> UI.click(testid: "planning-start")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--010")
+    |> UI.click(testid: "planning-due")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--011")
+    |> UI.click(testid: "execution-due")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
+    |> UI.click(testid: "control-due")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
+    |> UI.click(testid: "save")
   end
 
   # ===========================================================================
