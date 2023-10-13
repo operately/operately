@@ -6,6 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { useDocumentTitle } from "@/layouts/header";
+import { useNavigate } from "react-router-dom";
 
 import { ProjectLifecycleGraph } from "@/components/ProjectLifecycleGraph";
 
@@ -33,6 +34,7 @@ export async function loader({ params }): Promise<LoaderData> {
 }
 
 export function Page() {
+  const navigate = useNavigate();
   const [{ project }] = Paper.useLoadedData() as [LoaderData];
 
   useDocumentTitle(`Edit Project Timeline - ${project.name}`);
@@ -46,8 +48,57 @@ export function Page() {
     controlDue: Time.parse(project.phaseHistory.find((p) => p.phase === "control")?.dueTime || null),
   });
 
-  const [milestones, setMilestones] = React.useState(project.milestones);
+  const [milestones, setMilestones] = React.useState(project.milestones.map((m) => ({ ...m, deletable: false })));
   const pendingMilestones = React.useMemo(() => milestones.filter((m) => m.status === "pending"), [milestones]);
+
+  const [edit, { loading }] = Projects.useEditProjectTimeline({
+    onCompleted: () => {
+      navigate(`/projects/${project.id}`);
+    },
+  });
+
+  const newMilestones = React.useMemo(
+    () =>
+      milestones
+        .filter((m) => !project.milestones.find((pm) => pm.id === m.id))
+        .map((m) => ({
+          title: m.title,
+          dueTime: Time.toDateWithoutTime(Time.parse(m.deadlineAt)!),
+        })),
+    [project.milestones, milestones],
+  );
+
+  const milestoneUpdates = React.useMemo(
+    () =>
+      milestones
+        .filter((m) => {
+          project.milestones.find((pm) => pm.id === m.id);
+        })
+        .map((m) => ({
+          id: m.id,
+          title: m.title,
+          dueTime: Time.toDateWithoutTime(Time.parse(m.deadlineAt)!),
+        })),
+    [project.milestones, milestones],
+  );
+
+  const save = React.useCallback(async () => {
+    await edit({
+      variables: {
+        input: {
+          projectID: project.id,
+          projectStartTime: dates.projectStart && Time.toDateWithoutTime(dates.projectStart),
+          planningDueTime: dates.planningDue && Time.toDateWithoutTime(dates.planningDue),
+          executionDueTime: dates.executionDue && Time.toDateWithoutTime(dates.executionDue),
+          controlDueTime: dates.controlDue && Time.toDateWithoutTime(dates.controlDue),
+          newMilestones: newMilestones,
+          milestoneUpdates: milestoneUpdates,
+        },
+      },
+    });
+
+    navigate(`/projects/${project.id}`);
+  }, [project.id, dates, pendingMilestones]);
 
   return (
     <Paper.Root>
@@ -91,7 +142,7 @@ export function Page() {
         />
 
         <div className="mt-8 flex items-center gap-2">
-          <Button type="submit" variant="success">
+          <Button type="submit" variant="success" onClick={save} loading={loading}>
             Save
           </Button>
           <Button type="button" variant="secondary" linkTo={`/projects/${project.id}`}>
@@ -247,7 +298,7 @@ function AddMilestoneButton({ onClick }) {
 
 function AddMilestoneForm({ setMilestones, projectStart, projectEnd, close }) {
   const [title, setTitle] = React.useState("");
-  const [dueDate, setDueDate] = React.useState(null);
+  const [dueDate, setDueDate] = React.useState<Date | null>(null);
 
   const addMilestone = React.useCallback(() => {
     setMilestones((m: any) => [
@@ -257,6 +308,7 @@ function AddMilestoneForm({ setMilestones, projectStart, projectEnd, close }) {
         title,
         deadlineAt: dueDate?.toISOString(),
         status: "pending",
+        deletable: true,
       },
     ]);
 
@@ -349,9 +401,11 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
           />
         </div>
 
-        <div className="rounded-full bg-dark-4 hover:bg-dark-6 p-1 cursor-pointer" onClick={removeMilestone}>
-          <Icons.IconTrash size={16} />
-        </div>
+        {milestone.deletable && (
+          <div className="rounded-full bg-dark-4 hover:bg-dark-6 p-1 cursor-pointer" onClick={removeMilestone}>
+            <Icons.IconTrash size={16} />
+          </div>
+        )}
       </div>
     </div>
   );
