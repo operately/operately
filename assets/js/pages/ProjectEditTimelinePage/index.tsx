@@ -46,11 +46,8 @@ export function Page() {
     controlDue: Time.parse(project.phaseHistory.find((p) => p.phase === "control")?.dueTime || null),
   });
 
-  const [milestonesState, setMilestones] = React.useState(project.milestones);
-  const pendingMilestones = React.useMemo(
-    () => milestonesState.filter((m) => m.status === "pending"),
-    [milestonesState],
-  );
+  const [milestones, setMilestones] = React.useState(project.milestones);
+  const pendingMilestones = React.useMemo(() => milestones.filter((m) => m.status === "pending"), [milestones]);
 
   return (
     <Paper.Root>
@@ -71,7 +68,7 @@ export function Page() {
             planningDue={dates.planningDue}
             executionDue={dates.executionDue}
             controlDue={dates.controlDue}
-            milestones={milestonesState}
+            milestones={milestones}
           />
         </div>
 
@@ -90,7 +87,7 @@ export function Page() {
           originalDuration={originalDuration}
           newDuration={Time.daysBetween(dates.projectStart, dates.controlDue)}
           originalMilestones={project.milestones}
-          newMilestones={milestonesState}
+          newMilestones={milestones}
         />
 
         <div className="mt-8 flex items-center gap-2">
@@ -171,7 +168,7 @@ function PhaseDatesForm({ phaseName, startTime, dueDate, setStart, setDue, minSt
   );
 }
 
-function DateSelector({ date, onChange, minDate, maxDate }) {
+function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set" }) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -182,7 +179,7 @@ function DateSelector({ date, onChange, minDate, maxDate }) {
           onClick={() => setOpen(true)}
           data-test-id="change-milestone-due-date"
         >
-          {date ? <FormattedTime time={date} format="short-date-with-weekday" /> : "Not set"}
+          {date ? <FormattedTime time={date} format="short-date" /> : placeholder}
         </div>
       </Popover.Trigger>
 
@@ -214,6 +211,98 @@ function Millstones({ milestones, setMilestones, projectStart, projectEnd }) {
           projectEnd={projectEnd}
         />
       ))}
+      <AddMilestone setMilestones={setMilestones} projectStart={projectStart} projectEnd={projectEnd} />
+    </div>
+  );
+}
+
+function AddMilestone({ setMilestones, projectStart, projectEnd }) {
+  const [active, setActive] = React.useState(false);
+
+  const close = React.useCallback(() => {
+    setActive(false);
+  }, []);
+
+  if (active) {
+    return (
+      <AddMilestoneForm
+        setMilestones={setMilestones}
+        projectStart={projectStart}
+        projectEnd={projectEnd}
+        close={close}
+      />
+    );
+  } else {
+    return <AddMilestoneButton onClick={() => setActive(true)} />;
+  }
+}
+
+function AddMilestoneButton({ onClick }) {
+  return (
+    <div className="underline cursor-pointer text-white-2 hover:text-white-1" onClick={onClick}>
+      + Add milestone
+    </div>
+  );
+}
+
+function AddMilestoneForm({ setMilestones, projectStart, projectEnd, close }) {
+  const [title, setTitle] = React.useState("");
+  const [dueDate, setDueDate] = React.useState(null);
+
+  const addMilestone = React.useCallback(() => {
+    setMilestones((m: any) => [
+      ...m,
+      {
+        id: Math.random().toString(),
+        title,
+        deadlineAt: dueDate?.toISOString(),
+        status: "pending",
+      },
+    ]);
+
+    close();
+  }, [title, dueDate]);
+
+  const valid = React.useMemo(() => {
+    return title.length > 0 && dueDate;
+  }, [title, dueDate]);
+
+  return (
+    <div className="bg-dark-2 px-3 py-3">
+      <div className="uppercase text-white-2 text-sm mb-2">New milestone</div>
+
+      <div className="flex items-center gap-2 ">
+        <div className="w-2/3 shrink-0">
+          <input
+            type="text"
+            autoFocus
+            className="w-full bg-dark-4 rounded px-2 py-1 outline-none border-none"
+            placeholder="ex. Website launch"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div className="w-1/3 flex items-center gap-2">
+          <div className="flex-1">
+            <DateSelector
+              date={dueDate}
+              onChange={setDueDate}
+              minDate={projectStart}
+              maxDate={projectEnd}
+              placeholder="Select due date"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <Button size="small" type="submit" variant="success" onClick={addMilestone} disabled={!valid}>
+          Add
+        </Button>
+        <Button size="small" type="button" variant="secondary" onClick={close}>
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }
@@ -235,10 +324,22 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
     });
   }, []);
 
+  const removeMilestone = React.useCallback(() => {
+    setMilestones((m: any) => {
+      const index = m.findIndex((m) => m.id === milestone.id);
+      if (index === -1) return m;
+
+      const newMilestones = [...m];
+      newMilestones.splice(index, 1);
+
+      return newMilestones;
+    });
+  }, []);
+
   return (
     <div className="flex items-center gap-2">
       <div className="w-2/3">{milestone.title}</div>
-      <div className="w-1/3">
+      <div className="w-1/3 flex items-center gap-2">
         <div className="flex-1">
           <DateSelector
             date={Time.parse(milestone.deadlineAt)}
@@ -246,6 +347,10 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
             minDate={projectStart}
             maxDate={projectEnd}
           />
+        </div>
+
+        <div className="rounded-full bg-dark-4 hover:bg-dark-6 p-1 cursor-pointer" onClick={removeMilestone}>
+          <Icons.IconTrash size={16} />
         </div>
       </div>
     </div>
