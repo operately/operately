@@ -37,6 +37,8 @@ export function Page() {
 
   useDocumentTitle(`Edit Project Timeline - ${project.name}`);
 
+  const originalDuration = React.useMemo(() => calculateOriginalDuration(project), [project]);
+
   const [dates, setDates] = React.useState({
     projectStart: Time.parse(project.startedAt),
     planningDue: Time.parse(project.phaseHistory.find((p) => p.phase === "planning")?.dueTime || null),
@@ -84,6 +86,13 @@ export function Page() {
           projectEnd={dates.controlDue}
         />
 
+        <SummaryOfChanges
+          originalDuration={originalDuration}
+          newDuration={Time.daysBetween(dates.projectStart, dates.controlDue)}
+          originalMilestones={project.milestones}
+          newMilestones={milestonesState}
+        />
+
         <div className="mt-8 flex items-center gap-2">
           <Button type="submit" variant="success">
             Save
@@ -98,12 +107,6 @@ export function Page() {
 }
 
 function Phases({ dates, setDates }) {
-  const totalDays = React.useMemo(() => {
-    if (!dates.projectStart || !dates.controlDue) return null;
-
-    return Time.daysBetween(dates.projectStart, dates.controlDue);
-  }, [dates]);
-
   const setDate = React.useCallback(
     (phase: string) => (date: Date) => {
       setDates((d: any) => ({ ...d, [phase]: date }));
@@ -146,12 +149,6 @@ function Phases({ dates, setDates }) {
         minDue={dates.executionDue}
         maxDue={null}
       />
-
-      {totalDays && (
-        <div className="mt-4 text-sm">
-          In total, the project will take <span className="font-bold">{totalDays} days</span> to complete.
-        </div>
-      )}
     </div>
   );
 }
@@ -253,4 +250,54 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
       </div>
     </div>
   );
+}
+
+function SummaryOfChanges({ originalDuration, newDuration }) {
+  if (originalDuration === newDuration) return null;
+
+  return (
+    <div className="border-t border-dark-8 mt-8 pt-8">
+      <h1 className="font-extrabold text-white-1 mb-2">Summary Of Changes</h1>
+
+      <div>
+        - <ProjectDurationChange originalDuration={originalDuration} newDuration={newDuration} />
+      </div>
+    </div>
+  );
+}
+
+function calculateOriginalDuration(project: Projects.Project) {
+  if (!project.startedAt) return null;
+  if (!project.phaseHistory) return null;
+  if (!project.phaseHistory.length) return null;
+  if (!project.phaseHistory.find((p) => p.phase === "control")) return null;
+  if (!project.phaseHistory.find((p) => p.phase === "control")?.dueTime) return null;
+
+  const projectStart = Time.parse(project.startedAt);
+  const projectEnd = Time.parse(project.phaseHistory.find((p) => p.phase === "control")?.dueTime);
+
+  if (!projectStart || !projectEnd) return null;
+
+  return Time.daysBetween(projectStart, projectEnd);
+}
+
+function ProjectDurationChange({ originalDuration, newDuration }) {
+  if (originalDuration === newDuration) return null;
+  if (!originalDuration) {
+    return <>The project timeline was defined. It will take {newDuration} days.</>;
+  }
+
+  if (originalDuration > newDuration) {
+    return (
+      <>
+        Project duration was shortened from {originalDuration} days to {newDuration} days.
+      </>
+    );
+  } else {
+    return (
+      <>
+        Project duration was extended from {originalDuration} days to {newDuration} days.
+      </>
+    );
+  }
 }
