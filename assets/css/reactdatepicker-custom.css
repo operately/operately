@@ -91,3 +91,11 @@
 .react-datepicker__input-container input::placeholder {
   color: var(--color-white-2);
 }
+
+.react-datepicker__day--disabled {
+  color: var(--color-white-3);
+}
+
+.react-datepicker__day--disabled:hover {
+  background-color: transparent;
+}

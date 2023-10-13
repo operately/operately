@@ -27,6 +27,7 @@ import * as ProjectReviewRequestSubmitPage from "@/pages/ProjectReviewRequestSub
 import * as ProjectStatusUpdatePage from "@/pages/ProjectStatusUpdatePage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import * as ProjectEditProjectNamePage from "@/pages/ProjectEditProjectNamePage";
+import * as ProjectEditTimelinePage from "@/pages/ProjectEditTimelinePage";
 import * as ProjectContributorsPage from "@/pages/ProjectContributorsPage";
 
 import * as NotFoundPage from "@/pages/NotFoundPage";
@@ -63,6 +64,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/phase_change/:newPhase", ProjectPhaseChangeSurveyPage),
       pageRoute("/projects/:projectID/status_updates/:id", ProjectStatusUpdatePage),
       pageRoute("/projects/:projectID/edit/name", ProjectEditProjectNamePage),
+      pageRoute("/projects/:projectID/edit/timeline", ProjectEditTimelinePage),
       pageRoute("/projects/:projectID/contributors", ProjectContributorsPage),
       pageRoute("/projects/:id", ProjectPage),
       pageRoute("*", NotFoundPage),
