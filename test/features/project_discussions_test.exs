@@ -7,14 +7,14 @@ defmodule Operately.Features.ProjectDiscussionsText do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
     ctx = ProjectSteps.login(ctx)
 
-    {:ok, state}
+    {:ok, ctx}
   end
 
   @tag login_as: :champion
   feature "start a new discussion", ctx do
     ctx
     |> ProjectSteps.post_new_discussion(
-      title: "How are we going to do this?", 
+      title: "How are we going to do this", 
       body: "I think we should do it like this... I would like to hear your thoughts."
     )
 
@@ -32,13 +32,14 @@ defmodule Operately.Features.ProjectDiscussionsText do
   feature "comment on a discussion", ctx do
     ctx
     |> ProjectSteps.post_new_discussion(
-      title: "How are we going to do this?", 
+      title: "How are we going to do this", 
       body: "I think we should do it like this... I would like to hear your thoughts."
     )
     
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> ProjectSteps.visit_discussion_page(title: "How are we going to do this?")
+    |> ProjectSteps.visit_project_page()
+    |> ProjectSteps.click_on_discussion(title: "How are we going to do this")
     |> ProjectSteps.post_comment(body: "Sounds good to me! Let's do it!")
     |> UI.assert_text("Sounds good to me! Let's do it!")
 

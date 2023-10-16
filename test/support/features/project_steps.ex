@@ -41,37 +41,46 @@ defmodule Operately.Support.Features.ProjectSteps do
     end
   end
 
+  def post_new_discussion(ctx, title: title, body: body) do
+    ctx
+    |> visit_project_page()
+    |> UI.click(testid: "new-discussion-button")
+    |> UI.fill(testid: "discussion-title-input", with: title)
+    |> UI.fill_rich_text(body)
+    |> UI.click(testid: "submit-discussion-button")
+  end
+
+  def post_comment(ctx, body: body) do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(body)
+    |> UI.click(testid: "post-comment")
+  end
+
+  def click_on_discussion(ctx, title: title) do
+    ctx |> UI.click(title: title)
+  end
+
+  # 
+  # Navigation between project pages
+  #
+
   def visit_project_page(ctx) do
     ctx |> UI.visit("/projects/#{ctx.project.id}")
   end
 
+  #
+  # Assertions
+  #
+
   def assert_email_sent_to_all_contributors(ctx, subject: subject) do
-    contributors = Operately.Projects.list_project_contributors(ctx.project.id)
+    contributors = Operately.Projects.list_project_contributors(ctx.project)
 
     Enum.map(contributors, fn contributor ->
       email = Operately.People.get_person!(contributor.person_id).email
 
       UI.assert_email_sent(ctx, subject, to: email)
     end)
-  end
-
-  @new_discussion_button UI.query(testid: "new-discussion-button")
-  @discussion_title_input UI.query(testid: "discussion-title-input")
-  @submit_discussion_button UI.query(testid: "submit-discussion-button")
-
-  def post_new_discussion(ctx, title: title, body: body) do
-    ctx
-    |> visit_project_page()
-    |> UI.click(@new_discussion_button)
-    |> UI.fill(@discussion_title_input, with: title)
-    |> UI.fill_rich_text(body)
-    |> UI.click(@submit_discussion_button)
-  end
-
-  def post_comment(ctx, body: body) do
-    ctx
-    |> UI.fill_rich_text(body)
-    |> UI.click(UI.query(testid: "submit-comment-button"))
   end
 
   def assert_discussion_exists(ctx, title: title) do

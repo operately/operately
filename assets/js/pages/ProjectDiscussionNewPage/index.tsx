@@ -94,6 +94,7 @@ export function Page() {
           placeholder="Type a title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          data-test-id="discussion-title-input"
         />
 
         <Message editor={editor} />
@@ -103,7 +104,7 @@ export function Page() {
           variant="success"
           disabled={submitDisabled}
           loading={loading}
-          data-test-id="request-review-submit-button"
+          data-test-id="submit-discussion-button"
           onClick={submit}
         >
           {uploading ? "Uploading..." : "Post this message"}

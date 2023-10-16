@@ -50,11 +50,15 @@ function ListItem({ update, project }: { update: Updates.Update; project: Projec
   const author = update.author;
 
   return (
-    <div className="bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer" onClick={navigateToDiscussion}>
+    <div
+      className="bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer"
+      onClick={navigateToDiscussion}
+      title={content.title}
+    >
       <div className="flex justify-between">
         <div className="flex items-center gap-2">
           <Avatar person={author} size="tiny" />
-          <div className="font-medium text-white-1 capitalize">{content.title}</div>
+          <div className="font-medium text-white-1">{content.title}</div>
         </div>
 
         <div className="flex items-center text-sm">
