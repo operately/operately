@@ -13,6 +13,7 @@ defmodule Operately.Updates.Update do
 
     field :type, Ecto.Enum, values: [
       :message, 
+      :project_discussion,
       :status_update, 
       :health_change, 
       :phase_change, 
@@ -43,6 +44,10 @@ defmodule Operately.Updates.Update do
     field :title, :string
 
     timestamps()
+  end
+
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
   end
 
   @doc false

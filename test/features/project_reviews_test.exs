@@ -3,29 +3,20 @@ defmodule Operately.Features.ProjectReviewsTest do
 
   alias Operately.People.Person
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
+  alias Operately.Support.Features.ProjectSteps
   import Operately.Support.RichText
 
-  setup data do
-    company = company_fixture(%{name: "Test Org"})
-    champion = person_fixture_with_account(%{company_id: company.id})
-    reviewer = person_fixture_with_account(%{company_id: company.id})
-    project = create_project(company, champion: champion, reviewer: reviewer)
+  setup ctx do
+    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
+    ctx = ProjectSteps.login(ctx)
 
-    state = %{session: data.session, company: company, champion: champion, project: project, reviewer: reviewer}
-
-    state = if data[:login_as] == :champion, do: UI.login_as(state, champion), else: state
-    state = if data[:login_as] == :reviewer, do: UI.login_as(state, reviewer), else: state
-
-    {:ok, state}
+    {:ok, ctx}
   end
 
   @tag login_as: :reviewer
   feature "request a review", state do
     state
-    |> UI.login_as(state.reviewer)
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "request-review-button")
     |> UI.fill_rich_text("The project was paused for a while, let's review it before we continue.")
     |> UI.click(testid: "request-review-submit-button")
@@ -43,8 +34,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     })
 
     state
-    |> UI.login_as(state.champion)
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "request-review-link")
     |> UI.click(testid: "write-review-button")
     |> fill_survey([
@@ -63,7 +53,7 @@ defmodule Operately.Features.ProjectReviewsTest do
 
     # The review request should be marked as completed
     state
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> UI.refute_text("Request Review")
 
     # assert that the reviewew received an email
@@ -74,7 +64,7 @@ defmodule Operately.Features.ProjectReviewsTest do
   @tag login_as: :champion
   feature "changing phase from pending -> execution and filling in the review", state do
     state 
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:execution)
     |> fill_survey([
       {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
@@ -93,7 +83,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     change_phase(state.project, :execution)
 
     state 
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:control)
     |> fill_survey([
       {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
@@ -112,7 +102,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     change_phase(state.project, :control)
 
     state
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:completed)
     |> fill_survey([
       {"what-went-well", "The project was completed on schedule."},
@@ -129,7 +119,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     change_phase(state.project, :control)
 
     state
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:canceled)
     |> fill_survey([
       {"what-went-well", "The project was completed on schedule."},
@@ -144,7 +134,7 @@ defmodule Operately.Features.ProjectReviewsTest do
   @tag login_as: :champion
   feature "pausing a project", state do
     state
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:paused)
     |> fill_survey([
       {"why-are-you-pausing", "We are pausing the project because of X, Y, and Z."},
@@ -158,7 +148,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     change_phase(state.project, :control)
 
     state
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:planning)
     |> fill_survey([
       {"why-are-you-switching-back", "We are switching back to the planning phase because of X, Y, and Z."}
@@ -171,7 +161,7 @@ defmodule Operately.Features.ProjectReviewsTest do
     change_phase(state.project, :completed)
 
     state
-    |> visit_page(state.project)
+    |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:planning)
     |> fill_survey([
       {"why-are-you-restarting", "We are restarting the project because of X, Y, and Z."}
@@ -182,32 +172,6 @@ defmodule Operately.Features.ProjectReviewsTest do
   #
   # Helpers
   #
-
-  defp visit_page(state, project) do
-    UI.visit(state, "/projects" <> "/" <> project.id)
-  end
-
-  defp create_project(company, champion: champion, reviewer: reviewer) do
-    params = %Operately.Projects.ProjectCreation{
-      company_id: company.id,
-      name: "Live support",
-      champion_id: champion.id,
-      creator_id: champion.id,
-      creator_role: nil,
-      visibility: "everyone",
-    }
-
-    {:ok, project} = Operately.Projects.create_project(params)
-
-    {:ok, _} = Operately.Projects.create_contributor(%{
-      person_id: reviewer.id,
-      role: :reviewer,
-      project_id: project.id,
-      responsibility: " "
-    })
-
-    project
-  end
 
   defp first_name(person) do
     String.split(person.full_name, " ") |> List.first()

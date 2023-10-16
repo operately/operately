@@ -82,14 +82,18 @@ defmodule Operately.UpdatesTest do
     alias Operately.Updates.Comment
 
     import Operately.UpdatesFixtures
+    import Operately.ProjectsFixtures
 
     @invalid_attrs %{content: nil}
 
-    setup ctx do
-      update = update_fixture(%{author_id: ctx.person.id})
-      comment = comment_fixture(update, %{author_id: ctx.person.id, update_id: update.id})
+    setup do
+      company = company_fixture()
+      person = person_fixture(company_id: company.id)
+      project = project_fixture(company_id: company.id, creator_id: person.id)
+      update = update_fixture(%{author_id: person.id, updatable_id: project.id, updatable_type: :project})
+      comment = comment_fixture(update, %{author_id: person.id, update_id: update.id})
 
-      {:ok, %{update: update, comment: comment}}
+      {:ok, %{company: company, person: person, update: update, comment: comment}}
     end
 
     test "list_comments/0 returns all comments", ctx do
@@ -112,7 +116,7 @@ defmodule Operately.UpdatesTest do
     end
 
     test "create_comment/1 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Updates.create_comment(ctx.update, @invalid_attrs)
+      assert {:error, :comment, %Ecto.Changeset{}, _} = Updates.create_comment(ctx.update, @invalid_attrs)
     end
 
     test "update_comment/2 with valid data updates the comment", ctx do

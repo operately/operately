@@ -13,7 +13,10 @@ defmodule Operately.Updates.Comment do
     timestamps()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(comment, attrs) do
     comment
     |> cast(attrs, __schema__(:fields))

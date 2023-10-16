@@ -1,0 +1,3 @@
+A new comment on <%= @discussion.content["title"] %>
+
+Link: <%= @cta_url %>

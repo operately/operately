@@ -57,7 +57,6 @@ export function ActivityList({ project, updates }: { project: Projects.Project; 
   return (
     <div className="flex flex-col gap-4 relative">
       <FeedLine />
-      <NewMessage project={project} />
 
       {updates.map((update) => (
         <div key={update.id} className="z-20">
@@ -70,98 +69,6 @@ export function ActivityList({ project, updates }: { project: Projects.Project; 
 
 function FeedLine() {
   return <div className="absolute border-l border-shade-2 top-3 bottom-3 z-10" style={{ left: "69px" }}></div>;
-}
-
-function NewMessage({ project }) {
-  const [active, _, activate, deactivate] = useBoolState(false);
-  const [{ me }] = Paper.useLoadedData() as Paper.LoadedData;
-
-  if (active) {
-    return <NewMessageActive project={project} onBlur={deactivate} onPost={deactivate} me={me} />;
-  } else {
-    return (
-      <div className="flex items-start">
-        <FeedAvatar person={me} />
-
-        <div
-          className="cursor-pointer border rounded-lg border-dark-8 px-4 py-2 bg-dark-2 z-20 flex items-center gap-2 ml-4 flex-1 relative"
-          onClick={activate}
-          data-test-id="write-message"
-        >
-          <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
-          Write a message...
-        </div>
-      </div>
-    );
-  }
-}
-
-function NewMessageActive({ project, onBlur, onPost, me }) {
-  const { refetch } = React.useContext(ActivityContext) as ActivityContextDescriptor;
-  const [post, { loading }] = Updates.usePostUpdateMutation();
-  const peopleSearch = People.usePeopleSearch();
-
-  const { editor, submittable } = TipTapEditor.useEditor({
-    placeholder: "Write a message...",
-    peopleSearch: peopleSearch,
-    className: "min-h-[200px] p-4",
-  });
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (!submittable) return;
-    if (loading) return;
-
-    await post({
-      variables: {
-        input: {
-          updatableId: project.id,
-          updatableType: "project",
-          content: JSON.stringify(editor.getJSON()),
-          messageType: "message",
-        },
-      },
-    });
-
-    await onPost();
-    await refetch();
-  };
-
-  return (
-    <TipTapEditor.Root>
-      <div className="flex items-start">
-        <FeedAvatar person={me} />
-
-        <div className="border rounded-lg border-dark-8 bg-dark-2 z-20 flex-1 ml-4 relative">
-          <FeedAvatarCarrot fillColor="var(--color-dark-2)" />
-
-          <TipTapEditor.EditorContent editor={editor} />
-
-          <div className="flex justify-between items-center m-4">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handlePost}
-                loading={loading}
-                variant="success"
-                data-test-id="post-message"
-                size="small"
-                disabled={!submittable}
-              >
-                {submittable ? "Post" : "Uploading..."}
-              </Button>
-              <Button variant="secondary" onClick={onBlur} size="small">
-                Cancel
-              </Button>
-            </div>
-
-            <TipTapEditor.Toolbar editor={editor} variant="small" />
-          </div>
-
-          <TipTapEditor.LinkEditForm editor={editor} />
-        </div>
-      </div>
-    </TipTapEditor.Root>
-  );
 }
 
 function UpdateItem({ project, update }: { project: Projects.Project; update: Updates.Update }) {

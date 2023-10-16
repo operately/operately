@@ -30,7 +30,7 @@ defmodule Operately.PeopleFixtures do
   end
 
   def person_fixture_with_account(attrs \\ %{}) do
-    email = attrs[:email] || unique_account_email()
+    email = attrs[:email] || unique_account_email(attrs[:full_name])
     password = attrs[:password] || valid_account_password()
 
     account = account_fixture(%{email: email, password: password})
@@ -38,7 +38,14 @@ defmodule Operately.PeopleFixtures do
     person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
   end
 
-  def unique_account_email, do: "account#{System.unique_integer()}@example.com"
+  def unique_account_email(), do: "account#{System.unique_integer()}@example.com"
+  def unique_account_email(nil), do: unique_account_email()
+  def unique_account_email(full_name) do
+    sanitized_name = String.replace(full_name, " ", "-") |> String.downcase()
+
+    "#{sanitized_name}#{System.unique_integer()}@example.com"
+  end
+
   def valid_account_password, do: "hello world!"
 
   def valid_account_attributes(attrs \\ %{}) do

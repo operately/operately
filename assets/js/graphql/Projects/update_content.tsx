@@ -16,7 +16,8 @@ export type UpdateMessageType =
   | "project_milestone_created"
   | "project_milestone_deleted"
   | "project_milestone_completed"
-  | "project_milestone_deadline_changed";
+  | "project_milestone_deadline_changed"
+  | "project_discussion";
 
 export const FRAGMENT = `
   {
@@ -47,6 +48,11 @@ export const FRAGMENT = `
 
       projectStartTime
       projectEndTime
+    }
+
+    ... on UpdateContentProjectDiscussion {
+      title
+      body
     }
 
     ... on UpdateContentProjectCreated {
@@ -104,7 +110,8 @@ export type Content =
   | ProjectMilestoneCreated
   | ProjectMilestoneDeleted
   | ProjectMilestoneCompleted
-  | ProjectMilestoneDeadlineChanged;
+  | ProjectMilestoneDeadlineChanged
+  | ProjectDiscussion;
 
 export interface StatusUpdate {
   message: string;
@@ -121,6 +128,11 @@ export interface StatusUpdate {
 
   projectStartTime?: Date;
   projectEndTime?: Date;
+}
+
+export interface ProjectDiscussion {
+  title: string;
+  body: string;
 }
 
 export interface Message {

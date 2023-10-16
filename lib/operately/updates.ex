@@ -8,6 +8,13 @@ defmodule Operately.Updates do
 
   alias Operately.Updates.Update
 
+  alias OperatelyEmail.{
+    ProjectDiscussionSubmittedEmail,
+    ProjectCommentSubmittedEmail
+  }
+
+  alias Ecto.Multi
+
   def list_updates do
     Repo.all(Update)
   end
@@ -109,6 +116,23 @@ defmodule Operately.Updates do
       type: :message,
       content: Operately.Updates.Types.Message.build(content)
     })
+  end
+
+  def record_project_discussion(author, project, title, body) do
+    changeset = Update.changeset(%{
+      updatable_type: :project,
+      updatable_id: project.id,
+      author_id: author.id,
+      title: "",
+      type: :project_discussion,
+      content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
+    })
+
+    Multi.new()
+    |> Multi.insert(:discussion, changeset)
+    |> Multi.run(:send_email, &ProjectDiscussionSubmittedEmail.enqueue/2)
+    |> Repo.transaction()
+    |> extract_result(:discussion)
   end
 
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
@@ -290,22 +314,14 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
-  def create_comment(update, attrs) do
-    Repo.transaction(fn ->
-      result = %Comment{} |> Comment.changeset(attrs) |> Repo.insert()
+  def create_comment(_update, attrs) do
+    changeset = Comment.changeset(attrs)
 
-      case result do
-        {:ok, comment} ->
-          {:ok, _} = Operately.Activities.submit_comment_posted(comment, update)
-          :ok = publish_comment_added(comment)
-
-          comment
-
-        {:error, e} ->
-          Repo.rollback(e)
-          e
-      end
-    end)
+    Multi.new()
+    |> Multi.insert(:comment, changeset)
+    |> Multi.run(:send_email, &ProjectCommentSubmittedEmail.enqueue/2)
+    |> Repo.transaction()
+    |> extract_result(:comment)
   end
 
   def publish_comment_added(comment) do
@@ -361,5 +377,12 @@ defmodule Operately.Updates do
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
+  end
+
+  defp extract_result(res, field) do
+    case res do
+      {:ok, map} -> {:ok, map[field]}
+      e -> e
+    end
   end
 end

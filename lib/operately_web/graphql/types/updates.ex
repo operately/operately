@@ -90,6 +90,7 @@ defmodule OperatelyWeb.GraphQL.Types.Updates do
       :update_content_project_milestone_deleted,
       :update_content_status_update,
       :update_content_review,
+      :update_content_project_discussion,
       :update_content_message
     ]
 
