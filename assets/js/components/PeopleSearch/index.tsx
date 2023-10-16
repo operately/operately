@@ -30,10 +30,20 @@ interface PeopleSearchProps {
 export default function PeopleSearch(props: PeopleSearchProps) {
   const defaultValue = props.defaultValue && personAsOption(props.defaultValue);
 
-  const loadOptions = async (input: string) => {
-    const people = await props.loader(input);
-    return people.map(personAsOption);
-  };
+  const loadOptions = React.useCallback(
+    throttle((input: string, callback: any) => {
+      props
+        .loader(input)
+        .then((people) => {
+          callback(people.map(personAsOption));
+        })
+        .catch((err) => {
+          console.error(err);
+          callback([]);
+        });
+    }, 500),
+    [props.loader],
+  );
 
   return (
     <AsyncSelect
@@ -80,3 +90,15 @@ function PersonLabel({ person }: { person: Person }) {
     </div>
   );
 }
+
+const throttle = (callback: any, wait: number) => {
+  let timeoutId: number | null = null;
+
+  return (...args: any[]) => {
+    if (timeoutId) window.clearTimeout(timeoutId);
+
+    timeoutId = window.setTimeout(() => {
+      callback.apply(null, args);
+    }, wait);
+  };
+};
