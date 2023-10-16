@@ -8,7 +8,11 @@ defmodule Operately.Updates do
 
   alias Operately.Updates.Update
 
-  alias OperatelyEmail.ProjectDiscussionSubmittedEmail
+  alias OperatelyEmail.{
+    ProjectDiscussionSubmittedEmail,
+    ProjectCommentSubmittedEmail
+  }
+
   alias Ecto.Multi
 
   def list_updates do
@@ -310,22 +314,14 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
-  def create_comment(update, attrs) do
-    Repo.transaction(fn ->
-      result = %Comment{} |> Comment.changeset(attrs) |> Repo.insert()
+  def create_comment(_update, attrs) do
+    changeset = Comment.changeset(attrs)
 
-      case result do
-        {:ok, comment} ->
-          {:ok, _} = Operately.Activities.submit_comment_posted(comment, update)
-          :ok = publish_comment_added(comment)
-
-          comment
-
-        {:error, e} ->
-          Repo.rollback(e)
-          e
-      end
-    end)
+    Multi.new()
+    |> Multi.insert(:comment, changeset)
+    |> Multi.run(:send_email, &ProjectCommentSubmittedEmail.enqueue/2)
+    |> Repo.transaction()
+    |> extract_result(:comment)
   end
 
   def publish_comment_added(comment) do

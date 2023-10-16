@@ -34,21 +34,20 @@ defmodule Operately.Features.ProjectDiscussionsText do
   feature "comment on a discussion", ctx do
     ctx
     |> ProjectSteps.post_new_discussion(
-      title: "How are we going to do this", 
+      title: "How are we going to do this?", 
       body: "I think we should do it like this... I would like to hear your thoughts."
     )
     
     ctx
-    |> UI.login_as(ctx.reviewer)
     |> ProjectSteps.visit_project_page()
-    |> ProjectSteps.click_on_discussion(title: "How are we going to do this")
+    |> ProjectSteps.click_on_discussion(title: "How are we going to do this?")
     |> ProjectSteps.post_comment(body: "Sounds good to me! Let's do it!")
     |> UI.assert_text("Sounds good to me! Let's do it!")
 
     ctx
     |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "New comment on discussion in #{ctx.project.name}: How are we going to do this?",
-      except: [ctx.reviewer.email]
+      subject: "#{Person.short_name(ctx.champion)} commented on: How are we going to do this?",
+      except: [ctx.champion.email]
     )
   end
 
