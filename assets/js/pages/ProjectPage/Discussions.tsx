@@ -6,9 +6,12 @@ import * as Project from "@/graphql/Projects";
 
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
-import { Spacer } from "@/components/Spacer";
+import FormattedTime from "@/components/FormattedTime";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
+
+import { TextSeparator } from "@/components/TextSeparator";
+import { Spacer } from "@/components/Spacer";
 
 export default function Discussions({ project }) {
   return (
@@ -47,16 +50,33 @@ function ListItem({ update, project }: { update: Updates.Update; project: Projec
   const author = update.author;
 
   return (
-    <div
-      className="flex flex-row justify-between items-center bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer"
-      onClick={navigateToDiscussion}
-    >
-      <div className="flex gap-2 items-center">
-        <Avatar person={author} size="tiny" />
-        <div className="font-medium text-white-1 capitalize">{content.title}</div>
+    <div className="bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer" onClick={navigateToDiscussion}>
+      <div className="flex justify-between">
+        <div className="flex items-center gap-2">
+          <Avatar person={author} size="tiny" />
+          <div className="font-medium text-white-1 capitalize">{content.title}</div>
+        </div>
+
+        <div className="flex items-center text-sm">
+          <CommentCount update={update} />
+          <TextSeparator size={1.5} />
+          <FormattedTime time={update.insertedAt} format="short-date" />
+        </div>
       </div>
     </div>
   );
+}
+
+function CommentCount({ update }: { update: Updates.Update }) {
+  if (update.comments.length === 0) {
+    return <div>No comments</div>;
+  }
+
+  if (update.comments.length === 1) {
+    return <div>1 comment</div>;
+  }
+
+  return <div>{update.comments.length} comments</div>;
 }
 
 function useDiscussions({ project }): { updates: Updates.Update[]; loading: boolean; error: any } {
