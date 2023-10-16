@@ -6,8 +6,8 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   def create_project(ctx, name: name) do
     company = company_fixture(%{name: "Test Org"})
-    champion = person_fixture_with_account(%{company_id: company.id})
-    reviewer = person_fixture_with_account(%{company_id: company.id})
+    champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
+    reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
 
     params = %Operately.Projects.ProjectCreation{
       company_id: company.id,
@@ -73,13 +73,19 @@ defmodule Operately.Support.Features.ProjectSteps do
   # Assertions
   #
 
-  def assert_email_sent_to_all_contributors(ctx, subject: subject) do
+  def assert_email_sent_to_all_contributors(ctx, subject: subject, except: except) do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
 
-    Enum.map(contributors, fn contributor ->
+    Enum.each(contributors, fn contributor ->
       email = Operately.People.get_person!(contributor.person_id).email
 
-      UI.assert_email_sent(ctx, subject, to: email)
+      unless Enum.member?(except, email) do
+        UI.assert_email_sent(ctx, subject, to: email)
+      end
+    end)
+
+    Enum.each(except, fn email ->
+      UI.refute_email_sent(ctx, subject, to: email)
     end)
   end
 

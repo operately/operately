@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectDiscussionsText do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.People.Person
   
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -14,7 +15,7 @@ defmodule Operately.Features.ProjectDiscussionsText do
   feature "start a new discussion", ctx do
     ctx
     |> ProjectSteps.post_new_discussion(
-      title: "How are we going to do this", 
+      title: "How are we going to do this?", 
       body: "I think we should do it like this... I would like to hear your thoughts."
     )
 
@@ -24,7 +25,8 @@ defmodule Operately.Features.ProjectDiscussionsText do
 
     ctx
     |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "New discussion started in #{ctx.project.name}: How are we going to do this?"
+      subject: "#{Person.short_name(ctx.champion)} started a discussion in #{ctx.project.name}: How are we going to do this?",
+      except: [ctx.champion.email]
     )
   end
 
@@ -45,7 +47,8 @@ defmodule Operately.Features.ProjectDiscussionsText do
 
     ctx
     |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "New comment on discussion in #{ctx.project.name}: How are we going to do this?"
+      subject: "New comment on discussion in #{ctx.project.name}: How are we going to do this?",
+      except: [ctx.reviewer.email]
     )
   end
 

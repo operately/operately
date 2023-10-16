@@ -46,6 +46,10 @@ defmodule Operately.Updates.Update do
     timestamps()
   end
 
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   @doc false
   def changeset(update, attrs) do
     update

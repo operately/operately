@@ -8,6 +8,9 @@ defmodule Operately.Updates do
 
   alias Operately.Updates.Update
 
+  alias OperatelyEmail.ProjectDiscussionSubmittedEmail
+  alias Ecto.Multi
+
   def list_updates do
     Repo.all(Update)
   end
@@ -112,7 +115,7 @@ defmodule Operately.Updates do
   end
 
   def record_project_discussion(author, project, title, body) do
-    create_update(%{
+    changeset = Update.changeset(%{
       updatable_type: :project,
       updatable_id: project.id,
       author_id: author.id,
@@ -120,6 +123,12 @@ defmodule Operately.Updates do
       type: :project_discussion,
       content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
     })
+
+    Multi.new()
+    |> Multi.insert(:discussion, changeset)
+    |> Multi.run(:send_email, &ProjectDiscussionSubmittedEmail.enqueue/2)
+    |> Repo.transaction()
+    |> extract_result(:discussion)
   end
 
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
@@ -372,5 +381,12 @@ defmodule Operately.Updates do
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
+  end
+
+  defp extract_result(res, field) do
+    case res do
+      {:ok, map} -> {:ok, map[field]}
+      {:error, e} -> {:error, e}
+    end
   end
 end
