@@ -11,6 +11,7 @@ import Description from "./Description";
 import Reviews from "./Reviews";
 import StatusUpdates from "./StatusUpdates";
 import KeyResources from "./KeyResources";
+import Discussions from "./Discussions";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -66,6 +67,8 @@ export function Page() {
         <StatusUpdates me={me} project={project} />
         <Divider />
         <Reviews me={me} project={project} />
+        <Divider />
+        <Discussions project={project} />
         <Divider />
         <Activity project={project} key={fetchVersion} />
       </div>

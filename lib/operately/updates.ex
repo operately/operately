@@ -111,6 +111,17 @@ defmodule Operately.Updates do
     })
   end
 
+  def record_project_discussion(author, project, title, body) do
+    create_update(%{
+      updatable_type: :project,
+      updatable_id: project.id,
+      author_id: author.id,
+      title: "",
+      type: :project_discussion,
+      content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
+    })
+  end
+
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
     Operately.Repo.transaction(fn ->
       {:ok, update} = create_update(%{

@@ -39,6 +39,12 @@ defmodule OperatelyWeb.GraphQL.Mutations.Updates do
             project = Operately.Projects.get_project!(args.input.updatable_id)
             Operately.Updates.record_message(author, project, content)
 
+          "project_discussion" ->
+            project = Operately.Projects.get_project!(args.input.updatable_id)
+            content = Jason.decode!(args.input.content)
+
+            Operately.Updates.record_project_discussion(author, project, content["title"], content["body"])
+
           _ ->
             raise "Unknown message type"
         end

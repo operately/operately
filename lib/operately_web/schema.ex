@@ -31,6 +31,7 @@ defmodule OperatelyWeb.Schema do
   import_types Types.UpdateContentProjectMilestoneDeadlineChanged
   import_types Types.UpdateContentProjectMilestoneDeleted
   import_types Types.UpdateContentProjectStartTimeChanged
+  import_types Types.UpdateContentProjectDiscussion
   import_types Types.UpdateContentReview
   import_types Types.UpdateContentStatusUpdate
   import_types Types.Updates
