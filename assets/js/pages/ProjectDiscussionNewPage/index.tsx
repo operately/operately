@@ -54,7 +54,7 @@ export function Page() {
   });
 
   const [post, { loading }] = Projects.usePostUpdate({
-    onCompleted: (data) => navigate(`/projects/${project.id}/discussions/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(`/projects/${project.id}/discussions/${data.createUpdate.id}`),
   });
 
   const submit = async () => {

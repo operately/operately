@@ -4,7 +4,7 @@ defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectDiscussion do
   object :update_content_project_discussion do
     field :title, non_null(:string) do
       resolve fn update, _, _ ->
-        {:ok, Jason.encode!(update.content["title"])}
+        {:ok, update.content["title"]}
       end
     end
 
