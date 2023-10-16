@@ -382,7 +382,7 @@ defmodule Operately.Updates do
   defp extract_result(res, field) do
     case res do
       {:ok, map} -> {:ok, map[field]}
-      {:error, e} -> {:error, e}
+      e -> e
     end
   end
 end
