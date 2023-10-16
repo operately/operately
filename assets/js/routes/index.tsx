@@ -29,6 +29,7 @@ import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import * as ProjectEditProjectNamePage from "@/pages/ProjectEditProjectNamePage";
 import * as ProjectEditTimelinePage from "@/pages/ProjectEditTimelinePage";
 import * as ProjectContributorsPage from "@/pages/ProjectContributorsPage";
+import * as ProjectDiscussionNewPage from "@/pages/ProjectDiscussionNewPage";
 
 import * as NotFoundPage from "@/pages/NotFoundPage";
 
@@ -66,6 +67,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/edit/name", ProjectEditProjectNamePage),
       pageRoute("/projects/:projectID/edit/timeline", ProjectEditTimelinePage),
       pageRoute("/projects/:projectID/contributors", ProjectContributorsPage),
+      pageRoute("/projects/:projectID/discussions/new", ProjectDiscussionNewPage),
       pageRoute("/projects/:id", ProjectPage),
       pageRoute("*", NotFoundPage),
     ],
