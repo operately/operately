@@ -1,8 +1,10 @@
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 
-export function useDocumentTitle(title: string) {
+export function useDocumentTitle(title: string | string[]) {
   useEffect(() => {
-    document.title = title + " · Operately";
+    const parts = Array.isArray(title) ? [...title, "Operately"] : [title, "Operately"];
+
+    document.title = parts.join(" · ");
   }, [title]);
 
   useEffect(

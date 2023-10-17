@@ -41,7 +41,7 @@ export function Page() {
   const navigate = useNavigate();
   const [{ project }] = Paper.useLoadedData() as [LoaderResult];
 
-  useDocumentTitle("New Discussion" + "&middot;" + project.name);
+  useDocumentTitle(["New Discussion", project.name]);
 
   const [title, setTitle] = React.useState("");
 
