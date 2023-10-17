@@ -415,8 +415,8 @@ function DueDate({ milestone }) {
           data-test-id="change-milestone-due-date"
         >
           <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
-          <TextSeparator />
-          <DueDateExplanation milestone={milestone} />
+          {!Milestones.isDone(milestone) && <TextSeparator />}
+          {!Milestones.isDone(milestone) && <DueDateExplanation milestone={milestone} />}
         </div>
       </Popover.Trigger>
 

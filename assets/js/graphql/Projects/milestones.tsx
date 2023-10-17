@@ -112,9 +112,13 @@ export function groupByPhase(milestones: Milestone[]) {
 
 export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
-  let now = Time.today();
+  let now = +Time.today();
 
   return deadline < now;
+}
+
+export function isDone(milestone: Milestone) {
+  return milestone.status === "done";
 }
 
 export function parseDate(date: string | null | undefined): Date | null {
