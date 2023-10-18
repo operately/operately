@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectContributorAdded do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentProjectContributorAdded do
   use Absinthe.Schema.Notation
 
   object :update_content_project_contributor_added do

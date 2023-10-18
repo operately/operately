@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Context do
+defmodule OperatelyWeb.Graphql.Context do
   def init(opts), do: opts
 
   def call(conn, _) do

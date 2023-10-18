@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Dashboards do
+defmodule OperatelyWeb.Graphql.Types.Dashboards do
   use Absinthe.Schema.Notation
 
   object :dashboard do

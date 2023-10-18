@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Blobs do
+defmodule OperatelyWeb.Graphql.Types.Blobs do
   use Absinthe.Schema.Notation
 
   object :blob do

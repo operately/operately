@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentReview do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentReview do
   use Absinthe.Schema.Notation
 
   object :update_content_review do

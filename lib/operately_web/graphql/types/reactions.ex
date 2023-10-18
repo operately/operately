@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Reactions do
+defmodule OperatelyWeb.Graphql.Types.Reactions do
   use Absinthe.Schema.Notation
 
   object :reaction do

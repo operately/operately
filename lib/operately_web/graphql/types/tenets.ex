@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Tenets do
+defmodule OperatelyWeb.Graphql.Types.Tenets do
   use Absinthe.Schema.Notation
 
   object :tenet do

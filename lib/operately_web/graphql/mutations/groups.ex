@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Groups do
+defmodule OperatelyWeb.Graphql.Mutations.Groups do
   use Absinthe.Schema.Notation
 
   input_object :contact_input do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Kpis do
+defmodule OperatelyWeb.Graphql.Mutations.Kpis do
   use Absinthe.Schema.Notation
 
   input_object :create_kpi_input do

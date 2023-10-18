@@ -181,3 +181,23 @@
       package is licensed under MIT
     :versions: []
     :when: 2023-09-25 14:55:16.398108371 Z
+- - :approve
+  - "@graphql-codegen/client-preset"
+  - &1
+    :who: Igor
+    :why: It is MIT, as per https://github.com/dotansimha/graphql-code-generator/blob/master/LICENSE
+    :versions: []
+    :when: 2023-10-18 09:40:48.021118884 Z
+- - :approve
+  - Sarcevic
+  - *1
+- - :approve
+  - "@graphql-codegen/introspection"
+  - &2
+    :who: Igor
+    :why: It is MIT, as per https://github.com/dotansimha/graphql-code-generator/blob/master/LICENSE
+    :versions: []
+    :when: 2023-10-18 09:41:04.913115533 Z
+- - :approve
+  - Sarcevic
+  - *2

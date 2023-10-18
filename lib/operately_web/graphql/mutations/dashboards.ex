@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Dashboards do
+defmodule OperatelyWeb.Graphql.Mutations.Dashboards do
   use Absinthe.Schema.Notation
 
   input_object :update_dashboard_input do

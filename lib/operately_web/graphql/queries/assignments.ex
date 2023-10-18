@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Queries.Assignments do
+defmodule OperatelyWeb.Graphql.Queries.Assignments do
   use Absinthe.Schema.Notation
   
   alias Operately.People

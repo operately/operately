@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Activities do
+defmodule OperatelyWeb.Graphql.Types.Activities do
   use Absinthe.Schema.Notation
 
   object :activity do

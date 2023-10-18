@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.ProjectReviewRequests do
+defmodule OperatelyWeb.Graphql.Mutations.ProjectReviewRequests do
   use Absinthe.Schema.Notation
 
   input_object :create_project_review_request_input do

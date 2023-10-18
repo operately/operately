@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Projects do
+defmodule OperatelyWeb.Graphql.Mutations.Projects do
   use Absinthe.Schema.Notation
 
   input_object :create_project_input do

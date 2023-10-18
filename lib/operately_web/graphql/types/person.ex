@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Person do
+defmodule OperatelyWeb.Graphql.Types.Person do
   use Absinthe.Schema.Notation
 
   object :person do

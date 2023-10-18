@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Assignments do
+defmodule OperatelyWeb.Graphql.Types.Assignments do
   use Absinthe.Schema.Notation
 
   object :assignments do

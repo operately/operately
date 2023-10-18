@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Objectives do
+defmodule OperatelyWeb.Graphql.Mutations.Objectives do
   use Absinthe.Schema.Notation
 
   object :objective_mutations do

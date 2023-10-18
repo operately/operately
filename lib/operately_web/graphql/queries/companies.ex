@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Queries.Companies do
+defmodule OperatelyWeb.Graphql.Queries.Companies do
   use Absinthe.Schema.Notation
 
   object :company_queries do

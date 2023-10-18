@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Queries.Updates do
+defmodule OperatelyWeb.Graphql.Queries.Updates do
   use Absinthe.Schema.Notation
 
   input_object :updates_filter do

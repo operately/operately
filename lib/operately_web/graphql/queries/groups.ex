@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Queries.Groups do
+defmodule OperatelyWeb.Graphql.Queries.Groups do
   use Absinthe.Schema.Notation
 
   object :group_queries do
