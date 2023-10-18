@@ -7,12 +7,12 @@ import { useDocumentTitle } from "@/layouts/header";
 export function Page() {
   const data = useLoadedData();
 
-  useDocumentTitle("NotificationsPage");
+  useDocumentTitle("Notifications");
 
   return (
     <Paper.Root>
       <Paper.Body>
-        <div className="text-white-1 text-3xl font-extrabold">NotificationsPage</div>
+        <div className="text-white-1 text-3xl font-extrabold">Notifications</div>
       </Paper.Body>
     </Paper.Root>
   );
