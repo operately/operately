@@ -12,12 +12,13 @@ defmodule Mix.Tasks.Operately.Gen.Graphql do
     IO.puts "Generating lib/operately_web/graphql/types/#{name}.ex"
 
     module_name = Macro.camelize(name)
+    singular_name = Inflex.singularize(name)
 
     content = """
     defmodule OperatelyWeb.Graphql.Types.#{module_name} do
       use Absinthe.Schema.Notation
 
-      object :#{name} do
+      object :#{singular_name} do
         #{indent(generate_fields(fields), 4)}
       end
     end
@@ -37,6 +38,26 @@ defmodule Mix.Tasks.Operately.Gen.Graphql do
       use Absinthe.Schema.Notation
 
       object :#{singular_name}_queries do
+        field :get_#{singular_name}, :#{singular_name} do
+          arg :id, non_null(:id)
+
+          resolve fn args, %{context: context} ->
+            person = context.current_account.person
+            
+            raise "Not implemented"
+          end
+        end
+
+        field :list_#{name}, list_of(:#{singular_name}) do
+          arg :page, :integer
+          arg :per_page, :integer
+
+          resolve fn args, %{context: context} ->
+            person = context.current_account.person
+
+            raise "Not implemented"
+          end
+        end
       end
     end
     """
@@ -54,7 +75,30 @@ defmodule Mix.Tasks.Operately.Gen.Graphql do
     defmodule OperatelyWeb.Graphql.Mutations.#{module_name} do
       use Absinthe.Schema.Notation
 
+      input_object :#{singular_name}_input do
+        field :field1, non_null(:string)
+      end
+
       object :#{singular_name}_mutations do
+        field :create_#{singular_name}, :#{singular_name} do
+          arg :input, non_null(:#{singular_name}_input)
+
+          resolve fn args, %{context: context} ->
+            person = context.current_account.person
+
+            raise "Not implemented"
+          end
+        end
+
+        field :remove_#{singular_name}, :#{singular_name} do
+          arg :id, non_null(:id)
+
+          resolve fn args, %{context: context} ->
+            person = context.current_account.person
+
+            raise "Not implemented"
+          end
+        end
       end
     end
     """
