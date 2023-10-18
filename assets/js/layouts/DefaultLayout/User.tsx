@@ -12,7 +12,7 @@ export default function User() {
 
   return (
     <Link to="/account" className="flex items-center gap-2 cursor-pointer">
-      <Avatar person={data.me} />
+      <Avatar person={data.me} size={28} />
     </Link>
   );
 }
