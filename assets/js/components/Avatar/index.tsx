@@ -25,6 +25,10 @@ interface AvatarProps {
 }
 
 function SizeClasses({ size }: { size: AvatarSize }): string {
+  if (size instanceof Number) {
+    return "";
+  }
+
   switch (size) {
     case AvatarSize.Tiny:
       return "w-[20px] h-[20px]";
@@ -109,8 +113,12 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
 
+  console.log("size", size);
+
+  const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
+
   return (
-    <div title={person.fullName} className={className}>
+    <div title={person.fullName} className={className} style={style}>
       <img src={person.avatarUrl} alt={person.fullName} referrerPolicy="no-referrer" />
     </div>
   );
