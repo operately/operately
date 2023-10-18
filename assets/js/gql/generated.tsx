@@ -866,29 +866,6 @@ export type RootQueryTypeUpdatesArgs = {
   filter: UpdatesFilter;
 };
 
-export type RootSubscriptionType = {
-  __typename?: 'RootSubscriptionType';
-  commentAdded?: Maybe<Comment>;
-  groupAdded?: Maybe<Group>;
-  kpiAdded?: Maybe<Kpi>;
-  objectiveAdded?: Maybe<Objective>;
-  projectAdded?: Maybe<Project>;
-  tenetAdded?: Maybe<Tenet>;
-  updateAdded?: Maybe<Activity>;
-};
-
-
-export type RootSubscriptionTypeCommentAddedArgs = {
-  updatableId: Scalars['ID']['input'];
-  updatableType: Scalars['String']['input'];
-};
-
-
-export type RootSubscriptionTypeUpdateAddedArgs = {
-  updatableId: Scalars['ID']['input'];
-  updatableType: Scalars['String']['input'];
-};
-
 export type Tenet = {
   __typename?: 'Tenet';
   company: Company;

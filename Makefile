@@ -103,6 +103,7 @@ test.seed.env:
 # Graphql Generator
 #
 gql.gen:
+	$(MAKE) dev.mix.task TASK="operately.gen.elixir.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
 
 #
