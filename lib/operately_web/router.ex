@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Router do
   scope "/api" do
     pipe_through [:api, :require_authenticated_account, :graphql]
 
-    forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Schema
+    forward "/gql", Absinthe.Plug, schema: OperatelyWeb.GraphQL.Schema
   end
 
   if Application.compile_env(:operately, :dev_routes) do

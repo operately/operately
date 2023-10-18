@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Blobs do
+defmodule OperatelyWeb.Graphql.Mutations.Blobs do
   use Absinthe.Schema.Notation
 
   input_object :blob_input do
