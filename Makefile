@@ -100,6 +100,12 @@ test.seed.env:
 	touch .env
 
 #
+# Graphql Generator
+#
+gql.gen:
+	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
+
+#
 # Development tasks
 #
 
@@ -108,6 +114,9 @@ dev.server:
 
 dev.shell:
 	$(DEV_CONTAINER) bash
+
+dev.mix.task:
+	$(DEV_CONTAINER) mix $(TASK)
 
 dev.console:
 	$(DEV_CONTAINER) iex -S mix phx.server
