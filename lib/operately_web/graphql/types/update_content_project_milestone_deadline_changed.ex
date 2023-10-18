@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectMilestoneDeadlineChanged do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentProjectMilestoneDeadlineChanged do
   use Absinthe.Schema.Notation
 
   object :update_content_project_milestone_deadline_changed do

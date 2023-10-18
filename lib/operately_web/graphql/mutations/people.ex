@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.People do
+defmodule OperatelyWeb.Graphql.Mutations.People do
   use Absinthe.Schema.Notation
 
   input_object :update_profile_input do

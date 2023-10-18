@@ -56,7 +56,7 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
     path = Path.join(["lib", "operately_web", "graphql", "types", "update_content_#{snake_case_module_name}.ex"])
 
     content = """
-    defmodule OperatelyWeb.GraphQL.Types.#{module_name} do
+    defmodule OperatelyWeb.Graphql.Types.#{module_name} do
       use Absinthe.Schema.Notation
 
       object :#{full_object_name} do

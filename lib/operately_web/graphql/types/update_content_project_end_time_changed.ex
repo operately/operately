@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectEndTimeChanged do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentProjectEndTimeChanged do
   use Absinthe.Schema.Notation
 
   object :update_content_project_end_time_changed do

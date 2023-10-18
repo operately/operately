@@ -20,8 +20,8 @@ defmodule OperatelyWeb.Router do
   end
 
   pipeline :graphql do
-    plug OperatelyWeb.GraphQL.Context
-    plug OperatelyWeb.GraphQL.QueryCounter
+    plug OperatelyWeb.Graphql.Context
+    plug OperatelyWeb.Graphql.QueryCounter
   end
 
   #
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Router do
   scope "/api" do
     pipe_through [:api, :require_authenticated_account, :graphql]
 
-    forward "/gql", Absinthe.Plug, schema: OperatelyWeb.GraphQL.Schema
+    forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Graphql.Schema
   end
 
   if Application.compile_env(:operately, :dev_routes) do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.KeyResults do
+defmodule OperatelyWeb.Graphql.Mutations.KeyResults do
   use Absinthe.Schema.Notation
 
   object :key_result_mutations do

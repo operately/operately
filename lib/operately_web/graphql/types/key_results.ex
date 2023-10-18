@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.KeyResults do
+defmodule OperatelyWeb.Graphql.Types.KeyResults do
   use Absinthe.Schema.Notation
 
   object :key_result do

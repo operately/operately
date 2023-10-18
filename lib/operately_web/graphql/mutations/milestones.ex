@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Milestones do
+defmodule OperatelyWeb.Graphql.Mutations.Milestones do
   use Absinthe.Schema.Notation
 
   input_object :update_milestone_description_input do

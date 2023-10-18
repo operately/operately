@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Updates do
+defmodule OperatelyWeb.Graphql.Types.Updates do
   use Absinthe.Schema.Notation
 
   object :update do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.QueryCounter do
+defmodule OperatelyWeb.Graphql.QueryCounter do
   require Logger
 
   def init(opts), do: opts
@@ -18,8 +18,8 @@ defmodule OperatelyWeb.GraphQL.QueryCounter do
       counts = Operately.QueryCounter.get_counts()
       total = Enum.sum(Enum.map(counts, fn {_, count} -> count end))
 
-      Logger.info("GraphQL query counts: #{inspect(counts)}")
-      Logger.info("GraphQL total queries: #{total}")
+      Logger.info("Graphql query counts: #{inspect(counts)}")
+      Logger.info("Graphql total queries: #{total}")
 
       conn
     end)

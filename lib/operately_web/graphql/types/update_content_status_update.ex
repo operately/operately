@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentStatusUpdate do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentStatusUpdate do
   use Absinthe.Schema.Notation
 
   object :update_content_status_update do

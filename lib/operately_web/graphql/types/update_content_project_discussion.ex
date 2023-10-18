@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectDiscussion do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentProjectDiscussion do
   use Absinthe.Schema.Notation
 
   object :update_content_project_discussion do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Queries.Kpis do
+defmodule OperatelyWeb.Graphql.Queries.Kpis do
   use Absinthe.Schema.Notation
 
   object :kpi_queries do

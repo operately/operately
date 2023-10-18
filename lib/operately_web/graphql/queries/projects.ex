@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Queries.Projects do
+defmodule OperatelyWeb.Graphql.Queries.Projects do
   use Absinthe.Schema.Notation
 
   input_object :project_list_filters do

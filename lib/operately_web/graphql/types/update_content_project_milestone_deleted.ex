@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectMilestoneDeleted do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentProjectMilestoneDeleted do
   use Absinthe.Schema.Notation
 
   object :update_content_project_milestone_deleted do

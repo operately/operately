@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Updates do
+defmodule OperatelyWeb.Graphql.Mutations.Updates do
   use Absinthe.Schema.Notation
 
   input_object :create_update_input do

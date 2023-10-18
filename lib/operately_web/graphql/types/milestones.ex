@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Milestones do
+defmodule OperatelyWeb.Graphql.Types.Milestones do
   use Absinthe.Schema.Notation
 
   object :milestone do

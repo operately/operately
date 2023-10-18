@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Mutations.Tenets do
+defmodule OperatelyWeb.Graphql.Mutations.Tenets do
   use Absinthe.Schema.Notation
 
   object :tenet_mutations do

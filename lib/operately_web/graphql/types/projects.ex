@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Projects do
+defmodule OperatelyWeb.Graphql.Types.Projects do
   use Absinthe.Schema.Notation
   
   alias Operately.Projects

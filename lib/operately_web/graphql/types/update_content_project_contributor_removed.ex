@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.UpdateContentProjectContributorRemoved do
+defmodule OperatelyWeb.Graphql.Types.UpdateContentProjectContributorRemoved do
   use Absinthe.Schema.Notation
 
   object :update_content_project_contributor_removed do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Objectives do
+defmodule OperatelyWeb.Graphql.Types.Objectives do
   use Absinthe.Schema.Notation
 
   object :objective do

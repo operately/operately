@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.Comments do
+defmodule OperatelyWeb.Graphql.Types.Comments do
   use Absinthe.Schema.Notation
 
   object :comment do

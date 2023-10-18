@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.GraphQL.Types.ProjectReviewRequests do
+defmodule OperatelyWeb.Graphql.Types.ProjectReviewRequests do
   use Absinthe.Schema.Notation
 
   object :project_review_request do
