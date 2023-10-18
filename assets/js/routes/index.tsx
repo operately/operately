@@ -9,6 +9,7 @@ import * as GroupMembersPage from "@/pages/GroupMembersPage";
 
 import * as HomePage from "@/pages/HomePage";
 import * as MyAssignmentsPage from "@/pages/MyAssignmentsPage";
+import * as NotificationsPage from "@/pages/NotificationsPage";
 
 import * as AccountPage from "@/pages/AccountPage";
 import * as AccountEditProfilePage from "@/pages/AccountEditProfilePage";
@@ -48,6 +49,7 @@ const routes = createBrowserRouter([
       pageRoute("/account", AccountPage),
       pageRoute("/account/profile", AccountEditProfilePage),
       pageRoute("/account/notifications", AccountNotificationSettingsPage),
+      pageRoute("/notifications", NotificationsPage),
 
       pageRoute("/groups", GroupListPage),
       pageRoute("/groups/new", GroupAddPage),

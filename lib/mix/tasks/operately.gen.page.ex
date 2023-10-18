@@ -48,6 +48,7 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       import * as Paper from "@/components/PaperContainer";
 
       import { useLoadedData } from "./loader";
+      import { useDocumentTitle } from "@/layouts/header";
       
       export function Page() {
         const data = useLoadedData();
@@ -57,7 +58,7 @@ defmodule Mix.Tasks.Operately.Gen.Page do
         return (
           <Paper.Root>
             <Paper.Body>
-              <h1>#{page_name}</h1>
+              <div className="text-white-1 text-3xl font-extrabold">#{page_name}</div>
             </Paper.Body>
           </Paper.Root>
         );
