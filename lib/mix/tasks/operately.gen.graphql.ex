@@ -3,6 +3,9 @@ defmodule Mix.Tasks.Operately.Gen.Graphql do
     gen_type_file(name, fields)
     gen_query_file(name)
     gen_mutation_file(name)
+
+    Mix.Tasks.Operately.Gen.Elixir.Graphql.Schema.run([])
+    Mix.Tasks.Operately.Gen.Typescript.Graphql.Schema.run([])
   end
 
   def gen_type_file(name, fields) do
