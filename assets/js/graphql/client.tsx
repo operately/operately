@@ -1,7 +1,10 @@
 import { ApolloClient, InMemoryCache, createHttpLink, split } from "@apollo/client";
+import { createFragmentRegistry } from "@apollo/client/cache";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
+
+import fragments from "@/gql/fragments";
 
 const domain = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "");
 
@@ -16,7 +19,9 @@ const wsLink = new GraphQLWsLink(
   }),
 );
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  fragments: createFragmentRegistry(fragments),
+});
 
 const splitLink = split(
   ({ query }) => {
