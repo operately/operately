@@ -12,7 +12,6 @@ import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
 import * as HomePage from "./HomePage";
-import * as KpiAddPage from "./KpiAddPage";
 import * as KpiListPage from "./KpiListPage";
 import * as KpiPage from "./KpiPage";
 import * as MyAssignmentsPage from "./MyAssignmentsPage";
@@ -38,7 +37,6 @@ import * as ProjectReviewRequestPage from "./ProjectReviewRequestPage";
 import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPage";
 import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
-import * as TenetAddPage from "./TenetAddPage";
 import * as TenetListPage from "./TenetListPage";
 import * as TenetPage from "./TenetPage";
 
@@ -52,7 +50,6 @@ export default {
   GroupMembersPage,
   GroupPage,
   HomePage,
-  KpiAddPage,
   KpiListPage,
   KpiPage,
   MyAssignmentsPage,
@@ -78,7 +75,6 @@ export default {
   ProjectReviewRequestSubmitPage,
   ProjectStatusUpdateNewPage,
   ProjectStatusUpdatePage,
-  TenetAddPage,
   TenetListPage,
-  TenetPage,
+  TenetPage
 };
