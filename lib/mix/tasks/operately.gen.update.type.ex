@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.Operately.Gen.Update.Type do
+  import Mix.Operately, only: [indent: 2]
+
   #
   # Usage example:
   # mix operately.gen.update.type ProjectStartTimeChanged old_start_time:utc_datetime new_start_time:utc_datetime
@@ -77,21 +79,6 @@ defmodule Mix.Tasks.Operately.Gen.Update.Type do
       end
     end
     """
-  end
-
-
-  def indent(string, indent) do
-    string
-    |> String.split("\n")
-    |> Enum.with_index()
-    |> Enum.map(fn({line, index}) ->
-      if index == 0 do
-        line
-      else
-        String.duplicate(" ", indent) <> line
-      end
-    end)
-    |> Enum.join("\n")
   end
 
   def ts_interface_field({field_name, field_type}) do

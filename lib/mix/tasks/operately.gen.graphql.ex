@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.Operately.Gen.Graphql do
+  import Mix.Operately, only: [indent: 2]
+
   def run([name | fields]) do
     gen_type_file(name, fields)
     gen_query_file(name)
@@ -114,13 +116,5 @@ defmodule Mix.Tasks.Operately.Gen.Graphql do
       "field :#{field_name}, non_null(:#{field_type})"
     end)
     |> Enum.join("\n")
-  end
-
-  def indent(lines, spaces) do
-    first_line = Enum.at(String.split(lines, "\n"), 0)
-    rest_lines = Enum.drop(String.split(lines, "\n"), 1) |> Enum.map(fn line -> String.duplicate(" ", spaces) <> line end)
-    all_lines = [first_line] ++ rest_lines
-
-    Enum.join(all_lines, "\n")
   end
 end

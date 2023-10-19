@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.Operately.Gen.Page do
+  import Mix.Operately, only: [generate_file: 2]
+
   def run([name]) do
     page_name = Macro.camelize(name) <> "Page"
 
@@ -65,12 +67,6 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       }
       """
     end)
-  end
-
-  def generate_file(path, generator) do
-    IO.puts "#{IO.ANSI.green()}Generating#{IO.ANSI.reset()} #{path}"
-
-    File.write!(path, generator.(path))
   end
 
 end
