@@ -34,6 +34,22 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
         {:ok, activity.event_data}
       end
     end
+
+    field :content, non_null(:activity_content) do
+      resolve fn activity, _, _ ->
+        {:ok, activity}
+      end
+    end
+  end
+
+  union :activity_content do
+    types [
+      :activity_content_project_discussion_submitted,
+    ]
+
+    resolve_type fn %{action: action}, _ ->
+      String.to_atom("activity_content_#{action}")
+    end
   end
 
   union :activity_resource_union do

@@ -15,6 +15,20 @@ const query = gql`
         author {
           ...PersonCoreFields
         }
+
+        content {
+          __typename
+
+          ... on ActivityContentProjectDiscussionSubmitted {
+            title
+            discussionId
+            projectId
+
+            project {
+              name
+            }
+          }
+        }
       }
     }
   }

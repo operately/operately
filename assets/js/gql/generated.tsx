@@ -37,6 +37,7 @@ export type Activity = {
   __typename?: 'Activity';
   actionType: Scalars['String']['output'];
   author: Person;
+  content: ActivityContent;
   eventData: ActivityDataUnion;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['NaiveDateTime']['output'];
@@ -47,6 +48,16 @@ export type Activity = {
   scopeId: Scalars['ID']['output'];
   scopeType: Scalars['String']['output'];
   updatedAt: Scalars['NaiveDateTime']['output'];
+};
+
+export type ActivityContent = ActivityContentProjectDiscussionSubmitted;
+
+export type ActivityContentProjectDiscussionSubmitted = {
+  __typename?: 'ActivityContentProjectDiscussionSubmitted';
+  discussionId: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;

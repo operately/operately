@@ -4,12 +4,10 @@ import * as Paper from "@/components/PaperContainer";
 import { useLoadedData } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
 
-import FormattedTime from "@/components/FormattedTime";
-import Avatar from "@/components/Avatar";
-import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 
-import * as Icons from "@tabler/icons-react";
+import { Notification } from "@/gql";
+import { ProjectDiscussionSubmittedNotification } from "./types/ProjectDiscussionSubmittedNotification";
 
 export function Page() {
   useDocumentTitle("Notifications");
@@ -56,26 +54,10 @@ function PreviousNotifications() {
 }
 
 function Notification({ notification }) {
-  return (
-    <div className="flex items-center gap-3 hover:bg-shade-1 rounded p-1 group transition-all duration-100 cursor-pointer mb-1">
-      <div className="shrink-0">
-        <Avatar person={notification.activity.author} size={36} />
-      </div>
-
-      <div className="flex-1">
-        <div className="text-white-1 font-semibold">Igor started a new discussion: How to use Operately?</div>
-        <div className="text-white-2 text-sm leading-snug">
-          Operately Alpha
-          <TextSeparator />
-          {notification.activity.author.fullName}
-          <TextSeparator />
-          <FormattedTime time={notification.activity.insertedAt} format="long-date" />
-        </div>
-      </div>
-
-      <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1">
-        <Icons.IconX size={16} className="hover:text-white-1" />
-      </div>
-    </div>
-  );
+  switch (notification.activity.content.__typename) {
+    case "ActivityContentProjectDiscussionSubmitted":
+      return <ProjectDiscussionSubmittedNotification notification={notification} />;
+    default:
+      throw new Error(`Unknown notification type: ${notification.activity.content.__typename}`);
+  }
 }
