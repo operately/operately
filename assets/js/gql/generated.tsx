@@ -36,6 +36,7 @@ export type Scalars = {
 export type Activity = {
   __typename?: 'Activity';
   actionType: Scalars['String']['output'];
+  author: Person;
   eventData: ActivityDataUnion;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['NaiveDateTime']['output'];
@@ -280,12 +281,7 @@ export type NewMilestoneInput = {
 export type Notification = {
   __typename?: 'Notification';
   activity: Activity;
-  author: Person;
-  emailSent: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
-  read: Scalars['Boolean']['output'];
-  readAt: Scalars['DateTime']['output'];
-  shouldSendEmail: Scalars['Boolean']['output'];
 };
 
 export type NotificationInput = {

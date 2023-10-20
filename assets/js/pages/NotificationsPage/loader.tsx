@@ -10,6 +10,7 @@ const query = gql`
       id
       activity {
         id
+        insertedAt
 
         author {
           ...PersonCoreFields
