@@ -8,6 +8,16 @@ defmodule Operately.Notifications do
     Repo.all(Notification)
   end
 
+  def list_notifications(person, page: page, per_page: per_page) do
+    query = from n in Notification,
+      where: n.person_id == ^person.id,
+      order_by: [desc: n.inserted_at]
+
+    query = apply_pagination(query, page: page, per_page: per_page)
+
+    Repo.all(query)
+  end
+
   def get_notification!(id), do: Repo.get!(Notification, id)
 
   def create_notification(attrs \\ %{}) do
@@ -28,5 +38,11 @@ defmodule Operately.Notifications do
 
   def change_notification(%Notification{} = notification, attrs \\ %{}) do
     Notification.changeset(notification, attrs)
+  end
+
+  defp apply_pagination(query, page: page, per_page: per_page) do
+    query
+    |> limit(^per_page)
+    |> offset(^per_page * (^page - 1))
   end
 end

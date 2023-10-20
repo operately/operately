@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Graphql.Types.Notifications do
   use Absinthe.Schema.Notation
 
   object :notification do
+    field :id, non_null(:id)
     field :author, non_null(:person)
     field :activity, non_null(:activity)
     field :read, non_null(:boolean)

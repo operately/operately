@@ -282,6 +282,7 @@ export type Notification = {
   activity: Activity;
   author: Person;
   emailSent: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
   read: Scalars['Boolean']['output'];
   readAt: Scalars['DateTime']['output'];
   shouldSendEmail: Scalars['Boolean']['output'];
@@ -768,16 +769,16 @@ export type RootQueryType = {
   activities?: Maybe<Array<Maybe<Activity>>>;
   assignments: Assignments;
   company: Company;
-  getNotification?: Maybe<Notification>;
   group?: Maybe<Group>;
   groups?: Maybe<Array<Maybe<Group>>>;
   homeDashboard: Dashboard;
   keyResults?: Maybe<Array<Maybe<KeyResult>>>;
   kpi?: Maybe<Kpi>;
   kpis?: Maybe<Array<Maybe<Kpi>>>;
-  listNotifications?: Maybe<Array<Maybe<Notification>>>;
   me?: Maybe<Person>;
   milestone?: Maybe<Milestone>;
+  notification?: Maybe<Notification>;
+  notifications?: Maybe<Array<Notification>>;
   objective?: Maybe<Objective>;
   objectives?: Maybe<Array<Maybe<Objective>>>;
   person?: Maybe<Person>;
@@ -811,11 +812,6 @@ export type RootQueryTypeCompanyArgs = {
 };
 
 
-export type RootQueryTypeGetNotificationArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type RootQueryTypeGroupArgs = {
   id: Scalars['ID']['input'];
 };
@@ -831,14 +827,19 @@ export type RootQueryTypeKpiArgs = {
 };
 
 
-export type RootQueryTypeListNotificationsArgs = {
-  page?: InputMaybe<Scalars['Int']['input']>;
-  perPage?: InputMaybe<Scalars['Int']['input']>;
+export type RootQueryTypeMilestoneArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
-export type RootQueryTypeMilestoneArgs = {
+export type RootQueryTypeNotificationArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeNotificationsArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
+  perPage?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

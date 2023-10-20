@@ -118,7 +118,7 @@ defmodule Operately.Updates do
     })
   end
 
-  def record_project_discussion(author, project, title, body) do
+  def record_project_discussion(context, author, project, title, body) do
     changeset = Update.changeset(%{
       updatable_type: :project,
       updatable_id: project.id,
@@ -128,11 +128,7 @@ defmodule Operately.Updates do
       content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
     })
 
-    Multi.new()
-    |> Multi.insert(:discussion, changeset)
-    |> Multi.run(:send_email, &ProjectDiscussionSubmittedEmail.enqueue/2)
-    |> Repo.transaction()
-    |> extract_result(:discussion)
+    Operately.Activities.record(context, author, :project_discussion_submitted, changeset)
   end
 
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
