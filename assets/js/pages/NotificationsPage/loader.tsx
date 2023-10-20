@@ -8,6 +8,7 @@ const query = gql`
   query ListNotifications($page: Int, $perPage: Int) {
     notifications(page: $page, perPage: $perPage) {
       id
+      read
       activity {
         id
         insertedAt
@@ -57,4 +58,10 @@ export function useLoadedData(): LoaderResult {
   const [data, _] = Paper.useLoadedData() as [LoaderResult, () => void];
 
   return data;
+}
+
+export function useRefresh() {
+  const [_, refresh] = Paper.useLoadedData() as [LoaderResult, () => void];
+
+  return refresh;
 }

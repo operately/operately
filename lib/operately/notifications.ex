@@ -45,4 +45,11 @@ defmodule Operately.Notifications do
     |> limit(^per_page)
     |> offset(^per_page * (^page - 1))
   end
+
+  def mark_as_read(%Notification{} = notification) do
+    update_notification(notification, %{
+      read: true,
+      read_at: DateTime.utc_now()
+    })
+  end
 end

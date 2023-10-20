@@ -12,6 +12,7 @@ export function ProjectDiscussionSubmittedNotification({ notification }) {
 
   return (
     <Card
+      notification={notification}
       title={People.firstName(author) + " started a new discussion: " + title}
       author={author}
       link={link}

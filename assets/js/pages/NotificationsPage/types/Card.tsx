@@ -7,13 +7,31 @@ import FormattedTime from "@/components/FormattedTime";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
 
-export function Card({ author, title, link, where, when, who }) {
+import { gql, useMutation } from "@apollo/client";
+import { useRefresh } from "../loader";
+
+export function Card({ notification, author, title, link, where, when, who }) {
   const goToActivity = useNavigateTo(link);
+  const [mark] = useMarkAsRead();
+  const refresh = useRefresh();
+
+  const clickHandler = React.useCallback(async () => {
+    await mark({ variables: { id: notification.id } });
+    goToActivity();
+  }, [link]);
+
+  const closeHandler = React.useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    await mark({ variables: { id: notification.id } });
+
+    refresh();
+  }, []);
 
   return (
     <div
       className="flex items-center gap-3 hover:bg-shade-1 rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
-      onClick={goToActivity}
+      onClick={clickHandler}
     >
       <div className="shrink-0">
         <Avatar person={author} size={36} />
@@ -30,9 +48,21 @@ export function Card({ author, title, link, where, when, who }) {
         </div>
       </div>
 
-      <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1">
-        <Icons.IconX size={16} className="hover:text-white-1" />
-      </div>
+      {notification.read ? null : (
+        <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1" onClick={closeHandler}>
+          <Icons.IconX size={16} className="hover:text-white-1" />
+        </div>
+      )}
     </div>
   );
+}
+
+function useMarkAsRead() {
+  return useMutation(gql`
+    mutation MarkNotificationAsRead($id: ID!) {
+      markNotificationAsRead(id: $id) {
+        id
+      }
+    }
+  `);
 }

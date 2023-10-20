@@ -293,10 +293,8 @@ export type Notification = {
   __typename?: 'Notification';
   activity: Activity;
   id: Scalars['ID']['output'];
-};
-
-export type NotificationInput = {
-  field1: Scalars['String']['input'];
+  read: Scalars['Boolean']['output'];
+  readAt: Scalars['DateTime']['output'];
 };
 
 export type Objective = {
@@ -465,7 +463,6 @@ export type RootMutationType = {
   createGroup?: Maybe<Group>;
   createKeyResult?: Maybe<KeyResult>;
   createKpi?: Maybe<Kpi>;
-  createNotification?: Maybe<Notification>;
   createObjective?: Maybe<Objective>;
   createProfile?: Maybe<Person>;
   createProject: Project;
@@ -475,12 +472,12 @@ export type RootMutationType = {
   editKeyResource: ProjectKeyResource;
   editProjectName: Project;
   editProjectTimeline: Project;
+  markNotificationAsRead: Notification;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
-  removeNotification?: Maybe<Notification>;
   removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
   setGoalGroup?: Maybe<Objective>;
@@ -578,11 +575,6 @@ export type RootMutationTypeCreateKpiArgs = {
 };
 
 
-export type RootMutationTypeCreateNotificationArgs = {
-  input: NotificationInput;
-};
-
-
 export type RootMutationTypeCreateObjectiveArgs = {
   input: CreateObjectiveInput;
 };
@@ -630,6 +622,11 @@ export type RootMutationTypeEditProjectTimelineArgs = {
 };
 
 
+export type RootMutationTypeMarkNotificationAsReadArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type RootMutationTypePinProjectToHomePageArgs = {
   projectId: Scalars['ID']['input'];
 };
@@ -654,11 +651,6 @@ export type RootMutationTypeRemoveGroupMemberArgs = {
 
 
 export type RootMutationTypeRemoveKeyResourceArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeRemoveNotificationArgs = {
   id: Scalars['ID']['input'];
 };
 

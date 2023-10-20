@@ -20,7 +20,7 @@ defmodule Operately.Notifications.Notification do
   @doc false
   def changeset(notification, attrs) do
     notification
-    |> cast(attrs, [:read, :read_at, :email_sent, :email_sent_at, :should_send_email])
-    |> validate_required([:read, :read_at, :email_sent, :email_sent_at, :should_send_email])
+    |> cast(attrs, [:read, :read_at, :email_sent, :email_sent_at, :should_send_email, :person_id, :activity_id])
+    |> validate_required([:should_send_email, :person_id, :activity_id])
   end
 end
