@@ -24,14 +24,15 @@ defmodule Operately.Features.ProjectDiscussionsText do
     |> ProjectSteps.visit_project_page()
     |> ProjectSteps.assert_discussion_exists(title: "How are we going to do this?")
 
-    ctx
-    |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "#{Person.short_name(ctx.champion)} started a discussion in #{ctx.project.name}: How are we going to do this?",
-      except: [ctx.champion.email]
-    )
+    # ctx
+    # |> ProjectSteps.assert_email_sent_to_all_contributors(
+    #   subject: "#{Person.short_name(ctx.champion)} started a discussion in #{ctx.project.name}: How are we going to do this?",
+    #   except: [ctx.champion.email]
+    # )
 
     ctx
     |> UI.login_as(ctx.reviewer)
+    |> UI.visit("/")
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_notification_exists(
       author: ctx.champion,

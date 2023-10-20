@@ -23,6 +23,8 @@ defmodule OperatelyWeb.Graphql.Queries.Notifications do
           per_page: args.per_page
         )
 
+        notifications = Operately.Repo.preload(notifications, [activity: [:author]])
+
         {:ok, notifications}
       end
     end

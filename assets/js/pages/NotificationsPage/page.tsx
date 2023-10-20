@@ -28,6 +28,7 @@ function UnreadNotifications() {
 
   return (
     <div>
+      {unread.length}
       {unread.map((n) => (
         <Notification key={n.id} notification={n} />
       ))}
@@ -38,10 +39,11 @@ function UnreadNotifications() {
 function PreviousNotifications() {
   const { notifications } = useLoadedData();
 
-  const previouslyRead = notifications.filter((n) => !n.read);
+  const previouslyRead = notifications.filter((n) => n.read);
 
   return (
     <div>
+      {previouslyRead.length}
       {previouslyRead.map((n) => (
         <Notification key={n.id} notification={n} />
       ))}

@@ -5,13 +5,14 @@ defmodule Operately.Notifications.Notification do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "notifications" do
+    belongs_to :activity, Operately.Activities.Activity
+    belongs_to :person, Operately.People.Person
+
     field :email_sent, :boolean, default: false
     field :email_sent_at, :naive_datetime
     field :read, :boolean, default: false
     field :read_at, :naive_datetime
     field :should_send_email, :boolean, default: false
-    field :activity_id, :binary_id
-    field :person_id, :binary_id
 
     timestamps()
   end

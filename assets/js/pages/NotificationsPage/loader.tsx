@@ -8,12 +8,12 @@ const query = gql`
   query ListNotifications($page: Int, $perPage: Int) {
     notifications(page: $page, perPage: $perPage) {
       id
-      author {
-        ...PersonCoreFields
-      }
-
       activity {
         id
+
+        author {
+          ...PersonCoreFields
+        }
       }
     }
   }

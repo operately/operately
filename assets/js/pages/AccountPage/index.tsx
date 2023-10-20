@@ -59,6 +59,7 @@ function LogOutButton() {
   const [active, setActive] = React.useState(false);
 
   const handleClick = () => {
+    console.log("logOut");
     setActive(true);
 
     setTimeout(() => {
@@ -73,6 +74,7 @@ function LogOutButton() {
     <div
       className="flex items-center justify-between hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg"
       onClick={handleClick}
+      data-test-id="log-out-button"
     >
       <div className="flex items-center gap-4">
         <Icons.IconDoorExit size={24} /> Sign Out

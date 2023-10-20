@@ -69,7 +69,8 @@ defmodule OperatelyWeb.AccountOauthController do
 
       case People.fetch_or_create_account(account_params) do
         {:ok, account} ->
-          AccountAuth.log_in_account(conn, account)
+          conn
+          |> AccountAuth.log_in_account(account)
 
         _ ->
           conn

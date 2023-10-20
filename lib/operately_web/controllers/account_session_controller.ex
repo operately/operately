@@ -8,6 +8,8 @@ defmodule OperatelyWeb.AccountSessionController do
   end
 
   def delete(conn, _params) do
+    IO.inspect(conn)
+    IO.inspect("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
     conn
     |> put_flash(:info, "Logged out successfully.")
     |> AccountAuth.log_out_account()

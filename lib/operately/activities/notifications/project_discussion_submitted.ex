@@ -27,7 +27,7 @@ defmodule Operately.Activities.Notifications.ProjectDiscussionSubmitted do
   def create_notifications(people, activity_id) do
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
-    Enum.map(people, fn person ->
+    records = Enum.map(people, fn person ->
       %{
         person_id: person.id,
         activity_id: activity_id,
@@ -36,6 +36,7 @@ defmodule Operately.Activities.Notifications.ProjectDiscussionSubmitted do
         updated_at: now
       }
     end)
-    |> Repo.insert_all(Notifications.Notification)
+
+    Repo.insert_all(Notifications.Notification, records)
   end
 end
