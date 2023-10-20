@@ -17,11 +17,11 @@ defmodule Operately.Activities.Content.ProjectDiscussionSubmitted do
   def build(context, discussion) do
     project = context[:project]
 
-    %__MODULE__{
+    changeset(%{
       company_id: project.company_id,
       project_id: project.id,
       discussion_id: discussion.id,
-      title: discussion.title
-    }
+      title: discussion.content.title
+    })
   end
 end

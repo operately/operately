@@ -5,7 +5,7 @@ defmodule Operately.Activities.Activity do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "activities" do
-    belongs_to :author, Operately.People.Person, foreign_key: :person_id
+    belongs_to :author, Operately.People.Person
 
     field :action, :string
     field :content, :map

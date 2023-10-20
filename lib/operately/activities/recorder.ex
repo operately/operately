@@ -16,13 +16,12 @@ defmodule Operately.Activities.Recorder do
     start()
     |> insert_record(changeset)
     |> insert_activity(context, author, action)
+    |> schedule_notifications(author, action)
     |> Operately.Repo.transaction()
     |> log_result()
     |> extract_result()
   rescue
-    e ->
-      Logger.error("Activity recording failed: #{inspect(e)}")
-      IO.inspect(__STACKTRACE__)
+    err -> Logger.error(Exception.format(:error, err, __STACKTRACE__))
   end
 
   def start() do
@@ -35,17 +34,23 @@ defmodule Operately.Activities.Recorder do
 
   def insert_activity(multi, context, author, action) do
     Multi.insert(multi, :activity, fn %{record: record} ->
-      Activity.changeset(%{
-        author_id: author.id,
-        action: action,
-        content: Content.build(context, action, record),
-      })
+      content = Content.build(context, action, record)
+      
+      if content.valid? do
+        Activity.changeset(%{
+          author_id: author.id,
+          action: Atom.to_string(action),
+          content: content.changes,
+        })
+      else
+        {:error, content}
+      end
     end)
   end
 
   def schedule_notifications(multi, author, action) do
-    Multi.run(multi, :schedule_notifications, fn %{activity: activity} ->
-      NotificationDispatcher.new(activity_id: activity.id) |> Oban.insert()
+    Multi.run(multi, :notifications, fn _, %{activity: activity} ->
+      NotificationDispatcher.new(%{activity_id: activity.id}) |> Oban.insert()
     end)
   end
 
