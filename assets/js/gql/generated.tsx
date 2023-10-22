@@ -900,6 +900,11 @@ export type RootQueryTypeUpdatesArgs = {
   filter: UpdatesFilter;
 };
 
+export type RootSubscriptionType = {
+  __typename?: 'RootSubscriptionType';
+  onUnreadNotificationChanged?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type Tenet = {
   __typename?: 'Tenet';
   company: Company;

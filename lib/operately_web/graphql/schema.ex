@@ -73,6 +73,9 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Tenets
   import_types OperatelyWeb.Graphql.Mutations.Updates
 
+  # Subscriptions
+  import_types OperatelyWeb.Graphql.Subscriptions.Notifications
+
   query do
     import_fields :activity_queries
     import_fields :assignment_queries
@@ -104,5 +107,9 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :project_mutations
     import_fields :tenet_mutations
     import_fields :update_mutations
+  end
+
+  subscription do
+    import_fields :notification_subscriptions
   end
 end

@@ -23,12 +23,19 @@ defmodule Mix.Tasks.Operately.Gen.Elixir.Graphql.Schema do
         # Mutations
         #{indent(gen_import_type_statements(Path.wildcard("lib/operately_web/graphql/mutations/*.ex")), 2)}
 
+        # Subscriptions
+        #{indent(gen_import_type_statements(Path.wildcard("lib/operately_web/graphql/subscriptions/*.ex")), 2)}
+
         query do
           #{indent(gen_import_field_statements(Path.wildcard("lib/operately_web/graphql/queries/*.ex"), "_queries"), 4)}
         end
 
         mutation do
           #{indent(gen_import_field_statements(Path.wildcard("lib/operately_web/graphql/mutations/*.ex"), "_mutations"), 4)}
+        end
+
+        subscription do
+          #{indent(gen_import_field_statements(Path.wildcard("lib/operately_web/graphql/subscriptions/*.ex"), "_subscriptions"), 4)}
         end
       end
       """
