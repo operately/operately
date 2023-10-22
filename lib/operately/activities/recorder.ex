@@ -16,7 +16,7 @@ defmodule Operately.Activities.Recorder do
     start()
     |> insert_record(changeset)
     |> insert_activity(context, author, action)
-    |> schedule_notifications(author, action)
+    |> schedule_notifications()
     |> Operately.Repo.transaction()
     |> log_result()
     |> extract_result()
@@ -48,7 +48,7 @@ defmodule Operately.Activities.Recorder do
     end)
   end
 
-  def schedule_notifications(multi, author, action) do
+  def schedule_notifications(multi) do
     Multi.run(multi, :notifications, fn _, %{activity: activity} ->
       NotificationDispatcher.new(%{activity_id: activity.id}) |> Oban.insert()
     end)

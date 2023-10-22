@@ -52,4 +52,33 @@ defmodule Operately.Notifications do
       read_at: DateTime.utc_now()
     })
   end
+
+  def bulk_create(notifications) do
+    alias Ecto.Multi
+    alias Operately.Notifications.EmailWorker
+
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    notifications = Enum.map(notifications, fn notification ->
+      Map.merge(notification, %{inserted_at: now, updated_at: now})
+    end)
+
+    Multi.new()
+    |> Multi.run(:notifications, fn repo, _ -> 
+      {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email])
+      {:ok, notifications}
+    end)
+    |> Multi.merge(fn %{notifications: notifications} ->
+      Enum.reduce(notifications, Ecto.Multi.new(), fn notification, multi ->
+        if notification.should_send_email do
+          Ecto.Multi.run(multi, "email_#{notification.id}", fn _repo, _ ->
+            EmailWorker.new(%{notification_id: notification.id}) |> Oban.insert()
+          end)
+        else
+          multi
+        end
+      end)
+    end)
+    |> Repo.transaction()
+  end
 end
