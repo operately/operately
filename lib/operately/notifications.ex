@@ -47,10 +47,14 @@ defmodule Operately.Notifications do
   end
 
   def mark_as_read(%Notification{} = notification) do
-    update_notification(notification, %{
+    {:ok, notification} = update_notification(notification, %{
       read: true,
       read_at: DateTime.utc_now()
     })
+
+    Absinthe.Subscription.publish(OperatelyWeb.Endpoint, true, on_unread_notification_count_changed: "notifications:#{notification.person_id}")
+
+    {:ok, notification}
   end
 
   def bulk_create(notifications) do
@@ -65,7 +69,7 @@ defmodule Operately.Notifications do
 
     Multi.new()
     |> Multi.run(:notifications, fn repo, _ -> 
-      {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email])
+      {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email, :person_id])
       {:ok, notifications}
     end)
     |> Multi.merge(fn %{notifications: notifications} ->
@@ -80,6 +84,18 @@ defmodule Operately.Notifications do
       end)
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{notifications: notifications}} -> 
+        unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
+
+        Enum.each(unique_person_ids, fn person_id ->
+          Absinthe.Subscription.publish(OperatelyWeb.Endpoint, true, on_unread_notification_count_changed: "notifications:#{person_id}")
+        end)
+
+        {:ok, notifications}
+      {:error, _} -> 
+        {:error, :failed_to_create_notifications}
+    end
   end
 
   def unread_notifications_count(person) do

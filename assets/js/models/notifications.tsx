@@ -15,7 +15,12 @@ export function useUnreadCount() {
 
   const { data, loading, error, refetch } = useQuery(query, { fetchPolicy: "network-only" });
 
-  useSubscription(subscription, { onData: refetch });
+  useSubscription(subscription, {
+    onData: () => {
+      console.log("Notification count changed");
+      refetch();
+    },
+  });
 
   if (loading) return 0;
 

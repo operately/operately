@@ -23,6 +23,8 @@
 
       window.companyID = "<%= Operately.Companies.get_company_id() %>";
       window.environment = "<%= Application.get_env(:operately, :app_env) %>";
+
+      window.graphqlSocketToken = "<%= OperatelyWeb.GraphqlWSSocket.gen_token(@conn) %>";
     </script>
 
     <style>

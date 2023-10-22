@@ -902,7 +902,7 @@ export type RootQueryTypeUpdatesArgs = {
 
 export type RootSubscriptionType = {
   __typename?: 'RootSubscriptionType';
-  onUnreadNotificationChanged?: Maybe<Scalars['Boolean']['output']>;
+  onUnreadNotificationCountChanged?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type Tenet = {

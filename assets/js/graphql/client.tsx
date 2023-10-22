@@ -13,6 +13,11 @@ const httpLink = createHttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: domain.replace("http", "ws") + "/api/graphql-ws",
+    connectionParams: () => {
+      return {
+        token: (window as any).graphqlSocketToken,
+      };
+    },
   }),
 );
 

@@ -15,7 +15,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_notification_count(ctx, count) do
-    UI.refute_has(ctx, testid: "unread-notifications-count")
+    UI.assert_has(ctx, testid: "unread-notifications-count")
 
     bell = UI.query(testid: "notifications-bell")
 
