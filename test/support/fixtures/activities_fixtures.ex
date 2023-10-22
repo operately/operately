@@ -8,14 +8,20 @@ defmodule Operately.ActivitiesFixtures do
   Generate a activity.
   """
   def activity_fixture(attrs \\ %{}) do
-    {:ok, activity} =
-      attrs
-      |> Enum.into(%{
-        action_type: "some action_type",
-        resource_id: "7488a646-e31f-11e4-aace-600308960662",
-        resource_type: "some resource_type"
-      })
-      |> Operately.Activities.create_activity()
+    defaults = %{
+      action: "project_discussion_created",
+      author_id: Ecto.UUID.generate(),
+      content: %{
+        discussion_id: Ecto.UUID.generate(),
+        project_id: Ecto.UUID.generate(),
+        company_id: Ecto.UUID.generate(),
+      }
+    }
+
+    attrs = Map.merge(defaults, attrs)
+    changeset = Operately.Activities.Activity.changeset(%Operately.Activities.Activity{}, attrs)
+
+    {:ok, activity} = Operately.Repo.insert(changeset)
 
     activity
   end

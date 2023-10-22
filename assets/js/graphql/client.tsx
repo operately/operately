@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink, split } from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink, split, gql } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
@@ -16,7 +16,14 @@ const wsLink = new GraphQLWsLink(
   }),
 );
 
-const cache = new InMemoryCache();
+import { createFragmentRegistry } from "@apollo/client/cache";
+import personFragments from "@/gql/fragments/person";
+
+const cache = new InMemoryCache({
+  fragments: createFragmentRegistry(gql`
+    ${personFragments}
+  `),
+});
 
 const splitLink = split(
   ({ query }) => {

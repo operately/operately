@@ -36,6 +36,8 @@ export type Scalars = {
 export type Activity = {
   __typename?: 'Activity';
   actionType: Scalars['String']['output'];
+  author: Person;
+  content: ActivityContent;
   eventData: ActivityDataUnion;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['NaiveDateTime']['output'];
@@ -46,6 +48,16 @@ export type Activity = {
   scopeId: Scalars['ID']['output'];
   scopeType: Scalars['String']['output'];
   updatedAt: Scalars['NaiveDateTime']['output'];
+};
+
+export type ActivityContent = ActivityContentProjectDiscussionSubmitted;
+
+export type ActivityContentProjectDiscussionSubmitted = {
+  __typename?: 'ActivityContentProjectDiscussionSubmitted';
+  discussionId: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;
@@ -277,6 +289,14 @@ export type NewMilestoneInput = {
   title: Scalars['String']['input'];
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  activity: Activity;
+  id: Scalars['ID']['output'];
+  read: Scalars['Boolean']['output'];
+  readAt: Scalars['DateTime']['output'];
+};
+
 export type Objective = {
   __typename?: 'Objective';
   activities?: Maybe<Array<Maybe<Activity>>>;
@@ -452,6 +472,7 @@ export type RootMutationType = {
   editKeyResource: ProjectKeyResource;
   editProjectName: Project;
   editProjectTimeline: Project;
+  markNotificationAsRead: Notification;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
@@ -598,6 +619,11 @@ export type RootMutationTypeEditProjectNameArgs = {
 
 export type RootMutationTypeEditProjectTimelineArgs = {
   input: EditProjectTimelineInput;
+};
+
+
+export type RootMutationTypeMarkNotificationAsReadArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -750,6 +776,8 @@ export type RootQueryType = {
   kpis?: Maybe<Array<Maybe<Kpi>>>;
   me?: Maybe<Person>;
   milestone?: Maybe<Milestone>;
+  notification?: Maybe<Notification>;
+  notifications?: Maybe<Array<Notification>>;
   objective?: Maybe<Objective>;
   objectives?: Maybe<Array<Maybe<Objective>>>;
   person?: Maybe<Person>;
@@ -800,6 +828,17 @@ export type RootQueryTypeKpiArgs = {
 
 export type RootQueryTypeMilestoneArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeNotificationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeNotificationsArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
+  perPage?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

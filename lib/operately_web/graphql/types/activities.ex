@@ -11,6 +11,12 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
     field :inserted_at, non_null(:naive_datetime)
     field :updated_at, non_null(:naive_datetime)
 
+    field :author, non_null(:person) do
+      resolve fn activity, _, _ ->
+        {:ok, activity.author}
+      end
+    end
+
     field :resource, :activity_resource_union do
       resolve fn activity, _, _ ->
         {:ok, activity.resource}
@@ -27,6 +33,22 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
       resolve fn activity, _, _ ->
         {:ok, activity.event_data}
       end
+    end
+
+    field :content, non_null(:activity_content) do
+      resolve fn activity, _, _ ->
+        {:ok, activity}
+      end
+    end
+  end
+
+  union :activity_content do
+    types [
+      :activity_content_project_discussion_submitted,
+    ]
+
+    resolve_type fn %{action: action}, _ ->
+      String.to_atom("activity_content_#{action}")
     end
   end
 

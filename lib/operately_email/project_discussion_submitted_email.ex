@@ -1,23 +1,12 @@
 defmodule OperatelyEmail.ProjectDiscussionSubmittedEmail do
-  use Oban.Worker
-  
   alias Operately.People.Person
 
-  def enqueue(_repo, %{discussion: discussion}) do
-    new(%{id: discussion.id}) |> Oban.insert()
-  end
-
-  def perform(job) do
-    id = job.args["id"]
-
-    update = Operately.Updates.get_update!(id)
+  def send(person, activity) do
+    update = Operately.Updates.get_update!(activity.content["discussion_id"])
     project = Operately.Projects.get_project!(update.updatable_id)
-    recipients = Operately.Updates.list_people_who_should_be_notified(update)
+    email = compose(project, update, person)
 
-    Enum.each(recipients, fn recipient ->
-      email = compose(project, update, recipient)
-      OperatelyEmail.Mailer.deliver_now(email)
-    end)
+    OperatelyEmail.Mailer.deliver_now(email)
   end
 
   def compose(project, update, recipient) do
@@ -32,13 +21,13 @@ defmodule OperatelyEmail.ProjectDiscussionSubmittedEmail do
       discussion: update,
       author: Person.short_name(author),
       cta_url: cta_url(project, update),
-      title: subject(company, author, project, update)
+      title: subject(author, project, update)
     }
 
     new_email(
       to: recipient.email,
       from: sender(company),
-      subject: subject(company, author, project, update),
+      subject: subject(author, project, update),
       html_body: OperatelyEmail.Views.ProjectDiscussionSubmitted.html(assigns),
       text_body: OperatelyEmail.Views.ProjectDiscussionSubmitted.text(assigns)
     )
@@ -48,7 +37,7 @@ defmodule OperatelyEmail.ProjectDiscussionSubmittedEmail do
     {"Operately (#{company.name})", Application.get_env(:operately, :notification_email)}
   end
 
-  def subject(company, short_name, project, update) do
+  def subject(short_name, project, update) do
     "#{Person.short_name(short_name)} started a discussion in #{project.name}: #{update.content["title"]}"
   end
 

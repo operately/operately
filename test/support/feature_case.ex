@@ -71,9 +71,13 @@ defmodule Operately.FeatureCase do
     def login_as(state, person) do
       path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
-      res = session(state) |> Browser.visit(path)
+      new_session = 
+        state.session 
+        |> Browser.visit("/")
+        |> Browser.set_cookie("_operately_key", "")
+        |> Browser.visit(path)
 
-      Map.put(state, :session, res)
+      Map.put(state, :session, new_session)
     end
 
     def get_account() do

@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectDiscussionsText do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.NotificationsSteps
   alias Operately.People.Person
   
   setup ctx do
@@ -22,6 +23,15 @@ defmodule Operately.Features.ProjectDiscussionsText do
     ctx
     |> ProjectSteps.visit_project_page()
     |> ProjectSteps.assert_discussion_exists(title: "How are we going to do this?")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit("/")
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_notification_exists(
+      author: ctx.champion,
+      subject: "How are we going to do this?"
+    )
 
     ctx
     |> ProjectSteps.assert_email_sent_to_all_contributors(
