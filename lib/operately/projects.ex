@@ -9,7 +9,6 @@ defmodule Operately.Projects do
   alias Operately.Projects.Project
   alias Operately.Projects.Contributor
   alias Operately.People.Person
-  alias Operately.Activities
   alias Operately.Updates
 
   def get_project!(id) do
@@ -94,7 +93,6 @@ defmodule Operately.Projects do
   def uncomplete_milestone(person, milestone) do
     Repo.transaction(fn ->
       {:ok, milestone} = update_milestone(milestone, %{status: :pending, completed_at: nil})
-      {:ok, _} = Activities.submit_milestone_uncompleted(person.id, milestone)
 
       milestone
     end)

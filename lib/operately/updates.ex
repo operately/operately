@@ -9,7 +9,6 @@ defmodule Operately.Updates do
   alias Operately.Updates.Update
 
   alias OperatelyEmail.{
-    ProjectDiscussionSubmittedEmail,
     ProjectCommentSubmittedEmail
   }
 
@@ -277,8 +276,6 @@ defmodule Operately.Updates do
         acknowledged_at: DateTime.utc_now,
         acknowledging_person_id: person.id
       })
-
-      {:ok, _} = Operately.Activities.submit_update_acknowledged(update)
 
       update
     end)
