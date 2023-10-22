@@ -1,7 +1,7 @@
 import * as Paper from "@/components/PaperContainer";
 
 import client from "@/graphql/client";
-import { gql } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import { Notification } from "@/gql";
 
 const query = gql`
@@ -64,4 +64,16 @@ export function useRefresh() {
   const [_, refresh] = Paper.useLoadedData() as [LoaderResult, () => void];
 
   return refresh;
+}
+
+export function useSubscribeToChanges() {
+  const refresh = useRefresh();
+
+  const subscription = gql`
+    subscription NotificationsChanged {
+      onUnreadNotificationCountChanged
+    }
+  `;
+
+  useSubscription(subscription, { onData: refresh });
 }

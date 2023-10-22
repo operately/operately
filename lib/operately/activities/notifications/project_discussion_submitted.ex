@@ -5,6 +5,8 @@ defmodule Operately.Activities.Notifications.ProjectDiscussionSubmitted do
   alias Operately.People.Person
   alias Operately.Projects.Contributor
 
+  require Logger
+
   def dispatch(activity) do
     author_id = activity.author_id
     project_id = activity.content["project_id"]
@@ -19,6 +21,10 @@ defmodule Operately.Activities.Notifications.ProjectDiscussionSubmitted do
     end)
 
     Operately.Notifications.bulk_create(notifications)
+  rescue
+    e ->
+      Logger.error("Failed to dispatch notification: #{inspect(e)}")
+      {:error, e}
   end
 
   def list_contributors(project_id, exclude: author_id) do

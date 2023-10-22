@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useSubscribeToChanges } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
 
 import { Notification } from "@/gql";
@@ -29,6 +29,8 @@ export function Page() {
 }
 
 function UnreadNotifications() {
+  useSubscribeToChanges();
+
   const { notifications } = useLoadedData();
 
   const unread = notifications.filter((n) => !n.read);

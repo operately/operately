@@ -776,7 +776,6 @@ export type RootQueryType = {
   kpis?: Maybe<Array<Maybe<Kpi>>>;
   me?: Maybe<Person>;
   milestone?: Maybe<Milestone>;
-  notification?: Maybe<Notification>;
   notifications?: Maybe<Array<Notification>>;
   objective?: Maybe<Objective>;
   objectives?: Maybe<Array<Maybe<Objective>>>;
@@ -789,6 +788,7 @@ export type RootQueryType = {
   searchPeople?: Maybe<Array<Maybe<Person>>>;
   tenet?: Maybe<Tenet>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
+  unreadNotificationsCount?: Maybe<Scalars['Int']['output']>;
   update: Update;
   updates: Array<Maybe<Update>>;
 };
@@ -827,11 +827,6 @@ export type RootQueryTypeKpiArgs = {
 
 
 export type RootQueryTypeMilestoneArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeNotificationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -903,6 +898,11 @@ export type RootQueryTypeUpdateArgs = {
 
 export type RootQueryTypeUpdatesArgs = {
   filter: UpdatesFilter;
+};
+
+export type RootSubscriptionType = {
+  __typename?: 'RootSubscriptionType';
+  onUnreadNotificationCountChanged?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type Tenet = {
