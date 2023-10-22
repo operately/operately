@@ -16,7 +16,6 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionSubmitted d
 
     field :title, non_null(:string) do
       resolve fn activity, _, _ ->
-        IO.inspect(activity)
         {:ok, activity.content["title"]}
       end
     end

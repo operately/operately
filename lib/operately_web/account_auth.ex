@@ -71,9 +71,6 @@ defmodule OperatelyWeb.AccountAuth do
   It clears all session data for safety. See renew_session.
   """
   def log_out_account(conn) do
-    IO.inspect("LOGGING OUT ACCOUNT")
-    IO.inspect(conn)
-
     account_token = get_session(conn, :account_token)
     account_token && People.delete_account_session_token(account_token)
 
