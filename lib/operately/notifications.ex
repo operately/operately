@@ -81,4 +81,12 @@ defmodule Operately.Notifications do
     end)
     |> Repo.transaction()
   end
+
+  def unread_notifications_count(person) do
+    query = from n in Notification,
+      where: n.person_id == ^person.id and n.read == false,
+      select: count(n.id)
+
+    Repo.one(query)
+  end
 end

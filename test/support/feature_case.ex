@@ -187,6 +187,16 @@ defmodule Operately.FeatureCase do
       end)
     end
 
+    def refute_has(state, opts) do
+      {session, opts} = Keyword.pop(opts, :in)
+      context = session || session(state)
+      css_query = compose_css_query(opts)
+
+      context |> Browser.refute_has(Query.css(css_query))
+
+      state
+    end
+
     def refute_text(state, text) do
       session(state)
       |> Browser.refute_has(Query.text(text))

@@ -32,6 +32,7 @@ export function Card({ notification, author, title, link, where, when, who }) {
     <div
       className="flex items-center gap-3 hover:bg-shade-1 rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
       onClick={clickHandler}
+      data-test-id="notification-card"
     >
       <div className="shrink-0">
         <Avatar person={author} size={36} />
