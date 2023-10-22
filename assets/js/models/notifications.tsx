@@ -9,9 +9,7 @@ export function useUnreadCount() {
 
   const subscription = gql`
     subscription NotificationsChanged {
-      onUnreadNotificationCountChanged {
-        count
-      }
+      onUnreadNotificationCountChanged
     }
   `;
 
