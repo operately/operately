@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Activities
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionSubmitted
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateAcknowledged
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateSubmitted
   import_types OperatelyWeb.Graphql.Types.Assignments
   import_types OperatelyWeb.Graphql.Types.Blobs

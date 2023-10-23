@@ -12,9 +12,9 @@ defmodule Operately.Activities.Recorder do
   alias Operately.Activities.Content
   alias Operately.Activities.NotificationDispatcher
 
-  def record(context, author, action, changeset) do
+  def record(context, author, action, callback) do
     start()
-    |> insert_record(changeset)
+    |> run_transaction(callback)
     |> insert_activity(context, author, action)
     |> schedule_notifications()
     |> Operately.Repo.transaction()
@@ -28,8 +28,8 @@ defmodule Operately.Activities.Recorder do
     Multi.new()
   end
 
-  def insert_record(multi, changeset) do
-    Multi.insert(multi, :record, changeset)
+  def run_transaction(multi, callback) do
+    Multi.run(multi, :record, fn repo, _ -> callback.(repo) end)
   end
 
   def insert_activity(multi, context, author, action) do

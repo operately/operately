@@ -69,6 +69,11 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "post-status-update")
   end
 
+  def acknowledge_status_update(ctx) do
+    ctx
+    |> UI.click(testid: "acknowledge-update")
+  end
+
   # 
   # Navigation between project pages
   #
