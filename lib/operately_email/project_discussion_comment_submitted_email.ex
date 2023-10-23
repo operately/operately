@@ -31,8 +31,8 @@ defmodule OperatelyEmail.ProjectDiscussionCommentSubmittedEmail do
       to: recipient.email,
       from: sender(company),
       subject: subject,
-      html_body: OperatelyEmail.Views.ProjectCommentSubmitted.html(assigns),
-      text_body: OperatelyEmail.Views.ProjectCommentSubmitted.text(assigns)
+      html_body: OperatelyEmail.Views.ProjectDiscussionCommentSubmitted.html(assigns),
+      text_body: OperatelyEmail.Views.ProjectDiscussionCommentSubmitted.text(assigns)
     )
   end
 

@@ -24,6 +24,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_no_unread_notifications(ctx) do
+    :timer.sleep(500) # give the notification count time to update
     UI.refute_has(ctx, testid: "unread-notifications-count")
   end
 

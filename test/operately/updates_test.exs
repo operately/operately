@@ -116,7 +116,7 @@ defmodule Operately.UpdatesTest do
     end
 
     test "create_comment/1 with invalid data returns error changeset", ctx do
-      assert {:error, :comment, %Ecto.Changeset{}, _} = Updates.create_comment(ctx.update, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Updates.create_comment(ctx.update, @invalid_attrs)
     end
 
     test "update_comment/2 with valid data updates the comment", ctx do
