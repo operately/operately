@@ -4,24 +4,39 @@ defmodule Operately.Features.ProjectsTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  setup session do
-    company = company_fixture(%{name: "Test Org"})
-    session = session |> UI.login()
-    champion = UI.get_account().person
-    project = create_project(company, champion)
+  alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.NotificationsSteps
 
-    {:ok, %{session: session, company: company, champion: champion, project: project}}
+  setup ctx do
+    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
+    ctx = ProjectSteps.login(ctx)
+
+    {:ok, ctx}
   end
 
-  feature "add project", state do
-    state
+  @tag login_as: :champion
+  feature "add project", ctx do
+    ctx
     |> visit_index()
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person(state.champion.full_name)
+    |> UI.select_person(ctx.reviewer.full_name)
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
-    |> UI.assert_text(short_name(state.champion) <> " created this project and assigned themselves as the Champion")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_notification_exists(
+      author: ctx.champion, 
+      subject: "#{Person.first_name(ctx.champion)} created a new project and assigned you as the Champion"
+    )
+
+    ctx
+    |> ProjectSteps.assert_email_sent_to_all_contributors(
+      subject: "#{Person.short_name(ctx.champion)} created a new project and assigned you as the Champion",
+      except: [ctx.champion.email]
+    )
   end
 
   feature "add a private project", state do
