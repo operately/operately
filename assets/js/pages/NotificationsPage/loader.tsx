@@ -57,6 +57,15 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectStatusUpdateCommented {
+            projectId
+            statusUpdateId
+
+            project {
+              name
+            }
+          }
         }
       }
     }
