@@ -12,6 +12,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   def assert_notification_exists(ctx, author: author, subject: subject) do
     ctx
     |> UI.assert_text(author.full_name)
+    |> UI.assert_text(subject)
   end
 
   def assert_notification_count(ctx, count) do

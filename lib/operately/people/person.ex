@@ -49,4 +49,9 @@ defmodule Operately.People.Person do
 
     "#{first_name} #{last_name_initial}."
   end
+
+  def first_name(person) do
+    [first_name | _] = String.split(person.full_name, " ")
+    first_name
+  end
 end

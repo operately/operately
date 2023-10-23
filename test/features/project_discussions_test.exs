@@ -26,11 +26,10 @@ defmodule Operately.Features.ProjectDiscussionsText do
 
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> UI.visit("/")
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_notification_exists(
-      author: ctx.champion,
-      subject: "How are we going to do this?"
+      author: ctx.champion, 
+      subject: "#{Person.first_name(ctx.champion)} started a new discussion: How are we going to do this?"
     )
 
     ctx
@@ -53,6 +52,14 @@ defmodule Operately.Features.ProjectDiscussionsText do
     |> ProjectSteps.click_on_discussion(title: "How are we going to do this?")
     |> ProjectSteps.post_comment(body: "Sounds good to me! Let's do it!")
     |> UI.assert_text("Sounds good to me! Let's do it!")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_notification_exists(
+      author: ctx.champion,
+      subject: "#{Person.first_name(ctx.champion)} commented on: How are we going to do this?"
+    )
 
     ctx
     |> ProjectSteps.assert_email_sent_to_all_contributors(
