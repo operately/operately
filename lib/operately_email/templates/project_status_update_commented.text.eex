@@ -1,0 +1,3 @@
+<%= @author %> commented on a status update on <%= @project.name %>.
+
+Link: <%= @cta_url %>

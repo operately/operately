@@ -42,19 +42,6 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
     end
   end
 
-  union :activity_content do
-    types [
-      :activity_content_project_discussion_submitted,
-      :activity_content_project_discussion_comment_submitted,
-      :activity_content_project_status_update_submitted,
-      :activity_content_project_status_update_acknowledged,
-    ]
-
-    resolve_type fn %{action: action}, _ ->
-      String.to_atom("activity_content_#{action}")
-    end
-  end
-
   union :activity_resource_union do
     types [:project, :update, :milestone, :comment]
 

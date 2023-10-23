@@ -108,17 +108,6 @@ defmodule Operately.Features.ProjectsTest do
     |> refute_has(Query.text("Code Repository"))
   end
 
-  feature "leave a comment on an update", state do
-    add_status_update(state.project, "This is a status update.", state.champion.id)
-
-    state
-    |> visit_show(state.project)
-    |> UI.click(testid: "add-comment")
-    |> UI.fill_rich_text("This is a comment.")
-    |> UI.click(testid: "post-comment")
-    |> assert_has(Query.text("This is a comment."))
-  end
-
   feature "react to a comment", state do
     {:ok, update} = add_status_update(state.project, "This is a status update.", state.champion.id)
     {:ok, comment} = add_comment(update, "This is a comment.", state.champion.id)

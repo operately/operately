@@ -8,6 +8,7 @@ import * as React from "react";
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
 import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
+import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 
 export default function NotificationItem({notification}) {
@@ -22,6 +23,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectStatusUpdateAcknowledged":
       return <ProjectStatusUpdateAcknowledged notification={notification} />;
+    
+    case "ActivityContentProjectStatusUpdateCommented":
+      return <ProjectStatusUpdateCommented notification={notification} />;
     
     case "ActivityContentProjectStatusUpdateSubmitted":
       return <ProjectStatusUpdateSubmitted notification={notification} />;
