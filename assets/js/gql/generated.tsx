@@ -50,7 +50,15 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectDiscussionSubmitted;
+export type ActivityContent = ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted;
+
+export type ActivityContentProjectDiscussionCommentSubmitted = {
+  __typename?: 'ActivityContentProjectDiscussionCommentSubmitted';
+  discussionId: Scalars['String']['output'];
+  discussionTitle: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['String']['output'];
+};
 
 export type ActivityContentProjectDiscussionSubmitted = {
   __typename?: 'ActivityContentProjectDiscussionSubmitted';

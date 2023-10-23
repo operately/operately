@@ -14,6 +14,15 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubm
       end
     end
 
+    field :discussion_title, non_null(:string) do
+      resolve fn activity, _, _ ->
+        discussion_id = activity.content["discussion_id"]
+        discussion = Operately.Updates.get_update!(discussion_id)
+
+        {:ok, discussion.content["title"]}
+      end
+    end
+
     field :project, non_null(:project) do
       resolve fn activity, _, _ ->
         project_id = activity.content["project_id"]
