@@ -14,4 +14,12 @@ defmodule Mix.Operately do
 
     Enum.join(all_lines, "\n")
   end
+
+  def list_files(path, :basename, exclude: excluded) do
+    path
+    |> Path.wildcard()
+    |> Enum.map(fn f -> Path.basename(f) end)
+    |> Enum.map(fn f -> String.split(f, ".") |> Enum.at(0) end)
+    |> Enum.filter(fn f -> f not in excluded end)
+  end
 end

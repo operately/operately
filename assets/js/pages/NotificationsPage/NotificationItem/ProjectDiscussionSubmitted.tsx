@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import { Card } from "./Card";
+import { Card } from "../NotificationCard";
 
 import * as People from "@/models/people";
 
-export function ProjectDiscussionSubmittedNotification({ notification }) {
+export default function ProjectDiscussionSubmitted({ notification }) {
   const author = notification.activity.author;
   const title = notification.activity.content.title;
   const projectName = notification.activity.content.project.name;

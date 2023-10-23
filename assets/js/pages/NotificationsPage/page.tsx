@@ -5,8 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import { useLoadedData, useSubscribeToChanges } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
 
-import { Notification } from "@/gql";
-import { ProjectDiscussionSubmittedNotification } from "./types/ProjectDiscussionSubmittedNotification";
+import NotificationItem from "./NotificationItem";
 
 export function Page() {
   useDocumentTitle("Notifications");
@@ -50,7 +49,7 @@ function UnreadNotifications() {
       )}
 
       {unread.map((n) => (
-        <Notification key={n.id} notification={n} />
+        <NotificationItem key={n.id} notification={n} />
       ))}
     </div>
   );
@@ -65,17 +64,8 @@ function PreviousNotifications() {
     <div className="px-12 bg-dark-3/30 border-t border-dark-4 flex-1 pt-8">
       <div className="text-white-1 font-bold mb-2">Previous Notifications</div>
       {previouslyRead.map((n) => (
-        <Notification key={n.id} notification={n} />
+        <NotificationItem key={n.id} notification={n} />
       ))}
     </div>
   );
-}
-
-function Notification({ notification }) {
-  switch (notification.activity.content.__typename) {
-    case "ActivityContentProjectDiscussionSubmitted":
-      return <ProjectDiscussionSubmittedNotification notification={notification} />;
-    default:
-      throw new Error(`Unknown notification type: ${notification.activity.content.__typename}`);
-  }
 }
