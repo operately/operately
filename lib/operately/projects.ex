@@ -1,8 +1,4 @@
 defmodule Operately.Projects do
-  @moduledoc """
-  The Projects context.
-  """
-
   import Ecto.Query, warn: false
   alias Operately.Repo
 

@@ -2,8 +2,8 @@ defmodule Operately.Activities.Content.ProjectCreated do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :integer
-    field :project_id, :integer
+    field :company_id, :string
+    field :project_id, :string
   end
 
   def changeset(attrs) do

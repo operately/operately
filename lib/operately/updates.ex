@@ -128,26 +128,6 @@ defmodule Operately.Updates do
     end)
   end
 
-  def record_project_creation(creator_id, project_id, champion_id, creator_role) do
-    Operately.Repo.transaction(fn ->
-      {:ok, update} = create_update(%{
-        type: :project_created,
-        author_id: creator_id,
-        updatable_id: project_id,
-        updatable_type: :project,
-        content: %{
-          creator_id: creator_id,
-          champion_id: champion_id,
-          creator_role: creator_role
-        }
-      })
-
-      {:ok, _} = OperatelyEmail.ProjectCreatedEmail.new(%{update_id: update.id}) |> Oban.insert()
-
-      update
-    end)
-  end
-
   def record_project_start_time_changed(person, project, old_start_time, new_start_time) do
     create_update(%{
       type: :project_start_time_changed,

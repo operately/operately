@@ -176,8 +176,9 @@ defmodule Operately.FeatureCase do
     end
 
     def assert_text(state, text) do
-      session(state)
-      |> Browser.assert_text(text)
+      session = session(state) |> Browser.assert_text(text)
+
+      Map.put(state, :session, session)
     end
 
     def assert_text(state, text, testid: id) do
@@ -220,7 +221,9 @@ defmodule Operately.FeatureCase do
     end
 
     def visit(state, path) do
-      session(state) |> Browser.visit(path)
+      new_state = session(state) |> Browser.visit(path)
+
+      Map.put(state, :session, new_state)
     end
 
     def scroll_to(state, testid: id) do
