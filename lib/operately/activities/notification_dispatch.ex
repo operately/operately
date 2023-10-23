@@ -14,6 +14,7 @@ defmodule Operately.Activities.NotificationDispatcher do
   rescue
     e ->
       Logger.error("Failed to dispatch notification: #{inspect(e)}")
+      Logger.error(Exception.format(:error, e, __STACKTRACE__))
       {:error, e}
   end
 end

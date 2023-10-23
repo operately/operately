@@ -74,8 +74,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
       resolve fn args, %{context: context} ->
         person = context.current_account.person
         update = Operately.Updates.get_update!(args.id)
+        context = Map.put(context, :update, update)
 
-        Operately.Updates.acknowledge_update(person, update)
+        Operately.Updates.acknowledge_update(context, person, update)
       end
     end
 

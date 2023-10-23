@@ -31,4 +31,30 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
       except: [ctx.champion.email]
     )
   end
+
+  @tag login_as: :champion
+  feature "acknowledge a status update", ctx do
+    ctx
+    |> ProjectSteps.submit_status_update(content: "This is a status update.")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> ProjectSteps.visit_project_page()
+    |> ProjectSteps.acknowledge_status_update()
+
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_notification_exists(
+      author: ctx.reviewer,
+      subject: "#{Person.first_name(ctx.reviewer)} acknowledged your status update"
+    )
+
+    ctx
+    |> ProjectSteps.assert_email_sent_to_all_contributors(
+      subject: "Operately (#{ctx.company.name}): #{Person.short_name(ctx.reviewer)} acknowledged your status update for #{ctx.project.name}",
+      except: [ctx.reviewer.email]
+    )
+  end
+
 end

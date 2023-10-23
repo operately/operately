@@ -142,29 +142,6 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_has(testid: "reaction-thumbs_up")
   end
 
-  feature "acknowledge a status update", state do
-    new_champion = person_fixture(%{full_name: "John Wick", title: "Head of Operations", company_id: state.company.id})
-
-    change_champion(state.project, new_champion)
-    change_reviewer(state.project, state.champion)
-    add_status_update(state.project, "This is a status update.", new_champion.id)
-
-    :timer.sleep(200) # give some time for the update to be created
-
-    state
-    |> visit_show(state.project)
-    |> UI.assert_text("Waiting for your acknowledgement")
-    |> UI.click(testid: "acknowledge-update")
-
-    :timer.sleep(200) # give some time for the ack to propagate
-
-    state
-    |> UI.refute_text("Waiting for your acknowledgement")
-    |> UI.find(testid: "project-page-activity-section")
-    |> UI.assert_text(state.champion.full_name <> " acknowledged this update")
-    |> assert_has(Query.css("[data-test-id='acknowledged-marker']"))
-  end
-
   feature "adding a project contributor", state do
     contrib = person_fixture(%{full_name: "Michael Scott", title: "Manager", company_id: state.company.id})
 

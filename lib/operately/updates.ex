@@ -54,9 +54,11 @@ defmodule Operately.Updates do
       content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
     })
     
-    Operately.Repo.transaction(fn -> 
-      {:ok, update} = Operately.Activities.record(context, author, :project_status_update_submitted, changeset)
-      
+    Repo.transaction(fn ->
+      {:ok, update} = Operately.Activities.record(context, author, :project_status_update_submitted, fn repo -> 
+        repo.insert(changeset)
+      end)
+        
       {:ok, _} = Operately.Projects.update_project(project, %{
         health: new_health,
         next_update_scheduled_at: Operately.Time.first_friday_from_today()
@@ -121,7 +123,9 @@ defmodule Operately.Updates do
       content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
     })
 
-    Operately.Activities.record(context, author, :project_discussion_submitted, changeset)
+    Operately.Activities.record(context, author, :project_discussion_submitted, fn repo ->
+      repo.insert(changeset)
+    end)
   end
 
   def record_project_creation(creator_id, project_id, champion_id, creator_role) do
@@ -263,15 +267,15 @@ defmodule Operately.Updates do
       update_added: "*")
   end
   
-  def acknowledge_update(person, update) do
-    Repo.transaction(fn ->
-      {:ok, update} = update_update(update, %{
-        acknowledged: true,
-        acknowledged_at: DateTime.utc_now,
-        acknowledging_person_id: person.id
-      })
+  def acknowledge_update(context, author, update) do
+    changeset = change_update(update, %{
+      acknowledged: true,
+      acknowledged_at: DateTime.utc_now,
+      acknowledging_person_id: author.id
+    })
 
-      update
+    Operately.Activities.record(context, author, :project_status_update_acknowledged, fn repo ->
+      repo.update(changeset)
     end)
   end
 
@@ -317,7 +321,9 @@ defmodule Operately.Updates do
 
     action = String.to_atom(Atom.to_string(update.type) <> "_comment_submitted")
 
-    Operately.Activities.record(context, author, action, changeset)
+    Operately.Activities.record(context, author, action, fn repo ->
+      repo.insert(changeset)
+    end)
   end
 
   def publish_comment_added(comment) do

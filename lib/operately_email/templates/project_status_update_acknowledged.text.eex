@@ -1,0 +1,3 @@
+<%= @author %> acknowledged your status update for <%= @project.name %>.
+
+Link: <%= @cta_url %>
