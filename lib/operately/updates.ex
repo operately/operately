@@ -44,23 +44,23 @@ defmodule Operately.Updates do
     %Update{} |> Update.changeset(attrs) |> Repo.insert()
   end
 
-  def record_status_update(author, project, new_health, content) do
+  def record_status_update(context, author, project, new_health, content) do
+    changeset = Update.changeset(%{
+      updatable_type: :project,
+      updatable_id: project.id,
+      author_id: author.id,
+      title: "",
+      type: :status_update,
+      content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
+    })
+    
     Operately.Repo.transaction(fn -> 
-      {:ok, update} = create_update(%{
-        updatable_type: :project,
-        updatable_id: project.id,
-        author_id: author.id,
-        title: "",
-        type: :status_update,
-        content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
-      })
-
+      {:ok, update} = Operately.Activities.record(context, author, :project_status_update_submitted, changeset)
+      
       {:ok, _} = Operately.Projects.update_project(project, %{
         health: new_health,
         next_update_scheduled_at: Operately.Time.first_friday_from_today()
       })
-
-      {:ok, _} = OperatelyEmail.UpdateEmail.new(%{update_id: update.id}) |> Oban.insert()
 
       update
     end)

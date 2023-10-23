@@ -188,6 +188,16 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
+  def list_notification_subscribers(project_id, exclude: author_id) do
+    query = from p in Person,
+      join: c in Contributor, on: c.person_id == p.id, 
+      where: c.project_id == ^project_id,
+      where: p.id != ^author_id,
+      where: not is_nil(p.email) and p.notify_about_assignments
+
+    Repo.all(query)
+  end
+
   def create_contributor(attrs \\ %{}) do
     %Contributor{}
     |> Contributor.changeset(attrs)

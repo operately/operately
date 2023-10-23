@@ -1,0 +1,3 @@
+A new status update was submitted for <%= @project.name %>.
+
+Link: <%= @cta_url %>

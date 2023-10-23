@@ -50,7 +50,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted;
+export type ActivityContent = ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectStatusUpdateSubmitted;
 
 export type ActivityContentProjectDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentProjectDiscussionCommentSubmitted';
@@ -66,6 +66,13 @@ export type ActivityContentProjectDiscussionSubmitted = {
   project: Project;
   projectId: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectStatusUpdateSubmitted = {
+  __typename?: 'ActivityContentProjectStatusUpdateSubmitted';
+  project: Project;
+  projectId: Scalars['String']['output'];
+  statusUpdateId: Scalars['String']['output'];
 };
 
 export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;

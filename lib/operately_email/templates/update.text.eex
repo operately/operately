@@ -1,3 +1,0 @@
-<%= @author %> posted a status update for <%= @project.name %>
-
-Link: <%= @project_url %>

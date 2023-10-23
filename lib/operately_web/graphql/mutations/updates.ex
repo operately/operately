@@ -28,7 +28,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         case args.input.message_type do
           "status_update" ->
             project = Operately.Projects.get_project!(args.input.updatable_id)
-            Operately.Updates.record_status_update(author, project, args.input.health, content)
+            context = Map.put(context, :project, project)
+            Operately.Updates.record_status_update(context, author, project, args.input.health, content)
 
           "review" ->
             review_request_id = args.input[:review_request_id]

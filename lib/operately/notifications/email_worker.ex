@@ -1,4 +1,5 @@
 defmodule Operately.Notifications.EmailWorker do
+  require Logger
   use Oban.Worker
 
   def perform(job) do
@@ -7,13 +8,13 @@ defmodule Operately.Notifications.EmailWorker do
     person = Operately.People.get_person!(notification.person_id)
     activity = Operately.Activities.get_activity!(notification.activity_id)
 
-    case activity.action do
-      "project_discussion_submitted" ->
-        OperatelyEmail.ProjectDiscussionSubmittedEmail.send(person, activity)
-      "project_discussion_comment_submitted" ->
-        OperatelyEmail.ProjectDiscussionCommentSubmittedEmail.send(person, activity)
-      _ ->
-        raise "Unknown activity action in #{__MODULE__}: #{activity.action}"
-    end
+    module = String.to_existing_atom("Elixir.OperatelyEmail.#{Macro.camelize(activity.action)}Email")
+
+    apply(module, :send, [person, activity])
+  rescue
+    e ->
+      Logger.error("Failed to send email")
+      Logger.error(Exception.format(:error, e, __STACKTRACE__))
+      {:error, e}
   end
 end

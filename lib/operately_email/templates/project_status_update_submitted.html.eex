@@ -29,8 +29,12 @@
 
         <tr style="height: 20px">
           <td>
-            <%= Prosemirror2Html.convert(@content["message"]) %>
+            <%= Prosemirror2Html.convert(@status_update.content["message"]) %>
           </td>
+        </tr>
+
+        <tr style="height: 20px">
+          <td><%= cta_button(@cta_url, "View Update") %></td>
         </tr>
       </table>
     </div>
