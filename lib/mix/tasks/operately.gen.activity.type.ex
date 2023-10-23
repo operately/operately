@@ -130,13 +130,13 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
 
     generate_file("lib/operately_email/templates/#{Macro.underscore(name)}.html.eex", fn _ ->
       """
-      <%= raise "Not implemented" %>
+      <%= raise "HTML Email for #{name} not implemented" %>
       """
     end)
 
     generate_file("lib/operately_email/templates/#{Macro.underscore(name)}.text.eex", fn _ ->
       """
-      <%= raise "Not implemented" %>
+      <%= raise "Text Email for #{name} not implemented" %>
       """
     end)
   end

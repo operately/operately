@@ -51,7 +51,7 @@ defmodule Operately.Updates do
       author_id: author.id,
       title: "",
       type: :status_update,
-      content: Operately.Updates.Types.ProjectStatusUpdate.build(project, new_health, content)
+      content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
     })
     
     Operately.Repo.transaction(fn -> 

@@ -7,6 +7,7 @@ import * as React from "react";
 
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
+import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 
 export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
@@ -17,6 +18,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectDiscussionSubmitted":
       return <ProjectDiscussionSubmitted notification={notification} />;
+    
+    case "ActivityContentProjectStatusUpdateSubmitted":
+      return <ProjectStatusUpdateSubmitted notification={notification} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";

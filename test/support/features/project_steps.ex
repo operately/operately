@@ -61,6 +61,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.click(title: title)
   end
 
+  def submit_status_update(ctx, content: content) do
+    ctx
+    |> visit_project_page()
+    |> UI.click(testid: "add-status-update")
+    |> UI.fill_rich_text(content)
+    |> UI.click(testid: "post-status-update")
+  end
+
   # 
   # Navigation between project pages
   #

@@ -46,6 +46,7 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
     types [
       :activity_content_project_discussion_submitted,
       :activity_content_project_discussion_comment_submitted,
+      :activity_content_project_status_update_submitted,
     ]
 
     resolve_type fn %{action: action}, _ ->
