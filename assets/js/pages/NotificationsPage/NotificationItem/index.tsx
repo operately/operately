@@ -5,6 +5,7 @@
 
 import * as React from "react";
 
+import ProjectCreated from "./ProjectCreated"
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
 import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
@@ -15,6 +16,9 @@ export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentProjectCreated":
+      return <ProjectCreated notification={notification} />;
+    
     case "ActivityContentProjectDiscussionCommentSubmitted":
       return <ProjectDiscussionCommentSubmitted notification={notification} />;
     

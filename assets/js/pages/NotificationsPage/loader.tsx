@@ -66,6 +66,14 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectCreated {
+            project {
+              id
+              name
+              myRole
+            }
+          }
         }
       }
     }
