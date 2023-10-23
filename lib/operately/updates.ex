@@ -8,12 +8,6 @@ defmodule Operately.Updates do
 
   alias Operately.Updates.Update
 
-  alias OperatelyEmail.{
-    ProjectCommentSubmittedEmail
-  }
-
-  alias Ecto.Multi
-
   def list_updates do
     Repo.all(Update)
   end
@@ -307,14 +301,23 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
+  # old version. TODO: remove
   def create_comment(_update, attrs) do
     changeset = Comment.changeset(attrs)
 
-    Multi.new()
-    |> Multi.insert(:comment, changeset)
-    |> Multi.run(:send_email, &ProjectCommentSubmittedEmail.enqueue/2)
-    |> Repo.transaction()
-    |> extract_result(:comment)
+    Repo.insert(changeset)
+  end
+
+  def create_comment(context, author, update, content) do
+    changeset = Comment.changeset(%{
+      author_id: author.id,
+      update_id: update.id,
+      content: %{"message" => content}
+    })
+
+    action = String.to_atom(Atom.to_string(update.type) <> "_comment_submitted")
+
+    Operately.Activities.record(context, author, action, changeset)
   end
 
   def publish_comment_added(comment) do
@@ -370,12 +373,5 @@ defmodule Operately.Updates do
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
-  end
-
-  defp extract_result(res, field) do
-    case res do
-      {:ok, map} -> {:ok, map[field]}
-      e -> e
-    end
   end
 end

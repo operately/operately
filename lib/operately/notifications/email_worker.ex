@@ -10,8 +10,10 @@ defmodule Operately.Notifications.EmailWorker do
     case activity.action do
       "project_discussion_submitted" ->
         OperatelyEmail.ProjectDiscussionSubmittedEmail.send(person, activity)
+      "project_discussion_comment_submitted" ->
+        OperatelyEmail.ProjectDiscussionCommentSubmittedEmail.send(person, activity)
       _ ->
-        raise "Unknown activity action: #{activity.action}"
+        raise "Unknown activity action in #{__MODULE__}: #{activity.action}"
     end
   end
 end
