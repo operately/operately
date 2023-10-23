@@ -8,7 +8,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
 
 import { gql, useMutation } from "@apollo/client";
-import { useRefresh } from "../loader";
+import { useRefresh } from "./loader";
 
 export function Card({ notification, author, title, link, where, when, who }) {
   const goToActivity = useNavigateTo(link);

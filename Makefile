@@ -100,11 +100,12 @@ test.seed.env:
 	touch .env
 
 #
-# Graphql Generator
+# Generate code
 #
-gql.gen:
+gen:
 	$(MAKE) dev.mix.task TASK="operately.gen.elixir.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
+	$(MAKE) dev.mix.task TASK="operately.gen.notification.items.index"
 
 #
 # Development tasks

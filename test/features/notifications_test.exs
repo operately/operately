@@ -3,7 +3,6 @@ defmodule Operately.Features.NotificationsTest do
 
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
-  alias Operately.People.Person
   
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
