@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Notifications.ProjectDiscussionCommentSubmitted do
+defmodule Operately.Activities.Notifications.ProjectStatusUpdateSubmitted do
   alias Operately.Projects
 
   def dispatch(activity) do

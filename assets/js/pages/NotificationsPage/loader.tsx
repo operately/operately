@@ -39,6 +39,15 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectStatusUpdateSubmitted {
+            projectId
+            statusUpdateId
+
+            project {
+              name
+            }
+          }
         }
       }
     }

@@ -6,6 +6,10 @@ defmodule Operately.Activities.NotificationDispatcher do
     activity = Operately.Activities.get_activity!(activity_id)
 
     dispatch(activity)
+  rescue
+    e ->
+      Logger.error("Failed to dispatch notification: #{inspect(e)}")
+      {:error, e}
   end
 
   def dispatch(activity) do 

@@ -104,12 +104,9 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
   end
 
   def gen_email_template(name) do
-    module_name = name <> "Email"
-    file_name = Macro.underscore(module_name)
-
-    generate_file("lib/operately_email/#{file_name}.ex", fn _ ->
+    generate_file("lib/operately_email/#{Macro.underscore(name <> "Email")}.ex", fn _ ->
       """
-      defmodule OperatelyEmail.#{module_name} do
+      defmodule OperatelyEmail.#{name <> "Email"} do
         def send(person, activity) do
           raise "Not implemented"
         end
@@ -117,9 +114,9 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
       """
     end)
 
-    generate_file("lib/operately_email/views/#{file_name}.ex", fn _ ->
+    generate_file("lib/operately_email/views/#{Macro.underscore(name)}.ex", fn _ ->
       """
-      defmodule OperatelyEmail.Views.#{module_name} do
+      defmodule OperatelyEmail.Views.#{name} do
         require EEx
         @templates_root "lib/operately_email/templates"
 
@@ -127,16 +124,17 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
 
         EEx.function_from_file(:def, :html, "#\{@templates_root\}/#{Macro.underscore(name)}.html.eex", [:assigns])
         EEx.function_from_file(:def, :text, "#\{@templates_root\}/#{Macro.underscore(name)}.text.eex", [:assigns])
+      end
       """
     end)
 
-    generate_file("lib/operately_email/templates/#{file_name}.html.eex", fn _ ->
+    generate_file("lib/operately_email/templates/#{Macro.underscore(name)}.html.eex", fn _ ->
       """
       <%= raise "Not implemented" %>
       """
     end)
 
-    generate_file("lib/operately_email/templates/#{file_name}.text.eex", fn _ ->
+    generate_file("lib/operately_email/templates/#{Macro.underscore(name)}.text.eex", fn _ ->
       """
       <%= raise "Not implemented" %>
       """
