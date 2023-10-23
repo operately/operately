@@ -57,4 +57,30 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     )
   end
 
+  @tag login_as: :champion
+  feature "leave a comment on an update", ctx do
+    ctx
+    |> ProjectSteps.submit_status_update(content: "This is a status update.")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_notification_exists(
+      author: ctx.reviewer,
+      subject: "#{Person.first_name(ctx.reviewer)} commented on the project status update"
+    )
+
+    ctx
+    |> ProjectSteps.assert_email_sent_to_all_contributors(
+      subject: "Operately (#{ctx.company.name}): #{Person.short_name(ctx.reviewer)} commented on a status update for #{ctx.project.name}",
+      except: [ctx.reviewer.email]
+    )
+  end
 end

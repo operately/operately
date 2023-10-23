@@ -1,1 +1,3 @@
-<%= raise "Text Email for ProjectStatusUpdateCommented not implemented" %>
+<%= @author %> commented on a status update on <%= @project.name %>.
+
+Link: <%= @cta_url %>

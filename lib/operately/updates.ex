@@ -319,7 +319,11 @@ defmodule Operately.Updates do
       content: %{"message" => content}
     })
 
-    action = String.to_atom(Atom.to_string(update.type) <> "_comment_submitted")
+    action = case update.type do
+      :project_discussion -> :project_discussion_comment_submitted
+      :status_update -> :project_status_update_commented
+      _ -> raise "Unknown update type"
+    end
 
     Operately.Activities.record(context, author, action, fn repo ->
       repo.insert(changeset)
