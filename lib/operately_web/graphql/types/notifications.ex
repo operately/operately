@@ -11,8 +11,5 @@ defmodule OperatelyWeb.Graphql.Types.Notifications do
         {:ok, notification.activity}
       end
     end
-
-    # field :email_sent, non_null(:boolean)
-    # field :should_send_email, non_null(:boolean)
   end
 end

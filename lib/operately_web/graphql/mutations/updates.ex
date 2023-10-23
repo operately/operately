@@ -84,11 +84,19 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
       resolve fn args, %{context: context} ->
         update = Operately.Updates.get_update!(args.input.update_id)
 
-        Operately.Updates.create_comment(update, %{
-          author_id: context.current_account.person.id,
-          update_id: args.input.update_id,
-          content: %{"message" => args.input.content}
-        })
+        if update.type == :project_discussion do
+          author = context.current_account.person
+          content = args.input.content
+          context = Map.put(context, :update, update)
+
+          Operately.Updates.create_comment(context, author, update, content)
+        else
+          Operately.Updates.create_comment(update, %{
+            author_id: context.current_account.person.id,
+            update_id: args.input.update_id,
+            content: %{"message" => args.input.content}
+          })
+        end
       end
     end
   end

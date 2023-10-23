@@ -29,6 +29,16 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectDiscussionCommentSubmitted {
+            projectId
+            discussionId
+            discussionTitle
+
+            project {
+              name
+            }
+          }
         }
       }
     }

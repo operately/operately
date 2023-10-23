@@ -12,6 +12,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   def assert_notification_exists(ctx, author: author, subject: subject) do
     ctx
     |> UI.assert_text(author.full_name)
+    |> UI.assert_text(subject)
   end
 
   def assert_notification_count(ctx, count) do
@@ -23,6 +24,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_no_unread_notifications(ctx) do
+    :timer.sleep(500) # give the notification count time to update
     UI.refute_has(ctx, testid: "unread-notifications-count")
   end
 

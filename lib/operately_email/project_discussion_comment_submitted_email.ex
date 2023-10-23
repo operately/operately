@@ -1,26 +1,13 @@
-defmodule OperatelyEmail.ProjectCommentSubmittedEmail do
-  use Oban.Worker
-  
+defmodule OperatelyEmail.ProjectDiscussionCommentSubmittedEmail do
   alias Operately.People.Person
 
-  def enqueue(_repo, %{comment: comment}) do
-    new(%{id: comment.id}) |> Oban.insert()
-  end
+  def send(person, activity) do
+    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
+    discussion = Operately.Updates.get_update!(activity.content["discussion_id"])
+    project = Operately.Projects.get_project!(activity.content["project_id"])
 
-  def perform(job) do
-    id = job.args["id"]
-
-    comment = Operately.Updates.get_comment!(id)
-    update = Operately.Updates.get_update!(comment.update_id)
-    project = Operately.Projects.get_project!(update.updatable_id)
-    recipients = Operately.Updates.list_people_who_should_be_notified(update)
-
-    if update.type == :project_discussion do
-      Enum.each(recipients, fn recipient ->
-        email = compose(project, update, comment, recipient)
-        OperatelyEmail.Mailer.deliver_now(email)
-      end)
-    end
+    email = compose(project, discussion, comment, person)
+    OperatelyEmail.Mailer.deliver_now(email)
   end
 
   def compose(project, discussion, comment, recipient) do
@@ -44,8 +31,8 @@ defmodule OperatelyEmail.ProjectCommentSubmittedEmail do
       to: recipient.email,
       from: sender(company),
       subject: subject,
-      html_body: OperatelyEmail.Views.ProjectCommentSubmitted.html(assigns),
-      text_body: OperatelyEmail.Views.ProjectCommentSubmitted.text(assigns)
+      html_body: OperatelyEmail.Views.ProjectDiscussionCommentSubmitted.html(assigns),
+      text_body: OperatelyEmail.Views.ProjectDiscussionCommentSubmitted.text(assigns)
     )
   end
 

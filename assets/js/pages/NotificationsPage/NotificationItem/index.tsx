@@ -5,16 +5,20 @@
 
 import * as React from "react";
 
+import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
 
 export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentProjectDiscussionCommentSubmitted":
+      return <ProjectDiscussionCommentSubmitted notification={notification} />;
+    
     case "ActivityContentProjectDiscussionSubmitted":
       return <ProjectDiscussionSubmitted notification={notification} />;
     
     default:
-      throw "unknown activity type " + activityType;
+      throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";
   }
 }
