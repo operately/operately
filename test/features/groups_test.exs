@@ -19,21 +19,21 @@ defmodule Operately.Features.GroupsTest do
 
     state
     |> visit_page()
-    |> assert_has(Query.text(group1.name))
-    |> assert_has(Query.text(group1.mission))
-    |> assert_has(Query.text(group2.name))
-    |> assert_has(Query.text(group2.mission))
+    |> UI.assert_has(Query.text(group1.name))
+    |> UI.assert_has(Query.text(group1.mission))
+    |> UI.assert_has(Query.text(group2.name))
+    |> UI.assert_has(Query.text(group2.mission))
   end
 
   feature "creating a new group", state do
     state
     |> visit_page()
     |> UI.click(testid: "add-group")
-    |> fill_in(Query.text_field("Name"), with: "Marketing")
-    |> fill_in(Query.text_field("Mission"), with: "Let the world know about our products")
-    |> click(Query.button("Create Group"))
-    |> assert_has(Query.text("Marketing"))
-    |> assert_has(Query.text("Let the world know about our products"))
+    |> UI.fill_in(Query.text_field("Name"), with: "Marketing")
+    |> UI.fill_in(Query.text_field("Mission"), with: "Let the world know about our products")
+    |> UI.click(Query.button("Create Group"))
+    |> UI.assert_has(Query.text("Marketing"))
+    |> UI.assert_has(Query.text("Let the world know about our products"))
   end
 
   feature "listing group members", state do
@@ -46,7 +46,7 @@ defmodule Operately.Features.GroupsTest do
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.click(testid: "group-members")
-    |> assert_has(Query.text(person.full_name))
+    |> UI.assert_has(Query.text(person.full_name))
   end
 
   feature "adding group members", state do
@@ -58,9 +58,9 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(title: group.name)
     |> UI.click(testid: "group-members")
     |> UI.click(testid: "add-group-members")
-    |> fill_in(Query.css("#peopleSearch"), with: "Mati")
-    |> assert_text("Mati Aharoni")
-    |> send_keys([:enter])
+    |> UI.fill_in(Query.css("#peopleSearch"), with: "Mati")
+    |> UI.assert_text("Mati Aharoni")
+    |> UI.send_keys([:enter])
     |> UI.click(testid: "submit-group-members")
     |> UI.assert_has(title: person.full_name)
   end
@@ -75,9 +75,9 @@ defmodule Operately.Features.GroupsTest do
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.click(testid: "group-members")
-    |> assert_has(Query.text(person.full_name))
+    |> UI.assert_has(Query.text(person.full_name))
     |> UI.click(testid: "remove-member-#{person.id}")
-    |> refute_has(Query.text(person.full_name))
+    |> UI.refute_has(Query.text(person.full_name))
   end
 
   # feature "setting group mission", state do

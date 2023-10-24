@@ -16,7 +16,7 @@ defmodule Operately.Features.ProjectsTest do
   feature "listing projects", state do
     state
     |> visit_index()
-    |> assert_has(Query.text(state.project.name))
+    |> UI.assert_has(Query.text(state.project.name))
   end
 
   feature "editing the project description", state do
@@ -29,12 +29,12 @@ defmodule Operately.Features.ProjectsTest do
     # by default only the top of text is visible
     state.session
     |> assert_has(Query.text("TEXT START MARKER"))
-    |> refute_has(Query.text("TEXT END MARKER"))
+    |> UI.refute_has(Query.text("TEXT END MARKER"))
 
     # the text can be expanded
     state.session
     |> expand_description()
-    |> assert_has(Query.text("TEXT END MARKER"))
+    |> UI.assert_has(Query.text("TEXT END MARKER"))
   end
 
   feature "listing key resources", state do
@@ -43,8 +43,8 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> assert_has(Query.text("Code Repository"))
-    |> assert_has(Query.text("Website"))
+    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("Website"))
   end
 
   feature "adding key resources to a project", state do
@@ -54,7 +54,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.fill("Title", with: "Code Repository")
     |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save-key-resource")
-    |> assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("Code Repository"))
   end
 
   feature "editing key resources on a project", state do
@@ -62,12 +62,12 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("Code Repository"))
     |> UI.click(testid: "key-resource-options")
     |> UI.click(testid: "edit-key-resource")
     |> UI.fill("Title", with: "Github Repository")
     |> UI.fill("URL", with: "https://github.com/operately/kpiexamples")
-    |> refute_has(Query.text("Github Repository"))
+    |> UI.refute_has(Query.text("Github Repository"))
   end
 
   feature "removing key resources from a project", state do
@@ -75,10 +75,10 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("Code Repository"))
     |> UI.click(testid: "key-resource-options")
     |> UI.click(testid: "remove-key-resource")
-    |> refute_has(Query.text("Code Repository"))
+    |> UI.refute_has(Query.text("Code Repository"))
   end
 
   feature "react to a comment", state do
@@ -87,7 +87,7 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_show(state.project)
-    |> assert_has(Query.text("This is a comment."))
+    |> UI.assert_has(Query.text("This is a comment."))
     |> UI.find(testid: "comment-#{comment.id}")
     |> UI.click(testid: "reactions-button")
     |> UI.click(testid: "reaction-thumbs_up-button")
@@ -130,7 +130,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.hover(testid: "contributor-#{contrib.id}")
     |> UI.click(testid: "edit-contributor")
     |> UI.click(testid: "remove-contributor")
-    |> refute_has(Query.text("Michael Scott"))
+    |> UI.refute_has(Query.text("Michael Scott"))
 
     state
     |> visit_show(state.project)
@@ -147,7 +147,7 @@ defmodule Operately.Features.ProjectsTest do
 
     state
     |> visit_index()
-    |> refute_has(Query.text(state.project.name))
+    |> UI.refute_has(Query.text(state.project.name))
   end
 
   feature "rename a project", state do
@@ -197,7 +197,7 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   def click_save(state) do
-    click(state, Query.button("Save"))
+    UI.click(state, Query.button("Save"))
   end
 
   def add_key_resource(project, attrs) do
@@ -278,22 +278,6 @@ defmodule Operately.Features.ProjectsTest do
       project_id: project.id, 
       responsibility: responsibility
     })
-  end
-
-  defp change_champion(project, champion) do
-    delete_contributors_with_role(project, "champion")
-    add_contributor(project, champion, "champion")
-  end
-
-  defp change_reviewer(project, reviewer) do
-    delete_contributors_with_role(project, "reviewer")
-    add_contributor(project, reviewer, "reviewer")
-  end
-
-  defp delete_contributors_with_role(project, role) do
-    Operately.Projects.list_project_contributors(project)
-    |> Enum.filter(fn contributor -> contributor.role == role end)
-    |> Enum.map(&Operately.Projects.delete_contributor(&1))
   end
 
 end

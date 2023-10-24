@@ -132,7 +132,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     state
     |> visit_page(state.project, milestone)
-    |> assert_text("This is a description")
+    |> UI.assert_text("This is a description")
 
     state
     |> UI.hover(testid: "milestone-description")
@@ -141,7 +141,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     state
     |> UI.fill_rich_text(testid: "milestone-description-editor", with: "This is a NEW description")
     |> UI.click(testid: "save-milestone-description")
-    |> assert_text("This is a NEW description")
+    |> UI.assert_text("This is a NEW description")
   end
 
   feature "write a comment", state do
