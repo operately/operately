@@ -122,6 +122,9 @@ export interface Project {
   reviewer?: Person;
 
   isPinned: boolean;
+  isArchived: boolean;
+
+  archivedAt: Date;
 
   reviewRequests: ReviewRequests.ReviewRequest[];
 }
@@ -139,6 +142,8 @@ export const GET_PROJECT = gql`
       phase
       health
       isPinned
+      isArchived
+      archivedAt
       private
 
       permissions ${Permissions.FRAGMENT}

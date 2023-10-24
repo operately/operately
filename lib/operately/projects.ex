@@ -8,7 +8,9 @@ defmodule Operately.Projects do
   alias Operately.Updates
 
   def get_project!(id) do
-    Repo.get!(Project, id)
+    query = from p in Project, where: p.id == ^id
+
+    Repo.one(query, with_deleted: true)
   end
 
   def list_projects(person, filters \\ %{}) do
@@ -25,15 +27,10 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def archive_project(_person, %Project{} = project) do
-    Repo.transaction(fn ->
-      {:ok, _} = delete_project(project)
-      project
+  def archive_project(author, %Project{} = project) do
+    Operately.Activities.record(%{}, author, :project_archived, fn repo ->
+      repo.soft_delete(project)
     end)
-  end
-
-  defp delete_project(%Project{} = project) do
-    Repo.soft_delete(project)
   end
 
   def change_project(%Project{} = project, attrs \\ %{}) do
@@ -86,7 +83,7 @@ defmodule Operately.Projects do
     end)
   end
 
-  def uncomplete_milestone(person, milestone) do
+  def uncomplete_milestone(_person, milestone) do
     Repo.transaction(fn ->
       {:ok, milestone} = update_milestone(milestone, %{status: :pending, completed_at: nil})
 
