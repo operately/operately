@@ -59,8 +59,9 @@ defmodule Operately.FeatureCase do
   defmodule UI do
     alias Wallaby.Query
 
-    import Wallaby.Browser
     alias Wallaby.Browser
+    require Wallaby.Browser
+    import Wallaby.Browser, only: [execute_query: 2]
 
     def login(session) do
       path = URI.encode("/accounts/auth/test_login?email=john@johnson.com&full_name=John Johnson")
@@ -110,6 +111,18 @@ defmodule Operately.FeatureCase do
       state
     end
 
+    def send_keys(state, keys) do 
+      new_session = session(state) |> Browser.send_keys(keys)
+      Map.put(state, :session, new_session)
+    end
+
+
+    def assert_has(state, %Wallaby.Query{} = query) do
+      new_session = session(state) |> Browser.assert_has(query)
+
+      Map.put(state, :session, new_session)
+    end
+
     def assert_has(state, opts) do
       {session, opts} = Keyword.pop(opts, :in)
       context = session || session(state)
@@ -126,6 +139,11 @@ defmodule Operately.FeatureCase do
 
     def click_link(state, text) do
       session(state) |> Browser.click(Query.link(text))
+    end
+
+    def fill_in(state, query, with: value) do
+      new_session = session(state) |> Browser.fill_in(query, with: value)
+      Map.put(state, :session, new_session)
     end
 
     def fill(state, label, with: value) when is_binary(label) do
@@ -170,14 +188,10 @@ defmodule Operately.FeatureCase do
       |> Browser.click(Query.text(option_name))
     end
 
-    def send_keys(state, keys) do
-      session(state)
-      |> Browser.send_keys(keys)
-    end
-
     def assert_text(state, text) do
-      session(state)
-      |> Browser.assert_text(text)
+      session = session(state) |> Browser.assert_text(text)
+
+      Map.put(state, :session, session)
     end
 
     def assert_text(state, text, testid: id) do
@@ -185,6 +199,12 @@ defmodule Operately.FeatureCase do
       |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"), fn element ->
         element |> Browser.assert_text(text)
       end)
+    end
+
+    def refute_has(state, %Wallaby.Query{} = query) do
+      new_session = session(state) |> Browser.refute_has(query)
+
+      Map.put(state, :session, new_session)
     end
 
     def refute_has(state, opts) do
@@ -220,7 +240,9 @@ defmodule Operately.FeatureCase do
     end
 
     def visit(state, path) do
-      session(state) |> Browser.visit(path)
+      new_state = session(state) |> Browser.visit(path)
+
+      Map.put(state, :session, new_state)
     end
 
     def scroll_to(state, testid: id) do

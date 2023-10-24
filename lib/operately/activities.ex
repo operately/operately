@@ -9,5 +9,5 @@ defmodule Operately.Activities do
     Repo.get!(Activity, id)
   end
 
-  defdelegate record(context, author, action, changeset), to: Recorder
+  defdelegate record(context, author, action, callback), to: Recorder
 end

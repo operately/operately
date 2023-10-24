@@ -36,7 +36,10 @@ defmodule Operately.Projects.Project do
     soft_delete()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(project, attrs) do
     project
     |> cast(attrs, [

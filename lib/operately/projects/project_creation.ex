@@ -1,20 +1,20 @@
 defmodule Operately.Projects.ProjectCreation do
   alias Operately.Repo
   alias Operately.Projects
-  alias Operately.Updates
   alias Operately.Projects.Project
 
   defstruct [:company_id, :name, :champion_id, :creator_id, :creator_role, :visibility]
 
   def run(%__MODULE__{} = params) do
-    Operately.Repo.transaction(fn -> 
-      {:ok, project} = create_project(params)
-      {:ok, champion} = assign_champion(project, params)
-      {:ok, creator_role} = assign_creator_role(project, params)
-      {:ok, _} = record_phase_histories(project)
-      {:ok, _} = Updates.record_project_creation(project.creator_id, project.id, champion.person_id, creator_role)
+    author = Operately.People.get_person!(params.creator_id)
 
-      project
+    Operately.Activities.record(%{}, author, :project_created, fn _ ->
+      {:ok, project} = create_project(params)
+      {:ok, _champion} = assign_champion(project, params)
+      {:ok, _creator_role} = assign_creator_role(project, params)
+      {:ok, _} = record_phase_histories(project)
+
+      {:ok, project}
     end)
   end
 

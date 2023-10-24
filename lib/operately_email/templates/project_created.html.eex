@@ -19,7 +19,7 @@
       <table width="100%" style="background:#fff;margin:0;padding:0;border:0;border-collapse:collapse;border-spacing:0; max-width: 40em">
         <tr style="font-size: 22px; font-family: sans-serif; font-weight: 800;">
           <td>
-            <%= @author %> created the <a href="<%= @url %>"><%= @project.name %></a> project in Operately
+            <%= Person.short_name(@author) %> created the <a href="<%= @url %>"><%= @project.name %></a> project in Operately
           </td>
         </tr>
 
@@ -32,7 +32,7 @@
         <tr>
 
         <tr style="font-size: 16px; font-family: sans-serif;">
-          <td>- <%= @author %> is a <%= @author_role %></td>
+          <td>- <%= Person.short_name(@author) %> is a <%= @author_role %></td>
         <tr>
 
         <tr style="height: 20px">
