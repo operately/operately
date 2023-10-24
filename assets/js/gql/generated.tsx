@@ -50,11 +50,18 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted;
+
+export type ActivityContentProjectArchived = {
+  __typename?: 'ActivityContentProjectArchived';
+  project: Project;
+  projectId: Scalars['String']['output'];
+};
 
 export type ActivityContentProjectCreated = {
   __typename?: 'ActivityContentProjectCreated';
-  exampleField: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectDiscussionCommentSubmitted = {
@@ -387,9 +394,11 @@ export type Project = {
   health: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
+  isArchived: Scalars['Boolean']['output'];
   isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
   milestones?: Maybe<Array<Maybe<Milestone>>>;
+  myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nextMilestone?: Maybe<Milestone>;
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;

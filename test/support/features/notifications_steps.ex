@@ -30,11 +30,15 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_project_created_notification_sent(ctx, author: author, role: role) do
-    name = Person.first_name(author)
-
     ctx 
     |> visit_notifications_page()
-    |> assert_notification_exists(author: author, subject: "#{name} created a new project and assigned you as the #{role}")
+    |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} created a new project and assigned you as the #{role}")
+  end
+
+  def assert_project_archived_sent(ctx, author: author, project: project) do
+    ctx 
+    |> visit_notifications_page()
+    |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} archived the #{project.name} project")
   end
 
 end

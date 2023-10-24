@@ -12,6 +12,7 @@ import Reviews from "./Reviews";
 import StatusUpdates from "./StatusUpdates";
 import KeyResources from "./KeyResources";
 import Discussions from "./Discussions";
+import ArchivedBanner from "./ArchivedBanner";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
@@ -52,6 +53,7 @@ export function Page() {
 
   return (
     <Paper.Root size="medium">
+      <ArchivedBanner project={project} />
       <div className="p-8 border border-dark-3 bg-dark-2 rounded shadow-xl">
         <div className="bg-dark-2 p-8 -mx-8 -mt-8">
           <Header project={project} />

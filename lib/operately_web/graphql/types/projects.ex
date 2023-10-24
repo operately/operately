@@ -130,6 +130,18 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
       end
     end
 
+    field :is_archived, non_null(:boolean) do
+      resolve fn project, _, _ ->
+        {:ok, project.deleted_at != nil}
+      end
+    end
+
+    field :archived_at, :date do
+      resolve fn project, _, _ ->
+        {:ok, project.deleted_at}
+      end
+    end
+
     field :description, :string do
       resolve fn project, _, _ ->
         {:ok, project.description && Jason.encode!(project.description)}

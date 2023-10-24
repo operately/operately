@@ -69,18 +69,8 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     generate_file("lib/operately/activities/notifications/#{file_name}.ex", fn _ ->
       """
       defmodule Operately.Activities.Notifications.#{module_name} do
-        import Ecto.Query
-
-        alias Operately.Repo
-        alias Operately.People.Person
-        alias Operately.Projects.Contributor
-
-        require Logger
-
         def dispatch(activity) do
-          author_id = activity.author_id
-
-          raise "not implemented"
+          raise "Notification dispatcher for #{module_name} not implemented"
         end
       end
       """
