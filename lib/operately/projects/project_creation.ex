@@ -1,48 +1,39 @@
 defmodule Operately.Projects.ProjectCreation do
   alias Operately.Repo
   alias Operately.Projects
+  alias Operately.Projects.Contributor
   alias Operately.Projects.Project
+  alias Operately.Activities
+  alias Ecto.Multi
 
   defstruct [:company_id, :name, :champion_id, :creator_id, :creator_role, :visibility]
 
   def run(%__MODULE__{} = params) do
-    author = Operately.People.get_person!(params.creator_id)
-
-    Operately.Activities.record(%{}, author, :project_created, fn _ ->
-      {:ok, project} = create_project(params)
-      {:ok, _champion} = assign_champion(project, params)
-      {:ok, _creator_role} = assign_creator_role(project, params)
-      {:ok, _} = record_phase_histories(project)
-
-      {:ok, project}
+    Multi.new()
+    |> Multi.insert(:project, fn _changes ->
+      Project.changeset(%{
+        :company_id => params.company_id,
+        :name => params.name,
+        :private => is_private(params.visibility),
+        :creator_id => params.creator_id,
+        :started_at => DateTime.utc_now(),
+        :next_update_scheduled_at => Operately.Time.first_friday_from_today(),
+        :phase => :planning
+      })
     end)
-  end
-
-  defp create_project(%__MODULE__{} = params) do
-    attrs = %{
-      :company_id => params.company_id,
-      :name => params.name,
-      :private => is_private(params.visibility),
-      :creator_id => params.creator_id,
-      :started_at => DateTime.utc_now(),
-      :next_update_scheduled_at => Operately.Time.first_friday_from_today(),
-      :phase => :planning
-    }
-
-    %Project{} |> Project.changeset(attrs) |> Repo.insert()
-  end
-
-  defp is_private(visibility) do
-    visibility != "everyone"
-  end
-
-  defp assign_champion(project, %__MODULE__{} = params) do
-    {:ok, _} = Operately.Projects.create_contributor(%{
-      project_id: project.id,
-      person_id: params.champion_id,
-      responsibility: " ",
-      role: :champion
-    })
+    |> Multi.insert(:champion, fn changes ->
+      Contributor.changeset(%{
+        project_id: changes.project.id,
+        person_id: params.champion_id,
+        responsibility: " ",
+        role: :champion
+      })
+    end)
+    |> Multi.run(:creator_role, fn _repo, changes -> assign_creator_role(changes.project, params) end)
+    |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
+    |> Activities.insert(params.creator_id, :project_created, fn changes -> %{project_id: changes.project.id} end)
+    |> Repo.transaction()
+    |> extract_result(:project)
   end
 
   defp assign_creator_role(project, %__MODULE__{} = params) do
@@ -88,5 +79,16 @@ defmodule Operately.Projects.ProjectCreation do
       project_id: project.id,
       phase: :control
     })
+  end
+
+  defp is_private(visibility) do
+    visibility != "everyone"
+  end
+
+  def extract_result(res, field) do
+    case res do
+      {:ok, %{^field => value}} -> {:ok, value}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 end

@@ -9,5 +9,15 @@ defmodule Operately.Activities do
     Repo.get!(Activity, id)
   end
 
-  defdelegate record(context, author, action, callback), to: Recorder
+  def insert(multi, author_id, action, callback) do
+    Ecto.Multi.run(multi, :activity_recording_job, fn _repo, changes ->
+      job = Recorder.new(%{
+        action: action,
+        author_id: author_id,
+        params: callback.(changes),
+      }) 
+
+      Oban.insert(job)
+    end)
+  end
 end

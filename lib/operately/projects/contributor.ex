@@ -23,7 +23,10 @@ defmodule Operately.Projects.Contributor do
     ]
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(contributor, attrs) do
     contributor 
     |> cast(attrs, [:responsibility, :project_id, :person_id, :role])

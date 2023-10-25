@@ -14,15 +14,15 @@ defmodule Operately.Activities.Content.ProjectStatusUpdateCommented do
     |> validate_required(__schema__(:fields))
   end
 
-  def build(context, comment) do
-    update = context.update
-    project = Operately.Projects.get_project!(update.updatable_id)
+  def build(params) do
+    project_id = params["project_id"]
+    project = Operately.Projects.get_project!(project_id)
 
     changeset(%{
       company_id: project.company_id,
       project_id: project.id,
-      status_update_id: comment.update_id,
-      comment_id: comment.id
+      status_update_id: params["update_id"],
+      comment_id: params["comment_id"]
     })
   end
 end

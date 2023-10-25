@@ -4,9 +4,13 @@ defmodule Operately.Updates do
   """
 
   import Ecto.Query, warn: false
-  alias Operately.Repo
 
+  alias Operately.Activities
   alias Operately.Updates.Update
+  alias Operately.Projects.Project
+
+  alias Operately.Repo
+  alias Ecto.Multi
 
   def list_updates do
     Repo.all(Update)
@@ -44,7 +48,9 @@ defmodule Operately.Updates do
     %Update{} |> Update.changeset(attrs) |> Repo.insert()
   end
 
-  def record_status_update(context, author, project, new_health, content) do
+  def record_status_update(author, project, new_health, content) do
+    action = :project_status_update_submitted
+
     changeset = Update.changeset(%{
       updatable_type: :project,
       updatable_id: project.id,
@@ -53,19 +59,13 @@ defmodule Operately.Updates do
       type: :status_update,
       content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
     })
-    
-    Repo.transaction(fn ->
-      {:ok, update} = Operately.Activities.record(context, author, :project_status_update_submitted, fn repo -> 
-        repo.insert(changeset)
-      end)
-        
-      {:ok, _} = Operately.Projects.update_project(project, %{
-        health: new_health,
-        next_update_scheduled_at: Operately.Time.first_friday_from_today()
-      })
 
-      update
-    end)
+    Multi.new()
+    |> Multi.insert(:update, changeset)
+    |> Multi.update(:project, Project.changeset(project, %{health: new_health}))
+    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
+    |> Repo.transaction()
+    |> extract_result(:update)
   end
 
   def record_review(author, project, new_phase, content, review_request_id) do
@@ -113,7 +113,9 @@ defmodule Operately.Updates do
     })
   end
 
-  def record_project_discussion(context, author, project, title, body) do
+  def record_project_discussion(author, project, title, body) do
+    action = :project_discussion_submitted
+
     changeset = Update.changeset(%{
       updatable_type: :project,
       updatable_id: project.id,
@@ -123,9 +125,10 @@ defmodule Operately.Updates do
       content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
     })
 
-    Operately.Activities.record(context, author, :project_discussion_submitted, fn repo ->
-      repo.insert(changeset)
-    end)
+    Multi.new()
+    |> Multi.insert(:update, changeset)
+    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: project.id} end)
+    |> Repo.transaction()
   end
 
   def record_project_start_time_changed(person, project, old_start_time, new_start_time) do
@@ -247,16 +250,19 @@ defmodule Operately.Updates do
       update_added: "*")
   end
   
-  def acknowledge_update(context, author, update) do
+  def acknowledge_update(author, update) do
+    action = :project_status_update_acknowledged
+
     changeset = change_update(update, %{
       acknowledged: true,
       acknowledged_at: DateTime.utc_now,
       acknowledging_person_id: author.id
     })
 
-    Operately.Activities.record(context, author, :project_status_update_acknowledged, fn repo ->
-      repo.update(changeset)
-    end)
+    Multi.new()
+    |> Multi.update(:update, changeset)
+    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id} end)
+    |> Repo.transaction()
   end
 
   def update_update(%Update{} = update, attrs) do
@@ -292,7 +298,7 @@ defmodule Operately.Updates do
     Repo.insert(changeset)
   end
 
-  def create_comment(context, author, update, content) do
+  def create_comment(author, update, content) do
     changeset = Comment.changeset(%{
       author_id: author.id,
       update_id: update.id,
@@ -305,16 +311,15 @@ defmodule Operately.Updates do
       _ -> raise "Unknown update type"
     end
 
-    Operately.Activities.record(context, author, action, fn repo ->
-      repo.insert(changeset)
-    end)
-  end
-
-  def publish_comment_added(comment) do
-    Absinthe.Subscription.publish(
-      OperatelyWeb.Endpoint,
-      comment,
-      comment_added: "*")
+    Multi.new()
+    |> Multi.insert(:comment, changeset)
+    |> Activities.insert(author.id, action, fn changes -> %{
+      project_id: update.updatable_id, 
+      update_id: update.id, 
+      comment_id: changes.comment.id
+    } end)
+    |> Repo.transaction()
+    |> extract_result(:comment)
   end
 
   def update_comment(%Comment{} = comment, attrs) do
@@ -363,5 +368,12 @@ defmodule Operately.Updates do
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
+  end
+
+  def extract_result(res, field) do
+    case res do
+      {:ok, %{^field => value}} -> {:ok, value}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 end

@@ -28,8 +28,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         case args.input.message_type do
           "status_update" ->
             project = Operately.Projects.get_project!(args.input.updatable_id)
-            context = Map.put(context, :project, project)
-            Operately.Updates.record_status_update(context, author, project, args.input.health, content)
+            Operately.Updates.record_status_update(author, project, args.input.health, content)
 
           "review" ->
             review_request_id = args.input[:review_request_id]
@@ -43,9 +42,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
           "project_discussion" ->
             project = Operately.Projects.get_project!(args.input.updatable_id)
             content = Jason.decode!(args.input.content)
-            context = Map.put(context, :project, project)
 
-            Operately.Updates.record_project_discussion(context, author, project, content["title"], content["body"])
+            Operately.Updates.record_project_discussion(author, project, content["title"], content["body"])
 
           _ ->
             raise "Unknown message type"
@@ -74,9 +72,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
       resolve fn args, %{context: context} ->
         person = context.current_account.person
         update = Operately.Updates.get_update!(args.id)
-        context = Map.put(context, :update, update)
 
-        Operately.Updates.acknowledge_update(context, person, update)
+        Operately.Updates.acknowledge_update(person, update)
       end
     end
 
@@ -90,16 +87,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
           update.type == :project_discussion ->
             author = context.current_account.person
             content = args.input.content
-            context = Map.put(context, :update, update)
 
-            Operately.Updates.create_comment(context, author, update, content)
+            Operately.Updates.create_comment(author, update, content)
 
           update.type == :status_update ->
             author = context.current_account.person
             content = args.input.content
-            context = Map.put(context, :update, update)
 
-            Operately.Updates.create_comment(context, author, update, content)
+            Operately.Updates.create_comment(author, update, content)
 
           true ->
             Operately.Updates.create_comment(update, %{

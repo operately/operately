@@ -1,65 +1,44 @@
 defmodule Operately.Activities.Recorder do
-  @moduledoc """
-  The `Operately.Activities.Recorder` is responsible for
-  recording the activity, inserting the activity, and
-  scheduling notifications.
-  """
-  
+  use Oban.Worker
   require Logger
 
   alias Ecto.Multi
   alias Operately.Activities.Activity
-  alias Operately.Activities.Content
-  alias Operately.Activities.NotificationDispatcher
+  alias Operately.Repo
 
-  def record(context, author, action, callback) do
-    start()
-    |> run_transaction(callback)
-    |> insert_activity(context, author, action)
-    |> schedule_notifications()
-    |> Operately.Repo.transaction()
-    |> log_result()
-    |> extract_result()
+  def perform(job) do
+    action = job.args["action"]
+    author_id = job.args["author_id"]
+    params = job.args["params"]
+
+    {:ok, content} = build_content(action, params)
+
+    Multi.new()
+    |> Multi.insert(:activity, Activity.changeset(%{author_id: author_id, action: action, content: content }))
+    |> Multi.run(:notifications, fn _, changes -> schedule_notifications(changes.activity) end)
+    |> Repo.transaction()
   rescue
     err -> Logger.error(Exception.format(:error, err, __STACKTRACE__))
   end
 
-  def start() do
-    Multi.new()
+  def build_content(action, params) do
+    module = find_module("Operately.Activities.Content", action)
+    changeset = apply(module, :build, [params])
+
+    if changeset.valid? do
+      {:ok, changeset.changes}
+    else
+      {:error, changeset}
+    end
   end
 
-  def run_transaction(multi, callback) do
-    Multi.run(multi, :record, fn repo, _ -> callback.(repo) end)
+  def schedule_notifications(activity) do
+    module = find_module("Operately.Activities.Notifications", activity.action)
+    apply(module, :dispatch, [activity])
   end
 
-  def insert_activity(multi, context, author, action) do
-    Multi.insert(multi, :activity, fn %{record: record} ->
-      content = Content.build(context, action, record)
-      
-      if content.valid? do
-        Activity.changeset(%{
-          author_id: author.id,
-          action: Atom.to_string(action),
-          content: content.changes,
-        })
-      else
-        {:error, content}
-      end
-    end)
+  defp find_module(base, action) do
+    full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
+    String.to_existing_atom(full_module_name)
   end
-
-  def schedule_notifications(multi) do
-    Multi.run(multi, :notifications, fn _, %{activity: activity} ->
-      NotificationDispatcher.new(%{activity_id: activity.id}) |> Oban.insert()
-    end)
-  end
-
-  def log_result(result) do
-    Logger.info("Activity recorded: #{inspect(result)}")
-
-    result
-  end
-
-  def extract_result({:ok, map}), do: {:ok, map[:record]}
-  def extract_result(error), do: raise error
 end

@@ -6,6 +6,8 @@ defmodule Operately.Projects do
   alias Operately.Projects.Contributor
   alias Operately.People.Person
   alias Operately.Updates
+  alias Ecto.Multi
+  alias Operately.Activities
 
   def get_project!(id) do
     query = from p in Project, where: p.id == ^id
@@ -28,9 +30,10 @@ defmodule Operately.Projects do
   end
 
   def archive_project(author, %Project{} = project) do
-    Operately.Activities.record(%{}, author, :project_archived, fn repo ->
-      repo.soft_delete(project)
-    end)
+    Multi.new()
+    |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
+    |> Activities.insert(author.id, :project_archived, fn changes -> %{project_id: changes.project.id} end)
+    |> Repo.transaction()
   end
 
   def change_project(%Project{} = project, attrs \\ %{}) do

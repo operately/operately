@@ -13,14 +13,15 @@ defmodule Operately.Activities.Content.ProjectStatusUpdateAcknowledged do
     |> validate_required(__schema__(:fields))
   end
 
-  def build(_context, status_update) do
-    project_id = status_update.updatable_id
+  def build(params) do
+    project_id = params["project_id"]
+    status_update_id = params["update_id"]
     project = Operately.Projects.get_project!(project_id)
 
     changeset(%{
       company_id: project.company_id,
       project_id: project.id,
-      status_update_id: status_update.id,
+      status_update_id: status_update_id
     })
   end
 end
