@@ -3,6 +3,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
   alias Operately.People.Person
 
   setup ctx do
@@ -19,11 +20,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_notification_exists(
-      author: ctx.champion, 
-      subject: "#{Person.first_name(ctx.champion)} submitted a status update"
-    )
+    |> NotificationsSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
 
     ctx
     |> ProjectSteps.assert_email_sent_to_all_contributors(
@@ -44,17 +41,8 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_notification_exists(
-      author: ctx.reviewer,
-      subject: "#{Person.first_name(ctx.reviewer)} acknowledged your status update"
-    )
-
-    ctx
-    |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "Operately (#{ctx.company.name}): #{Person.short_name(ctx.reviewer)} acknowledged your status update for #{ctx.project.name}",
-      except: [ctx.reviewer.email]
-    )
+    |> NotificationsSteps.assert_project_update_acknowledged_sent(author: ctx.reviewer)
+    |> EmailSteps.assert_project_update_acknowledged_sent(author: ctx.reviewer, to: ctx.champion)
   end
 
   @tag login_as: :champion
@@ -71,16 +59,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_notification_exists(
-      author: ctx.reviewer,
-      subject: "#{Person.first_name(ctx.reviewer)} commented on the project status update"
-    )
-
-    ctx
-    |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "Operately (#{ctx.company.name}): #{Person.short_name(ctx.reviewer)} commented on a status update for #{ctx.project.name}",
-      except: [ctx.reviewer.email]
-    )
+    |> NotificationsSteps.assert_project_update_commented_sent(author: ctx.reviewer)
+    |> EmailSteps.assert_project_update_commented_sent(author: ctx.reviewer, to: ctx.champion)
   end
 end

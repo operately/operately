@@ -1,5 +1,5 @@
 defmodule Operately.Support.Features.ProjectSteps do
-  alias Operately.FeatureCase.UI
+  alias Operately.Support.Features.UI
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures

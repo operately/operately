@@ -33,7 +33,7 @@ defmodule Operately.Projects.ProjectCreation do
     |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
     |> Activities.insert(params.creator_id, :project_created, fn changes -> %{project_id: changes.project.id} end)
     |> Repo.transaction()
-    |> extract_result(:project)
+    |> Repo.extract_result(:project)
   end
 
   defp assign_creator_role(project, %__MODULE__{} = params) do
@@ -83,12 +83,5 @@ defmodule Operately.Projects.ProjectCreation do
 
   defp is_private(visibility) do
     visibility != "everyone"
-  end
-
-  def extract_result(res, field) do
-    case res do
-      {:ok, %{^field => value}} -> {:ok, value}
-      {:error, changeset} -> {:error, changeset}
-    end
   end
 end

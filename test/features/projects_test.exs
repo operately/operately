@@ -30,12 +30,12 @@ defmodule Operately.Features.ProjectsTest do
     |> click_save()
 
     # by default only the top of text is visible
-    ctx.session
-    |> assert_has(Query.text("TEXT START MARKER"))
+    ctx
+    |> UI.assert_has(Query.text("TEXT START MARKER"))
     |> UI.refute_has(Query.text("TEXT END MARKER"))
 
     # the text can be expanded
-    ctx.session
+    ctx
     |> expand_description()
     |> UI.assert_has(Query.text("TEXT END MARKER"))
   end

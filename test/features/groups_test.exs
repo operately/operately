@@ -6,27 +6,29 @@ defmodule Operately.Features.GroupsTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
 
-  setup state do
+  setup ctx do
     company = company_fixture(%{name: "Test Org"})
-    session = state.session |> UI.login()
 
-    {:ok, %{session: session, company: company}}
+    ctx = Map.merge(ctx, %{company: company})
+    ctx = UI.login(ctx)
+
+    {:ok, ctx}
   end
 
-  feature "listing existing groups", state do
+  feature "listing existing groups", ctx do
     group1 = group_fixture(%{name: "Marketing", mission: "Let the world know about our products"})
     group2 = group_fixture(%{name: "Engineering", mission: "Build the best product"})
 
-    state
+    ctx
     |> visit_page()
-    |> UI.assert_has(Query.text(group1.name))
-    |> UI.assert_has(Query.text(group1.mission))
-    |> UI.assert_has(Query.text(group2.name))
-    |> UI.assert_has(Query.text(group2.mission))
+    |> UI.assert_text(group1.name)
+    |> UI.assert_text(group1.mission)
+    |> UI.assert_text(group2.name)
+    |> UI.assert_text(group2.mission)
   end
 
-  feature "creating a new group", state do
-    state
+  feature "creating a new group", ctx do
+    ctx
     |> visit_page()
     |> UI.click(testid: "add-group")
     |> UI.fill_in(Query.text_field("Name"), with: "Marketing")
@@ -36,24 +38,24 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_has(Query.text("Let the world know about our products"))
   end
 
-  feature "listing group members", state do
+  feature "listing group members", ctx do
     group = group_fixture(%{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     Operately.Groups.add_member(group, person.id)
 
-    state
+    ctx
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.click(testid: "group-members")
     |> UI.assert_has(Query.text(person.full_name))
   end
 
-  feature "adding group members", state do
+  feature "adding group members", ctx do
     group = group_fixture(%{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    state
+    ctx
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.click(testid: "group-members")
@@ -65,51 +67,25 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_has(title: person.full_name)
   end
 
-  feature "removing group members", state do
+  feature "removing group members", ctx do
     group = group_fixture(%{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     Operately.Groups.add_member(group, person.id)
 
-    state
+    ctx
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.click(testid: "group-members")
-    |> UI.assert_has(Query.text(person.full_name))
+    |> UI.assert_text(person.full_name)
     |> UI.click(testid: "remove-member-#{person.id}")
-    |> UI.refute_has(Query.text(person.full_name))
+    |> UI.refute_text(person.full_name)
   end
 
-  # feature "setting group mission", state do
-  #   mission = "Let the world know about our products"
-  #   group = create_group("Marketing")
-
-  #   state
-  #   |> visit_page()
-  #   |> click(Query.link(group.name))
-  #   |> UI.click(testid: "editGroupMission")
-  #   |> UI.fill(testid: "groupMissionTextarea", with: mission)
-  #   |> click(Query.button("Save"))
-  #   |> assert_has(Query.text(mission))
-  # end
-
-  # feature "adding points of contact", state do
-  #   group = create_group("Marketing")
-
-  #   state
-  #   |> visit_page()
-  #   |> UI.click_link(group.name)
-  #   |> UI.click(testid: "groupAddPointOfContact")
-  #   |> UI.fill(testid: "groupPointOfContactName", with: "#marketing")
-  #   |> UI.fill(testid: "groupPointOfContactValue", with: "https://slack.com/marketing")
-  #   |> UI.click_button("Save")
-  #   |> UI.assert_text("#marketing")
-  # end
-
-  feature "listing championed projects in a group", state do
+  feature "listing championed projects in a group", ctx do
     group = group_fixture(%{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
-    project1 = project_fixture(%{name: "Project 1", company_id: state.company.id, creator_id: person.id})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
+    project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: person.id})
 
     Operately.Groups.add_member(group, person.id)
     Operately.Projects.create_contributor(%{
@@ -118,16 +94,16 @@ defmodule Operately.Features.GroupsTest do
       role: "champion"
     })
 
-    state
+    ctx
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.assert_text(project1.name)
   end
 
-  feature "listing reviwed projects in a group", state do
+  feature "listing reviwed projects in a group", ctx do
     group = group_fixture(%{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: state.company.id})
-    project1 = project_fixture(%{name: "Project 1", company_id: state.company.id, creator_id: person.id})
+    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
+    project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: person.id})
 
     Operately.Groups.add_member(group, person.id)
     Operately.Projects.create_contributor(%{
@@ -136,19 +112,19 @@ defmodule Operately.Features.GroupsTest do
       role: "reviewer"
     })
 
-    state
+    ctx
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.assert_text(project1.name)
   end
 
-  # feature "listing goals in a group", state do
+  # feature "listing goals in a group", ctx do
   #   group = create_group("Marketing")
 
   #   goal1 = crete_goal("Increase traffic", group: group)
   #   goal2 = crete_goal("Raise brand awareness", group: group)
 
-  #   state
+  #   ctx
   #   |> visit_page()
   #   |> UI.click_link(group.name)
   #   |> UI.assert_text(goal1.name)
@@ -157,7 +133,7 @@ defmodule Operately.Features.GroupsTest do
 
   # # ===========================================================================
 
-  defp visit_page(state) do
-    UI.visit(state, "/groups")
+  defp visit_page(ctx) do
+    UI.visit(ctx, "/groups")
   end
 end

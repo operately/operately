@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
   end
 
   object :update_mutations do
-    field :create_update, :activity do
+    field :create_update, non_null(:update) do
       arg :input, non_null(:create_update_input)
 
       resolve fn args, %{context: context} ->

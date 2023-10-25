@@ -65,7 +65,7 @@ defmodule Operately.Updates do
     |> Multi.update(:project, Project.changeset(project, %{health: new_health}))
     |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
     |> Repo.transaction()
-    |> extract_result(:update)
+    |> Repo.extract_result(:update)
   end
 
   def record_review(author, project, new_phase, content, review_request_id) do
@@ -129,6 +129,7 @@ defmodule Operately.Updates do
     |> Multi.insert(:update, changeset)
     |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: project.id} end)
     |> Repo.transaction()
+    |> Repo.extract_result(:update)
   end
 
   def record_project_start_time_changed(person, project, old_start_time, new_start_time) do
@@ -261,8 +262,9 @@ defmodule Operately.Updates do
 
     Multi.new()
     |> Multi.update(:update, changeset)
-    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id} end)
+    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.update.updatable_id} end)
     |> Repo.transaction()
+    |> Repo.extract_result(:update)
   end
 
   def update_update(%Update{} = update, attrs) do
@@ -319,7 +321,7 @@ defmodule Operately.Updates do
       comment_id: changes.comment.id
     } end)
     |> Repo.transaction()
-    |> extract_result(:comment)
+    |> Repo.extract_result(:comment)
   end
 
   def update_comment(%Comment{} = comment, attrs) do
@@ -368,12 +370,5 @@ defmodule Operately.Updates do
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
     Reaction.changeset(reaction, attrs)
-  end
-
-  def extract_result(res, field) do
-    case res do
-      {:ok, %{^field => value}} -> {:ok, value}
-      {:error, changeset} -> {:error, changeset}
-    end
   end
 end

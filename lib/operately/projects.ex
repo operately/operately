@@ -34,6 +34,7 @@ defmodule Operately.Projects do
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
     |> Activities.insert(author.id, :project_archived, fn changes -> %{project_id: changes.project.id} end)
     |> Repo.transaction()
+    |> Repo.extract_result(:project)
   end
 
   def change_project(%Project{} = project, attrs \\ %{}) do
