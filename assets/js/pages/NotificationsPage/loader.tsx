@@ -81,6 +81,15 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectReviewSubmitted {
+            reviewId
+
+            project {
+              id
+              name
+            }
+          }
         }
       }
     }

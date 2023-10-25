@@ -8,6 +8,7 @@ defmodule Operately.Updates do
   alias Operately.Activities
   alias Operately.Updates.Update
   alias Operately.Projects.Project
+  alias Operately.Projects.ReviewRequest
 
   alias Operately.Repo
   alias Ecto.Multi
@@ -69,37 +70,42 @@ defmodule Operately.Updates do
   end
 
   def record_review(author, project, new_phase, content, review_request_id) do
-    Operately.Repo.transaction(fn -> 
-      previous_phase = Atom.to_string(project.phase)
+    previous_phase = Atom.to_string(project.phase)
 
-      {:ok, update} = create_update(%{
-        updatable_type: :project,
-        updatable_id: project.id,
-        author_id: author.id,
-        title: "",
-        type: :review,
-        content: Operately.Updates.Types.Review.build(
-          content["survey"], 
-          content["previousPhase"], 
-          content["newPhase"],
-          review_request_id
-        )
-      })
+    changeset = Update.changeset(%{
+      updatable_type: :project,
+      updatable_id: project.id,
+      author_id: author.id,
+      title: "",
+      type: :review,
+      content: Operately.Updates.Types.Review.build(
+        content["survey"], 
+        content["previousPhase"], 
+        content["newPhase"],
+        review_request_id
+      )
+    })
 
+    Multi.new()
+    |> Multi.insert(:update, changeset)
+    |> then(fn multi ->
       if review_request_id do
         request = Operately.Projects.get_review_request!(review_request_id)
-        {:ok, _} = Operately.Projects.update_review_request(request, %{
-          status: :completed,
-          update_id: update.id
-        })
+
+        multi |> Multi.update(:review_request, fn changes -> 
+          ReviewRequest.changeset(request, %{status: :completed, update_id: changes.update.id})
+        end)
+      else
+        multi
       end
-
-      {:ok, _} = Operately.Projects.record_phase_history(project, previous_phase, new_phase)
-      {:ok, _} = Operately.Projects.update_project(project, %{phase: new_phase})
-      {:ok, _} = OperatelyEmail.ProjectReviewSubmittedEmail.new(%{review_id: update.id}) |> Oban.insert()
-
-      update
     end)
+    |> Multi.run(:phase_history, fn _repo, _changes -> 
+      Operately.Projects.record_phase_history(project, previous_phase, new_phase) 
+    end)
+    |> Multi.update(:project, Project.changeset(project, %{phase: new_phase}))
+    |> Activities.insert(author.id, :project_review_submitted, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:update)
   end
 
   def record_message(author, project, content) do

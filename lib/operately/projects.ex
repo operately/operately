@@ -362,11 +362,13 @@ defmodule Operately.Projects do
         |> Repo.update()
       end
       
-      {:ok, _} = create_phase_history(%{
+      {:ok, phase} = create_phase_history(%{
         project_id: project.id,
         phase: new_phase,
         start_time: DateTime.utc_now()
       })
+
+      phase
     end)
   end
 
