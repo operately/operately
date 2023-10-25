@@ -392,7 +392,11 @@ defmodule Operately.ProjectsTest do
       author = person_fixture(company_id: company.id)
       project = project_fixture(%{company_id: company.id, creator_id: author.id})
 
-      {:ok, review_request} = Operately.Projects.create_review_request(author, %{project_id: project.id, content: rich_text("hello")})
+      {:ok, review_request} = Operately.Projects.create_review_request(author, %{
+        author_id: author.id,
+        project_id: project.id, 
+        content: rich_text("hello")
+      })
 
       {:ok, author: author, review_request: review_request, project: project}
     end
@@ -406,14 +410,14 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_review_request/1 with valid data creates a review_request", ctx do
-      valid_attrs = %{project_id: ctx.project.id, content: rich_text("hello")}
+      valid_attrs = %{project_id: ctx.project.id, content: rich_text("hello"), author_id: ctx.author.id}
 
       assert {:ok, %ReviewRequest{} = review_request} = Projects.create_review_request(ctx.author, valid_attrs)
       assert review_request.content == rich_text("hello")
     end
 
     test "create_review_request/1 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_review_request(ctx.author, %{project_id: nil})
+      assert {:error, :request, %Ecto.Changeset{}, %{}} = Projects.create_review_request(ctx.author, %{project_id: nil})
     end
 
     test "update_review_request/2 with valid data updates the review_request", ctx do

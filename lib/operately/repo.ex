@@ -87,6 +87,7 @@ defmodule Operately.Repo do
       {:ok, %{^field => result}} -> {:ok, result}
       {:ok, _} -> {:error, :cannot_extract_result, field}
       {:error, reason} -> {:error, reason}
+      error -> error
     end
   end
 end

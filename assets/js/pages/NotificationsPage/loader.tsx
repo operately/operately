@@ -90,6 +90,15 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectReviewRequestSubmitted {
+            requestId
+
+            project {
+              id
+              name
+            }
+          }
         }
       }
     }
