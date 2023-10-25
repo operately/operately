@@ -1,35 +1,32 @@
 defmodule OperatelyEmail.ProjectReviewSubmittedEmail do
-  use Oban.Worker
-  
   alias Operately.People.Person
 
-  def perform(job) do
-    review_id = job.args["review_id"]
-    review = Operately.Updates.get_update!(review_id)
-    project = Operately.Projects.get_project!(review.updatable_id)
-    reviewer = Operately.Projects.get_reviewer(project)
+  def send(person, activity) do
+    update = Operately.Updates.get_update!(activity.content["review_id"])
+    project = Operately.Projects.get_project!(update.updatable_id)
+    email = compose(project, update, person)
 
-    email = compose(project, review, reviewer)
     OperatelyEmail.Mailer.deliver_now(email)
   end
 
-  def compose(project, review, reviewer) do
+  def compose(project, update, recipient) do
     import Bamboo.Email
 
-    author = Operately.Repo.preload(review, :author).author
+    author = Operately.Repo.preload(update, :author).author
     company = Operately.Repo.preload(author, :company).company
 
     assigns = %{
       company: company,
       project: project,
-      review: review,
+      review: update,
       author: Person.short_name(author),
-      cta_url: cta_url(project, review),
+      project_url: project_url(project),
+      cta_url: cta_url(project, update),
       title: subject(company, author, project)
     }
 
     new_email(
-      to: reviewer.email,
+      to: recipient.email,
       from: sender(company),
       subject: subject(company, author, project),
       html_body: OperatelyEmail.Views.ProjectReviewSubmitted.html(assigns),
@@ -38,18 +35,25 @@ defmodule OperatelyEmail.ProjectReviewSubmittedEmail do
   end
 
   def sender(company) do
-    {org_name(company), Application.get_env(:operately, :notification_email)}
+    {
+      "Operately (#{company.name})", 
+      Application.get_env(:operately, :notification_email)
+    }
   end
 
-  def subject(company, short_name, project) do
-    "#{org_name(company)}: #{Person.short_name(short_name)} submitted a review for #{project.name}"
+  def cta_url(project, status_update) do
+    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/reviews/#{status_update.id}"
+  end
+
+  def subject(company, author, project) do
+    "#{org_name(company)}: #{Person.short_name(author)} submitted a review for #{project.name}"
   end
 
   def org_name(company) do
     "Operately (#{company.name})"
   end
 
-  def cta_url(project, review) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/reviews/#{review.id}"
+  def project_url(project) do
+    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
   end
 end

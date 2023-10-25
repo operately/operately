@@ -50,7 +50,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectRenamed | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectRenamed | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted;
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
@@ -82,7 +82,16 @@ export type ActivityContentProjectDiscussionSubmitted = {
 
 export type ActivityContentProjectRenamed = {
   __typename?: 'ActivityContentProjectRenamed';
-  exampleField: Scalars['String']['output'];
+  newName: Scalars['String']['output'];
+  oldName: Scalars['String']['output'];
+  project: Project;
+};
+
+export type ActivityContentProjectReviewSubmitted = {
+  __typename?: 'ActivityContentProjectReviewSubmitted';
+  project: Project;
+  projectId: Scalars['String']['output'];
+  reviewId: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectStatusUpdateAcknowledged = {

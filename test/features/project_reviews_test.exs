@@ -14,26 +14,26 @@ defmodule Operately.Features.ProjectReviewsTest do
   end
 
   @tag login_as: :reviewer
-  feature "request a review", state do
-    state
+  feature "request a review", ctx do
+    ctx
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "request-review-button")
     |> UI.fill_rich_text("The project was paused for a while, let's review it before we continue.")
     |> UI.click(testid: "request-review-submit-button")
-    |> UI.assert_text(first_name(state.reviewer) <> " requested an Impromptu Review")
+    |> UI.assert_text(first_name(ctx.reviewer) <> " requested an Impromptu Review")
     |> UI.click(testid: "request-review-link")
     |> UI.assert_text("The project was paused for a while, let's review it before we continue.")
-    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.reviewer)} requested a review for #{state.project.name}", to: state.champion.email)
+    |> UI.assert_email_sent("Operately (#{ctx.company.name}): #{Person.short_name(ctx.reviewer)} requested a review for #{ctx.project.name}", to: ctx.champion.email)
   end
 
   @tag login_as: :champion
-  feature "submit a requested review", state do
-    {:ok, _} = Operately.Projects.create_review_request(state.reviewer, %{
-      project_id: state.project.id,
+  feature "submit a requested review", ctx do
+    {:ok, _} = Operately.Projects.create_review_request(ctx.reviewer, %{
+      project_id: ctx.project.id,
       content: rich_text("The project was paused for a while, let's review it before we continue.")
     })
 
-    state
+    ctx
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "request-review-link")
     |> UI.click(testid: "write-review-button")
@@ -45,25 +45,25 @@ defmodule Operately.Features.ProjectReviewsTest do
     ])
 
     # The review is submitted and the user is redirected to the review page
-    state
+    ctx
     |> UI.assert_text("Impromptu Project Review")
-    |> UI.assert_text("This review was requested by #{first_name(state.reviewer)}")
+    |> UI.assert_text("This review was requested by #{first_name(ctx.reviewer)}")
     |> UI.click(testid: "review-request-link")
     |> UI.assert_text("View Submitted Review")
 
     # The review request should be marked as completed
-    state
+    ctx
     |> ProjectSteps.visit_project_page()
     |> UI.refute_text("Request Review")
 
     # assert that the reviewew received an email
-    state
-    |> UI.assert_email_sent("Operately (#{state.company.name}): #{Person.short_name(state.champion)} submitted a review for #{state.project.name}", to: state.reviewer.email)
+    ctx
+    |> UI.assert_email_sent("Operately (#{ctx.company.name}): #{Person.short_name(ctx.champion)} submitted a review for #{ctx.project.name}", to: ctx.reviewer.email)
   end
 
   @tag login_as: :champion
-  feature "changing phase from pending -> execution and filling in the review", state do
-    state 
+  feature "changing phase from pending -> execution and filling in the review", ctx do
+    ctx 
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:execution)
     |> fill_survey([
@@ -74,15 +74,15 @@ defmodule Operately.Features.ProjectReviewsTest do
       {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
     ])
 
-    state
+    ctx
     |> UI.assert_text("The project has moved to the Execution phase")
   end
 
   @tag login_as: :champion
-  feature "changing phase from execution -> control and filling in the review", state do
-    change_phase(state.project, :execution)
+  feature "changing phase from execution -> control and filling in the review", ctx do
+    change_phase(ctx.project, :execution)
 
-    state 
+    ctx 
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:control)
     |> fill_survey([
@@ -93,15 +93,15 @@ defmodule Operately.Features.ProjectReviewsTest do
       {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
     ])
 
-    state
+    ctx
     |> UI.assert_text("The project has moved to the Control phase")
   end
 
   @tag login_as: :champion
-  feature "changing phase from control -> completed and filling in a retrospective", state do
-    change_phase(state.project, :control)
+  feature "changing phase from control -> completed and filling in a retrospective", ctx do
+    change_phase(ctx.project, :control)
 
-    state
+    ctx
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:completed)
     |> fill_survey([
@@ -110,15 +110,15 @@ defmodule Operately.Features.ProjectReviewsTest do
       {"what-we-learned", "We learned that we need to improve our budgeting process."},
     ])
 
-    state
+    ctx
     |> UI.assert_text("The project was completed")
   end
 
   @tag login_as: :champion
-  feature "changing phase from control -> canceled and filling in a retrospective", state do
-    change_phase(state.project, :control)
+  feature "changing phase from control -> canceled and filling in a retrospective", ctx do
+    change_phase(ctx.project, :control)
 
-    state
+    ctx
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:canceled)
     |> fill_survey([
@@ -127,13 +127,13 @@ defmodule Operately.Features.ProjectReviewsTest do
       {"what-we-learned", "We learned that we need to improve our budgeting process."},
     ])
 
-    state
+    ctx
     |> UI.assert_text("The project was canceled")
   end
 
   @tag login_as: :champion
-  feature "pausing a project", state do
-    state
+  feature "pausing a project", ctx do
+    ctx
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:paused)
     |> fill_survey([
@@ -144,10 +144,10 @@ defmodule Operately.Features.ProjectReviewsTest do
   end
 
   @tag login_as: :champion
-  feature "changing phase from control -> planning and filling in a the questions", state do
-    change_phase(state.project, :control)
+  feature "changing phase from control -> planning and filling in a the questions", ctx do
+    change_phase(ctx.project, :control)
 
-    state
+    ctx
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:planning)
     |> fill_survey([
@@ -157,10 +157,10 @@ defmodule Operately.Features.ProjectReviewsTest do
   end
 
   @tag login_as: :champion
-  feature "changing phase from completed -> planning and filling in a the questions", state do
-    change_phase(state.project, :completed)
+  feature "changing phase from completed -> planning and filling in a the questions", ctx do
+    change_phase(ctx.project, :completed)
 
-    state
+    ctx
     |> ProjectSteps.visit_project_page()
     |> initiate_phase_change(:planning)
     |> fill_survey([
@@ -177,23 +177,23 @@ defmodule Operately.Features.ProjectReviewsTest do
     String.split(person.full_name, " ") |> List.first()
   end
 
-  defp fill_survey(state, answers) do
+  defp fill_survey(ctx, answers) do
     Enum.each(answers, fn answer ->
       case answer do
         {question, answer, comment} ->
-          state
+          ctx
           |> UI.find(testid: "question-#{question}")
           |> UI.click(testid: "question-#{question}-#{answer}")
           |> UI.fill_rich_text(comment)
 
         {question, answer} ->
-          state
+          ctx
           |> UI.find(testid: "question-#{question}")
           |> UI.fill_rich_text(answer)
       end
     end)
 
-    state
+    ctx
     |> UI.scroll_to(testid: "submit-area")
     |> UI.click(testid: "submit-button")
   end
@@ -202,8 +202,8 @@ defmodule Operately.Features.ProjectReviewsTest do
     {:ok, _} = Operately.Projects.update_project(project, %{phase: phase})
   end
 
-  defp initiate_phase_change(state, phase) do
-    state
+  defp initiate_phase_change(ctx, phase) do
+    ctx
     |> UI.click(testid: "phase-selector")
     |> UI.click(testid: "phase-#{phase}")
   end
