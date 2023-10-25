@@ -18,18 +18,7 @@ const Context = React.createContext({
 });
 
 export function AssignmentList({ showUpcoming = true, readOnly = false }) {
-  const { data, loading, error } = Assignments.useAssignments();
-
-  if (error) {
-    console.error(error);
-    return null;
-  }
-
-  if (loading) {
-    return null;
-  }
-
-  const assignments: Assignments.Assignments[] = data.assignments.assignments;
+  const assignments: Assignments.Assignments[] = [];
   const pending = assignments.filter((a) => time.parseISO(a.due) < time.endOfToday());
   const upcoming = assignments.filter((a) => time.parseISO(a.due) >= time.endOfToday());
 

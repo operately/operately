@@ -12,7 +12,9 @@ defmodule Operately.Activities.Content.ProjectArchived do
     |> validate_required(__schema__(:fields))
   end
 
-  def build(_context, project) do
+  def build(params) do
+    project = Operately.Projects.get_project!(params["project_id"])
+
     changeset(%{
       company_id: project.company_id,
       project_id: project.id

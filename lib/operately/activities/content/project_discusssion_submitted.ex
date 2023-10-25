@@ -14,14 +14,15 @@ defmodule Operately.Activities.Content.ProjectDiscussionSubmitted do
     |> validate_required(__schema__(:fields))
   end
 
-  def build(context, discussion) do
-    project = context[:project]
+  def build(params) do
+    project = Operately.Projects.get_project!(params["project_id"])
+    discussion = Operately.Updates.get_update!(params["update_id"])
 
     changeset(%{
       company_id: project.company_id,
       project_id: project.id,
       discussion_id: discussion.id,
-      title: discussion.content.title
+      title: discussion.content["title"]
     })
   end
 end

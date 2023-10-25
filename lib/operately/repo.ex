@@ -69,4 +69,24 @@ defmodule Operately.Repo do
   end
 
   defp get_schema_module_from_query(_), do: nil
+
+  #
+  # Extracts Result from a transaction that was running a multi.
+  # Example:
+  #
+  # Ecto.Multi.new()
+  # |> Ecto.Multi.insert(:project, ...)
+  # |> Ecto.Multi.insert(:champion, ...)
+  # |> Repo.transaction()
+  # |> Repo.extract_result(:project)
+  #
+  # The returned value will be the result of the :project operation.
+  #
+  def extract_result(multi_result, field) do
+    case multi_result do
+      {:ok, %{^field => result}} -> {:ok, result}
+      {:ok, _} -> {:error, :cannot_extract_result, field}
+      {:error, reason} -> {:error, reason}
+    end
+  end
 end
