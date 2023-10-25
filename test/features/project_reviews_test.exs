@@ -4,6 +4,7 @@ defmodule Operately.Features.ProjectReviewsTest do
   alias Operately.People.Person
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.NotificationsSteps
   import Operately.Support.RichText
 
   setup ctx do
@@ -29,9 +30,13 @@ defmodule Operately.Features.ProjectReviewsTest do
   @tag login_as: :champion
   feature "submit a requested review", ctx do
     {:ok, _} = Operately.Projects.create_review_request(ctx.reviewer, %{
+      author_id: ctx.reviewer.id,
       project_id: ctx.project.id,
       content: rich_text("The project was paused for a while, let's review it before we continue.")
     })
+
+    ctx
+    |> NotificationsSteps.assert_project_review_request_notification(author: ctx.reviewer)
 
     ctx
     |> ProjectSteps.visit_project_page()

@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_project_discussion_comment_submitted,
     :activity_content_project_discussion_submitted,
     :activity_content_project_renamed,
+    :activity_content_project_review_request_submitted,
     :activity_content_project_review_submitted,
     :activity_content_project_status_update_acknowledged,
     :activity_content_project_status_update_commented,

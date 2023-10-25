@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
         use Operately.Activities.Content
 
         embedded_schema do
-          field :example_field, :string
+          field :company_id, :string
         end
 
         def changeset(attrs) do
@@ -54,7 +54,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
           |> validate_required(__schema__(:fields))
         end
 
-        def build(context, record) do
+        def build(params) do
           raise "not implemented"
         end
       end

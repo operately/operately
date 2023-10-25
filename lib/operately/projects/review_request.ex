@@ -15,7 +15,10 @@ defmodule Operately.Projects.ReviewRequest do
     timestamps()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(review_request, attrs) do
     review_request
     |> cast(attrs, [:content, :project_id, :author_id, :update_id, :status])

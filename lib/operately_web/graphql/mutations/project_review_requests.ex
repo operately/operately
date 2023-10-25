@@ -14,11 +14,14 @@ defmodule OperatelyWeb.Graphql.Mutations.ProjectReviewRequests do
         author = context.current_account.person
         content = Jason.decode!(args.input.content)
 
-        Operately.Projects.create_review_request(author, %{
+        attrs = %{
           project_id: args.input.project_id,
           author_id: author.id,
-          content: content
-        })
+          content: content,
+          status: :pending
+        }
+
+        Operately.Projects.create_review_request(author, attrs)
       end
     end
   end

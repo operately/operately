@@ -394,20 +394,11 @@ defmodule Operately.Projects do
   def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
 
   def create_review_request(author, attrs) do
-    Repo.transaction(fn ->
-      attrs = Map.merge(attrs, %{author_id: author.id})
-
-      result = %ReviewRequest{} |> ReviewRequest.changeset(attrs) |> Repo.insert()
-
-      case result do
-        {:ok, request} ->
-          {:ok, _} = OperatelyEmail.ProjectReviewRequestEmail.new(%{request_id: request.id}) |> Oban.insert()
-
-          request
-        {:error, changeset} ->
-          Repo.rollback(changeset)
-      end
-    end)
+    Multi.new()
+    |> Multi.insert(:request, ReviewRequest.changeset(attrs))
+    |> Activities.insert(author.id, :project_review_request_submitted, fn changes -> %{project_id: attrs.project_id, request_id: changes.request.id} end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:request)
   end
 
   def update_review_request(%ReviewRequest{} = review_request, attrs) do

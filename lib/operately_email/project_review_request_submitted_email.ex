@@ -1,15 +1,12 @@
-defmodule OperatelyEmail.ProjectReviewRequestEmail do
-  use Oban.Worker
-  
+defmodule OperatelyEmail.ProjectReviewRequestSubmittedEmail do
   alias Operately.People.Person
 
-  def perform(job) do
-    request_id = job.args["request_id"]
-    request = Operately.Projects.get_review_request!(request_id)
+  def send(person, activity) do
+    request = Operately.Projects.get_review_request!(activity.content["request_id"])
     project = Operately.Projects.get_project!(request.project_id)
-    champion = Operately.Projects.get_champion(project)
 
-    email = compose(project, request, champion)
+    email = compose(project, request, person)
+
     OperatelyEmail.Mailer.deliver_now(email)
   end
 
@@ -32,8 +29,8 @@ defmodule OperatelyEmail.ProjectReviewRequestEmail do
       to: champion.email,
       from: sender(company),
       subject: subject(company, author, project),
-      html_body: OperatelyEmail.Views.ProjectReviewRequest.html(assigns),
-      text_body: OperatelyEmail.Views.ProjectReviewRequest.text(assigns)
+      html_body: OperatelyEmail.Views.ProjectReviewRequestSubmitted.html(assigns),
+      text_body: OperatelyEmail.Views.ProjectReviewRequestSubmitted.text(assigns)
     )
   end
 
