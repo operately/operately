@@ -20,6 +20,12 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> UI.assert_email_sent(subject, to: to.email)
   end
 
+  def assert_project_review_acknowledged_sent(ctx, author: author, to: to) do
+    subject = "Operately (#{ctx.company.name}): #{Person.short_name(author)} acknowledged your review for #{ctx.project.name}"
+
+    ctx |> UI.assert_email_sent(subject, to: to.email)
+  end
+
   def assert_project_update_commented_sent(ctx, author: author, to: to) do
     subject = "Operately (#{ctx.company.name}): #{Person.short_name(author)} commented on a status update for #{ctx.project.name}"
 

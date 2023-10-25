@@ -99,6 +99,15 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectReviewAcknowledged {
+            projectId
+            reviewId
+
+            project {
+              name
+            }
+          }
         }
       }
     }

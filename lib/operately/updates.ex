@@ -258,13 +258,18 @@ defmodule Operately.Updates do
   end
   
   def acknowledge_update(author, update) do
-    action = :project_status_update_acknowledged
-
     changeset = change_update(update, %{
       acknowledged: true,
       acknowledged_at: DateTime.utc_now,
       acknowledging_person_id: author.id
     })
+
+    action = case update.type do
+      :project_discussion -> :project_discussion_acknowledged
+      :status_update -> :project_status_update_acknowledged
+      :review -> :project_review_acknowledged
+      _ -> raise "Unknown update type"
+    end
 
     Multi.new()
     |> Multi.update(:update, changeset)
