@@ -29,6 +29,14 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
+  def rename_project(author, project, new_name) do
+    Multi.new()
+    |> Multi.update(:project, change_project(project, %{name: new_name}))
+    |> Activities.insert(author.id, :project_renamed, fn changes -> %{project_id: project.id, old_name: project.name, new_name: changes.project.name} end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
+  end
+
   def archive_project(author, %Project{} = project) do
     Multi.new()
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)

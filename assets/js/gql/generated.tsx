@@ -50,7 +50,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectRenamed | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted;
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
@@ -78,6 +78,11 @@ export type ActivityContentProjectDiscussionSubmitted = {
   project: Project;
   projectId: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectRenamed = {
+  __typename?: 'ActivityContentProjectRenamed';
+  exampleField: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectStatusUpdateAcknowledged = {
@@ -386,6 +391,7 @@ export type PostMilestoneCommentInput = {
 
 export type Project = {
   __typename?: 'Project';
+  archivedAt?: Maybe<Scalars['Date']['output']>;
   champion?: Maybe<Person>;
   contributors?: Maybe<Array<Maybe<ProjectContributor>>>;
   deadline?: Maybe<Scalars['Date']['output']>;
@@ -511,7 +517,7 @@ export type RootMutationType = {
   createProject: Project;
   createProjectReviewRequest?: Maybe<ProjectReviewRequest>;
   createTenet?: Maybe<Tenet>;
-  createUpdate?: Maybe<Activity>;
+  createUpdate: Update;
   editKeyResource: ProjectKeyResource;
   editProjectName: Project;
   editProjectTimeline: Project;

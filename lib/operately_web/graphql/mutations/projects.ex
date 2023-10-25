@@ -51,10 +51,10 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :edit_project_name, non_null(:project) do
       arg :input, non_null(:edit_project_name_input)
 
-      resolve fn args, _ ->
+      resolve fn args, %{context: context} ->
+        author = context.current_account.person
         project = Operately.Projects.get_project!(args.input.project_id)
-
-        Operately.Projects.update_project(project, %{name: args.input.name})
+        Operately.Projects.rename_project(author, project, args.input.name)
       end
     end
 
