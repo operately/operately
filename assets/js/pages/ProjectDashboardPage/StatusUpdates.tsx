@@ -6,7 +6,7 @@ import * as Icons from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import RichContent from "@/components/RichContent";
+import { Summary } from "@/components/RichContent";
 
 export default function Reviews({ me, project }) {
   const { updates, loading, error } = useStatusUpdates({ project });
@@ -14,7 +14,7 @@ export default function Reviews({ me, project }) {
   if (loading) return <div></div>;
   if (error) return <div></div>;
 
-  const lastUpdate = updates[0];
+  const lastUpdate = updates[updates.length - 1];
   if (!lastUpdate) return <div></div>;
 
   const content = lastUpdate.content as UpdateContent.StatusUpdate;
@@ -36,7 +36,7 @@ export default function Reviews({ me, project }) {
           </span>
         </div>
 
-        <RichContent jsonContent={content.message} className="line-clamp-3 text-white-1" />
+        <Summary jsonContent={content.message} characterCount={100} />
 
         <div className="mt-2">
           <HealthIndicator health={content.newHealth} />

@@ -36,3 +36,5 @@ export default function RichContent({ jsonContent, className }: RichContentProps
 RichContent.defaultProps = {
   className: "",
 };
+
+export * from "./Summary";
