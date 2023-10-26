@@ -3,86 +3,47 @@ import React from "react";
 import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Icons from "@tabler/icons-react";
-import * as Project from "@/graphql/Projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import Button from "@/components/Button";
-import { Spacer } from "@/components/Spacer";
-
-import { useNavigateTo } from "@/routes/useNavigateTo";
-import classnames from "classnames";
+import RichContent from "@/components/RichContent";
 
 export default function Reviews({ me, project }) {
-  return (
-    <div className="flex flex-col gap-1 relative my-8">
-      <div className="font-extrabold text-lg text-white-1 leading-none">Status Updates</div>
-      <div className="text-white-2 max-w-xl">Asking the champion of the project for an update, every Friday.</div>
-
-      <Spacer size={0.25} />
-      <List project={project} />
-
-      <Spacer size={0.25} />
-      <NextUpdateSchedule project={project} />
-
-      <WriteUpdate project={project} me={me} />
-    </div>
-  );
-}
-
-function List({ project }) {
   const { updates, loading, error } = useStatusUpdates({ project });
 
   if (loading) return <div></div>;
   if (error) return <div></div>;
 
-  return (
-    <div className="flex flex-col gap-1">
-      {updates.map((update) => (
-        <ListItem key={update.id} update={update} project={project} />
-      ))}
-    </div>
-  );
-}
+  const lastUpdate = updates[0];
+  if (!lastUpdate) return <div></div>;
 
-function ListItem({ update, project }: { update: Updates.Update; project: Project.Project }) {
-  const navigateToUpdate = useNavigateTo(`/projects/${project.id}/status_updates/${update.id}`);
-
-  const content = update.content as UpdateContent.StatusUpdate;
-  const author = update.author;
+  const content = lastUpdate.content as UpdateContent.StatusUpdate;
+  const author = lastUpdate.author;
 
   return (
-    <div
-      className="flex flex-row justify-between items-center bg-dark-4 hover:bg-dark-5 p-2 rounded cursor-pointer"
-      onClick={navigateToUpdate}
-    >
-      <div className="flex gap-2 items-center">
-        <Avatar person={author} size="tiny" />
-        <div className="font-medium text-white-1 capitalize">
-          Update for <FormattedTime time={update.insertedAt} format="long-date" />
+    <div className="flex-1">
+      <div className="text-white-1/80 uppercase text-xs font-medium mb-1">Last Status Update</div>
+
+      <div className="flex flex-col gap-1 relative bg-dark-3 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Avatar person={author} size="tiny" />
+            <span className="font-medium text-white-1">{author.fullName}</span>
+          </div>
+
+          <span className="text-white-2 text-sm">
+            <FormattedTime time={lastUpdate.insertedAt} format="short-date" />
+          </span>
+        </div>
+
+        <RichContent jsonContent={content.message} className="line-clamp-3 text-white-1" />
+
+        <div className="mt-2">
+          <HealthIndicator health={content.newHealth} />
         </div>
       </div>
-      <div className="flex gap-2 items-center text-sm">
-        <HealthIndicator health={content.newHealth} />
-        <AckMarker update={update} />
-      </div>
-    </div>
-  );
-}
 
-function AckMarker({ update }) {
-  if (update.acknowledged) {
-    return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
-  } else {
-    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
-  }
-}
-
-function NextUpdateSchedule({ project }) {
-  return (
-    <div className="text-white-2">
-      Next update scheduled for{" "}
-      <FormattedTime time={project.nextUpdateScheduledAt} format="short-date-with-weekday-relative" />.
+      <div className="underline cursor-pointer decoration-blue-400 text-blue-400 mt-2">View all status updates</div>
     </div>
   );
 }
@@ -96,9 +57,17 @@ function HealthIndicator({ health }) {
 
   const color = colors[health];
   const title = health.replace("_", " ");
-  const className = classnames("bg-shade-2 rounded-full px-2 pt-0.5 text-xs uppercase font-medium", color);
 
-  return <div className={className}>{title}</div>;
+  return (
+    <div>
+      <div className="text-xs uppercase text-white-1/80 font-medium mb-1">Status</div>
+
+      <div className="font-medium flex items-center gap-1">
+        <Icons.IconCircleFilled size={12} className={color} />
+        <span className="font-medium capitalize">{title}</span>
+      </div>
+    </div>
+  );
 }
 
 function useStatusUpdates({ project }): { updates: Updates.Update[]; loading: boolean; error: any } {
@@ -120,20 +89,4 @@ function useStatusUpdates({ project }): { updates: Updates.Update[]; loading: bo
   updates = Updates.sortByDate(updates);
 
   return { updates: updates, loading, error };
-}
-
-function WriteUpdate({ project, me }) {
-  const navigateToNewUpdate = useNavigateTo(`/projects/${project.id}/updates/new?messageType=status_update`);
-
-  if (project.champion?.id !== me.id) {
-    return null;
-  }
-
-  return (
-    <div>
-      <Button variant="secondary" onClick={navigateToNewUpdate} data-test-id="add-status-update">
-        Write a status update
-      </Button>
-    </div>
-  );
 }

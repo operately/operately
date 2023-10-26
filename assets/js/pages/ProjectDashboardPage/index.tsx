@@ -5,13 +5,11 @@ import { useDocumentTitle } from "@/layouts/header";
 import * as Paper from "@/components/PaperContainer";
 
 import Header from "./Header";
-import Activity from "./Activity";
 import Timeline from "./Timeline";
 import Description from "./Description";
 import Reviews from "./Reviews";
 import StatusUpdates from "./StatusUpdates";
 import KeyResources from "./KeyResources";
-import Discussions from "./Discussions";
 import ArchivedBanner from "./ArchivedBanner";
 
 import client from "@/graphql/client";
@@ -66,9 +64,10 @@ export function Page() {
         <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Divider />
-        <StatusUpdates me={me} project={project} />
-        <Divider />
-        <Reviews me={me} project={project} />
+        <div className="my-8 flex items-center gap-6">
+          <StatusUpdates me={me} project={project} />
+          <StatusUpdates me={me} project={project} />
+        </div>
       </div>
     </Paper.Root>
   );
