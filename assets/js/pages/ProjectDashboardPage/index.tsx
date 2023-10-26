@@ -42,7 +42,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const [data, refetch, fetchVersion] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+  const [data, refetch] = Paper.useLoadedData() as [LoaderResult, () => void, number];
 
   const project = data.project;
   const me = data.me;
@@ -69,10 +69,6 @@ export function Page() {
         <StatusUpdates me={me} project={project} />
         <Divider />
         <Reviews me={me} project={project} />
-        <Divider />
-        <Discussions project={project} />
-        <Divider />
-        <Activity project={project} key={fetchVersion} />
       </div>
     </Paper.Root>
   );
