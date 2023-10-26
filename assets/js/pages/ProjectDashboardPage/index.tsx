@@ -64,9 +64,9 @@ export function Page() {
         <Divider />
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
         <Divider />
-        <div className="my-8 flex items-center gap-6">
+        <div className="my-8 flex items-start gap-6">
           <StatusUpdates me={me} project={project} />
-          <StatusUpdates me={me} project={project} />
+          <Reviews me={me} project={project} />
         </div>
       </div>
     </Paper.Root>

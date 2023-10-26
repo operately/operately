@@ -24,7 +24,7 @@ export default function Reviews({ me, project }) {
     <div className="flex-1">
       <div className="text-white-1/80 uppercase text-xs font-medium mb-1">Last Status Update</div>
 
-      <div className="flex flex-col gap-1 relative bg-dark-3 p-4">
+      <div className="flex flex-col gap-1 relative bg-dark-3 p-4 rounded hover:bg-dark-4 cursor-pointer">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Avatar person={author} size="tiny" />
