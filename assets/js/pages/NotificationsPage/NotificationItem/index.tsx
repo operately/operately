@@ -11,6 +11,7 @@ import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitt
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
 import ProjectRenamed from "./ProjectRenamed"
 import ProjectReviewAcknowledged from "./ProjectReviewAcknowledged"
+import ProjectReviewCommented from "./ProjectReviewCommented"
 import ProjectReviewRequestSubmitted from "./ProjectReviewRequestSubmitted"
 import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
 import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
@@ -38,6 +39,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectReviewAcknowledged":
       return <ProjectReviewAcknowledged notification={notification} />;
+    
+    case "ActivityContentProjectReviewCommented":
+      return <ProjectReviewCommented notification={notification} />;
     
     case "ActivityContentProjectReviewRequestSubmitted":
       return <ProjectReviewRequestSubmitted notification={notification} />;

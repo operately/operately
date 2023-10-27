@@ -321,6 +321,7 @@ defmodule Operately.Updates do
     action = case update.type do
       :project_discussion -> :project_discussion_comment_submitted
       :status_update -> :project_status_update_commented
+      :review -> :project_review_commented
       _ -> raise "Unknown update type"
     end
 

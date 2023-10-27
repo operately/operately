@@ -199,6 +199,32 @@ defmodule Operately.Features.ProjectReviewsTest do
     |> EmailSteps.assert_project_review_acknowledged_sent(author: ctx.reviewer, to: ctx.champion)
   end
 
+  @tag login_as: :champion
+  feature "comment on a review", ctx do
+    ctx 
+    |> ProjectSteps.visit_project_page()
+    |> initiate_phase_change(:execution)
+    |> fill_survey([
+      {"schedule", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"costs", "yes", "Yes, the execution phase was completed within budget."},
+      {"team", "yes", "The team was not staffed with suitable roles because of X, Y, and Z."},
+      {"risks", "yes", "The project was not completed on schedule because of X, Y, and Z."},
+      {"deliverables", "- Deliverable 1\n- Deliverable 2\n- Deliverable 3"},
+    ])
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_project_review_commented_sent(author: ctx.reviewer)
+    |> EmailSteps.assert_project_review_commented_sent(author: ctx.reviewer, to: ctx.champion)
+  end
+
   #
   # Helpers
   #

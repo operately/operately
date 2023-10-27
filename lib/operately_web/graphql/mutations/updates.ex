@@ -84,13 +84,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         update = Operately.Updates.get_update!(args.input.update_id)
 
         cond do
-          update.type == :project_discussion ->
-            author = context.current_account.person
-            content = args.input.content
-
-            Operately.Updates.create_comment(author, update, content)
-
-          update.type == :status_update ->
+          update.type in [:project_discussion, :status_update, :review] ->
             author = context.current_account.person
             content = args.input.content
 
