@@ -20,40 +20,21 @@ defmodule OperatelyEmail.ProjectStatusUpdateAcknowledgedEmail do
       project: project,
       status_update: update,
       author: Person.short_name(author),
-      project_url: project_url(project),
-      cta_url: cta_url(project, update),
+      project_url: OperatelyEmail.project_url(project.id),
+      cta_url: OperatelyEmail.project_status_update_url(project.id, update.id),
       title: subject(company, author, project)
     }
 
     new_email(
       to: recipient.email,
-      from: sender(company),
+      from: OperatelyEmail.sender(company),
       subject: subject(company, author, project),
       html_body: OperatelyEmail.Views.ProjectStatusUpdateAcknowledged.html(assigns),
       text_body: OperatelyEmail.Views.ProjectStatusUpdateAcknowledged.text(assigns)
     )
   end
 
-  def sender(company) do
-    {
-      "Operately (#{company.name})", 
-      Application.get_env(:operately, :notification_email)
-    }
-  end
-
-  def cta_url(project, status_update) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/status_updates/#{status_update.id}"
-  end
-
   def subject(company, author, project) do
-    "#{org_name(company)}: #{Person.short_name(author)} acknowledged your status update for #{project.name}"
-  end
-
-  def org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  def project_url(project) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
+    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(author)} acknowledged your status update for #{project.name}"
   end
 end

@@ -21,32 +21,20 @@ defmodule OperatelyEmail.ProjectReviewRequestSubmittedEmail do
       project: project,
       request: request,
       author: Person.short_name(author),
-      cta_url: cta_url(project, request),
+      cta_url: OperatelyEmail.project_review_request_url(project.id, request.id),
       title: subject(company, author, project)
     }
 
     new_email(
       to: champion.email,
-      from: sender(company),
+      from: OperatelyEmail.sender(company),
       subject: subject(company, author, project),
       html_body: OperatelyEmail.Views.ProjectReviewRequestSubmitted.html(assigns),
       text_body: OperatelyEmail.Views.ProjectReviewRequestSubmitted.text(assigns)
     )
   end
 
-  def sender(company) do
-    {org_name(company), Application.get_env(:operately, :notification_email)}
-  end
-
   def subject(company, short_name, project) do
-    "#{org_name(company)}: #{Person.short_name(short_name)} requested a review for #{project.name}"
-  end
-
-  def org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  def cta_url(project, request) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/reviews/request/#{request.id}"
+    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(short_name)} requested a review for #{project.name}"
   end
 end
