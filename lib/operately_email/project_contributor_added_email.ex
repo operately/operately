@@ -31,35 +31,20 @@ defmodule OperatelyEmail.ProjectContributorAddedEmail do
       role: role,
       responsibility: responsibility,
       project: project,
-      url: project_url(project)
+      url: OperatelyEmail.project_url(project.id),
     }
 
     new_email(
       to: recipient.email,
-      from: sender(company),
+      from: OperatelyEmail.sender(company),
       subject: subject(company, short_name, project, role),
       html_body: OperatelyEmail.Views.ProjectContributorAdded.html(assigns),
       text_body: OperatelyEmail.Views.ProjectContributorAdded.text(assigns)
     )
   end
 
-  def sender(company) do
-    {
-      org_name(company),
-      Application.get_env(:operately, :notification_email)
-    }
-  end
-
   def subject(company, short_name, project, role) do
-    "#{org_name(company)}: #{short_name} added you as a #{role} on #{project.name}"
-  end
-
-  def org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  def project_url(project) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
+    "#{OperatelyEmail.sender_name(company)}: #{short_name} added you as a #{role} on #{project.name}"
   end
 
   def stringify_role(role) do

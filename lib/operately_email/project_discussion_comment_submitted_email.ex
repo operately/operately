@@ -23,24 +23,16 @@ defmodule OperatelyEmail.ProjectDiscussionCommentSubmittedEmail do
       discussion: discussion,
       comment: comment,
       author: Person.short_name(author),
-      cta_url: cta_url(project, discussion),
+      cta_url: OperatelyEmail.project_discussion_url(project.id, discussion.id),
       title: subject
     }
 
     new_email(
       to: recipient.email,
-      from: sender(company),
+      from: OperatelyEmail.sender(company),
       subject: subject,
       html_body: OperatelyEmail.Views.ProjectDiscussionCommentSubmitted.html(assigns),
       text_body: OperatelyEmail.Views.ProjectDiscussionCommentSubmitted.text(assigns)
     )
-  end
-
-  def sender(company) do
-    {"Operately (#{company.name})", Application.get_env(:operately, :notification_email)}
-  end
-
-  def cta_url(project, discussion) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/discussions/#{discussion.id}"
   end
 end

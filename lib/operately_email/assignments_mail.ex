@@ -28,19 +28,11 @@ defmodule OperatelyEmail.AssignmentsEmail do
 
     new_email(
       to: account.email,
-      from: {org_name(company), from_email()},
-      subject: "#{org_name(company)}: Your assignments for today",
+      from: OperatelyEmail.sender(company),
+      subject: "#{OperatelyEmail.sender_name(company)}: Your assignments for today",
       html_body: OperatelyEmail.Views.Assignments.html(assigns),
       text_body: OperatelyEmail.Views.Assignments.text(assigns)
     )
-  end
-
-  defp org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  defp from_email do
-    Application.get_env(:operately, :notification_email)
   end
 
 end

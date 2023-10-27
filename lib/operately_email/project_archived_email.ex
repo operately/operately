@@ -18,34 +18,19 @@ defmodule OperatelyEmail.ProjectArchivedEmail do
       title: subject(company, author, project),
       author: author,
       project: project,
-      url: project_url(project)
+      url: OperatelyEmail.project_url(project.id),
     }
 
     new_email(
       to: recipient.email,
-      from: sender(company),
+      from: OperatelyEmail.sender(company),
       subject: subject(company, author, project),
       html_body: OperatelyEmail.Views.ProjectArchived.html(assigns),
       text_body: OperatelyEmail.Views.ProjectArchived.text(assigns)
     )
   end
 
-  def sender(company) do
-    {
-      org_name(company),
-      Application.get_env(:operately, :notification_email)
-    }
-  end
-
   def subject(company, author, project) do
-    "#{org_name(company)}: #{Person.short_name(author)} archived the #{project.name} project in Operately"
-  end
-
-  def org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  def project_url(project) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
+    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(author)} archived the #{project.name} project in Operately"
   end
 end
