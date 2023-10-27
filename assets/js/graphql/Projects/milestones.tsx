@@ -114,7 +114,7 @@ export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
   let now = +Time.today();
 
-  return deadline < now;
+  return !isDone(milestone) && deadline < now;
 }
 
 export function isDone(milestone: Milestone) {

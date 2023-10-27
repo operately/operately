@@ -25,11 +25,6 @@ export default function Header({ project }: HeaderProps): JSX.Element {
     <div>
       <ProjectName project={project} />
       <ContributorList project={project} />
-      <div className="flex items-center gap-10 mt-6">
-        <HealthIndicator health={project.health} />
-        <PhaseIndicator project={project} />
-        <NextMilestone project={project} />
-      </div>
     </div>
   );
 }
@@ -45,58 +40,6 @@ function ProjectName({ project }) {
 
       <div className="flex gap-4 items-center">
         <Options project={project} />
-      </div>
-    </div>
-  );
-}
-
-function PhaseIndicator({ project }) {
-  if (!project.nextMilestone) return null;
-
-  return (
-    <div>
-      <div className="text-xs uppercase text-white-1/80 font-medium mb-1">Phase</div>
-      <div className="font-medium flex items-center gap-1">
-        <Icons.IconCircuitBulb size={16} className="text-blue-400" />
-        <span className="font-medium capitalize">{project.phase}</span>
-      </div>
-    </div>
-  );
-}
-
-function NextMilestone({ project }) {
-  if (!project.nextMilestone) return null;
-
-  const gotoMilestone = useNavigateTo(`/projects/${project.id}/milestones/${project.nextMilestone.id}`);
-
-  return (
-    <div>
-      <div className="text-xs uppercase text-white-1/80 font-medium mb-1">Next milestone</div>
-      <div className="font-medium flex items-center gap-1" onClick={gotoMilestone}>
-        <Icons.IconFlagFilled size={16} className="text-yellow-400" />
-        <span className="font-medium underline decoration-white-2 cursor-pointer"> {project.nextMilestone.title}</span>
-      </div>
-    </div>
-  );
-}
-
-function HealthIndicator({ health }) {
-  const colors = {
-    on_track: "text-green-400",
-    at_risk: "text-yellow-400",
-    off_track: "text-red-400",
-  };
-
-  const color = colors[health];
-  const title = health.replace("_", " ");
-
-  return (
-    <div>
-      <div className="text-xs uppercase text-white-1/80 font-medium mb-1">Status</div>
-
-      <div className="font-medium flex items-center gap-1">
-        <Icons.IconCircleFilled size={12} className={color} />
-        <span className="font-medium capitalize">{title}</span>
       </div>
     </div>
   );
