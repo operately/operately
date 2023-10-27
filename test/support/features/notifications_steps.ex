@@ -34,6 +34,14 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} requested a review")
   end
 
+  def assert_project_review_acknowledged_sent(ctx, author: author) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your review")
+  end
+
+  def assert_project_review_commented_sent(ctx, author: author) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on the project review")
+  end
+
   def assert_project_status_update_submitted_sent(ctx, author: author) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a status update")
   end
@@ -48,10 +56,6 @@ defmodule Operately.Support.Features.NotificationsSteps do
 
   def assert_project_update_acknowledged_sent(ctx, author: author) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your status update")
-  end
-
-  def assert_project_review_acknowledged_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your review")
   end
 
   def assert_project_update_submitted_sent(ctx, author: author, title: title) do

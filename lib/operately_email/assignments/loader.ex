@@ -23,7 +23,7 @@ defmodule OperatelyEmail.Assignments.Loader do
   end
 
   defp status_updates(project) do
-    if project.next_update_scheduled_at < DateTime.utc_now() do
+    if status_update_due?(project) do
       [
         %{
           type: :status_update,
@@ -35,6 +35,10 @@ defmodule OperatelyEmail.Assignments.Loader do
     else
       []
     end
+  end
+
+  defp status_update_due?(project) do
+    DateTime.compare(project.next_update_scheduled_at, DateTime.utc_now()) in [:lt, :eq]
   end
 
   defp milestones(project) do

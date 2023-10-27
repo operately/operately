@@ -22,35 +22,20 @@ defmodule OperatelyEmail.ProjectCreatedEmail do
       role: role,
       author_role: author_role,
       project: project,
-      url: project_url(project)
+      url: OperatelyEmail.project_url(project.id),
     }
 
     new_email(
       to: recipient.email,
-      from: sender(company),
+      from: OperatelyEmail.sender(company),
       subject: subject(company, author, project, role),
       html_body: OperatelyEmail.Views.ProjectCreated.html(assigns),
       text_body: OperatelyEmail.Views.ProjectCreated.text(assigns)
     )
   end
 
-  def sender(company) do
-    {
-      org_name(company),
-      Application.get_env(:operately, :notification_email)
-    }
-  end
-
   def subject(company, author, project, role) do
-    "#{org_name(company)}: #{Person.short_name(author)} created the #{project.name} project in Operately and assigned you as a #{role}"
-  end
-
-  def org_name(company) do
-    "Operately (#{company.name})"
-  end
-
-  def project_url(project) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}"
+    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(author)} created the #{project.name} project in Operately and assigned you as a #{role}"
   end
 
   def stringify_role(role) do

@@ -108,6 +108,15 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectReviewCommented {
+            projectId
+            reviewId
+
+            project {
+              name
+            }
+          }
         }
       }
     }

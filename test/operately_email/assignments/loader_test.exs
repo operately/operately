@@ -4,15 +4,18 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
   import Operately.ProjectsFixtures
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
+  
+  alias Operately.Projects.Project
 
   setup do
     company = company_fixture()
     champion = person_fixture(%{company_id: company.id})
 
-    project = project_fixture(%{
-      company_id: company.id,
-      creator_id: champion.id,
-    })
+    project = project_fixture(%{company_id: company.id, creator_id: champion.id})
+
+    {:ok, project} = Operately.Repo.update(Project.changeset(project, %{
+      next_update_scheduled_at: days_from_now(10)
+    }))
 
     {:ok, %{company: company, champion: champion, project: project}}
   end
@@ -21,7 +24,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
     setup ctx do
       milestone(ctx, "Buy domain", :done, days_ago(10))
       milestone(ctx, "Publish book", :pending, days_ago(2))
-      milestone(ctx, "Update website", :pending, days_ago(0))
+      milestone(ctx, "Update website", :pending, days_ago(1))
       milestone(ctx, "Gain 1000 followers", :pending, days_from_now(10))
 
       assignments = OperatelyEmail.Assignments.Loader.load(ctx.champion)
