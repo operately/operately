@@ -6,10 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import Header from "./Header";
 import Timeline from "./Timeline";
-import Description from "./Description";
-import Reviews from "./Reviews";
 import StatusUpdates from "./StatusUpdates";
-import KeyResources from "./KeyResources";
 import ArchivedBanner from "./ArchivedBanner";
 
 import client from "@/graphql/client";
