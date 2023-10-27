@@ -7,6 +7,7 @@ import * as Paper from "@/components/PaperContainer";
 import Header from "./Header";
 import Timeline from "./Timeline";
 import StatusUpdates from "./StatusUpdates";
+import Pitch from "./Pitch";
 import ArchivedBanner from "./ArchivedBanner";
 
 import client from "@/graphql/client";
@@ -54,6 +55,8 @@ export function Page() {
           <Header project={project} />
         </div>
 
+        <Tabs />
+
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
 
         <div className="my-8 flex items-start gap-6">
@@ -64,6 +67,21 @@ export function Page() {
   );
 }
 
-function Divider() {
-  return <div className="-mx-8 border-t border-dark-5" />;
+function Tabs() {
+  return (
+    <div className="-mx-8 border-b border-dark-8 mb-8 px-8 -mt-2">
+      <div className="flex gap-1 items-center">
+        <div className="border-t border-x border-dark-8 -mb-px bg-dark-2 py-1.5 px-3 rounded-t text-white-1">
+          Summary
+        </div>
+
+        <div className="border-t border-x border-dark-8 -mb-px py-1.5 px-3 rounded-t text-white-2">Pitch</div>
+
+        <div className="border-t border-x border-dark-8 -mb-px py-1.5 px-3 rounded-t text-white-2 flex items-center gap-3">
+          Message Board
+          <div className="text-xs bg-shade-2 font-normal rounded-full h-4 w-4">12</div>
+        </div>
+      </div>
+    </div>
+  );
 }

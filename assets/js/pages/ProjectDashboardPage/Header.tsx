@@ -14,7 +14,6 @@ import * as Icons from "@tabler/icons-react";
 
 import { TextTooltip } from "@/components/Tooltip";
 import Options from "./Options";
-import { useNavigateTo } from "@/routes/useNavigateTo";
 
 interface HeaderProps {
   project: Project;
