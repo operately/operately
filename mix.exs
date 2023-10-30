@@ -85,7 +85,7 @@ defmodule Operately.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["tailwind default --minify", "cmd --cd assets node build.js --deploy", "phx.digest"]
     ]
   end
 end
