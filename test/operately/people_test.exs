@@ -9,7 +9,7 @@ defmodule Operately.PeopleTest do
     import Operately.PeopleFixtures
     import Operately.CompaniesFixtures
 
-    @invalid_attrs %{full_name: nil, handle: nil, title: nil}
+    @invalid_attrs %{full_name: nil, title: nil}
 
     setup do
       company = company_fixture()
@@ -29,14 +29,12 @@ defmodule Operately.PeopleTest do
     test "create_person/1 with valid data creates a person", ctx do
       valid_attrs = %{
         full_name: "some full_name", 
-        handle: "some handle",
         title: "some title",
         company_id: ctx.person.company_id
       }
 
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
       assert person.full_name == "some full_name"
-      assert person.handle == "some handle"
       assert person.title == "some title"
     end
 
@@ -47,13 +45,11 @@ defmodule Operately.PeopleTest do
     test "update_person/2 with valid data updates the person", ctx do
       update_attrs = %{
         full_name: "some updated full_name", 
-        handle: "some updated handle", 
         title: "some updated title"
       }
 
       assert {:ok, %Person{} = person} = People.update_person(ctx.person, update_attrs)
       assert person.full_name == "some updated full_name"
-      assert person.handle == "some updated handle"
       assert person.title == "some updated title"
     end
 

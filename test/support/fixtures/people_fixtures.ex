@@ -4,20 +4,11 @@ defmodule Operately.PeopleFixtures do
   entities via the `Operately.People` context.
   """
 
-  @doc """
-  Generate a unique person handle.
-  """
-  def unique_person_handle, do: "some handle#{System.unique_integer([:positive])}"
-
-  @doc """
-  Generate a person.
-  """
   def person_fixture(attrs \\ %{}) do
     {:ok, person} =
       attrs
       |> Enum.into(%{
         full_name: "some full_name",
-        handle: unique_person_handle(),
         title: "some title",
         email: "some-email@localhost",
         send_daily_summary: true,
