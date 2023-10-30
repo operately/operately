@@ -18,6 +18,8 @@ ARG DEBIAN_VERSION=bullseye-20221004-slim
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
+# --------------------------------------------------------------------------------------
+
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
@@ -75,6 +77,15 @@ COPY config/runtime.exs config/
 COPY rel rel
 RUN mix release
 
+# --------------------------------------------------------------------------------------
+
+# before we start building the release image, we need to export the
+# compiled JS map from the build image
+FROM scratch as export
+COPY --from=builder /app/priv/static/js/app.js.map .
+
+# --------------------------------------------------------------------------------------
+
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
@@ -97,7 +108,6 @@ ENV MIX_ENV="prod"
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/operately ./
-COPY --from=builder --chown=nobody:root /app/priv/static/assets/app.js.map /app/app.js.map
 
 USER nobody
 
