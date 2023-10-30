@@ -16,6 +16,7 @@ blocks:
           - cp docker-compose.yml.ci docker-compose.yml # use a minimal docker compose for tests on CI
           - mkdir -p screenshots && sudo chmod -R 777 screenshots # create a screenshots folder and allow writting to it from a container
           - make test.seed.env
+          - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
           - make test.setup
       epilogue:
         always:
