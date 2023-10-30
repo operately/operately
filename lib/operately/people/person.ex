@@ -11,7 +11,6 @@ defmodule Operately.People.Person do
     belongs_to(:home_dashboard, Operately.Dashboards.Dashboard)
 
     field :full_name, :string
-    field :handle, :string
     field :title, :string
     field :avatar_url, :string
     field :email, :string
@@ -28,7 +27,6 @@ defmodule Operately.People.Person do
     person
     |> cast(attrs, [
       :full_name,
-      :handle,
       :title,
       :avatar_url,
       :email,
@@ -40,7 +38,6 @@ defmodule Operately.People.Person do
       :notify_about_assignments
     ])
     |> validate_required([:full_name, :company_id])
-    |> unique_constraint(:handle)
   end
 
   def short_name(person) do

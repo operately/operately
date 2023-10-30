@@ -19,7 +19,6 @@ defmodule OperatelyWeb.AccountOauthController do
         avatar_url: account_info.image,
         email: account_info.email,
         full_name: account_info.name,
-        handle: account_info.name,
         title: "Unknown title"
       }
     }
@@ -62,7 +61,6 @@ defmodule OperatelyWeb.AccountOauthController do
           avatar_url: "https://www.gravatar.com/avatar/#{:crypto.strong_rand_bytes(16) |> Base.encode16()}",
           email: params["email"],
           full_name: params["full_name"],
-          handle: params["email"],
           title: "Junion Developer"
         }
       }
