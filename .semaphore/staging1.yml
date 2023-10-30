@@ -9,6 +9,7 @@ blocks:
     task:
       secrets:
         - name: infra-repository-ssh-keys
+        - name: sentry-secrets
       jobs:
         - name: "Deploy"
           commands:
