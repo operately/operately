@@ -27,7 +27,7 @@ function showProgress(loader: ({ params }: { params: any }) => Promise<any>) {
 
       const end = performance.now();
 
-      if (window["environment"] === "dev") {
+      if (window.appConfig.environment === "development") {
         console.log(`Execution time: ${end - start} ms`);
       }
 

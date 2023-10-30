@@ -16,7 +16,7 @@ const wsLink = new GraphQLWsLink(
     url: domain.replace("http", "ws") + "/api/graphql-ws",
     connectionParams: () => {
       return {
-        token: (window as any).graphqlSocketToken,
+        token: window.appConfig.graphql.socketToken,
       };
     },
   }),
@@ -41,7 +41,7 @@ const splitLink = split(
 );
 
 const errorLink = onError((params) => {
-  let { graphQLErrors, networkError, operation } = params;
+  let { graphQLErrors, operation } = params;
 
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path, extensions }) => {
@@ -52,9 +52,6 @@ const errorLink = onError((params) => {
       );
     });
   }
-  // if (networkError) {
-  //   console.log( `[Network error]: Error: ${networkError}, Operation: ${operation.operationName} );
-  // }
 });
 
 const client = new ApolloClient({

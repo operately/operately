@@ -22,6 +22,9 @@ end
 
 config :operately, :blob_token_secret_key, System.get_env("OPERATELY_BLOB_TOKEN_SECRET_KEY")
 
+config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABLED") == "true"
+config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
