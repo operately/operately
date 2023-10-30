@@ -28,3 +28,12 @@ blocks:
             - git commit -m "Release new app image operately/operately:${DOCKER_TAG} to staging"
             - git push
 
+        - name: "Upload JS Maps to sentry"
+          commands:
+            - mkdir -p tmp
+            - artifact pull workflow tmp/app.js.map
+            - curl -sL https://sentry.io/get-cli/ | sh
+            - export SENTRY_ORG=operately
+            - export SENTRY_PROJECT=operately-staging-1
+            - sentry-cli sourcemaps inject tmp/
+            - sentry-cli sourcemaps upload tmp/
