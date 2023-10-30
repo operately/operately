@@ -104,15 +104,13 @@ export default function DefaultLayout() {
   const [navigationSize, setNavigationSize] = React.useState("large");
 
   React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", () => {
-        if (window.pageYOffset > 10) {
-          setNavigationSize("small");
-        } else {
-          setNavigationSize("large");
-        }
-      });
-    }
+    window.addEventListener("scroll", () => {
+      if (window.pageYOffset > 10) {
+        setNavigationSize("small");
+      } else {
+        setNavigationSize("large");
+      }
+    });
   });
 
   return (

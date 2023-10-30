@@ -21,10 +21,17 @@
         }
       })()
 
-      window.companyID = "<%= Operately.Companies.get_company_id() %>";
-      window.environment = "<%= Application.get_env(:operately, :app_env) %>";
+      window.appConfig = {};
 
-      window.graphqlSocketToken = "<%= OperatelyWeb.GraphqlWSSocket.gen_token(@conn) %>";
+      window.appConfig.companyID = "<%= Operately.Companies.get_company_id() %>";
+      window.appConfig.environment = "<%= Application.get_env(:operately, :app_env) %>";
+
+      window.appConfig.graphql = {};
+      window.appConfig.graphql.socketToken = "<%= OperatelyWeb.GraphqlWSSocket.gen_token(@conn) %>";
+
+      window.appConfig.sentry = {};
+      window.appConfig.sentry.enabled = <%= Application.get_env(:operately, :js_sentry_enabled) %>;
+      window.appConfig.sentry.dsn = "<%= Application.get_env(:operately, :js_sentry_dsn) %>";
     </script>
 
     <style>

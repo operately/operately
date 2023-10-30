@@ -17,7 +17,7 @@ export interface Company {
 }
 
 export function companyID() {
-  return window.companyID;
+  return window.appConfig.companyID;
 }
 
 export function useCompany() {

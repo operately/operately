@@ -3,20 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useCompany } from "../../graphql/Companies";
 
-import {
-  DashboardIcon,
-  RowsIcon,
-  GearIcon,
-  ChevronDownIcon,
-} from "@radix-ui/react-icons";
+import { DashboardIcon, RowsIcon, GearIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 import { useApolloClient } from "@apollo/client";
-import {
-  useObjectives,
-  listObjectives,
-  createObjective,
-  createKeyResult,
-} from "../../graphql/Objectives";
+import { useObjectives, listObjectives, createObjective, createKeyResult } from "../../graphql/Objectives";
 
 import { Link } from "react-router-dom";
 import Icon from "../../components/Icon";
@@ -102,7 +92,7 @@ export function KPIValues({ kpi }) {
           marginTop: margin + "px",
           height: height + "px",
         }}
-      ></div>
+      ></div>,
     );
   }
 
@@ -132,14 +122,7 @@ export function KPIValues({ kpi }) {
 
       <div className="text-right w-20">
         <div className="font-semibold">{lastValue}</div>
-        <div
-          className={
-            "text-xs" +
-            (lastChange[0] === "-" ? " text-red-500" : " text-green-500")
-          }
-        >
-          {lastChange}
-        </div>
+        <div className={"text-xs" + (lastChange[0] === "-" ? " text-red-500" : " text-green-500")}>{lastChange}</div>
       </div>
     </div>
   );
@@ -156,18 +139,14 @@ export function KPI({ kpi, clickable }) {
 
   return (
     <div
-      className={
-        "flex flex-col border-t border-gray-600 group" +
-        (clickable ? " cursor-pointer" : "")
-      }
+      className={"flex flex-col border-t border-gray-600 group" + (clickable ? " cursor-pointer" : "")}
       onClick={handleClick}
     >
       <div className="py-2 flex items-center gap-1 justify-between">
         <div>
           <div className="font-bold">{kpi.name}</div>
           <div className="text-sm text-gray-400">
-            target: {kpi.targetDirection}{" "}
-            {formatMetric(kpi.target / 1000, kpi.unit)}
+            target: {kpi.targetDirection} {formatMetric(kpi.target / 1000, kpi.unit)}
           </div>
         </div>
 
@@ -286,12 +265,7 @@ function AddGoal({ onGoalAdded, onActivation }) {
   );
 
   if (formActive) {
-    return (
-      <AddGoalForm
-        onSubmit={handleSubmit}
-        onCancel={() => setFormActive(false)}
-      />
-    );
+    return <AddGoalForm onSubmit={handleSubmit} onCancel={() => setFormActive(false)} />;
   } else {
     return addGoalRow;
   }
@@ -322,9 +296,7 @@ function KeyResultStatus({ keyResult }) {
 
   return (
     <div className="w-24 flex mr-4">
-      <div
-        className={`flex items-center justify-between px-2 py-0.5 rounded gap-1`}
-      >
+      <div className={`flex items-center justify-between px-2 py-0.5 rounded gap-1`}>
         <div className={`rounded-full w-3 h-3 ${bgColor} border-2`} />
         {keyResult.status}
       </div>
@@ -377,27 +349,16 @@ function KeyResultList({ objective, editing, startEditing }) {
         <KeyResultRow key={i} kr={kr} />
       ))}
 
-      {editing && (
-        <AddKeyResult
-          objectiveId={objective.id}
-          onKeyResultAdded={() => null}
-        />
-      )}
+      {editing && <AddKeyResult objectiveId={objective.id} onKeyResultAdded={() => null} />}
     </>
   );
 }
 
 function ObjectiveCard({ objective, editing, startEditing }) {
   return (
-    <div
-      className="border-t border-b border-slate-700"
-      data-test-id={objective.name}
-    >
+    <div className="border-t border-b border-slate-700" data-test-id={objective.name}>
       <div className="flex flex-1 block items-center gap-2 justify-between px-2 py-2">
-        <Link
-          to={`/objectives/${objective.id}`}
-          className="flex flex-1 items-center gap-2 font-semibold"
-        >
+        <Link to={`/objectives/${objective.id}`} className="flex flex-1 items-center gap-2 font-semibold">
           <Icon name="objectives" size="small" color="brand" />
           {objective.name}
         </Link>
@@ -412,38 +373,20 @@ function ObjectiveCard({ objective, editing, startEditing }) {
       </div>
 
       <div className="border-t border-dark-8% divide-y divide-dark-8% flex flex-col">
-        <KeyResultList
-          objective={objective}
-          editing={editing}
-          startEditing={startEditing}
-        />
+        <KeyResultList objective={objective} editing={editing} startEditing={startEditing} />
       </div>
     </div>
   );
 }
 
-function ListOfObjectives({
-  objectives,
-  editing,
-  onGoalAdded,
-  onGoalAddingActivation,
-  startEditing,
-}) {
+function ListOfObjectives({ objectives, editing, onGoalAdded, onGoalAddingActivation, startEditing }) {
   return (
     <div className="flex flex-col gap-4" data-test-id="goalList">
       {objectives.map((objective: any, i: number) => (
-        <ObjectiveCard
-          editing={objective.id === editing}
-          key={i}
-          objective={objective}
-          startEditing={startEditing}
-        />
+        <ObjectiveCard editing={objective.id === editing} key={i} objective={objective} startEditing={startEditing} />
       ))}
 
-      <AddGoal
-        onGoalAdded={onGoalAdded}
-        onActivation={onGoalAddingActivation}
-      />
+      <AddGoal onGoalAdded={onGoalAdded} onActivation={onGoalAddingActivation} />
     </div>
   );
 }
@@ -457,9 +400,7 @@ function Tenet({ tenet }) {
       onClick={() => navigate("/tenets/" + tenet.id)}
     >
       <div className="text-center flex flex-col items-center">
-        <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">
-          {tenet.name}
-        </h1>
+        <h1 className="uppercase font-bold mb-2 -mt-8 bg-slate-700 px-3 py-1 rounded">{tenet.name}</h1>
       </div>
 
       <div className="mt-4 border-b border-gray-600">
@@ -491,7 +432,7 @@ function Tenet({ tenet }) {
 <div>12 Goals &middot; 17 Projects &middot; 40 people contributing</div>;
 
 export function CompanyPage() {
-  const companyId: string = window.companyID;
+  const companyId: string = window.appConfig.companyID;
 
   const navigate = useNavigate();
   const { data, loading, error } = useCompany(companyId);
@@ -531,9 +472,7 @@ export function CompanyPage() {
           </div>
 
           <h1 className="font-bold text-5xl">{company.name}</h1>
-          <div className="text-new-dark-3 text-xl max-w-xl mt-2">
-            {company.mission}
-          </div>
+          <div className="text-new-dark-3 text-xl max-w-xl mt-2">{company.mission}</div>
 
           <div className="mt-4 flex gap-4 justify-center">
             <button className="border border-gray-600 rounded px-4 py-1 hover:border-brand-base transition-all">
