@@ -208,4 +208,4 @@ docker.push:
 	docker push operately/operately:$(DOCKER_IMAGE_TAG)
 
 docker.export.jsmap:
-	docker build --target export -t test . --output tmp
+	docker build -f Dockerfile.prod --target export -t test . --output tmp
