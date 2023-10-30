@@ -82,7 +82,7 @@ RUN mix release
 # before we start building the release image, we need to export the
 # compiled JS map from the build image
 FROM scratch as export
-COPY --from=builder /app/priv/static/js/app.js.map .
+COPY --from=builder /app/priv/static/assets/app.js.map .
 
 # --------------------------------------------------------------------------------------
 
