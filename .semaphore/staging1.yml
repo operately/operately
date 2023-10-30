@@ -31,7 +31,7 @@ blocks:
         - name: "Upload JS Maps to sentry"
           commands:
             - mkdir -p tmp
-            - artifact pull workflow tmp/app.js.map
+            - artifact pull workflow app.js.map --destination tmp/app.js.map
             - curl -sL https://sentry.io/get-cli/ | sh
             - export SENTRY_ORG=operately
             - export SENTRY_PROJECT=operately-staging-1
