@@ -206,3 +206,6 @@ docker.build:
 
 docker.push:
 	docker push operately/operately:$(DOCKER_IMAGE_TAG)
+
+docker.export.jsmap:
+	docker cp operately/operately:$(DOCKER_IMAGE_TAG):/app/priv/static/js/app.js.map /tmp/app.js.map
