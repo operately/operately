@@ -23,6 +23,8 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=keyboard-cat
       - NOTIFICATION_EMAIL=notifications@locahost.dev
+      - OPERATELY_JS_SENTRY_ENABLED=false
+      - OPERATELY_JS_SENTRY_DSN=not-set
     env_file:
       - .env
 

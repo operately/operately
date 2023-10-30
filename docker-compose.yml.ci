@@ -21,6 +21,8 @@ services:
       - DB_PASSWORD=keyboard-cat
       - NOTIFICATION_EMAIL=notifications@locahost.ci
       - OPERATELY_BLOB_TOKEN_SECRET_KEY=qvGQYiBxnZZRo9qtwvVwUV8rUWBZgJ10q0Gm3X8dJL8=
+      - OPERATELY_JS_SENTRY_ENABLED=false
+      - OPERATELY_JS_SENTRY_DSN=not-set
     env_file:
       - .env
 
