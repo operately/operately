@@ -63,6 +63,7 @@ export function Page() {
           <StatusUpdates me={me} project={project} />
         </div>
       </div>
+      <button onClick={() => methodDoesNotExist()}>Break the world</button>;
     </Paper.Root>
   );
 }
