@@ -50,8 +50,7 @@ blocks:
             - make docker.build
             - make docker.push
             - make docker.export.jsmap
-            - artifact push workflow tmp/app.js
-            - artifact push workflow tmp/app.js.map
+            - artifact push workflow tmp/assets
 
 promotions:
   - name: Staging 1
