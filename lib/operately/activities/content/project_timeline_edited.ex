@@ -1,13 +1,23 @@
 defmodule Operately.Activities.Content.ProjectTimelineEdited do
   use Operately.Activities.Content
 
-  defmodule MilestoneEdit do
+  defmodule MilestoneUpdate do
     use Operately.Activities.Content
 
     embedded_schema do
       field :milestone_id, :string
+
+      field :old_title, :string
+      field :new_title, :string
+
       field :old_due_date, :utc_datetime
       field :new_due_date, :utc_datetime
+    end
+
+    def changeset(update, attrs) do
+      update
+      |> cast(attrs, __schema__(:fields))
+      |> validate_required(__schema__(:fields))
     end
   end
 
@@ -16,7 +26,14 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
 
     embedded_schema do
       field :milestone_id, :string
+      field :title, :string
       field :due_date, :utc_datetime
+    end
+
+    def changeset(update, attrs) do
+      update
+      |> cast(attrs, __schema__(:fields))
+      |> validate_required(__schema__(:fields))
     end
   end
 
@@ -25,32 +42,24 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     field :project_id, :string
 
     field :old_start_date, :utc_datetime
-    field :old_end_date, :utc_datetime
     field :new_start_date, :utc_datetime
+
+    field :old_end_date, :utc_datetime
     field :new_end_date, :utc_datetime
 
-    embeds_many :milestone_edits, MilestoneEdit
+    embeds_many :milestone_updates, MilestoneUpdate
     embeds_many :new_milestones, NewMilestones
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> cast(attrs, [:company_id, :project_id, :old_start_date, :old_end_date, :new_start_date, :new_end_date])
+    |> cast_embed(:milestone_updates)
+    |> cast_embed(:new_milestones)
+    |> validate_required([:company_id, :project_id, :new_start_date, :new_end_date])
   end
 
   def build(params) do
-    project = Operately.Projects.get_project!(params["project_id"])
-
-    changeset(%{
-      company_id: project.company_id,
-      project_id: project.id,
-      old_start_date: params["old_start_date"],
-      new_start_date: params["new_start_date"],
-      old_end_date: params["old_end_date"],
-      new_end_date: params["new_end_date"],
-      milestone_edits: params["milestone_edits"],
-      new_milestones: params["new_milestones"]
-    })
+    changeset(params)
   end
 end

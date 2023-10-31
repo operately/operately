@@ -71,9 +71,7 @@ export function Page() {
   const milestoneUpdates = React.useMemo(
     () =>
       milestones
-        .filter((m) => {
-          project.milestones.find((pm) => pm.id === m.id);
-        })
+        .filter((m) => project.milestones.find((pm) => pm.id === m.id))
         .map((m) => ({
           id: m.id,
           title: m.title,
@@ -127,7 +125,7 @@ export function Page() {
         <Phases dates={dates} setDates={setDates} />
 
         <h1 className="font-extrabold text-white-1 text-xl mt-8 mb-4">Milestones</h1>
-        <Millstones
+        <MilestoneList
           milestones={pendingMilestones}
           setMilestones={setMilestones}
           projectStart={dates.projectStart}
@@ -275,7 +273,7 @@ function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set
   );
 }
 
-function Millstones({ milestones, setMilestones, projectStart, projectEnd }) {
+function MilestoneList({ milestones, setMilestones, projectStart, projectEnd }) {
   return (
     <div className="flex flex-col gap-2">
       {milestones.map((m: Milestones.Milestone) => (
@@ -315,7 +313,11 @@ function AddMilestone({ setMilestones, projectStart, projectEnd }) {
 
 function AddMilestoneButton({ onClick }) {
   return (
-    <div className="underline cursor-pointer text-white-2 hover:text-white-1" onClick={onClick}>
+    <div
+      className="underline cursor-pointer text-white-2 hover:text-white-1"
+      data-test-id="add-milestone"
+      onClick={onClick}
+    >
       + Add milestone
     </div>
   );
@@ -356,6 +358,7 @@ function AddMilestoneForm({ setMilestones, projectStart, projectEnd, close }) {
             className="w-full bg-dark-4 rounded px-2 py-1 outline-none border-none"
             placeholder="ex. Website launch"
             value={title}
+            data-test-id="new-milestone-title"
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
@@ -367,13 +370,21 @@ function AddMilestoneForm({ setMilestones, projectStart, projectEnd, close }) {
               minDate={projectStart}
               maxDate={projectEnd}
               placeholder="Select due date"
+              testID="new-milestone-due"
             />
           </div>
         </div>
       </div>
 
       <div className="mt-4 flex items-center gap-2">
-        <Button size="small" type="submit" variant="success" onClick={addMilestone} disabled={!valid}>
+        <Button
+          size="small"
+          type="submit"
+          variant="success"
+          onClick={addMilestone}
+          disabled={!valid}
+          data-test-id="add-milestone-button"
+        >
           Add
         </Button>
         <Button size="small" type="button" variant="secondary" onClick={close}>
@@ -413,6 +424,8 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
     });
   }, []);
 
+  const testId = "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-") + "-due";
+
   return (
     <div className="flex items-center gap-2">
       <div className="w-2/3">{milestone.title}</div>
@@ -423,6 +436,7 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
             onChange={setDueDate}
             minDate={projectStart}
             maxDate={projectEnd}
+            testID={testId}
           />
         </div>
 

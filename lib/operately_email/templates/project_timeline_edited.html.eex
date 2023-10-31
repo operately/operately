@@ -1,1 +1,56 @@
-<%= raise "HTML Email for ProjectTimelineEdited not implemented" %>
+<html>
+  <head>
+    <title><%= @title %></title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+
+      h1 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="padding: 10px 20px;">
+      <table width="100%" style="background:#fff;margin:0;padding:0;border:0;border-collapse:collapse;border-spacing:0; max-width: 40em">
+        <tr style="font-size: 22px; font-family: sans-serif; font-weight: 800;">
+          <td>
+            <%= @author %> changed the timeline for <%= @project.name %>.
+          </td>
+        </tr>
+
+        <%= if @duration_changed && @old_duration == :undefined do %>
+          <tr style="height: 20px">
+            <td>The duration is now <%= @new_duration %>.</td>
+          </tr>
+        <% end %>
+
+        <%= if @duration_changed && @old_duration != :undefined do %>
+          <tr style="height: 20px">
+            <td>The duration was changed from <%= @old_duration %> to <%= @new_duration %>.</td>
+          </tr>
+        <% end %>
+
+        <%= if Enum.any?(@new_milestones) do %>
+          <tr style="height: 20px">
+            <td>New milestones were added:</td>
+          </tr>
+
+          <%= for milestone <- @new_milestones do %>
+            <tr style="height: 20px">
+              <td><%= milestone.title %> %></td>
+            </tr>
+          <% end %>
+        <% end %>
+
+        <tr style="height: 20px">
+          <td><%= cta_button(@cta_url, "View Project") %></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

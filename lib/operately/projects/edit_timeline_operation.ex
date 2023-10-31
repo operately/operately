@@ -22,7 +22,7 @@ defmodule Operately.Projects.EditTimelineOperation do
     |> Multi.update(:control_phase, PhaseHistory.changeset(control, %{start_time: attrs.execution_due_time, due_time: due_date}))
     |> update_milestones(attrs)
     |> insert_new_milestones(project, attrs)
-    # |> record_activity(author, project, attrs)
+    |> record_activity(author, project, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -48,24 +48,41 @@ defmodule Operately.Projects.EditTimelineOperation do
         deadline_at: milestone.due_time
       })
 
-      multi |> Multi.insert("new_milestone_#{milestone.id}", changeset)
+      multi |> Multi.insert("new_milestone_#{milestone.title}", changeset)
     end)
   end
 
   defp record_activity(multi, author, project, attrs) do
     multi
     |> Activities.insert(author.id, :project_timeline_edited, fn changes -> 
-      params = %{
+      %{
+        company_id: project.company_id,
         project_id: project.id,
         old_start_date: project.started_at,
         new_start_date: changes.project.started_at,
         old_end_date: project.deadline,
         new_end_date: changes.project.deadline,
-        milestone_edits: attrs.milestone_updates,
-        new_milestones: attrs.new_milestones
-      }
+        milestone_updates: Enum.map(attrs.milestone_updates, fn milestone_update ->
+          milestone = changes["milestone_#{milestone_update.milestone_id}"]
 
-      Operately.Activities.Content.ProjectTimelineEdited.build(params)
+          %{
+            milestone_id: milestone_update.milestone_id,
+            old_title: milestone_update.title,
+            new_title: milestone.title,
+            old_due_date: milestone_update.due_time,
+            new_due_date: milestone.deadline_at
+          }
+        end),
+        new_milestones: Enum.map(attrs.new_milestones, fn milestone ->
+          milestone = changes["new_milestone_#{milestone.title}"]
+
+          %{
+            milestone_id: milestone.id,
+            title: milestone.title,
+            due_date: milestone.deadline_at
+          }
+        end)
+      }
     end)
   end
 end

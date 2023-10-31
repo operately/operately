@@ -64,6 +64,12 @@ defmodule Operately.Projects do
 
   def get_milestone!(id, opts \\ []), do: Repo.get!(Milestone, id, opts)
 
+  def get_milestone_by_name(project, milestone_name) do
+    Repo.one(from m in Milestone,
+      where: m.project_id == ^project.id,
+      where: m.title == ^milestone_name)
+  end
+
   def get_next_milestone(project) do
     query = from m in Milestone,
       where: m.project_id == ^project.id,

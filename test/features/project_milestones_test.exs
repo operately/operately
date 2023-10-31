@@ -30,7 +30,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "deleting a milestone on a project", ctx do
-    add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -40,9 +40,9 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "see all milestones", ctx do
-    add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-    add_milestone(ctx.project, ctx.champion, %{title: "Demo Day", deadline_at: ~N[2023-07-17 00:00:00]})
-    add_milestone(ctx.project, ctx.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
+    add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(ctx, %{title: "Demo Day", deadline_at: ~N[2023-07-17 00:00:00]})
+    add_milestone(ctx, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -56,8 +56,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "mark upcomming milestone completed", ctx do
-    add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-    add_milestone(ctx.project, ctx.champion, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
+    add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(ctx, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -73,7 +73,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "change milestone deadline", ctx do
-    add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -84,7 +84,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "change milestone deadline on the milestone page", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> visit_page(ctx.project, milestone)
@@ -97,7 +97,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "visiting the milestone page", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -111,7 +111,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "adding a description", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> UI.visit("/projects/#{ctx.project.id}/milestones/#{milestone.id}")
@@ -122,7 +122,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "editing the description", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{
+    {:ok, milestone} = add_milestone(ctx, %{
       title: "Contract Signed", 
       deadline_at: ~N[2023-06-17 00:00:00],
       description: Operately.UpdatesFixtures.rich_text_fixture("This is a description")
@@ -143,7 +143,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "write a comment", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> visit_page(ctx.project, milestone)
@@ -153,7 +153,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "write a comment and complete the milestone", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> visit_page(ctx.project, milestone)
@@ -164,7 +164,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "write a comment and re-open the milestone", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00], completed_at: ~N[2023-06-17 00:00:00], status: "done"})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00], completed_at: ~N[2023-06-17 00:00:00], status: "done"})
 
     ctx
     |> visit_page(ctx.project, milestone)
@@ -175,7 +175,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   end
 
   feature "rename a milestone", ctx do
-    {:ok, milestone} = add_milestone(ctx.project, ctx.champion, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
+    {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
 
     ctx
     |> visit_page(ctx.project, milestone)
@@ -187,10 +187,10 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
   # ===========================================================================
 
-  defp add_milestone(project, creator, attrs) do
-    attrs = %{project_id: project.id} |> Map.merge(attrs)
+  defp add_milestone(ctx, attrs) do
+    attrs = Map.merge(attrs, %{project_id: ctx.project.id})
 
-    {:ok, _} = Operately.Projects.create_milestone(creator, attrs)
+    Operately.Projects.create_milestone(ctx.champion, attrs)
   end
 
   defp visit_page(ctx, project, milestone), do: UI.visit(ctx, "/projects" <> "/" <> project.id <> "/milestones" <> "/" <> milestone.id)

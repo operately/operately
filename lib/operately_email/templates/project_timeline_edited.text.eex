@@ -1,1 +1,3 @@
-<%= raise "Text Email for ProjectTimelineEdited not implemented" %>
+<%= @author %> changed the project timeline for <%= @project.name %>.
+
+Link: <%= @cta_url %>

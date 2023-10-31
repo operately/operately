@@ -182,7 +182,8 @@ defmodule Operately.Features.ProjectsTest do
   @tag login_as: :champion
   feature "edit project timeline", ctx do
     ctx
-    |> visit_show(ctx.project)
+    |> ProjectSteps.add_milestone(%{title: "Contract Signed", deadline_at: day_in_current_month(20)})
+    |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "edit-project-timeline")
     |> UI.click(testid: "planning-start")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--010")
@@ -192,6 +193,13 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
     |> UI.click(testid: "control-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
+    |> UI.click(testid: "milestone-contract-signed-due")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
+    |> UI.click(testid: "add-milestone")
+    |> UI.fill(testid: "new-milestone-title", with: "Website Launched")
+    |> UI.click(testid: "new-milestone-due")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
+    |> UI.click(testid: "add-milestone-button")
     |> UI.click(testid: "save")
 
     project = Operately.Projects.get_project!(ctx.project.id)
@@ -209,6 +217,18 @@ defmodule Operately.Features.ProjectsTest do
     assert execution.due_time == day_in_current_month(12)
     assert control.start_time == day_in_current_month(12)
     assert control.due_time == day_in_current_month(13)
+
+    milestones = Operately.Projects.list_project_milestones(project)
+    contract = Enum.find(milestones, fn milestone -> milestone.title == "Contract Signed" end)
+    website = Enum.find(milestones, fn milestone -> milestone.title == "Website Launched" end)
+
+    assert DateTime.from_naive!(contract.deadline_at, "Etc/UTC") == day_in_current_month(12)
+    assert DateTime.from_naive!(website.deadline_at, "Etc/UTC") == day_in_current_month(13)
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
+    |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
   end
 
   # ===========================================================================

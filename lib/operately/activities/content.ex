@@ -5,6 +5,7 @@ defmodule Operately.Activities.Content do
       import Ecto.Changeset
 
       @primary_key false
+      @derive Jason.Encoder
     end
   end
 end

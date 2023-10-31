@@ -26,7 +26,8 @@ defmodule Operately.Activities.Recorder do
     changeset = apply(module, :build, [params])
 
     if changeset.valid? do
-      {:ok, changeset.changes}
+      content = Ecto.Changeset.apply_changes(changeset)
+      {:ok, content}
     else
       {:error, changeset}
     end
