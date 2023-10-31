@@ -5,90 +5,96 @@ defmodule Prosemirror2Html do
   Link: https://github.com/inputhq/prosemirror_to_html
   """
 
-  def convert(%{"type" => "doc", "content" => content}) do
+  def convert(%{"type" => "doc", "content" => content}, opts \\ []) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
   end
 
-  def convert_node(%{"type" => "paragraph", "content" => content}) do
+  def convert_node(%{"type" => "paragraph", "content" => content}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("p")
   end
 
-  def convert_node(%{"type" => "paragraph"}) do
+  def convert_node(%{"type" => "paragraph"}, _opts) do
     wrap("", "p")
   end
 
-  def convert_node(%{"type" => "listItem", "content" => content}) do
+  def convert_node(%{"type" => "listItem", "content" => content}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("li")
   end
 
-  def convert_node(%{"type" => "bulletList", "content" => content}) do
+  def convert_node(%{"type" => "bulletList", "content" => content}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("ul")
   end
 
-  def convert_node(%{"type" => "orderedList", "content" => content, "attrs" => %{"start" => 1}}) do
+  def convert_node(%{"type" => "orderedList", "content" => content, "attrs" => %{"start" => 1}}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("ol")
   end
 
-  def convert_node(%{"type" => "heading", "attrs" => %{"level" => level}, "content" => content}) do
+  def convert_node(%{"type" => "heading", "attrs" => %{"level" => level}, "content" => content}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("h#{level}")
   end
 
-  def convert_node(%{"type" => "blockquote", "content" => content}) do
+  def convert_node(%{"type" => "blockquote", "content" => content}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("blockquote")
   end
 
-  def convert_node(%{"type" => "codeBlock", "content" => content}) do
+  def convert_node(%{"type" => "codeBlock", "content" => content}, opts) do
     content
-    |> Enum.map(&convert_node/1)
+    |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
     |> wrap("pre")
   end
 
-  def convert_node(%{"type" => "hardBreak"}) do
+  def convert_node(%{"type" => "hardBreak"}, _opts) do
     "<br>"
   end
 
-  def convert_node(%{"type" => "horizontalRule"}) do
+  def convert_node(%{"type" => "horizontalRule"}, _opts) do
     "<hr>"
   end
 
-  def convert_node(%{"type" => "image", "attrs" => %{"src" => src}}) do
-    "<img src=\"#{src}\">"
-  end
-
-  def convert_node(%{"type" => "text", "text" => text, "marks" => marks}) do
+  def convert_node(%{"type" => "text", "text" => text, "marks" => marks}, _opts) do
     marks
     |> Enum.reverse()
     |> Enum.reduce(text, fn mark, acc -> convert_mark(acc, mark) end)
   end
 
-  def convert_node(%{"type" => "text", "text" => text}) do
+  def convert_node(%{"type" => "text", "text" => text}, _opts) do
     text
   end
 
-  def convert_node(%{"attrs" => %{"id" => _id, "label" => name}, "type" => "mention"}) do
+  def convert_node(%{"attrs" => %{"id" => _id, "label" => name}, "type" => "mention"}, _opts) do
     wrap(name, "strong")
   end
+
+  def convert_node(%{"type" => "blob", "content" => %{"title" => title, "src" => src}}, opts) do
+    domain = Keyword.get(opts, :domain, nil) || raise("Missing domain option")
+
+    "<div><a href=\"#{domain}#{src}\">#{title}</a></div>"
+  end
+
+  #
+  # Marks
+  #
 
   def convert_mark(text, %{"type" => "bold"}) do
     wrap(text, "strong")

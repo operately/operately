@@ -139,7 +139,8 @@ defmodule Prosemirror2HtmlTest do
   }
 
   test "converts a a complex paragraph with various nodes and marks" do
-    html = Prosemirror2Html.convert(@fullExample)
+    opts = [domain: "https://example.com"]
+    html = Prosemirror2Html.convert(@fullExample, opts)
     assert html == Enum.join([
       "<p>",
       "<strong>Hello</strong>, ",
@@ -164,7 +165,7 @@ defmodule Prosemirror2HtmlTest do
   end
 
   test "mulitple nodes" do
-    html = Prosemirror2Html.convert(%{
+    content = %{
       "type" => "doc", 
       "content" => [
         %{
@@ -186,13 +187,14 @@ defmodule Prosemirror2HtmlTest do
           ]
         }
       ]
-    })
+    }
 
+    html = Prosemirror2Html.convert(content)
     assert html == "<p>Hello</p><p>Hello</p>"
   end
 
   test "paragraph" do
-    html = Prosemirror2Html.convert(%{
+    content = %{
       "type" => "doc", 
       "content" => [
         %{
@@ -205,13 +207,15 @@ defmodule Prosemirror2HtmlTest do
           ]
         }
       ]
-    })
+    }
 
+    html = Prosemirror2Html.convert(content)
     assert html == "<p>Hello</p>"
   end
 
   test "bold mark" do
-    html = Prosemirror2Html.convert(%{
+    opts = [domain: "https://example.com"]
+    content = %{
       "type" => "doc", 
       "content" => [
         %{
@@ -224,13 +228,15 @@ defmodule Prosemirror2HtmlTest do
           ]
         }
       ]
-    })
+    }
 
+    html = Prosemirror2Html.convert(content, opts)
     assert html == "<strong>Hello</strong>"
   end
 
   test "multiple marks" do
-    html = Prosemirror2Html.convert(%{
+    opts = [domain: "https://example.com"]
+    content = %{
       "type" => "doc", 
       "content" => [
         %{
@@ -246,9 +252,36 @@ defmodule Prosemirror2HtmlTest do
           ]
         }
       ]
-    })
+    }
 
+    html = Prosemirror2Html.convert(content, opts)
     assert html == "<strong><em>Hello</em></strong>"
+  end
+
+  test "blobs" do
+    opts = [domain: "https://example.com"]
+
+    content = %{
+      "type" => "doc", 
+      "content" => [
+        %{
+          "type" => "blob",
+          "content" => %{
+             "alt" => "Authentication Failed message", 
+             "filesize" => 91747, 
+             "filetype" => "image/png", 
+             "id" => "loegrjli3g3bgeqlxm8", 
+             "progress" => 100, 
+             "src" => "/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5", 
+             "status" => "uploaded", 
+             "title" => "Authentication Failed message"
+          }
+        }
+      ]
+    }
+
+    html = Prosemirror2Html.convert(content, opts)
+    assert html == "<div><a href=\"https://example.com/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5\">Authentication Failed message</a></div>"
   end
 
 end
