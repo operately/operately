@@ -1,0 +1,3 @@
+<%= @author %> changed the project timeline for <%= @project.name %>.
+
+Link: <%= @cta_url %>

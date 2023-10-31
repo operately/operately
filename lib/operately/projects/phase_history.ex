@@ -16,7 +16,10 @@ defmodule Operately.Projects.PhaseHistory do
     timestamps()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(phase_history, attrs) do
     phase_history
     |> cast(attrs, __schema__(:fields))

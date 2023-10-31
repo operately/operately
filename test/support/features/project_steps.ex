@@ -30,6 +30,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     Map.merge(ctx, %{company: company, champion: champion, project: project, reviewer: reviewer})
   end
 
+  def add_milestone(ctx, attrs) do
+    attrs = %{project_id: ctx.project.id} |> Map.merge(attrs)
+
+    {:ok, _} = Operately.Projects.create_milestone(ctx.champion, attrs)
+
+    ctx
+  end
+
   def login(ctx) do
     case ctx[:login_as] do
       :champion ->
@@ -85,6 +93,12 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   def visit_project_page(ctx) do
     ctx |> UI.visit("/projects/#{ctx.project.id}")
+  end
+
+  def visit_project_milestones_page(ctx, milestone_name) do
+    {:ok, milestone} = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
+
+    ctx |> UI.visit("/projects/#{ctx.project.id}/milestones/#{milestone.id}")
   end
 
   #

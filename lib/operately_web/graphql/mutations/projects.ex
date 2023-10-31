@@ -62,55 +62,34 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       arg :input, non_null(:edit_project_timeline_input)
 
       resolve fn args, %{context: context} ->
-        Operately.Repo.transaction(fn ->
-          author = context.current_account.person
+        author = context.current_account.person
+        project = Operately.Projects.get_project!(args.input.project_id)
 
-          project = Operately.Projects.get_project!(args.input.project_id)
-          phases = Operately.Projects.list_project_phase_history(project)
+        attrs = %{
+          project_id: args.input.project_id,
 
-          planning = Enum.find(phases, fn phase -> phase.phase == :planning end)
-          execution = Enum.find(phases, fn phase -> phase.phase == :execution end)
-          control = Enum.find(phases, fn phase -> phase.phase == :control end)
+          project_start_time: parse_date(args.input.project_start_time),
+          planning_due_time: parse_date(args.input.planning_due_time),
+          execution_due_time: parse_date(args.input.execution_due_time),
+          control_due_time: parse_date(args.input.control_due_time),
 
-          {:ok, _} = Operately.Projects.update_phase_history(planning, %{
-            start_time: project.started_at,
-            due_time: parse_date(args.input.planning_due_time)
-          })
+          milestone_updates: Enum.map(args.input.milestone_updates, fn update ->
+            %{
+              milestone_id: update.id,
+              title: update.title,
+              due_time: parse_date(update.due_time)
+            }
+          end),
 
-          {:ok, _} = Operately.Projects.update_phase_history(execution, %{
-            start_time: parse_date(args.input.planning_due_time),
-            due_time: parse_date(args.input.execution_due_time)
-          })
-
-          {:ok, _} = Operately.Projects.update_phase_history(control, %{
-            start_time: parse_date(args.input.execution_due_time),
-            due_time: parse_date(args.input.control_due_time
-          )})
-
-          {:ok, project} = Operately.Projects.update_project(project, %{
-            started_at: parse_date(args.input.project_start_time),
-            deadline: parse_date(args.input.control_due_time)
-          })
-
-          Enum.each(args.input.milestone_updates, fn milestone ->
-            milestone = Operately.Projects.get_milestone!(milestone.id)
-
-            Operately.Projects.update_milestone(milestone, %{
+          new_milestones: Enum.map(args.input.new_milestones, fn milestone ->
+            %{
               title: milestone.title,
-              deadline: parse_date(milestone.due_time)
-            })
+              due_time: parse_date(milestone.due_time)
+            }
           end)
+        }
 
-          Enum.each(args.input.new_milestones, fn milestone ->
-            Operately.Projects.create_milestone(author, %{
-              project_id: project.id,
-              title: milestone.title,
-              deadline_at: parse_date(milestone.due_time)
-            })
-          end)
-
-          project
-        end)
+        Operately.Projects.update_project_timeline(author, project, attrs)
       end
     end
 
@@ -216,14 +195,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
 
           project
         end)
-      end
-    end
-
-    defp parse_date(date) do
-      if date do
-        NaiveDateTime.new!(date, ~T[00:00:00])
-      else
-        nil
       end
     end
 
@@ -367,6 +338,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         Operately.Projects.archive_project(person, project)
 
         {:ok, project}
+      end
+    end
+
+    defp parse_date(date) do
+      if date do
+        NaiveDateTime.new!(date, ~T[00:00:00])
+      else
+        nil
       end
     end
   end

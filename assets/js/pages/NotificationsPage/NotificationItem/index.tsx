@@ -17,6 +17,7 @@ import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
 import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
 import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
+import ProjectTimelineEdited from "./ProjectTimelineEdited"
 
 export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
@@ -57,6 +58,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectStatusUpdateSubmitted":
       return <ProjectStatusUpdateSubmitted notification={notification} />;
+    
+    case "ActivityContentProjectTimelineEdited":
+      return <ProjectTimelineEdited notification={notification} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";

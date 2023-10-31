@@ -19,7 +19,8 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_project_review_submitted,
     :activity_content_project_status_update_acknowledged,
     :activity_content_project_status_update_commented,
-    :activity_content_project_status_update_submitted
+    :activity_content_project_status_update_submitted,
+    :activity_content_project_timeline_edited
     ]
 
     resolve_type fn %{action: action}, _ ->

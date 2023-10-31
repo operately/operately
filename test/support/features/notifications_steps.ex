@@ -70,4 +70,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on: #{title}")
   end
 
+  def assert_project_timeline_edited_sent(ctx, author: author) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} changed the project timeline")
+  end
+
 end

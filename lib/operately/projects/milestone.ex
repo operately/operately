@@ -1,10 +1,6 @@
 defmodule Operately.Projects.Milestone do
-  use Ecto.Schema
-  import Ecto.Changeset
-  import Operately.SoftDelete.Schema
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
 
@@ -21,7 +17,10 @@ defmodule Operately.Projects.Milestone do
     soft_delete()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(milestone, attrs) do
     milestone
     |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description])

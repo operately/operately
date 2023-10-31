@@ -1,13 +1,22 @@
 defmodule Operately.Projects do
   import Ecto.Query, warn: false
-  alias Operately.Repo
 
-  alias Operately.Projects.Project
-  alias Operately.Projects.Contributor
+  alias Operately.Repo
+  alias Ecto.Multi
+
   alias Operately.People.Person
   alias Operately.Updates
-  alias Ecto.Multi
   alias Operately.Activities
+
+  alias Operately.Projects.{
+    Project,
+    PhaseHistory,
+    Contributor,
+    Milestone,
+    ReviewRequest,
+    Document,
+    KeyResource
+  }
 
   def get_project!(id) do
     query = from p in Project, where: p.id == ^id
@@ -27,6 +36,10 @@ defmodule Operately.Projects do
     project
     |> Project.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_project_timeline(author, project, attrs) do
+    Operately.Projects.EditTimelineOperation.run(author, project, attrs)
   end
 
   def rename_project(author, project, new_name) do
@@ -49,9 +62,13 @@ defmodule Operately.Projects do
     Project.changeset(project, attrs)
   end
 
-  alias Operately.Projects.Milestone
-
   def get_milestone!(id, opts \\ []), do: Repo.get!(Milestone, id, opts)
+
+  def get_milestone_by_name(project, milestone_name) do
+    Repo.one(from m in Milestone,
+      where: m.project_id == ^project.id,
+      where: m.title == ^milestone_name)
+  end
 
   def get_next_milestone(project) do
     query = from m in Milestone,
@@ -134,8 +151,6 @@ defmodule Operately.Projects do
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do
     Milestone.changeset(milestone, attrs)
   end
-
-  alias Operately.Projects.Contributor
 
   def get_contributor!(person_id: person_id, project_id: project_id) do
     Repo.one(from c in Contributor, where: c.person_id == ^person_id and c.project_id == ^project_id)
@@ -234,8 +249,6 @@ defmodule Operately.Projects do
     Contributor.changeset(contributor, attrs)
   end
 
-  alias Operately.Projects.Document
-
   def get_pitch(project) do
     Repo.preload(project, :pitch).pitch
   end
@@ -282,8 +295,6 @@ defmodule Operately.Projects do
     Document.changeset(document, attrs)
   end
 
-  alias Operately.Projects.KeyResource
-
   def list_key_resources(project) do
     Operately.Repo.preload(project, :key_resources).key_resources
   end
@@ -311,8 +322,6 @@ defmodule Operately.Projects do
   end
 
   # Phase History
-
-  alias Operately.Projects.PhaseHistory
 
   def list_project_phase_history(project) do
     Operately.Repo.preload(project, :phase_history).phase_history
@@ -375,8 +384,6 @@ defmodule Operately.Projects do
   def get_permissions(project, person) do
     Operately.Projects.Permissions.calculate_permissions(project, person)
   end
-
-  alias Operately.Projects.ReviewRequest
 
   def list_project_review_requests do
     Repo.all(ReviewRequest)
