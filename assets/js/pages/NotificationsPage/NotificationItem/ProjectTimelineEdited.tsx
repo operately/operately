@@ -7,7 +7,7 @@ import * as People from "@/models/people";
 export default function ProjectStatusUpdateSubmitted({ notification }) {
   const author = notification.activity.author;
   const projectName = notification.activity.content.project.name;
-  const link = `/projects/${notification.activity.content.projectId}`;
+  const link = `/projects/${notification.activity.content.project.id}`;
 
   return (
     <Card

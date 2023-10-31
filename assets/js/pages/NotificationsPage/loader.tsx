@@ -22,6 +22,7 @@ const query = gql`
 
           ... on ActivityContentProjectTimelineEdited {
             project {
+              id
               name
             }
           }
