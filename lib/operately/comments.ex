@@ -3,7 +3,7 @@ defmodule Operately.Comments do
   alias Operately.Repo
 
   alias Operately.Comments.MilestoneComment
-  alias Operately.Updates.Comment
+  alias Operately.Comments.CreateMilestoneCommentOperation
 
   def list_milestone_comments do
     Repo.all(MilestoneComment)
@@ -15,26 +15,8 @@ defmodule Operately.Comments do
 
   def get_milestone_comment!(id), do: Repo.get!(MilestoneComment, id)
 
-  def create_milestone_comment(person, milestone, action, comment_attrs = %{}) do
-    Repo.transaction(fn ->
-      {:ok, comment} = %Comment{} |> Comment.changeset(comment_attrs) |> Repo.insert()
-
-      {:ok, milestone_comment} = %MilestoneComment{} |> MilestoneComment.changeset(%{
-        milestone_id: milestone.id,
-        comment_id: comment.id,
-        action: action
-      }) |> Repo.insert()
-
-      if action == "complete" do
-        {:ok, _} = Operately.Projects.complete_milestone(person, milestone)
-      end
-
-      if action == "reopen" do
-        {:ok, _} = Operately.Projects.uncomplete_milestone(person, milestone)
-      end
-
-      milestone_comment
-    end)
+  def create_milestone_comment(author, milestone, action, comment_attrs = %{}) do
+    CreateMilestoneCommentOperation.run(author, milestone, action, comment_attrs)
   end
 
   def update_milestone_comment(%MilestoneComment{} = milestone_comment, attrs) do

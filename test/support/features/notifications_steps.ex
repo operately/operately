@@ -74,4 +74,16 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} changed the project timeline")
   end
 
+  def assert_milestone_comment_sent(ctx, author: author, title: title) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on: #{title}")
+  end
+
+  def assert_milestone_completed_sent(ctx, author: author, title: title) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} completed: #{title}")
+  end
+
+  def assert_milestone_reopened_sent(ctx, author: author, title: title) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} re-opened: #{title}")
+  end
+
 end

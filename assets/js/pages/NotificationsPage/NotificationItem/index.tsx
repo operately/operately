@@ -9,6 +9,7 @@ import ProjectArchived from "./ProjectArchived"
 import ProjectCreated from "./ProjectCreated"
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
+import ProjectMilestoneCommented from "./ProjectMilestoneCommented"
 import ProjectRenamed from "./ProjectRenamed"
 import ProjectReviewAcknowledged from "./ProjectReviewAcknowledged"
 import ProjectReviewCommented from "./ProjectReviewCommented"
@@ -34,6 +35,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectDiscussionSubmitted":
       return <ProjectDiscussionSubmitted notification={notification} />;
+    
+    case "ActivityContentProjectMilestoneCommented":
+      return <ProjectMilestoneCommented notification={notification} />;
     
     case "ActivityContentProjectRenamed":
       return <ProjectRenamed notification={notification} />;

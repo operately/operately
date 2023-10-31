@@ -2,6 +2,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
   alias Operately.People.Person
 
   @timeline_section UI.query(testid: "timeline")
@@ -150,6 +152,10 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.fill_rich_text(testid: "milestone-comment-editor", with: "This is a comment")
     |> UI.click(testid: "post-comment")
     |> UI.assert_text("This is a comment")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_milestone_comment_sent(author: ctx.champion, title: "Contract Signed")
   end
 
   feature "write a comment and complete the milestone", ctx do
@@ -161,6 +167,10 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.click(testid: "complete-and-comment")
     |> UI.assert_text("This is a comment")
     |> UI.assert_text("Milestone Completed")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_milestone_completed_sent(author: ctx.champion, title: "Contract Signed")
   end
 
   feature "write a comment and re-open the milestone", ctx do
@@ -172,6 +182,10 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.click(testid: "reopen-and-comment")
     |> UI.assert_text("This is a comment")
     |> UI.assert_text("Milestone Re-Opened")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_milestone_reopened_sent(author: ctx.champion, title: "Contract Signed")
   end
 
   feature "rename a milestone", ctx do
