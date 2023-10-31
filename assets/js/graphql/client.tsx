@@ -1,8 +1,10 @@
 import { ApolloClient, InMemoryCache, createHttpLink, split, gql, from } from "@apollo/client";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { createClient } from "graphql-ws";
 import { onError } from "@apollo/client/link/error";
+import { createFragmentRegistry } from "@apollo/client/cache";
+import personFragments from "@/gql/fragments/person";
+
+import createGraphQLWsLink from "./wsLink";
 
 const domain = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "");
 
@@ -11,19 +13,7 @@ const httpLink = createHttpLink({
   credentials: "same-origin",
 });
 
-const wsLink = new GraphQLWsLink(
-  createClient({
-    url: domain.replace("http", "ws") + "/api/graphql-ws",
-    connectionParams: () => {
-      return {
-        token: window.appConfig.graphql.socketToken,
-      };
-    },
-  }),
-);
-
-import { createFragmentRegistry } from "@apollo/client/cache";
-import personFragments from "@/gql/fragments/person";
+const wsLink = createGraphQLWsLink(domain);
 
 const cache = new InMemoryCache({
   fragments: createFragmentRegistry(gql`
