@@ -20,6 +20,12 @@ const query = gql`
         content {
           __typename
 
+          ... on ActivityContentProjectTimelineEdited {
+            project {
+              name
+            }
+          }
+
           ... on ActivityContentProjectDiscussionSubmitted {
             title
             discussionId
