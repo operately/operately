@@ -29,7 +29,7 @@
 
         <tr style="height: 20px">
           <td>
-            <%= Prosemirror2Html.convert(Jason.decode!(@comment.content["message"])) %>
+            <%= rich_text(Jason.decode!(@comment.content["message"])) %>
           </td>
         </tr>
 

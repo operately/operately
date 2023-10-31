@@ -29,7 +29,7 @@
 
         <tr style="height: 20px">
           <td>
-            <%= Prosemirror2Html.convert(@status_update.content["message"]) %>
+            <%= rich_text(@status_update.content["message"]) %>
           </td>
         </tr>
 
