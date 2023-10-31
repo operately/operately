@@ -21,8 +21,6 @@ if (window.appConfig.sentry.enabled) {
     dsn: window.appConfig.sentry.dsn,
     integrations: [
       new Sentry.BrowserTracing({
-        // See docs for support of different versions of variation of react router
-        // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
         routingInstrumentation: Sentry.reactRouterV6Instrumentation(
           React.useEffect,
           useLocation,
@@ -31,17 +29,8 @@ if (window.appConfig.sentry.enabled) {
           matchRoutes,
         ),
       }),
-      new Sentry.Replay(),
     ],
-
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    tracesSampleRate: 1.0,
-
-    // Capture Replay for 10% of all sessions,
-    // plus for 100% of sessions with an error
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
+    enableTracing: false,
   });
 }
 
