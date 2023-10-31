@@ -193,6 +193,22 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "control-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
     |> UI.click(testid: "save")
+
+    project = Operately.Projects.get_project!(ctx.project.id)
+    phases = Operately.Projects.list_project_phase_history(project)
+    planning = Enum.find(phases, fn phase -> phase.phase == :planning end)
+    execution = Enum.find(phases, fn phase -> phase.phase == :execution end)
+    control = Enum.find(phases, fn phase -> phase.phase == :control end)
+
+    assert project.started_at == day_in_current_month(10)
+    assert project.deadline == day_in_current_month(13)
+
+    assert planning.start_time == day_in_current_month(10)
+    assert planning.due_time == day_in_current_month(11)
+    assert execution.start_time == day_in_current_month(11)
+    assert execution.due_time == day_in_current_month(12)
+    assert control.start_time == day_in_current_month(12)
+    assert control.due_time == day_in_current_month(13)
   end
 
   # ===========================================================================
@@ -280,6 +296,15 @@ defmodule Operately.Features.ProjectsTest do
       project_id: project.id, 
       responsibility: responsibility
     })
+  end
+
+  def day_in_current_month(day) do
+    today = Date.utc_today()
+
+    {:ok, date} = Date.from_erl({today.year, today.month, day})
+    {:ok, date} = NaiveDateTime.new(date, ~T[00:00:00])
+
+    DateTime.from_naive!(date, "Etc/UTC")
   end
 
 end

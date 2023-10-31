@@ -65,7 +65,31 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         author = context.current_account.person
         project = Operately.Projects.get_project!(args.input.project_id)
 
-        Operately.Projects.update_project_timeline(author, project, args.input)
+        attrs = %{
+          project_id: args.input.project_id,
+
+          project_start_time: parse_date(args.input.project_start_time),
+          planning_due_time: parse_date(args.input.planning_due_time),
+          execution_due_time: parse_date(args.input.execution_due_time),
+          control_due_time: parse_date(args.input.control_due_time),
+
+          milestone_updates: Enum.map(args.input.milestone_updates, fn update ->
+            %{
+              milestone_id: update.id,
+              title: update.title,
+              due_time: parse_date(update.due_time)
+            }
+          end),
+
+          new_milestones: Enum.map(args.input.new_milestones, fn milestone ->
+            %{
+              title: milestone.title,
+              due_time: parse_date(milestone.due_time)
+            }
+          end)
+        }
+
+        Operately.Projects.update_project_timeline(author, project, attrs)
       end
     end
 
@@ -171,14 +195,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
 
           project
         end)
-      end
-    end
-
-    defp parse_date(date) do
-      if date do
-        NaiveDateTime.new!(date, ~T[00:00:00])
-      else
-        nil
       end
     end
 
@@ -322,6 +338,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         Operately.Projects.archive_project(person, project)
 
         {:ok, project}
+      end
+    end
+
+    defp parse_date(date) do
+      if date do
+        NaiveDateTime.new!(date, ~T[00:00:00])
+      else
+        nil
       end
     end
   end

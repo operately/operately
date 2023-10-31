@@ -22,13 +22,13 @@ defmodule Operately.Projects.EditTimelineOperation do
     |> Multi.update(:control_phase, PhaseHistory.changeset(control, %{start_time: attrs.execution_due_time, due_time: due_date}))
     |> update_milestones(attrs)
     |> insert_new_milestones(project, attrs)
-    |> record_activity(author, project, attrs)
+    # |> record_activity(author, project, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
 
   defp update_milestones(multi, attrs) do
-    multi |> Enum.reduce(attrs.milestone_updates, fn milestone_update, multi ->
+    Enum.reduce(attrs.milestone_updates, multi, fn milestone_update, multi ->
       milestone = Operately.Projects.get_milestone!(milestone_update.milestone_id)
 
       changeset = Operately.Projects.Milestone.changeset(milestone, %{
@@ -41,8 +41,7 @@ defmodule Operately.Projects.EditTimelineOperation do
   end
 
   defp insert_new_milestones(multi, project, attrs) do
-    multi
-    |> Enum.reduce(attrs.input.new_milestones, fn milestone, multi ->
+    Enum.reduce(attrs.new_milestones, multi, fn milestone, multi ->
       changeset = Milestone.changeset(%{
         project_id: project.id,
         title: milestone.title,
@@ -63,7 +62,7 @@ defmodule Operately.Projects.EditTimelineOperation do
         old_end_date: project.deadline,
         new_end_date: changes.project.deadline,
         milestone_edits: attrs.milestone_updates,
-        new_milestones: attrs.input.new_milestones
+        new_milestones: attrs.new_milestones
       }
 
       Operately.Activities.Content.ProjectTimelineEdited.build(params)

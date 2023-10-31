@@ -17,6 +17,10 @@ defmodule Operately.Projects.Milestone do
     soft_delete()
   end
 
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(milestone, attrs) do
     milestone
     |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description])
