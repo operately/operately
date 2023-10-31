@@ -13,7 +13,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> apply_comment_action(milestone, action)
     |> record_activity(author, milestone, action)
     |> Repo.transaction()
-    |> Repo.extract_result(:comment)
+    |> Repo.extract_result(:milestone_comment)
   end
   
   defp insert_milestone_comment(multi, milestone, action) do

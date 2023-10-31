@@ -1,1 +1,3 @@
-<%= raise "Text Email for ProjectMilestoneCommented not implemented" %>
+<%= @title %>.
+
+Link: <%= @cta_url %>
