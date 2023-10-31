@@ -49,8 +49,6 @@ blocks:
             - docker pull operately/operately:latest
             - make docker.build
             - make docker.push
-            - make docker.export.jsmap
-            - artifact push workflow tmp/assets
 
 promotions:
   - name: Staging 1

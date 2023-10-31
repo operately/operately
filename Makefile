@@ -206,7 +206,3 @@ docker.build:
 
 docker.push:
 	docker push operately/operately:$(DOCKER_IMAGE_TAG)
-
-docker.export.jsmap:
-	mkdir -p tmp/assets
-	docker build -f Dockerfile.prod --target export -t test . --output tmp/assets
