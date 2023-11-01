@@ -124,6 +124,20 @@ const query = gql`
               name
             }
           }
+
+          ... on ActivityContentProjectMilestoneCommented {
+            commentAction
+
+            milestone {
+              id
+              title
+            }
+
+            project {
+              id
+              name
+            }
+          }
         }
       }
     }
