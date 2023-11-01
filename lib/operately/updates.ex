@@ -61,9 +61,11 @@ defmodule Operately.Updates do
       content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
     })
 
+    next_check_in = Operately.Time.calculate_next_check_in(project.next_update_scheduled_at, DateTime.utc_now())
+
     Multi.new()
     |> Multi.insert(:update, changeset)
-    |> Multi.update(:project, Project.changeset(project, %{health: new_health}))
+    |> Multi.update(:project, Project.changeset(project, %{health: new_health, next_update_scheduled_at: next_check_in}))
     |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)

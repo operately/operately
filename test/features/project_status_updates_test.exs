@@ -4,7 +4,6 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
-  alias Operately.People.Person
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -21,12 +20,18 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
+    |> EmailSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
+  end
 
-    ctx
-    |> ProjectSteps.assert_email_sent_to_all_contributors(
-      subject: "Operately (#{ctx.company.name}): #{Person.short_name(ctx.champion)} posted an update for #{ctx.project.name}",
-      except: [ctx.champion.email]
-    )
+  @tag login_as: :champion
+  feature "submitting a status update moves the next update date", ctx do
+    previous_due = ctx.project.next_update_scheduled_at
+
+    ProjectSteps.submit_status_update(ctx, content: "This is a status update.")
+
+    current_due = Operately.Projects.get_project!(ctx.project.id).next_update_scheduled_at
+
+    assert current_due == Operately.Time.calculate_next_check_in(previous_due, previous_due)
   end
 
   @tag login_as: :champion

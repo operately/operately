@@ -42,10 +42,36 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} re-opened the #{title} milestone")
   end
 
+  def assert_project_status_update_submitted_sent(ctx, author: author) do
+    ctx |> assert_sent_to_all_project_contributors(subject: "#{Person.short_name(author)} posted an update for #{ctx.project.name}", except: [author])
+  end
+
   #
   # Private
   #
   defp assert_sent(ctx, to: to, subject: subject) do
     ctx |> UI.assert_email_sent("Operately (#{ctx.company.name}): #{subject}", to: to.email)
+  end
+
+  defp refute_sent(ctx, to: to, subject: subject) do
+    ctx |> UI.refute_email_sent("Operately (#{ctx.company.name}): #{subject}", to: to.email)
+  end
+
+  defp assert_sent_to_all_project_contributors(ctx, subject: subject, except: except) do
+    people = list_project_contributors(ctx, except: except)
+
+    Enum.each(people, fn person -> assert_sent(ctx, to: person, subject: subject) end)
+    Enum.each(except, fn person -> refute_sent(ctx, to: person, subject: subject) end)
+
+    ctx
+  end
+
+  defp list_project_contributors(ctx, except: except) do
+    except_ids = Enum.map(except, fn person -> person.id end)
+
+    Operately.Projects.list_project_contributors(ctx.project)
+    |> Operately.Repo.preload(:person)
+    |> Enum.map(fn contrib -> contrib.person end)
+    |> Enum.reject(fn person -> person.id in except_ids end)
   end
 end
