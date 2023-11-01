@@ -1,4 +1,5 @@
 defmodule Operately.Support.Features.ProjectSteps do
+  use Operately.FeatureCase
   alias Operately.Support.Features.UI
 
   import Operately.CompaniesFixtures
@@ -124,4 +125,5 @@ defmodule Operately.Support.Features.ProjectSteps do
   def assert_discussion_exists(ctx, title: title) do
     ctx |> UI.assert_text(title)
   end
+
 end

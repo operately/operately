@@ -12,7 +12,43 @@ defmodule Operately.Time do
         Date.add(today, 12 - Date.day_of_week(today))
     end
 
-    NaiveDateTime.new!(date, ~T[09:00:00])
+    as_datetime(date)
   end
+
+  def calculate_next_check_in(previous_due, check_in_date) do
+    previous_due = as_date(previous_due)
+    check_in_date = as_date(check_in_date)
+
+    if Date.compare(previous_due, check_in_date) == :lt do
+      next_week_friday(check_in_date)
+    else
+      next_week_friday(previous_due)
+    end
+  end
+
+  defp next_week_friday(date) do
+    day = Date.day_of_week(date)
+
+    result = cond do
+      day == 5 ->
+        Date.add(date, 7)
+      day < 5 ->
+        Date.add(date, 5 - day)
+      day > 5 ->
+        Date.add(date, 12 - day)
+      true ->
+        raise "Invalid day of week: #{day}"
+    end
+
+    as_datetime(result)
+  end
+
+  def as_date(%Date{} = date), do: date
+  def as_date(%DateTime{} = date), do: DateTime.to_date(date)
+  def as_date(%NaiveDateTime{} = date), do: DateTime.to_date(date)
+
+  def as_datetime(%DateTime{} = date), do: date
+  def as_datetime(%Date{} = date), do: DateTime.new!(date, ~T[00:00:00], "Etc/UTC")
+  def as_datetime(%NaiveDateTime{} = date), do: DateTime.from_naive!(date, "Etc/UTC")
 
 end
