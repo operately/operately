@@ -31,6 +31,8 @@ function TimelineGraph({ project }) {
     days.push(Time.add(start, i, "weeks"));
   }
 
+  days.pop();
+
   return (
     <div>
       <div className="flex items-center gap-10 mb-4">
@@ -49,42 +51,42 @@ function TimelineGraph({ project }) {
         <NextMilestone project={project} />
       </div>
 
-      <div className="bg-shade-1 rounded-xl shadow-xl p-4 relative flex-1" {...mouseEvents}>
-        <div
-          className="absolute left-4 right-4 h-0.5 bg-green-400 rounded-xl top-1/2 transform -translate-y-1/2"
-          style={{ width: `${percentage}%` }}
-        />
+      <div className="flex items-center gap-4 mb-4">
+        <FormattedTime time={start} format="short-date" />
 
-        <div className="absolute left-4 right-4 h-0.5 bg-shade-3 rounded-xl top-1/2 transform -translate-y-1/2" />
+        <div className="bg-sky-700 rounded shadow-xl py-3 relative flex-1 overflow-hidden" {...mouseEvents}>
+          <div className="absolute top-px bottom-px bg-sky-400 rounded-l" style={{ width: `${percentage}%` }} />
 
-        {project.milestones.map((milestone) => (
-          <div
-            key={milestone.id}
-            className={classnames({
-              "rounded-full h-3 w-3 absolute top-1/2 transform -translate-y-1/2": true,
-              "bg-green-400": Milestones.isDone(milestone),
-              "bg-shade-3": !Milestones.isDone(milestone) && !Milestones.isOverdue(milestone),
-              "bg-red-400 z-10": Milestones.isOverdue(milestone),
-            })}
-            style={{
-              left: `${
-                (Time.daysBetween(start, Time.parse(milestone.deadlineAt)) / Time.daysBetween(start, end)) * 100
-              }%`,
-            }}
-          />
-        ))}
+          {days.map((day) => (
+            <div
+              key={day}
+              className="rounded-full top-0.5 bottom-0.5 bg-shade-1 absolute w-px"
+              style={{
+                left: `${(Time.daysBetween(start, Time.parse(day)) / Time.daysBetween(start, end)) * 100}%`,
+              }}
+            />
+          ))}
 
-        {days.map((day) => (
-          <div
-            key={day}
-            className="rounded-full top-1.5 bottom-1.5 bg-shade-2 absolute w-px"
-            style={{
-              left: `${(Time.daysBetween(start, Time.parse(day)) / Time.daysBetween(start, end)) * 100}%`,
-            }}
-          />
-        ))}
+          {project.milestones.map((milestone) => (
+            <div
+              key={milestone.id}
+              className={classnames({
+                "rounded-full h-3 w-1 absolute top-1/2 transform -translate-y-1/2": true,
+                "bg-green-900": Milestones.isDone(milestone),
+                "bg-dark-8": !Milestones.isDone(milestone) && !Milestones.isOverdue(milestone),
+                "bg-red-400 z-10": Milestones.isOverdue(milestone),
+              })}
+              style={{
+                left: `${
+                  (Time.daysBetween(start, Time.parse(milestone.deadlineAt)) / Time.daysBetween(start, end)) * 100
+                }%`,
+              }}
+            />
+          ))}
 
-        <HoverLine mouse={mouse} start={start} end={end} milestones={project.milestones} />
+          <HoverLine mouse={mouse} start={start} end={end} milestones={project.milestones} />
+        </div>
+        <FormattedTime time={end} format="short-date" />
       </div>
     </div>
   );
