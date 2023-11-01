@@ -55,8 +55,6 @@ export function Page() {
           <Header project={project} />
         </div>
 
-        <Tabs />
-
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
 
         <div className="my-8 flex items-start gap-6">

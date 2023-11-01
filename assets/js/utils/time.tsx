@@ -136,6 +136,10 @@ export function add(date: Date, amount: number, unit: "days" | "weeks" | "months
   return datefsn.add(date, { [unit]: amount });
 }
 
+export function weeksBetween(start: Date, end: Date) {
+  return datefsn.differenceInWeeks(end, start);
+}
+
 export function daysBetween(start: Date, end: Date) {
   return datefsn.differenceInDays(end, start);
 }
