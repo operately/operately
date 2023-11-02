@@ -49,8 +49,10 @@ defmodule Operately.Updates do
     %Update{} |> Update.changeset(attrs) |> Repo.insert()
   end
 
-  def record_status_update(author, project, new_health, content) do
+  def record_status_update(author, project, health, content) do
     action = :project_status_update_submitted
+
+    status = Jason.decode!(health)["status"]
 
     changeset = Update.changeset(%{
       updatable_type: :project,
@@ -58,14 +60,14 @@ defmodule Operately.Updates do
       author_id: author.id,
       title: "",
       type: :status_update,
-      content: Operately.Updates.Types.StatusUpdate.build(project, new_health, content)
+      content: Operately.Updates.Types.StatusUpdate.build(project, status, content)
     })
 
     next_check_in = Operately.Time.calculate_next_check_in(project.next_update_scheduled_at, DateTime.utc_now())
 
     Multi.new()
     |> Multi.insert(:update, changeset)
-    |> Multi.update(:project, Project.changeset(project, %{health: new_health, next_update_scheduled_at: next_check_in}))
+    |> Multi.update(:project, Project.changeset(project, %{health: status, next_update_scheduled_at: next_check_in}))
     |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)

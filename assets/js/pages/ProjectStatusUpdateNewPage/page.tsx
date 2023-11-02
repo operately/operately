@@ -10,10 +10,9 @@ import { useNavigate } from "react-router-dom";
 import * as Projects from "@/graphql/Projects";
 
 import Button from "@/components/Button";
-import * as Forms from "@/components/Form";
 
 import { useLoadedData } from "./loader";
-import { AccordionWithOptions, AccordionWithStatus } from "./Accordion";
+import { AccordionWithOptions } from "./Accordion";
 import { options } from "./healthOptions";
 
 export function Page() {
@@ -80,7 +79,7 @@ function Editor() {
           updatableType: "project",
           updatableId: project.id,
           content: JSON.stringify(editor.getJSON()),
-          health: health,
+          health: JSON.stringify(health),
           messageType: "status_update",
         },
       },
