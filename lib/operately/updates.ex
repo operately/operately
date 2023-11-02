@@ -52,7 +52,8 @@ defmodule Operately.Updates do
   def record_status_update(author, project, health, content) do
     action = :project_status_update_submitted
 
-    status = Jason.decode!(health)["status"]
+    health = Jason.decode!(health)
+    status = health["status"]
 
     changeset = Update.changeset(%{
       updatable_type: :project,
@@ -60,7 +61,7 @@ defmodule Operately.Updates do
       author_id: author.id,
       title: "",
       type: :status_update,
-      content: Operately.Updates.Types.StatusUpdate.build(project, status, content)
+      content: Operately.Updates.Types.StatusUpdate.build(project, health, content)
     })
 
     next_check_in = Operately.Time.calculate_next_check_in(project.next_update_scheduled_at, DateTime.utc_now())

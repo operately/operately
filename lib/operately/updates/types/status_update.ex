@@ -2,9 +2,31 @@ defmodule Operately.Updates.Types.StatusUpdate do
   use Ecto.Schema
   import Ecto.Changeset
 
+  defmodule Health do
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key false
+    embedded_schema do
+      field :status, :string
+      field :schedule, :string
+      field :budget, :string
+      field :team, :string
+      field :risk, :string
+    end
+
+    def changeset(health, attrs) do
+      health
+      |> cast(attrs, [:status, :schedule, :budget, :team, :risk])
+    end
+  end
+
   @primary_key false
   embedded_schema do
     field :message, :map
+
+    embeds_one :health, Health
+
     field :old_health, :string
     field :new_health, :string
 
@@ -22,17 +44,19 @@ defmodule Operately.Updates.Types.StatusUpdate do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
+    |> cast(attrs, [:message, :old_health, :new_health, :next_milestone_id, :next_milestone_title, :next_milestone_due_date, :phase, :phase_start, :phase_end, :project_start_time, :project_end_time])
+    |> cast_embed(:health)
     |> validate_required([:message, :old_health, :new_health])
   end
 
-  def build(project, new_health, message) do
+  def build(project, health, message) do
     result = %{}
     result = Map.merge(result, build_project_info(project))
-    result = Map.merge(result, build_health_info(project, new_health))
+    result = Map.merge(result, build_health_info(project, health["status"]))
     result = Map.merge(result, build_milestone_info(project))
     result = Map.merge(result, build_phase_info(project))
     result = Map.merge(result, %{:message => message})
+    result = Map.merge(result, %{:health => health})
     result
   end
 
