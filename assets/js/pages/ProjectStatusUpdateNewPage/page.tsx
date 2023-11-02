@@ -1,5 +1,7 @@
 import React from "react";
 
+import classnames from "classnames";
+
 import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
@@ -232,17 +234,156 @@ function FieldUpdates({ health, setHealth }) {
             <span className="text-white-2">Add further details...</span>
           </div>
         </Accoridion>
-        <Accoridion title="Budget" status={<span className="text-green-400 font-medium text-sm">Within Budget</span>}>
-          Hello
+        <Accoridion
+          title="Budget"
+          status={
+            <span className="font-medium flex items-center gap-2">
+              Within Budget
+              <Icons.IconCircleFilled size={12} className="text-green-400" />
+            </span>
+          }
+        >
+          <Forms.RadioGroup name="status" defaultValue="everyone" onChange={(e) => console.log(e)}>
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Within Budget
+                    <Icons.IconCircleFilled size={12} className="text-green-400" />
+                  </span>
+                }
+                explanation={"We are with budget, and we are not expecting any changes"}
+                value="on_track"
+              />
+            </div>
+
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Not Within Budget
+                    <Icons.IconCircleFilled size={12} className="text-red-400" />
+                  </span>
+                }
+                explanation={"We are not able to deliver within budget"}
+                value="on_track"
+              />
+            </div>
+          </Forms.RadioGroup>
+
+          <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+            <span className="text-white-2">Add further details...</span>
+          </div>
         </Accoridion>
+
         <Accoridion
           title="Team"
-          status={<span className="text-green-400 font-medium text-sm">Staffed with suitable roles</span>}
+          status={
+            <span className="font-medium flex items-center gap-2">
+              Staffed with suitable roles
+              <Icons.IconCircleFilled size={12} className="text-green-400" />
+            </span>
+          }
         >
-          Hello
+          <Forms.RadioGroup name="status" defaultValue="everyone" onChange={(e) => console.log(e)}>
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Staffed with suitable roles
+                    <Icons.IconCircleFilled size={12} className="text-green-400" />
+                  </span>
+                }
+                explanation={"Everyone is ready and we are able to deliver"}
+                value="staffed"
+              />
+            </div>
+
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Missing roles
+                    <Icons.IconCircleFilled size={12} className="text-yellow-400" />
+                  </span>
+                }
+                explanation={"Missing roles in the team, but we are able to deliver"}
+                value="missing_roles"
+              />
+            </div>
+
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Key roles missing
+                    <Icons.IconCircleFilled size={12} className="text-red-400" />
+                  </span>
+                }
+                explanation={"Missing key roles in the team, not able to deliver"}
+                value="key_roles-missing"
+              />
+            </div>
+          </Forms.RadioGroup>
+
+          <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+            <span className="text-white-2">Add further details...</span>
+          </div>
         </Accoridion>
-        <Accoridion title="Risks" status={<span className="text-green-400 font-medium text-sm">No known risks</span>}>
-          Hello
+
+        <Accoridion
+          title="Risks"
+          status={
+            <span className="font-medium flex items-center gap-2">
+              No known risks
+              <Icons.IconCircleFilled size={12} className="text-green-400" />
+            </span>
+          }
+        >
+          <Forms.RadioGroup name="status" defaultValue="everyone" onChange={(e) => console.log(e)}>
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    No known risks
+                    <Icons.IconCircleFilled size={12} className="text-green-400" />
+                  </span>
+                }
+                explanation={"We are not aware of any risks that could impact the project"}
+                value="on_track"
+              />
+            </div>
+
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Minor risks
+                    <Icons.IconCircleFilled size={12} className="text-yellow-400" />
+                  </span>
+                }
+                explanation={"Minor risks, we can manage them"}
+                value="on_track"
+              />
+            </div>
+
+            <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+              <Forms.RadioWithExplanation
+                label={
+                  <span className="font-medium flex items-center gap-2">
+                    Major risks
+                    <Icons.IconCircleFilled size={12} className="text-red-400" />
+                  </span>
+                }
+                explanation={"Major risks that significantly impact the project"}
+                value="on_track"
+              />
+            </div>
+          </Forms.RadioGroup>
+
+          <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
+            <span className="text-white-2">Explain the risks...</span>
+          </div>
         </Accoridion>
       </div>
     </div>
@@ -252,11 +393,16 @@ function FieldUpdates({ health, setHealth }) {
 // <TeamDropdown team={team} setTeam={setTeam} />
 
 function Accoridion({ title, status, children }) {
-  const [open, setOpen] = React.useState<boolean>(true);
+  const [open, setOpen] = React.useState<boolean>(false);
   const toggle = () => setOpen(!open);
 
   return (
-    <div className="border border-dark-5 rounded">
+    <div
+      className={classnames({
+        "border border-dark-5 rounded": true,
+        "border-dark-5 mb-8": open,
+      })}
+    >
       <div className="flex items-center justify-between cursor-pointer py-3 px-2.5" onClick={toggle}>
         <div className="flex items-center gap-2">
           <div className="text-white-1 font-bold">{title}</div>
