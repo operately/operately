@@ -202,7 +202,8 @@ test.license.check:
 DOCKER_IMAGE_TAG = $(shell git rev-parse --short HEAD)
 
 docker.build:
-	docker build -f Dockerfile.prod -t operately/operately:$(DOCKER_IMAGE_TAG) .
+	docker build -f Dockerfile.prod -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG) .
 
 docker.push:
 	docker push operately/operately:$(DOCKER_IMAGE_TAG)
+	docker push operately/operately:latest
