@@ -48,7 +48,7 @@ export function RadioWithExplanation({ label, value, explanation, ...props }) {
 
       <div className="flex flex-col">
         <div className="text-white-1 font-medium leading-none">{label}</div>
-        <div className="text-sm text-white-2 leading-loose">{explanation}</div>
+        <div className="text-sm text-white-2 max-w-md mt-0.5">{explanation}</div>
       </div>
     </label>
   );
