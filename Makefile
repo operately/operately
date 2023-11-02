@@ -207,3 +207,4 @@ docker.build:
 docker.push:
 	docker push operately/operately:$(DOCKER_IMAGE_TAG)
 	docker push operately/operately:latest
+
