@@ -2,6 +2,23 @@ defmodule Operately.Updates.Types.StatusUpdate do
   use Ecto.Schema
   import Ecto.Changeset
 
+  defmodule ValueWithComments do
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key false
+
+    embedded_schema do
+      field :value, :string
+      field :comments, :string
+    end
+
+    def changeset(value_with_comments, attrs) do
+      value_with_comments
+      |> cast(attrs, [:value, :comments])
+    end
+  end
+
   defmodule Health do
     use Ecto.Schema
     import Ecto.Changeset
@@ -9,15 +26,20 @@ defmodule Operately.Updates.Types.StatusUpdate do
     @primary_key false
     embedded_schema do
       field :status, :string
-      field :schedule, :string
-      field :budget, :string
-      field :team, :string
-      field :risk, :string
+
+      embeds_one :schedule, ValueWithComments
+      embeds_one :budget, ValueWithComments
+      embeds_one :team, ValueWithComments
+      embeds_one :risk, ValueWithComments
     end
 
     def changeset(health, attrs) do
       health
-      |> cast(attrs, [:status, :schedule, :budget, :team, :risk])
+      |> cast(attrs, [:status])
+      |> cast_embed(:schedule)
+      |> cast_embed(:budget)
+      |> cast_embed(:team)
+      |> cast_embed(:risk)
     end
   end
 

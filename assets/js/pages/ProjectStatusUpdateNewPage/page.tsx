@@ -62,7 +62,7 @@ function Editor() {
         <Health state={healthState} />
 
         <div className="flex items-center gap-2">
-          <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={!editor.uploading}>
+          <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={editor.uploading}>
             <Icons.IconMail size={20} />
             {editor.uploading ? "Uploading..." : "Submit"}
           </Button>
