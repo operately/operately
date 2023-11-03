@@ -7,14 +7,14 @@ import { LIST_PROJECTS, Project } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 
 import Button from "@/components/Button";
-import Table from "@/components/Table";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import { GET_COMPANY, companyID } from "@/graphql/Companies";
-import * as Popover from "@radix-ui/react-popover";
-import * as Forms from "@/components/Form";
-import * as ProjectIcons from "@/components/ProjectIcons";
+
+import Avatar from "@/components/Avatar";
+
+import { Indicator } from "@/components/ProjectHealthIndicators";
 
 export async function loader() {
   let projects = await client.query({
@@ -43,101 +43,72 @@ export function Page() {
   const company = data.company;
   const projects = SortProjects(data.projects);
 
-  const [showNextMilestone, setShowNextMilestone] = React.useState(true);
-  const [showPhase, setShowPhase] = React.useState(true);
-  const [showStartDate, setShowStartDate] = React.useState(true);
-  const [showDueDate, setShowDueDate] = React.useState(true);
-  const [showChampion, setShowChampion] = React.useState(true);
-  const [showHealth, setShowHealth] = React.useState(true);
-
-  const headerVisibility = {
-    health: showHealth,
-    phase: showPhase,
-    title: true,
-    nextMilestone: showNextMilestone,
-    startDate: showStartDate,
-    dueDate: showDueDate,
-    champion: showChampion,
-  };
-
   return (
-    <Paper.Root size="large">
-      <div className="font-extrabold text-3xl mt-4 mb-8">Projects in {company.name}</div>
+    <Paper.Root size="small">
+      <div className="font-extrabold text-3xl mt-4 mb-4 text-center">Projects in {company.name}</div>
 
-      <Paper.Body className="bg-dark-2" noPadding>
-        <div className="flex items-center justify-between mb-4 gap-4 m-4 pt-4">
-          <div className="flex items-center gap-2">
-            <Popover.Root>
-              <Popover.Trigger asChild>
-                <div className="flex items-center gap-2 rounded-lg border border-dark-8 py-2 px-4 text-sm font-semibold cursor-pointer">
-                  <Icons.IconAdjustmentsHorizontal size={16} />
-                  Display
-                  <Icons.IconChevronDown size={16} />
-                </div>
-              </Popover.Trigger>
+      <div className="flex items-center justify-center gap-4 mb-8">
+        <Button variant="success" onClick={() => navigate("/projects/new")} data-test-id="add-project">
+          <span className="font-semibold">Start a New Project</span>
+        </Button>
+      </div>
 
-              <Popover.Portal>
-                <Popover.Content sideOffset={5} align="start" className="focus:outline-none">
-                  <div className="bg-dark-3 rounded-lg p-4 w-64 text-sm border-dark-5 border-2">
-                    <div className="flex flex-col gap-2">
-                      <Forms.Switch label="Health" value={showHealth} onChange={setShowHealth} />
-                      <Forms.Switch label="Phase" value={showPhase} onChange={setShowPhase} />
-                      <Forms.Switch label="Next Milestone" value={showNextMilestone} onChange={setShowNextMilestone} />
-                      <Forms.Switch label="Start Date" value={showStartDate} onChange={setShowStartDate} />
-                      <Forms.Switch label="Due Date" value={showDueDate} onChange={setShowDueDate} />
-                      <Forms.Switch label="Champion" value={showChampion} onChange={setShowChampion} />
-                    </div>
-                  </div>
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
-          </div>
-
-          <Button variant="success" onClick={() => navigate("/projects/new")} data-test-id="add-project">
-            <Icons.IconPlus size={16} /> New Project
-          </Button>
-        </div>
-
-        <ProjectList projects={projects} headerVisibility={headerVisibility} />
-      </Paper.Body>
+      <ProjectList projects={projects} />
     </Paper.Root>
   );
 }
 
-function ProjectList({ projects, headerVisibility }: { projects: Project[]; headerVisibility: any }) {
+function ProjectList({ projects }: { projects: Project[] }) {
+  return (
+    <div className="flex flex-col gap-4">
+      {projects.map((project) => {
+        return <ProjectCard project={project} key={project.id} />;
+      })}
+    </div>
+  );
+}
+
+function ProjectCard({ project }: { project: Project }) {
   const navigate = useNavigate();
 
-  const headers = [
-    { id: "health", label: "", size: "w-3", visible: headerVisibility.health },
-    { id: "phase", label: "", size: "w-3", visible: headerVisibility.phase },
-    { id: "title", label: "Title", size: "flex-1 truncate", visible: true },
-    {
-      id: "milestone",
-      label: "Next Milestone",
-      size: "flex-1 truncate",
-      visible: headerVisibility.nextMilestone,
-    },
-    { id: "start", label: "Start Date", size: "w-24", visible: headerVisibility.startDate },
-    { id: "due", label: "Due Date", size: "w-24", visible: headerVisibility.dueDate },
-    { id: "champion", label: "Champion", size: "w-24", visible: headerVisibility.champion },
-  ];
+  return (
+    <div
+      className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer hover:shadow-lg"
+      onClick={() => navigate(`/projects/${project.id}`)}
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div className="text-ellipsis font-bold text-lg">{project.name}</div>
 
-  const rows = projects.map((project) => {
-    return {
-      onClick: () => navigate(`/projects/${project.id}`),
-      cells: {
-        health: <ProjectIcons.IconForHealth health={project.health} />,
-        phase: <ProjectIcons.IconForPhase phase={project.phase} />,
-        title: project.name,
-        milestone: <NextMilestone project={project} />,
-        start: <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />,
-        due: <DateOrNotSet date={project.deadline} ifNull="&mdash;" />,
-        champion: <ProjectIcons.Champion person={project.champion} />,
-      },
-    };
-  });
+        <div className="flex items-center gap-2">
+          {project.contributors.map((contributor) => (
+            <Avatar key={contributor.id} person={contributor.person} size="tiny" />
+          ))}
+        </div>
+      </div>
 
-  return <Table headers={headers} rows={rows} />;
+      <div className="flex items-center gap-12">
+        <div>
+          <div className="text-xs text-white-1/80 uppercase mb-1">Status</div>
+          <Indicator type="status" value={project.health} />
+        </div>
+
+        <div>
+          <div className="text-xs text-white-1/80 uppercase mb-1">Start Date</div>
+          <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />
+        </div>
+
+        <div>
+          <div className="text-xs text-white-1/80 uppercase mb-1">Due Date</div>
+          <DateOrNotSet date={project.deadline} ifNull="&mdash;" />
+        </div>
+
+        <div>
+          <div className="text-xs text-white-1/80 uppercase mb-1">Next Milestone</div>
+          <NextMilestone project={project} />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function NextMilestone({ project }) {
@@ -158,7 +129,7 @@ function DateOrNotSet({ date, ifNull }) {
     return <span className="text-sm text-white-2">{ifNull}</span>;
   }
   return (
-    <div className="text-sm flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <FormattedTime time={date} format="short-date" />
     </div>
   );
