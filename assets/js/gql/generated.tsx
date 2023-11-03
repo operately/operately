@@ -446,6 +446,7 @@ export type Project = {
   isArchived: Scalars['Boolean']['output'];
   isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
+  lastCheckIn?: Maybe<Update>;
   milestones?: Maybe<Array<Maybe<Milestone>>>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -481,6 +482,19 @@ export type ProjectDocument = {
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   title: Scalars['String']['output'];
+};
+
+export type ProjectHealth = {
+  __typename?: 'ProjectHealth';
+  budget: Scalars['String']['output'];
+  budgetComments: Scalars['String']['output'];
+  risks: Scalars['String']['output'];
+  risksComments: Scalars['String']['output'];
+  schedule: Scalars['String']['output'];
+  scheduleComments: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  team: Scalars['String']['output'];
+  teamComments: Scalars['String']['output'];
 };
 
 export type ProjectKeyResource = {
@@ -1108,6 +1122,7 @@ export type UpdateContentReview = {
 
 export type UpdateContentStatusUpdate = {
   __typename?: 'UpdateContentStatusUpdate';
+  health?: Maybe<ProjectHealth>;
   message: Scalars['String']['output'];
   newHealth: Scalars['String']['output'];
   nextMilestoneDueDate?: Maybe<Scalars['String']['output']>;

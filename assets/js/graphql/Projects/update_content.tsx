@@ -48,6 +48,19 @@ export const FRAGMENT = `
 
       projectStartTime
       projectEndTime
+
+      health {
+        status
+        schedule
+        budget
+        team
+        risks
+        
+        scheduleComments
+        budgetComments
+        teamComments
+        risksComments
+      }
     }
 
     ... on UpdateContentProjectDiscussion {
@@ -128,6 +141,24 @@ export interface StatusUpdate {
 
   projectStartTime?: Date;
   projectEndTime?: Date;
+
+  health: ProjectHealth;
+}
+
+export interface ProjectHealth {
+  status: string;
+
+  schedule: string;
+  scheduleComments: string;
+
+  budget: string;
+  budgetComments: string;
+
+  team: string;
+  teamComments: string;
+
+  risks: string;
+  risksComments: string;
 }
 
 export interface ProjectDiscussion {

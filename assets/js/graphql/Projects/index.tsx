@@ -127,6 +127,7 @@ export interface Project {
   archivedAt: Date;
 
   reviewRequests: ReviewRequests.ReviewRequest[];
+  lastCheckIn?: Updates.Update;
 }
 
 export const GET_PROJECT = gql`
@@ -145,6 +146,8 @@ export const GET_PROJECT = gql`
       isArchived
       archivedAt
       private
+
+      lastCheckIn ${Updates.UPDATE_FRAGMENT}
 
       permissions ${Permissions.FRAGMENT}
 

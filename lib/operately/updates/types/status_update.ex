@@ -39,7 +39,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
       |> cast_embed(:schedule)
       |> cast_embed(:budget)
       |> cast_embed(:team)
-      |> cast_embed(:risk)
+      |> cast_embed(:risks)
     end
   end
 
@@ -93,9 +93,9 @@ defmodule Operately.Updates.Types.StatusUpdate do
           :value => health["team"]["value"],
           :comments => Jason.encode!(health["team"]["comments"]),
         },
-        :risk => %{
-          :value => health["risk"]["value"],
-          :comments => Jason.encode!(health["risk"]["comments"]),
+        :risks => %{
+          :value => health["risks"]["value"],
+          :comments => Jason.encode!(health["risks"]["comments"]),
         },
       }
     })

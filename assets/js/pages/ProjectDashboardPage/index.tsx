@@ -58,7 +58,7 @@ export function Page() {
         <Timeline project={project} refetch={refetch} editable={championOfProject} />
 
         <div className="my-8 flex items-start gap-6">
-          <StatusUpdates me={me} project={project} />
+          <StatusUpdates project={project} />
         </div>
       </div>
     </Paper.Root>

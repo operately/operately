@@ -25,7 +25,7 @@ export function useHealthState(): HealthState {
   const [schedule, setSchedule] = React.useState("on_schedule");
   const [budget, setBudget] = React.useState("within_budget");
   const [team, setTeam] = React.useState("staffed");
-  const [risks, setRisks] = React.useState("no_risks");
+  const [risks, setRisks] = React.useState("no_known_risks");
 
   let scheduleEditor = TipTapEditor.useEditor({
     placeholder: "Add details...",

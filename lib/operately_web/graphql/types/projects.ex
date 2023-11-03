@@ -148,6 +148,12 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
       end
     end
 
+    field :last_check_in, :update do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Updates.get_last_check_in(project.id)}
+      end
+    end
+
     field :updates, list_of(:update) do
       resolve fn project, _, _ ->
         updates = Operately.Updates.list_updates(project.id, :project)
