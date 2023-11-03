@@ -61,13 +61,7 @@ function Editor() {
     onCompleted: (data) => navigate(`/projects/${project.id}/status_updates/${data.createUpdate.id}`),
   });
 
-  const [health, setHealth] = React.useState({
-    status: "on_track",
-    schedule: "on_schedule",
-    budget: "within_budget",
-    team: "staffed",
-    risks: "no_risks",
-  });
+  const healthState = useHealthState();
 
   const submit = () => {
     if (!editor) return;
@@ -95,7 +89,7 @@ function Editor() {
         <TipTapEditor.LinkEditForm editor={editor} />
       </div>
 
-      <Health health={health} setHealth={setHealth} />
+      <Health healthState={healthState} />
 
       <div className="flex items-center gap-2">
         <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={!submittable}>
@@ -110,8 +104,8 @@ function Editor() {
   );
 }
 
-function Health({ health, setHealth }) {
-  const { status, schedule, budget, team, risks } = health;
+function Health({ healthState }: { healthState: ReturnType<typeof useHealthState> }) {
+  const { status, schedule, budget, team, risks } = healthState;
 
   const setStatus = (value: string) => setHealth({ ...health, status: value });
   const setSchedule = (value: string) => setHealth({ ...health, schedule: value });
@@ -133,4 +127,57 @@ function Health({ health, setHealth }) {
       </div>
     </div>
   );
+}
+
+function useHealthState() {
+  const [status, setStatus] = React.useState("on_track");
+  const [schedule, setSchedule] = React.useState("on_schedule");
+  const [budget, setBudget] = React.useState("within_budget");
+  const [team, setTeam] = React.useState("staffed");
+  const [risks, setRisks] = React.useState("no_risks");
+
+  let scheduleEditor = TipTapEditor.useEditor({
+    placeholder: "Leave a comment...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "px-2 py-1 min-h-[4em]",
+    editable: true,
+  });
+
+  let budgetEditor = TipTapEditor.useEditor({
+    placeholder: "Leave a comment...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "px-2 py-1 min-h-[4em]",
+    editable: true,
+  });
+
+  let teamEditor = TipTapEditor.useEditor({
+    placeholder: "Leave a comment...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "px-2 py-1 min-h-[4em]",
+    editable: true,
+  });
+
+  let risksEditor = TipTapEditor.useEditor({
+    placeholder: "Leave a comment...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "px-2 py-1 min-h-[4em]",
+    editable: true,
+  });
+
+  return {
+    status,
+    setStatus,
+    schedule,
+    setSchedule,
+    budget,
+    setBudget,
+    team,
+    setTeam,
+    risks,
+    setRisks,
+    scheduleEditor,
+    budgetEditor,
+    teamEditor,
+    risksEditor,
+  };
 }
