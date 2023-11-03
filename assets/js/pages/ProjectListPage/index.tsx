@@ -44,7 +44,7 @@ export function Page() {
   const projects = SortProjects(data.projects);
 
   return (
-    <Paper.Root size="small">
+    <Paper.Root size="medium">
       <div className="font-extrabold text-3xl mt-4 mb-4 text-center">Projects in {company.name}</div>
 
       <div className="flex items-center justify-center gap-4 mb-8">
