@@ -5,7 +5,17 @@ import CreatableSelect from "react-select/creatable";
 
 import classnames from "classnames";
 
-export function SelectBox({ label, value, onChange, options, allowEnteringNewValues, ...props }) {
+interface SelectBoxProps {
+  label: string;
+  value: any;
+  onChange: (value: any) => void;
+  options: any[];
+  allowEnteringNewValues?: boolean;
+  "data-test-id"?: string;
+  props?: any;
+}
+
+export function SelectBox({ label, value, onChange, options, allowEnteringNewValues, ...props }: SelectBoxProps) {
   const dataTestId = props["data-test-id"];
 
   return (
