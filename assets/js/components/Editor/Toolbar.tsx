@@ -214,7 +214,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
 
   if (variant === "large") {
     return (
-      <div className="flex items-center gap-3 border-y border-shade-2 py-1 mt-4">
+      <div className="flex items-center gap-3 border-y border-shade-2 py-1">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-1">
             <BoldButton editor={editor} iconSize={20} />

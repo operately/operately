@@ -1,25 +1,59 @@
 import React from "react";
 
-import classnames from "classnames";
-
 import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
+import * as TipTapEditor from "@/components/Editor";
 
-export function AccordionWithOptions({ title, value, options, onChange }) {
+export function AccordionWithOptions({
+  name,
+  title,
+  value,
+  options,
+  onChange,
+  commentsEditor,
+}: {
+  name: string;
+  title: string;
+  value: string;
+  options: any;
+  onChange: (value: string) => void;
+  commentsEditor?: ReturnType<typeof TipTapEditor.useEditor>;
+}) {
   const current = options[value];
 
   return (
-    <AccordionWithStatus title={title} status={current.label}>
-      <Forms.RadioGroup name="status" defaultValue={value} onChange={onChange}>
-        {Object.keys(options).map((key) => (
-          <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2" key={key}>
-            <Forms.RadioWithExplanation value={key} label={options[key].label} explanation={options[key].explanation} />
-          </div>
-        ))}
-      </Forms.RadioGroup>
+    <AccordionWithStatus title={title} status={current!.label}>
+      <div className="p-4 bg-dark-3">
+        <div className="uppercase text-xs mb-4">Choose</div>
 
-      <div className="border-t border-dark-5 p-2 py-3 px-3 pb-2">
-        <span className="text-white-2">Add further details...</span>
+        <Forms.RadioGroup name={name} defaultValue={value} onChange={onChange}>
+          {Object.keys(options).map((key) => (
+            <div className="mb-4" key={key}>
+              <Forms.RadioWithExplanation
+                value={key}
+                label={options[key]!.label}
+                explanation={options[key]!.explanation}
+              />
+            </div>
+          ))}
+        </Forms.RadioGroup>
+
+        {commentsEditor && (
+          <>
+            <div className="uppercase text-xs mt-4 mb-4 tracking-wide">Leave comments</div>
+
+            <div className="bg-dark-3 border-x border-b border-dark-5">
+              <TipTapEditor.Root>
+                <TipTapEditor.Toolbar editor={commentsEditor.editor} variant="large" />
+
+                <div className="text-white-1 relative" style={{ minHeight: "150px" }}>
+                  <TipTapEditor.EditorContent editor={commentsEditor.editor} />
+                  <TipTapEditor.LinkEditForm editor={commentsEditor.editor} />
+                </div>
+              </TipTapEditor.Root>
+            </div>
+          </>
+        )}
       </div>
     </AccordionWithStatus>
   );
@@ -48,8 +82,8 @@ export function Accordion({ title, children }) {
   const toggle = () => setOpen(!open);
 
   return (
-    <div className={classnames({ "border border-dark-5 rounded": true, "border-dark-5 mb-8": open })}>
-      <div className="flex items-center justify-between cursor-pointer py-3 px-2.5" onClick={toggle}>
+    <div className="border border-dark-5 rounded bg-dark-4">
+      <div className="flex items-center justify-between cursor-pointer py-2.5 px-2.5" onClick={toggle}>
         {isFunction(title) ? title({ open }) : title}
 
         <div>{open ? <Icons.IconChevronUp size={20} /> : <Icons.IconChevronDown size={20} />}</div>
