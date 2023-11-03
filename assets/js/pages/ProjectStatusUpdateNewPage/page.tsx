@@ -82,8 +82,15 @@ function Health({ state }: { state: HealthState }) {
       <p className="text-white-1/70">Please adjust the values below.</p>
 
       <div className="my-6 mb-10 flex flex-col gap-3">
-        <AccordionWithOptions title="Status" value={state.status} options={options.status} onChange={state.setStatus} />
         <AccordionWithOptions
+          name="status"
+          title="Status"
+          value={state.status}
+          options={options.status}
+          onChange={state.setStatus}
+        />
+        <AccordionWithOptions
+          name="schedule"
           title="Schedule"
           value={state.schedule}
           options={options.schedule}
@@ -91,6 +98,7 @@ function Health({ state }: { state: HealthState }) {
           commentsEditor={state.scheduleEditor}
         />
         <AccordionWithOptions
+          name="budget"
           title="Budget"
           value={state.budget}
           options={options.budget}
@@ -98,6 +106,7 @@ function Health({ state }: { state: HealthState }) {
           commentsEditor={state.budgetEditor}
         />
         <AccordionWithOptions
+          name="team"
           title="Team"
           value={state.team}
           options={options.team}
@@ -105,6 +114,7 @@ function Health({ state }: { state: HealthState }) {
           commentsEditor={state.teamEditor}
         />
         <AccordionWithOptions
+          name="risks"
           title="Risks"
           value={state.risks}
           options={options.risks}

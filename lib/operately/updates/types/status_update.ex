@@ -78,7 +78,27 @@ defmodule Operately.Updates.Types.StatusUpdate do
     result = Map.merge(result, build_milestone_info(project))
     result = Map.merge(result, build_phase_info(project))
     result = Map.merge(result, %{:message => message})
-    result = Map.merge(result, %{:health => health})
+    result = Map.merge(result, %{
+      :health => %{
+        :status => health["status"],
+        :schedule => %{
+          :value => health["schedule"]["value"],
+          :comments => Jason.encode!(health["schedule"]["comments"]),
+        },
+        :budget => %{
+          :value => health["budget"]["value"],
+          :comments => Jason.encode!(health["budget"]["comments"]),
+        },
+        :team => %{
+          :value => health["team"]["value"],
+          :comments => Jason.encode!(health["team"]["comments"]),
+        },
+        :risk => %{
+          :value => health["risk"]["value"],
+          :comments => Jason.encode!(health["risk"]["comments"]),
+        },
+      }
+    })
     result
   end
 

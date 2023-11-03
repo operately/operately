@@ -5,15 +5,17 @@ import * as Forms from "@/components/Form";
 import * as TipTapEditor from "@/components/Editor";
 
 export function AccordionWithOptions({
+  name,
   title,
   value,
   options,
   onChange,
   commentsEditor,
 }: {
+  name: string;
   title: string;
   value: string;
-  options: Record<string, { label: string; explanation: string }>;
+  options: any;
   onChange: (value: string) => void;
   commentsEditor?: ReturnType<typeof TipTapEditor.useEditor>;
 }) {
@@ -24,7 +26,7 @@ export function AccordionWithOptions({
       <div className="p-4 bg-dark-3">
         <div className="uppercase text-xs mb-4">Choose</div>
 
-        <Forms.RadioGroup name="status" defaultValue={value} onChange={onChange}>
+        <Forms.RadioGroup name={name} defaultValue={value} onChange={onChange}>
           {Object.keys(options).map((key) => (
             <div className="mb-4" key={key}>
               <Forms.RadioWithExplanation
