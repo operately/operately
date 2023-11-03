@@ -18,6 +18,7 @@ defmodule Operately.Projects.ProjectCreation do
         :creator_id => params.creator_id,
         :started_at => DateTime.utc_now(),
         :next_update_scheduled_at => Operately.Time.first_friday_from_today(),
+        :health => :on_track,
         :phase => :planning
       })
     end)
