@@ -46,14 +46,13 @@ defmodule OperatelyWeb.Graphql.Types.ProjectHealths do
 
     field :risks, non_null(:string) do
       resolve fn health, _, _ ->
-      IO.inspect(health)
         {:ok, health["risks"] && health["risks"]["value"] || "no_known_risks"}
       end
     end
 
     field :risks_comments, non_null(:string) do
       resolve fn health, _, _ ->
-        {:ok, health["risks"] && health["risks"]["comments"] || ""}
+        {:ok, health["risks"] && health["risks"]["comments"] || "{}"}
       end
     end
   end

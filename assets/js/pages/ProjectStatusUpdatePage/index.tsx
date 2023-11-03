@@ -23,6 +23,9 @@ import { CommentSection } from "./CommentSection";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as ProjectIcons from "@/components/ProjectIcons";
 
+import { Accordion } from "@/components/Accordion";
+import { Indicator } from "@/components/ProjectHealthIndicators";
+
 interface LoaderData {
   project: Projects.Project;
   update: Updates.Update;
@@ -58,6 +61,7 @@ export function Page() {
   const [{ project, update, me }, refetch] = Paper.useLoadedData() as [LoaderData, () => void];
 
   const addReactionForm = useAddReaction(update.id, "update", refetch);
+  const content = update.content as UpdateContent.StatusUpdate;
 
   return (
     <Paper.Root>
@@ -67,13 +71,13 @@ export function Page() {
         <AckCTA project={project} update={update} refetch={refetch} me={me} />
 
         <div className="flex flex-col items-center">
-          <div className="text-white-1 text-2xl font-extrabold">Status Update</div>
+          <div className="text-white-1 text-2xl font-extrabold">
+            Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
+          </div>
           <div className="flex gap-0.5 flex-row items-center mt-1 text-white-1 font-medium">
             <div className="flex items-center gap-2">
               <Avatar person={update.author} size="tiny" /> {update.author.fullName}
             </div>
-            <TextSeparator />
-            <FormattedTime time={update.insertedAt} format="short-date" />
             <TextSeparator />
             <Acknowledgement update={update} />
           </div>
@@ -81,14 +85,13 @@ export function Page() {
 
         <Spacer size={4} />
         <RichContent jsonContent={update.message} className="text-lg" />
-
-        <Spacer size={2} />
-        <Details update={update} />
-
-        <Spacer size={2} />
-        <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+        <Spacer size={4} />
+        <Health health={content.health} />
 
         <Spacer size={4} />
+        <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+
+        <Spacer size={8} />
         <CommentSection update={update} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
@@ -195,6 +198,38 @@ function Details({ update }) {
           <FormattedTime time={content.projectEndTime} format="short-date" />
         </div>
       )}
+    </div>
+  );
+}
+
+function Health({ health }: { health: UpdateContent.ProjectHealth }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <Accordion title={<Indicator type="status" value={health.status} />}></Accordion>
+
+      <Accordion title={<Indicator type="schedule" value={health.schedule} />} showStatusWhenOpen>
+        <div className="p-4 bg-dark-3">
+          <RichContent jsonContent={health.scheduleComments} />
+        </div>
+      </Accordion>
+
+      <Accordion title={<Indicator type="budget" value={health.budget} />} showStatusWhenOpen>
+        <div className="p-4 bg-dark-3">
+          <RichContent jsonContent={health.budgetComments} />
+        </div>
+      </Accordion>
+
+      <Accordion title={<Indicator type="team" value={health.team} />} showStatusWhenOpen>
+        <div className="p-4 bg-dark-3">
+          <RichContent jsonContent={health.teamComments} />
+        </div>
+      </Accordion>
+
+      <Accordion title={<Indicator type="risks" value={health.risks} />} showStatusWhenOpen>
+        <div className="p-4 bg-dark-3">
+          <RichContent jsonContent={health.risksComments} />
+        </div>
+      </Accordion>
     </div>
   );
 }

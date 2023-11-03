@@ -28,7 +28,7 @@ export function CommentSection({
 
   return (
     <>
-      <div className="text-white-1 font-extrabold border-b border-shade-2 pb-2">Comments</div>
+      <div className="text-white-1 font-extrabold border-b border-shade-2 pb-4">Comments</div>
       <div className="flex flex-col">
         {beforeAck.map((c) => (
           <Comment key={c.id} comment={c} refetch={refetch} />
@@ -52,11 +52,11 @@ function Comment({ comment, refetch }) {
 
   return (
     <div
-      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-shade-2 text-white-1 bg-shade-1 px-3"
+      className="flex items-start justify-between gap-3 py-6 not-first:border-t border-shade-2 text-white-1"
       data-test-id={testId}
     >
       <div className="shrink-0">
-        <Avatar person={comment.author} size="tiny" />
+        <Avatar person={comment.author} size="normal" />
       </div>
 
       <div className="flex-1">
@@ -69,7 +69,7 @@ function Comment({ comment, refetch }) {
           </div>
         </div>
 
-        <div className="my-1">
+        <div className="my-3">
           <RichContent jsonContent={JSON.parse(comment.message)} />
         </div>
 
@@ -85,7 +85,7 @@ function AckComment({ update }) {
   const person = update.acknowledgingPerson;
 
   return (
-    <div className="flex items-center justify-between gap-3 py-3 px-3 text-white-1 bg-green-400/10">
+    <div className="flex items-center justify-between gap-3 py-6 px-3 text-white-1 bg-green-400/10">
       <div className="shrink-0">
         <Icons.IconCircleCheckFilled size={20} className="text-green-400" />
       </div>
@@ -113,7 +113,7 @@ function CommentBox({ update, refetch, me }) {
   };
 
   if (active) {
-    return <AddCommentActive update={update} onBlur={deactivate} onPost={onPost} />;
+    return <AddCommentActive me={me} update={update} onBlur={deactivate} onPost={onPost} />;
   } else {
     return <AddCommentNonActive onClick={activate} me={me} />;
   }
@@ -122,21 +122,21 @@ function CommentBox({ update, refetch, me }) {
 function AddCommentNonActive({ onClick, me }) {
   return (
     <div
-      className="py-3 not-first:border-t border-dark-8 cursor-pointer flex items-center gap-3 bg-shade-1 px-3"
+      className="py-6 not-first:border-t border-dark-5 cursor-pointer flex items-center gap-3"
       data-test-id="add-comment"
       onClick={onClick}
     >
-      <Avatar person={me} size="tiny" />
-      Post a comment...
+      <Avatar person={me} size="normal" />
+      Write a comment here...
     </div>
   );
 }
 
-function AddCommentActive({ update, onBlur, onPost }) {
+function AddCommentActive({ me, update, onBlur, onPost }) {
   const peopleSearch = People.usePeopleSearch();
 
-  const { editor, submittable } = TipTapEditor.useEditor({
-    placeholder: "Post a comment...",
+  const { editor, uploading } = TipTapEditor.useEditor({
+    placeholder: "Write a comment here...",
     peopleSearch: peopleSearch,
     className: "min-h-[200px] p-4",
   });
@@ -145,7 +145,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
 
   const handlePost = async () => {
     if (!editor) return;
-    if (!submittable) return;
+    if (uploading) return;
     if (loading) return;
 
     await post({
@@ -161,33 +161,37 @@ function AddCommentActive({ update, onBlur, onPost }) {
   };
 
   return (
-    <TipTapEditor.Root>
-      <div className="not-first:border-t border-dark-8 overflow-hidden relative bg-shade-1">
-        <TipTapEditor.EditorContent editor={editor} />
+    <div className="py-6 not-first:border-t border-dark-5 flex items-start gap-3">
+      <Avatar person={me} size="normal" />
+      <div className="flex-1">
+        <TipTapEditor.Root>
+          <div className="border border-dark-5 overflow-hidden relative">
+            <TipTapEditor.Toolbar editor={editor} variant="large" />
+            <TipTapEditor.EditorContent editor={editor} />
 
-        <div className="flex justify-between items-center m-4">
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={handlePost}
-              loading={loading}
-              variant="success"
-              data-test-id="post-comment"
-              size="small"
-              disabled={!submittable}
-            >
-              {submittable ? "Post" : "Uploading..."}
-            </Button>
+            <div className="flex justify-between items-center m-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handlePost}
+                  loading={loading}
+                  variant="success"
+                  data-test-id="post-comment"
+                  size="small"
+                  disabled={uploading}
+                >
+                  {uploading ? "Uploading..." : "Post"}
+                </Button>
 
-            <Button variant="secondary" onClick={onBlur} size="small">
-              Cancel
-            </Button>
+                <Button variant="secondary" onClick={onBlur} size="small">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+
+            <TipTapEditor.LinkEditForm editor={editor} />
           </div>
-
-          <TipTapEditor.Toolbar editor={editor} variant="small" />
-        </div>
-
-        <TipTapEditor.LinkEditForm editor={editor} />
+        </TipTapEditor.Root>
       </div>
-    </TipTapEditor.Root>
+    </div>
   );
 }

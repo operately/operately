@@ -89,7 +89,7 @@ const indicators = {
   },
 };
 
-export function Indicator({ value, type }) {
+export function Indicator({ value, type }): JSX.Element {
   const { title, color } = findOptions(type, value);
 
   return (

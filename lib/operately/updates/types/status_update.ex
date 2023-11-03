@@ -30,7 +30,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
       embeds_one :schedule, ValueWithComments
       embeds_one :budget, ValueWithComments
       embeds_one :team, ValueWithComments
-      embeds_one :risk, ValueWithComments
+      embeds_one :risks, ValueWithComments
     end
 
     def changeset(health, attrs) do
