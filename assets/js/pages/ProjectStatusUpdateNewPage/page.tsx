@@ -12,6 +12,7 @@ import * as Projects from "@/graphql/Projects";
 import Button from "@/components/Button";
 
 import { useLoadedData } from "./loader";
+import { useHealthState, HealthState } from "./useHealthState";
 import { AccordionWithOptions } from "./Accordion";
 import { options } from "./healthOptions";
 
@@ -46,33 +47,121 @@ function Header() {
 
 function Editor() {
   const { project } = useLoadedData();
+  const { editor, healthState, submit } = useForm();
+
+  return (
+    <div className="mt-4">
+      <TipTapEditor.Root>
+        <TipTapEditor.Toolbar editor={editor.editor} variant="large" />
+
+        <div className="mb-8 text-white-1 text-lg relative border-b border-shade-2" style={{ minHeight: "350px" }}>
+          <TipTapEditor.EditorContent editor={editor.editor} />
+          <TipTapEditor.LinkEditForm editor={editor.editor} />
+        </div>
+
+        <Health state={healthState} />
+
+        <div className="flex items-center gap-2">
+          <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={!editor.uploading}>
+            <Icons.IconMail size={20} />
+            {editor.uploading ? "Uploading..." : "Submit"}
+          </Button>
+          <Button variant="secondary" linkTo={`/projects/${project.id}`}>
+            Cancel
+          </Button>
+        </div>
+      </TipTapEditor.Root>
+    </div>
+  );
+}
+
+function Health({ state }: { state: HealthState }) {
+  return (
+    <div>
+      <p className="font-bold text-lg">Is there a change in the project's health?</p>
+      <p className="text-white-1/70">Please adjust the values below.</p>
+
+      <div className="my-6 mb-10 flex flex-col gap-3">
+        <AccordionWithOptions title="Status" value={state.status} options={options.status} onChange={state.setStatus} />
+        <AccordionWithOptions
+          title="Schedule"
+          value={state.schedule}
+          options={options.schedule}
+          onChange={state.setSchedule}
+          commentsEditor={state.scheduleEditor}
+        />
+        <AccordionWithOptions
+          title="Budget"
+          value={state.budget}
+          options={options.budget}
+          onChange={state.setBudget}
+          commentsEditor={state.budgetEditor}
+        />
+        <AccordionWithOptions
+          title="Team"
+          value={state.team}
+          options={options.team}
+          onChange={state.setTeam}
+          commentsEditor={state.teamEditor}
+        />
+        <AccordionWithOptions
+          title="Risks"
+          value={state.risks}
+          options={options.risks}
+          onChange={state.setRisks}
+          commentsEditor={state.risksEditor}
+        />
+      </div>
+    </div>
+  );
+}
+
+function useForm() {
+  const { project } = useLoadedData();
 
   const navigate = useNavigate();
+  const healthState = useHealthState();
 
-  const peopleSearch = People.usePeopleSearch();
-
-  const { editor, submittable } = TipTapEditor.useEditor({
+  const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
-    peopleSearch: peopleSearch,
+    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[350px] py-2",
   });
 
   const [post] = Projects.usePostUpdate({
-    onCompleted: (data) => navigate(`/projects/${project.id}/status_updates/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(`/projects/${project.id}/status_updates/${data.createUpdate.id}`),
   });
 
-  const healthState = useHealthState();
-
   const submit = () => {
-    if (!editor) return;
-    if (!submittable) return;
+    if (!editor.editor) return;
+    if (editor.uploading) return;
+
+    const health = {
+      status: healthState.status,
+      schedule: {
+        value: healthState.schedule,
+        comments: healthState.scheduleEditor.editor.getJSON(),
+      },
+      budget: {
+        value: healthState.budget,
+        comments: healthState.budgetEditor.editor.getJSON(),
+      },
+      team: {
+        value: healthState.team,
+        comments: healthState.teamEditor.editor.getJSON(),
+      },
+      risks: {
+        value: healthState.risks,
+        comments: healthState.risksEditor.editor.getJSON(),
+      },
+    };
 
     post({
       variables: {
         input: {
           updatableType: "project",
           updatableId: project.id,
-          content: JSON.stringify(editor.getJSON()),
+          content: JSON.stringify(editor.editor.getJSON()),
           health: JSON.stringify(health),
           messageType: "status_update",
         },
@@ -80,104 +169,5 @@ function Editor() {
     });
   };
 
-  return (
-    <TipTapEditor.Root>
-      <TipTapEditor.Toolbar editor={editor} variant="large" />
-
-      <div className="mb-8 text-white-1 text-lg relative border-b border-shade-2" style={{ minHeight: "350px" }}>
-        <TipTapEditor.EditorContent editor={editor} />
-        <TipTapEditor.LinkEditForm editor={editor} />
-      </div>
-
-      <Health healthState={healthState} />
-
-      <div className="flex items-center gap-2">
-        <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={!submittable}>
-          <Icons.IconMail size={20} />
-          {submittable ? "Submit" : "Uploading..."}
-        </Button>
-        <Button variant="secondary" linkTo={`/projects/${project.id}`}>
-          Cancel
-        </Button>
-      </div>
-    </TipTapEditor.Root>
-  );
-}
-
-function Health({ healthState }: { healthState: ReturnType<typeof useHealthState> }) {
-  const { status, schedule, budget, team, risks } = healthState;
-
-  const setStatus = (value: string) => setHealth({ ...health, status: value });
-  const setSchedule = (value: string) => setHealth({ ...health, schedule: value });
-  const setBudget = (value: string) => setHealth({ ...health, budget: value });
-  const setTeam = (value: string) => setHealth({ ...health, team: value });
-  const setRisks = (value: string) => setHealth({ ...health, risks: value });
-
-  return (
-    <div>
-      <p className="font-bold text-lg">Is there a change in the project's health?</p>
-      <p className="text-white-1/70">Please adjust the values below.</p>
-
-      <div className="my-6 mb-10 flex flex-col gap-2">
-        <AccordionWithOptions title="Status" value={status} options={options.status} onChange={setStatus} />
-        <AccordionWithOptions title="Schedule" value={schedule} options={options.schedule} onChange={setSchedule} />
-        <AccordionWithOptions title="Budget" value={budget} options={options.budget} onChange={setBudget} />
-        <AccordionWithOptions title="Team" value={team} options={options.team} onChange={setTeam} />
-        <AccordionWithOptions title="Risks" value={risks} options={options.risks} onChange={setRisks} />
-      </div>
-    </div>
-  );
-}
-
-function useHealthState() {
-  const [status, setStatus] = React.useState("on_track");
-  const [schedule, setSchedule] = React.useState("on_schedule");
-  const [budget, setBudget] = React.useState("within_budget");
-  const [team, setTeam] = React.useState("staffed");
-  const [risks, setRisks] = React.useState("no_risks");
-
-  let scheduleEditor = TipTapEditor.useEditor({
-    placeholder: "Leave a comment...",
-    peopleSearch: People.usePeopleSearch(),
-    className: "px-2 py-1 min-h-[4em]",
-    editable: true,
-  });
-
-  let budgetEditor = TipTapEditor.useEditor({
-    placeholder: "Leave a comment...",
-    peopleSearch: People.usePeopleSearch(),
-    className: "px-2 py-1 min-h-[4em]",
-    editable: true,
-  });
-
-  let teamEditor = TipTapEditor.useEditor({
-    placeholder: "Leave a comment...",
-    peopleSearch: People.usePeopleSearch(),
-    className: "px-2 py-1 min-h-[4em]",
-    editable: true,
-  });
-
-  let risksEditor = TipTapEditor.useEditor({
-    placeholder: "Leave a comment...",
-    peopleSearch: People.usePeopleSearch(),
-    className: "px-2 py-1 min-h-[4em]",
-    editable: true,
-  });
-
-  return {
-    status,
-    setStatus,
-    schedule,
-    setSchedule,
-    budget,
-    setBudget,
-    team,
-    setTeam,
-    risks,
-    setRisks,
-    scheduleEditor,
-    budgetEditor,
-    teamEditor,
-    risksEditor,
-  };
+  return { editor, healthState, submit };
 }
