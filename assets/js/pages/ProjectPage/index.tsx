@@ -17,6 +17,7 @@ import ArchivedBanner from "./ArchivedBanner";
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as Me from "@/graphql/Me";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -50,9 +51,17 @@ export function Page() {
   useDocumentTitle(project.name);
 
   const championOfProject = project.champion?.id === me.id;
+  const gotoNewDashboard = useNavigateTo(`/projects/${project.id}/dashboard`);
 
   return (
     <Paper.Root size="medium">
+      <div
+        className="border-b border-dark-5 p-4 text-center cursor-pointer underline text-blue-400 underline-offset-2"
+        onClick={gotoNewDashboard}
+      >
+        New Dashboard -&gt;
+      </div>
+
       <ArchivedBanner project={project} />
       <div className="p-8 border border-dark-3 bg-dark-2 rounded shadow-xl">
         <div className="bg-dark-2 p-8 -mx-8 -mt-8">

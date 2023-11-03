@@ -67,5 +67,11 @@ defmodule OperatelyWeb.Graphql.Types.UpdateContentStatusUpdate do
         {:ok, update.content["project_end_time"]}
       end
     end
+
+    field :health, :project_health do
+      resolve fn update, _, _ ->
+        {:ok, update.content["health"]}
+      end
+    end
   end
 end

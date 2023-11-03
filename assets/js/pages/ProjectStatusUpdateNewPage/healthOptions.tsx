@@ -1,108 +1,80 @@
 import React from "react";
-import * as Icons from "@tabler/icons-react";
 
-const StatusOnTrack = () => <OptionLabelWithColor title="On Track" color="text-green-400" />;
-const StatusAtRisk = () => <OptionLabelWithColor title="At Risk" color="text-yellow-400" />;
-const StatusOffTrack = () => <OptionLabelWithColor title="Off Track" color="text-red-400" />;
-const StatusPaused = () => <OptionLabelWithColor title="Paused" color="text-gray-400" />;
-
-const ScheduleOnTrack = () => <OptionLabelWithColor title="On Schedule" color="text-green-400" />;
-const ScheduleSmallDelays = () => <OptionLabelWithColor title="Small Delays" color="text-yellow-400" />;
-const ScheduleMajorDelays = () => <OptionLabelWithColor title="Major Delays" color="text-red-400" />;
-
-const BudgetWithinBudget = () => <OptionLabelWithColor title="Within Budget" color="text-green-400" />;
-const BudgetNotWithinBudget = () => <OptionLabelWithColor title="Not Within Budget" color="text-red-400" />;
-
-const TeamStaffed = () => <OptionLabelWithColor title="Staffed with suitable roles" color="text-green-400" />;
-const TeamMissingRoles = () => <OptionLabelWithColor title="Missing roles" color="text-yellow-400" />;
-const TeamKeyRolesMissing = () => <OptionLabelWithColor title="Key roles missing" color="text-red-400" />;
-
-const RisksNoKnownRisks = () => <OptionLabelWithColor title="No known risks" color="text-green-400" />;
-const RisksMinorRisks = () => <OptionLabelWithColor title="Minor risks" color="text-yellow-400" />;
-const RisksMajorRisks = () => <OptionLabelWithColor title="Major risks" color="text-red-400" />;
-
-function OptionLabelWithColor({ color, title }) {
-  return (
-    <span className="font-medium flex items-center gap-2">
-      {title}
-      <Icons.IconCircleFilled size={12} className={color} />
-    </span>
-  );
-}
+import { Indicator, explanation } from "@/components/ProjectHealthIndicators";
 
 export const options = {
   status: {
     on_track: {
-      label: <StatusOnTrack />,
-      explanation: "Progressing well, we are delivering results",
+      label: <Indicator value="on_track" type="status" />,
+      explanation: explanation("status", "on_track"),
     },
     at_risk: {
-      label: <StatusAtRisk />,
-      explanation: "Small concerns, but we are confident that we will deliver",
+      label: <Indicator value="at_risk" type="status" />,
+      explanation: explanation("status", "at_risk"),
     },
     off_track: {
-      label: <StatusOffTrack />,
-      explanation: "Major problems, not confident that we will deliver",
+      label: <Indicator value="off_track" type="status" />,
+      explanation: explanation("status", "off_track"),
     },
     paused: {
-      label: <StatusPaused />,
-      explanation: "Temporarely paused. We will resume soon.",
+      label: <Indicator value="paused" type="status" />,
+      explanation: explanation("status", "paused"),
     },
   },
 
   schedule: {
     on_schedule: {
-      label: <ScheduleOnTrack />,
-      explanation: "We have a timeline, and we are hitting the deadlines",
+      label: <Indicator value="on_schedule" type="schedule" />,
+      explanation: explanation("schedule", "on_schedule"),
     },
     small_delays: {
-      label: <ScheduleSmallDelays />,
-      explanation: "We are experiecing small delays in the schedule",
+      label: <Indicator value="small_delays" type="schedule" />,
+      explanation: explanation("schedule", "small_delays"),
     },
     major_delays: {
-      label: <ScheduleMajorDelays />,
-      explanation: "We are experiecing small delays in the schedule",
+      label: <Indicator value="major_delays" type="schedule" />,
+      explanation: explanation("schedule", "major_delays"),
     },
   },
 
   budget: {
     within_budget: {
-      label: <BudgetWithinBudget />,
-      explanation: "We are with budget, and we are not expecting any changes",
+      label: <Indicator value="within_budget" type="budget" />,
+      explanation: explanation("budget", "within_budget"),
     },
     not_within_budget: {
-      label: <BudgetNotWithinBudget />,
-      explanation: "We are not able to deliver within budget",
+      label: <Indicator value="not_within_budget" type="budget" />,
+      explanation: explanation("budget", "not_within_budget"),
     },
   },
 
   team: {
     staffed: {
-      label: <TeamStaffed />,
-      explanation: "Everyone is ready and we are able to deliver",
+      label: <Indicator value="staffed" type="team" />,
+      explanation: explanation("team", "staffed"),
     },
     missing_roles: {
-      label: <TeamMissingRoles />,
-      explanation: "Missing roles in the team, but we are able to deliver",
+      label: <Indicator value="missing_roles" type="team" />,
+      explanation: explanation("team", "missing_roles"),
     },
     key_roles_missing: {
-      label: <TeamKeyRolesMissing />,
-      explanation: "Missing key roles in the team, not able to deliver",
+      label: <Indicator value="key_roles_missing" type="team" />,
+      explanation: explanation("team", "key_roles_missing"),
     },
   },
 
   risks: {
-    no_risks: {
-      label: <RisksNoKnownRisks />,
-      explanation: "We are not aware of any risks that could impact the project",
+    no_known_risks: {
+      label: <Indicator value="no_known_risks" type="risks" />,
+      explanation: explanation("risks", "no_known_risks"),
     },
     minor_risks: {
-      label: <RisksMinorRisks />,
-      explanation: "Minor risks, we can manage them",
+      label: <Indicator value="minor_risks" type="risks" />,
+      explanation: explanation("risks", "minor_risks"),
     },
     major_risks: {
-      label: <RisksMajorRisks />,
-      explanation: "Major risks that significantly impact the project",
+      label: <Indicator value="major_risks" type="risks" />,
+      explanation: explanation("risks", "major_risks"),
     },
   },
 };

@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Notifications
   import_types OperatelyWeb.Graphql.Types.Objectives
   import_types OperatelyWeb.Graphql.Types.Person
+  import_types OperatelyWeb.Graphql.Types.ProjectHealths
   import_types OperatelyWeb.Graphql.Types.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Types.Projects
   import_types OperatelyWeb.Graphql.Types.Reactions

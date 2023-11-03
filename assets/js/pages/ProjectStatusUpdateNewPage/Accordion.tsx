@@ -1,8 +1,8 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
 import * as TipTapEditor from "@/components/Editor";
+import { Accordion } from "@/components/Accordion";
 
 export function AccordionWithOptions({
   name,
@@ -22,7 +22,7 @@ export function AccordionWithOptions({
   const current = options[value];
 
   return (
-    <AccordionWithStatus title={title} status={current!.label}>
+    <Accordion title={title} status={current!.label}>
       <div className="p-4 bg-dark-3">
         <div className="uppercase text-xs mb-4">Choose</div>
 
@@ -55,45 +55,6 @@ export function AccordionWithOptions({
           </>
         )}
       </div>
-    </AccordionWithStatus>
+    </Accordion>
   );
-}
-
-export function AccordionWithStatus({ title, status, children }) {
-  const TitleWithStatus = ({ open }) => {
-    return (
-      <div className="flex items-center gap-2">
-        <div className="text-white-1 font-bold">{title}</div>
-        {!open && (
-          <>
-            <Icons.IconArrowRight size={16} className="text-white-2" />
-            {status}
-          </>
-        )}
-      </div>
-    );
-  };
-
-  return <Accordion title={TitleWithStatus}>{children}</Accordion>;
-}
-
-export function Accordion({ title, children }) {
-  const [open, setOpen] = React.useState<boolean>(false);
-  const toggle = () => setOpen(!open);
-
-  return (
-    <div className="border border-dark-5 rounded bg-dark-4">
-      <div className="flex items-center justify-between cursor-pointer py-2.5 px-2.5" onClick={toggle}>
-        {isFunction(title) ? title({ open }) : title}
-
-        <div>{open ? <Icons.IconChevronUp size={20} /> : <Icons.IconChevronDown size={20} />}</div>
-      </div>
-
-      {open && <div className="">{children}</div>}
-    </div>
-  );
-}
-
-function isFunction(object: any) {
-  return typeof object === "function";
 }
