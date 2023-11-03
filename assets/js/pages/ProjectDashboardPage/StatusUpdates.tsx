@@ -4,9 +4,11 @@ import * as UpdateContent from "@/graphql/Projects/update_content";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import { Summary } from "@/components/RichContent";
 
+import { Summary } from "@/components/RichContent";
 import { Indicator } from "@/components/ProjectHealthIndicators";
+
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export default function StatusUpdate({ project }) {
   if (project.lastCheckIn == null) return null;
@@ -15,11 +17,16 @@ export default function StatusUpdate({ project }) {
   const content = lastUpdate.content as UpdateContent.StatusUpdate;
   const author = lastUpdate.author;
 
+  const gotoUpdate = useNavigateTo(`/projects/${project.id}/status_updates/${lastUpdate.id}`);
+
   return (
     <div className="flex-1">
       <div className="text-white-1/80 uppercase text-xs font-medium mb-2">Last Check-In</div>
 
-      <div className="flex items-start gap-2 bg-dark-3 p-4 rounded-lg shadow-xl hover:bg-dark-4 cursor-pointer">
+      <div
+        className="flex items-start gap-2 bg-dark-3 p-4 rounded-lg shadow-xl hover:bg-dark-4 cursor-pointer"
+        onClick={gotoUpdate}
+      >
         <div className="flex flex-col gap-1 relative flex-1">
           <div className="flex items-center justify-between flex-1">
             <div className="flex items-center gap-2">
