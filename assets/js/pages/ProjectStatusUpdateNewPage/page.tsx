@@ -4,6 +4,7 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as People from "@/graphql/People";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 
 import { useNavigate } from "react-router-dom";
 
@@ -130,7 +131,7 @@ function useForm() {
   const { project } = useLoadedData();
 
   const navigate = useNavigate();
-  const healthState = useHealthState();
+  const healthState = useHealthState(project);
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,

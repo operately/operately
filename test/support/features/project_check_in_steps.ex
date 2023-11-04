@@ -30,10 +30,15 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     },
   }
 
-  def submit_check_in(ctx, opts \\ %{}) do
+  def start_check_in(ctx) do
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "add-status-update")
+  end
+
+  def submit_check_in(ctx, opts \\ %{}) do
+    ctx
+    |> start_check_in()
     |> UI.fill_rich_text(opts.content)
     |> in_accordion("status", fn el ->
       el |> UI.click(testid: "status-#{opts.status}")
@@ -78,6 +83,28 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   def assert_check_in_submitted(ctx, opts) do
     ctx
     |> UI.assert_text("Check-In from")
+    |> UI.assert_text(@labels.status[opts.status])
+    |> UI.assert_text(@labels.schedule[opts.schedule])
+    |> UI.assert_text(@labels.budget[opts.budget])
+    |> UI.assert_text(@labels.team[opts.team])
+    |> UI.assert_text(@labels.risks[opts.risks])
+    |> in_accordion("schedule", fn el ->
+      el |> UI.assert_text(opts.schedule_comments)
+    end)
+    |> in_accordion("budget", fn el ->
+      el |> UI.assert_text(opts.budget_comments)
+    end)
+    |> in_accordion("team", fn el ->
+      el |> UI.assert_text(opts.team_comments)
+    end)
+    |> in_accordion("risks", fn el ->
+      el |> UI.assert_text(opts.risks_comments)
+    end)
+  end
+  
+  def assert_previous_check_in_values(ctx, opts) do
+    ctx
+    |> UI.assert_text("What's new since the last check-in?")
     |> UI.assert_text(@labels.status[opts.status])
     |> UI.assert_text(@labels.schedule[opts.schedule])
     |> UI.assert_text(@labels.budget[opts.budget])

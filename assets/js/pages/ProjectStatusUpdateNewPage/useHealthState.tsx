@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
+import * as Projects from "@/graphql/Projects";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 
 export interface HealthState {
   status: string;
@@ -20,18 +22,21 @@ export interface HealthState {
   risksEditor: ReturnType<typeof TipTapEditor.useEditor>;
 }
 
-export function useHealthState(): HealthState {
-  const [status, setStatus] = React.useState("on_track");
-  const [schedule, setSchedule] = React.useState("on_schedule");
-  const [budget, setBudget] = React.useState("within_budget");
-  const [team, setTeam] = React.useState("staffed");
-  const [risks, setRisks] = React.useState("no_known_risks");
+export function useHealthState(project: Projects.Project): HealthState {
+  const lastHealthState = lastKnownHealthState(project);
+
+  const [status, setStatus] = React.useState(lastHealthState.status);
+  const [schedule, setSchedule] = React.useState(lastHealthState.schedule);
+  const [budget, setBudget] = React.useState(lastHealthState.budget);
+  const [team, setTeam] = React.useState(lastHealthState.team);
+  const [risks, setRisks] = React.useState(lastHealthState.risks);
 
   let scheduleEditor = TipTapEditor.useEditor({
     placeholder: "Add details...",
     peopleSearch: People.usePeopleSearch(),
     className: "px-2 py-1 min-h-[4em]",
     editable: true,
+    content: JSON.parse(lastHealthState.scheduleComments),
   });
 
   let budgetEditor = TipTapEditor.useEditor({
@@ -39,6 +44,7 @@ export function useHealthState(): HealthState {
     peopleSearch: People.usePeopleSearch(),
     className: "px-2 py-1 min-h-[4em]",
     editable: true,
+    content: JSON.parse(lastHealthState.budgetComments),
   });
 
   let teamEditor = TipTapEditor.useEditor({
@@ -46,6 +52,7 @@ export function useHealthState(): HealthState {
     peopleSearch: People.usePeopleSearch(),
     className: "px-2 py-1 min-h-[4em]",
     editable: true,
+    content: JSON.parse(lastHealthState.teamComments),
   });
 
   let risksEditor = TipTapEditor.useEditor({
@@ -53,6 +60,7 @@ export function useHealthState(): HealthState {
     peopleSearch: People.usePeopleSearch(),
     className: "px-2 py-1 min-h-[4em]",
     editable: true,
+    content: JSON.parse(lastHealthState.risksComments),
   });
 
   return {
@@ -70,5 +78,29 @@ export function useHealthState(): HealthState {
     budgetEditor,
     teamEditor,
     risksEditor,
+  };
+}
+
+function lastKnownHealthState(project: Projects.Project): UpdateContent.ProjectHealth {
+  const lastCheckIn = project.lastCheckIn?.content as UpdateContent.StatusUpdate | undefined;
+
+  if (!lastCheckIn) return initialHealthState();
+  if (!lastCheckIn.health) return initialHealthState();
+
+  return lastCheckIn.health;
+}
+
+function initialHealthState(): UpdateContent.ProjectHealth {
+  return {
+    status: "on_track",
+    schedule: "on_schedule",
+    budget: "within_budget",
+    team: "staffed",
+    risks: "no_known_risks",
+
+    scheduleComments: "{}",
+    budgetComments: "{}",
+    teamComments: "{}",
+    risksComments: "{}",
   };
 }
