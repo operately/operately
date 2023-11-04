@@ -82,4 +82,15 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     |> NotificationsSteps.assert_project_update_commented_sent(author: ctx.reviewer)
     |> EmailSteps.assert_project_update_commented_sent(author: ctx.reviewer, to: ctx.champion)
   end
+
+  @tag login_as: :champion
+  feature "when checking in, it pre-populates the previous check-in values", ctx do
+    ctx
+    |> ProjectCheckInSteps.submit_check_in(@check_in_values)
+    |> ProjectCheckInSteps.assert_check_in_submitted(@check_in_values)
+
+    ctx
+    |> ProjectCheckInSteps.start_check_in()
+    |> ProjectCheckInSteps.assert_previous_check_in_values(@check_in_values)
+  end
 end
