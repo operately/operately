@@ -205,7 +205,11 @@ function Details({ update }) {
 function Health({ health }: { health: UpdateContent.ProjectHealth }) {
   return (
     <div className="flex flex-col gap-3">
-      <Accordion title={<Indicator type="status" value={health.status} />} testId="status"></Accordion>
+      <Accordion title={<Indicator type="status" value={health.status} />} testId="status">
+        <div className="p-4 bg-dark-3">
+          <RichContent jsonContent={health.statusComments} />
+        </div>
+      </Accordion>
 
       <Accordion
         title={<Indicator type="schedule" value={health.schedule} />}
@@ -217,19 +221,19 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
         </div>
       </Accordion>
 
-      <Accordion title={<Indicator type="budget" value={health.budget} />} showStatusWhenOpen testId="budget-accordion">
+      <Accordion title={<Indicator type="budget" value={health.budget} />} testId="budget-accordion">
         <div className="p-4 bg-dark-3">
           <RichContent jsonContent={health.budgetComments} />
         </div>
       </Accordion>
 
-      <Accordion title={<Indicator type="team" value={health.team} />} showStatusWhenOpen testId="team-accordion">
+      <Accordion title={<Indicator type="team" value={health.team} />} testId="team-accordion">
         <div className="p-4 bg-dark-3">
           <RichContent jsonContent={health.teamComments} />
         </div>
       </Accordion>
 
-      <Accordion title={<Indicator type="risks" value={health.risks} />} showStatusWhenOpen testId="risks-accordion">
+      <Accordion title={<Indicator type="risks" value={health.risks} />} testId="risks-accordion">
         <div className="p-4 bg-dark-3">
           <RichContent jsonContent={health.risksComments} />
         </div>

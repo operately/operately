@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectsTest do
   use Operately.FeatureCase
 
   import Operately.PeopleFixtures
+  import Operately.UpdatesFixtures
 
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
@@ -288,8 +289,7 @@ defmodule Operately.Features.ProjectsTest do
         updatable_id: project.id,
         content: %{
           "message" => rich_text_paragraph(text),
-          "old_health" => "on_track",
-          "new_health" => "on_track",
+          "health" => update_health_fixture()
         },
         author_id: author_id
       })

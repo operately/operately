@@ -9,12 +9,6 @@ defmodule OperatelyWeb.Graphql.Types.Updates do
     field :acknowledged, non_null(:boolean)
     field :acknowledged_at, :naive_datetime
 
-    field :previous_phase, :string
-    field :new_phase, :string
-
-    field :previous_health, :string
-    field :new_health, :string
-
     field :project, :project do
       resolve fn update, _, _ ->
         project = Operately.Projects.get_project!(update.updatable_id)

@@ -64,7 +64,7 @@ defmodule Operately.Updates do
     action = :project_status_update_submitted
 
     health = Jason.decode!(health)
-    status = health["status"]
+    status = health["status"]["value"]
 
     changeset = Update.changeset(%{
       updatable_type: :project,
