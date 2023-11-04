@@ -35,8 +35,6 @@ export const FRAGMENT = `
 
     ... on UpdateContentStatusUpdate {
       message
-      oldHealth
-      newHealth
 
       nextMilestoneId
       nextMilestoneTitle
@@ -56,6 +54,7 @@ export const FRAGMENT = `
         team
         risks
         
+        statusComments
         scheduleComments
         budgetComments
         teamComments
@@ -147,6 +146,7 @@ export interface StatusUpdate {
 
 export interface ProjectHealth {
   status: string;
+  statusComments: string;
 
   schedule: string;
   scheduleComments: string;

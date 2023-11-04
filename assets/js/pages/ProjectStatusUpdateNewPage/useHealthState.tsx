@@ -16,6 +16,7 @@ export interface HealthState {
   risks: string;
   setRisks: (value: string) => void;
 
+  statusEditor: ReturnType<typeof TipTapEditor.useEditor>;
   scheduleEditor: ReturnType<typeof TipTapEditor.useEditor>;
   budgetEditor: ReturnType<typeof TipTapEditor.useEditor>;
   teamEditor: ReturnType<typeof TipTapEditor.useEditor>;
@@ -30,6 +31,14 @@ export function useHealthState(project: Projects.Project): HealthState {
   const [budget, setBudget] = React.useState(lastHealthState.budget);
   const [team, setTeam] = React.useState(lastHealthState.team);
   const [risks, setRisks] = React.useState(lastHealthState.risks);
+
+  let statusEditor = TipTapEditor.useEditor({
+    placeholder: "Add details...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "px-2 py-1 min-h-[4em]",
+    editable: true,
+    content: JSON.parse(lastHealthState.statusComments),
+  });
 
   let scheduleEditor = TipTapEditor.useEditor({
     placeholder: "Add details...",
@@ -74,6 +83,7 @@ export function useHealthState(project: Projects.Project): HealthState {
     setTeam,
     risks,
     setRisks,
+    statusEditor,
     scheduleEditor,
     budgetEditor,
     teamEditor,
@@ -98,6 +108,7 @@ function initialHealthState(): UpdateContent.ProjectHealth {
     team: "staffed",
     risks: "no_known_risks",
 
+    statusComments: "{}",
     scheduleComments: "{}",
     budgetComments: "{}",
     teamComments: "{}",

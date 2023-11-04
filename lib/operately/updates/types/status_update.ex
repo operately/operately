@@ -25,8 +25,7 @@ defmodule Operately.Updates.Types.StatusUpdate do
 
     @primary_key false
     embedded_schema do
-      field :status, :string
-
+      embeds_one :status, ValueWithComments
       embeds_one :schedule, ValueWithComments
       embeds_one :budget, ValueWithComments
       embeds_one :team, ValueWithComments
@@ -35,7 +34,8 @@ defmodule Operately.Updates.Types.StatusUpdate do
 
     def changeset(health, attrs) do
       health
-      |> cast(attrs, [:status])
+      |> cast(attrs, [])
+      |> cast_embed(:status)
       |> cast_embed(:schedule)
       |> cast_embed(:budget)
       |> cast_embed(:team)
@@ -48,9 +48,6 @@ defmodule Operately.Updates.Types.StatusUpdate do
     field :message, :map
 
     embeds_one :health, Health
-
-    field :old_health, :string
-    field :new_health, :string
 
     field :next_milestone_id, Ecto.UUID
     field :next_milestone_title, :string
@@ -66,9 +63,9 @@ defmodule Operately.Updates.Types.StatusUpdate do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:message, :old_health, :new_health, :next_milestone_id, :next_milestone_title, :next_milestone_due_date, :phase, :phase_start, :phase_end, :project_start_time, :project_end_time])
+    |> cast(attrs, [:message, :next_milestone_id, :next_milestone_title, :next_milestone_due_date, :phase, :phase_start, :phase_end, :project_start_time, :project_end_time])
     |> cast_embed(:health)
-    |> validate_required([:message, :old_health, :new_health])
+    |> validate_required([:message, :health])
   end
 
   def build(project, health, message) do
@@ -80,7 +77,10 @@ defmodule Operately.Updates.Types.StatusUpdate do
     result = Map.merge(result, %{:message => message})
     result = Map.merge(result, %{
       :health => %{
-        :status => health["status"],
+        :status => %{
+          :value => health["status"]["value"],
+          :comments => Jason.encode!(health["status"]["comments"]),
+        },
         :schedule => %{
           :value => health["schedule"]["value"],
           :comments => Jason.encode!(health["schedule"]["comments"]),

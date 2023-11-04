@@ -24,12 +24,6 @@ export const UPDATE_FRAGMENT = `
 
     reactions ${Reactions.FRAGMENT}
 
-    previousPhase
-    newPhase
-
-    previousHealth
-    newHealth
-
     content ${UpdateContent.FRAGMENT}
   }
 `;

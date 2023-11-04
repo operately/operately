@@ -47,8 +47,6 @@ function List({ project }) {
 
 function ListItem({ update, project }: { update: Updates.Update; project: Project.Project }) {
   const navigateToUpdate = useNavigateTo(`/projects/${project.id}/status_updates/${update.id}`);
-
-  const content = update.content as UpdateContent.StatusUpdate;
   const author = update.author;
 
   return (
@@ -63,7 +61,7 @@ function ListItem({ update, project }: { update: Updates.Update; project: Projec
         </div>
       </div>
       <div className="flex gap-2 items-center text-sm">
-        <HealthIndicator health={content.newHealth} />
+        <HealthIndicator health={"on_track"} />
         <AckMarker update={update} />
       </div>
     </div>

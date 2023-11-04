@@ -89,6 +89,7 @@ function Health({ state }: { state: HealthState }) {
           value={state.status}
           options={options.status}
           onChange={state.setStatus}
+          commentsEditor={state.statusEditor}
         />
         <AccordionWithOptions
           name="schedule"
@@ -148,7 +149,10 @@ function useForm() {
     if (editor.uploading) return;
 
     const health = {
-      status: healthState.status,
+      status: {
+        value: healthState.status,
+        comments: healthState.statusEditor.editor.getJSON(),
+      },
       schedule: {
         value: healthState.schedule,
         comments: healthState.scheduleEditor.editor.getJSON(),

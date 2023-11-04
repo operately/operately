@@ -20,6 +20,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     budget: "within_budget",
     team: "staffed",
     risks: "no_known_risks",
+    status_comments: "This is a status comment.",
     schedule_comments: "This is a schedule comment.",
     budget_comments: "This is a budget comment.",
     team_comments: "This is a team comment.",

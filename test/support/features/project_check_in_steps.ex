@@ -41,7 +41,9 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> start_check_in()
     |> UI.fill_rich_text(opts.content)
     |> in_accordion("status", fn el ->
-      el |> UI.click(testid: "status-#{opts.status}")
+      el 
+      |> UI.click(testid: "status-#{opts.status}")
+      |> UI.fill_rich_text(opts.status_comments)
     end)
     |> in_accordion("schedule", fn el ->
       el 
@@ -110,6 +112,9 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> UI.assert_text(@labels.budget[opts.budget])
     |> UI.assert_text(@labels.team[opts.team])
     |> UI.assert_text(@labels.risks[opts.risks])
+    |> in_accordion("status", fn el ->
+      el |> UI.assert_text(opts.status_comments)
+    end)
     |> in_accordion("schedule", fn el ->
       el |> UI.assert_text(opts.schedule_comments)
     end)
