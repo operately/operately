@@ -22,7 +22,7 @@ export function AccordionWithOptions({
   const current = options[value];
 
   return (
-    <Accordion title={title} status={current!.label}>
+    <Accordion title={title} status={current!.label} testId={`${name}-accordion`}>
       <div className="p-4 bg-dark-3">
         <div className="uppercase text-xs mb-4">Choose</div>
 
@@ -33,6 +33,7 @@ export function AccordionWithOptions({
                 value={key}
                 label={options[key]!.label}
                 explanation={options[key]!.explanation}
+                data-test-id={`${name}-${key}`}
               />
             </div>
           ))}

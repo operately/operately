@@ -9,6 +9,8 @@ interface AccordionProps {
   showStatusWhenOpen?: boolean;
 
   openable?: boolean;
+
+  testId?: string;
 }
 
 export function Accordion(props: AccordionProps) {
@@ -21,8 +23,12 @@ export function Accordion(props: AccordionProps) {
   };
 
   return (
-    <div className="border border-dark-5 rounded bg-dark-4">
-      <div className="flex items-center justify-between cursor-pointer py-2.5 px-2.5" onClick={toggle}>
+    <div className="border border-dark-5 rounded bg-dark-4" data-test-id={props.testId}>
+      <div
+        className="flex items-center justify-between cursor-pointer py-2.5 px-2.5"
+        onClick={toggle}
+        data-test-id="open-close-toggle"
+      >
         <div className="flex items-center gap-2">
           <div className="text-white-1 font-bold">{props.title}</div>
 

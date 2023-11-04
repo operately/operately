@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.ProjectCheckInSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -12,10 +13,24 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     {:ok, ctx}
   end
 
+  @check_in_values %{
+    content: "This is a status update.",
+    status: "on_track",
+    schedule: "on_schedule",
+    budget: "within_budget",
+    team: "staffed",
+    risks: "no_known_risks",
+    schedule_comments: "This is a schedule comment.",
+    budget_comments: "This is a budget comment.",
+    team_comments: "This is a team comment.",
+    risks_comments: "This is a risk comment."
+  }
+
   @tag login_as: :champion
   feature "submitting a status update", ctx do
     ctx
-    |> ProjectSteps.submit_status_update(content: "This is a status update.")
+    |> ProjectCheckInSteps.submit_check_in(@check_in_values)
+    |> ProjectCheckInSteps.assert_check_in_submitted(@check_in_values)
 
     ctx
     |> UI.login_as(ctx.reviewer)
@@ -27,7 +42,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   feature "submitting a status update moves the next update date", ctx do
     previous_due = ctx.project.next_update_scheduled_at
 
-    ProjectSteps.submit_status_update(ctx, content: "This is a status update.")
+    ProjectCheckInSteps.submit_check_in(ctx, @check_in_values)
 
     current_due = Operately.Projects.get_project!(ctx.project.id).next_update_scheduled_at
 
@@ -37,7 +52,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   @tag login_as: :champion
   feature "acknowledge a status update", ctx do
     ctx
-    |> ProjectSteps.submit_status_update(content: "This is a status update.")
+    |> ProjectCheckInSteps.submit_check_in(@check_in_values)
 
     ctx
     |> UI.login_as(ctx.reviewer)
@@ -53,7 +68,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   @tag login_as: :champion
   feature "leave a comment on an update", ctx do
     ctx
-    |> ProjectSteps.submit_status_update(content: "This is a status update.")
+    |> ProjectCheckInSteps.submit_check_in(@check_in_values)
 
     ctx
     |> UI.login_as(ctx.reviewer)
