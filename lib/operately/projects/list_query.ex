@@ -6,11 +6,22 @@ defmodule Operately.Projects.ListQuery do
   def build(person, filters) do
     query = from p in Project
 
+    query = apply_archived_filter(query, filters[:include_archived])
     query = apply_visibility_filter(query, person)
     query = apply_group_filter(query, filters[:group_id], filters[:group_member_roles])
     query = apply_objective_filter(query, filters[:objective_id])
 
     query
+  end
+
+  defp apply_archived_filter(query, include_archived) do
+    IO.inspect "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    IO.inspect include_archived
+    if include_archived do
+      from p in query, where: is_nil(p.deleted_at) or not is_nil(p.deleted_at)
+    else
+      query
+    end
   end
 
   defp apply_visibility_filter(query, person) do

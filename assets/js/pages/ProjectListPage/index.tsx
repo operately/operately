@@ -10,27 +10,26 @@ import Button from "@/components/Button";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
-import { GET_COMPANY, companyID } from "@/graphql/Companies";
 
 import Avatar from "@/components/Avatar";
 
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
+import { OptionsBar, useOptionsState } from "./OptionsBar";
+
 export async function loader() {
   let projects = await client.query({
     query: LIST_PROJECTS,
     fetchPolicy: "network-only",
-  });
-
-  let company = await client.query({
-    query: GET_COMPANY,
-    variables: { id: companyID() },
-    fetchPolicy: "network-only",
+    variables: {
+      filter: {
+        includeArchived: true,
+      },
+    },
   });
 
   return {
     projects: projects.data.projects,
-    company: company.data.company,
   };
 }
 
@@ -40,21 +39,58 @@ export function Page() {
   const [data] = Paper.useLoadedData() as [{ projects: any; company: any }];
   const navigate = useNavigate();
 
-  const company = data.company;
   const projects = SortProjects(data.projects);
+  const options = useOptionsState();
 
   return (
     <Paper.Root size="medium">
-      <div className="font-extrabold text-3xl mt-4 mb-4 text-center">Projects in {company.name}</div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="font-extrabold text-2xl text-center">Projects</div>
 
-      <div className="flex items-center justify-center gap-4 mb-8">
-        <Button variant="success" onClick={() => navigate("/projects/new")} data-test-id="add-project">
-          <span className="font-semibold">Start a New Project</span>
-        </Button>
+        <div className="flex items-center justify-center">
+          <Button variant="success" onClick={() => navigate("/projects/new")} data-test-id="add-project">
+            <span className="font-semibold">Start a New Project</span>
+          </Button>
+        </div>
       </div>
 
-      <ProjectList projects={projects} />
+      <OptionsBar options={options} />
+      {options.layout === "grid" ? <ProjectGrid projects={projects} /> : <ProjectList projects={projects} />}
     </Paper.Root>
+  );
+}
+
+function ProjectGrid({ projects }: { projects: Project[] }) {
+  return (
+    <div className="grid grid-cols-3 gap-4 mt-6">
+      {projects.map((project) => {
+        return <ProjectGridItem project={project} key={project.id} />;
+      })}
+    </div>
+  );
+}
+
+function ProjectGridItem({ project }: { project: Project }) {
+  const navigate = useNavigate();
+
+  return (
+    <div
+      className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow-lg hover:shadow-xl"
+      onClick={() => navigate(`/projects/${project.id}`)}
+    >
+      <div className="flex flex-col justify-between h-28">
+        <div>
+          <div className="text-ellipsis font-bold">{project.name}</div>
+          <NextMilestone project={project} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          {project.contributors.map((contributor) => (
+            <Avatar key={contributor.id} person={contributor.person} size="small" />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -62,13 +98,13 @@ function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div className="flex flex-col gap-4">
       {projects.map((project) => {
-        return <ProjectCard project={project} key={project.id} />;
+        return <ProjectListItem project={project} key={project.id} />;
       })}
     </div>
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectListItem({ project }: { project: Project }) {
   const navigate = useNavigate();
 
   return (
@@ -76,7 +112,7 @@ function ProjectCard({ project }: { project: Project }) {
       className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer hover:shadow-lg"
       onClick={() => navigate(`/projects/${project.id}`)}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between">
         <div className="text-ellipsis font-bold text-lg">{project.name}</div>
 
         <div className="flex items-center gap-2">
@@ -86,7 +122,7 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-12">
+      <div className="flex items-center gap-12 mt-6">
         <div>
           <div className="text-xs text-white-1/80 uppercase mb-1">Status</div>
           <Indicator type="status" value={project.health} />
