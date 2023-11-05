@@ -1,16 +1,17 @@
-defmodule Operately.Projects.ListQuery do
+defmodule Operately.Projects.ListOperation do
   import Ecto.Query, warn: false
 
+  alias Operately.Repo
   alias Operately.Projects.Project
 
-  def build(person, filters) do
+  def run(person, filters) do
     query = from p in Project
 
     query = apply_visibility_filter(query, person)
     query = apply_group_filter(query, filters[:group_id], filters[:group_member_roles])
     query = apply_objective_filter(query, filters[:objective_id])
 
-    query
+    Repo.all(query, [with_deleted: filters[:include_archived]])
   end
 
   defp apply_visibility_filter(query, person) do

@@ -48,7 +48,8 @@ defmodule OperatelyWeb.Graphql.Types.ProjectHealths do
       case health[key] do
         nil -> {:ok, default}
         %{"value" => value} -> {:ok, value}
-        value -> {:ok, value}
+        "unknown" -> {:ok, default}
+        _value -> {:ok, default}
       end
     end
   end
