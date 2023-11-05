@@ -142,6 +142,9 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.hover(testid: "contributor-#{contrib.id}")
     |> UI.click(testid: "edit-contributor")
     |> UI.click(testid: "remove-contributor")
+
+    ctx
+    |> visit_show(ctx.project)
     |> UI.refute_has(Query.text("Michael Scott"))
 
     ctx

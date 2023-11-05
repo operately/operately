@@ -1,4 +1,4 @@
-defmodule Operately.Projects.ListQueryTest do
+defmodule Operately.Projects.ListOperationTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
@@ -77,20 +77,14 @@ defmodule Operately.Projects.ListQueryTest do
         role: "champion"
       })
 
-      query = Operately.Projects.ListQuery.build(ctx.person, %{
-        group_id: ctx.group.id,
-        group_member_roles: ["champion"]
-      })
-
-      project_ids = Operately.Repo.all(query) |> Enum.map(& &1.id)
+      project_ids = load_ids(ctx.person, %{group_id: ctx.group.id, group_member_roles: ["champion"]})
 
       assert Enum.member?(project_ids, ctx.project.id)
     end
   end
 
   defp load_ids(person, filters) do
-    query = Operately.Projects.ListQuery.build(person, filters)
-    Operately.Repo.all(query) |> Enum.map(& &1.id)
+    Operately.Projects.ListOperation.run(person, filters) |> Enum.map(& &1.id)
   end
 
   defp members(list, ids) do

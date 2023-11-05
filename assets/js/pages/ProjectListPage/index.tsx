@@ -22,7 +22,7 @@ export async function loader() {
     query: LIST_PROJECTS,
     fetchPolicy: "network-only",
     variables: {
-      filter: {
+      filters: {
         includeArchived: true,
       },
     },
@@ -39,8 +39,8 @@ export function Page() {
   const [data] = Paper.useLoadedData() as [{ projects: any; company: any }];
   const navigate = useNavigate();
 
-  const projects = SortProjects(data.projects);
   const options = useOptionsState();
+  const projects = filterAndSortProjects(data.projects, options.filter);
 
   return (
     <Paper.Root size="medium">
@@ -75,7 +75,7 @@ function ProjectGridItem({ project }: { project: Project }) {
 
   return (
     <div
-      className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow-lg hover:shadow-xl"
+      className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow-lg hover:shadow-xl overflow-hidden"
       onClick={() => navigate(`/projects/${project.id}`)}
     >
       <div className="flex flex-col justify-between h-28">
@@ -171,21 +171,32 @@ function DateOrNotSet({ date, ifNull }) {
   );
 }
 
-function SortProjects(projects: Project[]) {
+function filterAndSortProjects(projects: Project[], filter: "in-progress" | "archived") {
   let phaseOrder = ["paused", "planning", "execution", "control", "completed", "canceled"];
 
-  return ([] as Project[]).concat(projects).sort((a, b) => {
-    let aPhase = phaseOrder.indexOf(a.phase);
-    let bPhase = phaseOrder.indexOf(b.phase);
+  return ([] as Project[])
+    .concat(projects)
+    .sort((a, b) => {
+      let aPhase = phaseOrder.indexOf(a.phase);
+      let bPhase = phaseOrder.indexOf(b.phase);
 
-    if (aPhase < bPhase) return -1;
-    if (aPhase > bPhase) return 1;
+      if (aPhase < bPhase) return -1;
+      if (aPhase > bPhase) return 1;
 
-    let aStart = a.startedAt || 0;
-    let bStart = b.startedAt || 0;
+      let aStart = a.startedAt || 0;
+      let bStart = b.startedAt || 0;
 
-    if (aStart > bStart) return -1;
-    if (aStart < bStart) return 1;
-    return 0;
-  });
+      if (aStart > bStart) return -1;
+      if (aStart < bStart) return 1;
+
+      return 0;
+    })
+    .filter((project) => {
+      switch (filter) {
+        case "in-progress":
+          return project.isArchived === false;
+        case "archived":
+          return project.isArchived === true;
+      }
+    });
 }

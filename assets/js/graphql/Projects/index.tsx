@@ -27,6 +27,7 @@ export const LIST_PROJECTS = gql`
       deadline
       phase
       health
+      isArchived
       permissions ${Permissions.FRAGMENT}
       contributors ${fragments.CONTRIBUTOR}
       keyResources ${KeyResources.GQL_FRAGMENT}
