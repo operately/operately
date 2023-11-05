@@ -125,7 +125,7 @@ function ProjectListItem({ project }: { project: Project }) {
       <div className="flex items-center gap-12 mt-6">
         <div>
           <div className="text-xs text-white-1/80 uppercase mb-1">Status</div>
-          <Indicator type="status" value={project.health} />
+          <Indicator type="status" value={project.health === "unknown" ? "on_track" : project.health} />
         </div>
 
         <div>
@@ -152,9 +152,11 @@ function NextMilestone({ project }) {
     return <span className="text-sm text-white-2">&mdash;</span>;
   } else {
     return (
-      <div className="flex items-center gap-2">
-        <Icons.IconFlag3Filled size={16} className="text-yellow-400/80" />
-        <span className="text-ellipsis">{project.nextMilestone.title}</span>
+      <div className="flex items-start gap-2">
+        <div className="shrink-0 mt-1">
+          <Icons.IconFlag3Filled size={16} className="text-yellow-400/80" />
+        </div>
+        <span className="text-ellipsis truncate">{project.nextMilestone.title}</span>
       </div>
     );
   }
