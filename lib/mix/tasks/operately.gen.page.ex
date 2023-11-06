@@ -2,7 +2,8 @@ defmodule Mix.Tasks.Operately.Gen.Page do
   import Mix.Operately, only: [generate_file: 2]
 
   def run([name]) do
-    page_name = Macro.camelize(name) <> "Page"
+    check_name(name)
+    page_name = Macro.camelize(name)
 
     File.mkdir_p("assets/js/pages/#{page_name}")
 
@@ -67,6 +68,26 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       }
       """
     end)
+  end
+
+  defp check_name(name) do
+    if String.contains?(name, "-") do
+      raise """
+      Page name should be camel case. Example: ProfilePage
+      """
+    end
+
+    if String.contains?(name, "_") do
+      raise """
+      Page name should be camel case. Example: ProfilePage
+      """
+    end
+
+    unless String.ends_with?(name, "Page") do
+      raise """
+      Page name should end with 'Page'. Example: ProfilePage
+      """
+    end
   end
 
 end

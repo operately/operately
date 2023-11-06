@@ -36,6 +36,7 @@ import * as ProjectReviewPage from "./ProjectReviewPage";
 import * as ProjectReviewRequestNewPage from "./ProjectReviewRequestNewPage";
 import * as ProjectReviewRequestPage from "./ProjectReviewRequestPage";
 import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPage";
+import * as ProjectStatusUpdateListPage from "./ProjectStatusUpdateListPage";
 import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
 import * as TenetListPage from "./TenetListPage";
@@ -75,6 +76,7 @@ export default {
   ProjectReviewRequestNewPage,
   ProjectReviewRequestPage,
   ProjectReviewRequestSubmitPage,
+  ProjectStatusUpdateListPage,
   ProjectStatusUpdateNewPage,
   ProjectStatusUpdatePage,
   TenetListPage,

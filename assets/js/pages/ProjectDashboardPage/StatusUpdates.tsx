@@ -18,6 +18,7 @@ export default function StatusUpdate({ project }) {
   const author = lastUpdate.author;
 
   const gotoUpdate = useNavigateTo(`/projects/${project.id}/status_updates/${lastUpdate.id}`);
+  const gotoUpdates = useNavigateTo(`/projects/${project.id}/status_updates`);
 
   return (
     <div className="flex-1">
@@ -66,7 +67,9 @@ export default function StatusUpdate({ project }) {
         </div>
       </div>
 
-      <div className="underline cursor-pointer decoration-blue-400 text-blue-400 mt-2">View all check-ins</div>
+      <div className="underline cursor-pointer decoration-blue-400 text-blue-400 mt-2" onClick={gotoUpdates}>
+        View all check-ins
+      </div>
     </div>
   );
 }

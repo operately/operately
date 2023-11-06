@@ -493,6 +493,7 @@ export type ProjectHealth = {
   schedule: Scalars['String']['output'];
   scheduleComments: Scalars['String']['output'];
   status: Scalars['String']['output'];
+  statusComments: Scalars['String']['output'];
   team: Scalars['String']['output'];
   teamComments: Scalars['String']['output'];
 };
@@ -507,6 +508,7 @@ export type ProjectKeyResource = {
 export type ProjectListFilters = {
   groupId?: InputMaybe<Scalars['ID']['input']>;
   groupMemberRoles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   limitContributorsToGroupMembers?: InputMaybe<Scalars['Boolean']['input']>;
   objectiveId?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -1033,10 +1035,6 @@ export type Update = {
   insertedAt: Scalars['NaiveDateTime']['output'];
   message: Scalars['String']['output'];
   messageType: Scalars['String']['output'];
-  newHealth?: Maybe<Scalars['String']['output']>;
-  newPhase?: Maybe<Scalars['String']['output']>;
-  previousHealth?: Maybe<Scalars['String']['output']>;
-  previousPhase?: Maybe<Scalars['String']['output']>;
   project?: Maybe<Project>;
   reactions?: Maybe<Array<Maybe<Reaction>>>;
   title?: Maybe<Scalars['String']['output']>;
