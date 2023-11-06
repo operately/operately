@@ -14,16 +14,10 @@ import * as TipTapEditor from "@/components/Editor";
 import Button from "@/components/Button";
 
 import { useBoolState } from "@/utils/useBoolState";
+import { useLoadedData, usePageRefetch } from "./loader";
 
-export function CommentSection({
-  update,
-  refetch,
-  me,
-}: {
-  update: Updates.Update;
-  refetch: () => void;
-  me: People.Person;
-}) {
+export function CommentSection() {
+  const { update } = useLoadedData();
   const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
 
   return (
@@ -31,22 +25,23 @@ export function CommentSection({
       <div className="text-white-1 font-extrabold border-b border-shade-2 pb-4">Comments</div>
       <div className="flex flex-col">
         {beforeAck.map((c) => (
-          <Comment key={c.id} comment={c} refetch={refetch} />
+          <Comment key={c.id} comment={c} />
         ))}
 
         <AckComment update={update} />
 
         {afterAck.map((c) => (
-          <Comment key={c.id} comment={c} refetch={refetch} />
+          <Comment key={c.id} comment={c} />
         ))}
 
-        <CommentBox update={update} refetch={refetch} me={me} />
+        <CommentBox />
       </div>
     </>
   );
 }
 
-function Comment({ comment, refetch }) {
+function Comment({ comment }) {
+  const refetch = usePageRefetch();
   const addReactionForm = useAddReaction(comment.id, "comment", refetch);
   const testId = "comment-" + comment.id;
 
@@ -85,26 +80,30 @@ function AckComment({ update }) {
   const person = update.acknowledgingPerson;
 
   return (
-    <div className="flex items-center justify-between gap-3 py-6 px-3 text-white-1 bg-green-400/10">
+    <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-shade-2 text-white-1">
       <div className="shrink-0">
-        <Icons.IconCircleCheckFilled size={20} className="text-green-400" />
+        <Avatar person={person} size="normal" />
       </div>
 
-      <div className="flex-1">
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div>{person.fullName} acknowledged this update</div>
-            <span className="text-white-2 text-sm">
-              <FormattedTime time={update.acknowledgedAt} format="relative" />
-            </span>
-          </div>
+      <div className="flex items-center justify-between flex-1">
+        <div className="flex items-center gap-2 font-bold flex-1">
+          {person.fullName} acknowledged this Check-In
+          <Icons.IconSquareCheckFilled size={24} className="text-green-400" />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-white-2 text-sm">
+            <FormattedTime time={update.acknowledgedAt} format="relative" />
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
-function CommentBox({ update, refetch, me }) {
+function CommentBox() {
+  const refetch = usePageRefetch();
+
   const [active, _, activate, deactivate] = useBoolState(false);
 
   const onPost = () => {
@@ -113,13 +112,15 @@ function CommentBox({ update, refetch, me }) {
   };
 
   if (active) {
-    return <AddCommentActive me={me} update={update} onBlur={deactivate} onPost={onPost} />;
+    return <AddCommentActive onBlur={deactivate} onPost={onPost} />;
   } else {
-    return <AddCommentNonActive onClick={activate} me={me} />;
+    return <AddCommentNonActive onClick={activate} />;
   }
 }
 
-function AddCommentNonActive({ onClick, me }) {
+function AddCommentNonActive({ onClick }) {
+  const { me } = useLoadedData();
+
   return (
     <div
       className="py-6 not-first:border-t border-dark-5 cursor-pointer flex items-center gap-3"
@@ -132,7 +133,8 @@ function AddCommentNonActive({ onClick, me }) {
   );
 }
 
-function AddCommentActive({ me, update, onBlur, onPost }) {
+function AddCommentActive({ onBlur, onPost }) {
+  const { update, me } = useLoadedData();
   const peopleSearch = People.usePeopleSearch();
 
   const { editor, uploading } = TipTapEditor.useEditor({

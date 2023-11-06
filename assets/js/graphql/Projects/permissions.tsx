@@ -9,6 +9,7 @@ export interface Permissions {
   canEditMilestone: boolean;
 
   canCheckIn: boolean;
+  canAcknowledgeCheckIn: boolean;
 }
 
 export const FRAGMENT = gql`
@@ -21,5 +22,6 @@ export const FRAGMENT = gql`
     canEditMilestone
 
     canCheckIn
+    canAcknowledgeCheckIn
   }
 `;

@@ -3,14 +3,11 @@ import React from "react";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
-import * as People from "@/graphql/People";
 import * as Paper from "@/components/PaperContainer";
 
 import Avatar from "@/components/Avatar";
-import Button from "@/components/Button";
 import RichContent from "@/components/RichContent";
 
-import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 
 import { TextSeparator } from "@/components/TextSeparator";
@@ -26,6 +23,7 @@ import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import { useLoadedData, usePageRefetch } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
+import { AckCTA } from "./AckCTA";
 
 export function Page() {
   const { project, update, me } = useLoadedData();
@@ -41,8 +39,6 @@ export function Page() {
       <Navigation project={project} />
 
       <Paper.Body>
-        <AckCTA project={project} update={update} refetch={refetch} me={me} />
-
         <div className="flex flex-col items-center">
           <div className="text-white-1 text-2xl font-extrabold">
             Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
@@ -64,7 +60,8 @@ export function Page() {
         <Spacer size={4} />
         <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
 
-        <Spacer size={8} />
+        <AckCTA project={project} update={update} refetch={refetch} me={me} />
+        <Spacer size={4} />
         <CommentSection update={update} refetch={refetch} me={me} />
       </Paper.Body>
     </Paper.Root>
@@ -83,44 +80,6 @@ function Navigation({ project }) {
 
       <Paper.NavItem linkTo={`/projects/${project.id}/status_updates`}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>
-  );
-}
-
-function AckCTA({
-  project,
-  update,
-  refetch,
-  me,
-}: {
-  project: Projects.Project;
-  update: Updates.Update;
-  refetch: () => void;
-  me: People.Person;
-}) {
-  const [ack, { loading }] = Updates.useAckUpdate();
-
-  if (update.acknowledged) return null;
-  if (!project.reviewer) return null;
-  if (project.reviewer.id !== me.id) return null;
-
-  const handleAck = async () => {
-    await ack({
-      variables: {
-        id: update.id,
-      },
-    });
-
-    refetch();
-  };
-
-  return (
-    <div className="px-4 py-3 bg-shade-1 flex items-center justify-between font-bold -mt-4 mb-8 rounded">
-      Waiting for your acknowledgement
-      <Button variant="success" size="tiny" data-test-id="acknowledge-update" loading={loading} onClick={handleAck}>
-        <Icons.IconCheck size={16} className="-mr-1" stroke={3} />
-        Acknowledge
-      </Button>
-    </div>
   );
 }
 

@@ -522,6 +522,7 @@ export type ProjectParent = {
 
 export type ProjectPermissions = {
   __typename?: 'ProjectPermissions';
+  canAcknowledgeCheckIn: Scalars['Boolean']['output'];
   canCheckIn: Scalars['Boolean']['output'];
   canCreateMilestone: Scalars['Boolean']['output'];
   canDeleteMilestone: Scalars['Boolean']['output'];
