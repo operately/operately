@@ -522,6 +522,7 @@ export type ProjectParent = {
 
 export type ProjectPermissions = {
   __typename?: 'ProjectPermissions';
+  canCheckIn: Scalars['Boolean']['output'];
   canCreateMilestone: Scalars['Boolean']['output'];
   canDeleteMilestone: Scalars['Boolean']['output'];
   canEditContributors: Scalars['Boolean']['output'];
@@ -1038,6 +1039,7 @@ export type Update = {
   project?: Maybe<Project>;
   reactions?: Maybe<Array<Maybe<Reaction>>>;
   title?: Maybe<Scalars['String']['output']>;
+  updatableId: Scalars['ID']['output'];
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
@@ -1162,4 +1164,5 @@ export type UpdateProfileInput = {
 
 export type UpdatesFilter = {
   projectId?: InputMaybe<Scalars['ID']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
 };

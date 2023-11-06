@@ -27,7 +27,6 @@ const routes = createBrowserRouter([
 
       pageRoute("/projects", pages.ProjectListPage),
       pageRoute("/projects/new", pages.ProjectAddPage),
-      pageRoute("/projects/:projectID/updates/new", pages.ProjectStatusUpdateNewPage),
       pageRoute("/projects/:projectID/milestones", pages.ProjectMilestonesPage),
       pageRoute("/projects/:projectID/milestones/:id", pages.ProjectMilestonePage),
       pageRoute("/projects/:projectID/reviews/request/new", pages.ProjectReviewRequestNewPage),
@@ -35,6 +34,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/reviews/request/:id/submit", pages.ProjectReviewRequestSubmitPage),
       pageRoute("/projects/:projectID/reviews/:id", pages.ProjectReviewPage),
       pageRoute("/projects/:projectID/phase_change/:newPhase", pages.ProjectPhaseChangeSurveyPage),
+      pageRoute("/projects/:projectID/status_updates/new", pages.ProjectStatusUpdateNewPage),
       pageRoute("/projects/:projectID/status_updates", pages.ProjectStatusUpdateListPage),
       pageRoute("/projects/:projectID/status_updates/:id", pages.ProjectStatusUpdatePage),
       pageRoute("/projects/:projectID/edit/name", pages.ProjectEditProjectNamePage),

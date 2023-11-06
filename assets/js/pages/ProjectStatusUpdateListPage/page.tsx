@@ -5,8 +5,8 @@ import * as Updates from "@/graphql/Projects/updates";
 
 import { useLoadedData } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
+import { CheckInButton } from "./CheckInButton";
 import { CheckInCard } from "@/components/CheckInCard";
-import Button from "@/components/Button";
 
 export function Page() {
   const { project, updates } = useLoadedData();
@@ -29,9 +29,7 @@ export function Page() {
             <div className="text-white-1">Asking the champion for a check-in every Friday.</div>
           </div>
           <div>
-            <Button variant="success" linkTo={`/projects/${project.id}/status_updates/new`}>
-              Check-In Now
-            </Button>
+            <CheckInButton project={project} />
           </div>
         </div>
 
