@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Graphql.Types.Updates do
     field :updated_at, non_null(:naive_datetime)
     field :acknowledged, non_null(:boolean)
     field :acknowledged_at, :naive_datetime
+    field :updatable_id, non_null(:id)
 
     field :project, :project do
       resolve fn update, _, _ ->

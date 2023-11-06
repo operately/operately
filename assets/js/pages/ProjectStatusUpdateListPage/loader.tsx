@@ -18,7 +18,12 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   let updatesData = await client.query({
     query: Updates.LIST_UPDATES,
-    variables: { projectID: params.projectID },
+    variables: {
+      filter: {
+        projectID: params.projectID,
+        type: "status_update",
+      },
+    },
     fetchPolicy: "network-only",
   });
 

@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Graphql.Queries.Updates do
 
   input_object :updates_filter do
     field :project_id, :id
+    field :type, :string
   end
 
   object :update_queries do
@@ -10,9 +11,11 @@ defmodule OperatelyWeb.Graphql.Queries.Updates do
       arg :filter, non_null(:updates_filter)
 
       resolve fn args, _ ->
-        update = Operately.Updates.list_updates(args.filter.project_id, "project")
+        updateble_id = args.filter.project_id
+        updateble_type = "project"
+        update_type = args.filter[:type] && String.to_existing_atom(args.filter.type)
 
-        {:ok, update}
+        {:ok, Operately.Updates.list_updates(updateble_id, updateble_type, update_type)}
       end
     end
 

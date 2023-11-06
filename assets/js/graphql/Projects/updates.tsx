@@ -11,6 +11,7 @@ export const UPDATE_FRAGMENT = `
     title
     message
     messageType
+    updatableId
 
     insertedAt
     updatedAt

@@ -80,7 +80,7 @@ Root.defaultProps = {
 
 export function Navigation({ children }) {
   return (
-    <div className="bg-dark-2 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t">
+    <div className="bg-dark-2/70 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t">
       {children}
     </div>
   );
@@ -116,7 +116,7 @@ export function Body({ children, minHeight, className = "", noPadding = false })
 
   return (
     <div
-      className={`relative bg-dark-3 rounded shadow-lg ${padding} ${className}`}
+      className={`relative bg-dark-2 rounded shadow-xl ${padding} ${className} border border-dark-3`}
       style={{
         minHeight: minHeight,
       }}
