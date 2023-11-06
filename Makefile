@@ -82,9 +82,6 @@ migrate:
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
-gen.migration:
-	$(DEV_CONTAINER) mix ecto.gen.migration $(NAME)
-
 dev.setup:
 	$(DEV_CONTAINER) mix deps.get
 	$(DEV_CONTAINER) mix compile
@@ -107,6 +104,12 @@ gen:
 	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.notification.items.index"
 	$(MAKE) dev.mix.task TASK="operately.gen.page.index"
+
+gen.migration:
+	$(DEV_CONTAINER) mix ecto.gen.migration $(NAME)
+
+gen.page:
+	$(DEV_CONTAINER) mix operately.gen.page $(NAME)
 
 #
 # Development tasks

@@ -171,3 +171,7 @@ export function latest(...dates: (Date | null | undefined)[]) {
 
   return latest;
 }
+
+export function getMonthName(date: Date) {
+  return datefsn.format(date, "MMMM");
+}

@@ -7,7 +7,6 @@ import * as Paper from "@/components/PaperContainer";
 import Header from "./Header";
 import Timeline from "./Timeline";
 import StatusUpdates from "./StatusUpdates";
-import Pitch from "./Pitch";
 import ArchivedBanner from "./ArchivedBanner";
 
 import client from "@/graphql/client";
