@@ -4,7 +4,6 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as People from "@/graphql/People";
-import * as UpdateContent from "@/graphql/Projects/update_content";
 
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +11,7 @@ import * as Projects from "@/graphql/Projects";
 
 import Button from "@/components/Button";
 
+import { useDocumentTitle } from "@/layouts/header";
 import { useLoadedData } from "./loader";
 import { useHealthState, HealthState } from "./useHealthState";
 import { AccordionWithOptions } from "./Accordion";
@@ -20,6 +20,8 @@ import { options } from "./healthOptions";
 export function Page() {
   const { project } = useLoadedData();
 
+  useDocumentTitle(["Check-In", project.name]);
+
   return (
     <Paper.Root>
       <Paper.Navigation>
@@ -27,6 +29,10 @@ export function Page() {
           <Icons.IconClipboardList size={16} />
           {project.name}
         </Paper.NavItem>
+
+        <Paper.NavSeparator />
+
+        <Paper.NavItem linkTo={`/projects/${project.id}/status_updates`}>Check-Ins</Paper.NavItem>
       </Paper.Navigation>
 
       <Paper.Body>
