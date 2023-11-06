@@ -6,8 +6,6 @@ import { useDocumentTitle } from "@/layouts/header";
 import { LIST_PROJECTS, Project } from "@/graphql/Projects";
 import FormattedTime from "@/components/FormattedTime";
 
-import Button from "@/components/Button";
-
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
@@ -16,6 +14,7 @@ import Avatar from "@/components/Avatar";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import { OptionsBar, useOptionsState } from "./OptionsBar";
+import { GhostButton } from "@/components/Button";
 
 export async function loader() {
   let projects = await client.query({
@@ -37,7 +36,6 @@ export function Page() {
   useDocumentTitle("Projects");
 
   const [data] = Paper.useLoadedData() as [{ projects: any; company: any }];
-  const navigate = useNavigate();
 
   const options = useOptionsState();
   const projects = filterAndSortProjects(data.projects, options.filter);
@@ -48,9 +46,9 @@ export function Page() {
         <div className="font-extrabold text-2xl text-center">Projects</div>
 
         <div className="flex items-center justify-center">
-          <Button variant="success" onClick={() => navigate("/projects/new")} data-test-id="add-project">
-            <span className="font-semibold">Start a New Project</span>
-          </Button>
+          <GhostButton linkTo={"/projects/new"} testId="add-project">
+            Start a New Project
+          </GhostButton>
         </div>
       </div>
 

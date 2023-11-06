@@ -100,6 +100,7 @@ test.seed.env:
 # Generate code
 #
 gen:
+	rm lib/operately_web/graphql/schema.ex
 	$(MAKE) dev.mix.task TASK="operately.gen.elixir.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.notification.items.index"

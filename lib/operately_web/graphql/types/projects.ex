@@ -40,15 +40,6 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     end
   end
 
-  object :project_permissions do
-    field :can_view, non_null(:boolean)
-    field :can_edit_contributors, non_null(:boolean)
-
-    field :can_create_milestone, non_null(:boolean)
-    field :can_edit_milestone, non_null(:boolean)
-    field :can_delete_milestone, non_null(:boolean)
-  end
-
   object :project_key_resource do
     field :id, non_null(:id)
     field :title, non_null(:string)

@@ -121,7 +121,7 @@ function useStatusUpdates({ project }): { updates: Updates.Update[]; loading: bo
 }
 
 function WriteUpdate({ project, me }) {
-  const navigateToNewUpdate = useNavigateTo(`/projects/${project.id}/updates/new?messageType=status_update`);
+  const navigateToNewUpdate = useNavigateTo(`/projects/${project.id}/status_updates/new`);
 
   if (project.champion?.id !== me.id) {
     return null;

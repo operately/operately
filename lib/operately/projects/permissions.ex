@@ -4,23 +4,16 @@ defmodule Operately.Projects.Permissions do
     project = Operately.Repo.preload(project, :contributors)
 
     %{
-      can_view: can_view?(project, user),
-      can_edit_contributors: can_edit_contributors?(project, user),
+      can_view: is_public_or_contributor?(project, user),
+      can_edit_contributors: is_contributor?(project, user),
 
-      can_create_milestone: can_create_milestone?(project, user),
-      can_delete_milestone: can_delete_milestone?(project, user),
-      can_edit_milestone: can_edit_milestone?(project, user)
+      can_create_milestone: is_contributor?(project, user),
+      can_delete_milestone: is_contributor?(project, user),
+      can_edit_milestone: is_contributor?(project, user),
+
+      can_check_in: is_champion?(project, user)
     }
   end
-
-  defp can_view?(project, user) do
-    is_public?(project) || is_contributor?(project, user)
-  end
-
-  defp can_edit_contributors?(project, user), do: is_contributor?(project, user)
-  defp can_create_milestone?(project, user), do: is_contributor?(project, user)
-  defp can_delete_milestone?(project, user), do: is_contributor?(project, user)
-  defp can_edit_milestone?(project, user), do: is_contributor?(project, user)
 
   # ---
 
@@ -28,8 +21,16 @@ defmodule Operately.Projects.Permissions do
     Enum.any?(project.contributors, fn c -> c.person_id == user.id end)
   end
 
+  defp is_champion?(project, user) do
+    Enum.any?(project.contributors, fn c -> c.person_id == user.id && c.role == :champion end)
+  end
+
   defp is_public?(project) do
     !project.private
+  end
+
+  defp is_public_or_contributor?(project, user) do
+    is_public?(project) || is_contributor?(project, user)
   end
 
 end
