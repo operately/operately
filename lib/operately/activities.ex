@@ -4,9 +4,14 @@ defmodule Operately.Activities do
   alias Operately.Repo
   alias Operately.Activities.Activity
   alias Operately.Activities.Recorder
+  alias Operately.Activities.ListActivitiesOperation
 
   def get_activity!(id) do
     Repo.get!(Activity, id)
+  end
+
+  def list_activities(scope_type, scope_id) do
+    ListActivitiesOperation.run(scope_type, scope_id)
   end
 
   def insert(multi, author_id, action, callback) do
