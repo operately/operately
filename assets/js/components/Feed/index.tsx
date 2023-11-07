@@ -1,9 +1,8 @@
 import * as React from "react";
 
 import * as Activities from "@/models/activities";
-import * as People from "@/models/people";
 
-import { FeedItem } from "./types";
+import FeedItem from "./FeedItem";
 
 export function Feed({ project }) {
   const { activities, loading, error } = Activities.useFeed(project.id);
@@ -14,10 +13,7 @@ export function Feed({ project }) {
   return (
     <div className="w-full">
       {activities.map((activity) => (
-        <FeedItem key={activity.id} person={activity.author} time={activity.insertedAt}>
-          <FeedItemTitle>{People.shortName(activity.author)}</FeedItemTitle>
-          <FeedItemContent>Hello</FeedItemContent>
-        </FeedItem>
+        <FeedItem key={activity.id} activity={activity} />
       ))}
     </div>
   );
