@@ -13,6 +13,8 @@ import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as Me from "@/graphql/Me";
 
+import { Feed } from "@/components/Feed";
+
 interface LoaderResult {
   project: Projects.Project;
   me: any;
@@ -49,7 +51,7 @@ export function Page() {
   return (
     <Paper.Root size="medium">
       <ArchivedBanner project={project} />
-      <div className="p-8 border border-dark-3 bg-dark-2 rounded shadow-xl">
+      <div className="p-12 border border-dark-3 bg-dark-2 rounded shadow-xl">
         <div className="bg-dark-2 p-8 -mx-8 -mt-8">
           <Header project={project} />
         </div>
@@ -58,6 +60,11 @@ export function Page() {
 
         <div className="my-8 flex items-start gap-6">
           <StatusUpdates project={project} />
+        </div>
+
+        <div className="-m-12 mt-12 p-12 border-t border-dark-3 bg-dark-1/50">
+          <div className="uppercase text-xs text-white-1/80 font-semibold mb-4">Project Activity</div>
+          <Feed project={project} />
         </div>
       </div>
     </Paper.Root>

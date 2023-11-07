@@ -104,6 +104,7 @@ gen:
 	$(MAKE) dev.mix.task TASK="operately.gen.elixir.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
 	$(MAKE) dev.mix.task TASK="operately.gen.notification.items.index"
+	$(MAKE) dev.mix.task TASK="operately.gen.feed.items.index"
 	$(MAKE) dev.mix.task TASK="operately.gen.page.index"
 
 gen.migration:
