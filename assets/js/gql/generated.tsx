@@ -905,7 +905,7 @@ export type RootQueryType = {
 
 
 export type RootQueryTypeActivitiesArgs = {
-  scopeId: Scalars['ID']['input'];
+  scopeId: Scalars['String']['input'];
   scopeType: Scalars['String']['input'];
 };
 
