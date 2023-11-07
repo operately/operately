@@ -266,7 +266,7 @@ defmodule Prosemirror2HtmlTest do
       "content" => [
         %{
           "type" => "blob",
-          "content" => %{
+          "attrs" => %{
              "alt" => "Authentication Failed message", 
              "filesize" => 91747, 
              "filetype" => "image/png", 
