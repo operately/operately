@@ -83,7 +83,9 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const baseClass = ["flex items-center justify-center", "text-dark-1", "bg-pink-300", "rounded-full"].join(" ");
+  const baseClass = ["flex items-center justify-center", "text-dark-1", "bg-pink-300", "rounded-full", "shrink-0"].join(
+    " ",
+  );
 
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
@@ -109,7 +111,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
-  const baseClass = "rounded-full overflow-hidden bg-white";
+  const baseClass = "rounded-full overflow-hidden bg-white shrink-0";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
 
@@ -123,7 +125,7 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
 }
 
 function UnassingedAvatar({ size }: { size: AvatarSize }): JSX.Element {
-  const baseClass = "rounded-full overflow-hidden bg-shade-1 flex items-center justify-center";
+  const baseClass = "rounded-full overflow-hidden bg-shade-1 flex items-center justify-center shrink-0";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
 
