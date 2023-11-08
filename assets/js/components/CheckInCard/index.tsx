@@ -19,17 +19,17 @@ export function CheckInCard({ update }) {
 
   return (
     <div
-      className="flex items-start gap-2 bg-dark-3 p-4 rounded-lg shadow-xl hover:bg-dark-4 cursor-pointer"
+      className="flex items-start gap-2 p-4 rounded-lg cursor-pointer border border-surface-outline bg-surface-accent"
       onClick={gotoUpdate}
     >
       <div className="flex flex-col gap-1 relative flex-1">
         <div className="flex items-center justify-between flex-1">
           <div className="flex items-center gap-2">
             <Avatar person={author} size="tiny" />
-            <span className="font-medium text-white-1">{author.fullName}</span>
+            <span className="font-bold text-content-accent">{author.fullName}</span>
           </div>
 
-          <span className="text-white-2 text-sm">
+          <span className="text-content-dimmed text-sm">
             <FormattedTime time={update.insertedAt} format="short-date" />
           </span>
         </div>
@@ -39,7 +39,7 @@ export function CheckInCard({ update }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 border-l border-shade-3 pl-3 ml-3 w-1/3">
+      <div className="flex flex-col gap-1 border-l border-surface-outline pl-3 ml-3 w-1/3">
         <div className="flex items-center gap-1">
           <Indicator value={health.status} type="status" />
         </div>

@@ -23,9 +23,10 @@ body[data-theme="light"] {
 
   --color-surface: rgba(255, 255, 255, 1);
   --color-surface-dimmed: rgba(249, 249, 249, 1);
+  --color-surface-accent: rgba(249, 249, 249, 0.6);
   --color-surface-outline: rgba(211, 204, 189, 1);
 
-  --color-content-base: rgba(0, 0, 0, 0.9);
+  --color-content-base: rgba(0, 0, 0, 0.95);
   --color-content-accent: rgba(0, 0, 0, 1);
   --color-content-dimmed: rgba(0, 0, 0, 0.6);
 
@@ -37,7 +38,8 @@ body[data-theme="dark"] {
 
   --color-surface: rgba(35,35,39,1);
   --color-surface-dimmed: rgba(30, 30, 34, 0.8);
-  --color-surface-outline: rgba(43, 45, 49, 1);
+  --color-surface-accent: rgba(255, 255, 255, 0.03);
+  --color-surface-outline: rgba(60,60,64,1);
 
   --color-content-base: rgba(255, 255, 255, 0.9);
   --color-content-accent: rgba(255, 255, 255, 1);

@@ -33,11 +33,7 @@ function Logo() {
 }
 
 function NavigationContainer({ size, children }) {
-  return (
-    <div className="fixed top-0 bg-base left-0 right-0 transition-all z-50 border-b border-shade-2 py-1.5">
-      {children}
-    </div>
-  );
+  return <div className="fixed top-0 bg-base left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
 }
 
 function NavigationItem({ to, title, icon }) {

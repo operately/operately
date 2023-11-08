@@ -23,14 +23,14 @@ export function Accordion(props: AccordionProps) {
   };
 
   return (
-    <div className="border border-dark-5 rounded bg-dark-4" data-test-id={props.testId}>
+    <div className="border border-surface-outline rounded bg-surface-accent" data-test-id={props.testId}>
       <div
         className="flex items-center justify-between cursor-pointer py-2.5 px-2.5"
         onClick={toggle}
         data-test-id="open-close-toggle"
       >
         <div className="flex items-center gap-2">
-          <div className="text-white-1 font-bold">{props.title}</div>
+          <div className="text-content-accent font-bold">{props.title}</div>
 
           <Status status={props.status} showStatusWhenOpen={props.showStatusWhenOpen} open={open} />
         </div>
@@ -51,7 +51,7 @@ function Status({ status, showStatusWhenOpen, open }) {
 
   return (
     <>
-      <Icons.IconArrowRight size={16} className="text-white-2" />
+      <Icons.IconArrowRight size={16} className="text-content-dimmed" />
       {status}
     </>
   );

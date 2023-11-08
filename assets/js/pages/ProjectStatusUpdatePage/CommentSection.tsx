@@ -22,7 +22,7 @@ export function CommentSection() {
 
   return (
     <>
-      <div className="text-white-1 font-extrabold border-b border-shade-2 pb-4">Comments</div>
+      <div className="text-content-accent font-extrabold border-b border-stroke-base pb-4">Comments</div>
       <div className="flex flex-col">
         {beforeAck.map((c) => (
           <Comment key={c.id} comment={c} />
@@ -47,7 +47,7 @@ function Comment({ comment }) {
 
   return (
     <div
-      className="flex items-start justify-between gap-3 py-6 not-first:border-t border-shade-2 text-white-1"
+      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent"
       data-test-id={testId}
     >
       <div className="shrink-0">
@@ -58,13 +58,13 @@ function Comment({ comment }) {
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
-            <span className="text-white-2 text-sm">
+            <span className="text-content-dimmed text-sm">
               <FormattedTime time={comment.insertedAt} format="relative" />
             </span>
           </div>
         </div>
 
-        <div className="my-3">
+        <div className="mb-1">
           <RichContent jsonContent={JSON.parse(comment.message)} />
         </div>
 
@@ -80,7 +80,7 @@ function AckComment({ update }) {
   const person = update.acknowledgingPerson;
 
   return (
-    <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-shade-2 text-white-1">
+    <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
       <div className="shrink-0">
         <Avatar person={person} size="normal" />
       </div>
@@ -92,7 +92,7 @@ function AckComment({ update }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-white-2 text-sm">
+          <span className="text-content-dimmed text-sm">
             <FormattedTime time={update.acknowledgedAt} format="relative" />
           </span>
         </div>
@@ -123,7 +123,7 @@ function AddCommentNonActive({ onClick }) {
 
   return (
     <div
-      className="py-6 not-first:border-t border-dark-5 cursor-pointer flex items-center gap-3"
+      className="py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
       data-test-id="add-comment"
       onClick={onClick}
     >
@@ -163,11 +163,11 @@ function AddCommentActive({ onBlur, onPost }) {
   };
 
   return (
-    <div className="py-6 not-first:border-t border-dark-5 flex items-start gap-3">
+    <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
       <Avatar person={me} size="normal" />
       <div className="flex-1">
         <TipTapEditor.Root>
-          <div className="border border-dark-5 overflow-hidden relative">
+          <div className="border border-surface-outline overflow-hidden relative">
             <TipTapEditor.Toolbar editor={editor} variant="large" />
             <TipTapEditor.EditorContent editor={editor} />
 

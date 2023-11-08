@@ -13,6 +13,7 @@ module.exports = {
         "surface": "var(--color-surface)",
         "surface-dimmed": "var(--color-surface-dimmed)",
         "surface-outline": "var(--color-surface-outline)",
+        "surface-accent": "var(--color-surface-accent)",
 
         "content-base": "var(--color-content)",
         "content-accent": "var(--color-content-accent)",

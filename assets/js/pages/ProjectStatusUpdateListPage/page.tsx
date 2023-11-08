@@ -25,8 +25,8 @@ export function Page() {
       <Paper.Body>
         <div className="flex justify-between items-center">
           <div>
-            <div className="text-white-1 text-3xl font-extrabold">Check-Ins</div>
-            <div className="text-white-1">Asking the champion for a check-in every Friday.</div>
+            <div className="text-content-accent text-3xl font-extrabold">Check-Ins</div>
+            <div>Asking the champion for a check-in every Friday.</div>
           </div>
           <div>
             <CheckInButton project={project} />
@@ -54,7 +54,7 @@ function UpdateList({ updates }: { updates: Updates.Update[] }) {
 function UpdateGroup({ group }: { group: ReturnType<typeof Updates.groupUpdatesByMonth>[0] }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-sm font-semibold w-max text-white-1/80">
+      <div className="text-sm font-semibold w-max text-content-dimmed">
         <span className="uppercase">
           {group.month}
           {!isCurrentYear(group.year) && group.year}

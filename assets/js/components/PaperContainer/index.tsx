@@ -22,7 +22,7 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/components/Link";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
@@ -44,43 +44,23 @@ const Context = React.createContext({
 interface RootProps {
   size?: Size;
   children?: React.ReactNode;
-  rightSidebar?: React.ReactNode;
-  rightSidebarWidth?: string;
 }
 
-export function Root({ size, children, rightSidebar, rightSidebarWidth = "0" }: RootProps): JSX.Element {
+export function Root({ size, children }: RootProps): JSX.Element {
+  size = size || "medium";
+
   return (
     <Context.Provider value={{ size }}>
-      <div
-        className="fixed top-0 left-0 bottom-0 overflow-y-auto"
-        style={{
-          right: rightSidebar ? rightSidebarWidth : 0,
-        }}
-      >
-        <div className={classnames("flex-1 mx-auto my-20 relative", sizes[size])}>{children}</div>
+      <div className="fixed top-0 left-0 right-0 bottom-0 overflow-y-auto">
+        <div className={classnames("flex-1 mx-auto my-16 relative", sizes[size])}>{children}</div>
       </div>
-
-      {rightSidebar && (
-        <div
-          className="fixed top-0 right-0 bottom-0 bg-dark-2 border-l border-shade-1"
-          style={{
-            left: "calc(100% - " + rightSidebarWidth + ")",
-          }}
-        >
-          {rightSidebar}
-        </div>
-      )}
     </Context.Provider>
   );
 }
 
-Root.defaultProps = {
-  size: "medium",
-};
-
 export function Navigation({ children }) {
   return (
-    <div className="bg-dark-2/70 flex items-center justify-center gap-1 py-2 mx-10 font-semibold rounded-t">
+    <div className="bg-surface-dimmed flex items-center justify-center gap-1 pt-2 pb-1 mx-10 font-semibold rounded-t border-t border-x border-surface-outline">
       {children}
     </div>
   );
@@ -88,8 +68,8 @@ export function Navigation({ children }) {
 
 export function NavItem({ linkTo, children }) {
   return (
-    <Link to={linkTo} className="text-sky-400 underline underline-offset-2 flex gap-1.5 items-center">
-      {children}
+    <Link to={linkTo}>
+      <span className="flex items-center gap-1.5">{children}</span>
     </Link>
   );
 }
@@ -116,7 +96,7 @@ export function Body({ children, minHeight, className = "", noPadding = false })
 
   return (
     <div
-      className={`relative bg-dark-2 rounded shadow-xl ${padding} ${className} border border-dark-3`}
+      className={`relative bg-surface rounded shadow-xl ${padding} ${className} border border-surface-outline`}
       style={{
         minHeight: minHeight,
       }}

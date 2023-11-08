@@ -40,10 +40,10 @@ export function Page() {
 
       <Paper.Body>
         <div className="flex flex-col items-center">
-          <div className="text-white-1 text-2xl font-extrabold">
+          <div className="text-content-accent text-2xl font-extrabold">
             Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
           </div>
-          <div className="flex gap-0.5 flex-row items-center mt-1 text-white-1 font-medium">
+          <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
             <div className="flex items-center gap-2">
               <Avatar person={update.author} size="tiny" /> {update.author.fullName}
             </div>
@@ -100,9 +100,9 @@ function Details({ update }) {
   const content = update.content as UpdateContent.StatusUpdate;
 
   return (
-    <div className="border border-dark-5 rounded">
+    <div className="border border-surface-outline rounded">
       {content.newHealth && (
-        <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+        <div className="flex items-center gap-1 border-b border-surface-outline p-2">
           <span className="font-medium w-40">Health</span> <ProjectIcons.IconForHealth health={content.newHealth} />{" "}
           <span className="capitalize">
             {content.newHealth
@@ -114,7 +114,7 @@ function Details({ update }) {
       )}
 
       {content.phase && (
-        <div className="flex items-center gap-1 border-b border-dark-5 p-2">
+        <div className="flex items-center gap-1 border-b border-surface-outline p-2">
           <span className="font-medium w-40">Current Phase</span> <ProjectIcons.IconForPhase phase={content.phase} />{" "}
           {content.phase[0].toUpperCase() + content.phase.slice(1)}
         </div>
@@ -123,14 +123,14 @@ function Details({ update }) {
       {content.nextMilestoneTitle && (
         <div className="flex items-center gap-1 border-b border-dark-5 p-2">
           <span className="font-medium w-40">Next Milestone</span>
-          <Icons.IconMapPinFilled size={20} className="text-white-1/60 inline-block" /> {content.nextMilestoneTitle}
+          <Icons.IconMapPinFilled size={20} className="text-content-dimmed inline-block" /> {content.nextMilestoneTitle}
         </div>
       )}
 
       {content.projectEndTime && (
         <div className="flex items-center gap-1 not-last:border-b border-dark-5 p-2">
           <span className="font-medium w-40">Project Due Date</span>{" "}
-          <Icons.IconCalendarFilled size={20} className="text-white-1/60 inline-block" />{" "}
+          <Icons.IconCalendarFilled size={20} className="text-content-dimmed inline-block" />{" "}
           <FormattedTime time={content.projectEndTime} format="short-date" />
         </div>
       )}
@@ -142,7 +142,7 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
   return (
     <div className="flex flex-col gap-3">
       <Accordion title={<Indicator type="status" value={health.status} />} testId="status">
-        <div className="p-4 bg-dark-3">
+        <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.statusComments} />
         </div>
       </Accordion>
@@ -152,25 +152,25 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
         showStatusWhenOpen
         testId="schedule-accordion"
       >
-        <div className="p-4 bg-dark-3">
+        <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.scheduleComments} />
         </div>
       </Accordion>
 
       <Accordion title={<Indicator type="budget" value={health.budget} />} testId="budget-accordion">
-        <div className="p-4 bg-dark-3">
+        <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.budgetComments} />
         </div>
       </Accordion>
 
       <Accordion title={<Indicator type="team" value={health.team} />} testId="team-accordion">
-        <div className="p-4 bg-dark-3">
+        <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.teamComments} />
         </div>
       </Accordion>
 
       <Accordion title={<Indicator type="risks" value={health.risks} />} testId="risks-accordion">
-        <div className="p-4 bg-dark-3">
+        <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.risksComments} />
         </div>
       </Accordion>
