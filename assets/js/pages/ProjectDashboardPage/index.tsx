@@ -49,7 +49,7 @@ export function Page() {
   const championOfProject = project.champion?.id === me.id;
 
   return (
-    <Paper.Root size="medium">
+    <Paper.Root size="large">
       <ArchivedBanner project={project} />
       <div className="p-12 border border-dark-3 bg-surface rounded shadow-xl">
         <div className="p-8 -mx-8 -mt-8">
@@ -62,8 +62,8 @@ export function Page() {
           <StatusUpdates project={project} />
         </div>
 
-        <div className="-m-12 mt-12 p-12 border-t border-dark-3 bg-dark-1/50">
-          <div className="uppercase text-xs text-white-1/80 font-semibold mb-4">Project Activity</div>
+        <div className="-m-12 mt-12 p-12 border-t border-dark-3 bg-surface-dimmed">
+          <div className="uppercase text-xs text-surface-accent font-semibold mb-4">Project Activity</div>
           <Feed project={project} />
         </div>
       </div>

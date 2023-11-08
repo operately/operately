@@ -32,7 +32,7 @@ type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 const sizes = {
   small: "max-w-2xl",
   medium: "max-w-4xl",
-  large: "max-w-5xl",
+  large: "max-w-screen-lg w-[90%]",
   xlarge: "max-w-6xl",
   xxlarge: "max-w-7xl",
 };

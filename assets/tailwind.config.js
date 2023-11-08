@@ -10,10 +10,13 @@ module.exports = {
       colors: {
         "base": "var(--color-base)",
         "surface": "var(--color-surface)",
+        "surface-dimmed": "var(--color-surface-dimmed)",
 
         "content-base": "var(--color-content)",
         "content-accent": "var(--color-content-accent)",
         "content-dimmed": "var(--color-content-dimmed)",
+
+        "stroke-base": "var(--color-stroke-base)",
 
         brand: {
           1: "#3185FF",

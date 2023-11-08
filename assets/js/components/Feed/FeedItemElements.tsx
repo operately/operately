@@ -17,7 +17,7 @@ export function Container({ author, time, title, content }: ContainerProps) {
 
   return (
     <div className="flex w-full">
-      <div className="w-full pr-2 py-3">
+      <div className="w-full pr-2 pb-6">
         <div className={"flex gap-3" + " " + alignement}>
           <Avatar person={author} size="small" />
           <div className="flex-1">
@@ -33,14 +33,14 @@ export function Container({ author, time, title, content }: ContainerProps) {
 
 function Time({ time }) {
   return (
-    <div className="shrink-0 text-xs text-white-2 mt-2 w-12 text-right">
+    <div className="shrink-0 text-xs text-content-dimmed w-16 text-right">
       <FormattedTime time={time} format="time-only" />
     </div>
   );
 }
 
 function Title({ children }) {
-  return <div className="text-sm w-full font-bold text-white-1">{children}</div>;
+  return <div className="text-sm w-full font-bold text-content-accent">{children}</div>;
 }
 
 export function Content({ children }) {
