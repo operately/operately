@@ -10,18 +10,36 @@
 @import "./animations.css";
 @import "./lineclamp.css";
 
-body {
-  font-family: "Inter", sans-serif;
-  font-size: 16px;
-
-  background: var(--color-dark-1);
-  color: rgba(255, 255, 255, 0.9);
-}
-
 .h-full {
   height: 100%;
 }
 
 :focus-visible {
   outline: none;
+}
+
+body[data-theme="light"] {
+  --color-base: rgba(247, 244, 237, 1);
+  --color-surface: rgba(255, 255, 255, 1);
+
+  --color-content-base: rgba(0, 0, 0, 0.9);
+  --color-content-accent: rgba(0, 0, 0, 1);
+  --color-content-dimmed: rgba(0, 0, 0, 0.8);
+}
+
+body[data-theme="dark"] {
+  --color-base: rgba(30,30,34,1);
+  --color-surface: rgba(35,35,39,1);
+
+  --color-content-base: rgba(255, 255, 255, 0.9);
+  --color-content-accent: rgba(255, 255, 255, 1);
+  --color-content-dimmed: rgba(255, 255, 255, 0.8);
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+
+  color: var(--color-content-base);
+  background: var(--color-base);
 }

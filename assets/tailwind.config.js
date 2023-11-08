@@ -8,6 +8,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        "base": "var(--color-base)",
+        "surface": "var(--color-surface)",
+
+        "content-base": "var(--color-content)",
+        "content-accent": "var(--color-content-accent)",
+        "content-dimmed": "var(--color-content-dimmed)",
+
         brand: {
           1: "#3185FF",
           2: "#E3F2FF",

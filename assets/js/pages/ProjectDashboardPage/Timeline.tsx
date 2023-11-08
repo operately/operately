@@ -13,7 +13,7 @@ export default function Timeline({ project, refetch, editable }) {
 }
 
 const Divider = () => <div className="w-px h-10 bg-shade-2 mx-6" />;
-const Label = ({ children }) => <div className="text-xs uppercase text-white-2 font-bold mb-1">{children}</div>;
+const Label = ({ children }) => <div className="text-xs uppercase text-content-dimmed font-bold mb-1">{children}</div>;
 
 function TimelineGraph({ project }) {
   const start = Time.parse(project.startedAt);
