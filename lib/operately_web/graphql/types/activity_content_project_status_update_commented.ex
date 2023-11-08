@@ -23,5 +23,22 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateCommented
         {:ok, project}
       end
     end
+
+    field :update, non_null(:update) do
+      resolve fn activity, _, _ ->
+        id = activity.content["status_update_id"]
+        update = Operately.Updates.get_update!(id)
+
+        {:ok, update}
+      end
+    end
+
+    field :comment, non_null(:comment) do
+      resolve fn activity, _, _ ->
+        id = activity.content["comment_id"]
+
+        {:ok, Operately.Updates.get_comment!(id)}
+      end
+    end
   end
 end
