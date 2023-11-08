@@ -8,9 +8,9 @@ import { EditorContext, Context } from "./index";
 import { AddBlobsEditorCommand } from "./Blob/AddBlobsEditorCommand";
 
 function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
-  let className = classnames("p-1 text-white-1 rounded", {
-    "bg-shade-1": isActive,
-    "hover:bg-shade-1": !isActive,
+  let className = classnames("p-1 text-content-accent rounded", {
+    "bg-surface-accent": isActive,
+    "hover:bg-surface-accent": !isActive,
   });
 
   return (
@@ -21,9 +21,9 @@ function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
 }
 
 function MenuBarButton({ children, onClick, disabled = false }): JSX.Element {
-  let className = classnames("p-1 text-white-1 rounded text-xs", {
-    "hover:bg-shade-1 cursor-pointer": !disabled,
-    "text-dark-8": disabled,
+  let className = classnames("p-1 text-content-accent rounded text-xs", {
+    "hover:bg-surface-accent cursor-pointer": !disabled,
+    "text-content-subtle": disabled,
   });
 
   return (
@@ -183,7 +183,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
   if (variant === "small") {
     return (
       <div className="flex items-center gap-2 rounded-lg">
-        <div className="flex items-center border border-shade-2 rounded-lg">
+        <div className="flex items-center border border-stroke-base rounded-lg">
           <EditLinkButton editor={editor} iconSize={20} />
         </div>
 
@@ -214,7 +214,7 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
 
   if (variant === "large") {
     return (
-      <div className="flex items-center gap-3 border-y border-shade-2 py-1">
+      <div className="flex items-center gap-3 border-y border-stroke-base py-1">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-1">
             <BoldButton editor={editor} iconSize={20} />

@@ -46,7 +46,7 @@ export function Page() {
 function Header() {
   return (
     <div>
-      <div className="uppercase text-white-1 tracking-wide w-full mb-2">CHECK-IN</div>
+      <div className="uppercase text-content-accent tracking-wide w-full mb-1 text-sm font-semibold">CHECK-IN</div>
       <div className="text-4xl font-bold mx-auto">What's new since the last check-in?</div>
     </div>
   );
@@ -61,7 +61,10 @@ function Editor() {
       <TipTapEditor.Root>
         <TipTapEditor.Toolbar editor={editor.editor} variant="large" />
 
-        <div className="mb-8 text-white-1 text-lg relative border-b border-shade-2" style={{ minHeight: "350px" }}>
+        <div
+          className="mb-8 text-content-accent text-lg relative border-b border-stroke-base"
+          style={{ minHeight: "350px" }}
+        >
           <TipTapEditor.EditorContent editor={editor.editor} />
           <TipTapEditor.LinkEditForm editor={editor.editor} />
         </div>
@@ -86,7 +89,7 @@ function Health({ state }: { state: HealthState }) {
   return (
     <div>
       <p className="font-bold text-lg">Is there a change in the project's health?</p>
-      <p className="text-white-1/70">Please adjust the values below.</p>
+      <p className="text-content-dimmed">Please adjust the values below.</p>
 
       <div className="my-6 mb-10 flex flex-col gap-3">
         <AccordionWithOptions
@@ -143,7 +146,7 @@ function useForm() {
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
     peopleSearch: People.usePeopleSearch(),
-    className: "min-h-[350px] py-2",
+    className: "min-h-[350px] py-2 font-medium",
   });
 
   const [post] = Projects.usePostUpdate({
