@@ -64,7 +64,7 @@ export function Page() {
         </div>
 
         <div className="-m-12 mt-12 p-12 border-t border-surface-outline bg-surface-dimmed">
-          <div className="uppercase text-xs text-surface-accent font-semibold mb-4">Project Activity</div>
+          <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
           <Feed project={project} />
         </div>
       </div>

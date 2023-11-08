@@ -14,6 +14,16 @@ export function useFeed(projectId: string) {
         content {
           __typename
 
+          ... on ActivityContentProjectRenamed {
+            project {
+              id
+              name
+            }
+
+            oldName
+            newName
+          }
+
           ... on ActivityContentProjectTimelineEdited {
             project {
               id
