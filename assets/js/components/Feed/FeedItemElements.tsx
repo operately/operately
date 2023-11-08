@@ -3,18 +3,22 @@ import * as React from "react";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
+import * as People from "@/models/people";
+
 interface ContainerProps {
-  author: any;
+  author: People.Person;
   time: any;
-  title: string;
-  content?: string;
+  title: JSX.Element | string;
+  content?: JSX.Element | string;
 }
 
 export function Container({ author, time, title, content }: ContainerProps) {
+  const alignement = content ? "items-start" : "items-center";
+
   return (
     <div className="flex w-full">
       <div className="w-full pr-2 py-3">
-        <div className="flex items-start gap-3">
+        <div className={"flex gap-3" + " " + alignement}>
           <Avatar person={author} size="small" />
           <div className="flex-1">
             <Title>{title}</Title>

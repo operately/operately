@@ -23,5 +23,14 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateSubmitted
         {:ok, project}
       end
     end
+
+    field :update, non_null(:update) do
+      resolve fn activity, _, _ ->
+        id = activity.content["status_update_id"]
+        update = Operately.Updates.get_update!(id)
+
+        {:ok, update}
+      end
+    end
   end
 end

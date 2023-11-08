@@ -42,20 +42,25 @@ export function useFeed(projectId: string) {
           }
 
           ... on ActivityContentProjectStatusUpdateSubmitted {
-            projectId
-            statusUpdateId
-
             project {
+              id
               name
+            }
+
+            update {
+              id
+              insertedAt
+              message
             }
           }
 
           ... on ActivityContentProjectStatusUpdateAcknowledged {
             projectId
-            statusUpdateId
 
-            project {
-              name
+            update {
+              id
+              insertedAt
+              message
             }
           }
 
