@@ -66,10 +66,19 @@ export function useFeed(projectId: string) {
 
           ... on ActivityContentProjectStatusUpdateCommented {
             projectId
-            statusUpdateId
 
             project {
               name
+            }
+
+            update {
+              id
+              insertedAt
+              message
+            }
+
+            comment {
+              message
             }
           }
 

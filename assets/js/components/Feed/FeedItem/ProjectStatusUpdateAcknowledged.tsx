@@ -7,6 +7,7 @@ import { Container } from "../FeedItemElements";
 import { Link } from "@/components/Link";
 
 import * as Time from "@/utils/time";
+import * as Icons from "@tabler/icons-react";
 
 export default function ({ activity }) {
   const content = activity.content;
@@ -21,6 +22,7 @@ export default function ({ activity }) {
   const title = (
     <>
       {People.shortName(activity.author)} acknowledged: {link}
+      <Icons.IconSquareCheckFilled size={20} className="text-green-400 inline ml-2" />
     </>
   );
 
