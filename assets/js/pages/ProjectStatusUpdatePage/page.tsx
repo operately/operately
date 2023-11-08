@@ -92,7 +92,7 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
       </span>
     );
   } else {
-    return <span className="flex items-center gap-1">Not acknowledged</span>;
+    return <span className="flex items-center gap-1">Not yet acknowledged</span>;
   }
 }
 
