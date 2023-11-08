@@ -30,17 +30,17 @@ export function Card({ notification, author, title, link, where, when, who }) {
 
   return (
     <div
-      className="flex items-center gap-3 hover:bg-shade-1 rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
+      className="flex items-center gap-3 hover:bg-surface-accent rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
       onClick={clickHandler}
       data-test-id="notification-card"
     >
       <div className="shrink-0">
-        <Avatar person={author} size={36} />
+        <Avatar person={author} size="small" />
       </div>
 
       <div className="flex-1">
-        <div className="text-white-1 font-semibold">{title}</div>
-        <div className="text-white-2 text-sm leading-snug">
+        <div className="text-content-accent font-semibold">{title}</div>
+        <div className="text-content-dimmed font-medium text-sm leading-snug">
           {where}
           <TextSeparator />
           {who}
@@ -51,7 +51,7 @@ export function Card({ notification, author, title, link, where, when, who }) {
 
       {notification.read ? null : (
         <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1" onClick={closeHandler}>
-          <Icons.IconX size={16} className="hover:text-white-1" />
+          <Icons.IconX size={16} className="hover:text-content-accent" />
         </div>
       )}
     </div>
