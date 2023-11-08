@@ -113,14 +113,14 @@ function ProjectListItem({ project }: { project: Project }) {
       <div className="flex items-center justify-between">
         <div className="text-ellipsis font-bold text-lg">{project.name}</div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {project.contributors.map((contributor) => (
             <Avatar key={contributor.id} person={contributor.person} size="tiny" />
           ))}
         </div>
       </div>
 
-      <div className="flex items-center gap-12 mt-6">
+      <div className="flex items-center gap-12 mt-6 text-sm">
         <div>
           <div className="text-xs text-content-accent font-semibold uppercase mb-1">Status</div>
           <Indicator type="status" value={project.health === "unknown" ? "on_track" : project.health} />
@@ -150,11 +150,9 @@ function NextMilestone({ project }) {
     return <span className="text-sm text-content-dimmed">&mdash;</span>;
   } else {
     return (
-      <div className="flex items-start gap-2">
-        <div className="shrink-0 mt-1">
-          <Icons.IconFlag3Filled size={16} className="text-yellow-400/80" />
-        </div>
-        <span className="text-ellipsis truncate">{project.nextMilestone.title}</span>
+      <div className="text-sm">
+        <Icons.IconFlag3Filled size={14} className="text-yellow-400/80 inline mr-1" />{" "}
+        <span className="">{project.nextMilestone.title}</span>
       </div>
     );
   }
