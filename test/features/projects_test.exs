@@ -86,6 +86,9 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_has(Query.text("Code Repository"))
     |> UI.click(testid: "key-resource-options")
     |> UI.click(testid: "remove-key-resource")
+
+    ctx
+    |> visit_show(ctx.project)
     |> UI.refute_has(Query.text("Code Repository"))
   end
 
