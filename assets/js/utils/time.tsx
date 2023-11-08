@@ -175,3 +175,19 @@ export function latest(...dates: (Date | null | undefined)[]) {
 export function getMonthName(date: Date) {
   return datefsn.format(date, "MMMM");
 }
+
+export function isSameDay(date1: Date, date2: Date) {
+  return datefsn.isSameDay(date1, date2);
+}
+
+export function relativeDay(date: Date) {
+  const startOfToday = datefsn.startOfDay(new Date());
+  const startOfDayOfDate = datefsn.startOfDay(date);
+
+  const days = daysBetween(startOfDayOfDate, startOfToday);
+
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+
+  return `${days} days ago`;
+}

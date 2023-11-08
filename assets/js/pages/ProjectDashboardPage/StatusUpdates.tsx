@@ -11,7 +11,7 @@ export default function StatusUpdate({ project }) {
 
   return (
     <div className="flex-1">
-      <div className="text-white-1/80 uppercase text-xs font-medium mb-2">Last Check-In</div>
+      <div className="text-content-accent font-bold uppercase text-xs mb-2">Last Check-In</div>
 
       <CheckInCard update={lastUpdate} />
 

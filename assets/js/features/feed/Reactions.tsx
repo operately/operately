@@ -30,7 +30,10 @@ export function Reactions({ reactions, form, size }: ReactionsProps): JSX.Elemen
 function Reaction({ reaction, size }) {
   const testId = `reaction-${reaction.reactionType}`;
   return (
-    <div className="flex items-center gap-1.5 transition-all bg-shade-2 rounded-full p-1 pr-1.5" data-test-id={testId}>
+    <div
+      className="flex items-center gap-1.5 transition-all bg-surface-accent rounded-full p-1 pr-1.5"
+      data-test-id={testId}
+    >
       <Avatar person={reaction.person} size={AvatarSize.Tiny} />
       <ReactionIcon size={size} type={reaction.reactionType} />
     </div>
@@ -46,7 +49,7 @@ function AddReaction({ size, form }) {
   };
 
   return (
-    <div className="rounded-full bg-shade-2 p-1 hover:scale-105" data-test-id="reactions-button">
+    <div className="rounded-full bg-surface-dimmed p-1 hover:scale-105" data-test-id="reactions-button">
       <div className="flex items-center gap-3 transition-all">
         {active ? (
           <ReactionPallete size={size} handleAddReaction={handleAddReaction} />
@@ -60,7 +63,7 @@ function AddReaction({ size, form }) {
 
 function AddReactionZeroState({ size, onClick }) {
   return (
-    <div className="text-white-1 cursor-pointer" onClick={onClick}>
+    <div className="text-content-accent cursor-pointer" onClick={onClick}>
       <Icons.IconMoodPlus size={size} />
     </div>
   );

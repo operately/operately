@@ -33,17 +33,13 @@ function Logo() {
 }
 
 function NavigationContainer({ size, children }) {
-  return (
-    <div className="fixed top-0 bg-dark-1 left-0 right-0 transition-all z-50 border-b border-shade-2 py-1.5">
-      {children}
-    </div>
-  );
+  return <div className="fixed top-0 bg-base left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
 }
 
 function NavigationItem({ to, title, icon }) {
   return (
     <NavLink to={to} className="flex items-center">
-      <span className="font-bold flex items-center gap-1 text-white-2 hover:text-white-1 transition-all">
+      <span className="font-bold flex items-center gap-1 text-content-dimmed hover:text-content-accent transition-all">
         {icon}
         {title}
       </span>

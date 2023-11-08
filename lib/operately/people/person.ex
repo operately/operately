@@ -19,6 +19,8 @@ defmodule Operately.People.Person do
     field :notify_on_mention, :boolean
     field :notify_about_assignments, :boolean
 
+    field :theme, :string
+
     timestamps()
   end
 
@@ -35,7 +37,8 @@ defmodule Operately.People.Person do
       :home_dashboard_id,
       :send_daily_summary,
       :notify_on_mention,
-      :notify_about_assignments
+      :notify_about_assignments,
+      :theme
     ])
     |> validate_required([:full_name, :company_id])
   end

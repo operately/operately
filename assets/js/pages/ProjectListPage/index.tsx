@@ -73,7 +73,7 @@ function ProjectGridItem({ project }: { project: Project }) {
 
   return (
     <div
-      className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow-lg hover:shadow-xl overflow-hidden"
+      className="bg-surface rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow-lg hover:shadow-xl overflow-hidden"
       onClick={() => navigate(`/projects/${project.id}`)}
     >
       <div className="flex flex-col justify-between h-28">
@@ -107,7 +107,7 @@ function ProjectListItem({ project }: { project: Project }) {
 
   return (
     <div
-      className="bg-dark-2 rounded-lg p-4 flex flex-col gap-2 cursor-pointer hover:shadow-lg"
+      className="bg-surface rounded-lg p-4 flex flex-col gap-2 cursor-pointer hover:shadow"
       onClick={() => navigate(`/projects/${project.id}`)}
     >
       <div className="flex items-center justify-between">
@@ -122,22 +122,22 @@ function ProjectListItem({ project }: { project: Project }) {
 
       <div className="flex items-center gap-12 mt-6">
         <div>
-          <div className="text-xs text-white-1/80 uppercase mb-1">Status</div>
+          <div className="text-xs text-content-accent font-semibold uppercase mb-1">Status</div>
           <Indicator type="status" value={project.health === "unknown" ? "on_track" : project.health} />
         </div>
 
         <div>
-          <div className="text-xs text-white-1/80 uppercase mb-1">Start Date</div>
+          <div className="text-xs text-content-accent font-semibold uppercase mb-1">Start Date</div>
           <DateOrNotSet date={project.startedAt} ifNull="&mdash;" />
         </div>
 
         <div>
-          <div className="text-xs text-white-1/80 uppercase mb-1">Due Date</div>
+          <div className="text-xs text-content-accent font-semibold uppercase mb-1">Due Date</div>
           <DateOrNotSet date={project.deadline} ifNull="&mdash;" />
         </div>
 
         <div>
-          <div className="text-xs text-white-1/80 uppercase mb-1">Next Milestone</div>
+          <div className="text-xs text-content-accent font-semibold uppercase mb-1">Next Milestone</div>
           <NextMilestone project={project} />
         </div>
       </div>
@@ -147,7 +147,7 @@ function ProjectListItem({ project }: { project: Project }) {
 
 function NextMilestone({ project }) {
   if (project.nextMilestone === null) {
-    return <span className="text-sm text-white-2">&mdash;</span>;
+    return <span className="text-sm text-content-dimmed">&mdash;</span>;
   } else {
     return (
       <div className="flex items-start gap-2">
@@ -162,7 +162,7 @@ function NextMilestone({ project }) {
 
 function DateOrNotSet({ date, ifNull }) {
   if (date === null) {
-    return <span className="text-sm text-white-2">{ifNull}</span>;
+    return <span className="text-sm text-content-dimmed">{ifNull}</span>;
   }
   return (
     <div className="flex items-center gap-2">

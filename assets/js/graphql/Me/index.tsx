@@ -14,6 +14,8 @@ export const GET_ME = gql`
       sendDailySummary
       notifyOnMention
       notifyAboutAssignments
+
+      theme
     }
   }
 `;

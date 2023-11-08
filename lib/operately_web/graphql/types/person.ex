@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Graphql.Types.Person do
     field :full_name, non_null(:string)
     field :title, :string
     field :avatar_url, :string
+    field :theme, :string
 
     field :send_daily_summary, non_null(:boolean)
     field :notify_on_mention, non_null(:boolean)
