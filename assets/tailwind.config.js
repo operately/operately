@@ -22,6 +22,9 @@ module.exports = {
 
         "stroke-base": "var(--color-stroke-base)",
 
+        "link-base": "var(--color-link-base)",
+        "link-hover": "var(--color-link-hover)",
+
         brand: {
           1: "#3185FF",
           2: "#E3F2FF",

@@ -63,7 +63,7 @@ export function Page() {
           <StatusUpdates project={project} />
         </div>
 
-        <div className="-m-12 mt-12 p-12 border-t border-surface-outline bg-surface-dimmed">
+        <div className="-m-12 mt-12 p-12 border-t border-surface-outline bg-surface-dimmed rounded-b">
           <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
           <Feed project={project} />
         </div>

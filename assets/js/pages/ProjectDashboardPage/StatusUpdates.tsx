@@ -1,13 +1,13 @@
 import React from "react";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { Link } from "@/components/Link";
 import { CheckInCard } from "@/components/CheckInCard";
 
 export default function StatusUpdate({ project }) {
   if (project.lastCheckIn == null) return null;
 
   const lastUpdate = project.lastCheckIn;
-  const gotoUpdates = useNavigateTo(`/projects/${project.id}/status_updates`);
+  const seeAllPath = `/projects/${project.id}/status_updates`;
 
   return (
     <div className="flex-1">
@@ -15,8 +15,8 @@ export default function StatusUpdate({ project }) {
 
       <CheckInCard update={lastUpdate} />
 
-      <div className="underline cursor-pointer decoration-blue-400 text-blue-400 mt-2" onClick={gotoUpdates}>
-        View all check-ins
+      <div className="mt-2">
+        <Link to={seeAllPath}>View all check-ins</Link>
       </div>
     </div>
   );
