@@ -20,24 +20,28 @@
 
 body[data-theme="light"] {
   --color-base: rgba(247, 244, 237, 1);
+
   --color-surface: rgba(255, 255, 255, 1);
   --color-surface-dimmed: rgba(249, 249, 249, 1);
+  --color-surface-outline: rgba(211, 204, 189, 1);
 
   --color-content-base: rgba(0, 0, 0, 0.9);
   --color-content-accent: rgba(0, 0, 0, 1);
-  --color-content-dimmed: rgba(0, 0, 0, 0.8);
+  --color-content-dimmed: rgba(0, 0, 0, 0.6);
 
   --color-stroke-base: rgba(0, 0, 0, 0.1);
 }
 
 body[data-theme="dark"] {
   --color-base: rgba(30,30,34,1);
+
   --color-surface: rgba(35,35,39,1);
   --color-surface-dimmed: rgba(30, 30, 34, 0.8);
+  --color-surface-outline: rgba(43, 45, 49, 1);
 
   --color-content-base: rgba(255, 255, 255, 0.9);
   --color-content-accent: rgba(255, 255, 255, 1);
-  --color-content-dimmed: rgba(255, 255, 255, 0.8);
+  --color-content-dimmed: rgba(255, 255, 255, 0.6);
 
   --color-stroke-base: rgba(255, 255, 255, 0.05);
 }
