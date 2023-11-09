@@ -6,7 +6,8 @@ import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
-import { Label } from "./Label";
+import { Label, DimmedLabel } from "./Label";
+import { Indicator } from "@/components/ProjectHealthIndicators";
 
 export default function Timeline({ project, refetch, editable }) {
   return <TimelineGraph project={project} />;
@@ -19,38 +20,44 @@ function TimelineGraph({ project }) {
 
   return (
     <div>
-      <div className="flex items-center mb-8">
+      <div className="flex items-start">
         <div>
-          <Label>Status</Label>
-          <HealthIndicator health={project.health} />
+          <DimmedLabel>Status</DimmedLabel>
+          <Indicator value={project.health} type="status" />
         </div>
 
         <Divider />
 
         <div>
-          <Label>Start Date</Label>
-          <FormattedTime time={start} format="short-date" />
+          <DimmedLabel>Start Date</DimmedLabel>
+          <div className="font-semibold">
+            <FormattedTime time={start} format="short-date" />
+          </div>
         </div>
 
         <Divider />
 
         <div>
-          <Label>Due Date</Label>
-          <FormattedTime time={end} format="short-date" />
+          <DimmedLabel>Due Date</DimmedLabel>
+          <div className="font-semibold">
+            <FormattedTime time={end} format="short-date" />
+          </div>
         </div>
 
         <Divider />
 
         <div>
-          <Label>Duration</Label>
-          <Duration start={start} end={end} />
+          <DimmedLabel>Duration</DimmedLabel>
+          <div className="font-semibold">
+            <Duration start={start} end={end} />
+          </div>
         </div>
 
         <Divider />
 
         <div>
-          <Label>Progress</Label>
-          <div className="flex items-center gap-2">
+          <DimmedLabel>Progress</DimmedLabel>
+          <div className="flex items-center gap-2 font-semibold">
             {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
           </div>
         </div>

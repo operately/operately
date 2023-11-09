@@ -13,7 +13,6 @@ export default function ContributorAvatar(props: ContributorAvatarProps) {
   return (
     <div className={`shrink-0 relative ${borderClass(props.contributor.role)}`}>
       <Avatar person={props.contributor.person} />
-      <Badge role={props.contributor.role} />
     </div>
   );
 }

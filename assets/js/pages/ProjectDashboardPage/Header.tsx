@@ -23,6 +23,7 @@ export default function Header({ project }: HeaderProps): JSX.Element {
   return (
     <div>
       <ProjectName project={project} />
+      <div className="mt-2"></div>
       <ContributorList project={project} />
     </div>
   );
@@ -58,15 +59,15 @@ function PrivateIndicator({ project }) {
   );
 }
 
-function ContributorList({ project }) {
+export function ContributorList({ project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
 
   const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (
-    <div className="mt-4 flex items-center">
+    <div className="flex items-center">
       <Link to={contributorsPath} data-test-id="project-contributors">
-        <div className="flex items-center justify-center gap-1.5 cursor-pointer">
+        <div className="flex items-center justify-center gap-1 cursor-pointer">
           <Champion champion={champion} />
           <Reviewer reviewer={reviewer} />
 

@@ -6,7 +6,7 @@ interface GhostButton {
   linkTo?: string;
   onClick?: (e: any) => void;
   testId?: string;
-  size?: "base" | "lg";
+  size?: "sm" | "base" | "lg";
 }
 
 export function GhostButton(props: GhostButton) {
@@ -30,15 +30,19 @@ export function GhostButton(props: GhostButton) {
   );
 }
 
-function className(size?: "base" | "lg") {
+function className(size?: "sm" | "base" | "lg") {
   size = size || "base";
 
+  if (size === "sm") {
+    return "font-medium px-3 py-1 text-sm rounded-2xl border border-green-500 text-green-500 hover:bg-green-600/10 transition-all duration-100 cursor-pointer";
+  }
+
   if (size === "base") {
-    return "px-4 py-1 rounded-3xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-all duration-100 cursor-pointer";
+    return "font-medium px-4 py-1 rounded-3xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-all duration-100 cursor-pointer";
   }
 
   if (size === "lg") {
-    return "px-6 py-2 text-lg rounded-3xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-all duration-100 cursor-pointer";
+    return "font-medium px-6 py-2 text-lg rounded-3xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-all duration-100 cursor-pointer";
   }
 
   throw new Error(`Unknown size: ${size}`);
