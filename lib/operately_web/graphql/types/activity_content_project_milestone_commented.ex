@@ -33,5 +33,14 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectMilestoneCommented do
         {:ok, activity.content["comment_action"]}
       end
     end
+
+    field :comment, non_null(:comment) do
+      resolve fn activity, _, _ ->
+        comment_id = activity.content["comment_id"]
+        comment = Operately.Updates.get_comment!(comment_id)
+
+        {:ok, comment}
+      end
+    end
   end
 end

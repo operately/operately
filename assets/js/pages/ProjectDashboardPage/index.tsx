@@ -14,6 +14,7 @@ import * as Projects from "@/graphql/Projects";
 import * as Me from "@/graphql/Me";
 
 import { Feed } from "@/components/Feed";
+import { NextMilestone } from "./NextMilestone";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -62,6 +63,8 @@ export function Page() {
         <div className="my-8 flex items-start gap-6">
           <StatusUpdates project={project} />
         </div>
+
+        <NextMilestone project={project} />
 
         <div className="-m-12 mt-12 p-12 border-t border-surface-outline bg-surface-dimmed rounded-b">
           <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
