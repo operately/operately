@@ -144,6 +144,7 @@ export function useFeed(projectId: string) {
           }
 
           ... on ActivityContentProjectMilestoneCommented {
+            projectId
             commentAction
 
             milestone {
@@ -151,9 +152,8 @@ export function useFeed(projectId: string) {
               title
             }
 
-            project {
-              id
-              name
+            comment {
+              message
             }
           }
         }
