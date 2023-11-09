@@ -7,6 +7,7 @@ import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
 import { Label, DimmedLabel } from "./Label";
+import { Indicator } from "@/components/ProjectHealthIndicators";
 
 export default function Timeline({ project, refetch, editable }) {
   return <TimelineGraph project={project} />;
@@ -20,6 +21,13 @@ function TimelineGraph({ project }) {
   return (
     <div>
       <div className="flex items-start">
+        <div>
+          <DimmedLabel>Status</DimmedLabel>
+          <Indicator value={project.health} type="status" />
+        </div>
+
+        <Divider />
+
         <div>
           <DimmedLabel>Start Date</DimmedLabel>
           <div className="font-semibold">

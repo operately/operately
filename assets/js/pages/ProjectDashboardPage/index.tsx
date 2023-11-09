@@ -66,9 +66,8 @@ export function Page() {
         </div>
 
         <div className="">
-          <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Overview</div>
-
-          <div className="border-t border-stroke-base pt-4">
+          <Timeline project={project} refetch={refetch} editable={championOfProject} />
+          <div className="border-t border-stroke-base py-6 mt-4">
             <div className="flex items-start gap-4">
               <div className="w-1/5">
                 <div className="font-bold text-sm">Check-Ins</div>
@@ -125,34 +124,24 @@ export function Page() {
             </div>
           </div>
 
-          <div className="border-t border-stroke-base pt-4 mt-12">
+          <div className="border-y border-stroke-base py-6">
             <div className="flex items-start gap-4">
               <div className="w-1/5">
-                <div className="font-bold text-sm">Timeline</div>
+                <div className="font-bold text-sm">Milestones</div>
 
                 <div className="text-sm">
-                  <Link to={`/projects/${project.id}/milestones`}>Edit</Link>
+                  <Link to={`/projects/${project.id}/milestones`}>View all</Link>
                 </div>
               </div>
 
               <div className="w-4/5">
-                <Timeline project={project} refetch={refetch} editable={championOfProject} />
-                <div className="mt-8"></div>
                 <NextMilestone project={project} />
               </div>
             </div>
           </div>
-
-          <div className="border-t border-stroke-base pt-4 mt-12">
-            <div className="flex items-start gap-4">
-              <div className="w-1/4">
-                <div className="font-bold text-sm">Resources</div>
-              </div>
-
-              <div className="w-3/4"></div>
-            </div>
-          </div>
         </div>
+
+        <Resources project={project} />
 
         <div className="-m-12 mt-12 p-12 border-t border-surface-outline bg-surface-dimmed rounded-b">
           <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
@@ -178,60 +167,43 @@ import { Summary } from "@/components/RichContent";
 
 function Resources({ project }) {
   return (
-    <div className="mt-8">
-      <div className="uppercase text-xs text-content-accent mb-4 font-bold">Resources</div>
+    <div className="mt-12">
+      <div className="text-sm text-content-accent mb-4 font-bold">Resources</div>
 
-      <div className="grid grid-cols-4 gap-4">
-        <div className="rounded border border-stroke-base flex flex-col h-40">
-          <div className="font-bold text-sm border-b border-stroke-base py-1 px-1">Team</div>
-          <div className="flex items-center flex-wrap gap-1 p-2">
-            <Avatar person={project.champion} />
-            <Avatar person={project.reviewer} />
-          </div>
-        </div>
-
-        <div className="rounded border border-stroke-base flex flex-col h-40">
-          <div className="font-bold text-sm border-b border-stroke-base py-1 px-1">Business Case</div>
-          <div className="flex items-center flex-wrap gap-1 p-2 text-xs">
-            <Summary jsonContent={project.description} characterCount={200} />
-          </div>
-        </div>
-
-        <div className="rounded border border-stroke-base flex flex-col h-40">
-          <div className="font-bold text-sm border-b border-stroke-base py-1 px-1">Milestones</div>
-          <div className="flex items-center flex-wrap gap-1 p-2 text-xs">
-            <Summary jsonContent={project.description} characterCount={200} />
-          </div>
-        </div>
-
-        <div className="rounded border border-stroke-base p-4 flex flex-col items-center justify-center h-40">
-          <Brands.Github size={32} />
-
-          <div className="text-content-accent font-semibold mt-4 leading-tight text-center">Github Repository</div>
-
-          <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
-        </div>
-
-        <div className="rounded border border-stroke-base p-4 flex flex-col items-center justify-center">
-          <Brands.GoogleSheets size={32} />
-
-          <div className="text-content-accent font-semibold mt-4 leading-tight text-center">
-            Public Google Sheet with KPIs
-          </div>
-
-          <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
-        </div>
-
-        <div className="rounded border border-stroke-base p-4 flex flex-col items-center justify-center">
-          <Icons.IconExternalLink size={32} />
-
-          <div className="text-content-accent font-semibold mt-4 leading-tight text-center">Website</div>
-
-          <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
-        </div>
+      <div className="grid grid-cols-5 gap-4">
+        {project.keyResources.map((resource) => (
+          <Resource icon={<ResourceIcon resource={resource} />} title={resource.title} />
+        ))}
       </div>
     </div>
   );
+}
+
+function Resource({ icon, title }) {
+  return (
+    <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
+      <div className="pt-6 pb-3">{icon}</div>
+      <div className="pb-6 px-5">
+        <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
+        <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
+      </div>
+    </div>
+  );
+}
+
+const GithubLinkRegex = new RegExp("^https://github.com/.*/.*$");
+const GoogleSheetLinkRegex = new RegExp("^https://docs.google.com/spreadsheets/d/.*$");
+
+function ResourceIcon({ resource }) {
+  if (resource.link.match(GithubLinkRegex)) {
+    return <Brands.Github size={34} />;
+  }
+
+  if (resource.link.match(GoogleSheetLinkRegex)) {
+    return <Brands.GoogleSheets size={34} />;
+  }
+
+  return <Icons.IconLink size={34} />;
 }
 
 function Tabs() {
