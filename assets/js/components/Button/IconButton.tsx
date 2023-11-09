@@ -12,8 +12,8 @@ interface IconButtonProps {
 }
 
 const IconButtonColors = {
-  green: "text-white-1/60 bg-shade-1 hover:bg-green-400/20 hover:text-green-400",
-  red: "text-white-1/60 bg-shade-1 hover:bg-red-400/20 hover:text-red-400",
+  green: "text-content-dimmed bg-surface-accent hover:bg-green-400/20 hover:text-green-400",
+  red: "text-content-dimmed bg-surface-accent hover:bg-red-400/20 hover:text-red-400",
 };
 
 const paddings = {
