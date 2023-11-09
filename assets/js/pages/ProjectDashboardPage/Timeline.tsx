@@ -6,15 +6,13 @@ import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { Label } from "./Label";
 
 export default function Timeline({ project, refetch, editable }) {
   return <TimelineGraph project={project} />;
 }
 
 const Divider = () => <div className="w-px h-10 bg-shade-2 mx-6" />;
-const Label = ({ children }) => <div className="text-xs uppercase text-content-accent font-bold mb-1">{children}</div>;
-
 function TimelineGraph({ project }) {
   const start = Time.parse(project.startedAt);
   const end = Time.parse(project.deadline);
@@ -57,8 +55,6 @@ function TimelineGraph({ project }) {
           </div>
         </div>
       </div>
-
-      <NextMilestone project={project} />
     </div>
   );
 }
@@ -73,26 +69,6 @@ function ProgressGraph({ start, end }) {
   return (
     <div className="flex-1 h-4 bg-shade-2 rounded relative">
       <div className="absolute top-0 bottom-0 left-0 bg-green-400" style={{ width: `${width}%` }} />
-    </div>
-  );
-}
-
-function NextMilestone({ project }) {
-  if (!project.nextMilestone) return null;
-
-  const gotoMilestone = useNavigateTo(`/projects/${project.id}/milestones/${project.nextMilestone.id}`);
-
-  return (
-    <div>
-      <Label>Next Milestone</Label>
-      <div className="font-medium flex items-center gap-1" onClick={gotoMilestone}>
-        <Icons.IconFlagFilled size={16} className="text-yellow-400" />
-        <span className="font-medium underline decoration-white-2 cursor-pointer">{project.nextMilestone.title}</span>
-        <span>&middot;</span>
-        <span className="text-content-dimmed">
-          due on <FormattedTime time={project.nextMilestone.deadlineAt} format="short-date" />
-        </span>
-      </div>
     </div>
   );
 }
