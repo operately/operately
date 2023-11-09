@@ -23,3 +23,9 @@ function Context({ theme, children }: { theme: string; children: React.ReactNode
 
   return <ThemeContext.Provider value={{ theme }}>{children}</ThemeContext.Provider>;
 }
+
+export function useTheme() {
+  const { theme } = React.useContext(ThemeContext);
+
+  return theme;
+}

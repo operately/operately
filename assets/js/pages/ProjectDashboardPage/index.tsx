@@ -124,7 +124,7 @@ export function Page() {
             </div>
           </div>
 
-          <div className="border-y border-stroke-base py-6">
+          <div className="border-t border-stroke-base py-6">
             <div className="flex items-start gap-4">
               <div className="w-1/5">
                 <div className="font-bold text-sm">Milestones</div>
@@ -139,11 +139,25 @@ export function Page() {
               </div>
             </div>
           </div>
+
+          <div className="border-t border-stroke-base py-6">
+            <div className="flex items-start gap-4">
+              <div className="w-1/5">
+                <div className="font-bold text-sm">Resources</div>
+
+                <div className="text-sm">
+                  <Link to={`/projects/${project.id}/milestones`}>Manage</Link>
+                </div>
+              </div>
+
+              <div className="w-4/5">
+                <Resources project={project} />
+              </div>
+            </div>
+          </div>
         </div>
 
-        <Resources project={project} />
-
-        <div className="-m-12 mt-12 p-12 border-t border-surface-outline bg-surface-dimmed rounded-b">
+        <div className="-m-12 mt-6 p-12 border-t border-surface-outline bg-surface-dimmed rounded-b">
           <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
           <Feed project={project} />
         </div>
@@ -167,27 +181,27 @@ import { Summary } from "@/components/RichContent";
 
 function Resources({ project }) {
   return (
-    <div className="mt-12">
-      <div className="text-sm text-content-accent mb-4 font-bold">Resources</div>
-
-      <div className="grid grid-cols-5 gap-4">
-        {project.keyResources.map((resource) => (
-          <Resource icon={<ResourceIcon resource={resource} />} title={resource.title} />
-        ))}
-      </div>
+    <div className="grid grid-cols-4 gap-4">
+      {project.keyResources.map((resource) => (
+        <Resource icon={<ResourceIcon resource={resource} />} title={resource.title} href={resource.link} />
+      ))}
     </div>
   );
 }
 
-function Resource({ icon, title }) {
+function Resource({ icon, title, href }) {
   return (
-    <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
+    <a
+      href={href}
+      target="_blank"
+      className="rounded border border-stroke-base hover:border-surface-outline cursor-pointer flex flex-col items-center justify-center text-center"
+    >
       <div className="pt-6 pb-3">{icon}</div>
       <div className="pb-6 px-5">
         <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
         <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
       </div>
-    </div>
+    </a>
   );
 }
 
