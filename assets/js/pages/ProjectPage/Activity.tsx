@@ -132,7 +132,7 @@ const ContainerColors = {
 
 function FeedAvatar({ person }) {
   return (
-    <div className="border border-dark-8 bg-dark-3 rounded-full flex items-center justify-center mt-1.5">
+    <div className="border border-dark-8 bg-surface-accent rounded-full flex items-center justify-center mt-1.5">
       <Avatar person={person} size="small" />
     </div>
   );
@@ -178,7 +178,7 @@ function BigContainer({
     <div className="flex items-start justify-between my-2">
       <FeedAvatar person={person} />
 
-      <div className={"w-full border rounded-lg relative shadow-lg bg-dark-3 ml-4" + " " + colors.border}>
+      <div className={"w-full border rounded-lg relative shadow-lg bg-surface-accent ml-4" + " " + colors.border}>
         <FeedAvatarCarrot fillColor="var(--color-dark-3)" />
 
         <div className="flex flex-col overflow-hidden">
@@ -196,7 +196,7 @@ function BigContainer({
 
             <div className="mr-3 flex items-center gap-2">
               {ackable && <AckMarker update={update} />}
-              <span className="text-white-2 text-sm">
+              <span className="text-content-dimmed text-sm">
                 <FormattedTime time={time} format="relative" />
               </span>
             </div>
@@ -209,7 +209,7 @@ function BigContainer({
               <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
             </div>
 
-            <div className="bg-dark-2 rounded-b-lg -mx-4 -mb-2 border-t-2 border-dark-5 text-white-2">
+            <div className="bg-surface rounded-b-lg -mx-4 -mb-2 border-t-2 border-dark-5 text-content-dimmed">
               <Comments update={update} />
             </div>
           </div>
@@ -246,7 +246,7 @@ function AckMarker({ update }) {
   if (update.acknowledged) {
     return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
   } else {
-    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
+    return <Icons.IconCircleCheckFilled size={16} className="text-content-subtle" />;
   }
 }
 
@@ -307,7 +307,7 @@ function Comment({ comment }) {
 
   return (
     <div
-      className="flex items-start justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1"
+      className="flex items-start justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-content-accent"
       data-test-id={testId}
     >
       <div className="shrink-0">
@@ -318,7 +318,7 @@ function Comment({ comment }) {
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
-            <span className="text-white-2 text-sm">
+            <span className="text-content-dimmed text-sm">
               <FormattedTime time={comment.insertedAt} format="relative" />
             </span>
           </div>
@@ -340,7 +340,7 @@ function AckComment({ update }) {
   const person = update.acknowledgingPerson;
 
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-white-1 bg-green-400/10">
+    <div className="flex items-center justify-between gap-3 px-4 py-3 not-first:border-t border-shade-2 text-content-accent bg-green-400/10">
       <div className="shrink-0">
         <Icons.IconCircleCheckFilled size={20} className="text-green-400" />
       </div>
@@ -349,7 +349,7 @@ function AckComment({ update }) {
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <div>{person.fullName} acknowledged this update</div>
-            <span className="text-white-2 text-sm">
+            <span className="text-content-dimmed text-sm">
               <FormattedTime time={update.acknowledgedAt} format="relative" />
             </span>
           </div>
@@ -470,7 +470,7 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
 
       <details className="mt-4">
         <summary className="list-none">
-          <a className="text-white-2 underline cursor-pointer">Show project details</a>
+          <a className="text-content-dimmed underline cursor-pointer">Show project details</a>
         </summary>
 
         <div className="border border-dark-5 rounded mt-4 text-sm">
@@ -497,14 +497,14 @@ function StatusUpdate({ project, update }: { project: Projects.Project; update: 
           {content.nextMilestoneTitle && (
             <div className="flex items-center gap-1 border-b border-dark-5 p-2">
               <span className="font-medium w-32">Next Milestone</span>
-              <Icons.IconMapPinFilled size={20} className="text-white-1/60 inline-block" /> {content.nextMilestoneTitle}
+              <Icons.IconMapPinFilled size={20} className="text-content-accent/60 inline-block" /> {content.nextMilestoneTitle}
             </div>
           )}
 
           {content.projectEndTime && (
             <div className="flex items-center gap-1 not-last:border-b border-dark-5 p-2">
               <span className="font-medium w-32">Project Due Date</span>{" "}
-              <Icons.IconCalendarFilled size={20} className="text-white-1/60 inline-block" />{" "}
+              <Icons.IconCalendarFilled size={20} className="text-content-accent/60 inline-block" />{" "}
               <FormattedTime time={content.projectEndTime} format="short-date" />
             </div>
           )}
@@ -520,7 +520,7 @@ function ProjectCreated({ update }: { update: Updates.Update }) {
   const creatorIsChampion = content.creator.id === content.champion.id;
 
   const creator = (
-    <span className="font-extrabold text-white-1">
+    <span className="font-extrabold text-content-accent">
       <ShortName fullName={content.creator.fullName} />
     </span>
   );
@@ -528,7 +528,7 @@ function ProjectCreated({ update }: { update: Updates.Update }) {
   const action = " created this project ";
 
   const champion = (
-    <span className="font-extrabold text-white-1">
+    <span className="font-extrabold text-content-accent">
       <ShortName fullName={content.champion.fullName} />
     </span>
   );
@@ -567,12 +567,12 @@ function ProjectMilestoneCreated({ update }: { project: Projects.Project; update
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
-        added <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
+        added <Icons.IconMapPinFilled size={16} className="text-content-accent/60 inline-block -mt-1" />{" "}
         <MilestoneLink
-          className="font-extrabold text-white-1 undeline"
+          className="font-extrabold text-content-accent undeline"
           projectID={project.id}
           milestoneID={content.milestone.id}
         >
@@ -591,7 +591,7 @@ function ProjectStartTimeChanged({ update }: { update: Updates.Update }) {
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         changed the project's start date to <FormattedTime time={content.newStartTime} format="short-date" />.
@@ -607,7 +607,7 @@ function ProjectEndTimeChanged({ update }: { update: Updates.Update }) {
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         changed the project's due date to <FormattedTime time={content.newEndTime} format="short-date" />.
@@ -623,11 +623,11 @@ function ProjectContributorAdded({ update }: { update: Updates.Update }) {
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         added{" "}
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={content.contributor.fullName} />
         </span>{" "}
         to the project.
@@ -643,11 +643,11 @@ function ProjectContributorRemoved({ update }: { update: Updates.Update }) {
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         removed{" "}
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={content.contributor.fullName} />
         </span>{" "}
         from the project.
@@ -665,12 +665,12 @@ function ProjectMilestoneDeleted({ update }: { update: Updates.Update }) {
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
-        deleted the <Icons.IconMapPinFilled size={16} className="text-white-1/60 inline-block -mt-1" />{" "}
+        deleted the <Icons.IconMapPinFilled size={16} className="text-content-accent/60 inline-block -mt-1" />{" "}
         <MilestoneLink
-          className="font-extrabold text-white-1 undeline"
+          className="font-extrabold text-content-accent undeline"
           projectID={project.id}
           milestoneID={content.milestone.id}
         >
@@ -691,12 +691,12 @@ function ProjectMilestoneCompleted({ update }: { update: Updates.Update }) {
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         marked <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
         <MilestoneLink
-          className="font-extrabold text-white-1 undeline"
+          className="font-extrabold text-content-accent undeline"
           projectID={project.id}
           milestoneID={content.milestone.id}
         >
@@ -717,12 +717,12 @@ function ProjectMilestoneDeadlineChanged({ update }: { update: Updates.Update })
   return (
     <SmallContainer time={update.insertedAt}>
       <div className="text-white-4">
-        <span className="font-extrabold text-white-1">
+        <span className="font-extrabold text-content-accent">
           <ShortName fullName={creator.fullName} />
         </span>{" "}
         changed the due date for <Icons.IconMapPinFilled size={16} className="text-green-400 inline-block -mt-1" />{" "}
         <MilestoneLink
-          className="font-extrabold text-white-1 undeline"
+          className="font-extrabold text-content-accent undeline"
           projectID={project.id}
           milestoneID={content.milestone.id}
         >
@@ -738,7 +738,7 @@ function SmallContainer({ time, children }) {
   return (
     <div className="flex items-start justify-between my-2 mr-1 text-sm">
       <div
-        className="bg-dark-3 rounded-full flex items-center justify-center"
+        className="bg-surface-accent rounded-full flex items-center justify-center"
         style={{
           marginLeft: "55px",
           marginRight: "10px",
@@ -751,7 +751,7 @@ function SmallContainer({ time, children }) {
       </div>
 
       <div className="flex-1">{children}</div>
-      <div className="shrink-0 ml-4 text-white-2">
+      <div className="shrink-0 ml-4 text-content-dimmed">
         <FormattedTime time={time} format="relative" />
       </div>
     </div>
@@ -812,7 +812,7 @@ function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
   if (newPhase === "completed") {
     return (
       <>
-        <div className="text-white-1">The project was completed.</div>
+        <div className="text-content-accent">The project was completed.</div>
         <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Retrospective</div>
       </>
     );
@@ -821,7 +821,7 @@ function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
   if (newPhase === "canceled") {
     return (
       <>
-        <div className="text-white-1">The project was canceled.</div>
+        <div className="text-content-accent">The project was canceled.</div>
         <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Retrospective</div>
       </>
     );
@@ -830,7 +830,7 @@ function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
   if (newPhase === "paused") {
     return (
       <>
-        <div className="text-white-1">The project was paused.</div>
+        <div className="text-content-accent">The project was paused.</div>
         <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
       </>
     );
@@ -839,7 +839,7 @@ function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
   if (previousPhase === "paused") {
     return (
       <>
-        <div className="text-white-1">
+        <div className="text-content-accent">
           The project was unpaused and moved to the <span className="font-bold capitalize">{newPhase}</span> phase.
         </div>
         <div className="mt-8 border-b border-dark-8 uppercase text-sm pb-2 mb-2">Project Review</div>
@@ -854,7 +854,7 @@ function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
   if (oldIndex < newIndex) {
     return (
       <>
-        <div className="text-white-1">
+        <div className="text-content-accent">
           The project has moved to the <span className="font-bold capitalize">{newPhase}</span> phase.
         </div>
 
@@ -866,7 +866,7 @@ function ReviewTitlePhaseChange({ previousPhase, newPhase }) {
   if (oldIndex > newIndex) {
     return (
       <>
-        <div className="text-white-1">
+        <div className="text-content-accent">
           The project reverted to the <span className="font-bold capitalize">{newPhase}</span> phase.
         </div>
 

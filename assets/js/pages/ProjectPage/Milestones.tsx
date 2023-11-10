@@ -29,7 +29,7 @@ function Milestone({ milestone }) {
       <div className="text-sm flex items-center gap-3">
         <FormattedTime time={milestone.deadlineAt} format="short-date" />
 
-        <div className="hover:text-white-1 text-white-2 cursor-pointer">
+        <div className="hover:text-content-accent text-content-dimmed cursor-pointer">
           <Icons.DotsVertical size={20} />
         </div>
       </div>

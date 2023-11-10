@@ -17,8 +17,8 @@ import { useNavigate } from "react-router-dom";
 export default function Reviews({ me, project }) {
   return (
     <div className="flex flex-col gap-1 relative my-8">
-      <div className="font-extrabold text-lg text-white-1 leading-none">Project Reviews</div>
-      <div className="text-white-2 max-w-xl">Assessments of the state of the project after each project phase.</div>
+      <div className="font-extrabold text-lg text-content-accent leading-none">Project Reviews</div>
+      <div className="text-content-dimmed max-w-xl">Assessments of the state of the project after each project phase.</div>
 
       <Spacer size={0.25} />
       <ReviewList project={project} />
@@ -80,7 +80,7 @@ function ReviewList({ project }) {
 }
 
 function ReviewEmptyState() {
-  return <div className="text-white-2">No reviews have been submitted for this project.</div>;
+  return <div className="text-content-dimmed">No reviews have been submitted for this project.</div>;
 }
 
 function ReviewTable({ reviews, project }: { reviews: Updates.Update[]; project: Project.Project }) {
@@ -107,7 +107,7 @@ function ReviewRow({ review, project }: { review: Updates.Update; project: Proje
     >
       <div className="flex gap-2 items-center">
         <Avatar person={author} size="tiny" />
-        <div className="font-medium text-white-1 capitalize">
+        <div className="font-medium text-content-accent capitalize">
           <ReviewTitle review={content} />
         </div>
       </div>
@@ -135,7 +135,7 @@ function AckMarker({ update }) {
   if (update.acknowledged) {
     return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
   } else {
-    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
+    return <Icons.IconCircleCheckFilled size={16} className="text-content-subtle" />;
   }
 }
 
@@ -173,7 +173,7 @@ function NextReviewScheduleBasedOnRequest({ project, reviewRequest }) {
     >
       <div className="flex gap-2 items-center">
         <Avatar person={author} size="tiny" />
-        <div className="font-medium text-white-1">{People.firstName(author)} requested an Impromptu Review</div>
+        <div className="font-medium text-content-accent">{People.firstName(author)} requested an Impromptu Review</div>
       </div>
       <div className="flex gap-2 items-center text-sm">
         <FormattedTime time={time} format="short-date-with-weekday-relative" />
@@ -185,7 +185,7 @@ function NextReviewScheduleBasedOnRequest({ project, reviewRequest }) {
 
 function NextReviewScheduleBasedOnPhaseWithNoDueDate({ currentPhase }) {
   return (
-    <div className="flex gap-2 items-center max-w-lg text-white-2">
+    <div className="flex gap-2 items-center max-w-lg text-content-dimmed">
       The next review is scheduled for when the {currentPhase.phase} phase is completed. Currently, no due date is set.
     </div>
   );
@@ -193,7 +193,7 @@ function NextReviewScheduleBasedOnPhaseWithNoDueDate({ currentPhase }) {
 
 function NextReviewScheduleBasedOnPhaseWithDueDate({ currentPhase }) {
   return (
-    <div className="flex gap-2 items-center max-w-lg text-white-2">
+    <div className="flex gap-2 items-center max-w-lg text-content-dimmed">
       The next review is scheduled for <FormattedTime time={currentPhase.dueTime} format="short-date" /> when the{" "}
       {currentPhase.phase} phase is scheduled to end.
     </div>

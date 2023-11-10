@@ -56,15 +56,15 @@ export function Page() {
   return (
     <Paper.Root size="medium">
       <div
-        className="border-b border-dark-5 p-4 text-center cursor-pointer underline text-blue-400 underline-offset-2"
+        className="border-b border-surface-outline p-4 text-center cursor-pointer underline text-blue-400 underline-offset-2 text-content-base"
         onClick={gotoNewDashboard}
       >
         New Dashboard -&gt;
       </div>
 
       <ArchivedBanner project={project} />
-      <div className="p-8 border border-dark-3 bg-dark-2 rounded shadow-xl">
-        <div className="bg-dark-2 p-8 -mx-8 -mt-8">
+      <div className="p-8 border border-surface-outline bg-surface rounded shadow-xl">
+        <div className="bg-surface p-8 -mx-8 -mt-8">
           <Header project={project} />
         </div>
 
@@ -88,5 +88,5 @@ export function Page() {
 }
 
 function Divider() {
-  return <div className="-mx-8 border-t border-dark-5" />;
+  return <div className="-mx-8 border-t border-stroke-base" />;
 }

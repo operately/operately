@@ -30,7 +30,7 @@ export default function Timeline({ project, refetch, editable }) {
     <Context.Provider value={{ project, refetch, editable }}>
       <div className="my-8" data-test-id="timeline">
         <div className="flex items-start justify-between">
-          <div className="font-extrabold text-lg text-white-1 leading-none">Timeline</div>
+          <div className="font-extrabold text-lg text-content-accent leading-none">Timeline</div>
           <div>
             <EditTimeline project={project} />
           </div>
@@ -44,7 +44,7 @@ export default function Timeline({ project, refetch, editable }) {
           </div>
         </div>
 
-        <div className="rounded-lg shadow-lg bg-dark-3 my-4">
+        <div className="rounded-lg shadow-lg bg-surface-accent my-4">
           <ProjectLifecycleGraph
             milestones={project.milestones}
             projectStart={Time.parse(project.startedAt)}
@@ -55,7 +55,7 @@ export default function Timeline({ project, refetch, editable }) {
           />
         </div>
 
-        <div className="rounded-lg shadow-lg bg-dark-3 my-4">
+        <div className="rounded-lg shadow-lg bg-surface-accent my-4">
           <MilestoneList project={project} refetch={refetch} />
         </div>
       </div>
@@ -90,7 +90,7 @@ function MilestoneListCollapsed({ project, refetch, onExpand }) {
     <div className="flex items-end justify-between px-4">
       <NextMilestone project={project} refetch={refetch} />
       <div
-        className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1"
+        className="flex items-center gap-1 cursor-pointer font-medium text-content-accent/60 hover:text-content-accent"
         onClick={onExpand}
         data-test-id="show-all-milestones"
       >
@@ -123,7 +123,7 @@ function MilestoneListExpanded({ project, onCollapse, refetch }) {
         <div></div>
 
         <div
-          className="flex items-center gap-1 cursor-pointer font-medium text-white-1/60 hover:text-white-1 px-4 py-3"
+          className="flex items-center gap-1 cursor-pointer font-medium text-content-accent/60 hover:text-content-accent px-4 py-3"
           onClick={onCollapse}
         >
           <Icons.IconArrowUp size={16} stroke={2} />
@@ -154,7 +154,7 @@ function MilestoneAddNotActive({ activate }) {
       data-test-id="add-milestone"
     >
       <div className="flex items-center gap-2 flex-1 truncate">
-        <Icons.IconPlus size={16} className={"text-white-1/60"} /> Add Milestone
+        <Icons.IconPlus size={16} className={"text-content-accent/60"} /> Add Milestone
       </div>
     </div>
   );
@@ -189,10 +189,10 @@ function MilestoneAddActive({ project, refetch, deactivate }) {
   return (
     <div className="flex items-center border-b border-dark-5 py-2 cursor-pointer px-4">
       <div className="flex items-center gap-2 flex-1 truncate">
-        <Icons.IconMapPinFilled size={16} className={"text-white-1/60"} />
+        <Icons.IconMapPinFilled size={16} className={"text-content-accent/60"} />
 
         <input
-          className="flex-1 bg-transparent outline-none placeholder:text-white-1/60"
+          className="flex-1 bg-transparent outline-none placeholder:text-content-accent/60"
           placeholder="e.g. Design Review"
           autoFocus
           value={name}
@@ -308,7 +308,7 @@ function MilestoneListItemDueDate({ project, milestone, refetch }) {
         <FormattedTime time={milestone.deadlineAt} format="short-date" />
         {editable && (
           <div className="opacity-0 group-hover:opacity-100">
-            <Icons.IconCalendarCog size={16} className="text-white-1/60" />
+            <Icons.IconCalendarCog size={16} className="text-content-accent/60" />
           </div>
         )}
       </DatePickerWithClear>
@@ -407,7 +407,7 @@ function DatePickerWithClear({
         {selectedDate ? (
           <FormattedTime time={selectedDate} format="short-date" />
         ) : (
-          <span className="text-white-1/60">{placeholder}</span>
+          <span className="text-content-accent/60">{placeholder}</span>
         )}
       </SelectBox.Trigger>
     );
@@ -448,11 +448,11 @@ function milestoneIconColor(milestone: Milestones.Milestone) {
   const deadline = Time.parse(milestone.deadlineAt);
 
   if (milestone.status === "done") return "text-green-400";
-  if (!deadline) return "text-white-1/60";
+  if (!deadline) return "text-content-accent/60";
 
   const isOverdue = deadline < Time.today();
 
-  return isOverdue ? "text-red-400" : "text-white-1/60";
+  return isOverdue ? "text-red-400" : "text-content-accent/60";
 }
 
 function ExistingNextMilestone({ project, refetch }) {
@@ -467,7 +467,7 @@ function ExistingNextMilestone({ project, refetch }) {
 
   return (
     <div>
-      <span className="text-white-2 uppercase text-xs leading-none tracking-wide">NEXT MILESTONE</span>
+      <span className="text-content-dimmed uppercase text-xs leading-none tracking-wide">NEXT MILESTONE</span>
       <div className="flex items-center gap-1">
         <Icons.IconMapPinFilled size={16} className={iconColor} />
         <MilestoneLink
@@ -481,7 +481,7 @@ function ExistingNextMilestone({ project, refetch }) {
         {isOverdue ? (
           <div className="text-red-400">{Time.daysBetween(deadline, Time.today())} days overdue</div>
         ) : (
-          <div className="text-white-2">due in {Time.daysBetween(Time.today(), deadline)} days</div>
+          <div className="text-content-dimmed">due in {Time.daysBetween(Time.today(), deadline)} days</div>
         )}
       </div>
     </div>
@@ -526,8 +526,8 @@ function CompleteMilestoneButton({
 function NoNextMilestones() {
   return (
     <div className="flex items-center gap-2">
-      <Icons.IconMapPinFilled size={16} className="text-white-1/60" />
-      <span className="text-white-1/60">No upcoming milestones</span>
+      <Icons.IconMapPinFilled size={16} className="text-content-accent/60" />
+      <span className="text-content-accent/60">No upcoming milestones</span>
     </div>
   );
 }

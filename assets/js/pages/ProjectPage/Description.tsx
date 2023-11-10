@@ -67,7 +67,7 @@ function Editor({ project, refetch, deactivateEdit }) {
   return (
     <TipTapEditor.Root>
       <div className="z-20 relative my-8">
-        <div className="text-white-1 mb-4" style={{ minHeight: "200px" }}>
+        <div className="text-content-accent mb-4" style={{ minHeight: "200px" }}>
           <TipTapEditor.EditorContent editor={editor} />
         </div>
 
@@ -109,7 +109,7 @@ function Display({ me, project, activateEdit }) {
     <Context.Provider value={{ me, project, editable, isClamped, isCondensed, toggleLines, lines }}>
       <div className="flex flex-col gap-1 relative py-8">
         <div className="flex gap-2 items-center mb-2">
-          <div className="font-extrabold text-lg text-white-1">Description</div>
+          <div className="font-extrabold text-lg text-content-accent">Description</div>
           <EditButton onClick={activateEdit} />
         </div>
         <div className="font-medium">
@@ -133,7 +133,7 @@ function Body({ project }) {
 }
 
 function EmptyDesctipion() {
-  return <span className="text-white-2">No description.</span>;
+  return <span className="text-content-dimmed">No description.</span>;
 }
 
 function ToggleHeight() {
@@ -167,7 +167,7 @@ function EditButton({ onClick }) {
 
   return (
     <div
-      className="cursor-pointer hover:text-white-1 transition-all text-white-2"
+      className="cursor-pointer hover:text-content-accent transition-all text-content-button"
       onClick={onClick}
       data-test-id="edit-project-description"
     >

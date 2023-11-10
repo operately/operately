@@ -16,8 +16,8 @@ import classnames from "classnames";
 export default function Reviews({ me, project }) {
   return (
     <div className="flex flex-col gap-1 relative my-8">
-      <div className="font-extrabold text-lg text-white-1 leading-none">Status Updates</div>
-      <div className="text-white-2 max-w-xl">Asking the champion of the project for an update, every Friday.</div>
+      <div className="font-extrabold text-lg text-content-accent leading-none">Status Updates</div>
+      <div className="text-content-dimmed max-w-xl">Asking the champion of the project for an update, every Friday.</div>
 
       <Spacer size={0.25} />
       <List project={project} />
@@ -56,7 +56,7 @@ function ListItem({ update, project }: { update: Updates.Update; project: Projec
     >
       <div className="flex gap-2 items-center">
         <Avatar person={author} size="tiny" />
-        <div className="font-medium text-white-1 capitalize">
+        <div className="font-medium text-content-accent capitalize">
           Update for <FormattedTime time={update.insertedAt} format="long-date" />
         </div>
       </div>
@@ -72,13 +72,13 @@ function AckMarker({ update }) {
   if (update.acknowledged) {
     return <Icons.IconCircleCheckFilled size={16} className="text-green-400" data-test-id="acknowledged-marker" />;
   } else {
-    return <Icons.IconCircleCheckFilled size={16} className="text-white-3" />;
+    return <Icons.IconCircleCheckFilled size={16} className="text-content-subtle" />;
   }
 }
 
 function NextUpdateSchedule({ project }) {
   return (
-    <div className="text-white-2">
+    <div className="text-content-dimmed">
       Next update scheduled for{" "}
       <FormattedTime time={project.nextUpdateScheduledAt} format="short-date-with-weekday-relative" />.
     </div>

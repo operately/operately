@@ -31,7 +31,9 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 function ProjectName({ project }) {
   return (
     <div className="flex items-center justify-between">
-      <div className={classnames("flex gap-2 items-center", "font-bold", "break-all", "text-3xl", "text-white-1")}>
+      <div
+        className={classnames("flex gap-2 items-center", "font-bold", "break-all", "text-3xl", "text-content-accent")}
+      >
         {project.name}
 
         <PrivateIndicator project={project} />

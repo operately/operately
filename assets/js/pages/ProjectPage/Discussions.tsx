@@ -16,8 +16,8 @@ import { Spacer } from "@/components/Spacer";
 export default function Discussions({ project }) {
   return (
     <div className="flex flex-col gap-1 relative my-8">
-      <div className="font-extrabold text-lg text-white-1 leading-none">Disussions</div>
-      <div className="text-white-2 max-w-xl">Ask questions, pitch ideas, gather feedback.</div>
+      <div className="font-extrabold text-lg text-content-accent leading-none">Disussions</div>
+      <div className="text-content-dimmed max-w-xl">Ask questions, pitch ideas, gather feedback.</div>
 
       <Spacer size={0.25} />
       <List project={project} />
@@ -58,7 +58,7 @@ function ListItem({ update, project }: { update: Updates.Update; project: Projec
       <div className="flex justify-between">
         <div className="flex items-center gap-2">
           <Avatar person={author} size="tiny" />
-          <div className="font-medium text-white-1">{content.title}</div>
+          <div className="font-medium text-content-accent">{content.title}</div>
         </div>
 
         <div className="flex items-center text-sm">

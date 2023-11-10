@@ -23,8 +23,8 @@ interface Props {
 export default function KeyResources({ project, editable, refetch }: Props): JSX.Element {
   return (
     <div className="flex flex-col gap-1 relative my-8">
-      <div className="font-extrabold text-lg text-white-1 leading-none">Key Resources</div>
-      <div className="text-white-2 max-w-xl">Links to documents, spreadsheets, design assets...</div>
+      <div className="font-extrabold text-lg text-content-accent leading-none">Key Resources</div>
+      <div className="text-content-dimmed max-w-xl">Links to documents, spreadsheets, design assets...</div>
 
       <Body project={project} refetch={refetch} editable={editable} />
     </div>
@@ -48,7 +48,7 @@ function Body({ project, refetch, editable }: Props): JSX.Element {
 }
 
 function EmptyState() {
-  return <div className="text-white-2">No key resources.</div>;
+  return <div className="text-content-dimmed">No key resources.</div>;
 }
 
 function Links({ project, refetch, editable }: Props): JSX.Element {
@@ -97,14 +97,14 @@ function LinkOptions({ resource, refetch }: { resource: KeyResource; refetch: ()
   return (
     <Popover.Root open={popoverOpen} onOpenChange={changePopoverOpen}>
       <Popover.Trigger asChild>
-        <div className="text-white-2 hover:bg-shade-1 pr-1 pl-1 py-2.5" data-test-id="key-resource-options">
+        <div className="text-content-dimmed hover:bg-shade-1 pr-1 pl-1 py-2.5" data-test-id="key-resource-options">
           <Icons.IconDotsVertical size={20} strokeWidth={1.5} />
         </div>
       </Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content className="outline-none">
-          <div className="p-1 bg-dark-3 rounded-lg shadow-lg border border-dark-5 text-sm">
+          <div className="p-1 bg-surface-accent rounded-lg shadow-lg border border-dark-5 text-sm">
             <EditResourceLinkOption onClick={handleEdit} />
             <RemoveResource resource={resource} refetch={refetch} />
           </div>
@@ -128,7 +128,7 @@ function EditResourceLinkOption({ onClick }) {
       onClick={onClick}
       data-test-id="edit-key-resource"
     >
-      <Icons.IconPencil size={16} className="text-white-1" />
+      <Icons.IconPencil size={16} className="text-content-accent" />
       Edit
     </div>
   );
@@ -261,7 +261,7 @@ function AddResource({ project, refetch }) {
   return (
     <>
       <div
-        className="text-white-2 hover:text-white-1 cursor-pointer bg-shade-1 rounded-lg p-2"
+        className="text-content-dimmed hover:text-content-accent cursor-pointer bg-shade-1 rounded-lg p-2"
         onClick={openModal}
         data-test-id="add-key-resource"
       >
