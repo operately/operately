@@ -74,51 +74,15 @@ export function Page() {
             <div className="flex items-start gap-4">
               <div className="w-1/5">
                 <div className="font-bold text-sm">Check-Ins</div>
-                <div className="text-sm">
-                  <Link to={`/projects/${project.id}/status_updates`}>View all</Link>
-                </div>
+                {project.lastCheckIn && (
+                  <div className="text-sm">
+                    <Link to={`/projects/${project.id}/status_updates`}>View all</Link>
+                  </div>
+                )}
               </div>
 
               <div className="w-4/5">
-                <DimmedLabel>Last Check-In</DimmedLabel>
-                <div className="flex items-start gap-2 max-w-xl mt-2">
-                  <div className="flex flex-col gap-1">
-                    <div className="font-bold flex items-center gap-1">
-                      <Avatar person={project.lastCheckIn.author} size="tiny" />
-                      {People.shortName(project.lastCheckIn.author)} submitted:
-                      <Link to={`/projects/${project.id}/status_updates/${project.lastCheckIn.id}`}>
-                        Check-in November 3rd
-                      </Link>
-                    </div>
-                    <Summary jsonContent={project.lastCheckIn.content.message} characterCount={200} />
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-12 mt-6">
-                  <div>
-                    <DimmedLabel>Status</DimmedLabel>
-                    <div className="flex flex-col gap-1 text-sm">
-                      <div>
-                        <Indicator value={project.lastCheckIn.content.health.status} type="status" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <DimmedLabel>Health Issues</DimmedLabel>
-                    <HealthIssues checkIn={project.lastCheckIn} />
-                  </div>
-
-                  <div>
-                    <DimmedLabel>Next Check-In</DimmedLabel>
-                    <div className="text-sm font-medium">
-                      Scheduled for this Friday &middot;{" "}
-                      <span className="font-extrabold">
-                        <Link to={`/projects/${project.id}/status_updates/new`}>Check-In Now</Link>
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <LastCheckIn project={project} />
               </div>
             </div>
           </div>
@@ -162,6 +126,64 @@ export function Page() {
         </div>
       </div>
     </Paper.Root>
+  );
+}
+
+function LastCheckIn({ project }) {
+  const checkInNowLink = (
+    <Link to={`/projects/${project.id}/status_updates/new`} testId="check-in-now">
+      Check-In Now
+    </Link>
+  );
+
+  if (project.lastCheckIn === null) {
+    return (
+      <div className="text-sm">
+        Asking the champion to check-in every Friday.
+        <div className="mt-2 font-bold">{checkInNowLink}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <DimmedLabel>Last Check-In</DimmedLabel>
+      <div className="flex items-start gap-2 max-w-xl mt-2">
+        <div className="flex flex-col gap-1">
+          <div className="font-bold flex items-center gap-1">
+            <Avatar person={project.lastCheckIn.author} size="tiny" />
+            {People.shortName(project.lastCheckIn.author)} submitted:
+            <Link to={`/projects/${project.id}/status_updates/${project.lastCheckIn.id}`} testId="last-check-in-link">
+              Check-in November 3rd
+            </Link>
+          </div>
+          <Summary jsonContent={project.lastCheckIn.content.message} characterCount={200} />
+        </div>
+      </div>
+
+      <div className="flex items-start gap-12 mt-6">
+        <div>
+          <DimmedLabel>Status</DimmedLabel>
+          <div className="flex flex-col gap-1 text-sm">
+            <div>
+              <Indicator value={project.lastCheckIn.content.health.status} type="status" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <DimmedLabel>Health Issues</DimmedLabel>
+          <HealthIssues checkIn={project.lastCheckIn} />
+        </div>
+
+        <div>
+          <DimmedLabel>Next Check-In</DimmedLabel>
+          <div className="text-sm font-medium">
+            Scheduled for this Friday &middot; <span className="font-extrabold">{checkInNowLink}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

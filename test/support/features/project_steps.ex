@@ -102,6 +102,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.visit("/projects/#{ctx.project.id}/milestones/#{milestone.id}")
   end
 
+  def follow_last_check_in(ctx) do
+    ctx |> UI.click(testid: "last-check-in-link")
+  end
+
   #
   # Assertions
   #

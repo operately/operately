@@ -33,7 +33,7 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   def start_check_in(ctx) do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "add-status-update")
+    |> UI.click(testid: "check-in-now")
   end
 
   def submit_check_in(ctx, opts \\ %{}) do
