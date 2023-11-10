@@ -38,6 +38,10 @@ export interface Milestone {
   description: string | null;
 }
 
+export function filterPending(milestones: Milestone[]) {
+  return milestones.filter((m) => m.status === "pending");
+}
+
 export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
   let result: Milestone[] = [];
 
