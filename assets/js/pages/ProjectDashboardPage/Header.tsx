@@ -1,11 +1,7 @@
 import React from "react";
 
 import classnames from "classnames";
-import ContributorAvatar, {
-  ChampionPlaceholder,
-  ReviewerPlaceholder,
-  ContributorAdd,
-} from "@/components/ContributorAvatar";
+import ContributorAvatar, { ChampionPlaceholder, ReviewerPlaceholder } from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
@@ -14,6 +10,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { TextTooltip } from "@/components/Tooltip";
 import Options from "./Options";
+import { GhostButton } from "@/components/Button";
 
 interface HeaderProps {
   project: Project;
@@ -75,7 +72,13 @@ export function ContributorList({ project }) {
             <ContributorAvatar key={c.id} contributor={c} />
           ))}
 
-          {project.permissions.canEditContributors && <ContributorAdd />}
+          {project.permissions.canEditContributors && (
+            <div className="ml-2">
+              <GhostButton size="xs" type="secondary">
+                Manage Team
+              </GhostButton>
+            </div>
+          )}
         </div>
       </Link>
     </div>

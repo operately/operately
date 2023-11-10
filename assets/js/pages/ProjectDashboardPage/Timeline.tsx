@@ -8,6 +8,7 @@ import Duration from "@/components/Duration";
 
 import { Label, DimmedLabel } from "./Label";
 import { Indicator } from "@/components/ProjectHealthIndicators";
+import { GhostButton } from "@/components/Button";
 
 export default function Timeline({ project, refetch, editable }) {
   return <TimelineGraph project={project} />;
@@ -60,6 +61,14 @@ function TimelineGraph({ project }) {
           <div className="flex items-center gap-2 font-semibold">
             {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
           </div>
+        </div>
+
+        <Divider />
+
+        <div className="mt-2">
+          <GhostButton size="xs" type="secondary" linkTo={`/projects/${project.id}/edit/timeline`}>
+            Edit Timeline
+          </GhostButton>
         </div>
       </div>
     </div>

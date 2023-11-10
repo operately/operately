@@ -6,7 +6,8 @@ interface GhostButton {
   linkTo?: string;
   onClick?: (e: any) => void;
   testId?: string;
-  size?: "sm" | "base" | "lg";
+  size?: "xs" | "sm" | "base" | "lg";
+  type?: "primary" | "secondary";
 }
 
 export function GhostButton(props: GhostButton) {
@@ -24,26 +25,42 @@ export function GhostButton(props: GhostButton) {
   };
 
   return (
-    <div className={className(props.size)} onClick={handleClick} data-test-id={props.testId}>
+    <div className={className(props.size, props.type)} onClick={handleClick} data-test-id={props.testId}>
       {props.children}
     </div>
   );
 }
 
-function className(size?: "sm" | "base" | "lg") {
+function className(size?: "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary") {
   size = size || "base";
+  type = type || "primary";
+
+  let result = "font-medium transition-all duration-100 cursor-pointer";
+
+  if (size === "xs") {
+    result += " px-2.5 py-0.5 text-sm rounded-2xl";
+  }
 
   if (size === "sm") {
-    return "font-medium px-3 py-1 text-sm rounded-2xl border border-green-500 text-green-500 hover:bg-green-600/10 transition-all duration-100 cursor-pointer";
+    result += " px-3 py-1 text-sm rounded-2xl";
   }
 
   if (size === "base") {
-    return "font-medium px-4 py-1 rounded-3xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-all duration-100 cursor-pointer";
+    result += " px-4 py-1 rounded-3xl";
   }
 
   if (size === "lg") {
-    return "font-medium px-6 py-2 text-lg rounded-3xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-all duration-100 cursor-pointer";
+    result += " px-6 py-2 text-lg rounded-3xl";
   }
 
-  throw new Error(`Unknown size: ${size}`);
+  if (type === "primary") {
+    result += " border border-green-500 hover:bg-green-400 text-green-500 hover:text-green-400";
+  }
+
+  if (type === "secondary") {
+    result +=
+      " border border-surface-outline hover:border-surface-outline text-content-dimmed hover:text-content-accent";
+  }
+
+  return result;
 }

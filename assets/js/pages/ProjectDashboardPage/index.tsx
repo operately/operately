@@ -67,6 +67,9 @@ export function Page() {
 
         <div className="">
           <Timeline project={project} refetch={refetch} editable={championOfProject} />
+
+          <div className="mt-4" />
+
           <div className="border-t border-stroke-base py-6 mt-4">
             <div className="flex items-start gap-4">
               <div className="w-1/5">
