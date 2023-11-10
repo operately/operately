@@ -83,7 +83,7 @@ export function Page() {
                     <div className="font-bold flex items-center gap-1">
                       <Avatar person={project.lastCheckIn.author} size="tiny" />
                       {People.shortName(project.lastCheckIn.author)} submitted:
-                      <Link to={`/projects/${project.id}/check-ins/${project.lastCheckIn.id}`}>
+                      <Link to={`/projects/${project.id}/status_updates/${project.lastCheckIn.id}`}>
                         Check-in November 3rd
                       </Link>
                     </div>
