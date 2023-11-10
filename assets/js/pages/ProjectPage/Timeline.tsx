@@ -66,7 +66,12 @@ function TimelineGraph({ project }) {
         <Divider />
 
         <div className="mt-2">
-          <GhostButton size="xs" type="secondary" linkTo={`/projects/${project.id}/edit/timeline`}>
+          <GhostButton
+            size="xs"
+            type="secondary"
+            linkTo={`/projects/${project.id}/edit/timeline`}
+            testId="edit-project-timeline"
+          >
             Edit Timeline
           </GhostButton>
         </div>

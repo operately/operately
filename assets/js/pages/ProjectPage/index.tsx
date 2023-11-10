@@ -58,9 +58,8 @@ export function Page() {
 
   return (
     <Paper.Root size="large">
-      <ArchivedBanner project={project} />
-
       <div className="p-12 border border-surface-outline bg-surface rounded shadow-xl">
+        <ArchivedBanner project={project} />
         <div className="mb-8">
           <Header project={project} />
         </div>

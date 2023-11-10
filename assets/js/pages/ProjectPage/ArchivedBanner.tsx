@@ -5,7 +5,7 @@ import FormattedTime from "@/components/FormattedTime";
 export default function ArchivedBanner({ project }) {
   if (project.isArchived) {
     return (
-      <div className="bg-yellow-400/10 text-yellow-400 font-bold flex items-cennter justify-center py-3 mb-3 rounded">
+      <div className="mb-8 -mx-12 -mt-12  bg-yellow-400/10 text-content-accent font-bold flex items-cennter justify-center py-4 rounded-t border-b border-surface-outline leading-none">
         This project was archived on <FormattedTime time={project.archivedAt} format="long-date" />
       </div>
     );

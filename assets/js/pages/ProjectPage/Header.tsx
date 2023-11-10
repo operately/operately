@@ -74,7 +74,7 @@ export function ContributorList({ project }) {
 
           {project.permissions.canEditContributors && (
             <div className="ml-2">
-              <GhostButton size="xs" type="secondary">
+              <GhostButton size="xs" type="secondary" testId="manage-team-button">
                 Manage Team
               </GhostButton>
             </div>
