@@ -22,7 +22,6 @@ import * as ObjectivePage from "./ObjectivePage";
 import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
-import * as ProjectDashboardPage from "./ProjectDashboardPage";
 import * as ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import * as ProjectDiscussionPage from "./ProjectDiscussionPage";
 import * as ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
@@ -62,7 +61,6 @@ export default {
   ProfilePage,
   ProjectAddPage,
   ProjectContributorsPage,
-  ProjectDashboardPage,
   ProjectDiscussionNewPage,
   ProjectDiscussionPage,
   ProjectEditProjectNamePage,
