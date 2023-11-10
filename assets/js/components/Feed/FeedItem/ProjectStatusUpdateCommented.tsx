@@ -22,7 +22,7 @@ export default function ({ activity }) {
   const link = <Link to={path}>Check-In on {time}</Link>;
   const title = (
     <>
-      {People.shortName(activity.author)} submitted: {link}
+      {People.shortName(activity.author)} commented on: {link}
     </>
   );
 
