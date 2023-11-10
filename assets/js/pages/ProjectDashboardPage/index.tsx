@@ -96,7 +96,7 @@ export function Page() {
                     <DimmedLabel>Status</DimmedLabel>
                     <div className="flex flex-col gap-1 text-sm">
                       <div>
-                        <Indicator value={"on_track"} type="status" />
+                        <Indicator value={project.lastCheckIn.content.health.status} type="status" />
                       </div>
                     </div>
                   </div>
@@ -104,9 +104,7 @@ export function Page() {
                   <div>
                     <DimmedLabel>Health Issues</DimmedLabel>
                     <div className="flex flex-col gap-1 text-sm">
-                      <div>
-                        <Indicator value={"key_roles_missing"} type="team" />
-                      </div>
+                      <HealthIssues checkIn={project.lastCheckIn} />
                     </div>
                   </div>
 
@@ -163,6 +161,46 @@ export function Page() {
         </div>
       </div>
     </Paper.Root>
+  );
+}
+
+function HealthIssues({ checkIn }) {
+  const issues = Object.keys(checkIn.content.health).filter((type) => {
+    if (type === "status") {
+      return false;
+    }
+
+    if (type === "schedule") {
+      return checkIn.content.health[type] !== "on_schedule";
+    }
+
+    if (type === "budget") {
+      return checkIn.content.health[type] !== "on_budget";
+    }
+
+    if (type === "team") {
+      return checkIn.content.health[type] !== "staffed";
+    }
+
+    if (type === "risks") {
+      return checkIn.content.health[type] !== "no_known_risks";
+    }
+
+    return false;
+  });
+
+  if (issues.length === 0) {
+    return <div className="text-content-dimmed">No issues</div>;
+  }
+
+  return (
+    <div className="flex flex-col">
+      {issues.map((issue) => (
+        <div>
+          <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
+        </div>
+      ))}
+    </div>
   );
 }
 
