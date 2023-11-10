@@ -47,8 +47,8 @@ export function RadioWithExplanation({ label, value, explanation, ...props }) {
       <InputElement value={value} {...props} />
 
       <div className="flex flex-col">
-        <div className="text-white-1 font-medium leading-none">{label}</div>
-        <div className="text-sm text-white-2 max-w-md mt-0.5">{explanation}</div>
+        <div className="text-content-accent font-semibold leading-none">{label}</div>
+        <div className="text-sm text-content-dimmed max-w-md mt-0.5">{explanation}</div>
       </div>
     </label>
   );
@@ -62,9 +62,9 @@ function InputElement({ value, ...props }) {
       type="radio"
       className={classnames(
         "before:content[''] peer relative h-4 w-4 cursor-pointer appearance-none",
-        "rounded-full border border-shade-3 bg-shade-1 text-white-1 transition-all",
-        "hover:border-blue-400 hover:border-y-[2px] hover:border-x-[2px]",
-        "checked:border-blue-400 checked:border-y-[3px] checked:border-x-[3px] checked:bg-shade-1",
+        "rounded-full border border-surface-outline text-content-accent transition-all",
+        "hover:border-blue-400 hover:border-y-[3px] hover:border-x-[3px]",
+        "checked:border-blue-400 checked:border-y-[5px] checked:border-x-[5px] checked:bg-shade-1",
         "checked:hover:border-blue-400 checked:hover:border-y-[4px] checked:hover:border-x-[4px] checked:hover:bg-shade-1",
         "focus:outline-none focus:checked:border-blue-400 focus:checked:border-y-[5px] focus:checked:border-x-[5px] focus:shadow-white focus:checked:bg-shade-1",
       )}

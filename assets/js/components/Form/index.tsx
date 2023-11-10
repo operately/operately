@@ -80,7 +80,7 @@ export function TextInput({ label, value, onChange, placeholder = "", ...props }
       <div className="flex-1">
         <input
           id={id}
-          className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+          className="w-full bg-surface text-content-accent placeholder-content-subtle border border-surface-outline rounded-lg px-3 py-1.5"
           type="text"
           value={value}
           placeholder={placeholder}
