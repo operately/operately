@@ -106,9 +106,7 @@ export function Page() {
 
                   <div>
                     <DimmedLabel>Health Issues</DimmedLabel>
-                    <div className="flex flex-col gap-1 text-sm">
-                      <HealthIssues checkIn={project.lastCheckIn} />
-                    </div>
+                    <HealthIssues checkIn={project.lastCheckIn} />
                   </div>
 
                   <div>
@@ -178,7 +176,7 @@ function HealthIssues({ checkIn }) {
     }
 
     if (type === "budget") {
-      return checkIn.content.health[type] !== "on_budget";
+      return checkIn.content.health[type] !== "within_budget";
     }
 
     if (type === "team") {
@@ -193,11 +191,11 @@ function HealthIssues({ checkIn }) {
   });
 
   if (issues.length === 0) {
-    return <div className="text-content-dimmed">No issues</div>;
+    return <div className="text-sm text-content-dimmed">No issues</div>;
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col text-sm">
       {issues.map((issue) => (
         <div>
           <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
