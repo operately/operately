@@ -28,6 +28,20 @@ function Context({ userTheme, children }: { userTheme: string; children: React.R
     } else {
       document.querySelector("body")!.dataset.theme = theme;
     }
+
+    const isDark = window.matchMedia("(prefers-color-scheme:dark)");
+
+    const listener = (e: MediaQueryListEvent) => {
+      if (theme === "system") {
+        document.querySelector("body")!.dataset.theme = e.matches ? "dark" : "light";
+      }
+    };
+
+    isDark.addEventListener("change", listener);
+
+    return () => {
+      isDark.removeEventListener("change", listener);
+    };
   }, [theme]);
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;

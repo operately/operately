@@ -87,7 +87,7 @@ function ColorModeOption({ theme, icon, title }) {
     "cursor-pointer",
     "hover:bg-surface-accent",
     {
-      "bg-surface-dimmed": currentTheme === theme,
+      "bg-surface-dimmed": currentTheme !== theme,
       "border-accent-1": currentTheme === theme,
       "border-surface-outline": currentTheme !== theme,
     },

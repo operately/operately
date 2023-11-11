@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
     field :notify_about_assignments, :boolean
   end
 
-  input_object :update_apperance_input do
+  input_object :update_appearance_input do
     field :theme, :string
   end
 
@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
     end
 
     field :update_appearance, :person do
-      arg :input, non_null(:update_apperance_input)
+      arg :input, non_null(:update_appearance_input)
 
       resolve fn _, args, %{context: context} ->
         person = context.current_account.person
