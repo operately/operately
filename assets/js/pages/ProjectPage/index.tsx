@@ -4,9 +4,8 @@ import { useDocumentTitle } from "@/layouts/header";
 
 import * as Paper from "@/components/PaperContainer";
 
-import Header, { ContributorList } from "./Header";
+import Header from "./Header";
 import Timeline from "./Timeline";
-import StatusUpdates from "./StatusUpdates";
 import ArchivedBanner from "./ArchivedBanner";
 
 import client from "@/graphql/client";
@@ -15,10 +14,11 @@ import * as Me from "@/graphql/Me";
 
 import { Feed } from "@/components/Feed";
 import { NextMilestone } from "./NextMilestone";
-import { Label, DimmedLabel } from "./Label";
+import { DimmedLabel } from "./Label";
 
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import * as People from "@/models/people";
+import { Link } from "@/components/Link";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -42,9 +42,6 @@ export async function loader({ params }): Promise<LoaderResult> {
     me: meData.data.me,
   };
 }
-
-import { GhostButton } from "@/components/Button";
-import { DimmedLink, Link } from "@/components/Link";
 
 export function Page() {
   const [data, refetch] = Paper.useLoadedData() as [LoaderResult, () => void, number];
