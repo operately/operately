@@ -59,7 +59,9 @@ function SubmitButton() {
 
   return (
     <div className="flex items-center justify-center mt-8">
-      <GhostButton onClick={save}>Save Appearance changes</GhostButton>
+      <GhostButton onClick={save} testId="save">
+        Save Appearance changes
+      </GhostButton>
     </div>
   );
 }
@@ -98,7 +100,7 @@ function ColorModeOption({ theme, icon, title }) {
   };
 
   return (
-    <div className={className} onClick={changeTheme}>
+    <div className={className} onClick={changeTheme} data-test-id={`color-mode-${theme}`}>
       {React.createElement(icon, { size: 32, strokeWidth: 1.5 })}
       <span className="font-semibold">{title}</span>
     </div>

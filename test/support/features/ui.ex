@@ -6,6 +6,10 @@ defmodule Operately.Support.Features.UI do
   require Wallaby.Browser
   import Wallaby.Browser, only: [execute_query: 2]
 
+  def init_ctx(ctx, state \\ %{}) do
+    Map.merge(ctx, state)
+  end
+
   def login(state) do
     path = URI.encode("/accounts/auth/test_login?email=john@johnson.com&full_name=John Johnson")
 

@@ -61,6 +61,7 @@ function AppearanceLink() {
     <Link
       to="/account/appearance"
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
+      data-test-id="appearance-link"
     >
       <Icons.IconPaint size={24} /> Appearance
     </Link>
