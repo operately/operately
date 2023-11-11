@@ -605,6 +605,7 @@ export type RootMutationType = {
   setProjectDueDate: Project;
   setProjectStartDate: Project;
   setTargetGroup?: Maybe<KeyResult>;
+  updateAppearance?: Maybe<Person>;
   updateDashboard: Dashboard;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
@@ -835,6 +836,11 @@ export type RootMutationTypeSetTargetGroupArgs = {
 };
 
 
+export type RootMutationTypeUpdateAppearanceArgs = {
+  input: UpdateApperanceInput;
+};
+
+
 export type RootMutationTypeUpdateDashboardArgs = {
   input: UpdateDashboardInput;
 };
@@ -1048,6 +1054,10 @@ export type Update = {
   title?: Maybe<Scalars['String']['output']>;
   updatableId: Scalars['ID']['output'];
   updatedAt: Scalars['NaiveDateTime']['output'];
+};
+
+export type UpdateApperanceInput = {
+  theme?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateContent = UpdateContentMessage | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectCreated | UpdateContentProjectDiscussion | UpdateContentProjectEndTimeChanged | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentProjectStartTimeChanged | UpdateContentReview | UpdateContentStatusUpdate;

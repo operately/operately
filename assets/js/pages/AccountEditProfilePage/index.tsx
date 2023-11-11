@@ -8,6 +8,7 @@ import Avatar from "@/components/Avatar";
 import { useMe } from "@/graphql/Me";
 
 import * as Forms from "@/components/Form";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export async function loader(): Promise<null> {
   return null;
@@ -43,10 +44,10 @@ export function Page() {
 }
 
 function ProfileForm({ me }) {
+  const goToAccount = useNavigateTo("/account");
+
   const [update, { loading }] = useProfileMutation({
-    onCompleted: () => {
-      window.location.href = "/account";
-    },
+    onCompleted: goToAccount,
   });
 
   const [name, setName] = React.useState(me.fullName);

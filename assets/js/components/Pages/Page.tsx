@@ -1,7 +1,14 @@
+import React from "react";
+
 import { useDocumentTitle } from "@/layouts/header";
 
-export function Page({ title, children }) {
+interface PageProps {
+  title: string | string[];
+  children: React.ReactNode;
+}
+
+export function Page({ title, children }: PageProps): JSX.Element {
   useDocumentTitle(title);
 
-  return children;
+  return <>{children}</>;
 }

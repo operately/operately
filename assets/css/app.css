@@ -35,6 +35,8 @@ body[data-theme="light"] {
 
   --color-link-base: rgba(20, 120, 197, 1);
   --color-link-hover: rgba(15, 92, 151, 1);
+
+  --color-accent-1: rgba(37, 155, 105, 1);
 }
 
 body[data-theme="dark"] {
@@ -54,6 +56,8 @@ body[data-theme="dark"] {
 
   --color-link-base: rgba(96, 165, 250, 1);
   --color-link-hover: rgba(147, 197, 253, 1);
+
+  --color-accent-1: rgba(37, 155, 105, 1);
 }
 
 body {
