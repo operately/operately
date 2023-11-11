@@ -66,12 +66,9 @@ function Navigation({ size }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center">
-            <Bell />
-            <VerticalDivider />
-            <User />
-          </div>
+        <div className="flex items-center gap-2">
+          <Bell />
+          <User />
         </div>
       </div>
     </NavigationContainer>

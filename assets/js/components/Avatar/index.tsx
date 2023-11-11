@@ -25,7 +25,7 @@ interface AvatarProps {
 }
 
 function SizeClasses({ size }: { size: AvatarSize }): string {
-  if (size instanceof Number) {
+  if (size.constructor.name === "Number") {
     return "";
   }
 
@@ -46,6 +46,10 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
 }
 
 function TextClasses({ size }: { size: AvatarSize }): string {
+  if (size.constructor.name === "Number") {
+    return "";
+  }
+
   switch (size) {
     case AvatarSize.Tiny:
       return "text-[10px] font-semibold";
@@ -89,10 +93,13 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
+  console.log("textClass", textClass);
   const className = baseClass + " " + sizeClass + " " + textClass;
 
+  const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
+
   return (
-    <div title={person.fullName} className={className}>
+    <div title={person.fullName} className={className} style={style}>
       {initials(person.fullName)}
     </div>
   );
@@ -125,13 +132,13 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
 }
 
 function UnassingedAvatar({ size }: { size: AvatarSize }): JSX.Element {
-  const baseClass = "rounded-full overflow-hidden bg-shade-1 flex items-center justify-center shrink-0";
+  const baseClass = "rounded-full overflow-hidden bg-surface-accent flex items-center justify-center shrink-0";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
 
   return (
     <div title="Unassigned" className={className}>
-      <Icons.IconUser size={24} />
+      <Icons.IconUser size={size} />
     </div>
   );
 }

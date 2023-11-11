@@ -11,11 +11,12 @@ export default function Bell() {
   return (
     <Link
       to="/notifications"
-      className="flex items-center gap-2 cursor-pointer relative group"
+      className="flex items-center justify-center cursor-pointer relative group rounded-full bg-surface-accent border border-surface-outline"
+      style={{ height: "32px", width: "32px" }}
       data-test-id="notifications-bell"
     >
       <Icons.IconBell
-        size={24}
+        size={20}
         stroke={1.5}
         className="text-content-dimmed group-hover:text-content-accent transition-all"
       />

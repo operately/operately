@@ -11,8 +11,12 @@ export default function User() {
   if (error) return <div></div>;
 
   return (
-    <Link to="/account" className="flex items-center gap-2 cursor-pointer">
-      <Avatar person={data.me} size={28} />
+    <Link
+      to="/account"
+      className="flex items-center cursor-pointer border border-stroke-base rounded-full"
+      style={{ height: "32px", width: "32px" }}
+    >
+      <Avatar person={data.me} size={30} />
     </Link>
   );
 }
