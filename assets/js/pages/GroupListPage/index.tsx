@@ -31,8 +31,14 @@ export function Page() {
   return (
     <Pages.Page title="Spaces">
       <Paper.Root size="large">
-        <div className="flex justify-center gap-4">
-          <div></div>
+        <div className="flex justify-center gap-4 pt-16">
+          <div className="relative w-64 px-4 py-3">
+            <div className="font-bold">Welcome Back!</div>
+            <div className="text-sm mt-4">
+              You are in the lobby of Operately. This is where you can find all the spaces you are a part of.
+            </div>
+          </div>
+
           <SpaceCard
             name="Company Space"
             icon={Icons.IconBuildingEstate}
