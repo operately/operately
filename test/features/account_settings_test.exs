@@ -1,4 +1,4 @@
-defmodule Operately.Features.CompanyPageTest do
+defmodule Operately.Features.AccountSettingsTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
