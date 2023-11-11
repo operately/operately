@@ -152,3 +152,16 @@ export function sortPanelsByIndex(panels: Panel[]) {
 export function areNotificationsEnabled(me: Person) {
   return me.sendDailySummary || me.notifyOnMention || me.notifyAboutAssignments;
 }
+
+export function useUpdateAppearanceMutation(options = {}) {
+  return useMutation(
+    gql`
+      mutation UpdateAppearance($input: UpdateAppearanceInput!) {
+        updateAppearance(input: $input) {
+          theme
+        }
+      }
+    `,
+    options,
+  );
+}

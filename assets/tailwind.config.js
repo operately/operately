@@ -25,6 +25,8 @@ module.exports = {
         "link-base": "var(--color-link-base)",
         "link-hover": "var(--color-link-hover)",
 
+        "accent-1": "var(--color-accent-1)",
+
         brand: {
           1: "#3185FF",
           2: "#E3F2FF",

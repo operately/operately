@@ -35,7 +35,7 @@ function className(size?: "xs" | "sm" | "base" | "lg", type?: "primary" | "secon
   size = size || "base";
   type = type || "primary";
 
-  let result = "font-medium transition-all duration-100 cursor-pointer";
+  let result = "font-medium transition-all duration-100 cursor-pointer text-center";
 
   if (size === "xs") {
     result += " px-2.5 py-0.5 text-sm rounded-2xl";
@@ -54,7 +54,7 @@ function className(size?: "xs" | "sm" | "base" | "lg", type?: "primary" | "secon
   }
 
   if (type === "primary") {
-    result += " border border-green-500 hover:bg-green-400 text-green-500 hover:text-green-400";
+    result += " border-2 border-accent-1 text-accent-1 hover:text-accent-1";
   }
 
   if (type === "secondary") {
