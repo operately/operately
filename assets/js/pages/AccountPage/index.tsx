@@ -19,12 +19,13 @@ export function Page() {
         <Paper.Title>My Account</Paper.Title>
 
         <div className="flex flex-col gap-8">
-          <div className="bg-dark-5 rounded-lg overflow-hidden divide-y divide-shade-2">
+          <div className="bg-surface-dimmed rounded-lg overflow-hidden divide-y divide-surface-outline border border-surface-outline">
             <ProfileLink />
+            <AppearanceLink />
             <NotificationLink />
           </div>
 
-          <div className="bg-dark-5 rounded-lg overflow-hidden">
+          <div className="bg-surface-dimmed rounded-lg overflow-hidden border border-surface-outline">
             <LogOutButton />
           </div>
         </div>
@@ -37,7 +38,7 @@ function ProfileLink() {
   return (
     <Link
       to="/account/profile"
-      className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg"
+      className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
     >
       <Icons.IconUserCircle size={24} /> Profile
     </Link>
@@ -48,9 +49,20 @@ function NotificationLink() {
   return (
     <Link
       to="/account/notifications"
-      className="flex items-center gap-4 hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg"
+      className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
     >
       <Icons.IconBell size={24} /> Notifications
+    </Link>
+  );
+}
+
+function AppearanceLink() {
+  return (
+    <Link
+      to="/account/appearance"
+      className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
+    >
+      <Icons.IconPaint size={24} /> Appearance
     </Link>
   );
 }
@@ -72,7 +84,7 @@ function LogOutButton() {
 
   return (
     <div
-      className="flex items-center justify-between hover:bg-dark-7 cursor-pointer px-4 py-3 font-bold text-lg"
+      className="flex items-center justify-between hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
       onClick={handleClick}
       data-test-id="log-out-button"
     >
