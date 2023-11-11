@@ -66,7 +66,7 @@ export function Page() {
 
           <div className="mt-4" />
 
-          <div className="border-t border-stroke-base py-6 mt-4">
+          <div className="border-t border-stroke-base py-6">
             <div className="flex items-start gap-4">
               <div className="w-1/5">
                 <div className="font-bold text-sm">Check-Ins</div>
@@ -95,6 +95,22 @@ export function Page() {
 
               <div className="w-4/5">
                 <NextMilestone project={project} />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-stroke-base py-6">
+            <div className="flex items-start gap-4">
+              <div className="w-1/5">
+                <div className="font-bold text-sm">Documentation</div>
+
+                <div className="text-sm">
+                  <Link to={`/projects/${project.id}/milestones`}>Manage</Link>
+                </div>
+              </div>
+
+              <div className="w-4/5">
+                <Documentation project={project} />
               </div>
             </div>
           </div>
@@ -277,23 +293,48 @@ function ResourceIcon({ resource }) {
   return <Icons.IconLink size={34} />;
 }
 
-function Tabs() {
+function Documentation({ project }) {
   return (
-    <div className="-mx-8 border-b border-dark-8 mb-8 px-8 -mt-2">
-      <div className="flex gap-1 items-center">
-        <div className="border-t border-x border-dark-8 -mb-px bg-dark-2 py-1.5 px-3 rounded-t text-white-1">
-          Summary
+    <div className="flex flex-wrap items-start gap-4">
+      <div className="flex items-center flex-col gap-1">
+        <div
+          className="bg-surface-dimmed rounded shadow border border-stroke-base cursor-default"
+          style={{
+            width: "100px",
+            height: "142px",
+            fontSize: "4px",
+            padding: "12px",
+            overflow: "hidden",
+          }}
+        >
+          <div className="text-content-accent font-semibold leading-thight mb-1">Business Case</div>
+          <Summary jsonContent={project.description} characterCount={400} />
         </div>
 
-        <div className="border-t border-x border-dark-8 -mb-px py-1.5 px-3 rounded-t text-white-2">Pitch</div>
+        <div className="mt-1 text-sm">
+          <Link to={`/projects/${project.id}/milestones`}>Business Case</Link>
+        </div>
+      </div>
 
-        <div className="border-t border-x border-dark-8 -mb-px py-1.5 px-3 rounded-t text-white-2 flex items-center gap-3">
-          Message Board
-          <div className="text-xs bg-shade-2 font-normal rounded-full h-4 w-4">12</div>
+      <div className="flex items-center flex-col gap-1">
+        <div
+          className="bg-surface-dimmed rounded shadow border border-stroke-base cursor-default"
+          style={{
+            width: "100px",
+            height: "142px",
+            fontSize: "4px",
+            padding: "12px",
+            overflow: "hidden",
+          }}
+        >
+          <div className="text-content-accent font-semibold leading-thight mb-1">Retrospective</div>
+          <Summary jsonContent={project.description} characterCount={400} />
+        </div>
+
+        <div className="mt-1 text-sm">
+          <Link to={`/projects/${project.id}/milestones`}>Restrospective</Link>
         </div>
       </div>
     </div>
   );
 }
-
-const Divider = () => <div className="w-px h-10 bg-shade-2 mx-3" />;
