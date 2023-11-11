@@ -1,13 +1,13 @@
 import React from "react";
 
-import { useDocumentTitle } from "@/layouts/header";
 import { useNavigate } from "react-router-dom";
 
-import Button from "@/components/Button";
+import { GhostButton } from "@/components/Button";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Groups from "@/graphql/Groups";
+import * as Pages from "@/components/Pages";
 
 import client from "@/graphql/client";
 
@@ -28,45 +28,81 @@ export async function loader(): Promise<LoaderData> {
 export function Page() {
   const [{ groups }] = Paper.useLoadedData() as [LoaderData];
 
-  useDocumentTitle("Groups");
-
   return (
-    <Paper.Root>
-      <div className="flex items-center justify-between">
-        <div className="font-extrabold text-3xl">Groups</div>
+    <Pages.Page title="Spaces">
+      <Paper.Root size="large">
+        <div className="flex justify-center gap-4">
+          <div></div>
+          <SpaceCard
+            name="Company Space"
+            icon={Icons.IconBuildingEstate}
+            desctiption="Everyone in the company"
+            privateSpace={false}
+          />
+          <SpaceCard
+            name="Personal Space"
+            icon={Icons.IconTrees}
+            desctiption="Your own private space in Operately"
+            privateSpace={true}
+          />
+          <div></div>
+        </div>
 
-        <Button linkTo="/groups/new" variant="success" data-test-id="add-group">
-          <Icons.IconPlus size={16} /> Add Group
-        </Button>
-      </div>
+        <div className="flex items-center justify-center mt-8">
+          <div className="flex-1 mx-4 border-t border-surface-outline"></div>
 
-      <GroupList groups={groups} />
-    </Paper.Root>
+          <GhostButton testId="add-group" linkTo="/groups/new" type="primary">
+            Add a new Space
+          </GhostButton>
+
+          <div className="flex-1 mx-4 border-t border-surface-outline"></div>
+        </div>
+
+        <GroupList groups={groups} />
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function SpaceCard({
+  name,
+  desctiption,
+  privateSpace,
+  icon,
+}: {
+  name: string;
+  desctiption: string;
+  privateSpace: boolean;
+  icon: React.FC<{ size: number; className: string; strokeWidth: number }>;
+}) {
+  return (
+    <div className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64">
+      <div className="mt-2"></div>
+      {React.createElement(icon, { size: 40, className: "text-content-dimmed", strokeWidth: 1 })}
+      <div className="font-semibold mt-2">{name}</div>
+      <div className="text-content-dimmed text-xs">{desctiption}</div>
+
+      {privateSpace && (
+        <div className="absolute top-2 right-2 text-accent-1">
+          <Icons.IconLock size={24} />
+        </div>
+      )}
+    </div>
   );
 }
 
 function GroupList({ groups }: { groups: Groups.Group[] }) {
   return (
-    <div className="mt-8 flex gap-2 flex-col">
+    <div className="flex justify-center gap-4 flex-wrap mt-8">
       {groups.map((group) => (
-        <GroupListItem key={group.id} group={group} />
+        <SpaceCard
+          key={group.id}
+          name={group.name}
+          desctiption={group.mission}
+          privateSpace={false}
+          icon={Icons.IconFriends}
+        />
       ))}
-    </div>
-  );
-}
-
-function GroupListItem({ group }: { group: Groups.Group }) {
-  const navigate = useNavigate();
-  const gotoGroupPage = () => navigate(`/groups/${group.id}`);
-
-  return (
-    <div
-      className="px-4 py-3 rounded-lg bg-dark-3 hover:shadow-lg hover:bg-dark-4 transition-colors cursor-pointer"
-      onClick={gotoGroupPage}
-      title={group.name}
-    >
-      <div className="font-semibold text-xl">{group.name}</div>
-      <div className="text-white-1/80 text-sm">{group.mission}</div>
     </div>
   );
 }
