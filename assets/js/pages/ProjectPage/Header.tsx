@@ -1,11 +1,7 @@
 import React from "react";
 
 import classnames from "classnames";
-import ContributorAvatar, {
-  ChampionPlaceholder,
-  ReviewerPlaceholder,
-  ContributorAdd,
-} from "@/components/ContributorAvatar";
+import ContributorAvatar, { ChampionPlaceholder, ReviewerPlaceholder } from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
@@ -14,6 +10,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { TextTooltip } from "@/components/Tooltip";
 import Options from "./Options";
+import { GhostButton } from "@/components/Button";
 
 interface HeaderProps {
   project: Project;
@@ -23,6 +20,7 @@ export default function Header({ project }: HeaderProps): JSX.Element {
   return (
     <div>
       <ProjectName project={project} />
+      <div className="mt-2"></div>
       <ContributorList project={project} />
     </div>
   );
@@ -40,25 +38,10 @@ function ProjectName({ project }) {
       </div>
 
       <div className="flex gap-4 items-center">
-        <HealthIndicator health={project.health} />
         <Options project={project} />
       </div>
     </div>
   );
-}
-
-function HealthIndicator({ health }) {
-  const colors = {
-    on_track: "text-green-400",
-    at_risk: "text-yellow-400",
-    off_track: "text-red-400",
-  };
-
-  const color = colors[health];
-  const title = health.replace("_", " ");
-  const className = classnames("bg-shade-2 rounded-full px-3 py-1 text-sm uppercase font-medium", color);
-
-  return <div className={className}>{title}</div>;
 }
 
 function PrivateIndicator({ project }) {
@@ -73,15 +56,15 @@ function PrivateIndicator({ project }) {
   );
 }
 
-function ContributorList({ project }) {
+export function ContributorList({ project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
 
   const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (
-    <div className="mt-4 flex items-center">
+    <div className="flex items-center">
       <Link to={contributorsPath} data-test-id="project-contributors">
-        <div className="flex items-center justify-center gap-1.5 cursor-pointer">
+        <div className="flex items-center justify-center gap-1 cursor-pointer">
           <Champion champion={champion} />
           <Reviewer reviewer={reviewer} />
 
@@ -89,7 +72,13 @@ function ContributorList({ project }) {
             <ContributorAvatar key={c.id} contributor={c} />
           ))}
 
-          {project.permissions.canEditContributors && <ContributorAdd />}
+          {project.permissions.canEditContributors && (
+            <div className="ml-2">
+              <GhostButton size="xs" type="secondary" testId="manage-team-button">
+                Manage Team
+              </GhostButton>
+            </div>
+          )}
         </div>
       </Link>
     </div>

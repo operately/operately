@@ -64,12 +64,12 @@ export default function PeopleSearch(props: PeopleSearchProps) {
 
 function classNames() {
   return {
-    control: () => "bg-shade-3 placeholder-white-2 border-none rounded-lg px-3",
-    menu: () => "bg-dark-3 text-white-1 border border-white-3 rounded-lg mt-1",
+    control: () => "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3",
+    menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1",
     option: ({ isFocused }) =>
       classnames({
-        "px-3 py-2 hover:bg-shade-1 cursor-pointer": true,
-        "bg-shade-1": isFocused,
+        "px-3 py-2 hover:bg-surface cursor-pointer": true,
+        "bg-surface": isFocused,
       }),
   };
 }

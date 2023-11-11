@@ -82,6 +82,7 @@ export type ActivityContentProjectDiscussionSubmitted = {
 
 export type ActivityContentProjectMilestoneCommented = {
   __typename?: 'ActivityContentProjectMilestoneCommented';
+  comment: Comment;
   commentAction: Scalars['String']['output'];
   milestone: Milestone;
   project: Project;
@@ -128,13 +129,16 @@ export type ActivityContentProjectStatusUpdateAcknowledged = {
   project: Project;
   projectId: Scalars['String']['output'];
   statusUpdateId: Scalars['String']['output'];
+  update: Update;
 };
 
 export type ActivityContentProjectStatusUpdateCommented = {
   __typename?: 'ActivityContentProjectStatusUpdateCommented';
+  comment: Comment;
   project: Project;
   projectId: Scalars['String']['output'];
   statusUpdateId: Scalars['String']['output'];
+  update: Update;
 };
 
 export type ActivityContentProjectStatusUpdateSubmitted = {
@@ -142,6 +146,7 @@ export type ActivityContentProjectStatusUpdateSubmitted = {
   project: Project;
   projectId: Scalars['String']['output'];
   statusUpdateId: Scalars['String']['output'];
+  update: Update;
 };
 
 export type ActivityContentProjectTimelineEdited = {
@@ -423,6 +428,7 @@ export type Person = {
   notifyAboutAssignments: Scalars['Boolean']['output'];
   notifyOnMention: Scalars['Boolean']['output'];
   sendDailySummary: Scalars['Boolean']['output'];
+  theme?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
 };
 

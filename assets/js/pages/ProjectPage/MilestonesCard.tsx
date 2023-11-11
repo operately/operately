@@ -35,7 +35,7 @@ function EmptyState() {
   return (
     <div className="flex items-center flex-col w-full gap-4 justify-center mt-8 text-base px-8">
       <div className="bg-orange-500/80 rounded-full p-3">
-        <Icons.IconFlag3Filled size={40} className="text-content-accent/80" />
+        <Icons.IconFlag3Filled size={40} className="text-white-1/80" />
       </div>
 
       <p className="text-center font-medium">

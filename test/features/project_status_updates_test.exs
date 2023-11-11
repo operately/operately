@@ -58,6 +58,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> ProjectSteps.visit_project_page()
+    |> ProjectSteps.follow_last_check_in()
     |> ProjectSteps.acknowledge_status_update()
 
     ctx
@@ -74,6 +75,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> ProjectSteps.visit_project_page()
+    |> ProjectSteps.follow_last_check_in()
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")

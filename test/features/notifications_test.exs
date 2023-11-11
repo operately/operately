@@ -11,16 +11,19 @@ defmodule Operately.Features.NotificationsTest do
     {:ok, ctx}
   end
 
-  @tag login_as: :champion
+  @tag login_as: :reviewer
   feature "unread notifications count", ctx do
     ctx
-    |> ProjectSteps.post_new_discussion(
-      title: "How are we going to do this?", 
-      body: "I think we should do it like this... I would like to hear your thoughts."
-    )
+    |> UI.visit("/projects")
+    |> UI.click(testid: "add-project")
+    |> UI.fill(testid: "project-name-input", with: "Website Redesign")
+    |> UI.select_person(ctx.champion.full_name)
+    |> UI.select(testid: "your-role-input", option: "Reviewer")
+    |> UI.click(testid: "save")
+    |> UI.assert_text("Website Redesign")
 
     ctx
-    |> UI.login_as(ctx.reviewer)
+    |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(1)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.click_on_first_notification()

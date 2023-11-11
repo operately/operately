@@ -11,8 +11,6 @@ import FormattedTime from "@/components/FormattedTime";
 export function NextMilestone({ project }) {
   const nextMilestones = getNextMilestones(project, 3);
 
-  console.log(nextMilestones);
-
   return (
     <div>
       <DimmedLabel>Next Milestones</DimmedLabel>
