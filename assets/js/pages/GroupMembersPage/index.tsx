@@ -8,9 +8,10 @@ import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
 
 import Avatar from "@/components/Avatar";
-import Button from "@/components/Button";
+import { GhostButton } from "@/components/Button";
 
 import AddMembersModal from "./AddMembersModal";
+import { Link } from "@/components/Link";
 
 import client from "@/graphql/client";
 
@@ -30,20 +31,22 @@ export async function loader({ params }): Promise<LoadedData> {
 
 export function Page() {
   const [{ group }] = Paper.useLoadedData() as [LoadedData, () => void];
+  const [_, refetch] = Paper.useLoadedData() as [LoadedData, () => void];
 
   useDocumentTitle(group.name + " Members");
 
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/groups/${group.id}`}>
-          <Icons.IconUsers size={16} stroke={3} />
-          {group.name}
-        </Paper.NavItem>
-      </Paper.Navigation>
+    <Paper.Root size="medium">
+      <div className="flex items-center justify-center mb-2">
+        <Link to={`/groups/${group.id}`}>
+          <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
+          Back to the {group.name} Space
+        </Link>
+      </div>
 
-      <Paper.Body>
+      <Paper.Body minHeight="none">
         <Header group={group} />
+        <AddMembersModal groupId={group.id} onSubmit={refetch} members={group.members} />
         <MemberList group={group} />
       </Paper.Body>
     </Paper.Root>
@@ -51,20 +54,12 @@ export function Page() {
 }
 
 function Header({ group }) {
-  const [_, refetch] = Paper.useLoadedData() as [LoadedData, () => void];
-
-  return (
-    <div className="flex items-center justify-between mb-4">
-      <div className="font-extrabold text-2xl">Group Members</div>
-
-      <AddMembersModal groupId={group.id} onSubmit={refetch} members={group.members} />
-    </div>
-  );
+  return <div className="font-extrabold text-2xl text-center">Members of {group.name}</div>;
 }
 
 function MemberList({ group }: { group: Groups.Group }) {
   return (
-    <div className="flex flex-col divide-y divide-shade-2 mt-8">
+    <div className="grid grid-cols-3 gap-4 mt-8">
       {group.members.map((member) => (
         <MemberListItem key={member.id} member={member} />
       ))}
@@ -83,25 +78,24 @@ function MemberListItem({ member }) {
   };
 
   return (
-    <div className="flex justify-between items-center py-4">
-      <div className="flex items-center gap-3">
-        <Avatar person={member} size="large" />
-        <div>
-          <div className="font-bold">{member.fullName}</div>
-          <div className="text-sm text-white-1/80">{member.title}</div>
-        </div>
-      </div>
+    <div className="p-4 rounded border border-surface-outline">
+      <div className="flex flex-col gap-2">
+        <div className="flex-1 flex flex-col items-center text-center">
+          <div className="my-4">
+            <Avatar person={member} size="xlarge" />
+          </div>
 
-      <div className="flex items-center gap-2">
-        <Button
-          variant="secondary"
-          size="small"
-          onClick={handleRemove}
-          loading={loading}
-          data-test-id={"remove-member-" + member.id}
-        >
-          Remove
-        </Button>
+          <div>
+            <div className="font-bold">{member.fullName}</div>
+            <div className="text-sm text-content-dimmed">{member.title}</div>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <GhostButton type="secondary" size="xs" onClick={handleRemove} testId={"remove-member-" + member.id}>
+            Remove
+          </GhostButton>
+        </div>
       </div>
     </div>
   );

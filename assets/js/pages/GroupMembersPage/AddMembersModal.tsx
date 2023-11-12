@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import Button from "@/components/Button";
+import Button, { GhostButton } from "@/components/Button";
 
 import PeopleSearch, { Option, Person } from "@/components/PeopleSearch";
 import * as Groups from "@/graphql/Groups";
@@ -61,9 +61,13 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
 
   return (
     <Context.Provider value={{ selected, add, remove }}>
-      <Button variant="success" onClick={openModal} data-test-id="add-group-members">
-        Add Members
-      </Button>
+      <div className="flex items-center my-8 gap-2">
+        <div className="h-px bg-surface-outline flex-1" />
+        <GhostButton type="primary" onClick={openModal} testId="add-group-members">
+          Add Members
+        </GhostButton>
+        <div className="h-px bg-surface-outline flex-1" />
+      </div>
 
       <Modal title={t("forms.add_group_members_title")} isOpen={isModalOpen} hideModal={hideModal}>
         <SearchField
@@ -103,7 +107,7 @@ function PeopleListItem({ selected }: { selected: Option }): JSX.Element {
   const { remove } = React.useContext(Context) as ContextDescriptor;
 
   return (
-    <div className="px-2 py-1 bg-dark-5 rounded flex justify-between items-center" key={selected.value}>
+    <div className="px-2 py-1 bg-surface rounded flex justify-between items-center" key={selected.value}>
       <div className="flex items-center gap-2">
         <Avatar person={selected.person} size="tiny" />
         <p>
@@ -141,7 +145,7 @@ function SearchField({ onSelect, loader, placeholder, alreadySelected }) {
 
 function RemoveIcon({ onClick }) {
   return (
-    <div className="hover:cursor-pointer text-white-3 hover:text-white-1" onClick={onClick}>
+    <div className="hover:cursor-pointer text-content-dimmed hover:text-content-accent" onClick={onClick}>
       <Icons.IconX size={20} />
     </div>
   );

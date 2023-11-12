@@ -8,6 +8,7 @@ import Bell from "./Bell";
 import { useLocation, NavLink } from "react-router-dom";
 
 import * as Icons from "@tabler/icons-react";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 function Logo() {
   return (
@@ -33,7 +34,7 @@ function Logo() {
 }
 
 function NavigationContainer({ size, children }) {
-  return <div className="fixed top-0 bg-base left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
+  return <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
 }
 
 function NavigationItem({ to, title, icon }) {
@@ -48,27 +49,22 @@ function NavigationItem({ to, title, icon }) {
 }
 
 function Navigation({ size }) {
+  const goToLobby = useNavigateTo("/groups");
+
   return (
     <NavigationContainer size={size}>
-      <div className="flex justify-between mx-4">
+      <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={goToLobby}>
             <Logo />
-          </div>
-
-          <div className="flex items-center ml-2">
-            <NavigationItem to="/" title="Home" />
-            <VerticalDivider />
-            <NavigationItem to="/projects" title="Projects" />
-            <VerticalDivider />
-            <NavigationItem to="/groups" title="Groups" />
-            <VerticalDivider />
+            <div className="font-semibold">Operately</div>
           </div>
         </div>
+        <div className="flex-1"></div>
 
-        <div className="flex items-center gap-2">
-          <Bell />
+        <div className="flex items-center gap-2 flex-row-reverse">
           <User />
+          <Bell />
         </div>
       </div>
     </NavigationContainer>

@@ -310,6 +310,8 @@ export type EditProjectTimelineInput = {
 
 export type Group = {
   __typename?: 'Group';
+  color: Scalars['String']['output'];
+  icon: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   members?: Maybe<Array<Person>>;
   mission?: Maybe<Scalars['String']['output']>;
@@ -837,7 +839,7 @@ export type RootMutationTypeSetTargetGroupArgs = {
 
 
 export type RootMutationTypeUpdateAppearanceArgs = {
-  input: UpdateApperanceInput;
+  input: UpdateAppearanceInput;
 };
 
 
@@ -1056,7 +1058,7 @@ export type Update = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type UpdateApperanceInput = {
+export type UpdateAppearanceInput = {
   theme?: InputMaybe<Scalars['String']['input']>;
 };
 

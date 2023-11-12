@@ -10,6 +10,8 @@ defmodule Operately.Groups.Group do
 
     field :name, :string
     field :mission, :string
+    field :icon, :string, default: "IconPlanet"
+    field :color, :string, default: "text-green-500"
 
     timestamps()
   end
@@ -17,7 +19,7 @@ defmodule Operately.Groups.Group do
   @doc false
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:name, :mission])
-    |> validate_required([:name, :mission])
+    |> cast(attrs, [:name, :mission, :icon, :color])
+    |> validate_required([:name, :mission, :icon, :color])
   end
 end
