@@ -118,7 +118,7 @@ function SpaceCard({
       <div className="mt-2"></div>
       {React.createElement(icon, { size: 40, className: color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
-      <div className="text-content-dimmed text-xs">{desctiption}</div>
+      <div className="text-content-dimmed text-xs line-clamp-2">{desctiption}</div>
 
       {privateSpace && (
         <div className="absolute top-2 right-2 text-accent-1">
