@@ -42,12 +42,14 @@ export function Page() {
           <SpaceCard
             name="Company Space"
             icon={Icons.IconBuildingEstate}
+            color={"text-cyan-500"}
             desctiption="Everyone in the company"
             privateSpace={false}
           />
           <SpaceCard
             name="Personal Space"
             icon={Icons.IconTrees}
+            color={"text-green-500"}
             desctiption="Your own private space in Operately"
             privateSpace={true}
           />
@@ -74,17 +76,19 @@ function SpaceCard({
   name,
   desctiption,
   privateSpace,
+  color,
   icon,
 }: {
   name: string;
   desctiption: string;
   privateSpace: boolean;
+  color: string;
   icon: React.FC<{ size: number; className: string; strokeWidth: number }>;
 }) {
   return (
     <div className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64">
       <div className="mt-2"></div>
-      {React.createElement(icon, { size: 40, className: "text-content-dimmed", strokeWidth: 1 })}
+      {React.createElement(icon, { size: 40, className: "text-content-dimmed" + " " + color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
       <div className="text-content-dimmed text-xs">{desctiption}</div>
 
@@ -98,15 +102,26 @@ function SpaceCard({
 }
 
 function GroupList({ groups }: { groups: Groups.Group[] }) {
+  const colors = ["text-orange-500", "text-cyan-500", "text-purple-500", "text-blue-500", "text-purple-500"];
+  const icons = [
+    Icons.IconSpeakerphone,
+    Icons.IconRocket,
+    Icons.IconBook,
+    Icons.IconFriends,
+    Icons.IconWritingSign,
+    Icons.IconReportMoney,
+  ];
+
   return (
     <div className="flex justify-center gap-4 flex-wrap mt-8">
-      {groups.map((group) => (
+      {groups.map((group, index) => (
         <SpaceCard
           key={group.id}
           name={group.name}
+          color={colors[index % colors.length]}
+          icon={icons[index % icons.length]}
           desctiption={group.mission}
           privateSpace={false}
-          icon={Icons.IconFriends}
         />
       ))}
     </div>
