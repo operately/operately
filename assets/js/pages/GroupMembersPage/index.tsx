@@ -92,7 +92,7 @@ function MemberListItem({ member }) {
         </div>
 
         <div className="flex justify-center">
-          <GhostButton type="secondary" size="xs" onClick={handleRemove} data-test-id={"remove-member-" + member.id}>
+          <GhostButton type="secondary" size="xs" onClick={handleRemove} testId={"remove-member-" + member.id}>
             Remove
           </GhostButton>
         </div>

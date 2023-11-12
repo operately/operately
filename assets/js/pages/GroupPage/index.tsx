@@ -34,7 +34,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <OptionsMenu group={group} />
 
-      <div className="font-medium flex items-center gap-2 w-full justify-center mt-2">
+      <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="group-members">
         <MemberList group={group} />
       </div>
 
