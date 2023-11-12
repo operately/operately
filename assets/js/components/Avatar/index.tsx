@@ -93,7 +93,6 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 
   const sizeClass = SizeClasses({ size });
   const textClass = TextClasses({ size });
-  console.log("textClass", textClass);
   const className = baseClass + " " + sizeClass + " " + textClass;
 
   const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};

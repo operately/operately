@@ -47,7 +47,8 @@ defmodule Operately.Features.GroupsTest do
     ctx
     |> visit_page()
     |> UI.click(title: group.name)
-    |> UI.click(testid: "group-members")
+    |> UI.click(testid: "space-settings")
+    |> UI.click(testid: "add-remove-members")
     |> UI.assert_has(Query.text(person.full_name))
   end
 
@@ -58,7 +59,8 @@ defmodule Operately.Features.GroupsTest do
     ctx
     |> visit_page()
     |> UI.click(title: group.name)
-    |> UI.click(testid: "group-members")
+    |> UI.click(testid: "space-settings")
+    |> UI.click(testid: "add-remove-members")
     |> UI.click(testid: "add-group-members")
     |> UI.fill_in(Query.css("#peopleSearch"), with: "Mati")
     |> UI.assert_text("Mati Aharoni")
@@ -76,7 +78,8 @@ defmodule Operately.Features.GroupsTest do
     ctx
     |> visit_page()
     |> UI.click(title: group.name)
-    |> UI.click(testid: "group-members")
+    |> UI.click(testid: "space-settings")
+    |> UI.click(testid: "add-remove-members")
     |> UI.assert_text(person.full_name)
     |> UI.click(testid: "remove-member-#{person.id}")
     |> UI.refute_text(person.full_name)
