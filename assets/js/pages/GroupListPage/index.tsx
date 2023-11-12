@@ -9,6 +9,7 @@ import client from "@/graphql/client";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { GhostButton } from "@/components/Button";
+import { JumpToSpaceHint } from "./JumpToSpaceHint";
 
 interface LoaderData {
   groups: Groups.Group[];
@@ -77,6 +78,8 @@ export function Page() {
 
         <GroupList groups={groups} />
       </Paper.Root>
+
+      <JumpToSpaceHint />
     </Pages.Page>
   );
 }
