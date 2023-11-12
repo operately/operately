@@ -103,6 +103,7 @@ function SpaceCard({
   return (
     <div
       className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64"
+      title={name}
       onClick={onClick}
     >
       {commingSoon && (

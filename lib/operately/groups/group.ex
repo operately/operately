@@ -10,8 +10,8 @@ defmodule Operately.Groups.Group do
 
     field :name, :string
     field :mission, :string
-    field :icon, :string
-    field :color, :string
+    field :icon, :string, default: "IconPlanet"
+    field :color, :string, default: "text-green-500"
 
     timestamps()
   end
