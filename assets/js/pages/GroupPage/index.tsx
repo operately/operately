@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import MemberList from "./MemberList";
 import { Link, DimmedLink } from "@/components/Link";
 
+import OptionsMenu from "./OptionsMenu";
+
 interface LoadedData {
   group: Groups.Group;
 }
@@ -29,15 +31,7 @@ export function Page() {
 
   return (
     <Pages.Page title={group.name}>
-      <div className="font-medium flex items-center gap-2 w-full justify-center mt-3">
-        <Icons.IconSpeakerphone size={20} className="text-pink-500" strokeWidth={2} />
-        <div className="font-bold">{group.name}</div>
-        <Icons.IconChevronDown size={20} className="text-content-accent" strokeWidth={2} />
-      </div>
-
-      <div className="text-center">
-        <div className="text-content-dimmed text-sm">{group.mission}</div>
-      </div>
+      <OptionsMenu group={group} />
 
       <div className="font-medium flex items-center gap-2 w-full justify-center mt-2">
         <MemberList group={group} />
