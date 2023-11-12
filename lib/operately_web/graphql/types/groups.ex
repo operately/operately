@@ -6,6 +6,18 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
     field :name, non_null(:string)
     field :mission, :string
 
+    field :icon, non_null(:string) do
+      resolve fn group, _, _ ->
+        group.icon || "IconPlanet"
+      end
+    end
+    
+    field :color, non_null(:string) do
+      resolve fn group, _, _ ->
+        group.color || "text-green-500"
+      end
+    end
+
     field :members, list_of(non_null(:person)) do
       resolve fn group, _, _ ->
         people = Operately.Groups.list_members(group)
