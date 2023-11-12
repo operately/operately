@@ -78,6 +78,7 @@ export function useFeed(projectId: string) {
             projectId
 
             project {
+              id
               name
             }
 
