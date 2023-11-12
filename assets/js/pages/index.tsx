@@ -9,6 +9,7 @@ import * as AccountNotificationSettingsPage from "./AccountNotificationSettingsP
 import * as AccountPage from "./AccountPage";
 import * as Company from "./Company";
 import * as GroupAddPage from "./GroupAddPage";
+import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
@@ -49,6 +50,7 @@ export default {
   AccountPage,
   Company,
   GroupAddPage,
+  GroupAppearancePage,
   GroupListPage,
   GroupMembersPage,
   GroupPage,

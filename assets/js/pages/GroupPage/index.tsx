@@ -21,6 +21,7 @@ export async function loader({ params }): Promise<LoadedData> {
   const groupData = await client.query({
     query: Groups.GET_GROUP,
     variables: { id: params.id },
+    fetchPolicy: "network-only",
   });
 
   return { group: groupData.data.group };

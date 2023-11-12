@@ -12,8 +12,7 @@ const routes = createBrowserRouter([
     path: "/",
     element: <DefaultLayout />,
     children: [
-      pageRoute("/", pages.HomePage),
-      pageRoute("/home/my-assignments", pages.MyAssignmentsPage),
+      pageRoute("/", pages.GroupListPage),
 
       pageRoute("/account", pages.AccountPage),
       pageRoute("/account/profile", pages.AccountEditProfilePage),
@@ -25,6 +24,7 @@ const routes = createBrowserRouter([
       pageRoute("/groups/new", pages.GroupAddPage),
       pageRoute("/groups/:id", pages.GroupPage),
       pageRoute("/groups/:id/members", pages.GroupMembersPage),
+      pageRoute("/groups/:id/appearance", pages.GroupAppearancePage),
 
       pageRoute("/projects", pages.ProjectListPage),
       pageRoute("/projects/new", pages.ProjectAddPage),

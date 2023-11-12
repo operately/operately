@@ -7,6 +7,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :type, non_null(:string)
   end
 
+  input_object :update_group_appearance_input do
+    field :id, non_null(:id)
+    field :icon, non_null(:string)
+    field :color, non_null(:string)
+  end
+
   object :group_contact do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -77,6 +83,21 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
           args.contact.value,
           args.contact.type
         )
+
+        {:ok, group}
+      end
+    end
+
+    field :update_group_appearance, non_null(:group) do
+      arg :input, non_null(:update_group_appearance_input)
+
+      resolve fn args, _ ->
+        group = Operately.Groups.get_group!(args.input.id)
+
+        {:ok, _} = Operately.Groups.update_group(group, %{
+          icon: args.input.icon,
+          color: args.input.color
+        })
 
         {:ok, group}
       end
