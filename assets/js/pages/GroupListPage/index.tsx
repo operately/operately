@@ -1,15 +1,14 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
-
-import { GhostButton } from "@/components/Button";
-
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Groups from "@/graphql/Groups";
 import * as Pages from "@/components/Pages";
 
 import client from "@/graphql/client";
+
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import { GhostButton } from "@/components/Button";
 
 interface LoaderData {
   groups: Groups.Group[];
@@ -29,9 +28,15 @@ export function Page() {
   const [{ groups }] = Paper.useLoadedData() as [LoaderData];
 
   return (
-    <Pages.Page title="Spaces">
+    <Pages.Page title="Lobby">
+      <div className="font-medium flex items-center gap-2 w-full justify-center mt-3">
+        <Icons.IconPlant2 size={20} className="text-accent-1" strokeWidth={2} />
+        Lobby &middot; Choose a Space to get started
+        <Icons.IconChevronDown size={20} className="text-content-accent" strokeWidth={2} />
+      </div>
+
       <Paper.Root size="large">
-        <div className="flex justify-center gap-4 pt-16">
+        <div className="flex justify-center gap-4 pt-16 flex-wrap">
           <div className="relative w-64 px-4 py-3">
             <div className="font-bold">Welcome Back!</div>
             <div className="text-sm mt-4">
@@ -45,6 +50,7 @@ export function Page() {
             color={"text-cyan-500"}
             desctiption="Everyone in the company"
             privateSpace={false}
+            linkTo="/groups"
           />
           <SpaceCard
             name="Personal Space"
@@ -52,6 +58,7 @@ export function Page() {
             color={"text-green-500"}
             desctiption="Your own private space in Operately"
             privateSpace={true}
+            linkTo="/groups"
           />
           <div></div>
         </div>
@@ -78,15 +85,22 @@ function SpaceCard({
   privateSpace,
   color,
   icon,
+  linkTo,
 }: {
   name: string;
   desctiption: string;
   privateSpace: boolean;
   color: string;
   icon: React.FC<{ size: number; className: string; strokeWidth: number }>;
+  linkTo: string;
 }) {
+  const onClick = useNavigateTo(linkTo);
+
   return (
-    <div className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64">
+    <div
+      className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64"
+      onClick={onClick}
+    >
       <div className="mt-2"></div>
       {React.createElement(icon, { size: 40, className: "text-content-dimmed" + " " + color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
@@ -122,6 +136,7 @@ function GroupList({ groups }: { groups: Groups.Group[] }) {
           icon={icons[index % icons.length]}
           desctiption={group.mission}
           privateSpace={false}
+          linkTo={`/groups/${group.id}`}
         />
       ))}
     </div>

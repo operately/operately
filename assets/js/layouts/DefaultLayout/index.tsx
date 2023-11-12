@@ -34,7 +34,7 @@ function Logo() {
 }
 
 function NavigationContainer({ size, children }) {
-  return <div className="fixed top-0 bg-base left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
+  return <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
 }
 
 function NavigationItem({ to, title, icon }) {
@@ -53,21 +53,14 @@ function Navigation({ size }) {
 
   return (
     <NavigationContainer size={size}>
-      <div className="grid grid-cols-6 gap-4 px-4">
+      <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={goToLobby}>
             <Logo />
             <div className="font-semibold">Operately</div>
           </div>
         </div>
-
-        <div className="flex items-center justify-center col-start-2 col-end-6">
-          <div className="font-medium flex items-center gap-2">
-            <Icons.IconPlant2 size={20} className="text-accent-1" strokeWidth={2} />
-            Lobby &middot; Choose a Space to get started
-            <Icons.IconChevronDown size={20} className="text-content-accent" strokeWidth={2} />
-          </div>
-        </div>
+        <div className="flex-1"></div>
 
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
