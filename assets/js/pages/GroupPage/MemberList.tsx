@@ -5,6 +5,7 @@ import * as Groups from "@/graphql/Groups";
 import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
+import { GhostButton } from "@/components/Button";
 
 export default function MemberList({ group }: { group: Groups.Group }) {
   const navigate = useNavigate();
@@ -18,12 +19,8 @@ export default function MemberList({ group }: { group: Groups.Group }) {
         data-test-id="group-members"
       >
         {group.members.map((m) => (
-          <Avatar key={m.id} person={m} />
+          <Avatar key={m.id} person={m} size={24} />
         ))}
-
-        <div className="shrink-0 relative w-8 h-8 border-dashed border border-white-3 rounded-full p-0.5 text-white-3 flex items-center justify-center">
-          <Icons.IconPlus size={16} />
-        </div>
       </div>
     </div>
   );
