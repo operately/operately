@@ -45,6 +45,22 @@ export function Page() {
 
         <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
           <div className="w-48">
+            <div className="text-content-accent font-bold">Projects</div>
+            <Link to={`/groups/${group.id}/projects`}>Manage Projects</Link>
+          </div>
+
+          <div className="flex-1">
+            <div className="uppercase font-medium text-content-accent text-xs tracking-wide mb-2">Ongoing</div>
+            <ProjectList group={group} />
+
+            <div className="flex mt-8">
+              <DimmedLink>See Archived Projects</DimmedLink>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
+          <div className="w-48">
             <div className="text-content-accent font-bold">Documents</div>
             <Link to={`/groups/${group.id}/projects`}>Manage Calendar</Link>
           </div>
@@ -65,21 +81,6 @@ export function Page() {
             <Link to={`/groups/${group.id}/projects`}>Manage Goals</Link>
           </div>
           <div className="flex-1"></div>
-        </div>
-
-        <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
-          <div className="w-48">
-            <div className="text-content-accent font-bold">Projects</div>
-            <Link to={`/groups/${group.id}/projects`}>Manage Projects</Link>
-          </div>
-
-          <div className="flex-1">
-            <ProjectList group={group} />
-
-            <div className="flex mt-4">
-              <DimmedLink>See Archived Projects</DimmedLink>
-            </div>
-          </div>
         </div>
       </div>
     </Pages.Page>
@@ -119,16 +120,16 @@ function ProjectGridItem({ project }: { project: Project }) {
 
   return (
     <div
-      className="bg-surface rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow-lg hover:shadow-xl overflow-hidden"
+      className="bg-surface rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow hover:shadow-lg overflow-hidden borderb border-surface-outline"
       onClick={() => navigate(`/projects/${project.id}`)}
     >
-      <div className="flex flex-col justify-between h-20">
+      <div className="flex flex-col justify-between h-28">
         <div>
-          <div className="text-ellipsis font-bold text-sm">{project.name}</div>
+          <div className="text-ellipsis font-bold">{project.name}</div>
           <NextMilestone project={project} />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {project.contributors.map((contributor) => (
             <Avatar key={contributor.id} person={contributor.person} size="tiny" />
           ))}
@@ -143,8 +144,8 @@ function NextMilestone({ project }) {
     return <span className="text-sm text-content-dimmed">&mdash;</span>;
   } else {
     return (
-      <div className="text-sm">
-        <Icons.IconFlag3Filled size={14} className="text-yellow-400/80 inline mr-1" />{" "}
+      <div className="">
+        <Icons.IconFlag3Filled size={16} className="text-yellow-400/80 inline mr-1" />{" "}
         <span className="">{project.nextMilestone.title}</span>
       </div>
     );
