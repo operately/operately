@@ -51,6 +51,7 @@ export function Page() {
             desctiption="Everyone in the company"
             privateSpace={false}
             linkTo="/groups"
+            commingSoon={true}
           />
           <SpaceCard
             name="Personal Space"
@@ -59,6 +60,7 @@ export function Page() {
             desctiption="Your own private space in Operately"
             privateSpace={true}
             linkTo="/groups"
+            commingSoon={true}
           />
           <div></div>
         </div>
@@ -86,6 +88,7 @@ function SpaceCard({
   color,
   icon,
   linkTo,
+  commingSoon,
 }: {
   name: string;
   desctiption: string;
@@ -93,6 +96,7 @@ function SpaceCard({
   color: string;
   icon: React.FC<{ size: number; className: string; strokeWidth: number }>;
   linkTo: string;
+  commingSoon?: boolean;
 }) {
   const onClick = useNavigateTo(linkTo);
 
@@ -101,8 +105,14 @@ function SpaceCard({
       className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64"
       onClick={onClick}
     >
+      {commingSoon && (
+        <div className="uppercase text-[10px] bg-surface-dimmed text-content-dimmed mt-1 inline-block px-1 py-0.5 tracking-wider">
+          Comming Soon
+        </div>
+      )}
+
       <div className="mt-2"></div>
-      {React.createElement(icon, { size: 40, className: "text-content-dimmed" + " " + color, strokeWidth: 1 })}
+      {React.createElement(icon, { size: 40, className: color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
       <div className="text-content-dimmed text-xs">{desctiption}</div>
 
@@ -116,24 +126,14 @@ function SpaceCard({
 }
 
 function GroupList({ groups }: { groups: Groups.Group[] }) {
-  const colors = ["text-orange-500", "text-cyan-500", "text-purple-500", "text-blue-500", "text-purple-500"];
-  const icons = [
-    Icons.IconSpeakerphone,
-    Icons.IconRocket,
-    Icons.IconBook,
-    Icons.IconFriends,
-    Icons.IconWritingSign,
-    Icons.IconReportMoney,
-  ];
-
   return (
     <div className="flex justify-center gap-4 flex-wrap mt-8">
-      {groups.map((group, index) => (
+      {groups.map((group) => (
         <SpaceCard
           key={group.id}
           name={group.name}
-          color={colors[index % colors.length]}
-          icon={icons[index % icons.length]}
+          color={group.color}
+          icon={Icons[group.icon]}
           desctiption={group.mission}
           privateSpace={false}
           linkTo={`/groups/${group.id}`}

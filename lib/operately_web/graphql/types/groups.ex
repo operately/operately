@@ -8,13 +8,13 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
 
     field :icon, non_null(:string) do
       resolve fn group, _, _ ->
-        group.icon || "IconPlanet"
+        {:ok, group.icon || "IconPlanet"}
       end
     end
     
     field :color, non_null(:string) do
       resolve fn group, _, _ ->
-        group.color || "text-green-500"
+        {:ok, group.color || "text-green-500"}
       end
     end
 

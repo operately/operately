@@ -13,6 +13,9 @@ export interface Group {
   mission: string;
   members: Person[];
   pointsOfContact: PointOfContact[];
+
+  icon: string;
+  color: string;
 }
 
 interface Person {
@@ -27,6 +30,8 @@ export const GET_GROUP = gql`
       id
       name
       mission
+      icon
+      color
 
       members {
         id
@@ -142,6 +147,8 @@ export const LIST_GROUPS = gql`
       id
       name
       mission
+      icon
+      color
     }
   }
 `;
