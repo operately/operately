@@ -132,7 +132,7 @@
 
 .ProseMirror [data-type="mention"] {
   font-weight: 500;
-  color: var(--color-accent-1);
+  color: var(--color-link-base);
 }
 
 .ProseMirror blockquote {

@@ -85,7 +85,7 @@ const MentionList = forwardRef((props: MentionListProps, ref) => {
   }));
 
   return (
-    <div className="flex flex-col border border-dark-5 rounded">
+    <div className="flex flex-col border border-surface-outline rounded overflow-hidden">
       {props.items.length > 0 ? (
         <ItemList items={props.items} selectItem={selectItem} selectedIndex={selectedIndex} />
       ) : (
@@ -103,8 +103,8 @@ interface ItemListProps {
 
 function ItemList({ items, selectItem, selectedIndex }: ItemListProps): JSX.Element {
   const baseClass = "px-1.5 py-1 text-left";
-  const selectedClass = baseClass + " bg-shade-3 text-white-1";
-  const unselectedClass = baseClass + " text-white-1 rounded hover:bg-shade-1 transition";
+  const selectedClass = baseClass + " bg-accent-1 text-content-accent";
+  const unselectedClass = baseClass + " text-content-accent hover:bg-accent-1";
 
   return (
     <>
