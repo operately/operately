@@ -16,7 +16,7 @@
   left: 0em;
   width: 100%;
   height: 100%;
-  color: var(--color-green-400);
+  color: var(--color-accent-1);
   border: 2px dashed var(--color-accent-1);
   background-color: rgba(0,255,0,0.1);
   padding-bottom: 1em;
@@ -34,8 +34,10 @@
 }
 
 .ProseMirror a {
-  color: var(--color-sky-400);
+  color: var(--color-link-base);
+  font-weight: 500;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .ProseMirror > ul:first-child, ul:last-child, ol:first-child, ol:last-child {
