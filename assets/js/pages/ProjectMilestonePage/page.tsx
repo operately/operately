@@ -380,7 +380,6 @@ function DueDate({ milestone }) {
           data-test-id="change-milestone-due-date"
         >
           <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
-          {!Milestones.isDone(milestone) && <TextSeparator />}
           {!Milestones.isDone(milestone) && <DueDateExplanation milestone={milestone} />}
         </div>
       </Popover.Trigger>
@@ -395,13 +394,18 @@ function DueDate({ milestone }) {
 }
 
 function DueDateExplanation({ milestone }) {
+  if (Milestones.isDone(milestone)) return null;
+  if (!Milestones.isOverdue(milestone)) return null;
+
   const deadline = Time.parseISO(milestone.deadlineAt);
-  const color = Milestones.isOverdue(milestone) ? "text-red-400" : "text-emerald-400";
 
   return (
-    <span className={color}>
-      <TimeToDueDate dueDate={deadline} />
-    </span>
+    <>
+      <TextSeparator />
+      <span className="text-red-500 font-bold">
+        <TimeToDueDate dueDate={deadline} />
+      </span>
+    </>
   );
 }
 
