@@ -50,7 +50,7 @@ export function Page() {
 
         <Comments milestone={milestone} refetch={refetch} />
 
-        <AddComment milestone={milestone} refetch={refetch} me={me} />
+        <AddComment milestone={milestone} me={me} />
       </Paper.Body>
     </Paper.Root>
   );
@@ -274,7 +274,9 @@ function Comment({ comment }) {
   );
 }
 
-function AddComment({ milestone, refetch, me }) {
+function AddComment({ milestone, me }) {
+  const refetch = useRefresh();
+
   const { editor, submittable, focused, empty } = TipTapEditor.useEditor({
     peopleSearch: People.usePeopleSearch(),
     placeholder: "Leave a comment...",
@@ -287,7 +289,7 @@ function AddComment({ milestone, refetch, me }) {
   const actionMessage = action === "reopen" ? "Re-open" : "Complete";
   const actionIcon =
     action === "reopen" ? (
-      <Icons.IconRefresh size={16} className="text-emerald-600" />
+      <Icons.IconRefresh size={16} className="text-emerald-500" />
     ) : (
       <Icons.IconCheck size={16} className="text-purple-500" />
     );
@@ -309,7 +311,8 @@ function AddComment({ milestone, refetch, me }) {
       },
     });
 
-    await refetch();
+    editor.commands.clearContent(true);
+    refetch();
   };
 
   const avatar = <Avatar person={me} size="small" />;
