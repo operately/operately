@@ -89,7 +89,7 @@ defmodule Prosemirror2Html do
   def convert_node(%{"type" => "blob", "attrs" => %{"title" => title, "src" => src}}, opts) do
     domain = Keyword.get(opts, :domain, nil) || raise("Missing domain option")
 
-    "<div><a href=\"#{domain}#{src}\">#{title}</a></div>"
+    "<div>&#128206; <a href=\"#{domain}#{src}\">#{title}</a></div>"
   end
 
   #
