@@ -20,11 +20,10 @@ const routes = createBrowserRouter([
       pageRoute("/account/appearance", pages.AccountAppearancePage),
       pageRoute("/notifications", pages.NotificationsPage),
 
-      pageRoute("/groups", pages.GroupListPage),
-      pageRoute("/groups/new", pages.GroupAddPage),
-      pageRoute("/groups/:id", pages.GroupPage),
-      pageRoute("/groups/:id/members", pages.GroupMembersPage),
-      pageRoute("/groups/:id/appearance", pages.GroupAppearancePage),
+      pageRoute("/spaces/new", pages.GroupAddPage),
+      pageRoute("/spaces/:id", pages.GroupPage),
+      pageRoute("/spaces/:id/members", pages.GroupMembersPage),
+      pageRoute("/spaces/:id/appearance", pages.GroupAppearancePage),
 
       pageRoute("/projects", pages.ProjectListPage),
       pageRoute("/projects/new", pages.ProjectAddPage),

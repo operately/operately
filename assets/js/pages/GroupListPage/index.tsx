@@ -51,7 +51,7 @@ export function Page() {
             color={"text-cyan-500"}
             desctiption="Everyone in the company"
             privateSpace={false}
-            linkTo="/groups"
+            linkTo="/spaces"
             commingSoon={true}
           />
           <SpaceCard
@@ -60,7 +60,7 @@ export function Page() {
             color={"text-green-500"}
             desctiption="Your own private space in Operately"
             privateSpace={true}
-            linkTo="/groups"
+            linkTo="/spaces"
             commingSoon={true}
           />
           <div></div>
@@ -69,7 +69,7 @@ export function Page() {
         <div className="flex items-center justify-center mt-8">
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>
 
-          <GhostButton testId="add-group" linkTo="/groups/new" type="primary">
+          <GhostButton testId="add-group" linkTo="/spaces/new" type="primary">
             Add a new Space
           </GhostButton>
 
@@ -140,7 +140,7 @@ function GroupList({ groups }: { groups: Groups.Group[] }) {
           icon={Icons[group.icon]}
           desctiption={group.mission}
           privateSpace={false}
-          linkTo={`/groups/${group.id}`}
+          linkTo={`/spaces/${group.id}`}
         />
       ))}
     </div>

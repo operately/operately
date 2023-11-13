@@ -8,7 +8,7 @@ import { useSetGoalGroup, useSetTargetGroup } from "../../graphql/Objectives";
 
 function Profile({ group, onUnassign, onChangeGroup }): JSX.Element {
   const navigate = useNavigate();
-  const handleGoToGroup = () => navigate(`/groups/${group.id}`);
+  const handleGoToGroup = () => navigate(`/spaces/${group.id}`);
 
   return (
     <div>

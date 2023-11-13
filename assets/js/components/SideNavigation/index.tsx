@@ -29,7 +29,7 @@ function SideNavigation({ isCollapsed }: SideNavigationProps) {
         >
           <Link to="/objectives" title={t("Company")} icon="objectives" />
           <Link to="/projects" title={t("Projects")} icon="my projects" />
-          <Link to="/groups" title={t("Groups")} icon="groups" />
+          <Link to="/spaces" title={t("Groups")} icon="groups" />
         </ul>
       </div>
     </aside>

@@ -9,7 +9,7 @@ import { GhostButton } from "@/components/Button";
 
 export default function MemberList({ group }: { group: Groups.Group }) {
   const navigate = useNavigate();
-  const gotoGroupMembersPage = () => navigate(`/groups/${group.id}/members`);
+  const gotoGroupMembersPage = () => navigate(`/spaces/${group.id}/members`);
 
   return (
     <div>
