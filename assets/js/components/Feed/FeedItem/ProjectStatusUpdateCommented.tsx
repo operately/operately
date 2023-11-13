@@ -13,7 +13,7 @@ export default function ({ activity }) {
   const content = activity.content;
   const update = content.update;
   const comment = content.comment;
-  const project = content.projectId;
+  const project = content.project;
 
   const insertedAt = Time.parseISO(update.insertedAt);
   const time = <FormattedTime time={insertedAt} format="long-date" />;
