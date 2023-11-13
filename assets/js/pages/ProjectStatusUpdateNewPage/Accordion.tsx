@@ -18,7 +18,7 @@ export function AccordionWithOptions(props: AccordionWithOptionsProps) {
 
   return (
     <Accordion title={props.title} status={current!.label} testId={`${props.name}-accordion`}>
-      <div className="p-4 bg-dark-3">
+      <div className="p-4 bg-surface-dimmed border-t border-surface-outline">
         <div className="uppercase text-xs mb-4">Choose</div>
         <Options {...props} />
 
@@ -48,11 +48,11 @@ function Options(props: AccordionWithOptionsProps) {
 
 function Comments({ editor }: { editor: ReturnType<typeof TipTapEditor.useEditor> }) {
   return (
-    <div className="bg-dark-3 border-x border-b border-dark-5">
+    <div className="bg-surface-dimmed border-x border-b border-stroke-base">
       <TipTapEditor.Root>
         <TipTapEditor.Toolbar editor={editor.editor} variant="large" />
 
-        <div className="text-white-1 relative" style={{ minHeight: "150px" }}>
+        <div className="text-content-base relative" style={{ minHeight: "150px" }}>
           <TipTapEditor.EditorContent editor={editor.editor} />
           <TipTapEditor.LinkEditForm editor={editor.editor} />
         </div>
