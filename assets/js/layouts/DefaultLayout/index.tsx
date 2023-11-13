@@ -49,7 +49,7 @@ function NavigationItem({ to, title, icon }) {
 }
 
 function Navigation({ size }) {
-  const goToLobby = useNavigateTo("/spaces");
+  const goToLobby = useNavigateTo("/");
 
   return (
     <NavigationContainer size={size}>

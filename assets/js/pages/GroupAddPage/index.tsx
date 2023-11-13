@@ -64,7 +64,7 @@ function Form() {
     navigate(`/spaces/${res.data.createGroup.id}`);
   };
 
-  const onCancel = () => navigate("/spaces");
+  const onCancel = () => navigate("/");
 
   const isValid = name.length > 0 && mission.length > 0;
 

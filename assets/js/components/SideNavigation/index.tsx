@@ -22,14 +22,10 @@ function SideNavigation({ isCollapsed }: SideNavigationProps) {
           </div>
         </div>
 
-        <ul
-          className={`flex flex-col gap-2.5 list-none m-0 p-0 ${
-            isCollapsed ? "hidden" : "block"
-          }`}
-        >
+        <ul className={`flex flex-col gap-2.5 list-none m-0 p-0 ${isCollapsed ? "hidden" : "block"}`}>
           <Link to="/objectives" title={t("Company")} icon="objectives" />
           <Link to="/projects" title={t("Projects")} icon="my projects" />
-          <Link to="/spaces" title={t("Groups")} icon="groups" />
+          <Link to="/" title={t("Groups")} icon="groups" />
         </ul>
       </div>
     </aside>

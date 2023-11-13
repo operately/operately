@@ -51,7 +51,7 @@ export function Page() {
             color={"text-cyan-500"}
             desctiption="Everyone in the company"
             privateSpace={false}
-            linkTo="/spaces"
+            linkTo="/"
             commingSoon={true}
           />
           <SpaceCard
@@ -60,7 +60,7 @@ export function Page() {
             color={"text-green-500"}
             desctiption="Your own private space in Operately"
             privateSpace={true}
-            linkTo="/spaces"
+            linkTo="/"
             commingSoon={true}
           />
           <div></div>
