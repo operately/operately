@@ -61,7 +61,7 @@ export function Page() {
         <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
           <div className="w-48">
             <div className="text-content-accent font-bold">Documents</div>
-            <Link to={`/groups/${group.id}/projects`}>Manage Calendar</Link>
+            <Link to={`/spaces/${group.id}/projects`}>Manage Calendar</Link>
           </div>
           <div className="flex-1"></div>
         </div>
@@ -69,7 +69,7 @@ export function Page() {
         <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
           <div className="w-48">
             <div className="text-content-accent font-bold">Calendar</div>
-            <Link to={`/groups/${group.id}/projects`}>Manage Calendar</Link>
+            <Link to={`/spaces/${group.id}/projects`}>Manage Calendar</Link>
           </div>
           <div className="flex-1"></div>
         </div>
@@ -77,7 +77,7 @@ export function Page() {
         <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
           <div className="w-48">
             <div className="text-content-accent font-bold">Goals</div>
-            <Link to={`/groups/${group.id}/projects`}>Manage Goals</Link>
+            <Link to={`/spaces/${group.id}/projects`}>Manage Goals</Link>
           </div>
           <div className="flex-1"></div>
         </div>

@@ -38,7 +38,7 @@ export function Page() {
   return (
     <Paper.Root size="medium">
       <div className="flex items-center justify-center mb-2">
-        <Link to={`/groups/${group.id}`}>
+        <Link to={`/spaces/${group.id}`}>
           <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
           Back to the {group.name} Space
         </Link>

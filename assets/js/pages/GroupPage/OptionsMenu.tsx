@@ -30,25 +30,25 @@ export default ({ group }) => (
           <Option
             icon={Icons.IconId}
             label="Edit Name and Purpose"
-            linkTo={`/groups/${group.id}/edit`}
+            linkTo={`/spaces/${group.id}/edit`}
             testId="edit-name-and-purpose"
           />
           <Option
             icon={Icons.IconUserPlus}
             label="Add/Remove Members"
-            linkTo={`/groups/${group.id}/members`}
+            linkTo={`/spaces/${group.id}/members`}
             testId="add-remove-members"
           />
           <Option
             icon={Icons.IconPaint}
             label="Change Appearance"
-            linkTo={`/groups/${group.id}/appearance`}
+            linkTo={`/spaces/${group.id}/appearance`}
             testId="change-appearance"
           />
           <Option
             icon={Icons.IconLock}
             label="Change Visibility"
-            linkTo={`/groups/${group.id}/visibility`}
+            linkTo={`/spaces/${group.id}/visibility`}
             testId="change-visibility"
           />
         </div>

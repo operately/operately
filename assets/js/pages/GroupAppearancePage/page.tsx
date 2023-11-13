@@ -22,7 +22,7 @@ export function Page() {
     <Pages.Page title={["Appearance Settings", group.name]}>
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-2">
-          <Link to={`/groups/${group.id}`}>
+          <Link to={`/spaces/${group.id}`}>
             <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
             Back to the {group.name} Space
           </Link>
@@ -76,7 +76,7 @@ export function Page() {
 }
 
 function SubmitButton({ group, color, icon }) {
-  const goToSpace = useNavigateTo("/groups/" + group.id);
+  const goToSpace = useNavigateTo("/spaces/" + group.id);
   const [update] = Groups.useUpdateGroupAppearanceMutation({ onCompleted: goToSpace });
 
   const save = React.useCallback(() => {

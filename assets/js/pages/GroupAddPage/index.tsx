@@ -30,7 +30,7 @@ export function Page() {
   return (
     <Paper.Root size="small">
       <Paper.Navigation>
-        <Paper.NavItem linkTo={`/groups`}>
+        <Paper.NavItem linkTo={`/spaces`}>
           <Icons.IconUsers size={16} stroke={3} />
           Groups
         </Paper.NavItem>
@@ -61,10 +61,10 @@ function Form() {
       },
     });
 
-    navigate(`/groups/${res.data.createGroup.id}`);
+    navigate(`/spaces/${res.data.createGroup.id}`);
   };
 
-  const onCancel = () => navigate("/groups");
+  const onCancel = () => navigate("/");
 
   const isValid = name.length > 0 && mission.length > 0;
 

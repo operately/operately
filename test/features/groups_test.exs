@@ -137,6 +137,6 @@ defmodule Operately.Features.GroupsTest do
   # # ===========================================================================
 
   defp visit_page(ctx) do
-    UI.visit(ctx, "/groups")
+    UI.visit(ctx, "/")
   end
 end
