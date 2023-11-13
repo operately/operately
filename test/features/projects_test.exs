@@ -160,6 +160,8 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "add-milestone-button")
     |> UI.click(testid: "save")
 
+    :timer.sleep(200)
+
     project = Operately.Projects.get_project!(ctx.project.id)
     phases = Operately.Projects.list_project_phase_history(project)
     planning = Enum.find(phases, fn phase -> phase.phase == :planning end)
