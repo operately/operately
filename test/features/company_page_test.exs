@@ -98,7 +98,7 @@ defmodule Operately.Features.CompanyPageTest do
   #   |> click_on_the_goal_group()
   #   |> UI.assert_text("Customer Success")
   #   |> click_on_go_to_group()
-  #   |> UI.assert_page("/groups/#{group.id}")
+  #   |> UI.assert_page("/spaces/#{group.id}")
   # end
 
   # feature "see target group details", state do
@@ -111,7 +111,7 @@ defmodule Operately.Features.CompanyPageTest do
   #   |> click_on_the_target_group()
   #   |> UI.assert_text("Marketing")
   #   |> click_on_go_to_group()
-  #   |> UI.assert_page("/groups/#{group.id}")
+  #   |> UI.assert_page("/spaces/#{group.id}")
   # end
 
   # feature "unassigning goal group", state do
