@@ -7,14 +7,14 @@ defmodule Operately.GroupsFixtures do
   @doc """
   Generate a group.
   """
-  def group_fixture(attrs \\ %{}) do
-    {:ok, group} =
-      attrs
+  def group_fixture(creator, attrs \\ %{}) do
+    attrs = attrs
       |> Enum.into(%{
         name: "some name",
         mission: "some mission"
       })
-      |> Operately.Groups.create_group()
+
+    {:ok, group} = Operately.Groups.create_group(creator, attrs)
 
     group
   end

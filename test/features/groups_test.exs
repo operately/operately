@@ -13,14 +13,12 @@ defmodule Operately.Features.GroupsTest do
     ctx = Map.merge(ctx, %{company: company, person: person})
     ctx = UI.login_as(ctx, ctx.person)
 
-    IO.inspect(Operately.People.list_people())
-
     {:ok, ctx}
   end
 
   feature "listing existing groups", ctx do
-    group1 = group_fixture(%{name: "Marketing", mission: "Let the world know about our products"})
-    group2 = group_fixture(%{name: "Engineering", mission: "Build the best product"})
+    group1 = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
+    group2 = group_fixture(ctx.person, %{name: "Engineering", mission: "Build the best product"})
 
     ctx
     |> visit_page()
@@ -48,7 +46,7 @@ defmodule Operately.Features.GroupsTest do
   end
 
   feature "listing group members", ctx do
-    group = group_fixture(%{name: "Marketing"})
+    group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     Operately.Groups.add_member(group, person.id)
@@ -62,7 +60,7 @@ defmodule Operately.Features.GroupsTest do
   end
 
   feature "adding group members", ctx do
-    group = group_fixture(%{name: "Marketing"})
+    group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     ctx
@@ -79,7 +77,7 @@ defmodule Operately.Features.GroupsTest do
   end
 
   feature "removing group members", ctx do
-    group = group_fixture(%{name: "Marketing"})
+    group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     Operately.Groups.add_member(group, person.id)
@@ -95,7 +93,7 @@ defmodule Operately.Features.GroupsTest do
   end
 
   feature "listing championed projects in a group", ctx do
-    group = group_fixture(%{name: "Marketing"})
+    group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
     project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: person.id})
 
@@ -113,7 +111,7 @@ defmodule Operately.Features.GroupsTest do
   end
 
   feature "listing reviwed projects in a group", ctx do
-    group = group_fixture(%{name: "Marketing"})
+    group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
     project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: person.id})
 

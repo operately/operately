@@ -31,7 +31,9 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
 
   describe "query: projects" do
     setup ctx do
-      group = group_fixture(%{company_id: ctx.company.id})
+      creator = person_fixture(%{full_name: "Jaden Jonson", company_id: ctx.company.id})
+      group = group_fixture(creator, %{company_id: ctx.company.id})
+
       person1 = person_fixture(%{full_name: "Bob Smith", company_id: ctx.company.id})
       person2 = person_fixture(%{full_name: "Jane Doe", company_id: ctx.company.id})
 

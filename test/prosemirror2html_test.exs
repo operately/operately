@@ -281,7 +281,7 @@ defmodule Prosemirror2HtmlTest do
     }
 
     html = Prosemirror2Html.convert(content, opts)
-    assert html == "<div><a href=\"https://example.com/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5\">Authentication Failed message</a></div>"
+    assert html == "<div>&#128206; <a href=\"https://example.com/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5\">Authentication Failed message</a></div>"
   end
 
 end
