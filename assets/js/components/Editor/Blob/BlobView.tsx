@@ -48,7 +48,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         alt={node.attrs.alt}
         title={node.attrs.title}
         className={classnames({
-          "group-hover:border-white-3 transition-colors": view.editable,
+          "group-hover:border-stroke-base transition-colors": view.editable,
         })}
         data-drag-handle
       />
@@ -65,9 +65,9 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         </NodeViewContent>
         {!view.editable && (
           <>
-            <div className="text-white-2 text-sm">•</div>
+            <div className="text-content-dimmed text-sm">•</div>
             <a
-              className="text-white-2 text-sm underline cursor-pointer"
+              className="text-content-dimmed text-sm underline cursor-pointer"
               download={node.attrs.title}
               href={node.attrs.src}
             >
@@ -77,8 +77,8 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         )}
         {!view.editable && (
           <>
-            <div className="text-white-2 text-sm">•</div>
-            <a className="text-white-2 text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
+            <div className="text-content-dimmed text-sm">•</div>
+            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
               View
             </a>
           </>
@@ -87,15 +87,15 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
       {view.editable && node.attrs.status === "uploading" && (
         <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-          <div className="bg-dark-1 rounded-xl text-white-1 font-medium w-32 h-5 overflow-hidden">
-            <div className="bg-green-400 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
+          <div className="bg-content-accent rounded-xl text-content-accent font-medium w-32 h-5 overflow-hidden">
+            <div className="bg-accent-1 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
           </div>
         </div>
       )}
 
       {view.editable && (
         <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
-          <Icons.IconTrash onClick={deleteNode} size={16} className="text-white-1" />
+          <Icons.IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
         </div>
       )}
     </NodeViewWrapper>
@@ -104,23 +104,23 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
 function FileView({ node, deleteNode, view }) {
   return (
-    <NodeViewWrapper className="blob-container relative group bg-shade-1 rounded-lg p-2">
+    <NodeViewWrapper className="blob-container relative group bg-surface-dimmed rounded-lg p-2">
       <div className="flex items-center gap-2">
         <div className="shrink-0">
           <FileIcon filetype={node.attrs.filetype} />
         </div>
 
         <div>
-          <div className="font-medium text-white-1 leading-snug">{node.attrs.title}</div>
+          <div className="font-medium text-content-accent leading-snug">{node.attrs.title}</div>
           <div className="flex items-center gap-1">
-            <div className="text-white-2 text-sm">
+            <div className="text-content-dimmed text-sm">
               <HumanFilesize size={node.attrs.filesize} />
             </div>
             {!view.editable && (
               <>
-                <div className="text-white-2 text-sm">•</div>
+                <div className="text-content-dimmed text-sm">•</div>
                 <a
-                  className="text-white-2 text-sm underline cursor-pointer"
+                  className="text-content-dimmed text-sm underline cursor-pointer"
                   download={node.attrs.title}
                   href={node.attrs.src}
                 >
@@ -134,15 +134,15 @@ function FileView({ node, deleteNode, view }) {
 
       {view.editable && node.attrs.status === "uploading" && (
         <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-          <div className="bg-dark-1 rounded-xl text-white-1 font-medium w-32 h-5 overflow-hidden">
-            <div className="bg-green-400 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
+          <div className="bg-content-accent rounded-xl text-content-base font-medium w-32 h-5 overflow-hidden">
+            <div className="bg-accent-1 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
           </div>
         </div>
       )}
 
       {view.editable && (
         <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
-          <Icons.IconTrash onClick={deleteNode} size={16} className="text-white-1" />
+          <Icons.IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
         </div>
       )}
     </NodeViewWrapper>
@@ -159,12 +159,12 @@ function HumanFilesize({ size }: { size: number }) {
 function FileIcon({ filetype }: { filetype: string }) {
   switch (filetype) {
     case "application/pdf":
-      return <Icons.IconPdf className="text-white-1" size={48} data-drag-handle strokeWidth={1} />;
+      return <Icons.IconPdf className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
     case "application/zip":
-      return <Icons.IconFileZip className="text-white-1" size={48} data-drag-handle strokeWidth={1} />;
+      return <Icons.IconFileZip className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
     case "text/plain":
-      return <Icons.IconFileFilled className="text-white-1" size={48} data-drag-handle strokeWidth={1} />;
+      return <Icons.IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
     default:
-      return <Icons.IconFileFilled className="text-white-1" size={48} data-drag-handle strokeWidth={1} />;
+      return <Icons.IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
   }
 }
