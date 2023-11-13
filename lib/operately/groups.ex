@@ -11,17 +11,8 @@ defmodule Operately.Groups do
   alias Operately.Groups.Contact
 
   alias Operately.People.Person
+  alias Ecto.Multi
 
-
-  @doc """
-  Returns the list of groups.
-
-  ## Examples
-
-      iex> list_groups()
-      [%Group{}, ...]
-
-  """
   def list_groups do
     Repo.all(Group)
   end
@@ -71,22 +62,14 @@ defmodule Operately.Groups do
     Repo.one(from g in Group, where: g.name == ^name)
   end
 
-  @doc """
-  Creates a group.
-
-  ## Examples
-
-      iex> create_group(%{field: value})
-      {:ok, %Group{}}
-
-      iex> create_group(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_group(attrs \\ %{}) do
-    %Group{}
-    |> Group.changeset(attrs)
-    |> Repo.insert()
+  def create_group(creator, attrs \\ %{}) do
+    Multi.new()
+    |> Multi.insert(:group, Group.changeset(attrs))
+    |> Multi.insert(:creator, fn %{group: group} ->
+      Member.changeset(%{group_id: group.id, person_id: creator.id})
+    end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:group)
   end
 
   @doc """

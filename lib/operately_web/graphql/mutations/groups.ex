@@ -25,11 +25,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
       arg :name, non_null(:string)
       arg :mission, non_null(:string)
 
-      resolve fn args, _ ->
-        Operately.Groups.create_group(%{
+      resolve fn args, %{context: context} ->
+        creator = context.current_account.person
+
+        attrs = %{
           name: args.name,
-          mission: args.mission
-        })
+          mission: args.mission,
+        }
+
+        Operately.Groups.create_group(creator, attrs)
       end
     end
 

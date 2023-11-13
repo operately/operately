@@ -1,9 +1,6 @@
 defmodule Operately.Groups.Member do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "members" do
     field :group_id, :binary_id
     field :person_id, :binary_id
@@ -11,7 +8,10 @@ defmodule Operately.Groups.Member do
     timestamps()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(member, attrs) do
     member
     |> cast(attrs, [:group_id, :person_id])

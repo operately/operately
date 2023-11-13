@@ -8,9 +8,12 @@ defmodule Operately.Features.GroupsTest do
 
   setup ctx do
     company = company_fixture(%{name: "Test Org"})
+    person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
 
-    ctx = Map.merge(ctx, %{company: company})
-    ctx = UI.login(ctx)
+    ctx = Map.merge(ctx, %{company: company, person: person})
+    ctx = UI.login_as(ctx, ctx.person)
+
+    IO.inspect(Operately.People.list_people())
 
     {:ok, ctx}
   end
@@ -36,6 +39,12 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(Query.button("Create Group"))
     |> UI.assert_has(Query.text("Marketing"))
     |> UI.assert_has(Query.text("Let the world know about our products"))
+
+    group = Operately.Groups.get_group_by_name("Marketing")
+    assert group != nil
+
+    members = Operately.Groups.list_members(group)
+    assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
   end
 
   feature "listing group members", ctx do
