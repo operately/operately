@@ -3,6 +3,7 @@ import * as Me from "@/graphql/Me";
 
 export const ThemeContext = React.createContext({
   theme: "dark",
+  colorMode: "dark",
   setTheme: (_theme: string) => {},
 });
 
@@ -21,19 +22,32 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 function Context({ userTheme, children }: { userTheme: string; children: React.ReactNode }) {
   const [theme, setTheme] = React.useState(userTheme);
+  const [colorMode, setColorMode] = React.useState<"dark" | "light">("dark");
 
   React.useEffect(() => {
     if (theme === "system") {
-      document.querySelector("body")!.dataset.theme = getSystemMode();
+      setColorMode(getSystemMode());
     } else {
-      document.querySelector("body")!.dataset.theme = theme;
+      setColorMode(theme as "dark" | "light");
     }
+  }, [theme]);
 
+  useSystemColorModeListener(theme, setColorMode);
+
+  React.useEffect(() => {
+    document.querySelector("body")!.dataset.theme = colorMode;
+  }, [colorMode]);
+
+  return <ThemeContext.Provider value={{ theme, colorMode, setTheme }}>{children}</ThemeContext.Provider>;
+}
+
+function useSystemColorModeListener(theme: string, setColorMode: (mode: "dark" | "light") => void) {
+  React.useEffect(() => {
     const isDark = window.matchMedia("(prefers-color-scheme:dark)");
 
     const listener = (e: MediaQueryListEvent) => {
       if (theme === "system") {
-        document.querySelector("body")!.dataset.theme = e.matches ? "dark" : "light";
+        setColorMode(e.matches ? "dark" : "light");
       }
     };
 
@@ -42,9 +56,13 @@ function Context({ userTheme, children }: { userTheme: string; children: React.R
     return () => {
       isDark.removeEventListener("change", listener);
     };
-  }, [theme]);
+  }, [theme, setColorMode]);
+}
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+export function useColorMode() {
+  const { colorMode } = React.useContext(ThemeContext);
+
+  return colorMode;
 }
 
 export function useTheme() {

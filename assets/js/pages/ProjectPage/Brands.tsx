@@ -1,10 +1,12 @@
 import React from "react";
-import { useTheme } from "@/theme";
+import { useColorMode } from "@/theme";
 
 export const Github = ({ size }) => {
-  const theme = useTheme();
+  const mode = useColorMode();
 
-  if (theme === "light") {
+  console.log(mode);
+
+  if (mode === "light") {
     return <GithubBlack size={size} />;
   } else {
     return <GithubWhite size={size} />;
