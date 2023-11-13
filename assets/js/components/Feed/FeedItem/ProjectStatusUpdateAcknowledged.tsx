@@ -22,7 +22,7 @@ export default function ({ activity }) {
   const title = (
     <>
       {People.shortName(activity.author)} acknowledged: {link}
-      <Icons.IconSquareCheckFilled size={20} className="text-green-400 inline ml-2" />
+      <Icons.IconSquareCheckFilled size={20} className="text-accent-1 inline ml-2" />
     </>
   );
 

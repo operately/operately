@@ -87,7 +87,7 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
-        <Icons.IconCircleCheck size={16} className="text-green-400" />
+        <Icons.IconSquareCheckFilled size={16} className="text-accent-1" />
         Acknowledged by {update.acknowledgingPerson.fullName}
       </span>
     );

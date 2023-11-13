@@ -88,7 +88,7 @@ function AckComment({ update }) {
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
           {person.fullName} acknowledged this Check-In
-          <Icons.IconSquareCheckFilled size={24} className="text-green-400" />
+          <Icons.IconSquareCheckFilled size={24} className="text-accent-1" />
         </div>
 
         <div className="flex items-center justify-between">
