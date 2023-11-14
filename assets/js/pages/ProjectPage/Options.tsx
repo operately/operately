@@ -30,7 +30,7 @@ function OptionsDropdown({ project, closeOptions }) {
 }
 
 function ArchiveProject({ project }) {
-  const navigateToProjectList = useNavigateTo("/projects");
+  const navigateToProjectList = useNavigateTo(`/spaces/${project.spaceId}`);
 
   const archiveForm = Projects.useArchiveForm({
     variables: {

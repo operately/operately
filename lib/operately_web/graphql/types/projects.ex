@@ -68,6 +68,12 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :next_update_scheduled_at, :date
     field :private, non_null(:boolean)
 
+    field :space_id, non_null(:id) do
+      resolve fn project, _, _ ->
+        {:ok, project.group_id}
+      end
+    end
+
     field :my_role, :string do
       resolve fn project, _, %{context: context} ->
         person = context.current_account.person

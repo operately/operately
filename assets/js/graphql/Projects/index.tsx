@@ -55,7 +55,10 @@ interface ListProjectsFilters {
 }
 
 export function useProjects(filters: ListProjectsFilters) {
-  const query = useQuery(LIST_PROJECTS, { variables: { filters } });
+  const query = useQuery(LIST_PROJECTS, {
+    variables: { filters },
+    fetchPolicy: "network-only",
+  });
 
   React.useEffect(() => {
     query.subscribeToMore({
@@ -117,6 +120,8 @@ export interface Project {
   milestones: Milestones.Milestone[];
   keyResources: KeyResources.KeyResource[];
 
+  spaceId: string;
+
   parents: Parent[];
   contributors: Contributor[];
   champion?: Person;
@@ -147,6 +152,7 @@ export const GET_PROJECT = gql`
       isArchived
       archivedAt
       private
+      spaceId
 
       lastCheckIn ${Updates.UPDATE_FRAGMENT}
 

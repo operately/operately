@@ -180,7 +180,7 @@ defmodule Operately.Features.ProjectsTest do
   # ===========================================================================
 
   defp visit_index(ctx) do
-    UI.visit(ctx, "/projects")
+    UI.visit(ctx, "/spaces" <> "/" <> ctx.group.id)
   end
 
   defp visit_show(ctx, project) do
