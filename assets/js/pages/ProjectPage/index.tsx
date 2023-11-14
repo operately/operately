@@ -154,7 +154,7 @@ function LastCheckIn({ project }) {
     return (
       <div className="text-sm">
         Asking the champion to check-in every Friday.
-        <div className="mt-2 font-bold">{checkInNowLink}</div>
+        {project.permissions.canCheckIn && <div className="mt-2 font-bold">{checkInNowLink}</div>}
       </div>
     );
   }
@@ -193,7 +193,12 @@ function LastCheckIn({ project }) {
         <div>
           <DimmedLabel>Next Check-In</DimmedLabel>
           <div className="text-sm font-medium">
-            Scheduled for this Friday &middot; <span className="font-extrabold">{checkInNowLink}</span>
+            Scheduled for this Friday{" "}
+            {project.permissions.canCheckIn && (
+              <>
+                &middot; <span className="font-extrabold">{checkInNowLink}</span>
+              </>
+            )}
           </div>
         </div>
       </div>
