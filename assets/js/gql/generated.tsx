@@ -515,9 +515,7 @@ export type ProjectKeyResource = {
 
 export type ProjectListFilters = {
   groupId?: InputMaybe<Scalars['ID']['input']>;
-  groupMemberRoles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  limitContributorsToGroupMembers?: InputMaybe<Scalars['Boolean']['input']>;
   objectiveId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -609,6 +607,7 @@ export type RootMutationType = {
   setTargetGroup?: Maybe<KeyResult>;
   updateAppearance?: Maybe<Person>;
   updateDashboard: Dashboard;
+  updateGroupAppearance: Group;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
   updateNotificationSettings?: Maybe<Person>;
@@ -845,6 +844,11 @@ export type RootMutationTypeUpdateAppearanceArgs = {
 
 export type RootMutationTypeUpdateDashboardArgs = {
   input: UpdateDashboardInput;
+};
+
+
+export type RootMutationTypeUpdateGroupAppearanceArgs = {
+  input: UpdateGroupAppearanceInput;
 };
 
 
@@ -1158,6 +1162,12 @@ export type UpdateContentStatusUpdate = {
 export type UpdateDashboardInput = {
   id: Scalars['ID']['input'];
   panels?: InputMaybe<Array<InputMaybe<PanelInput>>>;
+};
+
+export type UpdateGroupAppearanceInput = {
+  color: Scalars['String']['input'];
+  icon: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
 };
 
 export type UpdateMilestoneDescriptionInput = {

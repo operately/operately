@@ -44,7 +44,7 @@ export function Page() {
           <div className="flex items-center gap-4 w-full">
             <div className="text-content-accent font-bold text-lg">Projects</div>
             <div className="h-px bg-surface-outline flex-1"></div>
-            <GhostButton type="primary" linkTo={"/projects/new"} size="sm">
+            <GhostButton type="primary" size="sm" linkTo={`/spaces/${group.id}/projects/new`} testId="add-project">
               Start a new Project
             </GhostButton>
           </div>

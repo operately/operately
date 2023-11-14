@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectCreationTest do
   use Operately.FeatureCase
 
   import Operately.CompaniesFixtures
+  import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
   alias Operately.Support.Features.ProjectSteps
@@ -13,7 +14,9 @@ defmodule Operately.Features.ProjectCreationTest do
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
 
-    ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer})
+    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
+
+    ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group})
     ctx = ProjectSteps.login(ctx)
 
     {:ok, ctx}
@@ -22,7 +25,7 @@ defmodule Operately.Features.ProjectCreationTest do
   @tag login_as: :champion
   feature "add project", ctx do
     ctx
-    |> UI.visit("/projects")
+    |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person(ctx.champion.full_name)
@@ -33,7 +36,7 @@ defmodule Operately.Features.ProjectCreationTest do
   @tag login_as: :reviewer
   feature "add project and assign someone else as champion", ctx do
     ctx
-    |> UI.visit("/projects")
+    |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person(ctx.champion.full_name)
@@ -50,7 +53,7 @@ defmodule Operately.Features.ProjectCreationTest do
   @tag login_as: :champion
   feature "add a private project", ctx do
     ctx
-    |> UI.visit("/projects")
+    |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person(ctx.champion.full_name)

@@ -18,15 +18,15 @@ const routes = createBrowserRouter([
       pageRoute("/account/profile", pages.AccountEditProfilePage),
       pageRoute("/account/notifications", pages.AccountNotificationSettingsPage),
       pageRoute("/account/appearance", pages.AccountAppearancePage),
+
       pageRoute("/notifications", pages.NotificationsPage),
 
       pageRoute("/spaces/new", pages.GroupAddPage),
       pageRoute("/spaces/:id", pages.GroupPage),
       pageRoute("/spaces/:id/members", pages.GroupMembersPage),
       pageRoute("/spaces/:id/appearance", pages.GroupAppearancePage),
+      pageRoute("/spaces/:id/projects/new", pages.ProjectAddPage),
 
-      pageRoute("/projects", pages.ProjectListPage),
-      pageRoute("/projects/new", pages.ProjectAddPage),
       pageRoute("/projects/:projectID/milestones", pages.ProjectMilestonesPage),
       pageRoute("/projects/:projectID/milestones/:id", pages.ProjectMilestonePage),
       pageRoute("/projects/:projectID/reviews/request/new", pages.ProjectReviewRequestNewPage),
@@ -43,6 +43,7 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/discussions/new", pages.ProjectDiscussionNewPage),
       pageRoute("/projects/:projectID/discussions/:id", pages.ProjectDiscussionPage),
       pageRoute("/projects/:id", pages.ProjectPage),
+
       pageRoute("*", pages.NotFoundPage),
     ],
   },
