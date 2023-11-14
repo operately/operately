@@ -2,29 +2,27 @@ defmodule Operately.UpdatesTest do
   use Operately.DataCase
 
   alias Operately.Updates
+  alias Operately.Updates.Update
+  alias Operately.Updates.Comment
 
   import Operately.CompaniesFixtures
+  import Operately.GroupsFixtures
+  import Operately.ProjectsFixtures
   import Operately.PeopleFixtures
+  import Operately.UpdatesFixtures
 
   setup do
     company = company_fixture()
     person = person_fixture(company_id: company.id)
+    group = group_fixture(person, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
+    update = update_fixture(%{author_id: person.id, updatable_id: project.id, updatable_type: :project})
 
-    {:ok, %{company: company, person: person}}
+    {:ok, %{company: company, person: person, group: group, project: project, update: update}}
   end
 
   describe "updates" do
-    alias Operately.Updates.Update
-
-    import Operately.UpdatesFixtures
-
     @invalid_attrs %{content: nil, updatable_id: nil, updatable_type: nil}
-
-    setup ctx do
-      update = update_fixture(%{author_id: ctx.person.id})
-
-      {:ok, %{update: update}}
-    end
 
     test "list_updates/0 returns all updates", ctx do
       assert Updates.list_updates() |> Enum.map(& &1.id) == [ctx.update.id]
@@ -78,21 +76,12 @@ defmodule Operately.UpdatesTest do
   end
 
   describe "comments" do
-    alias Operately.Updates.Comment
-
-    import Operately.UpdatesFixtures
-    import Operately.ProjectsFixtures
-
     @invalid_attrs %{content: nil}
 
-    setup do
-      company = company_fixture()
-      person = person_fixture(company_id: company.id)
-      project = project_fixture(company_id: company.id, creator_id: person.id)
-      update = update_fixture(%{author_id: person.id, updatable_id: project.id, updatable_type: :project})
-      comment = comment_fixture(update, %{author_id: person.id, update_id: update.id})
+    setup ctx do
+      comment = comment_fixture(ctx.update, %{author_id: ctx.person.id, update_id: ctx.update.id})
 
-      {:ok, %{company: company, person: person, update: update, comment: comment}}
+      {:ok, %{comment: comment}}
     end
 
     test "list_comments/0 returns all comments", ctx do

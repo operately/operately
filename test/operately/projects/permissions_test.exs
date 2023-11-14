@@ -3,6 +3,7 @@ defmodule Operately.Projects.PermissionsTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
   alias Operately.Projects.Permissions
@@ -10,7 +11,8 @@ defmodule Operately.Projects.PermissionsTest do
   setup do
     company = company_fixture()
     person = person_fixture(company_id: company.id)
-    project = project_fixture(%{company_id: company.id, creator_id: person.id})
+    group = group_fixture(person, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
 
     %{company: company, person: person, project: project}
   end

@@ -5,6 +5,7 @@ defmodule MyAppWeb.GraphQL.Mutations.UpdatesTest do
 
   import Operately.ProjectsFixtures
   import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.CompaniesFixtures
   import Operately.UpdatesFixtures
 
@@ -34,7 +35,8 @@ defmodule MyAppWeb.GraphQL.Mutations.UpdatesTest do
   setup do
     company = company_fixture()
     creator = person_fixture(%{company_id: company.id})
-    project = project_fixture(%{company_id: company.id, creator_id: creator.id})
+    group = group_fixture(creator, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: creator.id, group_id: group.id})
 
     update = update_fixture(%{
       author_id: creator.id,

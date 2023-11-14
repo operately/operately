@@ -5,12 +5,14 @@ defmodule OperatelyWeb.GraphQL.Queries.PeopleText do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
   setup do
     company = company_fixture(%{name: "Acme"})
     person = person_fixture(%{full_name: "Bob Smith", company_id: company.id})
-    project = project_fixture(%{company_id: company.id, creator_id: person.id})
+    group = group_fixture(person, %{name: "Developers", company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
 
     {:ok, %{company: company, person: person, project: project}}
   end

@@ -8,12 +8,14 @@ defmodule Operately.CommentsTest do
 
     import Operately.CompaniesFixtures
     import Operately.PeopleFixtures
+    import Operately.GroupsFixtures
     import Operately.ProjectsFixtures
 
     setup do
       company = company_fixture()
       person = person_fixture(company_id: company.id)
-      project = project_fixture(company_id: company.id, creator_id: person.id)
+      group = group_fixture(person, %{company_id: company.id})
+      project = project_fixture(company_id: company.id, creator_id: person.id, group_id: group.id)
       milestone = milestone_fixture(person, %{project_id: project.id, title: "Create a milestone"})
 
       comment_attrs = %{

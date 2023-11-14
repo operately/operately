@@ -14,9 +14,11 @@ defmodule Operately.Projects.ListOperationTest do
       colaborator = person_fixture(company_id: company.id)
       non_colaborator = person_fixture(company_id: company.id)
 
-      project1 = project_fixture(%{company_id: company.id, visibility: "everyone", creator_id: creator.id})
-      project2 = project_fixture(%{company_id: company.id, visibility: "invite-only", creator_id: creator.id})
-      project3 = project_fixture(%{company_id: company.id, visibility: "invite-only", creator_id: creator.id})
+      group = group_fixture(creator)
+
+      project1 = project_fixture(%{company_id: company.id, group_id: group.id, visibility: "everyone", creator_id: creator.id})
+      project2 = project_fixture(%{company_id: company.id, group_id: group.id, visibility: "invite-only", creator_id: creator.id})
+      project3 = project_fixture(%{company_id: company.id, group_id: group.id, visibility: "invite-only", creator_id: creator.id})
 
       {:ok, %{
         company: company,

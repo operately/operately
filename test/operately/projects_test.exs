@@ -4,19 +4,22 @@ defmodule Operately.ProjectsTest do
   alias Operately.Projects
 
   import Operately.ProjectsFixtures
+  import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
 
   setup do
     company = company_fixture()
     person = person_fixture(%{company_id: company.id})
+    group = group_fixture(person, %{company_id: company.id})
 
     project = project_fixture(%{
       company_id: company.id,
-      creator_id: person.id
+      creator_id: person.id,
+      group_id: group.id
     })
 
-    {:ok, company: company, project: project, person: person}
+    {:ok, company: company, project: project, person: person, group: group}
   end
 
   describe "projects" do
@@ -39,6 +42,7 @@ defmodule Operately.ProjectsTest do
         name: "some name",
         company_id: ctx.company.id,
         creator_id: ctx.person.id,
+        group_id: ctx.group.id,
         champion_id: ctx.person.id,
       }
 
@@ -387,18 +391,14 @@ defmodule Operately.ProjectsTest do
     import Operately.ProjectsFixtures
     import Operately.Support.RichText
 
-    setup do
-      company = company_fixture()
-      author = person_fixture(company_id: company.id)
-      project = project_fixture(%{company_id: company.id, creator_id: author.id})
-
-      {:ok, review_request} = Operately.Projects.create_review_request(author, %{
-        author_id: author.id,
-        project_id: project.id, 
+    setup ctx do
+      {:ok, review_request} = Operately.Projects.create_review_request(ctx.person, %{
+        author_id: ctx.person.id,
+        project_id: ctx.project.id, 
         content: rich_text("hello")
       })
 
-      {:ok, author: author, review_request: review_request, project: project}
+      {:ok, author: ctx.person, review_request: review_request}
     end
 
     test "list_project_review_requests/0 returns all project_review_requests", ctx do

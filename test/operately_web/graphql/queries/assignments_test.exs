@@ -4,11 +4,15 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
   setup :register_and_log_in_account
 
   import Operately.ProjectsFixtures
+  import Operately.GroupsFixtures
 
   setup ctx do
+    group = group_fixture(ctx.person, %{company_id: ctx.company.id})
+
     project = project_fixture(%{
       company_id: ctx.company.id,
       creator_id: ctx.person.id,
+      group_id: group.id,
     })
 
     {:ok, project} = Operately.Projects.update_project(project, %{

@@ -5,12 +5,14 @@ defmodule MyAppWeb.GraphQL.Mutations.ProjectsTest do
 
   import Operately.ProjectsFixtures
   import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.CompaniesFixtures
 
   setup do
     company = company_fixture()
     creator = person_fixture(%{company_id: company.id})
-    project = project_fixture(%{company_id: company.id, creator_id: creator.id})
+    group = group_fixture(creator, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: creator.id, group_id: group.id})
 
     {:ok, %{company: company, creator: creator, project: project}}
   end
