@@ -7,9 +7,10 @@ import * as Pages from "@/components/Pages";
 
 import client from "@/graphql/client";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { GhostButton } from "@/components/Button";
 import { JumpToSpaceHint } from "./JumpToSpaceHint";
+
+import { SpaceCardLink, SpaceCardGrid } from "@/components/SpaceCards";
 
 interface LoaderData {
   groups: Groups.Group[];
@@ -18,6 +19,7 @@ interface LoaderData {
 export async function loader(): Promise<LoaderData> {
   const groupData = await client.query({
     query: Groups.LIST_GROUPS,
+    fetchPolicy: "network-only",
   });
 
   return {
@@ -45,28 +47,32 @@ export function Page() {
             </div>
           </div>
 
-          <SpaceCard
-            name="Company Space"
-            icon={Icons.IconBuildingEstate}
-            color={"text-cyan-500"}
-            desctiption="Everyone in the company"
-            privateSpace={false}
-            linkTo="/"
+          <SpaceCardLink
+            group={{
+              name: "Company Space",
+              color: "text-cyan-500",
+              icon: "IconBuildingEstate",
+              id: "company",
+              mission: "Everyone in the company",
+              privateSpace: false,
+            }}
             commingSoon={true}
           />
-          <SpaceCard
-            name="Personal Space"
-            icon={Icons.IconTrees}
-            color={"text-green-500"}
-            desctiption="Your own private space in Operately"
-            privateSpace={true}
-            linkTo="/"
+
+          <SpaceCardLink
+            group={{
+              name: "Personal Space",
+              color: "text-green-500",
+              icon: "IconTrees",
+              id: "personal",
+              mission: "Your own private space in Operately",
+              privateSpace: true,
+            }}
             commingSoon={true}
           />
-          <div></div>
         </div>
 
-        <div className="flex items-center justify-center mt-8">
+        <div className="flex items-center justify-center mt-8 mb-8">
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>
 
           <GhostButton testId="add-group" linkTo="/spaces/new" type="primary">
@@ -76,73 +82,14 @@ export function Page() {
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>
         </div>
 
-        <GroupList groups={groups} />
+        <SpaceCardGrid>
+          {groups.map((group) => (
+            <SpaceCardLink key={group.id} group={group} />
+          ))}
+        </SpaceCardGrid>
       </Paper.Root>
 
       <JumpToSpaceHint />
     </Pages.Page>
-  );
-}
-
-function SpaceCard({
-  name,
-  desctiption,
-  privateSpace,
-  color,
-  icon,
-  linkTo,
-  commingSoon,
-}: {
-  name: string;
-  desctiption: string;
-  privateSpace: boolean;
-  color: string;
-  icon: React.FC<{ size: number; className: string; strokeWidth: number }>;
-  linkTo: string;
-  commingSoon?: boolean;
-}) {
-  const onClick = useNavigateTo(linkTo);
-
-  return (
-    <div
-      className="px-4 py-3 bg-surface rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow border border-surface-outline relative w-64"
-      title={name}
-      onClick={onClick}
-    >
-      {commingSoon && (
-        <div className="uppercase text-[10px] bg-surface-dimmed text-content-dimmed mt-1 inline-block px-1 py-0.5 tracking-wider">
-          Comming Soon
-        </div>
-      )}
-
-      <div className="mt-2"></div>
-      {React.createElement(icon, { size: 40, className: color, strokeWidth: 1 })}
-      <div className="font-semibold mt-2">{name}</div>
-      <div className="text-content-dimmed text-xs line-clamp-2">{desctiption}</div>
-
-      {privateSpace && (
-        <div className="absolute top-2 right-2 text-accent-1">
-          <Icons.IconLock size={24} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function GroupList({ groups }: { groups: Groups.Group[] }) {
-  return (
-    <div className="flex justify-center gap-4 flex-wrap mt-8">
-      {groups.map((group) => (
-        <SpaceCard
-          key={group.id}
-          name={group.name}
-          color={group.color}
-          icon={Icons[group.icon]}
-          desctiption={group.mission}
-          privateSpace={false}
-          linkTo={`/spaces/${group.id}`}
-        />
-      ))}
-    </div>
   );
 }

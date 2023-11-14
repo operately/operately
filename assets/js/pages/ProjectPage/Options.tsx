@@ -21,11 +21,25 @@ export default function Options({ project }) {
 
 function OptionsDropdown({ project, closeOptions }) {
   return (
-    <div className="absolute right-0 top-0 z-50 shadow-lg bg-blue-400 w-[250px] text-dark-1 font-medium flex flex-col">
+    <div className="absolute right-0 top-0 z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col">
       <CloseOptions onClick={closeOptions} />
       <EditProjectName project={project} />
+      <MoveProject project={project} />
       <ArchiveProject project={project} />
     </div>
+  );
+}
+
+function MoveProject({ project }) {
+  const gotoMoveProjectPage = useNavigateTo(`/projects/${project.id}/move`);
+
+  return (
+    <Option
+      icon={Icons.IconReplace}
+      title="Move project to another space"
+      onClick={gotoMoveProjectPage}
+      dataTestId="move-project-link"
+    />
   );
 }
 
@@ -41,7 +55,7 @@ function ArchiveProject({ project }) {
 
   return (
     <Option
-      icon={<Icons.IconArchiveFilled size={20} />}
+      icon={Icons.IconArchive}
       title="Archive this project"
       onClick={archiveForm.submit}
       dataTestId="archive-project-button"
@@ -54,7 +68,7 @@ function EditProjectName({ project }) {
 
   return (
     <Option
-      icon={<Icons.IconEdit size={20} />}
+      icon={Icons.IconEdit}
       title="Edit project name"
       onClick={navigateToEdit}
       dataTestId="edit-project-name-button"
@@ -69,7 +83,7 @@ function Option({ icon, title, onClick, dataTestId }) {
       onClick={onClick}
       data-test-id={dataTestId}
     >
-      {icon}
+      {React.createElement(icon, { size: 20 })}
       {title}
     </div>
   );
@@ -90,7 +104,11 @@ function OpenOptions({ onClick }) {
 function CloseOptions({ onClick }) {
   return (
     <div className="flex flex-row-reverse m-4 cursor-pointer">
-      <div className="p-1 rounded-full border border-dark-1" onClick={onClick} data-test-id="project-options-button">
+      <div
+        className="p-1 rounded-full border border-content-base"
+        onClick={onClick}
+        data-test-id="project-options-button"
+      >
         <Icons.IconX size={20} />
       </div>
     </div>

@@ -1,2 +1,2 @@
-export { Page } from "./page";
 export { loader } from "./loader";
+export { Page } from "./page";

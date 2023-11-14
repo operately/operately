@@ -471,6 +471,7 @@ export type Project = {
   retrospective?: Maybe<ProjectDocument>;
   reviewRequests?: Maybe<Array<Maybe<ProjectReviewRequest>>>;
   reviewer?: Maybe<Person>;
+  spaceId: Scalars['ID']['output'];
   startedAt?: Maybe<Scalars['Date']['output']>;
   updatedAt: Scalars['Date']['output'];
   updates?: Maybe<Array<Maybe<Update>>>;
