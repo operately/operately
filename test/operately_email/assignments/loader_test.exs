@@ -3,6 +3,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
 
   import Operately.ProjectsFixtures
   import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.CompaniesFixtures
   
   alias Operately.Projects.Project
@@ -10,8 +11,8 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
   setup do
     company = company_fixture()
     champion = person_fixture(%{company_id: company.id})
-
-    project = project_fixture(%{company_id: company.id, creator_id: champion.id})
+    group = group_fixture(champion, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: champion.id, group_id: group.id})
 
     {:ok, project} = Operately.Repo.update(Project.changeset(project, %{
       next_update_scheduled_at: days_from_now(10)

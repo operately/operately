@@ -11,98 +11,10 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
   setup do
     company = company_fixture(%{name: "Acme"})
     person = person_fixture(%{full_name: "Bob Smith", company_id: company.id})
-    project = project_fixture(%{company_id: company.id, creator_id: person.id})
+    group = group_fixture(person, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
 
     {:ok, %{company: company, person: person, project: project}}
-  end
-
-  @projects_query """
-  query projects($filters: ProjectListFilters!) {
-    projects(filters: $filters) {
-      id
-      contributors {
-        person {
-          id
-        }
-      }
-    }
-  }
-  """
-
-  describe "query: projects" do
-    setup ctx do
-      creator = person_fixture(%{full_name: "Jaden Jonson", company_id: ctx.company.id})
-      group = group_fixture(creator, %{company_id: ctx.company.id})
-
-      person1 = person_fixture(%{full_name: "Bob Smith", company_id: ctx.company.id})
-      person2 = person_fixture(%{full_name: "Jane Doe", company_id: ctx.company.id})
-
-      {:ok, _} = Operately.Projects.create_contributor(%{
-        project_id: ctx.project.id,
-        person_id: person1.id,
-        role: "contributor",
-      })
-
-      {:ok, _} = Operately.Projects.create_contributor(%{
-        project_id: ctx.project.id,
-        person_id: person2.id,
-        role: "contributor",
-      })
-
-      {:ok, _} = Operately.Groups.add_member(group, person1.id)
-      
-      {:ok, %{group: group, person1: person1, person2: person2}}
-    end
-
-    test "with contributors limited to group members", ctx do
-      conn = graphql(ctx.conn, @projects_query, %{
-        "filters" => %{
-          "groupId" => ctx.group.id,
-          "groupMemberRoles" => ["contributor"],
-          "limitContributorsToGroupMembers" => true,
-        }
-      })
-
-      assert json_response(conn, 200) == %{
-        "data" => %{
-          "projects" => [
-            %{
-              "contributors" => [
-                %{"person" => %{"id" => ctx.person1.id}}
-              ],
-              "id" => ctx.project.id
-            }
-          ]
-        }
-      }
-    end
-
-    test "with all contributors", ctx do
-      champion = Operately.Projects.list_project_contributors(ctx.project) |> Enum.find(fn c -> c.role == :champion end)
-
-      conn = graphql(ctx.conn, @projects_query, %{
-        "filters" => %{
-          "groupId" => ctx.group.id,
-          "groupMemberRoles" => ["contributor"],
-          "limitContributorsToGroupMembers" => false,
-        }
-      })
-
-      assert json_response(conn, 200) == %{
-        "data" => %{
-          "projects" => [
-            %{
-              "contributors" => [
-                %{"person" => %{"id" => champion.person_id}},
-                %{"person" => %{"id" => ctx.person1.id}},
-                %{"person" => %{"id" => ctx.person2.id}}
-              ],
-              "id" => ctx.project.id
-            }
-          ]
-        }
-      }
-    end
   end
 
   @project_contributor_candidates_query """

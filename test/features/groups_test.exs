@@ -92,40 +92,16 @@ defmodule Operately.Features.GroupsTest do
     |> UI.refute_text(person.full_name)
   end
 
-  feature "listing championed projects in a group", ctx do
+  feature "listing projects in a group", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
-    project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: person.id})
-
-    Operately.Groups.add_member(group, person.id)
-    Operately.Projects.create_contributor(%{
-      project_id: project1.id,
-      person_id: person.id,
-      role: "champion"
-    })
+    project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
+    project2 = project_fixture(%{name: "Project 2", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
 
     ctx
     |> visit_page()
     |> UI.click(title: group.name)
     |> UI.assert_text(project1.name)
-  end
-
-  feature "listing reviwed projects in a group", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
-    project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: person.id})
-
-    Operately.Groups.add_member(group, person.id)
-    Operately.Projects.create_contributor(%{
-      project_id: project1.id,
-      person_id: person.id,
-      role: "reviewer"
-    })
-
-    ctx
-    |> visit_page()
-    |> UI.click(title: group.name)
-    |> UI.assert_text(project1.name)
+    |> UI.assert_text(project2.name)
   end
 
   # feature "listing goals in a group", ctx do

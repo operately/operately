@@ -1,20 +1,24 @@
 defmodule Operately.Features.NotificationsTest do
   use Operately.FeatureCase
 
-  alias Operately.Support.Features.ProjectSteps
+  import Operately.CompaniesFixtures
+  import Operately.GroupsFixtures
+  import Operately.PeopleFixtures
+
   alias Operately.Support.Features.NotificationsSteps
   
   setup ctx do
-    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
-    ctx = ProjectSteps.login(ctx)
+    ctx = Map.put(ctx, :company, company_fixture(%{name: "Test Org"}))
+    ctx = Map.put(ctx, :person, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John Champion"}))
+    ctx = Map.put(ctx, :group, group_fixture(ctx.person, %{company_id: ctx.company.id, name: "Designers"}))
+    ctx = Map.put(ctx, :champion, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Dorcy Devonshire"}))
 
-    {:ok, ctx}
+    UI.login_as(ctx, ctx.person)
   end
 
-  @tag login_as: :reviewer
   feature "unread notifications count", ctx do
     ctx
-    |> UI.visit("/projects")
+    |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person(ctx.champion.full_name)

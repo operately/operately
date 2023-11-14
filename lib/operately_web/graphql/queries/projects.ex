@@ -3,8 +3,6 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
 
   input_object :project_list_filters do
     field :group_id, :id
-    field :group_member_roles, list_of(:string)
-    field :limit_contributors_to_group_members, :boolean
     field :objective_id, :id
     field :include_archived, :boolean
   end
@@ -19,7 +17,6 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
 
         projects = Operately.Projects.list_projects(person, %{
           group_id: filters[:group_id],
-          group_member_roles: filters[:group_member_roles],
           objective_id: filters[:objective_id],
           include_archived: filters[:include_archived]
         })

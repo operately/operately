@@ -4,12 +4,14 @@ defmodule OperatelyEmail.ProjectContributorAddedEmailTest do
 
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
+  import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
   setup do
     company = company_fixture()
     author = person_fixture(%{company_id: company.id})
-    project = project_fixture(%{company_id: company.id, creator_id: author.id})
+    group = group_fixture(author, %{company_id: company.id})
+    project = project_fixture(%{company_id: company.id, creator_id: author.id, group_id: group.id})
 
     person = person_fixture(%{company_id: project.company_id})
 

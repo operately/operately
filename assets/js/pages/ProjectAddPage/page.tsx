@@ -30,6 +30,7 @@ export function Page() {
 }
 
 function Form({ company, me }) {
+  const { spaceID } = useLoadedData();
   const navigate = useNavigate();
 
   const [projectName, setProjectName] = React.useState("");
@@ -49,14 +50,13 @@ function Form({ company, me }) {
           championId: projectChampion,
           visibility: visibility,
           creatorRole: creatorRole?.value,
+          spaceId: spaceID,
         },
       },
     });
   };
 
-  const handleCancel = () => {
-    navigate(`/projects`);
-  };
+  const handleCancel = () => navigate(`/spaces/${spaceID}`);
 
   const isValid =
     projectName.length > 0 &&

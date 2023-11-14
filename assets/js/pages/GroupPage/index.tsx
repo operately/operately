@@ -44,7 +44,7 @@ export function Page() {
           <div className="flex items-center gap-4 w-full">
             <div className="text-content-accent font-bold text-lg">Projects</div>
             <div className="h-px bg-surface-outline flex-1"></div>
-            <GhostButton type="primary" linkTo={"/projects/new"} size="sm">
+            <GhostButton type="primary" size="sm" linkTo={`/spaces/${group.id}/projects/new`} testId="add-project">
               Start a new Project
             </GhostButton>
           </div>
@@ -90,11 +90,7 @@ import * as Projects from "@/graphql/Projects";
 import Avatar from "@/components/Avatar";
 
 function ProjectList({ group }: { group: Groups.Group }) {
-  const { data, loading, error } = Projects.useProjects({
-    groupId: group.id,
-    groupMemberRoles: ["champion"],
-    limitContributorsToGroupMembers: true,
-  });
+  const { data, loading, error } = Projects.useProjects({ groupId: group.id });
 
   if (loading) return null;
   if (error) return null;
@@ -114,7 +110,7 @@ function ProjectGrid({ projects }: { projects: Projects.Project[] }) {
   );
 }
 
-function ProjectGridItem({ project }: { project: Project }) {
+function ProjectGridItem({ project }: { project: Projects.Project }) {
   const navigate = useNavigate();
 
   return (

@@ -3,12 +3,14 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Support.Features.UI
 
   import Operately.CompaniesFixtures
+  import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
   def create_project(ctx, name: name) do
     company = company_fixture(%{name: "Test Org"})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
+    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
     params = %Operately.Projects.ProjectCreation{
       company_id: company.id,
@@ -17,6 +19,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       creator_id: champion.id,
       creator_role: nil,
       visibility: "everyone",
+      group_id: group.id,
     }
 
     {:ok, project} = Operately.Projects.create_project(params)
@@ -28,7 +31,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       responsibility: " "
     })
 
-    Map.merge(ctx, %{company: company, champion: champion, project: project, reviewer: reviewer})
+    Map.merge(ctx, %{company: company, champion: champion, project: project, reviewer: reviewer, group: group})
   end
 
   def add_milestone(ctx, attrs) do
