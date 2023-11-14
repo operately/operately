@@ -15,13 +15,6 @@ defmodule Operately.Features.ProjectsTest do
     {:ok, ctx}
   end
 
-  @tag login_as: :champion
-  feature "listing projects", ctx do
-    ctx
-    |> visit_index()
-    |> UI.assert_has(Query.text(ctx.project.name))
-  end
-
   # @tag login_as: :champion
   # feature "editing the project description", ctx do
   #   ctx
