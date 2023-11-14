@@ -262,6 +262,7 @@ export type CreateProjectInput = {
   championId: Scalars['ID']['input'];
   creatorRole?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  spaceId: Scalars['ID']['input'];
   visibility: Scalars['String']['input'];
 };
 

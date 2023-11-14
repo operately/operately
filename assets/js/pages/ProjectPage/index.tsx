@@ -69,6 +69,24 @@ export function Page() {
           <div className="border-t border-stroke-base py-6">
             <div className="flex items-start gap-4">
               <div className="w-1/5">
+                <div className="font-bold text-sm">Overview</div>
+
+                <div className="text-sm">
+                  <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description">
+                    Edit
+                  </Link>
+                </div>
+              </div>
+
+              <div className="w-4/5">
+                <RichContent jsonContent={project.description} />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-stroke-base py-6">
+            <div className="flex items-start gap-4">
+              <div className="w-1/5">
                 <div className="font-bold text-sm">Check-Ins</div>
                 {project.lastCheckIn && (
                   <div className="text-sm">
@@ -95,22 +113,6 @@ export function Page() {
 
               <div className="w-4/5">
                 <NextMilestone project={project} />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-stroke-base py-6">
-            <div className="flex items-start gap-4">
-              <div className="w-1/5">
-                <div className="font-bold text-sm">Documentation</div>
-
-                <div className="text-sm">
-                  <Link to={`/projects/${project.id}/milestones`}>Manage</Link>
-                </div>
-              </div>
-
-              <div className="w-4/5">
-                <Documentation project={project} />
               </div>
             </div>
           </div>
@@ -250,7 +252,7 @@ function HealthIssues({ checkIn }) {
 import * as Brands from "./Brands";
 import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
-import { Summary } from "@/components/RichContent";
+import RichContent, { Summary } from "@/components/RichContent";
 
 function Resources({ project }) {
   return (

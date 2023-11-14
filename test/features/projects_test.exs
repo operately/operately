@@ -15,25 +15,18 @@ defmodule Operately.Features.ProjectsTest do
     {:ok, ctx}
   end
 
-  # @tag login_as: :champion
-  # feature "editing the project description", ctx do
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> click_edit_description()
-  #   |> UI.fill_rich_text(project_description())
-  #   |> click_save()
+  @tag login_as: :champion
+  feature "editing the project description", ctx do
+    ctx
+    |> visit_show(ctx.project)
+    |> click_edit_description()
+    |> UI.fill_rich_text(project_description())
+    |> UI.click(testid: "save")
 
-  #   # by default only the top of text is visible
-  #   ctx
-  #   |> UI.assert_has(Query.text("TEXT START MARKER"))
-  #   |> UI.refute_has(Query.text("TEXT END MARKER"))
-
-  #   # the text can be expanded
-  #   ctx
-  #   |> expand_description()
-  #   |> UI.assert_has(Query.text("TEXT END MARKER"))
-  # end
-
+    ctx
+    |> visit_show(ctx.project)
+    |> UI.assert_text(project_description())
+  end
 
   # @tag login_as: :champion
   # feature "react to a comment", ctx do
@@ -203,7 +196,7 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   def click_save(ctx) do
-    UI.click(ctx, Query.button("Save"))
+    UI.click(ctx, Query.button("Save Project Overview"))
   end
 
   def add_key_resource(project, attrs) do
@@ -258,7 +251,6 @@ defmodule Operately.Features.ProjectsTest do
       })
   end
 
-  defp short_name(person), do: Operately.People.Person.short_name(person)
   defp rich_text_paragraph(text), do: Operately.UpdatesFixtures.rich_text_fixture(text)
 
   defp add_contributor(project, person, role, responsibility \\ " ") do
