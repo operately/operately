@@ -57,29 +57,19 @@ defmodule Operately.Projects.ListOperationTest do
     setup do
       company = company_fixture()
       person = person_fixture(company_id: company.id)
-      project = project_fixture(%{company_id: company.id, creator_id: person.id})
-      group = group_fixture(person)
 
-      {:ok, %{
-        company: company, 
-        person: person, 
-        project: project,
-        group: group
-      }}
+      {:ok, %{company: company, person: person}}
     end
 
-    test "listing projects for a group where the members are the champion of the project", ctx do
-      Operately.Groups.add_member(ctx.group, ctx.person.id)
+    test "listing projects for a group", ctx do
+      group1 = group_fixture(ctx.person)
+      group2 = group_fixture(ctx.person)
 
-      Operately.Projects.create_contributor(%{
-        project_id: ctx.project.id,
-        person_id: ctx.person.id,
-        role: "champion"
-      })
+      project1 = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group1.id})
+      project2 = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group2.id})
 
-      project_ids = load_ids(ctx.person, %{group_id: ctx.group.id, group_member_roles: ["champion"]})
-
-      assert Enum.member?(project_ids, ctx.project.id)
+      assert load_ids(ctx.person, %{group_id: group1.id}) == [project1.id]
+      assert load_ids(ctx.person, %{group_id: group2.id}) == [project2.id]
     end
   end
 

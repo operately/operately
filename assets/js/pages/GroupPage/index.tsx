@@ -90,11 +90,7 @@ import * as Projects from "@/graphql/Projects";
 import Avatar from "@/components/Avatar";
 
 function ProjectList({ group }: { group: Groups.Group }) {
-  const { data, loading, error } = Projects.useProjects({
-    groupId: group.id,
-    groupMemberRoles: ["champion"],
-    limitContributorsToGroupMembers: true,
-  });
+  const { data, loading, error } = Projects.useProjects({ groupId: group.id });
 
   if (loading) return null;
   if (error) return null;
@@ -114,7 +110,7 @@ function ProjectGrid({ projects }: { projects: Projects.Project[] }) {
   );
 }
 
-function ProjectGridItem({ project }: { project: Project }) {
+function ProjectGridItem({ project }: { project: Projects.Project }) {
   const navigate = useNavigate();
 
   return (

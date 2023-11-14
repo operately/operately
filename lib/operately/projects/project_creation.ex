@@ -6,13 +6,14 @@ defmodule Operately.Projects.ProjectCreation do
   alias Operately.Activities
   alias Ecto.Multi
 
-  defstruct [:company_id, :name, :champion_id, :creator_id, :creator_role, :visibility]
+  defstruct [:company_id, :name, :champion_id, :creator_id, :creator_role, :visibility, :group_id]
 
   def run(%__MODULE__{} = params) do
     Multi.new()
     |> Multi.insert(:project, fn _changes ->
       Project.changeset(%{
         :company_id => params.company_id,
+        :group_id => params.group_id,
         :name => params.name,
         :private => is_private(params.visibility),
         :creator_id => params.creator_id,
