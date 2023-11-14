@@ -64,6 +64,7 @@ defmodule Operately.Projects.Project do
     |> validate_required([
       :name,
       :company_id,
+      :group_id,
       :creator_id,
     ])
   end
