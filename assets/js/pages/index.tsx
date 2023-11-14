@@ -26,6 +26,7 @@ import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
 import * as ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import * as ProjectDiscussionPage from "./ProjectDiscussionPage";
+import * as ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
 import * as ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
 import * as ProjectEditTimelinePage from "./ProjectEditTimelinePage";
 import * as ProjectMilestonePage from "./ProjectMilestonePage";
@@ -66,6 +67,7 @@ export default {
   ProjectContributorsPage,
   ProjectDiscussionNewPage,
   ProjectDiscussionPage,
+  ProjectEditDescriptionPage,
   ProjectEditProjectNamePage,
   ProjectEditTimelinePage,
   ProjectMilestonePage,
