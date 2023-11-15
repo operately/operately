@@ -53,13 +53,7 @@ export function Page() {
                 </div>
 
                 <div className="w-4/5">
-                  {project.description ? (
-                    <RichContent jsonContent={project.description} />
-                  ) : (
-                    <>
-                      <DescriptionZeroState project={project} />
-                    </>
-                  )}
+                  <Description project={project} />
                 </div>
               </div>
             </div>
@@ -242,7 +236,7 @@ function Resources({ project }) {
 
 function ResourcesZeroState({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/description`} testId="write-project-description-link">
+    <Link to={`/projects/${project.id}/edit/description`} testId="add-resources-link">
       Add links to resources
     </Link>
   );
@@ -340,6 +334,14 @@ function Documentation({ project }) {
       </div>
     </div>
   );
+}
+
+function Description({ project }) {
+  if (project.description) {
+    return <RichContent jsonContent={project.description} />;
+  } else {
+    return <DescriptionZeroState project={project} />;
+  }
 }
 
 function DescriptionZeroState({ project }) {
