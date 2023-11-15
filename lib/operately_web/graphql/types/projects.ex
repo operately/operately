@@ -74,6 +74,12 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
       end
     end
 
+    field :space, non_null(:group) do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Groups.get_group!(project.group_id)}
+      end
+    end
+
     field :my_role, :string do
       resolve fn project, _, %{context: context} ->
         person = context.current_account.person

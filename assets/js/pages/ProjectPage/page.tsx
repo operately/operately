@@ -5,6 +5,7 @@ import * as Pages from "@/components/Pages";
 
 import Header from "./Header";
 import Timeline from "./Timeline";
+import Navigation from "./Navigation";
 import ArchivedBanner from "./ArchivedBanner";
 
 import { Feed } from "@/components/Feed";
@@ -26,6 +27,8 @@ export function Page() {
   return (
     <Pages.Page title={project.name}>
       <Paper.Root size="large">
+        <Navigation space={project.space} />
+
         <div className="p-12 border border-surface-outline bg-surface rounded shadow-xl">
           <ArchivedBanner project={project} />
           <div className="mb-8">
@@ -49,9 +52,7 @@ export function Page() {
                   </div>
                 </div>
 
-                <div className="w-4/5">
-                  <RichContent jsonContent={project.description} />
-                </div>
+                <div className="w-4/5">{project.description && <RichContent jsonContent={project.description} />}</div>
               </div>
             </div>
 

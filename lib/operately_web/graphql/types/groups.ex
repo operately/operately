@@ -6,6 +6,12 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
     field :name, non_null(:string)
     field :mission, :string
 
+    field :private_space, non_null(:string) do
+      resolve fn group, _, _ ->
+        {:ok, false}
+      end
+    end
+
     field :icon, non_null(:string) do
       resolve fn group, _, _ ->
         {:ok, group.icon || "IconPlanet"}
