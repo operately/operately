@@ -1,4 +1,4 @@
-defmodule Operately.Features.ProjectsTest do
+defmodule Operately.Features.ProjectsDescriptionTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
