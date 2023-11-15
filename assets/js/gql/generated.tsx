@@ -91,7 +91,9 @@ export type ActivityContentProjectMilestoneCommented = {
 
 export type ActivityContentProjectMoved = {
   __typename?: 'ActivityContentProjectMoved';
-  exampleField: Scalars['String']['output'];
+  newSpace: Group;
+  oldSpace: Group;
+  project: Project;
 };
 
 export type ActivityContentProjectRenamed = {
@@ -526,6 +528,11 @@ export type ProjectListFilters = {
   objectiveId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+export type ProjectMoveInput = {
+  projectId: Scalars['ID']['input'];
+  spaceId: Scalars['ID']['input'];
+};
+
 export type ProjectParent = {
   __typename?: 'ProjectParent';
   id?: Maybe<Scalars['String']['output']>;
@@ -754,8 +761,7 @@ export type RootMutationTypeMarkNotificationAsReadArgs = {
 
 
 export type RootMutationTypeMoveProjectToSpaceArgs = {
-  projectId: Scalars['ID']['input'];
-  spaceId: Scalars['ID']['input'];
+  input: ProjectMoveInput;
 };
 
 

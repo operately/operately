@@ -48,16 +48,21 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :name, non_null(:string)
   end
 
+  input_object :project_move_input do
+    field :project_id, non_null(:id)
+    field :space_id, non_null(:id)
+  end
+
   object :project_mutations do
     field :move_project_to_space, non_null(:project) do
-      arg :project_id, non_null(:id)
-      arg :space_id, non_null(:id)
+      arg :input, non_null(:project_move_input)
 
       resolve fn args, %{context: context} ->
         author = context.current_account.person
         project = Operately.Projects.get_project!(args.input.project_id)
+        space_id = args.input.space_id
 
-        Operately.Projects.move_project_to_space(author, args.project, args.space_id)
+        Operately.Projects.move_project_to_space(author, project, space_id)
       end
     end
 

@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectMoved do
       end
     end
 
-    field :old_space, non_null(:space) do
+    field :old_space, non_null(:group) do
       resolve fn activity, _, _ ->
         old_space_id = activity.content["old_space_id"]
         space = Operately.Groups.get_group!(old_space_id)
@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectMoved do
       end
     end
 
-    field :new_space, non_null(:string) do
+    field :new_space, non_null(:group) do
       resolve fn activity, _, _ ->
         new_space_id = activity.content["new_space_id"]
         space = Operately.Groups.get_group!(new_space_id)

@@ -17,6 +17,7 @@ export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
 export { EDIT_PROJECT_NAME, useEditProjectName } from "./mutations/edit_name";
 export { ARCHIVE_PROJECT, useArchiveProject, useArchiveForm } from "./mutations/archive";
+export { MOVE_PROJECT_TO_SPACE, useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -415,17 +416,4 @@ export function getReviewRequest(project: Project): ReviewRequests.ReviewRequest
   } else {
     return null;
   }
-}
-
-export function useMoveProjectToSpaceMutation(options = {}) {
-  return useMutation(
-    gql`
-      mutation MoveProjectToSpace($projectId: ID!, $spaceId: ID!) {
-        moveProjectToSpace(projectId: $projectId, spaceId: $spaceId) {
-          id
-        }
-      }
-    `,
-    options,
-  );
 }

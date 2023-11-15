@@ -8,10 +8,10 @@ interface CardProps extends React.ComponentPropsWithoutRef<"div"> {
   testId?: string;
 }
 
-export function Card({ children, linkTo, ...props }: CardProps) {
+export function Card({ children, linkTo, testId, ...props }: CardProps) {
   const cardProps = {
     ...props,
-    "data-test-id": props.testId,
+    "data-test-id": testId,
   };
 
   if (linkTo) {
