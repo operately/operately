@@ -64,6 +64,11 @@ export function Page() {
             <IconOption setIcon={setIcon} color={color} icon="IconBox" current={icon} />
             <IconOption setIcon={setIcon} color={color} icon="IconReportMoney" current={icon} />
             <IconOption setIcon={setIcon} color={color} icon="IconPlanet" current={icon} />
+            <IconOption setIcon={setIcon} color={color} icon="IconTrash" current={icon} />
+            <IconOption setIcon={setIcon} color={color} icon="IconFlower" current={icon} />
+            <IconOption setIcon={setIcon} color={color} icon="IconServerBolt" current={icon} />
+            <IconOption setIcon={setIcon} color={color} icon="IconHeartHandshake" current={icon} />
+            <IconOption setIcon={setIcon} color={color} icon="IconLifebuoy" current={icon} />
           </div>
 
           <div className="h-px bg-stroke-base my-8"></div>
