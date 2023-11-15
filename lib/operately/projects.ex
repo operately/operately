@@ -42,6 +42,14 @@ defmodule Operately.Projects do
     Operately.Projects.EditTimelineOperation.run(author, project, attrs)
   end
 
+  def move_project_to_space(author, project, space_id) do
+    Multi.new()
+    |> Multi.update(:project, change_project(project, %{group_id: space_id}))
+    |> Activities.insert(author.id, :project_moved, fn _ -> %{project_id: project.id, old_space_id: project.space_id, new_space_id: space_id} end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
+  end
+
   def rename_project(author, project, new_name) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{name: new_name}))

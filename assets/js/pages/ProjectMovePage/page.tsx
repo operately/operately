@@ -3,13 +3,17 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 
+import * as Projects from "@/graphql/Projects";
+import * as Groups from "@/graphql/Groups";
+
+import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
-import { SpaceCardGrid, SpaceCardOption } from "@/components/SpaceCards";
+import { SpaceCardGrid, SpaceCard } from "@/components/SpaceCards";
 
 export function Page() {
   const { project, groups } = useLoadedData();
 
-  const candidateSpaces = groups.filter((group) => group.id !== project.group_id);
+  const candidateSpaces = groups.filter((group) => group.id !== project.spaceId);
 
   return (
     <Pages.Page title={["Move to another space", project.name]}>
@@ -43,16 +47,33 @@ function NoOtherSpaces() {
   );
 }
 
-function MoveToSpace({ project, candidateSpaces }) {
+function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; candidateSpaces: Groups.Group[] }) {
+  const gotoProject = useNavigateTo(`/projects/${project.id}`);
+
+  const [move] = Projects.useMoveProjectToSpaceMutation({
+    onCompleted: gotoProject,
+  });
+
+  const moveProjectToSpace = async (project: Projects.Project, group: Groups.Group) => {
+    await move({
+      variables: {
+        input: {
+          projectId: project.id,
+          spaceId: group.id,
+        },
+      },
+    });
+  };
+
   return (
     <>
       <div className="uppercase text-content-dimmed text-sm font-medium mt-8 mb-4 tracking-wide text-center">
-        Select a space
+        Select a destination space
       </div>
 
       <SpaceCardGrid>
         {candidateSpaces.map((group) => (
-          <SpaceCardOption key={group.id} group={group} />
+          <SpaceCard key={group.id} group={group} onClick={() => moveProjectToSpace(project, group)} />
         ))}
       </SpaceCardGrid>
     </>
