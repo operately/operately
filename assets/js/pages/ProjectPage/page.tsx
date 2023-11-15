@@ -16,13 +16,10 @@ import { Indicator } from "@/components/ProjectHealthIndicators";
 import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { project, me } = useLoadedData();
-  const refetch = useRefresh();
-
-  const championOfProject = project.champion?.id === me.id;
+  const { project } = useLoadedData();
 
   return (
     <Pages.Page title={project.name}>
@@ -36,7 +33,7 @@ export function Page() {
           </div>
 
           <div className="">
-            <Timeline project={project} refetch={refetch} editable={championOfProject} />
+            <Timeline project={project} />
 
             <div className="mt-4" />
 
