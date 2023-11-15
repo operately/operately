@@ -46,13 +46,23 @@ export function Page() {
                   <div className="font-bold text-sm">Overview</div>
 
                   <div className="text-sm">
-                    <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description">
-                      Edit
-                    </Link>
+                    {project.description && (
+                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
+                        Edit
+                      </Link>
+                    )}
                   </div>
                 </div>
 
-                <div className="w-4/5">{project.description && <RichContent jsonContent={project.description} />}</div>
+                <div className="w-4/5">
+                  {project.description ? (
+                    <RichContent jsonContent={project.description} />
+                  ) : (
+                    <>
+                      <DescriptionZeroState project={project} />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -315,6 +325,21 @@ function Documentation({ project }) {
           <Link to={`/projects/${project.id}/milestones`}>Restrospective</Link>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DescriptionZeroState({ project }) {
+  const editLink = (
+    <Link to={`/projects/${project.id}/edit/description`} testId="write-project-description-link">
+      Write project description
+    </Link>
+  );
+
+  return (
+    <div className="text-sm">
+      Project description is not yet set.
+      {project.permissions.canEditDescription && <div className="mt-2 font-bold">{editLink}</div>}
     </div>
   );
 }
