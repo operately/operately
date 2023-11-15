@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Time from "@/utils/time";
 
-export default function Duration({ start, end }) {
+export default function Duration({ start, end }: { start: Date; end: Date }) {
   const days = Time.daysBetween(start, end);
 
   if (days === 1) {

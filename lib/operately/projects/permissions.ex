@@ -11,6 +11,7 @@ defmodule Operately.Projects.Permissions do
       can_delete_milestone: is_contributor?(project, user),
       can_edit_milestone: is_contributor?(project, user),
       can_edit_description: is_champion?(project, user),
+      can_edit_timeline: is_champion?(project, user),
 
       can_check_in: is_champion?(project, user),
       can_acknowledge_check_in: is_reviewer?(project, user)
