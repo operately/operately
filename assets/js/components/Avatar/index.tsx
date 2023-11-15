@@ -1,5 +1,6 @@
 import React from "react";
 import * as Icons from "@tabler/icons-react";
+import { Person } from "@/gql";
 
 export enum AvatarSize {
   Tiny = "tiny",
@@ -11,13 +12,6 @@ export enum AvatarSize {
 }
 
 type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
-
-interface Person {
-  avatarUrl?: string;
-  fullName: string;
-  title?: string;
-  id: string;
-}
 
 interface AvatarProps {
   person: Person | null;

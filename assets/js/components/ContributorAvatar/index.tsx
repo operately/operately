@@ -3,10 +3,10 @@ import React from "react";
 import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
 
-import { Contributor } from "@/graphql/Projects/contributors";
+import { ProjectContributor } from "@/gql/generated";
 
 interface ContributorAvatarProps {
-  contributor: Contributor;
+  contributor: ProjectContributor;
 }
 
 export default function ContributorAvatar(props: ContributorAvatarProps) {

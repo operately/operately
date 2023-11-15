@@ -1,12 +1,12 @@
 import React from "react";
 
 import classnames from "classnames";
-import ContributorAvatar, { ChampionPlaceholder, ReviewerPlaceholder } from "@/components/ContributorAvatar";
+import ContributorAvatar from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
-import * as Contributors from "@/graphql/Projects/contributors";
 import * as Icons from "@tabler/icons-react";
+import * as Projects from "@/graphql/Projects";
 
 import { TextTooltip } from "@/components/Tooltip";
 import Options from "./Options";
@@ -56,21 +56,15 @@ function PrivateIndicator({ project }) {
   );
 }
 
-export function ContributorList({ project }) {
+export function ContributorList({ project }: { project: Projects.Project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
-
-  const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
+  const contributors = (project.contributors || []).filter((c) => c !== null);
 
   return (
     <div className="flex items-center">
       <Link to={contributorsPath} data-test-id="project-contributors">
         <div className="flex items-center justify-center gap-1 cursor-pointer">
-          <Champion champion={champion} />
-          <Reviewer reviewer={reviewer} />
-
-          {contributors.map((c) => (
-            <ContributorAvatar key={c.id} contributor={c} />
-          ))}
+          {contributors.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
 
           {project.permissions.canEditContributors && (
             <div className="ml-2">
@@ -83,16 +77,4 @@ export function ContributorList({ project }) {
       </Link>
     </div>
   );
-}
-
-function Champion({ champion }) {
-  if (!champion) return <ChampionPlaceholder />;
-
-  return <ContributorAvatar contributor={champion} />;
-}
-
-function Reviewer({ reviewer }) {
-  if (!reviewer) return <ReviewerPlaceholder />;
-
-  return <ContributorAvatar contributor={reviewer} />;
 }

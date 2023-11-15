@@ -3,7 +3,6 @@ import * as Pages from "@/components/Pages";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
-import * as Me from "@/graphql/Me";
 
 import * as fragments from "@/graphql/Fragments";
 import * as KeyResources from "@/graphql/Projects/key_resources";
@@ -14,7 +13,6 @@ import * as People from "@/graphql/People";
 
 interface LoaderResult {
   project: Projects.Project;
-  me: any;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -24,14 +22,8 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectData.data.project,
-    me: meData.data.me,
   };
 }
 
