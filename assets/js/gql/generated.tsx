@@ -325,6 +325,7 @@ export type Group = {
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   pointsOfContact?: Maybe<Array<GroupContact>>;
+  privateSpace: Scalars['String']['output'];
 };
 
 export type GroupContact = {
@@ -548,7 +549,10 @@ export type ProjectPermissions = {
   canCreateMilestone: Scalars['Boolean']['output'];
   canDeleteMilestone: Scalars['Boolean']['output'];
   canEditContributors: Scalars['Boolean']['output'];
+  canEditDescription: Scalars['Boolean']['output'];
   canEditMilestone: Scalars['Boolean']['output'];
+  canEditResources: Scalars['Boolean']['output'];
+  canEditTimeline: Scalars['Boolean']['output'];
   canView: Scalars['Boolean']['output'];
 };
 
