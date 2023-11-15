@@ -7,6 +7,7 @@ export interface Permissions {
   canCreateMilestone: boolean;
   canDeleteMilestone: boolean;
   canEditMilestone: boolean;
+  canEditDescription: boolean;
 
   canCheckIn: boolean;
   canAcknowledgeCheckIn: boolean;
@@ -20,6 +21,7 @@ export const FRAGMENT = gql`
     canCreateMilestone
     canDeleteMilestone
     canEditMilestone
+    canEditDescription
 
     canCheckIn
     canAcknowledgeCheckIn

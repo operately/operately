@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Graphql.Types.ProjectPermissions do
     field :can_create_milestone, non_null(:boolean)
     field :can_edit_milestone, non_null(:boolean)
     field :can_delete_milestone, non_null(:boolean)
+    field :can_edit_description, non_null(:boolean)
 
     field :can_check_in, non_null(:boolean)
     field :can_acknowledge_check_in, non_null(:boolean)

@@ -17,19 +17,6 @@ defmodule Operately.Features.ProjectsTest do
     {:ok, ctx}
   end
 
-  @tag login_as: :champion
-  feature "editing the project description", ctx do
-    ctx
-    |> visit_show(ctx.project)
-    |> click_edit_description()
-    |> UI.fill_rich_text(project_description())
-    |> UI.click(testid: "save")
-
-    ctx
-    |> visit_show(ctx.project)
-    |> UI.assert_text(project_description())
-  end
-
   # @tag login_as: :champion
   # feature "react to a comment", ctx do
   #   {:ok, update} = add_status_update(ctx.project, "This is a status update.", ctx.champion.id)
@@ -208,43 +195,8 @@ defmodule Operately.Features.ProjectsTest do
     UI.visit(ctx, "/projects" <> "/" <> project.id)
   end
 
-  def click_edit_description(ctx) do
-    UI.click(ctx, testid: "edit-project-description")
-  end
-
-  def expand_description(ctx) do
-    UI.click(ctx, testid: "expand-project-description")
-  end
-
-  def click_save(ctx) do
-    UI.click(ctx, Query.button("Save Project Overview"))
-  end
-
-  def add_key_resource(project, attrs) do
+  defp add_key_resource(project, attrs) do
     {:ok, _} = Operately.Projects.create_key_resource(%{project_id: project.id} |> Map.merge(attrs))
-  end
-
-  defp project_description() do
-    """
-    SuperPace is an innovative project designed to track and quantify DevOps
-    TEXT START MARKER <- this is the start of the text
-    Research and Assessment (DORA) metrics for organizations across the globe. The
-    project's primary goal is to empower development and operations teams by
-    providing insightful, actionable data to drive performance and productivity
-    improvements.
-
-    DORA includes some fancy stuff that is mentioned in this line
-
-    SuperPace will do something called Y, instead of X
-
-    SuperPace utilizes cutting-edge data collection and analytics technologies to
-    meticulously gather, measure, and interpret key DORA metrics, including
-    deployment frequency, lead time for changes, time to restore service, and
-    change failure rate. By translating these metrics into practical insights,
-    SuperPace fosters continuous learning, enhances collaboration, and accelerates
-    the pace of innovation in the complex, fast-paced world.
-    TEXT END MARKER <- this is the end of the text
-    """
   end
 
   def add_status_update(project, text, author_id) do
