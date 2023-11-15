@@ -50,7 +50,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
@@ -87,6 +87,13 @@ export type ActivityContentProjectMilestoneCommented = {
   milestone: Milestone;
   project: Project;
   projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectMoved = {
+  __typename?: 'ActivityContentProjectMoved';
+  newSpace: Group;
+  oldSpace: Group;
+  project: Project;
 };
 
 export type ActivityContentProjectRenamed = {
@@ -471,6 +478,7 @@ export type Project = {
   retrospective?: Maybe<ProjectDocument>;
   reviewRequests?: Maybe<Array<Maybe<ProjectReviewRequest>>>;
   reviewer?: Maybe<Person>;
+  spaceId: Scalars['ID']['output'];
   startedAt?: Maybe<Scalars['Date']['output']>;
   updatedAt: Scalars['Date']['output'];
   updates?: Maybe<Array<Maybe<Update>>>;
@@ -518,6 +526,11 @@ export type ProjectListFilters = {
   groupId?: InputMaybe<Scalars['ID']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   objectiveId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type ProjectMoveInput = {
+  projectId: Scalars['ID']['input'];
+  spaceId: Scalars['ID']['input'];
 };
 
 export type ProjectParent = {
@@ -590,6 +603,7 @@ export type RootMutationType = {
   editProjectName: Project;
   editProjectTimeline: Project;
   markNotificationAsRead: Notification;
+  moveProjectToSpace: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
@@ -743,6 +757,11 @@ export type RootMutationTypeEditProjectTimelineArgs = {
 
 export type RootMutationTypeMarkNotificationAsReadArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeMoveProjectToSpaceArgs = {
+  input: ProjectMoveInput;
 };
 
 

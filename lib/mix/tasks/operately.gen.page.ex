@@ -24,7 +24,7 @@ defmodule Mix.Tasks.Operately.Gen.Page do
   def generate_loader(page_name) do
     generate_file("assets/js/pages/#{page_name}/loader.tsx", fn _path ->
       """
-      import * as Paper from "@/components/PaperContainer";
+      import * as Pages from "@/components/Pages";
 
       export interface LoaderResult {
       }
@@ -36,9 +36,11 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       }
 
       export function useLoadedData() : LoaderResult {
-        const [data, _] = Paper.useLoadedData() as [LoaderResult, () => void];
+        return Pages.useLoadedData() as LoaderResult;
+      }
 
-        return data;
+      export function useRefresh() {
+        return Pages.useRefresh();
       }
       """
     end)
@@ -49,21 +51,21 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       """
       import * as React from "react";
       import * as Paper from "@/components/PaperContainer";
+      import * as Pages from "@/components/Pages";
 
       import { useLoadedData } from "./loader";
-      import { useDocumentTitle } from "@/layouts/header";
       
       export function Page() {
         const data = useLoadedData();
 
-        useDocumentTitle("#{page_name}");
-      
         return (
-          <Paper.Root>
-            <Paper.Body>
-              <div className="text-white-1 text-3xl font-extrabold">#{page_name}</div>
-            </Paper.Body>
-          </Paper.Root>
+          <Pages.Page title={"#{page_name}"}>
+            <Paper.Root>
+              <Paper.Body>
+                <div className="text-white-1 text-3xl font-extrabold">#{page_name}</div>
+              </Paper.Body>
+            </Paper.Root>
+          </Pages.Page>
         );
       }
       """

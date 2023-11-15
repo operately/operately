@@ -2,9 +2,11 @@ defmodule Operately.Features.ProjectsTest do
   use Operately.FeatureCase
 
   import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.UpdatesFixtures
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.ProjectFeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -121,6 +123,25 @@ defmodule Operately.Features.ProjectsTest do
     ctx
     |> visit_show(ctx.project)
     |> UI.assert_text("New Name")
+  end
+
+  @tag login_as: :champion
+  feature "move project to a different space", ctx do
+    new_space = group_fixture(ctx.champion, %{name: "New Space", company_id: ctx.company.id})
+
+    ctx
+    |> visit_show(ctx.project)
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "move-project-link")
+    |> UI.click(testid: "space-#{new_space.id}")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_project_moved_sent(author: ctx.champion, old_space: ctx.group, new_space: new_space)
+    
+    ctx
+    |> visit_show(ctx.project)
+    |> ProjectFeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: new_space)
   end
 
   @tag login_as: :champion

@@ -14,6 +14,7 @@ export interface Group {
   members: Person[];
   pointsOfContact: PointOfContact[];
 
+  privateSpace: boolean;
   icon: string;
   color: string;
 }

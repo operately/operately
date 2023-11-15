@@ -112,6 +112,11 @@ gen.migration:
 
 gen.page:
 	$(DEV_CONTAINER) mix operately.gen.page $(NAME)
+	$(MAKE) gen
+
+gen.activity:
+	$(DEV_CONTAINER) mix operately.gen.activity.type $(NAME)
+	$(MAKE) gen
 
 #
 # Development tasks

@@ -31,6 +31,7 @@ import * as ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
 import * as ProjectEditTimelinePage from "./ProjectEditTimelinePage";
 import * as ProjectMilestonePage from "./ProjectMilestonePage";
 import * as ProjectMilestonesPage from "./ProjectMilestonesPage";
+import * as ProjectMovePage from "./ProjectMovePage";
 import * as ProjectPage from "./ProjectPage";
 import * as ProjectPhaseChangeSurveyPage from "./ProjectPhaseChangeSurveyPage";
 import * as ProjectReviewPage from "./ProjectReviewPage";
@@ -72,6 +73,7 @@ export default {
   ProjectEditTimelinePage,
   ProjectMilestonePage,
   ProjectMilestonesPage,
+  ProjectMovePage,
   ProjectPage,
   ProjectPhaseChangeSurveyPage,
   ProjectReviewPage,

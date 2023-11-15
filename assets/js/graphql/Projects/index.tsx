@@ -10,10 +10,14 @@ import * as Updates from "./updates";
 import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 
+export * from "./Project";
+import { Project } from "./Project";
+
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
 export { EDIT_PROJECT_NAME, useEditProjectName } from "./mutations/edit_name";
 export { ARCHIVE_PROJECT, useArchiveProject, useArchiveForm } from "./mutations/archive";
+export { MOVE_PROJECT_TO_SPACE, useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -80,60 +84,6 @@ export function listProjects(client: ApolloClient<object>, variables: ListProjec
     variables,
     fetchPolicy: "network-only",
   });
-}
-
-export interface Person {
-  id: string;
-  fullName: string;
-  title: string;
-  avatarUrl: string;
-}
-
-interface Parent {
-  id: string;
-  title: string;
-  type: "objective" | "project" | "tenet" | "company";
-}
-
-interface Contributor {
-  id: string;
-  person: Person;
-  role: "champion" | "reviewer" | "contributor";
-  responsibility: string;
-}
-
-export type ProjectPhase = "planning" | "execution" | "control" | "completed" | "canceled" | "paused";
-export type ProjectHealth = "unknown" | "on_track" | "at_risk" | "off_track";
-
-export interface Project {
-  id: string;
-  name: string;
-  description: string;
-  startedAt: Date;
-  deadline: Date;
-  phase: ProjectPhase;
-  health: ProjectHealth;
-  private: boolean;
-
-  permissions: Permissions.Permissions;
-  phaseHistory: PhaseHistory.PhaseHistory[];
-  milestones: Milestones.Milestone[];
-  keyResources: KeyResources.KeyResource[];
-
-  spaceId: string;
-
-  parents: Parent[];
-  contributors: Contributor[];
-  champion?: Person;
-  reviewer?: Person;
-
-  isPinned: boolean;
-  isArchived: boolean;
-
-  archivedAt: Date;
-
-  reviewRequests: ReviewRequests.ReviewRequest[];
-  lastCheckIn?: Updates.Update;
 }
 
 export const GET_PROJECT = gql`
