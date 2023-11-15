@@ -73,7 +73,12 @@ function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; 
 
       <SpaceCardGrid>
         {candidateSpaces.map((group) => (
-          <SpaceCard key={group.id} group={group} onClick={() => moveProjectToSpace(project, group)} />
+          <SpaceCard
+            key={group.id}
+            group={group}
+            testId={`space-${group.id}`}
+            onClick={() => moveProjectToSpace(project, group)}
+          />
         ))}
       </SpaceCardGrid>
     </>
