@@ -1,0 +1,1 @@
+<%= raise "HTML Email for ProjectMoved not implemented" %>

@@ -14,6 +14,23 @@ export function useFeed(projectId: string) {
         content {
           __typename
 
+          ... on ActivityContentProjectMoved {
+            project {
+              id
+              name
+            }
+
+            oldSpace {
+              id
+              name
+            }
+
+            newSpace {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectRenamed {
             project {
               id

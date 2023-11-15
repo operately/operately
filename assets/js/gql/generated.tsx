@@ -50,7 +50,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
@@ -87,6 +87,11 @@ export type ActivityContentProjectMilestoneCommented = {
   milestone: Milestone;
   project: Project;
   projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectMoved = {
+  __typename?: 'ActivityContentProjectMoved';
+  exampleField: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectRenamed = {
@@ -591,6 +596,7 @@ export type RootMutationType = {
   editProjectName: Project;
   editProjectTimeline: Project;
   markNotificationAsRead: Notification;
+  moveProjectToSpace: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
@@ -744,6 +750,12 @@ export type RootMutationTypeEditProjectTimelineArgs = {
 
 export type RootMutationTypeMarkNotificationAsReadArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeMoveProjectToSpaceArgs = {
+  projectId: Scalars['ID']['input'];
+  spaceId: Scalars['ID']['input'];
 };
 
 

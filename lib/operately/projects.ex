@@ -45,7 +45,7 @@ defmodule Operately.Projects do
   def move_project_to_space(author, project, space_id) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{group_id: space_id}))
-    |> Activities.insert(author.id, :project_moved, fn _ -> %{project_id: project.id, old_space_id: project.space_id, new_space_id: space_id} end)
+    |> Activities.insert(author.id, :project_moved, fn _ -> %{company_id: project.company_id, project_id: project.id, old_space_id: project.space_id, new_space_id: space_id} end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

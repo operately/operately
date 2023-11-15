@@ -6,6 +6,8 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
   # mix operately.gen.activity.type ProjectDiscussionSubmitted
   #
   def run([name]) do
+    check_name(name)
+
     gen_graphql_type(name)
     gen_activity_content_schema(name)
     gen_notificaiton_dispatcher(name)
@@ -129,6 +131,20 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
       <%= raise "Text Email for #{name} not implemented" %>
       """
     end)
+  end
+
+  defp check_name(name) do
+    if String.contains?(name, "-") do
+      raise """
+      Activity name should be camel case. Example: ProjectDiscussionSubmitted
+      """
+    end
+
+    if String.contains?(name, "_") do
+      raise """
+      Activity name should be camel case. Example: ProjectDiscussionSubmitted
+      """
+    end
   end
 
 end

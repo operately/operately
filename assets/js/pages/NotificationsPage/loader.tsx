@@ -20,6 +20,23 @@ const query = gql`
         content {
           __typename
 
+          ... on ActivityContentProjectMoved {
+            project {
+              id
+              name
+            }
+
+            oldSpace {
+              id
+              name
+            }
+
+            newSpace {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectTimelineEdited {
             project {
               id
