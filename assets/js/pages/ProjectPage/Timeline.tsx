@@ -1,113 +1,114 @@
 import React from "react";
 
 import * as Time from "@/utils/time";
-import * as Icons from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
-import { Label, DimmedLabel } from "./Label";
+import { DimmedLabel } from "./Label";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import { GhostButton } from "@/components/Button";
+import * as Projects from "@/graphql/Projects";
 
-export default function Timeline({ project, refetch, editable }) {
-  return <TimelineGraph project={project} />;
-}
-
-const Divider = () => <div className="w-px h-10 bg-shade-2 mx-6" />;
-function TimelineGraph({ project }) {
-  const start = Time.parse(project.startedAt);
-  const end = Time.parse(project.deadline);
-
+export default function Timeline({ project }) {
   return (
     <div>
-      <div className="flex items-start">
-        <div>
-          <DimmedLabel>Status</DimmedLabel>
-          <Indicator value={project.health} type="status" />
-        </div>
-
-        <Divider />
-
-        <div>
-          <DimmedLabel>Start Date</DimmedLabel>
-          <div className="font-semibold">
-            <FormattedTime time={start} format="short-date" />
-          </div>
-        </div>
-
-        <Divider />
-
-        <div>
-          <DimmedLabel>Due Date</DimmedLabel>
-          <div className="font-semibold">
-            <FormattedTime time={end} format="short-date" />
-          </div>
-        </div>
-
-        <Divider />
-
-        <div>
-          <DimmedLabel>Duration</DimmedLabel>
-          <div className="font-semibold">
-            <Duration start={start} end={end} />
-          </div>
-        </div>
-
-        <Divider />
-
-        <div>
-          <DimmedLabel>Progress</DimmedLabel>
-          <div className="flex items-center gap-2 font-semibold">
-            {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
-          </div>
-        </div>
-
-        <Divider />
-
-        <div className="mt-2">
-          <GhostButton
-            size="xs"
-            type="secondary"
-            linkTo={`/projects/${project.id}/edit/timeline`}
-            testId="edit-project-timeline"
-          >
-            Edit Timeline
-          </GhostButton>
-        </div>
+      <div className="flex items-start gap-12">
+        <Status project={project} />
+        <StartDate project={project} />
+        <EndDate project={project} />
+        <DurationField project={project} />
+        <Progress project={project} />
+        <EditTimelineButton project={project} />
       </div>
     </div>
   );
 }
 
-function ProgressGraph({ start, end }) {
-  const now = new Date();
-
-  const totalDays = Time.daysBetween(start, end);
-  const usedDays = Time.daysBetween(start, now);
-  const width = (usedDays / totalDays) * 100;
-
+function Status({ project }: { project: Projects.Project }) {
   return (
-    <div className="flex-1 h-4 bg-shade-2 rounded relative">
-      <div className="absolute top-0 bottom-0 left-0 bg-green-400" style={{ width: `${width}%` }} />
+    <div>
+      <DimmedLabel>Status</DimmedLabel>
+      <Indicator value={project.health} type="status" />
     </div>
   );
 }
 
-function HealthIndicator({ health }) {
-  const colors = {
-    on_track: "text-green-400",
-    at_risk: "text-yellow-400",
-    off_track: "text-red-400",
-  };
+function StartDate({ project }: { project: Projects.Project }) {
+  return (
+    <div>
+      <DimmedLabel>Start Date</DimmedLabel>
+      <div className="font-semibold">
+        <FormattedTime time={project.startedAt} format="short-date" />
+      </div>
+    </div>
+  );
+}
 
-  const color = colors[health];
-  const title = health.replace("_", " ");
+function EndDate({ project }: { project: Projects.Project }) {
+  return (
+    <div>
+      <DimmedLabel>Due Date</DimmedLabel>
+      {project.deadline ? (
+        <div className="font-semibold">
+          <FormattedTime time={project.deadline} format="short-date" />
+        </div>
+      ) : (
+        <div>
+          <span className="text-content-dimmed">No due date</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DurationField({ project }: { project: Projects.Project }) {
+  const start = Time.parse(project.startedAt);
+  const end = Time.parse(project.deadline);
+
+  if (!start) return null;
+  if (!end) return null;
 
   return (
-    <div className="font-medium flex items-center gap-1">
-      <Icons.IconCircleFilled size={12} className={color} />
-      <span className="font-medium capitalize">{title}</span>
+    <div>
+      <DimmedLabel>Duration</DimmedLabel>
+      <div className="font-semibold">
+        <Duration start={start} end={end} />
+      </div>
+    </div>
+  );
+}
+
+function Progress({ project }: { project: Projects.Project }) {
+  const start = Time.parse(project.startedAt);
+  const end = Time.parse(project.deadline);
+
+  if (!start) return null;
+  if (!end) return null;
+
+  return (
+    <div>
+      <DimmedLabel>Progress</DimmedLabel>
+      <div className="flex items-center gap-2 font-semibold">
+        {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
+      </div>
+    </div>
+  );
+}
+
+function EditTimelineButton({ project }) {
+  if (!project.permissions.canEditTimeline) return null;
+
+  return (
+    <div className="mt-2">
+      <GhostButton
+        size="xs"
+        type="secondary"
+        linkTo={`/projects/${project.id}/edit/timeline`}
+        testId="edit-project-timeline"
+      >
+        Edit Timeline
+      </GhostButton>
     </div>
   );
 }
