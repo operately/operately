@@ -1,29 +1,6 @@
 import { gql, useMutation, ApolloClient } from "@apollo/client";
 
-export interface PointOfContact {
-  id: string;
-  name: string;
-  type: string;
-  value: string;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  mission: string;
-  members: Person[];
-  pointsOfContact: PointOfContact[];
-
-  privateSpace: boolean;
-  icon: string;
-  color: string;
-}
-
-interface Person {
-  id: string;
-  fullName: string;
-  avatarUrl?: string;
-}
+export { Group } from "@/gql";
 
 export const GET_GROUP = gql`
   query GetGroup($id: ID!) {

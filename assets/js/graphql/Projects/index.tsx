@@ -10,8 +10,8 @@ import * as Updates from "./updates";
 import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 
-export * from "./Project";
-import { Project } from "./Project";
+import { Project } from "@/gql";
+export { Project } from "@/gql";
 
 export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
 export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
