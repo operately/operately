@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Projects from "@/graphql/Projects";
 
 import Header from "./Header";
 import Timeline from "./Timeline";
@@ -43,7 +44,7 @@ export function Page() {
                   <div className="font-bold text-sm">Overview</div>
 
                   <div className="text-sm">
-                    {project.description && (
+                    {showEditDescription(project) && (
                       <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
                         Edit
                       </Link>
@@ -102,7 +103,7 @@ export function Page() {
                   <div className="font-bold text-sm">Resources</div>
 
                   <div className="text-sm">
-                    <Link to={`/projects/${project.id}/milestones`}>Manage</Link>
+                    {showEditResource(project) && <Link to={`/projects/${project.id}/resources`}>Edit</Link>}
                   </div>
                 </div>
 
@@ -134,7 +135,7 @@ function LastCheckIn({ project }) {
     return (
       <div className="text-sm">
         Asking the champion to check-in every Friday.
-        {project.permissions.canCheckIn && <div className="mt-2 font-bold">{checkInNowLink}</div>}
+        {project.permissions.canCheckIn && <div className="mt-1 font-bold">{checkInNowLink}</div>}
       </div>
     );
   }
@@ -226,20 +227,35 @@ function HealthIssues({ checkIn }) {
   );
 }
 
-// <div className="my-8 flex items-start gap-6">
-//   <StatusUpdates project={project} />
-// </div>
-
-// <NextMilestone project={project} />
-
-// <Resources project={project} />
-
 import * as Brands from "./Brands";
 import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
 import RichContent, { Summary } from "@/components/RichContent";
 
 function Resources({ project }) {
+  if (project.keyResources.length === 0) {
+    return <ResourcesZeroState project={project} />;
+  } else {
+    return <ResourcesList project={project} />;
+  }
+}
+
+function ResourcesZeroState({ project }) {
+  const editLink = (
+    <Link to={`/projects/${project.id}/edit/description`} testId="write-project-description-link">
+      Add links to resources
+    </Link>
+  );
+
+  return (
+    <div className="text-sm">
+      No resources have been added yet.
+      {project.permissions.canEditResources && <div className="mt-1 font-bold">{editLink}</div>}
+    </div>
+  );
+}
+
+function ResourcesList({ project }) {
   return (
     <div className="grid grid-cols-4 gap-4">
       {project.keyResources.map((resource) => (
@@ -336,7 +352,21 @@ function DescriptionZeroState({ project }) {
   return (
     <div className="text-sm">
       Project description is not yet set.
-      {project.permissions.canEditDescription && <div className="mt-2 font-bold">{editLink}</div>}
+      {project.permissions.canEditDescription && <div className="mt-1 font-bold">{editLink}</div>}
     </div>
   );
+}
+
+function showEditResource(project: Projects.Project) {
+  if (!project.permissions.canEditResources) return false;
+
+  const resources = project.keyResources || [];
+
+  return resources.length > 0;
+}
+
+function showEditDescription(project: Projects.Project) {
+  if (!project.permissions.canEditDescription) return false;
+
+  return project.description !== null;
 }

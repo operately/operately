@@ -12,6 +12,7 @@ export const FRAGMENT = gql`
     canEditDescription
     canEditContributors
     canEditTimeline
+    canEditResources
 
     canCheckIn
     canAcknowledgeCheckIn
