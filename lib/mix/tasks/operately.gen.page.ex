@@ -62,7 +62,7 @@ defmodule Mix.Tasks.Operately.Gen.Page do
           <Pages.Page title={"#{page_name}"}>
             <Paper.Root>
               <Paper.Body>
-                <div className="text-white-1 text-3xl font-extrabold">#{page_name}</div>
+                <div className="text-content-accent text-3xl font-extrabold">#{page_name}</div>
               </Paper.Body>
             </Paper.Root>
           </Pages.Page>

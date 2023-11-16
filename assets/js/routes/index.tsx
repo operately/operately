@@ -27,6 +27,7 @@ const routes = createBrowserRouter([
       pageRoute("/spaces/:id/appearance", pages.GroupAppearancePage),
       pageRoute("/spaces/:id/projects/new", pages.ProjectAddPage),
 
+      pageRoute("/projects/:projectID/archive", pages.ProjectArchivationPage),
       pageRoute("/projects/:projectID/move", pages.ProjectMovePage),
       pageRoute("/projects/:projectID/milestones", pages.ProjectMilestonesPage),
       pageRoute("/projects/:projectID/milestones/:id", pages.ProjectMilestonePage),
