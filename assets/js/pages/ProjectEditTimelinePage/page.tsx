@@ -5,85 +5,25 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { useNavigate } from "react-router-dom";
-
-import { ProjectLifecycleGraph } from "@/components/ProjectLifecycleGraph";
-
-import * as Popover from "@radix-ui/react-popover";
-import DatePicker from "react-datepicker";
-import FormattedTime from "@/components/FormattedTime";
 import Button from "@/components/Button";
 import * as Time from "@/utils/time";
 import * as Milestones from "@/graphql/Projects/milestones";
 
+import { DateSelector } from "./DateSelector";
+
 import { useLoadedData } from "./loader";
+import { useForm } from "./useForm";
 
 export function Page() {
-  const navigate = useNavigate();
   const { project } = useLoadedData();
+
+  const form = useForm(project);
 
   const originalDuration = React.useMemo(() => calculateOriginalDuration(project), [project]);
 
-  const [dates, setDates] = React.useState({
-    projectStart: Time.parse(project.startedAt),
-    planningDue: Time.parse(project.phaseHistory.find((p) => p.phase === "planning")?.dueTime || null),
-    executionDue: Time.parse(project.phaseHistory.find((p) => p.phase === "execution")?.dueTime || null),
-    controlDue: Time.parse(project.phaseHistory.find((p) => p.phase === "control")?.dueTime || null),
-  });
-
-  const [milestones, setMilestones] = React.useState(project.milestones.map((m) => ({ ...m, deletable: false })));
-  const pendingMilestones = React.useMemo(() => milestones.filter((m) => m.status === "pending"), [milestones]);
-
-  const [edit, { loading }] = Projects.useEditProjectTimeline({
-    onCompleted: () => {
-      navigate(`/projects/${project.id}`);
-    },
-  });
-
-  const newMilestones = React.useMemo(
-    () =>
-      milestones
-        .filter((m) => !project.milestones.find((pm) => pm.id === m.id))
-        .map((m) => ({
-          title: m.title,
-          dueTime: Time.toDateWithoutTime(Time.parse(m.deadlineAt)!),
-        })),
-    [project.milestones, milestones],
-  );
-
-  const milestoneUpdates = React.useMemo(
-    () =>
-      milestones
-        .filter((m) => project.milestones.find((pm) => pm.id === m.id))
-        .map((m) => ({
-          id: m.id,
-          title: m.title,
-          dueTime: Time.toDateWithoutTime(Time.parse(m.deadlineAt)!),
-        })),
-    [project.milestones, milestones],
-  );
-
-  const save = React.useCallback(async () => {
-    await edit({
-      variables: {
-        input: {
-          projectID: project.id,
-          projectStartTime: dates.projectStart && Time.toDateWithoutTime(dates.projectStart),
-          planningDueTime: dates.planningDue && Time.toDateWithoutTime(dates.planningDue),
-          executionDueTime: dates.executionDue && Time.toDateWithoutTime(dates.executionDue),
-          controlDueTime: dates.controlDue && Time.toDateWithoutTime(dates.controlDue),
-          newMilestones: newMilestones,
-          milestoneUpdates: milestoneUpdates,
-        },
-      },
-    });
-
-    navigate(`/projects/${project.id}`);
-  }, [project.id, dates, pendingMilestones]);
-
   return (
     <Pages.Page title={["Edit Project Timeline", project.name]}>
-      <Paper.Root>
+      <Paper.Root size="medium">
         <Paper.Navigation>
           <Paper.NavItem linkTo={`/projects/${project.id}`}>
             <Icons.IconClipboardList size={16} />
@@ -94,37 +34,22 @@ export function Page() {
         <Paper.Body minHeight="none">
           <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project timeline</h1>
 
-          <div className="bg-surface rounded-lg overflow-hidden">
-            <ProjectLifecycleGraph
-              projectStart={dates.projectStart}
-              projectEnd={dates.controlDue}
-              planningDue={dates.planningDue}
-              executionDue={dates.executionDue}
-              controlDue={dates.controlDue}
-              milestones={milestones}
-            />
+          <div className="flex items-start gap-4">
+            <StartDate form={form} />
+            <DueDate form={form} />
           </div>
-
-          <h1 className="font-extrabold text-content-accent text-xl mt-8 mb-4">Project Phases</h1>
-          <Phases dates={dates} setDates={setDates} />
+          <Duration form={form} />
 
           <h1 className="font-extrabold text-content-accent text-xl mt-8 mb-4">Milestones</h1>
           <MilestoneList
-            milestones={pendingMilestones}
-            setMilestones={setMilestones}
-            projectStart={dates.projectStart}
-            projectEnd={dates.controlDue}
-          />
-
-          <SummaryOfChanges
-            originalDuration={originalDuration}
-            newDuration={Time.daysBetween(dates.projectStart, dates.controlDue)}
-            originalMilestones={project.milestones}
-            newMilestones={milestones}
+            milestones={form.newMilestones}
+            setMilestones={form.addNewMilestone}
+            projectStart={form.startTime}
+            projectEnd={form.dueDate}
           />
 
           <div className="mt-8 flex items-center gap-2">
-            <Button type="submit" variant="success" onClick={save} loading={loading} data-test-id="save">
+            <Button type="submit" variant="success" onClick={form.submit} loading={form.submitting} data-test-id="save">
               Save
             </Button>
             <Button type="button" variant="secondary" linkTo={`/projects/${project.id}`}>
@@ -134,127 +59,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function Phases({ dates, setDates }) {
-  const setDate = React.useCallback(
-    (phase: string) => (date: Date) => {
-      setDates((d: any) => ({ ...d, [phase]: date }));
-    },
-    [],
-  );
-
-  return (
-    <div className="flex flex-col gap-2">
-      <PhaseDatesForm
-        testID="planning"
-        phaseName="Planning Phase"
-        startTime={dates.projectStart}
-        dueDate={dates.planningDue}
-        setStart={setDate("projectStart")}
-        setDue={setDate("planningDue")}
-        minStart={null}
-        maxStart={dates.planningDue}
-        minDue={dates.projectStart}
-        maxDue={dates.executionDue}
-      />
-      <PhaseDatesForm
-        testID="execution"
-        phaseName="Execution Phase"
-        startTime={dates.planningDue}
-        dueDate={dates.executionDue}
-        setStart={setDate("planningDue")}
-        setDue={setDate("executionDue")}
-        minStart={dates.projectStart}
-        maxStart={dates.executionDue}
-        minDue={dates.planningDue}
-        maxDue={dates.controlDue}
-      />
-      <PhaseDatesForm
-        testID="control"
-        phaseName="Control Phase"
-        startTime={dates.executionDue}
-        dueDate={dates.controlDue}
-        setStart={setDate("executionDue")}
-        setDue={setDate("controlDue")}
-        minStart={dates.planningDue}
-        maxStart={dates.controlDue}
-        minDue={dates.executionDue}
-        maxDue={null}
-      />
-    </div>
-  );
-}
-
-function PhaseDatesForm({
-  phaseName,
-  startTime,
-  dueDate,
-  setStart,
-  setDue,
-  minStart,
-  maxStart,
-  minDue,
-  maxDue,
-  testID,
-}) {
-  return (
-    <div className="flex items-center">
-      <div className="w-40">{phaseName}</div>
-
-      <div className="flex items-center gap-2 flex-1">
-        <div className="w-40">
-          <DateSelector
-            date={startTime}
-            onChange={setStart}
-            minDate={minStart}
-            maxDate={maxStart}
-            testID={testID + "-start"}
-          />
-        </div>
-        <Icons.IconArrowRight size={16} className="shrink-0" />
-        <div className="w-40">
-          <DateSelector date={dueDate} onChange={setDue} minDate={minDue} maxDate={maxDue} testID={testID + "-due"} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testID }) {
-  const [open, setOpen] = React.useState(false);
-
-  const onChangeDate = React.useCallback((date: Date) => {
-    setOpen(false);
-    onChange(date);
-  }, []);
-
-  return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <div
-          className="bg-surface-dimmed hover:bg-surface-accent border border-surface-outline rounded px-2 py-1 relative group cursor-pointer w-full outline-none"
-          onClick={() => setOpen(true)}
-          data-test-id={testID}
-        >
-          {date ? <FormattedTime time={date} format="short-date" /> : placeholder}
-        </div>
-      </Popover.Trigger>
-
-      <Popover.Portal>
-        <Popover.Content className="outline-red-400 border border-surface-outline" align="start">
-          <DatePicker
-            inline
-            selected={date}
-            onChange={onChangeDate}
-            minDate={minDate}
-            maxDate={maxDate}
-            className="border-none"
-          ></DatePicker>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
   );
 }
 
@@ -486,4 +290,45 @@ function ProjectDurationChange({ originalDuration, newDuration }) {
       </>
     );
   }
+}
+
+function StartDate({ form }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="uppercase text-xs text-content-accent font-bold">Start Date</div>
+      <div className="w-40">
+        <DateSelector
+          date={form.startTime}
+          onChange={form.setStartTime}
+          minDate={null}
+          maxDate={form.dueDate}
+          testID={"project-start"}
+        />
+      </div>
+    </div>
+  );
+}
+
+function DueDate({ form }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="uppercase text-xs text-content-accent font-bold">Due Date</div>
+      <div className="w-40">
+        <DateSelector
+          date={form.dueDate}
+          onChange={form.setDueDate}
+          minDate={form.startTime}
+          maxDate={null}
+          testID={"project-due"}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Duration({ form }) {
+  if (!form.startTime) return null;
+  if (!form.dueDate) return null;
+
+  return <div className="mt-2">Total duration is aproximately {Time.humanDuration(form.startTime, form.dueDate)}.</div>;
 }
