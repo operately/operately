@@ -3,14 +3,16 @@ import React from "react";
 import pages from "@/pages";
 
 import { createBrowserRouter } from "react-router-dom";
-import { pageRoute } from "./utils";
+import { pageRoute } from "./pageRoute";
 
+import ErrorPage from "./ErrorPage";
 import DefaultLayout from "@/layouts/DefaultLayout";
 
 const routes = createBrowserRouter([
   {
     path: "/",
     element: <DefaultLayout />,
+    errorElement: <ErrorPage />,
     children: [
       pageRoute("/", pages.GroupListPage),
 

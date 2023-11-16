@@ -2,8 +2,8 @@ import { ApolloClient, InMemoryCache, createHttpLink, split, gql, from } from "@
 import { getMainDefinition } from "@apollo/client/utilities";
 import { onError } from "@apollo/client/link/error";
 import { createFragmentRegistry } from "@apollo/client/cache";
-import personFragments from "@/gql/fragments/person";
 
+import personFragments from "@/gql/fragments/person";
 import createGraphQLWsLink from "./wsLink";
 
 const domain = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "");
@@ -34,7 +34,7 @@ const errorLink = onError((params) => {
   let { graphQLErrors, operation } = params;
 
   if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+    Array.from(graphQLErrors).forEach(({ message, locations, path, extensions }) => {
       console.log(
         `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${JSON.stringify(
           path,

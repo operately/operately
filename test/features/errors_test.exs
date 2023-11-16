@@ -22,4 +22,12 @@ defmodule Operately.Features.ErrorsTest do
     |> UI.click(testid: "back-to-lobby")
     |> UI.assert_text("Lobby")
   end
+
+  feature "error page", ctx do
+    ctx
+    |> UI.visit("/spaces/123")
+    |> UI.assert_text("Oops! Something went wrong.")
+    |> UI.click(testid: "back-to-lobby")
+    |> UI.assert_text("Lobby")
+  end
 end
