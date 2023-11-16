@@ -33,8 +33,8 @@ defmodule Operately.Features.GroupsTest do
     |> visit_page()
     |> UI.click(testid: "add-group")
     |> UI.fill_in(Query.text_field("Name"), with: "Marketing")
-    |> UI.fill_in(Query.text_field("Mission"), with: "Let the world know about our products")
-    |> UI.click(Query.button("Create Group"))
+    |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products")
+    |> UI.click(Query.button("Create Space"))
     |> UI.assert_has(Query.text("Marketing"))
     |> UI.assert_has(Query.text("Let the world know about our products"))
 
