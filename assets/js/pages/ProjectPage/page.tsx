@@ -81,7 +81,7 @@ export function Page() {
                   <div className="font-bold text-sm">Milestones</div>
 
                   <div className="text-sm">
-                    <Link to={`/projects/${project.id}/milestones`}>View all</Link>
+                    {showEditMilestones(project) && <Link to={`/projects/${project.id}/milestones`}>View all</Link>}
                   </div>
                 </div>
 
@@ -371,4 +371,12 @@ function showEditDescription(project: Projects.Project) {
   if (!project.permissions.canEditDescription) return false;
 
   return project.description !== null;
+}
+
+function showEditMilestones(project: Projects.Project) {
+  if (!project.permissions.canEditMilestone) return false;
+
+  const milestones = project.milestones || [];
+
+  return milestones.length > 0;
 }
