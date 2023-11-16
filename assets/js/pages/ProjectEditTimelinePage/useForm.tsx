@@ -15,6 +15,8 @@ interface FormState {
   newMilestones: Milestones.Milestone[];
   addNewMilestone: (milestone: Milestones.Milestone) => void;
 
+  existingMilestones: Milestones.Milestone[];
+
   submit: () => void;
   submitting: boolean;
 }
@@ -26,7 +28,8 @@ export function useForm(project: Projects.Project): FormState {
   const [startTime, setStartTime] = React.useState<Date | null>(start);
   const [dueDate, setDueDate] = React.useState<Date | null>(due);
 
-  const [newMilestones, addNewMilestone] = useMilestoneList();
+  const [newMilestones, addNewMilestone] = useMilestoneList([]);
+  const [existingMilestones, _add] = useMilestoneList(getExistingMilestones(project));
 
   const navigate = useNavigate();
 
@@ -56,18 +59,30 @@ export function useForm(project: Projects.Project): FormState {
     setDueDate,
     newMilestones,
     addNewMilestone,
+    existingMilestones,
 
     submit,
     submitting: loading,
   };
 }
 
-function useMilestoneList(): [Milestones.Milestone[], (milestone: Milestones.Milestone) => void] {
-  const [milestones, setMilestones] = React.useState<Milestones.Milestone[]>([]);
+type UseMilestoneListState = [
+  milestones: Milestones.Milestone[],
+  addMilestone: (milestone: Milestones.Milestone) => void,
+];
+
+function useMilestoneList(initial: Milestones.Milestone[]): UseMilestoneListState {
+  const [milestones, setMilestones] = React.useState<Milestones.Milestone[]>(initial);
 
   const addMilestone = React.useCallback((milestone: Milestones.Milestone) => {
     setMilestones((milestones) => [...milestones, milestone]);
   }, []);
 
   return [milestones, addMilestone];
+}
+
+function getExistingMilestones(project: Projects.Project): Milestones.Milestone[] {
+  if (!project.milestones) return [];
+
+  return project.milestones.filter((m) => !!m) as Milestones.Milestone[];
 }
