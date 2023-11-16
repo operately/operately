@@ -1,11 +1,10 @@
 import * as React from "react";
 
-import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { useDocumentTitle } from "@/layouts/header";
 import { useNavigate } from "react-router-dom";
 
 import { ProjectLifecycleGraph } from "@/components/ProjectLifecycleGraph";
@@ -22,8 +21,6 @@ import { useLoadedData } from "./loader";
 export function Page() {
   const navigate = useNavigate();
   const { project } = useLoadedData();
-
-  useDocumentTitle(`Edit Project Timeline - ${project.name}`);
 
   const originalDuration = React.useMemo(() => calculateOriginalDuration(project), [project]);
 
@@ -85,56 +82,58 @@ export function Page() {
   }, [project.id, dates, pendingMilestones]);
 
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${project.id}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-      </Paper.Navigation>
+    <Pages.Page title={["Edit Project Timeline", project.name]}>
+      <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+            <Icons.IconClipboardList size={16} />
+            {project.name}
+          </Paper.NavItem>
+        </Paper.Navigation>
 
-      <Paper.Body>
-        <h1 className="mb-8 font-extrabold text-white-1 text-3xl">Editing the project timeline</h1>
+        <Paper.Body minHeight="none">
+          <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project timeline</h1>
 
-        <div className="bg-dark-2 rounded-lg overflow-hidden">
-          <ProjectLifecycleGraph
+          <div className="bg-surface rounded-lg overflow-hidden">
+            <ProjectLifecycleGraph
+              projectStart={dates.projectStart}
+              projectEnd={dates.controlDue}
+              planningDue={dates.planningDue}
+              executionDue={dates.executionDue}
+              controlDue={dates.controlDue}
+              milestones={milestones}
+            />
+          </div>
+
+          <h1 className="font-extrabold text-content-accent text-xl mt-8 mb-4">Project Phases</h1>
+          <Phases dates={dates} setDates={setDates} />
+
+          <h1 className="font-extrabold text-content-accent text-xl mt-8 mb-4">Milestones</h1>
+          <MilestoneList
+            milestones={pendingMilestones}
+            setMilestones={setMilestones}
             projectStart={dates.projectStart}
             projectEnd={dates.controlDue}
-            planningDue={dates.planningDue}
-            executionDue={dates.executionDue}
-            controlDue={dates.controlDue}
-            milestones={milestones}
           />
-        </div>
 
-        <h1 className="font-extrabold text-white-1 text-xl mt-8 mb-4">Project Phases</h1>
-        <Phases dates={dates} setDates={setDates} />
+          <SummaryOfChanges
+            originalDuration={originalDuration}
+            newDuration={Time.daysBetween(dates.projectStart, dates.controlDue)}
+            originalMilestones={project.milestones}
+            newMilestones={milestones}
+          />
 
-        <h1 className="font-extrabold text-white-1 text-xl mt-8 mb-4">Milestones</h1>
-        <MilestoneList
-          milestones={pendingMilestones}
-          setMilestones={setMilestones}
-          projectStart={dates.projectStart}
-          projectEnd={dates.controlDue}
-        />
-
-        <SummaryOfChanges
-          originalDuration={originalDuration}
-          newDuration={Time.daysBetween(dates.projectStart, dates.controlDue)}
-          originalMilestones={project.milestones}
-          newMilestones={milestones}
-        />
-
-        <div className="mt-8 flex items-center gap-2">
-          <Button type="submit" variant="success" onClick={save} loading={loading} data-test-id="save">
-            Save
-          </Button>
-          <Button type="button" variant="secondary" linkTo={`/projects/${project.id}`}>
-            Cancel
-          </Button>
-        </div>
-      </Paper.Body>
-    </Paper.Root>
+          <div className="mt-8 flex items-center gap-2">
+            <Button type="submit" variant="success" onClick={save} loading={loading} data-test-id="save">
+              Save
+            </Button>
+            <Button type="button" variant="secondary" linkTo={`/projects/${project.id}`}>
+              Cancel
+            </Button>
+          </div>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
@@ -235,7 +234,7 @@ function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <div
-          className="bg-dark-4 hover:bg-dark-6 rounded px-2 py-1 relative group cursor-pointer w-full outline-none"
+          className="bg-surface-dimmed hover:bg-surface-accent border border-surface-outline rounded px-2 py-1 relative group cursor-pointer w-full outline-none"
           onClick={() => setOpen(true)}
           data-test-id={testID}
         >
@@ -244,7 +243,7 @@ function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Content className="outline-red-400 border border-dark-8" align="start">
+        <Popover.Content className="outline-red-400 border border-surface-outline" align="start">
           <DatePicker
             inline
             selected={date}
@@ -300,7 +299,7 @@ function AddMilestone({ setMilestones, projectStart, projectEnd }) {
 function AddMilestoneButton({ onClick }) {
   return (
     <div
-      className="underline cursor-pointer text-white-2 hover:text-white-1"
+      className="underline cursor-pointer text-content-dimmed hover:text-content-accent"
       data-test-id="add-milestone"
       onClick={onClick}
     >
@@ -333,15 +332,15 @@ function AddMilestoneForm({ setMilestones, projectStart, projectEnd, close }) {
   }, [title, dueDate]);
 
   return (
-    <div className="bg-dark-2 px-3 py-3">
-      <div className="uppercase text-white-2 text-sm mb-2">New milestone</div>
+    <div className="bg-surface px-3 py-3">
+      <div className="uppercase text-content-dimmed text-sm mb-2">New milestone</div>
 
       <div className="flex items-center gap-2 ">
         <div className="w-2/3 shrink-0">
           <input
             type="text"
             autoFocus
-            className="w-full bg-dark-4 rounded px-2 py-1 outline-none border-none"
+            className="w-full bg-surface-accent rounded px-2 py-1 outline-none border-none"
             placeholder="ex. Website launch"
             value={title}
             data-test-id="new-milestone-title"
@@ -427,7 +426,10 @@ function Milestone({ milestone, setMilestones, projectStart, projectEnd }) {
         </div>
 
         {milestone.deletable && (
-          <div className="rounded-full bg-dark-4 hover:bg-dark-6 p-1 cursor-pointer" onClick={removeMilestone}>
+          <div
+            className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer"
+            onClick={removeMilestone}
+          >
             <Icons.IconTrash size={16} />
           </div>
         )}
@@ -440,8 +442,8 @@ function SummaryOfChanges({ originalDuration, newDuration }) {
   if (originalDuration === newDuration) return null;
 
   return (
-    <div className="border-t border-dark-8 mt-8 pt-8">
-      <h1 className="font-extrabold text-white-1 mb-2">Summary Of Changes</h1>
+    <div className="border-t border-stroke-base mt-8 pt-8">
+      <h1 className="font-extrabold text-content-accent mb-2">Summary Of Changes</h1>
 
       <div>
         - <ProjectDurationChange originalDuration={originalDuration} newDuration={newDuration} />
