@@ -34,6 +34,10 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     |> ProjectCheckInSteps.assert_check_in_submitted(@check_in_values)
 
     ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_text("Check-in #{Operately.Time.current_month()} #{Operately.Time.current_day()}")
+
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
     |> EmailSteps.assert_project_status_update_submitted_sent(author: ctx.champion)

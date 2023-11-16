@@ -51,4 +51,12 @@ defmodule Operately.Time do
   def as_datetime(%Date{} = date), do: DateTime.new!(date, ~T[00:00:00], "Etc/UTC")
   def as_datetime(%NaiveDateTime{} = date), do: DateTime.from_naive!(date, "Etc/UTC")
 
+  def current_month do
+    Date.utc_today() |> Calendar.strftime("%B")
+  end
+
+  def current_day do
+    Date.utc_today().day
+  end
+
 end
