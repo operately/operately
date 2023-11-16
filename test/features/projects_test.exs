@@ -3,7 +3,6 @@ defmodule Operately.Features.ProjectsTest do
 
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
-  import Operately.UpdatesFixtures
 
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.ProjectFeedSteps
@@ -86,7 +85,11 @@ defmodule Operately.Features.ProjectsTest do
     ctx
     |> visit_show(ctx.project)
     |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "archive-project-link")
+    |> UI.assert_text("Archive this project?")
     |> UI.click(testid: "archive-project-button")
+    |> UI.assert_text("This project was archived on")
+    |> ProjectFeedSteps.assert_project_archived(author: ctx.champion)
 
     ctx
     |> visit_index()
@@ -131,7 +134,9 @@ defmodule Operately.Features.ProjectsTest do
     |> ProjectFeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: new_space)
   end
 
-  # ===========================================================================
+  #
+  # ======== Helper functions ========
+  #
 
   defp visit_index(ctx) do
     UI.visit(ctx, "/spaces" <> "/" <> ctx.group.id)
@@ -140,33 +145,6 @@ defmodule Operately.Features.ProjectsTest do
   defp visit_show(ctx, project) do
     UI.visit(ctx, "/projects" <> "/" <> project.id)
   end
-
-  defp add_status_update(project, text, author_id) do
-    {:ok, _} =
-      Operately.Updates.create_update(%{
-        type: :status_update,
-        updatable_type: :project,
-        updatable_id: project.id,
-        content: %{
-          "message" => rich_text_paragraph(text),
-          "health" => update_health_fixture()
-        },
-        author_id: author_id
-      })
-  end
-
-  defp add_comment(update, text, author_id) do
-    {:ok, _} =
-      Operately.Updates.create_comment(update, %{
-        update_id: update.id,
-        content: %{
-          "message" => Jason.encode!(rich_text_paragraph(text))
-        },
-        author_id: author_id
-      })
-  end
-
-  defp rich_text_paragraph(text), do: Operately.UpdatesFixtures.rich_text_fixture(text)
 
   defp add_contributor(project, person, role, responsibility \\ " ") do
     {:ok, _} = Operately.Projects.create_contributor(%{

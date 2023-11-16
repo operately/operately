@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as Projects from "@/graphql/Projects";
 import * as Icons from "@tabler/icons-react";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -44,21 +43,14 @@ function MoveProject({ project }) {
 }
 
 function ArchiveProject({ project }) {
-  const navigateToProjectList = useNavigateTo(`/spaces/${project.spaceId}`);
-
-  const archiveForm = Projects.useArchiveForm({
-    variables: {
-      projectId: project.id,
-    },
-    onSuccess: () => navigateToProjectList(),
-  });
+  const navigateToProjectArchive = useNavigateTo(`/projects/${project.id}/archive`);
 
   return (
     <Option
       icon={Icons.IconArchive}
       title="Archive this project"
-      onClick={archiveForm.submit}
-      dataTestId="archive-project-button"
+      onClick={navigateToProjectArchive}
+      dataTestId="archive-project-link"
     />
   );
 }

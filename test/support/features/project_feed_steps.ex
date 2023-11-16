@@ -6,6 +6,10 @@ defmodule Operately.Support.Features.ProjectFeedSteps do
     ctx |> assert_feed_item_exists(author, "moved the project", "From #{old_space.name} to #{new_space.name}")
   end
 
+  def assert_project_archived(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "archived this project", "")
+  end
+
   #
   # Utility functions
   #
