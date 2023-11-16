@@ -8,6 +8,7 @@ import Header from "./Header";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
 import ArchivedBanner from "./ArchivedBanner";
+import FormattedTime from "@/components/FormattedTime";
 
 import { Feed } from "@/components/Feed";
 import { NextMilestone } from "./NextMilestone";
@@ -134,19 +135,25 @@ function LastCheckIn({ project }) {
     );
   }
 
+  const author = project.lastCheckIn.author;
+  const time = project.lastCheckIn.insertedAt;
+  const message = project.lastCheckIn.content.message;
+  const path = `/projects/${project.id}/status_updates/${project.lastCheckIn.id}`;
+  const status = project.lastCheckIn.content.health.status;
+
   return (
     <div>
       <DimmedLabel>Last Check-In</DimmedLabel>
       <div className="flex items-start gap-2 max-w-xl mt-2">
         <div className="flex flex-col gap-1">
           <div className="font-bold flex items-center gap-1">
-            <Avatar person={project.lastCheckIn.author} size="tiny" />
-            {People.shortName(project.lastCheckIn.author)} submitted:
-            <Link to={`/projects/${project.id}/status_updates/${project.lastCheckIn.id}`} testId="last-check-in-link">
-              Check-in November 3rd
+            <Avatar person={author} size="tiny" />
+            {People.shortName(author)} submitted:
+            <Link to={path} testId="last-check-in-link">
+              Check-in <FormattedTime time={time} format="long-date" />
             </Link>
           </div>
-          <Summary jsonContent={project.lastCheckIn.content.message} characterCount={200} />
+          <Summary jsonContent={message} characterCount={200} />
         </div>
       </div>
 
@@ -155,7 +162,7 @@ function LastCheckIn({ project }) {
           <DimmedLabel>Status</DimmedLabel>
           <div className="flex flex-col gap-1 text-sm">
             <div>
-              <Indicator value={project.lastCheckIn.content.health.status} type="status" />
+              <Indicator value={status} type="status" />
             </div>
           </div>
         </div>
