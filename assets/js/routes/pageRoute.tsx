@@ -33,7 +33,7 @@ function showProgress(loader: ({ params }: { params: any }) => Promise<any>) {
 
       return data;
     } catch (error) {
-      console.error(error);
+      console.log(error);
       if (!samePage) nprogress.done();
     }
   };
