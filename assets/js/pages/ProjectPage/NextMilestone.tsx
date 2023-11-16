@@ -9,8 +9,52 @@ import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 
 export function NextMilestone({ project }) {
+  const milestones = project.milestones || [];
+
+  if (milestones.length === 0) {
+    return <MilestonesZeroState project={project} />;
+  }
+
   const nextMilestones = getNextMilestones(project, 3);
 
+  if (nextMilestones.length === 0) {
+    return <AllMilestonesCompleted project={project} />;
+  }
+
+  return <NextMilestoneList project={project} nextMilestones={nextMilestones} />;
+}
+
+function MilestonesZeroState({ project }) {
+  const editLink = (
+    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-resources-link">
+      Add milestones
+    </Link>
+  );
+
+  return (
+    <div className="text-sm">
+      No milestones defined yet.
+      {project.permissions.canEditMilestone && <div className="mt-1 font-bold">{editLink}</div>}
+    </div>
+  );
+}
+
+function AllMilestonesCompleted({ project }) {
+  const editLink = (
+    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-resources-link">
+      Add more milestones
+    </Link>
+  );
+
+  return (
+    <div className="text-sm">
+      All milestones completed.
+      {project.permissions.canEditMilestone && <div className="mt-1 font-bold">{editLink}</div>}
+    </div>
+  );
+}
+
+function NextMilestoneList({ project, nextMilestones }) {
   return (
     <div>
       <DimmedLabel>Next Milestones</DimmedLabel>

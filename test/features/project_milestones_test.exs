@@ -16,6 +16,17 @@ defmodule Operately.Features.ProjectMilestonesTest do
     {:ok, ctx}
   end
 
+  feature "adding first milestones to a project", ctx do
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_text("No milestones defined yet")
+  #   |> UI.click(testid: "add-milestone")
+  #   |> UI.fill(testid: "milestone-title", with: "Contract Signed")
+  #   |> UI.click(testid: "milestone-due-date")
+  #   |> UI.click(css: ".react-datepicker__day.react-datepicker__day--016")
+  #   |> UI.click(testid: "save-milestone")
+  end
+
   # feature "adding milestones to a project", ctx do
   #   ctx
   #   |> ProjectSteps.visit_project_page()
