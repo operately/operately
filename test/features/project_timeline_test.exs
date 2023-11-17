@@ -14,17 +14,20 @@ defmodule Operately.Features.ProjectsTimelineTest do
   end
 
   @tag login_as: :champion
-  feature "setting initial start and due dates", ctx do
+  feature "setting initial start and due dates, and adding milestones", ctx do
     ctx
     |> visit_page()
     |> choose_day(field: "project-start", day: 10)
     |> choose_day(field: "project-due", day: 20)
+    |> add_milestone(title: "Contract Signed", due_day: 15)
     |> UI.click(testid: "save")
     |> ProjectFeedSteps.assert_project_timeline_edited(
       author: ctx.champion, 
       messages: [
         "The due date was set to #{Operately.Time.current_month()} 20th.",
-        "Total project duration is 10 days."
+        "Total project duration is 10 days.",
+        "Added a milestone:",
+        "Contract Signed - #{Operately.Time.current_month()} 15th"
       ]
     )
     
@@ -86,13 +89,14 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{day}")
   end
 
-  defp day_in_current_month(day) do
-    today = Date.utc_today()
+  defp add_milestone(ctx, attrs) do
+    attrs = Enum.into(attrs, %{})
 
-    {:ok, date} = Date.from_erl({today.year, today.month, day})
-    {:ok, date} = NaiveDateTime.new(date, ~T[00:00:00])
-
-    DateTime.from_naive!(date, "Etc/UTC")
+    ctx
+    |> UI.click(testid: "add-milestone")
+    |> UI.fill(testid: "new-milestone-title", with: attrs.title)
+    |> UI.click(testid: "new-milestone-due")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{attrs.due_day}")
+    |> UI.click(testid: "add-milestone-button")
   end
-
 end
