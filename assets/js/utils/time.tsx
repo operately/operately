@@ -42,6 +42,14 @@ export function parse(date: string | Date | null | undefined) {
   throw new Error("Invalid date");
 }
 
+export function parseDate(date: string | null | undefined) {
+  if (date === null || date === undefined) {
+    return null;
+  } else {
+    return datefsn.parse(date, "yyyy-MM-dd", new Date());
+  }
+}
+
 export function parseISO(date: string) {
   return datefsn.parseISO(date);
 }

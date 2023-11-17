@@ -22,6 +22,8 @@ interface FormState {
 }
 
 export function useForm(project: Projects.Project): FormState {
+  const navigate = useNavigate();
+
   const start = Time.parse(project.startedAt);
   const due = Time.parse(project.deadline);
 
@@ -30,8 +32,6 @@ export function useForm(project: Projects.Project): FormState {
 
   const [newMilestones, addNewMilestone] = useMilestoneList([]);
   const [existingMilestones, _add] = useMilestoneList(getExistingMilestones(project));
-
-  const navigate = useNavigate();
 
   const [edit, { loading }] = Projects.useEditProjectTimeline({
     onCompleted: () => {
@@ -44,6 +44,8 @@ export function useForm(project: Projects.Project): FormState {
       variables: {
         input: {
           projectID: project.id,
+          projectStartDate: startTime && Time.toDateWithoutTime(startTime),
+          projectDueDate: dueDate && Time.toDateWithoutTime(dueDate),
           newMilestones: newMilestones,
         },
       },

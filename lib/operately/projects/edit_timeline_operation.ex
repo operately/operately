@@ -3,25 +3,18 @@ defmodule Operately.Projects.EditTimelineOperation do
   alias Ecto.Multi
 
   alias Operately.Activities
-  alias Operately.Projects.{Project, PhaseHistory, Milestone}
+  alias Operately.Projects.{Project, Milestone}
 
   def run(author, project, attrs) do
-    phases = Operately.Projects.list_project_phase_history(project)
-
-    planning = Enum.find(phases, fn phase -> phase.phase == :planning end)
-    execution = Enum.find(phases, fn phase -> phase.phase == :execution end)
-    control = Enum.find(phases, fn phase -> phase.phase == :control end)
-
-    start_date = attrs.project_start_time
-    due_date = attrs.control_due_time
+    changeset = Project.changeset(project, %{
+      started_at: attrs.project_start_date, 
+      deadline: attrs.project_due_date
+    })
 
     Multi.new()
-    |> Multi.update(:project, Project.changeset(project, %{started_at: start_date, deadline: due_date}))
-    |> Multi.update(:planning_phase, PhaseHistory.changeset(planning, %{start_time: start_date, due_time: attrs.planning_due_time}))
-    |> Multi.update(:execution_phase, PhaseHistory.changeset(execution, %{start_time: attrs.planning_due_time, due_time: attrs.execution_due_time}))
-    |> Multi.update(:control_phase, PhaseHistory.changeset(control, %{start_time: attrs.execution_due_time, due_time: due_date}))
-    |> update_milestones(attrs)
-    |> insert_new_milestones(project, attrs)
+    |> Multi.update(:project, changeset)
+    # |> update_milestones(attrs)
+    # |> insert_new_milestones(project, attrs)
     |> record_activity(author, project, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:project)

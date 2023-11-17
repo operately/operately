@@ -50,7 +50,7 @@ export function Page() {
           <MilestoneList form={form} />
 
           <div className="mt-12 flex items-center justify-center">
-            <GhostButton type="primary" onClick={form.submit} data-test-id="save">
+            <GhostButton type="primary" onClick={form.submit} testId="save">
               Save timeline changes
             </GhostButton>
           </div>

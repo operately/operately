@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.ProjectFeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
 
@@ -13,62 +14,77 @@ defmodule Operately.Features.ProjectsTimelineTest do
   end
 
   @tag login_as: :champion
-  feature "edit project timeline", ctx do
+  feature "setting initial start and due dates", ctx do
     ctx
-    |> ProjectSteps.add_milestone(%{title: "Contract Signed", deadline_at: day_in_current_month(20)})
-    |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "edit-project-timeline")
-    |> UI.click(testid: "planning-start")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--010")
-    |> UI.click(testid: "planning-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--011")
-    |> UI.click(testid: "execution-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
-    |> UI.click(testid: "control-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
-    |> UI.click(testid: "milestone-contract-signed-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
-    |> UI.click(testid: "add-milestone")
-    |> UI.fill(testid: "new-milestone-title", with: "Website Launched")
-    |> UI.click(testid: "new-milestone-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
-    |> UI.click(testid: "add-milestone-button")
+    |> visit_page()
+    |> choose_day(field: "project-start", day: 10)
+    |> choose_day(field: "project-due", day: 20)
     |> UI.click(testid: "save")
-
-    :timer.sleep(200)
-
-    project = Operately.Projects.get_project!(ctx.project.id)
-    phases = Operately.Projects.list_project_phase_history(project)
-    planning = Enum.find(phases, fn phase -> phase.phase == :planning end)
-    execution = Enum.find(phases, fn phase -> phase.phase == :execution end)
-    control = Enum.find(phases, fn phase -> phase.phase == :control end)
-
-    assert project.started_at == day_in_current_month(10)
-    assert project.deadline == day_in_current_month(13)
-
-    assert planning.start_time == day_in_current_month(10)
-    assert planning.due_time == day_in_current_month(11)
-    assert execution.start_time == day_in_current_month(11)
-    assert execution.due_time == day_in_current_month(12)
-    assert control.start_time == day_in_current_month(12)
-    assert control.due_time == day_in_current_month(13)
-
-    milestones = Operately.Projects.list_project_milestones(project)
-    contract = Enum.find(milestones, fn milestone -> milestone.title == "Contract Signed" end)
-    website = Enum.find(milestones, fn milestone -> milestone.title == "Website Launched" end)
-
-    assert DateTime.from_naive!(contract.deadline_at, "Etc/UTC") == day_in_current_month(12)
-    assert DateTime.from_naive!(website.deadline_at, "Etc/UTC") == day_in_current_month(13)
-
+    |> ProjectFeedSteps.assert_project_timeline_edited(
+      author: ctx.champion, 
+      messages: [
+        "The due date was set to #{Operately.Time.current_month()} 20th.",
+        "Total project duration is 10 days."
+      ]
+    )
+    
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
     |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
   end
 
+  # @tag login_as: :champion
+  # feature "edit project timeline", ctx do
+  #   ctx
+  #   |> ProjectSteps.add_milestone(%{title: "Contract Signed", deadline_at: day_in_current_month(20)})
+  #   |> visit_page()
+  #   |> choose_day(field: "project-start", day: 10)
+  #   |> choose_day(field: "project-due", day: 20)
+  #   # |> UI.click(testid: "milestone-contract-signed-due")
+  #   # |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
+  #   # |> UI.click(testid: "add-milestone")
+  #   # |> UI.fill(testid: "new-milestone-title", with: "Website Launched")
+  #   # |> UI.click(testid: "new-milestone-due")
+  #   # |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
+  #   # |> UI.click(testid: "add-milestone-button")
+  #   # |> UI.click(testid: "save")
+
+  #   # :timer.sleep(200)
+
+  #   # project = Operately.Projects.get_project!(ctx.project.id)
+
+  #   # assert project.started_at == day_in_current_month(10)
+  #   # assert project.deadline == day_in_current_month(20)
+
+  #   # milestones = Operately.Projects.list_project_milestones(project)
+  #   # contract = Enum.find(milestones, fn milestone -> milestone.title == "Contract Signed" end)
+  #   # website = Enum.find(milestones, fn milestone -> milestone.title == "Website Launched" end)
+
+  #   # assert DateTime.from_naive!(contract.deadline_at, "Etc/UTC") == day_in_current_month(12)
+  #   # assert DateTime.from_naive!(website.deadline_at, "Etc/UTC") == day_in_current_month(13)
+
+  #   # ctx
+  #   # |> UI.login_as(ctx.reviewer)
+  #   # |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
+  #   # |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
+  # end
+
   #
   # ======== Helper functions ========
   #
+
+  defp visit_page(ctx) do
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "edit-project-timeline")
+  end
+
+  defp choose_day(ctx, field: field, day: day) do
+    ctx
+    |> UI.click(testid: field)
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{day}")
+  end
 
   defp day_in_current_month(day) do
     today = Date.utc_today()

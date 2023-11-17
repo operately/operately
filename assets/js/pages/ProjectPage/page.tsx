@@ -219,8 +219,8 @@ function HealthIssues({ checkIn }) {
 
   return (
     <div className="flex flex-col text-sm">
-      {issues.map((issue) => (
-        <div>
+      {issues.map((issue, index) => (
+        <div key={index}>
           <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
         </div>
       ))}
