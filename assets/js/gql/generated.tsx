@@ -158,6 +158,11 @@ export type ActivityContentProjectStatusUpdateSubmitted = {
 
 export type ActivityContentProjectTimelineEdited = {
   __typename?: 'ActivityContentProjectTimelineEdited';
+  newEndDate?: Maybe<Scalars['Date']['output']>;
+  newMilestones?: Maybe<Array<Maybe<Milestone>>>;
+  newStartDate?: Maybe<Scalars['Date']['output']>;
+  oldEndDate?: Maybe<Scalars['Date']['output']>;
+  oldStartDate?: Maybe<Scalars['Date']['output']>;
   project: Project;
 };
 
@@ -307,13 +312,11 @@ export type EditProjectNameInput = {
 };
 
 export type EditProjectTimelineInput = {
-  controlDueTime?: InputMaybe<Scalars['Date']['input']>;
-  executionDueTime?: InputMaybe<Scalars['Date']['input']>;
   milestoneUpdates?: InputMaybe<Array<InputMaybe<MilestoneUpdateInput>>>;
   newMilestones?: InputMaybe<Array<InputMaybe<NewMilestoneInput>>>;
-  planningDueTime?: InputMaybe<Scalars['Date']['input']>;
+  projectDueDate?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
-  projectStartTime?: InputMaybe<Scalars['Date']['input']>;
+  projectStartDate?: InputMaybe<Scalars['Date']['input']>;
 };
 
 export type Group = {

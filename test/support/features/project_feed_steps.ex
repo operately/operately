@@ -10,6 +10,19 @@ defmodule Operately.Support.Features.ProjectFeedSteps do
     ctx |> assert_feed_item_exists(author, "archived this project", "")
   end
 
+  def assert_project_timeline_edited(ctx, author: author, messages: messages) do
+    ctx
+    |> UI.assert_text(Person.short_name(author))
+    |> UI.assert_text("edited the timeline")
+    |> then(fn ctx ->
+      Enum.each(messages, fn message ->
+        ctx |> UI.assert_text(message)
+      end)
+
+      ctx
+    end)
+  end
+
   #
   # Utility functions
   #

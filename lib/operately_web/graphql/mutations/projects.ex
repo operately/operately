@@ -34,10 +34,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
 
   input_object :edit_project_timeline_input do
     field :project_id, non_null(:id)
-    field :project_start_time, :date
-    field :planning_due_time, :date
-    field :execution_due_time, :date
-    field :control_due_time, :date
+
+    field :project_start_date, :date
+    field :project_due_date, :date
 
     field :milestone_updates, list_of(:milestone_update_input)
     field :new_milestones, list_of(:new_milestone_input)
@@ -86,10 +85,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         attrs = %{
           project_id: args.input.project_id,
 
-          project_start_time: parse_date(args.input.project_start_time),
-          planning_due_time: parse_date(args.input.planning_due_time),
-          execution_due_time: parse_date(args.input.execution_due_time),
-          control_due_time: parse_date(args.input.control_due_time),
+          project_start_date: parse_date(args.input.project_start_date),
+          project_due_date: parse_date(args.input.project_due_date),
 
           milestone_updates: Enum.map(args.input.milestone_updates, fn update ->
             %{
