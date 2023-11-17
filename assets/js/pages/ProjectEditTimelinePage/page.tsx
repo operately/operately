@@ -39,7 +39,6 @@ export function Page() {
             <StartDate form={form} />
             <DueDate form={form} />
           </div>
-          <Duration form={form} />
 
           <div className="mt-8 flex items-center gap-2">
             <div className="flex-1 border-b border-surface-outline"></div>
@@ -48,6 +47,14 @@ export function Page() {
           </div>
 
           <MilestoneList form={form} />
+
+          <div className="mt-8 flex items-center gap-2">
+            <div className="flex-1 border-b border-surface-outline"></div>
+            <h1 className="uppercase font-semibold text-content-accent py-1 px-2 text-xs">Summary</h1>
+            <div className="flex-1 border-b border-surface-outline"></div>
+          </div>
+
+          <Duration form={form} />
 
           <div className="mt-12 flex items-center justify-center">
             <GhostButton type="primary" onClick={form.submit} testId="save">
@@ -129,7 +136,7 @@ function AddMilestoneForm({ form, close }) {
 
   return (
     <div className="bg-surface px-3 py-3 border border-surface-outline rounded">
-      <div className="uppercase text-content-dimmed text-sm mb-2">New milestone</div>
+      <div className="uppercase text-xs mb-2">New milestone</div>
 
       <div className="flex items-center gap-2 ">
         <div className="w-2/3 shrink-0">
@@ -249,5 +256,18 @@ function Duration({ form }) {
   if (!form.startTime) return null;
   if (!form.dueDate) return null;
 
-  return <div className="mt-2">Total duration is aproximately {Time.humanDuration(form.startTime, form.dueDate)}.</div>;
+  return (
+    <div className="mt-4">
+      <div className="">
+        Total project duration is {Time.daysBetween(form.startTime, form.dueDate)} days. (~
+        {Time.humanDuration(form.startTime, form.dueDate)}).
+      </div>
+      {form.newMilestones.length > 0 && (
+        <div className="mt-2">
+          {form.newMilestones.length > 1 ? form.newMilestones.length + "new milestones have" : "One new milestone has"}{" "}
+          been added.
+        </div>
+      )}
+    </div>
+  );
 }
