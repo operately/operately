@@ -20,14 +20,20 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> choose_day(field: "project-start", day: 10)
     |> choose_day(field: "project-due", day: 20)
     |> add_milestone(title: "Contract Signed", due_day: 15)
+    |> add_milestone(title: "Website Launched", due_day: 16)
     |> UI.click(testid: "save")
+
+    ctx
     |> ProjectFeedSteps.assert_project_timeline_edited(
       author: ctx.champion, 
       messages: [
         "The due date was set to #{Operately.Time.current_month()} 20th.",
         "Total project duration is 10 days.",
-        "Added a milestone:",
-        "Contract Signed - #{Operately.Time.current_month()} 15th"
+        "Added new milestones:",
+        "Contract Signed",
+        "#{Operately.Time.current_month()} 15th",
+        "Website Launched",
+        "#{Operately.Time.current_month()} 16th"
       ]
     )
     

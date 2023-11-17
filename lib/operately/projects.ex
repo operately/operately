@@ -70,6 +70,10 @@ defmodule Operately.Projects do
     Project.changeset(project, attrs)
   end
 
+  def get_milestones(ids) do
+    Repo.all(from m in Milestone, where: m.id in ^ids)
+  end
+
   def get_milestone!(id, opts \\ []), do: Repo.get!(Milestone, id, opts)
 
   def get_milestone_by_name(project, milestone_name) do

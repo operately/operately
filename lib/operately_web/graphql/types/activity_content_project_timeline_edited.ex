@@ -35,6 +35,13 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectTimelineEdited do
         {:ok, as_date(activity.content["new_end_date"])}
       end
     end
+
+    field :new_milestones, list_of(:milestone) do
+      resolve fn activity, _, _ ->
+        new_milestone_ids = activity.content["new_milestones"] |> Enum.map(& &1["milestone_id"])
+        {:ok, Operately.Projects.get_milestones(new_milestone_ids)}
+      end
+    end
   end
 
   defp as_date(nil), do: nil

@@ -88,23 +88,20 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           project_start_date: parse_date(args.input.project_start_date),
           project_due_date: parse_date(args.input.project_due_date),
 
-          milestone_updates: [],
-          new_milestones: []
+          milestone_updates: Enum.map(args.input.milestone_updates, fn update ->
+            %{
+              milestone_id: update.id,
+              title: update.title,
+              due_time: parse_date(update.due_time)
+            }
+          end),
 
-          # milestone_updates: Enum.map(args.input.milestone_updates, fn update ->
-          #   %{
-          #     milestone_id: update.id,
-          #     title: update.title,
-          #     due_time: parse_date(update.due_time)
-          #   }
-          # end),
-
-          # new_milestones: Enum.map(args.input.new_milestones, fn milestone ->
-          #   %{
-          #     title: milestone.title,
-          #     due_time: parse_date(milestone.due_time)
-          #   }
-          # end)
+          new_milestones: Enum.map(args.input.new_milestones, fn milestone ->
+            %{
+              title: milestone.title,
+              due_time: parse_date(milestone.due_time)
+            }
+          end)
         }
 
         Operately.Projects.update_project_timeline(author, project, attrs)

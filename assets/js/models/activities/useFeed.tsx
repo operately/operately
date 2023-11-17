@@ -51,6 +51,12 @@ export function useFeed(projectId: string) {
             oldEndDate
             newStartDate
             newEndDate
+
+            newMilestones {
+              id
+              title
+              deadlineAt
+            }
           }
 
           ... on ActivityContentProjectDiscussionSubmitted {

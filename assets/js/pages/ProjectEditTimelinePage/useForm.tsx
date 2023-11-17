@@ -46,7 +46,11 @@ export function useForm(project: Projects.Project): FormState {
           projectID: project.id,
           projectStartDate: startTime && Time.toDateWithoutTime(startTime),
           projectDueDate: dueDate && Time.toDateWithoutTime(dueDate),
-          newMilestones: newMilestones,
+          newMilestones: newMilestones.map((m) => ({
+            title: m.title,
+            dueTime: m.deadlineAt && Time.toDateWithoutTime(Time.parseISO(m.deadlineAt)),
+          })),
+          milestoneUpdates: [],
         },
       },
     });

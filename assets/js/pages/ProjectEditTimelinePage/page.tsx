@@ -119,7 +119,11 @@ function AddMilestoneForm({ form, close }) {
     if (!valid) return;
     if (!dueDate) return;
 
-    form.addNewMilestone({ title, deadlineAt: dueDate.toISOString() });
+    form.addNewMilestone({
+      id: Math.random().toString(36),
+      title,
+      deadlineAt: dueDate.toISOString(),
+    });
     close();
   }, [valid, title, dueDate]);
 
