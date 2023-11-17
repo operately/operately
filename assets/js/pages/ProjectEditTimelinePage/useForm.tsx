@@ -18,20 +18,29 @@ interface FormState {
   existingMilestones: Milestones.Milestone[];
 
   submit: () => void;
+  hasChanges: boolean;
   submitting: boolean;
 }
 
 export function useForm(project: Projects.Project): FormState {
   const navigate = useNavigate();
 
-  const start = Time.parse(project.startedAt);
-  const due = Time.parse(project.deadline);
+  const oldStart = Time.parse(project.startedAt);
+  const oldDue = Time.parse(project.deadline);
 
-  const [startTime, setStartTime] = React.useState<Date | null>(start);
-  const [dueDate, setDueDate] = React.useState<Date | null>(due);
+  const [startTime, setStartTime] = React.useState<Date | null>(oldStart);
+  const [dueDate, setDueDate] = React.useState<Date | null>(oldDue);
 
   const [newMilestones, addNewMilestone] = useMilestoneList([]);
   const [existingMilestones, _add] = useMilestoneList(getExistingMilestones(project));
+
+  const hasChanges = React.useMemo(() => {
+    if (startTime !== oldStart) return true;
+    if (dueDate !== oldDue) return true;
+    if (newMilestones.length > 0) return true;
+
+    return false;
+  }, [startTime, dueDate, newMilestones]);
 
   const [edit, { loading }] = Projects.useEditProjectTimeline({
     onCompleted: () => {
@@ -68,6 +77,7 @@ export function useForm(project: Projects.Project): FormState {
     existingMilestones,
 
     submit,
+    hasChanges,
     submitting: loading,
   };
 }
