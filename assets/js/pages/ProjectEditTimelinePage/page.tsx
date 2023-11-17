@@ -40,30 +40,34 @@ export function Page() {
             <DueDate form={form} />
           </div>
 
-          <div className="mt-8 flex items-center gap-2">
-            <div className="flex-1 border-b border-surface-outline"></div>
-            <h1 className="uppercase font-semibold text-content-accent py-1 px-2 text-xs">Milestones</h1>
-            <div className="flex-1 border-b border-surface-outline"></div>
-          </div>
-
+          <Section title="Milestones" />
           <MilestoneList form={form} />
 
-          <div className="mt-8 flex items-center gap-2">
-            <div className="flex-1 border-b border-surface-outline"></div>
-            <h1 className="uppercase font-semibold text-content-accent py-1 px-2 text-xs">Summary</h1>
-            <div className="flex-1 border-b border-surface-outline"></div>
-          </div>
+          {form.hasChanges && (
+            <>
+              <Section title="Summary" />
+              <Summary form={form} />
 
-          <Duration form={form} />
-
-          <div className="mt-12 flex items-center justify-center">
-            <GhostButton type="primary" onClick={form.submit} testId="save">
-              Save timeline changes
-            </GhostButton>
-          </div>
+              <div className="mt-12 flex items-center justify-center">
+                <GhostButton type="primary" onClick={form.submit} testId="save">
+                  Save timeline changes
+                </GhostButton>
+              </div>
+            </>
+          )}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Section({ title }) {
+  return (
+    <div className="mt-8 flex items-center gap-2">
+      <div className="flex-1 border-b border-surface-outline"></div>
+      <h1 className="uppercase font-semibold text-content-accent py-1 px-2 text-xs">{title}</h1>
+      <div className="flex-1 border-b border-surface-outline"></div>
+    </div>
   );
 }
 
@@ -252,7 +256,7 @@ function DueDate({ form }) {
   );
 }
 
-function Duration({ form }) {
+function Summary({ form }) {
   if (!form.startTime) return null;
   if (!form.dueDate) return null;
 
