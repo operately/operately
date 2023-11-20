@@ -18,6 +18,7 @@ interface FormState {
 
   newMilestones: Milestone[];
   addNewMilestone: (milestone: Milestone) => void;
+  editNewMilestone: ({ id, title, deadlineAt }: { id: string; title: string; deadlineAt: string }) => void;
   removeNewMilestone: (id: string) => void;
 
   existingMilestones: Milestones.Milestone[];
@@ -36,7 +37,7 @@ export function useForm(project: Projects.Project): FormState {
   const [startTime, setStartTime] = React.useState<Date | null>(oldStart);
   const [dueDate, setDueDate] = React.useState<Date | null>(oldDue);
 
-  const [newMilestones, addNewMilestone, removeNewMilestone] = useMilestoneList([]);
+  const [newMilestones, addNewMilestone, editNewMilestone, removeNewMilestone] = useMilestoneList([]);
   const [existingMilestones, _add, _remove] = useMilestoneList(getExistingMilestones(project));
 
   const hasChanges = React.useMemo(() => {
@@ -79,6 +80,7 @@ export function useForm(project: Projects.Project): FormState {
     setDueDate,
     newMilestones,
     addNewMilestone,
+    editNewMilestone,
     removeNewMilestone,
     existingMilestones,
 
@@ -91,22 +93,33 @@ export function useForm(project: Projects.Project): FormState {
 type UseMilestoneListState = [
   milestones: Milestone[],
   addMilestone: (milestone: Milestone) => void,
+  editMilestone: ({ id, title, deadlineAt }: { id: string; title: string; deadlineAt: string }) => void,
   removeMilestone: (id: string) => void,
 ];
 
 function useMilestoneList(initial: Milestone[]): UseMilestoneListState {
   const [milestones, setMilestones] = React.useState<Milestone[]>(initial);
 
-  const addMilestone = React.useCallback((milestone: Milestone) => {
+  const add = React.useCallback((milestone: Milestone) => {
     const newMilestone = { ...milestone, deletable: true };
     setMilestones((milestones) => [...milestones, newMilestone]);
   }, []);
 
-  const removeMilestone = React.useCallback((id: string) => {
+  const remove = React.useCallback((id: string) => {
     setMilestones((milestones) => milestones.filter((m) => m.id !== id));
   }, []);
 
-  return [milestones, addMilestone, removeMilestone];
+  const edit = React.useCallback(({ id, title, deadlineAt }: { id: string; title: string; deadlineAt: string }) => {
+    setMilestones((milestones) =>
+      milestones.map((m) => {
+        if (m.id !== id) return m;
+
+        return { ...m, title, deadlineAt };
+      }),
+    );
+  }, []);
+
+  return [milestones, add, edit, remove];
 }
 
 function getExistingMilestones(project: Projects.Project): Milestone[] {
