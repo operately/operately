@@ -191,35 +191,38 @@ function Milestone({ milestone, form }) {
   return (
     <div
       className="py-2 px-3 border border-surface-outline bg-surface-accent rounded"
-      data-test-id={milestoneTestID(milestone)}
+      data-test-id={milestoneTestID(milestone) + "-due"}
     >
-      <div className="flex flex-col flex-1">
-        <div className="font-bold flex items-center gap-1">
-          <Icons.IconFlagFilled size={16} className="text-accent-1 shrink-0" />
-          {milestone.title}
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col flex-1">
+          <div className="font-bold flex items-center gap-1">
+            <Icons.IconFlagFilled size={16} className="text-accent-1 shrink-0" />
+            {milestone.title}
+          </div>
+
+          <div className="text-sm">
+            Deadline: <FormattedTime time={Time.parse(milestone.deadlineAt)!} format="short-date" />
+          </div>
         </div>
 
-        <div className="text-sm">
-          Deadline: <FormattedTime time={Time.parse(milestone.deadlineAt)} format="short-date" />
-        </div>
-
-        <div className="flex items-center gap-2">
-          {milestone.deletable && (
+        {milestone.deletable && (
+          <div className="flex items-center gap-2">
             <div
-              className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer"
-              onClick={() => form.removeMilestone(milestone.id)}
+              className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-red-500 transition-colors"
+              onClick={() => form.removeNewMilestone(milestone.id)}
+              data-test-id={"remove-" + milestoneTestID(milestone)}
             >
               <Icons.IconTrash size={16} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 function milestoneTestID(milestone: Milestones.Milestone) {
-  return "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-") + "-due";
+  return "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-");
 }
 
 function StartDate({ form }) {
