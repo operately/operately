@@ -4,17 +4,15 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import Button, { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Button";
 
 import * as Time from "@/utils/time";
-import * as Milestones from "@/graphql/Projects/milestones";
-
-import { DateSelector } from "./DateSelector";
 
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 
-import FormattedTime from "@/components/FormattedTime";
+import { DateSelector } from "./DateSelector";
+import { MilestoneList } from "./MilestoneList";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -69,160 +67,6 @@ function Section({ title }) {
       <div className="flex-1 border-b border-surface-outline"></div>
     </div>
   );
-}
-
-function MilestoneList({ form }) {
-  return (
-    <div className="flex flex-col gap-2 my-3">
-      {form.existingMilestones.map((m: Milestones.Milestone) => (
-        <Milestone key={m.id} milestone={m} form={form} />
-      ))}
-
-      {form.newMilestones.map((m: Milestones.Milestone) => (
-        <Milestone key={m.id} milestone={m} form={form} />
-      ))}
-
-      <AddMilestone form={form} />
-    </div>
-  );
-}
-
-function AddMilestone({ form }) {
-  const [active, setActive] = React.useState(false);
-
-  const close = React.useCallback(() => {
-    setActive(false);
-  }, []);
-
-  if (active) {
-    return <AddMilestoneForm form={form} close={close} />;
-  } else {
-    return <AddMilestoneButton onClick={() => setActive(true)} />;
-  }
-}
-
-function AddMilestoneButton({ onClick }) {
-  return (
-    <div
-      className="py-2 px-3 border border-surface-outline bg-surface-accent rounded cursor-pointer hover:bg-surface-dimmed"
-      onClick={onClick}
-      data-test-id="add-milestone"
-    >
-      <div className="flex flex-col flex-1">
-        <div className="flex items-center gap-1 text-content-dimmed font-medium">
-          <Icons.IconPlus size={16} className="text-content-dimmed shrink-0" />
-          Add milestone
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AddMilestoneForm({ form, close }) {
-  const [title, setTitle] = React.useState("");
-  const [dueDate, setDueDate] = React.useState<Date | null>(null);
-
-  const valid = React.useMemo(() => {
-    return title.length > 0 && dueDate;
-  }, [title, dueDate]);
-
-  const addMilestone = React.useCallback(() => {
-    if (!valid) return;
-    if (!dueDate) return;
-
-    form.addNewMilestone({
-      id: Math.random().toString(36),
-      title,
-      deadlineAt: dueDate.toISOString(),
-    });
-    close();
-  }, [valid, title, dueDate]);
-
-  return (
-    <div className="bg-surface px-3 py-3 border border-surface-outline rounded">
-      <div className="uppercase text-xs mb-2">New milestone</div>
-
-      <div className="flex items-center gap-2 ">
-        <div className="w-2/3 shrink-0">
-          <input
-            type="text"
-            autoFocus
-            className="w-full bg-surface-accent rounded px-2 py-1 outline-none border border-surface-outline ring-0"
-            placeholder="ex. Website launch"
-            value={title}
-            data-test-id="new-milestone-title"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div className="w-1/3 flex items-center gap-2">
-          <div className="flex-1">
-            <DateSelector
-              date={dueDate}
-              onChange={setDueDate}
-              minDate={form.startTime}
-              maxDate={form.dueDate}
-              placeholder="Select due date"
-              testID="new-milestone-due"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-2">
-        <Button
-          size="small"
-          type="submit"
-          variant="success"
-          onClick={addMilestone}
-          disabled={!valid}
-          data-test-id="add-milestone-button"
-        >
-          Add
-        </Button>
-        <Button size="small" type="button" variant="secondary" onClick={close}>
-          Cancel
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function Milestone({ milestone, form }) {
-  return (
-    <div
-      className="py-2 px-3 border border-surface-outline bg-surface-accent rounded"
-      data-test-id={milestoneTestID(milestone) + "-due"}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col flex-1">
-          <div className="font-bold flex items-center gap-1">
-            <Icons.IconFlagFilled size={16} className="text-accent-1 shrink-0" />
-            {milestone.title}
-          </div>
-
-          <div className="text-sm">
-            Deadline: <FormattedTime time={Time.parse(milestone.deadlineAt)!} format="short-date" />
-          </div>
-        </div>
-
-        {milestone.deletable && (
-          <div className="flex items-center gap-2">
-            <div
-              className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-red-500 transition-colors"
-              onClick={() => form.removeNewMilestone(milestone.id)}
-              data-test-id={"remove-" + milestoneTestID(milestone)}
-            >
-              <Icons.IconTrash size={16} />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function milestoneTestID(milestone: Milestones.Milestone) {
-  return "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-");
 }
 
 function StartDate({ form }) {
