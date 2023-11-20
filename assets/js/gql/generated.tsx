@@ -164,6 +164,7 @@ export type ActivityContentProjectTimelineEdited = {
   oldEndDate?: Maybe<Scalars['Date']['output']>;
   oldStartDate?: Maybe<Scalars['Date']['output']>;
   project: Project;
+  updatedMilestones?: Maybe<Array<Maybe<Milestone>>>;
 };
 
 export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;
