@@ -12,11 +12,7 @@ import { DateSelector } from "./DateSelector";
 export function MilestoneList({ form }) {
   return (
     <div className="flex flex-col gap-2 my-3">
-      {form.existingMilestones.map((m: Milestones.Milestone) => (
-        <MilestoneListItem key={m.id} milestone={m} form={form} />
-      ))}
-
-      {form.newMilestones.map((m: Milestones.Milestone) => (
+      {form.milestoneList.milestones.map((m: Milestones.Milestone) => (
         <MilestoneListItem key={m.id} milestone={m} form={form} />
       ))}
 
@@ -58,7 +54,7 @@ function AddMilestoneButton({ onClick }) {
 
 function AddMilestoneForm({ form, close }) {
   const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date) => {
-    await form.addNewMilestone({
+    await form.milestoneList.add({
       id: id,
       title,
       deadlineAt: dueDate.toISOString(),
@@ -111,25 +107,25 @@ function MilestoneDisplay({ milestone, form, edit }) {
           </div>
         </div>
 
-        {milestone.deletable && (
-          <div className="flex items-center gap-2">
-            <div
-              className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-accent-1 transition-colors"
-              onClick={edit}
-              data-test-id={"edit-" + milestoneTestID(milestone)}
-            >
-              <Icons.IconPencil size={16} />
-            </div>
+        <div className="flex items-center gap-2">
+          <div
+            className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-accent-1 transition-colors"
+            onClick={edit}
+            data-test-id={"edit-" + milestoneTestID(milestone)}
+          >
+            <Icons.IconPencil size={16} />
+          </div>
 
+          {milestone.deletable && (
             <div
               className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-red-500 transition-colors"
-              onClick={() => form.removeNewMilestone(milestone.id)}
+              onClick={() => form.milestoneList.remove(milestone.id)}
               data-test-id={"remove-" + milestoneTestID(milestone)}
             >
               <Icons.IconTrash size={16} />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
@@ -137,7 +133,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
 
 function MilestoneEdit({ milestone, form, close }) {
   const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date) => {
-    await form.editNewMilestone({
+    await form.milestoneList.edit({
       id: id,
       title,
       deadlineAt: dueDate.toISOString(),

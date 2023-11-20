@@ -68,6 +68,39 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> UI.assert_text("Contract Updated with Provider")
   end
 
+  @tag login_as: :champion
+  feature "editing existing milestones while editing project timeline", ctx do
+    date = {{Date.utc_today().year, Date.utc_today().month, 15}, {0, 0, 0}}
+
+    {:ok, _} = Operately.Projects.create_milestone(ctx.champion, %{
+      project_id: ctx.project.id,
+      title: "Contract Signed",
+      deadline_at: NaiveDateTime.from_erl!(date)
+    })
+
+    ctx
+    |> visit_page()
+    |> choose_day(field: "project-start", day: 10)
+    |> choose_day(field: "project-due", day: 20)
+    |> edit_milestone("contract-signed", "Contract Updated with Provider", 16)
+    |> UI.click(testid: "save")
+
+    ctx
+    |> ProjectFeedSteps.assert_project_timeline_edited(
+      author: ctx.champion, 
+      messages: [
+        "Updated a milestone:",
+        "Contract Updated with Provider",
+        "#{Operately.Time.current_month()} 16th",
+      ]
+    )
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
+    |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
+  end
+
   #
   # ======== Helper functions ========
   #

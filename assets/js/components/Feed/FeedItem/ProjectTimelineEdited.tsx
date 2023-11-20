@@ -30,6 +30,7 @@ function Content({ activity }) {
       <NewEndDate content={content} />
       <DurationChange content={content} />
       <AddedMilestones content={content} />
+      <UpdatedMilestones content={content} />
     </div>
   );
 }
@@ -84,14 +85,31 @@ function AddedMilestones({ content }: { content: Content }) {
       {title}:
       <div className="flex flex-col gap-1">
         {content.newMilestones.map((m) => (
-          <AddedNewMilestoneLink key={m.id} projectId={content.projectId} milestone={m} />
+          <MilestoneLink key={m.id} projectId={content.projectId} milestone={m} />
         ))}
       </div>
     </div>
   );
 }
 
-function AddedNewMilestoneLink({ projectId, milestone }: { projectId: string; milestone: Milestones.Milestone }) {
+function UpdatedMilestones({ content }: { content: Content }) {
+  if (!content.hasUpdatedMilestones) return null;
+
+  const title = content.updatedMilestones.length === 1 ? "Updated a milestone" : "Updated milestones";
+
+  return (
+    <div className="mt-2">
+      {title}:
+      <div className="flex flex-col gap-1">
+        {content.updatedMilestones.map((m) => (
+          <MilestoneLink key={m.id} projectId={content.projectId} milestone={m} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MilestoneLink({ projectId, milestone }: { projectId: string; milestone: Milestones.Milestone }) {
   const path = `/projects/${projectId}/milestones/${milestone.id}`;
   const title = milestone.title;
 
@@ -112,6 +130,7 @@ interface Content {
   oldDueDate: Date | null;
   newDueDate: Date | null;
   newMilestones: Milestones.Milestone[];
+  updatedMilestones: Milestones.Milestone[];
 
   startDateChanged: boolean;
   dueDateChanged: boolean;
@@ -123,6 +142,7 @@ interface Content {
   durationChangePercentage: number | null;
 
   hasNewMilestones: boolean;
+  hasUpdatedMilestones: boolean;
 }
 
 function prepareContent(content: Activities.ActivityContentProjectTimelineEdited): Content {
@@ -134,6 +154,7 @@ function prepareContent(content: Activities.ActivityContentProjectTimelineEdited
   const newDuration = calcDuration(newStartDate, newEndDate);
 
   const newMilestones = (content.newMilestones || []).filter((m) => m !== null) as Milestones.Milestone[];
+  const updatedMilestones = (content.updatedMilestones || []).filter((m) => m !== null) as Milestones.Milestone[];
 
   return {
     projectId: content.project.id,
@@ -142,7 +163,9 @@ function prepareContent(content: Activities.ActivityContentProjectTimelineEdited
     newStartDate: Time.parseDate(content.newStartDate),
     oldDueDate: Time.parseDate(content.oldEndDate),
     newDueDate: Time.parseDate(content.newEndDate),
+
     newMilestones: newMilestones,
+    updatedMilestones: updatedMilestones,
 
     startDateChanged: content.oldStartDate !== content.newStartDate,
     dueDateChanged: content.oldEndDate !== content.newEndDate,
@@ -154,6 +177,7 @@ function prepareContent(content: Activities.ActivityContentProjectTimelineEdited
     durationChangePercentage: calcPercentageChange(oldDuration, newDuration),
 
     hasNewMilestones: newMilestones.length > 0,
+    hasUpdatedMilestones: updatedMilestones.length > 0,
   };
 }
 

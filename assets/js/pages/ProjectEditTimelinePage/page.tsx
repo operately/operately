@@ -107,18 +107,21 @@ function Summary({ form }) {
   if (!form.startTime) return null;
   if (!form.dueDate) return null;
 
+  const newMilestones = form.milestoneList.newMilestones.length;
+  const updatedMilestones = form.milestoneList.updatedMilestones.length;
+
   return (
     <div className="mt-4">
       <div className="">
         Total project duration is {Time.daysBetween(form.startTime, form.dueDate)} days. (~
         {Time.humanDuration(form.startTime, form.dueDate)}).
       </div>
-      {form.newMilestones.length > 0 && (
-        <div className="mt-2">
-          {form.newMilestones.length > 1 ? form.newMilestones.length + "new milestones have" : "One new milestone has"}{" "}
-          been added.
-        </div>
-      )}
+      {newMilestones > 0 && <div className="mt-2">{milestoneCount(newMilestones)} added.</div>}
+      {updatedMilestones > 0 && <div className="mt-2">{milestoneCount(updatedMilestones)} edited.</div>}
     </div>
   );
+}
+
+function milestoneCount(count: number) {
+  return count === 1 ? "One milestone has been" : count + " milestones have been";
 }

@@ -226,3 +226,11 @@ export function humanDuration(start: Date, end: Date): string {
   if (years === 1) return "1 year";
   return `${years} years`;
 }
+
+export function dateChanged(old: Date | null, current: Date | null): boolean {
+  if (!old && !current) return false;
+  if (!old && current) return true;
+  if (old && !current) return true;
+
+  return !isSameDay(old!, current!);
+}
