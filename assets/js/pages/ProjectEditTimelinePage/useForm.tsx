@@ -5,6 +5,10 @@ import * as Time from "@/utils/time";
 
 import { useNavigate } from "react-router-dom";
 
+interface Milestone extends Milestones.Milestone {
+  deletable: boolean;
+}
+
 interface FormState {
   startTime: Date | null;
   setStartTime: (date: Date | null) => void;
@@ -12,8 +16,9 @@ interface FormState {
   dueDate: Date | null;
   setDueDate: (date: Date | null) => void;
 
-  newMilestones: Milestones.Milestone[];
-  addNewMilestone: (milestone: Milestones.Milestone) => void;
+  newMilestones: Milestone[];
+  addNewMilestone: (milestone: Milestone) => void;
+  removeNewMilestone: (id: string) => void;
 
   existingMilestones: Milestones.Milestone[];
 
@@ -31,12 +36,12 @@ export function useForm(project: Projects.Project): FormState {
   const [startTime, setStartTime] = React.useState<Date | null>(oldStart);
   const [dueDate, setDueDate] = React.useState<Date | null>(oldDue);
 
-  const [newMilestones, addNewMilestone] = useMilestoneList([]);
-  const [existingMilestones, _add] = useMilestoneList(getExistingMilestones(project));
+  const [newMilestones, addNewMilestone, removeNewMilestone] = useMilestoneList([]);
+  const [existingMilestones, _add, _remove] = useMilestoneList(getExistingMilestones(project));
 
   const hasChanges = React.useMemo(() => {
-    if (startTime !== oldStart) return true;
-    if (dueDate !== oldDue) return true;
+    if (dateChanged(startTime, oldStart)) return true;
+    if (dateChanged(dueDate, oldDue)) return true;
     if (newMilestones.length > 0) return true;
 
     return false;
@@ -74,6 +79,7 @@ export function useForm(project: Projects.Project): FormState {
     setDueDate,
     newMilestones,
     addNewMilestone,
+    removeNewMilestone,
     existingMilestones,
 
     submit,
@@ -83,22 +89,36 @@ export function useForm(project: Projects.Project): FormState {
 }
 
 type UseMilestoneListState = [
-  milestones: Milestones.Milestone[],
-  addMilestone: (milestone: Milestones.Milestone) => void,
+  milestones: Milestone[],
+  addMilestone: (milestone: Milestone) => void,
+  removeMilestone: (id: string) => void,
 ];
 
-function useMilestoneList(initial: Milestones.Milestone[]): UseMilestoneListState {
-  const [milestones, setMilestones] = React.useState<Milestones.Milestone[]>(initial);
+function useMilestoneList(initial: Milestone[]): UseMilestoneListState {
+  const [milestones, setMilestones] = React.useState<Milestone[]>(initial);
 
-  const addMilestone = React.useCallback((milestone: Milestones.Milestone) => {
-    setMilestones((milestones) => [...milestones, milestone]);
+  const addMilestone = React.useCallback((milestone: Milestone) => {
+    const newMilestone = { ...milestone, deletable: true };
+    setMilestones((milestones) => [...milestones, newMilestone]);
   }, []);
 
-  return [milestones, addMilestone];
+  const removeMilestone = React.useCallback((id: string) => {
+    setMilestones((milestones) => milestones.filter((m) => m.id !== id));
+  }, []);
+
+  return [milestones, addMilestone, removeMilestone];
 }
 
-function getExistingMilestones(project: Projects.Project): Milestones.Milestone[] {
+function getExistingMilestones(project: Projects.Project): Milestone[] {
   if (!project.milestones) return [];
 
-  return project.milestones.filter((m) => !!m) as Milestones.Milestone[];
+  return project.milestones.filter((m) => !!m).map((m) => ({ ...m, deletable: false })) as Milestone[];
+}
+
+function dateChanged(a: Date | null, b: Date | null): boolean {
+  if (!a && !b) return false;
+  if (!a && b) return true;
+  if (a && !b) return true;
+
+  return !Time.isSameDay(a!, b!);
 }

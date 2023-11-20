@@ -43,41 +43,17 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
   end
 
-  # @tag login_as: :champion
-  # feature "edit project timeline", ctx do
-  #   ctx
-  #   |> ProjectSteps.add_milestone(%{title: "Contract Signed", deadline_at: day_in_current_month(20)})
-  #   |> visit_page()
-  #   |> choose_day(field: "project-start", day: 10)
-  #   |> choose_day(field: "project-due", day: 20)
-  #   # |> UI.click(testid: "milestone-contract-signed-due")
-  #   # |> UI.click(css: ".react-datepicker__day.react-datepicker__day--012")
-  #   # |> UI.click(testid: "add-milestone")
-  #   # |> UI.fill(testid: "new-milestone-title", with: "Website Launched")
-  #   # |> UI.click(testid: "new-milestone-due")
-  #   # |> UI.click(css: ".react-datepicker__day.react-datepicker__day--013")
-  #   # |> UI.click(testid: "add-milestone-button")
-  #   # |> UI.click(testid: "save")
-
-  #   # :timer.sleep(200)
-
-  #   # project = Operately.Projects.get_project!(ctx.project.id)
-
-  #   # assert project.started_at == day_in_current_month(10)
-  #   # assert project.deadline == day_in_current_month(20)
-
-  #   # milestones = Operately.Projects.list_project_milestones(project)
-  #   # contract = Enum.find(milestones, fn milestone -> milestone.title == "Contract Signed" end)
-  #   # website = Enum.find(milestones, fn milestone -> milestone.title == "Website Launched" end)
-
-  #   # assert DateTime.from_naive!(contract.deadline_at, "Etc/UTC") == day_in_current_month(12)
-  #   # assert DateTime.from_naive!(website.deadline_at, "Etc/UTC") == day_in_current_month(13)
-
-  #   # ctx
-  #   # |> UI.login_as(ctx.reviewer)
-  #   # |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
-  #   # |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
-  # end
+  @tag login_as: :champion
+  feature "adding and removing new milestones while editing project timeline", ctx do
+    ctx
+    |> visit_page()
+    |> choose_day(field: "project-start", day: 10)
+    |> choose_day(field: "project-due", day: 20)
+    |> add_milestone(title: "Contract Signed", due_day: 15)
+    |> UI.assert_text("Contract Signed")
+    |> remove_milestone(title: "contract-signed")
+    |> UI.refute_text("Contract Signed")
+  end
 
   #
   # ======== Helper functions ========
@@ -104,5 +80,10 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> UI.click(testid: "new-milestone-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{attrs.due_day}")
     |> UI.click(testid: "add-milestone-button")
+  end
+
+  defp remove_milestone(ctx, title: title) do
+    ctx
+    |> UI.click(testid: "remove-milestone-#{title}")
   end
 end
