@@ -5,13 +5,15 @@ import * as Pages from "@/components/Pages";
 import * as Projects from "@/graphql/Projects";
 import * as KeyResources from "@/models/key_resources";
 
-import { useLoadedData } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { Link } from "@/components/Link";
+import { Link, ButtonLink, DivLink } from "@/components/Link";
 
 import { createTestId } from "@/utils/testid";
 import { createPath } from "@/utils/paths";
+
+import { useLoadedData } from "./loader";
+import { useRemoveAction } from "./useRemoveAction";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -62,21 +64,32 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 }
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
+  const remove = useRemoveAction(resource!);
+
   const title = resource!.title;
   const icon = <ResourceIcon resourceType={resource!.resourceType} size={32} />;
+  const removeId = createTestId("remove-resource", title);
 
   return (
-    <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
-      <div className="pt-6 pb-3">{icon}</div>
-      <div className="pb-6 px-5">
-        <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
-        <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
-      </div>
+    <div className="rounded border border-stroke-base text-center">
+      <DivLink
+        to={resource!.link}
+        className="flex flex-col items-center justify-center text-center border border-transparent hover:border-surface-outline"
+        target="_blank"
+      >
+        <div className="pt-6 pb-3">{icon}</div>
+        <div className="pb-6 px-5">
+          <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
+          <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
+        </div>
+      </DivLink>
 
       <div className="border-t border-stroke-base w-full text-sm py-1 bg-surface-dimmed font-semibold">
         <Link to="">Edit</Link>
         <span className="mx-1">&middot;</span>
-        <Link to="">Remove</Link>
+        <ButtonLink onClick={remove} testId={removeId}>
+          Remove
+        </ButtonLink>
       </div>
     </div>
   );

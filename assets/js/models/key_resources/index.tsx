@@ -1,6 +1,8 @@
 import { ProjectKeyResource } from "@/gql/generated";
 
+export { useRemoveResource } from "./useRemoveResource";
 export { useAddResource } from "./useAddResource";
+
 export type KeyResource = ProjectKeyResource;
 
 export const SupportedTypes = [

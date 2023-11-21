@@ -6,6 +6,9 @@ import { createPath } from "@/utils/paths";
 import { useAddResource } from "@/models/key_resources";
 
 interface FormState {
+  projectId: string;
+  resourceType: string;
+
   name: string;
   setName: (name: string) => void;
 
@@ -34,15 +37,20 @@ export function useForm(project: Projects.Project, resourceType: string): FormSt
   const submit = React.useCallback(async () => {
     await add({
       variables: {
-        project_id: project.id,
-        name,
-        link: url,
-        resourceType,
+        input: {
+          project_id: project.id,
+          title: name,
+          link: url,
+          resourceType,
+        },
       },
     });
   }, [name, url, resourceType]);
 
   return {
+    projectId: project.id,
+    resourceType,
+
     name,
     setName,
     url,

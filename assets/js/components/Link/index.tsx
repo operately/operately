@@ -1,32 +1,68 @@
 import React from "react";
+import classnames from "classnames";
 
 import * as Router from "react-router-dom";
 
 interface Props {
-  to: string;
   children: React.ReactNode;
+  target?: string;
   testId?: string;
 }
 
-export function Link({ to, children, testId }: Props) {
+interface LinkProps extends Props {
+  to: string;
+}
+
+interface ButtonLinkProps extends Props {
+  onClick: () => void;
+}
+
+interface DivLinkProps extends Props {
+  to: string;
+  className?: string;
+}
+
+const baseClassName = classnames(
+  "text-link-base hover:text-link-hover",
+  "underline underline-offset-2",
+  "cursor-pointer",
+  "transition-colors",
+);
+
+const dimmedClassName = classnames(
+  "text-content-dimmed hover:text-content-hover",
+  "underline underline-offset-2",
+  "cursor-pointer",
+  "transition-colors",
+);
+
+export function Link({ to, children, target, testId }: LinkProps) {
   return (
-    <Router.Link
-      to={to}
-      className="text-link-base hover:text-link-hover underline underline-offset-2 cursor-pointer transition-colors"
-      data-test-id={testId}
-    >
+    <Router.Link to={to} className={baseClassName} data-test-id={testId} target={target}>
       {children}
     </Router.Link>
   );
 }
 
-export function DimmedLink({ to, children, testId }: Props) {
+export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
   return (
-    <Router.Link
-      to={to}
-      className="text-content-dimmed hover:text-content-hover underline underline-offset-1 cursor-pointer transition-colors"
-      data-test-id={testId}
-    >
+    <span onClick={onClick} className={baseClassName} data-test-id={testId}>
+      {children}
+    </span>
+  );
+}
+
+export function DimmedLink({ to, children, target, testId }: LinkProps) {
+  return (
+    <Router.Link to={to} className={dimmedClassName} data-test-id={testId} target={target}>
+      {children}
+    </Router.Link>
+  );
+}
+
+export function DivLink({ to, children, testId, target, ...props }: DivLinkProps) {
+  return (
+    <Router.Link to={to} data-test-id={testId} {...props} target={target}>
       {children}
     </Router.Link>
   );

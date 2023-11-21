@@ -1,32 +1,13 @@
 import { gql, useMutation } from "@apollo/client";
 
-export interface KeyResource {
-  id: string;
-  title: string;
-  link: string;
-}
-
 export const GQL_FRAGMENT = gql`
   {
     id
     title
     link
+    resourceType
   }
 `;
-
-export const ADD_KEY_RESOURCE = gql`
-  mutation AddKeyResource($input: AddKeyResourceInput!) {
-    addKeyResource(input: $input) {
-      id
-      title
-      link
-    }
-  }
-`;
-
-export function useAddKeyResourceMutation(options = {}) {
-  return useMutation(ADD_KEY_RESOURCE, options);
-}
 
 export const EDIT_KEY_RESOURCE = gql`
   mutation EditKeyResource($input: EditKeyResourceInput!) {

@@ -4,23 +4,20 @@ import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
 import * as KeyResources from "@/models/key_resources";
 
-import { useLoadedData } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createPath } from "@/utils/paths";
-import { useSearchParams } from "react-router-dom";
 
+import { useLoadedData, useResourceTypeParam } from "./loader";
 import { useForm } from "./useForm";
 
 export function Page() {
   const { project } = useLoadedData();
-  const [searchParams] = useSearchParams();
-  const resourceType = searchParams.get("resourceType") || "generic";
-  const title = KeyResources.humanTitle(resourceType);
+  const resourceType = useResourceTypeParam();
+  const form = useForm(project, resourceType);
 
-  const form = useForm();
-  const onCancel = useNavigateTo(createPath("projects", project.id, "edit", "resources"));
+  const title = KeyResources.humanTitle(resourceType);
 
   return (
     <Pages.Page title={["Add Resource", project.name]}>
@@ -33,24 +30,33 @@ export function Page() {
             <ResourceIcon resourceType={resourceType} size={48} />
           </div>
 
-          <Forms.Form onSubmit={form.submit} isValid={form.isValid} onCancel={onCancel}>
-            <Forms.TextInput
-              name="name"
-              label="Name"
-              placeholder={KeyResources.placeholderName(resourceType)}
-              value={form.name}
-              onChange={form.setName}
-              autoFocus
-            />
-            <Forms.TextInput name="url" label="URL" placeholder="https://..." value={form.url} onChange={form.setUrl} />
-
-            <Forms.SubmitArea>
-              <Forms.SubmitButton>Save</Forms.SubmitButton>
-              <Forms.CancelButton>Cancel</Forms.CancelButton>
-            </Forms.SubmitArea>
-          </Forms.Form>
+          <Form project={project} form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Form({ project, form }) {
+  const onCancel = useNavigateTo(createPath("projects", project.id, "edit", "resources"));
+  const namePlaceholder = KeyResources.placeholderName(form.resourceType);
+
+  return (
+    <Forms.Form onSubmit={form.submit} isValid={form.isValid} onCancel={onCancel}>
+      <Forms.TextInput
+        name="name"
+        label="Name"
+        placeholder={namePlaceholder}
+        value={form.name}
+        onChange={form.setName}
+        autoFocus
+      />
+      <Forms.TextInput name="url" label="URL" placeholder="https://..." value={form.url} onChange={form.setUrl} />
+
+      <Forms.SubmitArea>
+        <Forms.SubmitButton data-test-id="save">Save</Forms.SubmitButton>
+        <Forms.CancelButton>Cancel</Forms.CancelButton>
+      </Forms.SubmitArea>
+    </Forms.Form>
   );
 }

@@ -26,7 +26,7 @@ export function NextMilestone({ project }) {
 
 function MilestonesZeroState({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-resources-link">
+    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestoes-link">
       Add milestones
     </Link>
   );
@@ -41,7 +41,7 @@ function MilestonesZeroState({ project }) {
 
 function AllMilestonesCompleted({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-resources-link">
+    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestones-link">
       Add more milestones
     </Link>
   );

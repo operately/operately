@@ -3,6 +3,8 @@ import client from "@/graphql/client";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/graphql/Projects";
 
+import { useSearchParams } from "react-router-dom";
+
 export interface LoaderResult {
   project: Projects.Project;
 }
@@ -25,4 +27,11 @@ export function useLoadedData(): LoaderResult {
 
 export function useRefresh() {
   return Pages.useRefresh();
+}
+
+export function useResourceTypeParam() {
+  const [searchParams] = useSearchParams();
+  const resourceType = searchParams.get("resourceType") || "generic";
+
+  return resourceType;
 }

@@ -101,7 +101,11 @@ export function Page() {
                   <div className="font-bold text-sm">Resources</div>
 
                   <div className="text-sm">
-                    {showEditResource(project) && <Link to={`/projects/${project.id}/edit/resources`}>Edit</Link>}
+                    {showEditResource(project) && (
+                      <Link to={`/projects/${project.id}/edit/resources`} testId="edit-resources-link">
+                        Edit
+                      </Link>
+                    )}
                   </div>
                 </div>
 
