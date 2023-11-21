@@ -4,8 +4,6 @@ import { useColorMode } from "@/theme";
 export const Github = ({ size }) => {
   const mode = useColorMode();
 
-  console.log(mode);
-
   if (mode === "light") {
     return <GithubBlack size={size} />;
   } else {

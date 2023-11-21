@@ -15,16 +15,17 @@ defmodule Operately.Features.ProjectResourcesTest do
     {:ok, ctx}
   end
 
-  # @tag login_as: :champion
-  # feature "listing key resources", ctx do
-  #   add_key_resource(ctx.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
-  #   add_key_resource(ctx.project, %{title: "Website", link: "https://operately.com", type: "generic"})
+  @tag login_as: :champion
+  feature "listing key resources", ctx do
+    ctx
+    |> add_key_resource(%{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
+    |> add_key_resource(%{title: "Website", link: "https://operately.com", type: "generic"})
 
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.assert_has(Query.text("Code Repository"))
-  #   |> UI.assert_has(Query.text("Website"))
-  # end
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("Website"))
+  end
 
   # @tag login_as: :champion
   # feature "adding key resources to a project", ctx do
@@ -65,4 +66,14 @@ defmodule Operately.Features.ProjectResourcesTest do
   #   |> visit_show(ctx.project)
   #   |> UI.refute_has(Query.text("Code Repository"))
   # end
+
+  #
+  # Helpers
+  #
+
+  defp add_key_resource(ctx, attrs) do
+    attrs = Map.merge(attrs, %{project_id: ctx.project.id})
+    {:ok, _} = Operately.Projects.create_key_resource(attrs)
+    ctx
+  end
 end

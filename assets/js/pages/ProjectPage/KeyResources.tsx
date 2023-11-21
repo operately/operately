@@ -34,7 +34,7 @@ export default function KeyResources({ project, editable, refetch }: Props): JSX
 function Body({ project, refetch, editable }: Props): JSX.Element {
   return (
     <div className="flex flex-wrap gap-2 mt-4 items-center">
-      {project.keyResources.length > 0 ? (
+      {project.keyResources!.length > 0 ? (
         <Links project={project} refetch={refetch} editable={editable} />
       ) : (
         <EmptyState />
