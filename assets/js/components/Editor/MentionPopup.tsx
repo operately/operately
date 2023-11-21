@@ -6,6 +6,10 @@ import MentionList from "./MentionList";
 type PopupInstance = Instance<Props>[] | null;
 type MentionPopupProps = Record<string, any>;
 
+/**
+ * @public
+ * Declaring the MentionPopup class public to silence the knip dead code warning.
+ */
 export default class MentionPopup {
   component: ReactRenderer | null;
   popup: PopupInstance | null;

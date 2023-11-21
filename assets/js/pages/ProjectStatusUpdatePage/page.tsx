@@ -16,7 +16,6 @@ import { useAddReaction } from "./useAddReaction";
 import * as Feed from "@/features/feed";
 import { CommentSection } from "./CommentSection";
 import * as UpdateContent from "@/graphql/Projects/update_content";
-import * as ProjectIcons from "@/components/ProjectIcons";
 
 import { Accordion } from "@/components/Accordion";
 import { Indicator } from "@/components/ProjectHealthIndicators";
@@ -94,48 +93,6 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
   } else {
     return <span className="flex items-center gap-1">Not yet acknowledged</span>;
   }
-}
-
-function Details({ update }) {
-  const content = update.content as UpdateContent.StatusUpdate;
-
-  return (
-    <div className="border border-surface-outline rounded">
-      {content.newHealth && (
-        <div className="flex items-center gap-1 border-b border-surface-outline p-2">
-          <span className="font-medium w-40">Health</span> <ProjectIcons.IconForHealth health={content.newHealth} />{" "}
-          <span className="capitalize">
-            {content.newHealth
-              .split("_")
-              .map((s) => s[0].toUpperCase() + s.slice(1))
-              .join(" ")}
-          </span>
-        </div>
-      )}
-
-      {content.phase && (
-        <div className="flex items-center gap-1 border-b border-surface-outline p-2">
-          <span className="font-medium w-40">Current Phase</span> <ProjectIcons.IconForPhase phase={content.phase} />{" "}
-          {content.phase[0].toUpperCase() + content.phase.slice(1)}
-        </div>
-      )}
-
-      {content.nextMilestoneTitle && (
-        <div className="flex items-center gap-1 border-b border-dark-5 p-2">
-          <span className="font-medium w-40">Next Milestone</span>
-          <Icons.IconMapPinFilled size={20} className="text-content-dimmed inline-block" /> {content.nextMilestoneTitle}
-        </div>
-      )}
-
-      {content.projectEndTime && (
-        <div className="flex items-center gap-1 not-last:border-b border-dark-5 p-2">
-          <span className="font-medium w-40">Project Due Date</span>{" "}
-          <Icons.IconCalendarFilled size={20} className="text-content-dimmed inline-block" />{" "}
-          <FormattedTime time={content.projectEndTime} format="short-date" />
-        </div>
-      )}
-    </div>
-  );
 }
 
 function Health({ health }: { health: UpdateContent.ProjectHealth }) {

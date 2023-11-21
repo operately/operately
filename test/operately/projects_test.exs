@@ -278,12 +278,13 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_key_resource/1 with valid data creates a key_resource", ctx do
-      valid_attrs = %{link: "some link", title: "some title", project_id: ctx.project.id}
+      valid_attrs = %{link: "some link", title: "some title", project_id: ctx.project.id, resource_type: "slack-channel"}
 
       assert {:ok, %KeyResource{} = key_resource} = Projects.create_key_resource(valid_attrs)
       assert key_resource.link == "some link"
       assert key_resource.title == "some title"
       assert key_resource.project_id == ctx.project.id
+      assert key_resource.resource_type == "slack-channel"
     end
 
     test "create_key_resource/1 with invalid data returns error changeset" do

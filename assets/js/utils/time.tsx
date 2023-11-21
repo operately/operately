@@ -4,18 +4,6 @@ export function today() {
   return datefsn.startOfDay(new Date());
 }
 
-export function epochZero() {
-  return new Date(0);
-}
-
-export function endOfNextWeek() {
-  return datefsn.endOfWeek(sameDayNextWeek());
-}
-
-export function sameDayNextWeek() {
-  return datefsn.addWeeks(new Date(), 1);
-}
-
 export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }
@@ -70,78 +58,8 @@ export function toDateWithoutTime(date: Date) {
   return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
 
-export function parseDateWithoutTime(date: string) {
-  return new Date(Date.parse(date));
-}
-
 export function isCurrentYear(date: Date) {
   return date.getFullYear() === new Date().getFullYear();
-}
-
-export function startOfWeek(date: Date) {
-  return datefsn.startOfWeek(date);
-}
-
-export function endOfWeek(date: Date) {
-  return datefsn.endOfWeek(date);
-}
-
-export function closestMonday(date: Date, direction: "before" | "after") {
-  if (direction === "before") {
-    return datefsn.startOfWeek(date);
-  } else {
-    if (datefsn.isMonday(date)) {
-      return date;
-    } else {
-      return datefsn.startOfWeek(datefsn.addWeeks(date, 1));
-    }
-  }
-}
-
-export function everyMondayBetween(start: Date, end: Date, inclusive = false) {
-  let mondays = [] as Date[];
-
-  let current = start;
-
-  while (current <= end) {
-    mondays.push(current);
-    current = datefsn.addWeeks(current, 1);
-  }
-
-  if (!inclusive) {
-    mondays.pop();
-  }
-
-  return mondays;
-}
-
-export function firstOfMonth(date: Date) {
-  return datefsn.startOfMonth(date);
-}
-
-export function lastOfMonth(date: Date) {
-  return datefsn.endOfMonth(date);
-}
-
-export function everyFirstOfMonthBetween(start: Date, end: Date, inclusive = false) {
-  let firsts = [] as Date[];
-
-  let current = start;
-
-  while (current <= end) {
-    firsts.push(current);
-    current = datefsn.addMonths(current, 1);
-  }
-
-  if (!inclusive) {
-    firsts.pop();
-  }
-
-  return firsts;
-}
-
-export function add(date: Date, amount: number, unit: "days" | "weeks" | "months" | "years") {
-  return datefsn.add(date, { [unit]: amount });
 }
 
 export function weeksBetween(start: Date, end: Date) {
@@ -150,34 +68,6 @@ export function weeksBetween(start: Date, end: Date) {
 
 export function daysBetween(start: Date, end: Date) {
   return datefsn.differenceInDays(end, start);
-}
-
-export function secondsBetween(start: Date, end: Date) {
-  return datefsn.differenceInSeconds(end, start);
-}
-
-export function earliest(...dates: (Date | null | undefined)[]) {
-  let earliest: Date | null = null;
-
-  dates.forEach((date) => {
-    if (date && (!earliest || date < earliest)) {
-      earliest = date;
-    }
-  });
-
-  return earliest;
-}
-
-export function latest(...dates: (Date | null | undefined)[]) {
-  let latest: Date | null = null;
-
-  dates.forEach((date) => {
-    if (date && (!latest || date > latest)) {
-      latest = date;
-    }
-  });
-
-  return latest;
 }
 
 export function getMonthName(date: Date) {

@@ -57,63 +57,6 @@ export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}
   });
 }
 
-export function sortByStatus(milestones: Milestone[]) {
-  let result: Milestone[] = [];
-
-  return result.concat(milestones).sort((m1, m2) => {
-    let s1 = m1.status;
-    let s2 = m2.status;
-
-    if (s1 === "done" && s2 === "pending") {
-      return 1;
-    } else if (s1 === "pending" && s2 === "done") {
-      return -1;
-    } else {
-      return 0;
-    }
-  });
-}
-
-export function splitByCompletion(milestones: Milestone[]) {
-  let completed: Milestone[] = [];
-  let pending: Milestone[] = [];
-
-  milestones.forEach((milestone) => {
-    if (milestone.status === "done") {
-      completed.push(milestone);
-    } else {
-      pending.push(milestone);
-    }
-  });
-
-  return { completed, pending };
-}
-
-export function groupByPhase(milestones: Milestone[]) {
-  let phases = ["concept", "planning", "execution", "control"];
-
-  let results: [{ phase: string; milestones: Milestone[] }] = [
-    { phase: "concept", milestones: [] as Milestone[] },
-    { phase: "planning", milestones: [] as Milestone[] },
-    { phase: "execution", milestones: [] as Milestone[] },
-    { phase: "control", milestones: [] as Milestone[] },
-  ];
-
-  milestones.forEach((milestone) => {
-    let index = phases.indexOf(milestone.phase);
-
-    if (index >= 0) {
-      results[index]!.milestones.push(milestone);
-    }
-  });
-
-  results.forEach((result) => {
-    result.milestones = sortByDeadline(result.milestones);
-  });
-
-  return results;
-}
-
 export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
   let now = +Time.today();
@@ -123,10 +66,6 @@ export function isOverdue(milestone: Milestone) {
 
 export function isDone(milestone: Milestone) {
   return milestone.status === "done";
-}
-
-export function parseDate(date: string | null | undefined): Date | null {
-  return date ? new Date(Date.parse(date)) : null;
 }
 
 const ADD_MILESTONE = gql`

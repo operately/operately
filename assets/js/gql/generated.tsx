@@ -189,6 +189,7 @@ export type ActivityResourceUnion = Comment | Milestone | Project | Update;
 export type AddKeyResourceInput = {
   link: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
+  resourceType: Scalars['String']['input'];
   title: Scalars['String']['input'];
 };
 
@@ -525,6 +526,7 @@ export type ProjectKeyResource = {
   __typename?: 'ProjectKeyResource';
   id: Scalars['ID']['output'];
   link: Scalars['String']['output'];
+  resourceType: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
 

@@ -1,7 +1,5 @@
 import { gql, useMutation, ApolloClient } from "@apollo/client";
 
-export { Group } from "@/gql";
-
 export const GET_GROUP = gql`
   query GetGroup($id: ID!) {
     group(id: $id) {
@@ -28,7 +26,7 @@ export const GET_GROUP = gql`
   }
 `;
 
-export const CREATE_GROUP = gql`
+const CREATE_GROUP = gql`
   mutation CreateGroup($name: String!, $mission: String!) {
     createGroup(name: $name, mission: $mission) {
       id
@@ -68,57 +66,6 @@ export function listPotentialGroupMembers(
   return client.query({ query: LIST_POTENTIAL_GROUP_MEMBERS, variables });
 }
 
-const SET_MISSION = gql`
-  mutation SetGroupMission($groupId: ID!, $mission: String!) {
-    setGroupMission(groupId: $groupId, mission: $mission) {
-      id
-      mission
-    }
-  }
-`;
-
-interface SetMissionParams {
-  variables: {
-    groupId: string;
-    mission: string;
-  };
-}
-
-export function setMission(client: ApolloClient<object>, { variables }: SetMissionParams) {
-  return client.mutate({
-    mutation: SET_MISSION,
-    variables: variables,
-  });
-}
-
-const ADD_CONTACT = gql`
-  mutation AddGroupContact($groupId: ID!, $contact: ContactInput!) {
-    addGroupContact(groupId: $groupId, contact: $contact) {
-      id
-    }
-  }
-`;
-
-interface ContactInput {
-  type?: string;
-  name?: string;
-  value?: string;
-}
-
-interface AddContactParams {
-  variables: {
-    groupId: string;
-    contact: ContactInput;
-  };
-}
-
-export function addContact(client: ApolloClient<object>, { variables }: AddContactParams) {
-  return client.mutate({
-    mutation: ADD_CONTACT,
-    variables: variables,
-  });
-}
-
 export const LIST_GROUPS = gql`
   query ListGroups {
     groups {
@@ -131,7 +78,7 @@ export const LIST_GROUPS = gql`
   }
 `;
 
-export const REMOVE_GROUP_MEMBER = gql`
+const REMOVE_GROUP_MEMBER = gql`
   mutation RemoveGroupMember($groupId: ID!, $memberId: ID!) {
     removeGroupMember(groupId: $groupId, memberId: $memberId) {
       id

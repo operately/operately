@@ -100,12 +100,12 @@ test.seed.env:
 # Generate code
 #
 gen:
-	rm lib/operately_web/graphql/schema.ex
-	$(MAKE) dev.mix.task TASK="operately.gen.elixir.graphql.schema"
-	$(MAKE) dev.mix.task TASK="operately.gen.typescript.graphql.schema"
-	$(MAKE) dev.mix.task TASK="operately.gen.notification.items.index"
-	$(MAKE) dev.mix.task TASK="operately.gen.feed.items.index"
-	$(MAKE) dev.mix.task TASK="operately.gen.page.index"
+	@rm -f lib/operately_web/graphql/schema.ex
+	@$(DEV_CONTAINER) bash -c "mix operately.gen.elixir.graphql.schema && \
+		                         mix operately.gen.typescript.graphql.schema && \
+		                         mix operately.gen.notification.items.index && \
+		                         mix operately.gen.feed.items.index && \
+		                         mix operately.gen.page.index"
 
 gen.migration:
 	$(DEV_CONTAINER) mix ecto.gen.migration $(NAME)
@@ -204,6 +204,9 @@ test.screenshots.clear:
 test.license.check:
 	bundle install
 	bash scripts/license-check.sh
+
+test.js.dead.code:
+	$(TEST_CONTAINER) bash -c "cd assets && npm --no-update-notifier run knip"
 
 #
 # Building a docker image

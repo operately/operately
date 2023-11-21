@@ -2,13 +2,12 @@ import React from "react";
 
 import classname from "classnames";
 
-export type Ref = HTMLFormElement;
+type Ref = HTMLFormElement;
 
 import Button from "@/components/Button";
 
 export * from "./radio";
 export * from "./select";
-export * from "./datepicker";
 
 interface Props {
   children?: React.ReactNode;
@@ -113,22 +112,4 @@ export function Switch({ label, value, onChange }) {
       </div>
     </div>
   );
-}
-
-export function Textarea({ value, onChange, ...props }) {
-  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
-
-  React.useEffect(() => {
-    if (textAreaRef.current) {
-      // We need to reset the height momentarily to get the correct scrollHeight for the textarea
-      textAreaRef.current.style.height = "0px";
-      const scrollHeight = textAreaRef.current.scrollHeight;
-
-      // We then set the height directly, outside of the render loop
-      // Trying to set this with state or a ref will product an incorrect value.
-      textAreaRef.current.style.height = scrollHeight + "px";
-    }
-  }, [textAreaRef, value]);
-
-  return <textarea id="review-text" ref={textAreaRef} value={value} onChange={onChange} {...props} />;
 }

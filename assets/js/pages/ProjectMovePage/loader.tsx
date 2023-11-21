@@ -5,7 +5,7 @@ import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as Groups from "@/graphql/Groups";
 
-export interface LoaderResult {
+interface LoaderResult {
   project: Projects.Project;
   groups: Groups.Group[];
 }

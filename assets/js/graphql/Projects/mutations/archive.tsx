@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 
-export const ARCHIVE_PROJECT = gql`
+const ARCHIVE_PROJECT = gql`
   mutation ArchiveProject($projectId: ID!) {
     archiveProject(projectId: $projectId) {
       id
@@ -8,7 +8,7 @@ export const ARCHIVE_PROJECT = gql`
   }
 `;
 
-export function useArchiveProject(options = {}) {
+function useArchiveProject(options = {}) {
   return useMutation(ARCHIVE_PROJECT, options);
 }
 

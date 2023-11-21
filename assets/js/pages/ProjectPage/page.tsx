@@ -9,6 +9,9 @@ import Timeline from "./Timeline";
 import Navigation from "./Navigation";
 import ArchivedBanner from "./ArchivedBanner";
 import FormattedTime from "@/components/FormattedTime";
+import Avatar from "@/components/Avatar";
+import RichContent, { Summary } from "@/components/RichContent";
+import { ResourceIcon } from "@/components/KeyResourceIcon";
 
 import { Feed } from "@/components/Feed";
 import { NextMilestone } from "./NextMilestone";
@@ -98,7 +101,11 @@ export function Page() {
                   <div className="font-bold text-sm">Resources</div>
 
                   <div className="text-sm">
-                    {showEditResource(project) && <Link to={`/projects/${project.id}/resources`}>Edit</Link>}
+                    {showEditResource(project) && (
+                      <Link to={`/projects/${project.id}/edit/resources`} testId="edit-resources-link">
+                        Edit
+                      </Link>
+                    )}
                   </div>
                 </div>
 
@@ -228,11 +235,6 @@ function HealthIssues({ checkIn }) {
   );
 }
 
-import * as Brands from "./Brands";
-import * as Icons from "@tabler/icons-react";
-import Avatar from "@/components/Avatar";
-import RichContent, { Summary } from "@/components/RichContent";
-
 function Resources({ project }) {
   if (project.keyResources.length === 0) {
     return <ResourcesZeroState project={project} />;
@@ -243,7 +245,7 @@ function Resources({ project }) {
 
 function ResourcesZeroState({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/description`} testId="add-resources-link">
+    <Link to={`/projects/${project.id}/edit/resources`} testId="add-resources-link">
       Add links to resources
     </Link>
   );
@@ -256,11 +258,16 @@ function ResourcesZeroState({ project }) {
   );
 }
 
-function ResourcesList({ project }) {
+function ResourcesList({ project }: { project: Projects.Project }) {
   return (
     <div className="grid grid-cols-4 gap-4">
-      {project.keyResources.map((resource) => (
-        <Resource icon={<ResourceIcon resource={resource} />} title={resource.title} href={resource.link} />
+      {project.keyResources!.map((resource, index) => (
+        <Resource
+          key={index}
+          icon={<ResourceIcon resourceType={resource!.resourceType} size={32} />}
+          title={resource!.title}
+          href={resource!.link}
+        />
       ))}
     </div>
   );
@@ -279,67 +286,6 @@ function Resource({ icon, title, href }) {
         <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
       </div>
     </a>
-  );
-}
-
-const GithubLinkRegex = new RegExp("^https://github.com/.*/.*$");
-const GoogleSheetLinkRegex = new RegExp("^https://docs.google.com/spreadsheets/d/.*$");
-
-function ResourceIcon({ resource }) {
-  if (resource.link.match(GithubLinkRegex)) {
-    return <Brands.Github size={34} />;
-  }
-
-  if (resource.link.match(GoogleSheetLinkRegex)) {
-    return <Brands.GoogleSheets size={34} />;
-  }
-
-  return <Icons.IconLink size={34} />;
-}
-
-function Documentation({ project }) {
-  return (
-    <div className="flex flex-wrap items-start gap-4">
-      <div className="flex items-center flex-col gap-1">
-        <div
-          className="bg-surface-dimmed rounded shadow border border-stroke-base cursor-default"
-          style={{
-            width: "100px",
-            height: "142px",
-            fontSize: "4px",
-            padding: "12px",
-            overflow: "hidden",
-          }}
-        >
-          <div className="text-content-accent font-semibold leading-thight mb-1">Business Case</div>
-          <Summary jsonContent={project.description} characterCount={400} />
-        </div>
-
-        <div className="mt-1 text-sm">
-          <Link to={`/projects/${project.id}/milestones`}>Business Case</Link>
-        </div>
-      </div>
-
-      <div className="flex items-center flex-col gap-1">
-        <div
-          className="bg-surface-dimmed rounded shadow border border-stroke-base cursor-default"
-          style={{
-            width: "100px",
-            height: "142px",
-            fontSize: "4px",
-            padding: "12px",
-            overflow: "hidden",
-          }}
-        >
-          <div className="text-content-accent font-semibold leading-thight mb-1">Retrospective</div>
-          <Summary jsonContent={project.description} characterCount={400} />
-        </div>
-
-        <div className="mt-1 text-sm">
-          <Link to={`/projects/${project.id}/milestones`}>Restrospective</Link>
-        </div>
-      </div>
-    </div>
   );
 }
 

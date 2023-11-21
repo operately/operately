@@ -161,7 +161,7 @@ const query = gql`
   }
 `;
 
-export interface LoaderResult {
+interface LoaderResult {
   notifications: Notification[];
 }
 

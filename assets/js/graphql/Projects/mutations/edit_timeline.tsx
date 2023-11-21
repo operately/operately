@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 
-export const EDIT_PROJECT_TIMELINE = gql`
+const EDIT_PROJECT_TIMELINE = gql`
   mutation EditProjectTimeline($input: EditProjectTimelineInput!) {
     editProjectTimeline(input: $input) {
       id

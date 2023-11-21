@@ -119,13 +119,14 @@ export type Content =
   | ProjectStartTimeChanged
   | ProjectEndTimeChanged
   | ProjectContributorAdded
+  | ProjectContributorRemoved
   | ProjectMilestoneCreated
   | ProjectMilestoneDeleted
   | ProjectMilestoneCompleted
   | ProjectMilestoneDeadlineChanged
   | ProjectDiscussion;
 
-export interface StatusUpdate {
+interface StatusUpdate {
   message: string;
   oldHealth: string;
   newHealth: string;
@@ -161,62 +162,62 @@ export interface ProjectHealth {
   risksComments: string;
 }
 
-export interface ProjectDiscussion {
+interface ProjectDiscussion {
   title: string;
   body: string;
 }
 
-export interface Message {
+interface Message {
   message: string;
 }
 
-export interface ProjectMilestoneCreated {
+interface ProjectMilestoneCreated {
   milestone: Milestones.Milestone;
 }
 
-export interface ProjectMilestoneDeleted {
+interface ProjectMilestoneDeleted {
   milestone: Milestones.Milestone;
 }
 
-export interface ProjectMilestoneCompleted {
+interface ProjectMilestoneCompleted {
   milestone: Milestones.Milestone;
 }
 
-export interface ProjectMilestoneDeadlineChanged {
+interface ProjectMilestoneDeadlineChanged {
   milestone: Milestones.Milestone;
   oldDeadline: Date;
   newDeadline: Date;
 }
 
-export interface ProjectCreated {
+interface ProjectCreated {
   champion: People.Person;
   creator: People.Person;
   creatorRole?: string;
 }
 
-export interface ProjectStartTimeChanged {
+interface ProjectStartTimeChanged {
   oldStartTime: string;
   newStartTime: string;
 }
 
-export interface ProjectEndTimeChanged {
+interface ProjectEndTimeChanged {
   oldEndTime: string;
   newEndTime: string;
 }
 
-export interface ProjectContributorAdded {
+interface ProjectContributorAdded {
   contributor: People.Person;
   contributorId: string;
   contributorRole: string;
 }
 
-export interface ProjectContributorRemoved {
+interface ProjectContributorRemoved {
   contributor: People.Person;
   contributorId: string;
   contributorRole: string;
 }
 
-export interface Review {
+interface Review {
   survey: string;
   previousPhase: string;
   newPhase: string;

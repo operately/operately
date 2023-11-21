@@ -1,5 +1,4 @@
 import { gql } from "@apollo/client";
-export { ProjectPermissions } from "@/gql";
 
 export const FRAGMENT = gql`
   {

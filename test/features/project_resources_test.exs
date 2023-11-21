@@ -15,54 +15,70 @@ defmodule Operately.Features.ProjectResourcesTest do
     {:ok, ctx}
   end
 
-  # @tag login_as: :champion
-  # feature "listing key resources", ctx do
-  #   add_key_resource(ctx.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
-  #   add_key_resource(ctx.project, %{title: "Website", link: "https://operately.com", type: "generic"})
+  @tag login_as: :champion
+  feature "listing key resources", ctx do
+    ctx
+    |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
+    |> add_key_resource("Website", "https://operately.com", "generic")
 
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.assert_has(Query.text("Code Repository"))
-  #   |> UI.assert_has(Query.text("Website"))
-  # end
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("Website"))
+  end
 
-  # @tag login_as: :champion
-  # feature "adding key resources to a project", ctx do
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.click(testid: "add-key-resource")
-  #   |> UI.fill("Title", with: "Code Repository")
-  #   |> UI.fill("URL", with: "https://github.com/operately/operately")
-  #   |> UI.click(testid: "save-key-resource")
-  #   |> UI.assert_has(Query.text("Code Repository"))
-  # end
+  @tag login_as: :champion
+  feature "adding first key resource to a project", ctx do
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "add-resources-link")
+    |> UI.click(testid: "add-resource-github-repository")
+    |> UI.fill("Name", with: "Code Repository")
+    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.click(testid: "save")
+    |> UI.assert_has(Query.text("Code Repository"))
 
-  # @tag login_as: :champion
-  # feature "editing key resources on a project", ctx do
-  #   add_key_resource(ctx.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_has(Query.text("Code Repository"))
+  end
 
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.assert_has(Query.text("Code Repository"))
-  #   |> UI.click(testid: "key-resource-options")
-  #   |> UI.click(testid: "edit-key-resource")
-  #   |> UI.fill("Title", with: "Github Repository")
-  #   |> UI.fill("URL", with: "https://github.com/operately/kpiexamples")
-  #   |> UI.refute_has(Query.text("Github Repository"))
-  # end
+  @tag login_as: :champion
+  feature "editing key resources on a project", ctx do
+    ctx
+    |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
+    |> add_key_resource("Website", "https://operately.com", "generic")
 
-  # @tag login_as: :champion
-  # feature "removing key resources from a project", ctx do
-  #   add_key_resource(ctx.project, %{title: "Code Repository", link: "https://github.com/operately/operately", type: "github"})
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "edit-resources-link")
+    |> UI.click(testid: "add-resource-slack-channel")
+    |> UI.fill("Name", with: "#product")
+    |> UI.fill("URL", with: "https://operately.slack.com")
+    |> UI.click(testid: "save")
+    |> UI.click(testid: "remove-resource-website")
+    |> UI.assert_has(Query.text("Code Repository"))
 
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.assert_has(Query.text("Code Repository"))
-  #   |> UI.click(testid: "key-resource-options")
-  #   |> UI.click(testid: "remove-key-resource")
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_has(Query.text("#product"))
+    |> UI.refute_has(Query.text("Website"))
+  end
 
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.refute_has(Query.text("Code Repository"))
-  # end
+  #
+  # Helpers
+  #
+
+  defp add_key_resource(ctx, title, link, resource_type) do
+    attrs = %{
+      project_id: ctx.project.id,
+      title: title,
+      link: link,
+      resource_type: resource_type
+    }
+
+    {:ok, _} = Operately.Projects.create_key_resource(attrs)
+    ctx
+  end
 end

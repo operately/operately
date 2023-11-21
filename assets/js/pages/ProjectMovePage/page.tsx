@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 
 import * as Projects from "@/graphql/Projects";
 import * as Groups from "@/graphql/Groups";
@@ -9,6 +8,7 @@ import * as Groups from "@/graphql/Groups";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 import { SpaceCardGrid, SpaceCard } from "@/components/SpaceCards";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 
 export function Page() {
   const { project, groups } = useLoadedData();
@@ -18,12 +18,7 @@ export function Page() {
   return (
     <Pages.Page title={["Move to another space", project.name]}>
       <Paper.Root size="small">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-        </Paper.Navigation>
+        <ProjectPageNavigation project={project} />
 
         <Paper.Body>
           <div className="text-content-accent text-3xl font-extrabold text-center">Moving to another space</div>

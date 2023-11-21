@@ -5,7 +5,7 @@ import { PuffLoader } from "react-spinners";
 export * from "./GhostButton";
 export * from "./IconButton";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";
   size?: "small" | "base" | "tiny" | "lg";
   linkTo?: string;
@@ -33,20 +33,20 @@ const variants = {
 
   success: {
     base: "flex items-center transition-all duration-100",
-    color: "text-dark-2 bg-green-400",
-    text: "font-medium",
+    color: "border-2 border-accent-1 text-content-accent text-accent-1",
+    text: "font-semibold",
     border: "rounded",
-    hover: "hover:bg-green-400/90 transition-all duration-400",
-    disabled: "cursor-not-allowed text-white-1/60 bg-green-400/50",
+    hover: "",
+    disabled: "cursor-not-allowed",
   },
 
   secondary: {
     base: "flex items-center transition-all duration-100",
-    color: "text-white-1 bg-dark-5",
-    text: "font-medium",
-    border: "border border-shade-2 rounded",
-    hover: "hover:border-white-3 hover:text-white-1",
-    disabled: "opacity-50 cursor-not-allowed",
+    color: "border-2 border-content-subtle text-content-dimmed",
+    text: "font-semibold",
+    border: "rounded",
+    hover: "",
+    disabled: "cursor-not-allowed",
   },
 
   attention: {
