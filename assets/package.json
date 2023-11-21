@@ -12,9 +12,11 @@
     "@tiptap/extension-mention": "^2.0.3",
     "@tiptap/extension-placeholder": "^2.0.3",
     "@tiptap/pm": "^2.0.3",
+    "@tiptap/core": "^2.0.3",
     "@tiptap/react": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/suggestion": "^2.0.3",
+    "prosemirror-state": "^1.4.1",
     "@types/react-datepicker": "^4.11.2",
     "axios": "^1.5.0",
     "classnames": "^2.3.2",
@@ -35,20 +37,15 @@
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
-    "@absinthe/socket": "^0.2.1",
-    "@absinthe/socket-apollo-link": "^0.2.1",
     "@graphql-codegen/cli": "5.0.0",
-    "@graphql-codegen/client-preset": "^4.1.0",
-    "@graphql-codegen/introspection": "4.0.0",
-    "@jumpn/utils-graphql": "^0.6.0",
-    "@types/jest": "^29.5.3",
+    "@graphql-codegen/typed-document-node": "5.0.1",
+    "@graphql-codegen/typescript": "4.0.1",
+    "@graphql-codegen/typescript-operations": "4.0.1",
     "@types/nprogress": "^0.2.0",
-    "@types/phoenix": "^1.5.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/react-modal": "^3.13.1",
     "esbuild": "^0.14.54",
-    "esbuild-plugin-svgr": "^1.1.0",
     "jest": "^29.6.1",
     "knip": "^2.41.5",
     "ts-jest": "^29.1.1",
@@ -61,7 +58,7 @@
   "scripts": {
     "test": "jest",
     "codegen": "graphql-codegen --config codegen.ts",
-    "knip": "knip --max-issues 40 --no-progress"
+    "knip": "knip --no-progress"
   },
   "jest": {
     "transform": {
