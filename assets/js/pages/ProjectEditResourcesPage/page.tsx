@@ -3,9 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import * as Projects from "@/graphql/Projects";
-import * as KeyResources from "@/graphql/Projects/key_resources";
-import * as Brands from "@/components/Brands";
-import * as Icons from "@tabler/icons-react";
+import * as KeyResources from "@/models/key_resources";
 
 import { useLoadedData } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
@@ -65,7 +63,7 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
   const title = resource!.title;
-  const icon = <ResourceIcon resource={resource!} />;
+  const icon = <ResourceIcon resourceType={resource!.resourceType} size={32} />;
 
   return (
     <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
@@ -97,34 +95,18 @@ function Section({ title }) {
 function PotentialResourceList() {
   return (
     <div className="grid grid-cols-4 gap-4 mt-8">
-      <PotentialResourceListItem resourceType="slack-channel" title="Slack Channel" icon={<Brands.Slack size={34} />} />
-      <PotentialResourceListItem
-        resourceType="google-document"
-        title="Google Document"
-        icon={<Brands.GoogleDoc size={34} />}
-      />
-      <PotentialResourceListItem
-        resourceType="google-sheet"
-        title="Google Sheet"
-        icon={<Brands.GoogleSheets size={34} />}
-      />
-      <PotentialResourceListItem
-        resourceType="github-repository"
-        title="Github Repository"
-        icon={<Brands.Github size={34} />}
-      />
-      <PotentialResourceListItem
-        resourceType="basecamp-project"
-        title="Basecamp Project"
-        icon={<Brands.Basecamp size={34} />}
-      />
-      <PotentialResourceListItem resourceType="generic" title="Link" icon={<Icons.IconLink size={34} />} />
+      {KeyResources.SupportedTypes.map((t) => (
+        <PotentialResourceListItem key={t} resourceType={t} />
+      ))}
     </div>
   );
 }
 
-function PotentialResourceListItem({ resourceType, title, icon }) {
+function PotentialResourceListItem({ resourceType }: { resourceType: string }) {
   const { project } = useLoadedData();
+
+  const title = KeyResources.humanTitle(resourceType);
+  const icon = <ResourceIcon resourceType={resourceType} size={32} />;
 
   const id = createTestId("add-resource", title);
   const path = createPath("projects", project.id, "resources", "new", { resourceType });

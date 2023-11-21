@@ -260,7 +260,7 @@ function ResourcesList({ project }: { project: Projects.Project }) {
       {project.keyResources!.map((resource, index) => (
         <Resource
           key={index}
-          icon={<ResourceIcon resource={resource} />}
+          icon={<ResourceIcon resourceType={resource!.resourceType} size={32} />}
           title={resource!.title}
           href={resource!.link}
         />

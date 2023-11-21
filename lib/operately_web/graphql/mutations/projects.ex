@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :project_id, non_null(:id)
     field :title, non_null(:string)
     field :link, non_null(:string)
+    field :resource_type, non_null(:string)
   end
 
   input_object :edit_key_resource_input do

@@ -23,6 +23,7 @@ import * as ObjectiveListPage from "./ObjectiveListPage";
 import * as ObjectivePage from "./ObjectivePage";
 import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
+import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
 import * as ProjectArchivationPage from "./ProjectArchivationPage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
 import * as ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
@@ -67,6 +68,7 @@ export default {
   ObjectivePage,
   ProfilePage,
   ProjectAddPage,
+  ProjectAddResourcePage,
   ProjectArchivationPage,
   ProjectContributorsPage,
   ProjectDiscussionNewPage,
