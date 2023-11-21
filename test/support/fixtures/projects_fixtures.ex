@@ -76,7 +76,7 @@ defmodule Operately.ProjectsFixtures do
       |> Enum.into(%{
         link: "some link",
         title: "some title",
-        type: :github
+        resource_type: "slack-channel"
       })
       |> Operately.Projects.create_key_resource()
 
