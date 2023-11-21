@@ -4,18 +4,6 @@ export function today() {
   return datefsn.startOfDay(new Date());
 }
 
-export function epochZero() {
-  return new Date(0);
-}
-
-export function endOfNextWeek() {
-  return datefsn.endOfWeek(sameDayNextWeek());
-}
-
-function sameDayNextWeek() {
-  return datefsn.addWeeks(new Date(), 1);
-}
-
 export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }

@@ -100,13 +100,9 @@ export const LIST_UPDATES = gql`
   }
 `;
 
-export function useListUpdates(options = {}) {
-  return useQuery(LIST_UPDATES, options);
-}
-
 // POST A NEW COMMENT
 
-export const POST_COMMENT_MUTATION = gql`
+const POST_COMMENT_MUTATION = gql`
   mutation CreateComment($input: CreateCommentInput!) {
     createComment(input: $input) {
       id
@@ -120,7 +116,7 @@ export function usePostComment(options = {}) {
 
 // ACKNOWLEDGE AN UPDATE
 
-export const ACKNOWLEDGE_UPDATE = gql`
+const ACKNOWLEDGE_UPDATE = gql`
   mutation Acknowledge($id: ID!) {
     acknowledge(id: $id) {
       id
@@ -148,8 +144,7 @@ export function splitCommentsBeforeAndAfterAck(update: Update) {
   }
 }
 
-export const REACTION_TYPES = ["thumbs_up", "thumbs_down", "heart", "rocket"];
-export const ADD_REACTION = gql`
+const ADD_REACTION = gql`
   mutation AddReaction($entityID: ID!, $entityType: String!, $type: String!) {
     addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
       id
@@ -161,7 +156,7 @@ export function useReactMutation(options = {}) {
   return useMutation(ADD_REACTION, options);
 }
 
-export function sortByDate(updates: Update[]): Update[] {
+function sortByDate(updates: Update[]): Update[] {
   return [...updates].sort((a, b) => {
     const aDate = Time.parseISO(a.insertedAt);
     const bDate = Time.parseISO(b.insertedAt);
@@ -170,10 +165,6 @@ export function sortByDate(updates: Update[]): Update[] {
     if (aDate < bDate) return 1;
     return 0;
   });
-}
-
-export function filterByType(updates: Update[], type: UpdateContent.UpdateMessageType): Update[] {
-  return updates.filter((update) => update.messageType === type);
 }
 
 interface UpdateGroupByMonth {
