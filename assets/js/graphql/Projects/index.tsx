@@ -10,7 +10,6 @@ import * as Updates from "./updates";
 import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 
-import { Project } from "@/gql";
 export { Project } from "@/gql";
 
 export { useCreateProject } from "./mutations/create";
@@ -226,19 +225,6 @@ export function useProjectContributorCandidatesQuery(id: string) {
 
     return res.data.projectContributorCandidates;
   };
-}
-
-type DocumentType = "pitch" | "plan" | "execution_review" | "retrospective";
-
-const whatShouldBeFilledIn = {
-  concept: ["pitch"],
-  planning: ["pitch", "plan"],
-  execution: ["pitch", "plan", "execution_review"],
-  control: ["pitch", "plan", "execution_review", "retrospective"],
-};
-
-export function shouldBeFilledIn(project: Project, documentType: DocumentType): boolean {
-  return whatShouldBeFilledIn[project.phase].includes(documentType);
 }
 
 export function useUpdateDescriptionMutation(options = {}) {

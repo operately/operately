@@ -24,7 +24,7 @@ export default function ContributorItem({ project, contributor, role, refetch }:
   );
 }
 
-export function ContributorItemContent({
+function ContributorItemContent({
   contributor = undefined,
   role,
   project,
