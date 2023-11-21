@@ -27,16 +27,17 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.assert_has(Query.text("Website"))
   end
 
-  # @tag login_as: :champion
-  # feature "adding key resources to a project", ctx do
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.click(testid: "add-key-resource")
-  #   |> UI.fill("Title", with: "Code Repository")
-  #   |> UI.fill("URL", with: "https://github.com/operately/operately")
-  #   |> UI.click(testid: "save-key-resource")
-  #   |> UI.assert_has(Query.text("Code Repository"))
-  # end
+  @tag login_as: :champion
+  feature "adding first key resource to a project", ctx do
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "add-resources-link")
+    |> UI.click(testid: "new-github-resource")
+    |> UI.fill("Title", with: "Code Repository")
+    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.click(testid: "save-key-resource")
+    |> UI.assert_has(Query.text("Code Repository"))
+  end
 
   # @tag login_as: :champion
   # feature "editing key resources on a project", ctx do

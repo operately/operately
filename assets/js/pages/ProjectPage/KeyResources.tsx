@@ -54,7 +54,7 @@ function EmptyState() {
 function Links({ project, refetch, editable }: Props): JSX.Element {
   return (
     <>
-      {project.keyResources.map((kr) => (
+      {project.keyResources!.map((kr) => (
         <Link resource={kr} key={kr.id} refetch={refetch} editable={editable} />
       ))}
     </>
