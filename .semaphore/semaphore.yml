@@ -31,6 +31,9 @@ blocks:
         - name: license check
           commands:
             - make test.license.check
+        - name: dead code
+          commands:
+            - make test.js.dead.code
 
   - name: Docker Build
     dependencies: []
