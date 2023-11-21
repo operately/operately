@@ -1,5 +1,5 @@
 import React from "react";
-import { gql, useQuery, useMutation, useApolloClient, ApolloClient, QueryResult } from "@apollo/client";
+import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
 
 import * as fragments from "@/graphql/Fragments";
 import * as KeyResources from "./key_resources";
@@ -13,13 +13,13 @@ import * as People from "@/graphql/People";
 import { Project } from "@/gql";
 export { Project } from "@/gql";
 
-export { CREATE_PROJECT, useCreateProject } from "./mutations/create";
-export { EDIT_PROJECT_TIMELINE, useEditProjectTimeline } from "./mutations/edit_timeline";
-export { EDIT_PROJECT_NAME, useEditProjectName } from "./mutations/edit_name";
-export { ARCHIVE_PROJECT, useArchiveProject, useArchiveForm } from "./mutations/archive";
-export { MOVE_PROJECT_TO_SPACE, useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
+export { useCreateProject } from "./mutations/create";
+export { useEditProjectTimeline } from "./mutations/edit_timeline";
+export { useEditProjectName } from "./mutations/edit_name";
+export { useArchiveForm } from "./mutations/archive";
+export { useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
 
-export const LIST_PROJECTS = gql`
+const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
     projects(filters: $filters) {
       id
@@ -78,14 +78,6 @@ export function useProjects(filters: ListProjectsFilters) {
   return query;
 }
 
-export function listProjects(client: ApolloClient<object>, variables: ListProjectsVariables) {
-  return client.query({
-    query: LIST_PROJECTS,
-    variables,
-    fetchPolicy: "network-only",
-  });
-}
-
 export const GET_PROJECT = gql`
   query GetProject($id: ID!) {
     project(id: $id) {
@@ -122,12 +114,6 @@ export const GET_PROJECT = gql`
   }
 `;
 
-type UseProjectResult = QueryResult<{ project: Project }, { id: string }>;
-
-export function useProject(id: string): UseProjectResult {
-  return useQuery(GET_PROJECT, { variables: { id } });
-}
-
 export function usePostUpdate(options: any) {
   return useMutation(
     gql`
@@ -139,86 +125,6 @@ export function usePostUpdate(options: any) {
     `,
     options,
   );
-}
-
-export function usePostCommentMutation(updateId: string) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation CreateComment($input: CreateCommentInput!) {
-        createComment(input: $input) {
-          id
-        }
-      }
-    `,
-    {
-      refetchQueries: [
-        {
-          query: Updates.GET_STATUS_UPDATE,
-          variables: { id: updateId },
-        },
-      ],
-    },
-  );
-
-  const createComment = (content: any) => {
-    return fun({
-      variables: {
-        input: {
-          updateId: updateId,
-          content: JSON.stringify(content),
-        },
-      },
-    });
-  };
-
-  return [createComment, status] as const;
-}
-
-export function usePostDocument(projectId: string, type: string, options?: any) {
-  const [fun, status] = useMutation(
-    gql`
-      mutation PostProjectDocument($projectId: ID!, $content: String!, $type: String!) {
-        postProjectDocument(projectId: $projectId, content: $content, type: $type) {
-          id
-        }
-      }
-    `,
-    options,
-  );
-
-  const post = (content: any) => {
-    return fun({
-      variables: {
-        projectId: projectId,
-        type: type,
-        content: JSON.stringify(content),
-      },
-    });
-  };
-
-  return [post, status] as const;
-}
-
-export function useReactMutation(entityType: string, entityID: string) {
-  const [fun, status] = useMutation(gql`
-    mutation AddReaction($entityID: ID!, $entityType: String!, $type: String!) {
-      addReaction(entityID: $entityID, entityType: $entityType, type: $type) {
-        id
-      }
-    }
-  `);
-
-  const addReaction = (type: any) => {
-    return fun({
-      variables: {
-        entityType: entityType,
-        entityID: entityID,
-        type: type,
-      },
-    });
-  };
-
-  return [addReaction, status] as const;
 }
 
 export function useAddProjectContributorMutation(projectId: string) {
@@ -297,10 +203,6 @@ export function useRemoveProjectContributorMutation(contribId: string) {
   });
 }
 
-export function useProjectStatusUpdate(id: string) {
-  return useQuery(Updates.GET_STATUS_UPDATE, { variables: { id: id } });
-}
-
 const LIST_PROJECT_CONTRIBUTOR_CANDIDATES = gql`
   query projectContributorCandidates($projectId: ID!, $query: String!) {
     projectContributorCandidates(projectId: $projectId, query: $query) ${fragments.PERSON}
@@ -326,14 +228,6 @@ export function useProjectContributorCandidatesQuery(id: string) {
   };
 }
 
-export function isChampionAssigned(project: Project) {
-  return project.contributors.some((c) => c.role === "champion");
-}
-
-export function isReviwerAssigned(project: Project) {
-  return project.contributors.some((c) => c.role === "reviewer");
-}
-
 type DocumentType = "pitch" | "plan" | "execution_review" | "retrospective";
 
 const whatShouldBeFilledIn = {
@@ -347,52 +241,6 @@ export function shouldBeFilledIn(project: Project, documentType: DocumentType): 
   return whatShouldBeFilledIn[project.phase].includes(documentType);
 }
 
-export function isPhaseCompleted(project: Project, phase: string): boolean {
-  const phases = ["concept", "planning", "execution", "control"];
-
-  const phaseIndex = phases.indexOf(phase);
-  const projectPhaseIndex = phases.indexOf(project.phase);
-
-  return phaseIndex < projectPhaseIndex;
-}
-
-export function usePinProjectToHomePage(options = {}) {
-  return useMutation(
-    gql`
-      mutation PinProjectToHomePage($projectId: ID!) {
-        pinProjectToHomePage(projectId: $projectId)
-      }
-    `,
-    options,
-  );
-}
-
-export function useSetProjectStartDateMutation(options = {}) {
-  return useMutation(
-    gql`
-      mutation SetProjectStartDate($projectId: ID!, $startDate: Date) {
-        setProjectStartDate(projectId: $projectId, startDate: $startDate) {
-          id
-        }
-      }
-    `,
-    options,
-  );
-}
-
-export function useSetProjectDueDateMutation(options = {}) {
-  return useMutation(
-    gql`
-      mutation SetProjectDueDate($projectId: ID!, $dueDate: Date) {
-        setProjectDueDate(projectId: $projectId, dueDate: $dueDate) {
-          id
-        }
-      }
-    `,
-    options,
-  );
-}
-
 export function useUpdateDescriptionMutation(options = {}) {
   return useMutation(
     gql`
@@ -404,16 +252,4 @@ export function useUpdateDescriptionMutation(options = {}) {
     `,
     options,
   );
-}
-
-export function hasReviewRequest(project: Project): boolean {
-  return project.reviewRequests.length > 0;
-}
-
-export function getReviewRequest(project: Project): ReviewRequests.ReviewRequest | null {
-  if (project.reviewRequests[0]) {
-    return project.reviewRequests[0];
-  } else {
-    return null;
-  }
 }

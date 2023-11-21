@@ -7,21 +7,15 @@ import * as AccountAppearancePage from "./AccountAppearancePage";
 import * as AccountEditProfilePage from "./AccountEditProfilePage";
 import * as AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import * as AccountPage from "./AccountPage";
-import * as Company from "./Company";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
 import * as HomePage from "./HomePage";
-import * as KpiListPage from "./KpiListPage";
-import * as KpiPage from "./KpiPage";
 import * as MyAssignmentsPage from "./MyAssignmentsPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
-import * as ObjectiveListPage from "./ObjectiveListPage";
-import * as ObjectivePage from "./ObjectivePage";
-import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
 import * as ProjectArchivationPage from "./ProjectArchivationPage";
@@ -44,51 +38,150 @@ import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPag
 import * as ProjectStatusUpdateListPage from "./ProjectStatusUpdateListPage";
 import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
-import * as TenetListPage from "./TenetListPage";
-import * as TenetPage from "./TenetPage";
 
+//
+// We are explocily exporting the pages here to avoid false positives
+// dead code repors form knip
+//
 export default {
-  AccountAppearancePage,
-  AccountEditProfilePage,
-  AccountNotificationSettingsPage,
-  AccountPage,
-  Company,
-  GroupAddPage,
-  GroupAppearancePage,
-  GroupListPage,
-  GroupMembersPage,
-  GroupPage,
-  HomePage,
-  KpiListPage,
-  KpiPage,
-  MyAssignmentsPage,
-  NotFoundPage,
-  NotificationsPage,
-  ObjectiveListPage,
-  ObjectivePage,
-  ProfilePage,
-  ProjectAddPage,
-  ProjectAddResourcePage,
-  ProjectArchivationPage,
-  ProjectContributorsPage,
-  ProjectDiscussionNewPage,
-  ProjectDiscussionPage,
-  ProjectEditDescriptionPage,
-  ProjectEditProjectNamePage,
-  ProjectEditResourcesPage,
-  ProjectEditTimelinePage,
-  ProjectMilestonePage,
-  ProjectMilestonesPage,
-  ProjectMovePage,
-  ProjectPage,
-  ProjectPhaseChangeSurveyPage,
-  ProjectReviewPage,
-  ProjectReviewRequestNewPage,
-  ProjectReviewRequestPage,
-  ProjectReviewRequestSubmitPage,
-  ProjectStatusUpdateListPage,
-  ProjectStatusUpdateNewPage,
-  ProjectStatusUpdatePage,
-  TenetListPage,
-  TenetPage
+  AccountAppearancePage: {
+    loader: AccountAppearancePage.loader,
+    Page: AccountAppearancePage.Page
+  },
+  AccountEditProfilePage: {
+    loader: AccountEditProfilePage.loader,
+    Page: AccountEditProfilePage.Page
+  },
+  AccountNotificationSettingsPage: {
+    loader: AccountNotificationSettingsPage.loader,
+    Page: AccountNotificationSettingsPage.Page
+  },
+  AccountPage: {
+    loader: AccountPage.loader,
+    Page: AccountPage.Page
+  },
+  GroupAddPage: {
+    loader: GroupAddPage.loader,
+    Page: GroupAddPage.Page
+  },
+  GroupAppearancePage: {
+    loader: GroupAppearancePage.loader,
+    Page: GroupAppearancePage.Page
+  },
+  GroupListPage: {
+    loader: GroupListPage.loader,
+    Page: GroupListPage.Page
+  },
+  GroupMembersPage: {
+    loader: GroupMembersPage.loader,
+    Page: GroupMembersPage.Page
+  },
+  GroupPage: {
+    loader: GroupPage.loader,
+    Page: GroupPage.Page
+  },
+  HomePage: {
+    loader: HomePage.loader,
+    Page: HomePage.Page
+  },
+  MyAssignmentsPage: {
+    loader: MyAssignmentsPage.loader,
+    Page: MyAssignmentsPage.Page
+  },
+  NotFoundPage: {
+    loader: NotFoundPage.loader,
+    Page: NotFoundPage.Page
+  },
+  NotificationsPage: {
+    loader: NotificationsPage.loader,
+    Page: NotificationsPage.Page
+  },
+  ProjectAddPage: {
+    loader: ProjectAddPage.loader,
+    Page: ProjectAddPage.Page
+  },
+  ProjectAddResourcePage: {
+    loader: ProjectAddResourcePage.loader,
+    Page: ProjectAddResourcePage.Page
+  },
+  ProjectArchivationPage: {
+    loader: ProjectArchivationPage.loader,
+    Page: ProjectArchivationPage.Page
+  },
+  ProjectContributorsPage: {
+    loader: ProjectContributorsPage.loader,
+    Page: ProjectContributorsPage.Page
+  },
+  ProjectDiscussionNewPage: {
+    loader: ProjectDiscussionNewPage.loader,
+    Page: ProjectDiscussionNewPage.Page
+  },
+  ProjectDiscussionPage: {
+    loader: ProjectDiscussionPage.loader,
+    Page: ProjectDiscussionPage.Page
+  },
+  ProjectEditDescriptionPage: {
+    loader: ProjectEditDescriptionPage.loader,
+    Page: ProjectEditDescriptionPage.Page
+  },
+  ProjectEditProjectNamePage: {
+    loader: ProjectEditProjectNamePage.loader,
+    Page: ProjectEditProjectNamePage.Page
+  },
+  ProjectEditResourcesPage: {
+    loader: ProjectEditResourcesPage.loader,
+    Page: ProjectEditResourcesPage.Page
+  },
+  ProjectEditTimelinePage: {
+    loader: ProjectEditTimelinePage.loader,
+    Page: ProjectEditTimelinePage.Page
+  },
+  ProjectMilestonePage: {
+    loader: ProjectMilestonePage.loader,
+    Page: ProjectMilestonePage.Page
+  },
+  ProjectMilestonesPage: {
+    loader: ProjectMilestonesPage.loader,
+    Page: ProjectMilestonesPage.Page
+  },
+  ProjectMovePage: {
+    loader: ProjectMovePage.loader,
+    Page: ProjectMovePage.Page
+  },
+  ProjectPage: {
+    loader: ProjectPage.loader,
+    Page: ProjectPage.Page
+  },
+  ProjectPhaseChangeSurveyPage: {
+    loader: ProjectPhaseChangeSurveyPage.loader,
+    Page: ProjectPhaseChangeSurveyPage.Page
+  },
+  ProjectReviewPage: {
+    loader: ProjectReviewPage.loader,
+    Page: ProjectReviewPage.Page
+  },
+  ProjectReviewRequestNewPage: {
+    loader: ProjectReviewRequestNewPage.loader,
+    Page: ProjectReviewRequestNewPage.Page
+  },
+  ProjectReviewRequestPage: {
+    loader: ProjectReviewRequestPage.loader,
+    Page: ProjectReviewRequestPage.Page
+  },
+  ProjectReviewRequestSubmitPage: {
+    loader: ProjectReviewRequestSubmitPage.loader,
+    Page: ProjectReviewRequestSubmitPage.Page
+  },
+  ProjectStatusUpdateListPage: {
+    loader: ProjectStatusUpdateListPage.loader,
+    Page: ProjectStatusUpdateListPage.Page
+  },
+  ProjectStatusUpdateNewPage: {
+    loader: ProjectStatusUpdateNewPage.loader,
+    Page: ProjectStatusUpdateNewPage.Page
+  },
+  ProjectStatusUpdatePage: {
+    loader: ProjectStatusUpdatePage.loader,
+    Page: ProjectStatusUpdatePage.Page
+  }
 };

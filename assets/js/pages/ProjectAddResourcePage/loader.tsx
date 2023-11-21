@@ -5,7 +5,7 @@ import * as Projects from "@/graphql/Projects";
 
 import { useSearchParams } from "react-router-dom";
 
-export interface LoaderResult {
+interface LoaderResult {
   project: Projects.Project;
 }
 
@@ -23,10 +23,6 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
-}
-
-export function useRefresh() {
-  return Pages.useRefresh();
 }
 
 export function useResourceTypeParam() {

@@ -1,9 +1,9 @@
-import * as Paper from "@/components/PaperContainer";
+import * as Pages from "@/components/Pages";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 
-export interface LoaderResult {
+interface LoaderResult {
   project: Projects.Project;
 }
 
@@ -18,13 +18,5 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function useLoadedData(): LoaderResult {
-  const [data, _] = Paper.useLoadedData() as [LoaderResult, () => void];
-
-  return data;
-}
-
-export function useRefresh() {
-  const [_, refresh] = Paper.useLoadedData() as [LoaderResult, () => void];
-
-  return refresh;
+  return Pages.useLoadedData() as LoaderResult;
 }

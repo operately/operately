@@ -65,13 +65,3 @@ export function ReviewerPlaceholder() {
     </div>
   );
 }
-
-export function ContributorAdd() {
-  return (
-    <div className={`shrink-0 relative ${borderClass("")} border-dashed`}>
-      <div className="w-8 h-8 flex items-center justify-center">
-        <Icons.IconPlus />
-      </div>
-    </div>
-  );
-}

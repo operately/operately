@@ -6,7 +6,7 @@ import * as TipTapEditor from "@/components/Editor";
 import Button from "@/components/Button";
 import { RadioGroup, Radio } from "@/components/Form";
 
-export type YesNoWithCommentsAnswer = {
+type YesNoWithCommentsAnswer = {
   id: string;
   type: "yes-no-with-comments";
   title: string;
@@ -14,7 +14,7 @@ export type YesNoWithCommentsAnswer = {
   comments: string;
 };
 
-export type TextAreaAnswer = {
+type TextAreaAnswer = {
   id: string;
   type: "text-area";
   answer: string;

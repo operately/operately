@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 
-export const CREATE_PROJECT = gql`
+const CREATE_PROJECT = gql`
   mutation CreateProject($input: CreateProjectInput!) {
     createProject(input: $input) {
       id

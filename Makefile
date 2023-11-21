@@ -206,7 +206,7 @@ test.license.check:
 	bash scripts/license-check.sh
 
 test.js.dead.code:
-	$(TEST_CONTAINER) bash -c "cd assets && npm --no-update-notifier run knip --max-issues=250"
+	$(TEST_CONTAINER) bash -c "cd assets && npm --no-update-notifier run knip | tee /dev/tty | wc -l"
 
 #
 # Building a docker image

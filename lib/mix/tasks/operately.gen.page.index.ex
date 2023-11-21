@@ -13,8 +13,12 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
 
       #{import_statements(pages)}
 
+      //
+      // We are explocily exporting the pages here to avoid false positives
+      // dead code repors form knip
+      //
       export default {
-        #{indent(Enum.join(pages, ",\n"), 2)}
+        #{indent(Enum.join(exports(pages), ",\n"), 2)}
       };
       """
     end)
@@ -30,6 +34,20 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
     Path.wildcard("assets/js/pages/*")
     |> Enum.map(fn path -> Path.basename(path) end)
     |> Enum.filter(fn name -> name != "index.tsx" end)
+  end
+
+  def exports(pages) do
+    pages |> Enum.map(fn page -> export_page(page) end)
+  end
+
+  def export_page(page) do
+    """
+    #{page}: {
+      loader: #{page}.loader,
+      Page: #{page}.Page
+    }
+    """
+    |> String.trim()
   end
 
 end

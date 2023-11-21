@@ -1,18 +1,7 @@
 import client from "@/graphql/client";
 import { gql } from "@apollo/client";
 
-import * as People from "@/graphql/People";
-
-export interface Blob {
-  author: People.Person;
-  status: string;
-  filename: string;
-  url: string;
-
-  signedUploadUrl: string;
-}
-
-export interface BlobInput {
+interface BlobInput {
   filename: string;
 }
 

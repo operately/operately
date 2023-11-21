@@ -4,7 +4,7 @@ import client from "@/graphql/client";
 
 import * as Projects from "@/graphql/Projects";
 
-export interface LoaderResult {
+interface LoaderResult {
   project: Projects.Project;
 }
 

@@ -120,7 +120,7 @@ export function Title({ children }) {
   );
 }
 
-export function FancyLineSeparator() {
+function FancyLineSeparator() {
   return (
     <div
       className="flex-1"
@@ -132,7 +132,7 @@ export function FancyLineSeparator() {
   );
 }
 
-export function LineSeparator() {
+function LineSeparator() {
   return (
     <div
       className="flex-1"
@@ -151,10 +151,6 @@ export function SectionHeader({ children }) {
       <LineSeparator />
     </div>
   );
-}
-
-export function RightToolbox({ children }) {
-  return <div className="absolute top-16 border-l border-shade-2 -right-[47px]">{children}</div>;
 }
 
 export function useLoadedData() {

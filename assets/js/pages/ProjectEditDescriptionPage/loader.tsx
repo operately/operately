@@ -3,7 +3,7 @@ import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as Pages from "@/components/Pages";
 
-export interface LoaderResult {
+interface LoaderResult {
   project: Projects.Project;
 }
 

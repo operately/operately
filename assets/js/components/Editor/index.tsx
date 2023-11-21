@@ -15,7 +15,7 @@ export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
 import { EditorContext } from "./EditorContext";
 
-export type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
+type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
 export type Editor = TipTap.Editor;
 
@@ -50,7 +50,7 @@ export function Root({ children }): JSX.Element {
   return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
 }
 
-export interface EditorState {
+interface EditorState {
   editor: any;
   submittable: boolean;
   focused: boolean;

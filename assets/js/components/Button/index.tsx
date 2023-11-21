@@ -5,7 +5,7 @@ import { PuffLoader } from "react-spinners";
 export * from "./GhostButton";
 export * from "./IconButton";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";
   size?: "small" | "base" | "tiny" | "lg";
   linkTo?: string;

@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 
-export interface LoaderResult {
+interface LoaderResult {
   project: Projects.Project;
   updates: Updates.Update[];
 }

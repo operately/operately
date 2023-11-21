@@ -43,6 +43,6 @@ function Title({ children }) {
   return <div className="text-sm w-full font-bold text-content-accent">{children}</div>;
 }
 
-export function Content({ children }) {
+function Content({ children }) {
   return <div className="text-sm w-full mt-1">{children}</div>;
 }

@@ -31,10 +31,6 @@ export function useLoadedData() {
   return Pages.useLoadedData() as LoaderResult;
 }
 
-export function useRefresh() {
-  return Pages.useRefresh();
-}
-
 const GET_PROJECT = gql`
   query GetProject($id: ID!) {
     project(id: $id) {

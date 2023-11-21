@@ -65,7 +65,7 @@ interface Comment {
   reactions: Reaction[];
 }
 
-export interface Person {
+interface Person {
   id: string;
   fullName: string;
   title: string;

@@ -56,7 +56,7 @@ function PrivateIndicator({ project }) {
   );
 }
 
-export function ContributorList({ project }: { project: Projects.Project }) {
+function ContributorList({ project }: { project: Projects.Project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
   const contributors = (project.contributors || []).filter((c) => c !== null);
 

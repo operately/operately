@@ -1,11 +1,11 @@
-export type YesNoQuestion = {
+type YesNoQuestion = {
   id: string;
   title: string;
   question: string;
   type: "yes_no_with_comments";
 };
 
-export type TextAreaQuestion = {
+type TextAreaQuestion = {
   id: string;
   title: string;
   question: string;

@@ -1,7 +1,7 @@
 import React from "react";
 import * as Me from "@/graphql/Me";
 
-export const ThemeContext = React.createContext({
+const ThemeContext = React.createContext({
   theme: "dark",
   colorMode: "dark",
   setTheme: (_theme: string) => {},
