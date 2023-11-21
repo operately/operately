@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@2/schema.json",
+  "entry": ["js/app.tsx"],
+  "project": ["js/**/*.ts", "js/**/*.tsx"],
+  "ignore": ["js/gql/generated.tsx"],
+}
