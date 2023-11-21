@@ -65,7 +65,7 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
   const icon = <ResourceIcon resource={resource!} />;
 
   return (
-    <div className="rounded border border-stroke-base hover:border-surface-outline cursor-pointer flex flex-col items-center justify-center text-center">
+    <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
       <div className="pt-6 pb-3">{icon}</div>
       <div className="pb-6 px-5">
         <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
