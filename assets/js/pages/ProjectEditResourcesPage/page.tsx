@@ -12,6 +12,9 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { Link } from "@/components/Link";
 
+import { createTestId } from "@/utils/testid";
+import { createPath } from "@/utils/paths";
+
 export function Page() {
   const { project } = useLoadedData();
 
@@ -94,17 +97,38 @@ function Section({ title }) {
 function PotentialResourceList() {
   return (
     <div className="grid grid-cols-4 gap-4 mt-8">
-      <PotentialResourceListItem title="Slack Channel" icon={<Brands.Slack size={34} />} />
-      <PotentialResourceListItem title="Google Document" icon={<Brands.GoogleDoc size={34} />} />
-      <PotentialResourceListItem title="Google Sheet" icon={<Brands.GoogleSheets size={34} />} />
-      <PotentialResourceListItem title="Github Repository" icon={<Brands.Github size={34} />} />
-      <PotentialResourceListItem title="Basecamp Project" icon={<Brands.Basecamp size={34} />} />
-      <PotentialResourceListItem title="Link" icon={<Icons.IconLink size={34} />} />
+      <PotentialResourceListItem resourceType="slack-channel" title="Slack Channel" icon={<Brands.Slack size={34} />} />
+      <PotentialResourceListItem
+        resourceType="google-document"
+        title="Google Document"
+        icon={<Brands.GoogleDoc size={34} />}
+      />
+      <PotentialResourceListItem
+        resourceType="google-sheet"
+        title="Google Sheet"
+        icon={<Brands.GoogleSheets size={34} />}
+      />
+      <PotentialResourceListItem
+        resourceType="github-repository"
+        title="Github Repository"
+        icon={<Brands.Github size={34} />}
+      />
+      <PotentialResourceListItem
+        resourceType="basecamp-project"
+        title="Basecamp Project"
+        icon={<Brands.Basecamp size={34} />}
+      />
+      <PotentialResourceListItem resourceType="generic" title="Link" icon={<Icons.IconLink size={34} />} />
     </div>
   );
 }
 
-function PotentialResourceListItem({ title, icon }) {
+function PotentialResourceListItem({ resourceType, title, icon }) {
+  const { project } = useLoadedData();
+
+  const id = createTestId("add-resource", title);
+  const path = createPath("projects", project.id, "resources", "new", { resourceType });
+
   return (
     <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
       <div className="pt-6 pb-3">{icon}</div>
@@ -114,7 +138,9 @@ function PotentialResourceListItem({ title, icon }) {
       </div>
 
       <div className="border-t border-stroke-base w-full text-sm py-1 bg-surface-dimmed font-semibold">
-        <Link to="">Add</Link>
+        <Link to={path} testId={id}>
+          Add
+        </Link>
       </div>
     </div>
   );
