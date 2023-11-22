@@ -1,12 +1,7 @@
 defmodule Operately.Features.ProjectResourcesTest do
   use Operately.FeatureCase
 
-  import Operately.PeopleFixtures
-  import Operately.UpdatesFixtures
-
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -23,8 +18,8 @@ defmodule Operately.Features.ProjectResourcesTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
-    |> UI.assert_has(Query.text("Website"))
+    |> UI.assert_text("Code Repository")
+    |> UI.assert_text("Website")
   end
 
   @tag login_as: :champion
@@ -36,11 +31,11 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "Code Repository")
     |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
-    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_text("Code Repository")
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_text("Code Repository")
   end
 
   @tag login_as: :champion
@@ -59,7 +54,7 @@ defmodule Operately.Features.ProjectResourcesTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("#product"))
+    |> UI.assert_text("#product")
   end
 
   @tag login_as: :champion
@@ -75,8 +70,8 @@ defmodule Operately.Features.ProjectResourcesTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
-    |> UI.refute_has(Query.text("Website"))
+    |> UI.assert_text("Code Repository")
+    |> UI.refute_text("Website")
   end
 
   @tag login_as: :champion
@@ -89,16 +84,19 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "edit-resources-link")
     |> UI.click(testid: "edit-resource-code-repository")
-    |> UI.fill("Name", with: "Github Repo")
+    |> UI.fill("Name", with: "Operately Repo")
     |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
-    |> UI.assert_has(Query.text("Github Repo"))
-    |> UI.refute_has(Query.text("Code Repository"))
+
+    ctx
+    |> UI.refute_text("Code Repository")
+    |> UI.assert_text("Operately Repo")
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
-    |> UI.refute_has(Query.text("Website"))
+    |> UI.assert_text("Operately Repo")
+    |> UI.refute_text("Code Repository")
+    |> UI.assert_text("Website")
   end
 
   #

@@ -930,6 +930,7 @@ export type RootQueryType = {
   group?: Maybe<Group>;
   groups?: Maybe<Array<Maybe<Group>>>;
   homeDashboard: Dashboard;
+  keyResource?: Maybe<ProjectKeyResource>;
   keyResults?: Maybe<Array<Maybe<KeyResult>>>;
   kpi?: Maybe<Kpi>;
   kpis?: Maybe<Array<Maybe<Kpi>>>;
@@ -971,6 +972,11 @@ export type RootQueryTypeCompanyArgs = {
 
 
 export type RootQueryTypeGroupArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeKeyResourceArgs = {
   id: Scalars['ID']['input'];
 };
 
