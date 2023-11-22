@@ -16,7 +16,7 @@ defmodule Operately.Features.ProjectResourcesTest do
   end
 
   @tag login_as: :champion
-  feature "listing key resources", ctx do
+  feature "listing key resources on the project dashboard", ctx do
     ctx
     |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
     |> add_key_resource("Website", "https://operately.com", "generic")
@@ -44,7 +44,7 @@ defmodule Operately.Features.ProjectResourcesTest do
   end
 
   @tag login_as: :champion
-  feature "editing key resources on a project", ctx do
+  feature "adding non-first key resource to a project", ctx do
     ctx
     |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
     |> add_key_resource("Website", "https://operately.com", "generic")
@@ -56,13 +56,48 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "#product")
     |> UI.fill("URL", with: "https://operately.slack.com")
     |> UI.click(testid: "save")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_has(Query.text("#product"))
+  end
+
+  @tag login_as: :champion
+  feature "removing a key resource from a project", ctx do
+    ctx
+    |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
+    |> add_key_resource("Website", "https://operately.com", "generic")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "edit-resources-link")
     |> UI.click(testid: "remove-resource-website")
-    |> UI.assert_has(Query.text("Code Repository"))
 
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.assert_has(Query.text("Code Repository"))
-    |> UI.assert_has(Query.text("#product"))
+    |> UI.refute_has(Query.text("Website"))
+  end
+
+  @tag login_as: :champion
+  feature "editing a key resource", ctx do
+    ctx
+    |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
+    |> add_key_resource("Website", "https://operately.com", "generic")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "edit-resources-link")
+    |> UI.click(testid: "edit-resource-code-repository")
+    |> UI.fill("Name", with: "Github Repo")
+    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.click(testid: "save")
+    |> UI.assert_has(Query.text("Github Repo"))
+    |> UI.refute_has(Query.text("Code Repository"))
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_has(Query.text("Code Repository"))
     |> UI.refute_has(Query.text("Website"))
   end
 
