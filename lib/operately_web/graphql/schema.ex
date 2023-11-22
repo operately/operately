@@ -64,6 +64,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Assignments
   import_types OperatelyWeb.Graphql.Queries.Companies
   import_types OperatelyWeb.Graphql.Queries.Groups
+  import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.KeyResults
   import_types OperatelyWeb.Graphql.Queries.Kpis
   import_types OperatelyWeb.Graphql.Queries.Milestones
@@ -98,6 +99,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :assignment_queries
     import_fields :company_queries
     import_fields :group_queries
+    import_fields :key_resource_queries
     import_fields :key_result_queries
     import_fields :kpi_queries
     import_fields :milestone_queries

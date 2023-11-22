@@ -64,11 +64,16 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 }
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
+  const { project } = useLoadedData();
+
   const remove = useRemoveAction(resource!);
 
   const title = resource!.title;
   const icon = <ResourceIcon resourceType={resource!.resourceType} size={32} />;
   const removeId = createTestId("remove-resource", title);
+
+  const editPath = createPath("projects", project.id, "resources", resource!.id, "edit");
+  const editId = createTestId("edit-resource", title);
 
   return (
     <div className="rounded border border-stroke-base text-center">
@@ -85,7 +90,9 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
       </DivLink>
 
       <div className="border-t border-stroke-base w-full text-sm py-1 bg-surface-dimmed font-semibold">
-        <Link to="">Edit</Link>
+        <Link to={editPath} testId={editId}>
+          Edit
+        </Link>
         <span className="mx-1">&middot;</span>
         <ButtonLink onClick={remove} testId={removeId}>
           Remove

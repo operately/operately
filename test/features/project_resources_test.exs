@@ -1,12 +1,7 @@
 defmodule Operately.Features.ProjectResourcesTest do
   use Operately.FeatureCase
 
-  import Operately.PeopleFixtures
-  import Operately.UpdatesFixtures
-
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -16,15 +11,15 @@ defmodule Operately.Features.ProjectResourcesTest do
   end
 
   @tag login_as: :champion
-  feature "listing key resources", ctx do
+  feature "listing key resources on the project dashboard", ctx do
     ctx
     |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
     |> add_key_resource("Website", "https://operately.com", "generic")
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
-    |> UI.assert_has(Query.text("Website"))
+    |> UI.assert_text("Code Repository")
+    |> UI.assert_text("Website")
   end
 
   @tag login_as: :champion
@@ -36,15 +31,15 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "Code Repository")
     |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
-    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_text("Code Repository")
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
+    |> UI.assert_text("Code Repository")
   end
 
   @tag login_as: :champion
-  feature "editing key resources on a project", ctx do
+  feature "adding non-first key resource to a project", ctx do
     ctx
     |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
     |> add_key_resource("Website", "https://operately.com", "generic")
@@ -56,14 +51,52 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "#product")
     |> UI.fill("URL", with: "https://operately.slack.com")
     |> UI.click(testid: "save")
-    |> UI.click(testid: "remove-resource-website")
-    |> UI.assert_has(Query.text("Code Repository"))
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(Query.text("Code Repository"))
-    |> UI.assert_has(Query.text("#product"))
-    |> UI.refute_has(Query.text("Website"))
+    |> UI.assert_text("#product")
+  end
+
+  @tag login_as: :champion
+  feature "removing a key resource from a project", ctx do
+    ctx
+    |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
+    |> add_key_resource("Website", "https://operately.com", "generic")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "edit-resources-link")
+    |> UI.click(testid: "remove-resource-website")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_text("Code Repository")
+    |> UI.refute_text("Website")
+  end
+
+  @tag login_as: :champion
+  feature "editing a key resource", ctx do
+    ctx
+    |> add_key_resource("Code Repository", "https://github.com/operately/operately", "github-repository")
+    |> add_key_resource("Website", "https://operately.com", "generic")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "edit-resources-link")
+    |> UI.click(testid: "edit-resource-code-repository")
+    |> UI.fill("Name", with: "Operately Repo")
+    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.click(testid: "save")
+
+    ctx
+    |> UI.refute_text("Code Repository")
+    |> UI.assert_text("Operately Repo")
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_text("Operately Repo")
+    |> UI.refute_text("Code Repository")
+    |> UI.assert_text("Website")
   end
 
   #

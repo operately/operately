@@ -1,6 +1,8 @@
 import { ProjectKeyResource } from "@/gql/generated";
 
+export { getKeyResource } from "./queries";
 export { useRemoveResource } from "./useRemoveResource";
+export { useEditResource } from "./useEditResource";
 export { useAddResource } from "./useAddResource";
 
 export type KeyResource = ProjectKeyResource;
