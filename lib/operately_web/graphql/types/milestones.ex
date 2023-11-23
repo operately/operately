@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Graphql.Types.Milestones do
     field :id, non_null(:id)
     field :title, non_null(:string)
     field :status, non_null(:string)
+    field :inserted_at, :date
 
     field :deadline_at, :date
     field :completed_at, :date

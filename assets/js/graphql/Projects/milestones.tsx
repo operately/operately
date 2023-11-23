@@ -13,6 +13,7 @@ export const FRAGMENT = `
     deadlineAt
     completedAt
     description
+    insertedAt  
 
     comments {
       id

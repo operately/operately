@@ -10,7 +10,7 @@ import * as Paper from "@/components/PaperContainer";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import * as TipTapEditor from "@/components/Editor";
-import Button, { IconButton } from "@/components/Button";
+import Button, { IconButton, GhostButton } from "@/components/Button";
 import Avatar from "@/components/Avatar";
 import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
@@ -20,9 +20,12 @@ import { useLoadedData, useRefresh } from "./loader";
 import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
 import { ButtonLink } from "@/components/Link";
 
+import { useFormState } from "./useForm";
+
 export function Page() {
   const { project, milestone, me } = useLoadedData();
-  const refetch = useRefresh();
+
+  const form = useFormState(milestone);
 
   return (
     <Pages.Page title={[milestone.title, project.name]}>
@@ -34,13 +37,33 @@ export function Page() {
             <MilestoneName milestone={milestone} />
           </div>
 
-          <div className="flex items-center gap-12 mb-4">
-            <Status milestone={milestone} />
-            <DueDate milestone={milestone} />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-12">
+              <Status milestone={milestone} />
+              <DueDate milestone={milestone} />
+            </div>
+
+            <GhostButton size="xs" onClick={() => {}} data-test-id="edit-milestone">
+              Complete Milestone
+            </GhostButton>
           </div>
 
-          <div className="border-t border-stroke-base mb-8 pt-4 text-sm">
-            <Description milestone={milestone} refetch={refetch} />
+          <div className="border-t border-stroke-base mb-8 pt-4">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-1/5 text-sm">
+                <div className="font-semibold text-content-accent">Description</div>
+
+                {milestone.description && (
+                  <ButtonLink onClick={form.description.startEditing} data-test-id="write-milestone-description">
+                    Edit
+                  </ButtonLink>
+                )}
+              </div>
+
+              <div className="flex-1">
+                <Description milestone={milestone} form={form} />
+              </div>
+            </div>
           </div>
 
           <Comments milestone={milestone} me={me} />
@@ -91,41 +114,25 @@ function DueDate({ milestone }) {
   );
 }
 
-function DetailList({ children }) {
-  return <div className="flex flex-col border-b border-stroke-base">{children}</div>;
-}
-
-function DetailListItem({ title, value }) {
-  return (
-    <div className="flex items-start gap-4 py-6 border-t border-stroke-base text-sm">
-      <div className="font-semibold text-content-accent w-1/5">{title}</div>
-
-      <div className="flex-1">{value}</div>
-    </div>
-  );
-}
-
-function Description({ milestone, refetch }) {
-  const [editing, _, setEditing, setNotEditing] = useBoolState(false);
-
-  if (editing) {
-    return <DescriptionEdit milestone={milestone} onSave={setNotEditing} onCancel={setNotEditing} refetch={refetch} />;
+function Description({ milestone, form }) {
+  if (form.description.state === "edit") {
+    return <DescriptionEdit form={form} />;
   } else {
     if (milestone.description) {
-      return <DescriptionFilled milestone={milestone} onEdit={setEditing} />;
+      return <DescriptionFilled milestone={milestone} />;
     } else {
-      return <DescriptionZeroState onEdit={setEditing} />;
+      return <DescriptionZeroState form={form} />;
     }
   }
 }
 
-function DescriptionZeroState({ onEdit }) {
+function DescriptionZeroState({ form }) {
   return (
     <div>
-      <div className="text-content-dimmed">No description yet</div>
+      <div className="text-content-dimmed text-sm">No description yet</div>
 
-      <div className="font-semibold mt-1">
-        <ButtonLink onClick={onEdit} data-test-id="write-milestone-description">
+      <div className="font-semibold mt-1 text-sm">
+        <ButtonLink onClick={form.description.startEditing} data-test-id="write-milestone-description">
           Add description
         </ButtonLink>
       </div>
@@ -133,100 +140,60 @@ function DescriptionZeroState({ onEdit }) {
   );
 }
 
-function DescriptionFilled({ milestone, onEdit }) {
+function DescriptionFilled({ milestone }) {
   return (
-    <div className="relative group hover:bg-surface-accent p-1.5 -m-1.5" data-test-id="milestone-description">
-      <div style={{ width: "calc(100% - 2rem)" }}>
-        <RichContent jsonContent={milestone.description} />
-      </div>
-
-      <div className="absolute top-1.5 right-1 opacity-0 group-hover:opacity-100">
-        <IconButton
-          color="green"
-          size="sm"
-          tooltip="Edit description"
-          onClick={onEdit}
-          icon={<Icons.IconEdit size={16} />}
-          data-test-id="edit-milestone-description"
-        ></IconButton>
-      </div>
+    <div>
+      <RichContent jsonContent={milestone.description} />
     </div>
   );
 }
 
-function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
-  const peopleSearch = People.usePeopleSearch();
-
-  const { editor, submittable, empty } = TipTapEditor.useEditor({
-    placeholder: "Write here...",
-    content: JSON.parse(milestone.description || "{}"),
-    editable: true,
-    className: "pb-2 min-h-[200px]",
-    peopleSearch: peopleSearch,
-  });
-
-  const [post, { loading }] = Milestones.useUpdateDescription();
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (!submittable) return;
-    if (loading) return;
-
-    const content = empty ? null : JSON.stringify(editor.getJSON());
-
-    await post({
-      variables: {
-        input: {
-          id: milestone.id,
-          description: content,
-        },
-      },
-    });
-
-    await onSave();
-    refetch();
-  };
-
+function DescriptionEdit({ form }) {
   return (
     <div
       className="border-x border-b border-stroke-base rounded relative overflow-hidden"
       data-test-id="milestone-description-editor"
     >
       <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={editor} variant="large" />
+        <TipTapEditor.Toolbar editor={form.description.editor} variant="large" />
 
         <div className="p-2">
-          <TipTapEditor.EditorContent editor={editor} className="min-h-[200px]" />
+          <TipTapEditor.EditorContent editor={form.description.editor} className="min-h-[200px]" />
+
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Button
-                onClick={handlePost}
-                loading={loading}
-                disabled={!submittable}
+                onClick={form.description.submit}
+                loading={form.description.submitting}
+                disabled={!form.description.submittable}
                 variant="success"
                 data-test-id="save-milestone-description"
                 size="small"
               >
-                {submittable ? "Save" : "Uploading..."}
+                {form.description.submittable ? "Save" : "Uploading..."}
               </Button>
 
-              <Button variant="secondary" size="small" onClick={onCancel}>
+              <Button variant="secondary" size="small" onClick={form.description.cancelEditing}>
                 Cancel
               </Button>
             </div>
           </div>
         </div>
 
-        <TipTapEditor.LinkEditForm editor={editor} />
+        <TipTapEditor.LinkEditForm editor={form.description.editor} />
       </TipTapEditor.Root>
     </div>
   );
 }
 
 function Comments({ milestone, me }) {
+  const { project } = useLoadedData();
+
   return (
     <div className="-mx-12 px-12 -mb-10 pb-10 rounded-b bg-surface-dimmed border-t border-surface-outline">
       <h1 className="uppercase text-xs font-semibold text-content-accent pb-4 mt-8">Comments</h1>
+
+      <CommentMilestoneCreated author={project.champion} milestone={milestone} />
 
       {milestone.comments.map((comment) => (
         <React.Fragment key={comment.id}>
@@ -241,86 +208,70 @@ function Comments({ milestone, me }) {
   );
 }
 
-function Comment({ comment }) {
+function CommentShell({ author, time, children }) {
   return (
     <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
+      <div className="text-sm w-1/5">
+        <div className="font-medium text-content-accent">
+          <FormattedTime time={time} format="short-date" />
+        </div>
+        <div className="text-content-dimmed">
+          <FormattedTime time={time} format="time-only" />
+        </div>
+      </div>
+
       <div className="shrink-0">
-        <Avatar person={comment.author} size="normal" />
+        <Avatar person={author} size="normal" />
       </div>
 
-      <div className="flex-1">
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
-            <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
-            </span>
-          </div>
-        </div>
-
-        <div className="mb-1">
-          <RichContent jsonContent={comment.message} />
-        </div>
-      </div>
+      <div className="flex-1">{children}</div>
     </div>
+  );
+}
+
+function Comment({ comment }) {
+  return (
+    <CommentShell author={comment.author} time={comment.insertedAt}>
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
+        </div>
+      </div>
+
+      <RichContent jsonContent={comment.message} />
+    </CommentShell>
   );
 }
 
 function CompletedComment({ comment }) {
   return (
-    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
-      <div className="shrink-0">
-        <Avatar person={comment.author} size="normal" />
+    <CommentShell author={comment.author} time={comment.insertedAt}>
+      <div className="flex items-center gap-1 mt-1.5">
+        <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
+        <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
       </div>
-
-      <div className="flex-1">
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="font-bold -mt-0.5"></div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mt-1">
-          <div className="flex items-center gap-1">
-            <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
-            <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
-          </div>
-
-          <span className="text-content-dimmed text-sm">
-            <FormattedTime time={comment.insertedAt} format="relative" />
-          </span>
-        </div>
-      </div>
-    </div>
+    </CommentShell>
   );
 }
 
 function ReopenedComment({ comment }) {
   return (
-    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
-      <div className="shrink-0">
-        <Avatar person={comment.author} size="normal" />
+    <CommentShell author={comment.author} time={comment.insertedAt}>
+      <div className="flex items-center gap-1 mt-1.5">
+        <Icons.IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
+        <div className="flex-1 pr-2 font-semibold text-content-accent">Re-Opened the Milestone</div>
       </div>
+    </CommentShell>
+  );
+}
 
-      <div className="flex-1">
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="font-bold -mt-0.5"></div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mt-1">
-          <div className="flex items-center gap-1">
-            <Icons.IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
-            <div className="flex-1 pr-2 font-semibold text-content-accent">Re-Opened the Milestone</div>
-          </div>
-
-          <span className="text-content-dimmed text-sm">
-            <FormattedTime time={comment.insertedAt} format="relative" />
-          </span>
-        </div>
+function CommentMilestoneCreated({ author, milestone }) {
+  return (
+    <CommentShell author={author} time={milestone.insertedAt}>
+      <div className="flex items-center gap-1 mt-1.5">
+        <div className="flex-1 pr-2 font-semibold text-content-accent">Added this Milestone to the Project</div>
       </div>
-    </div>
+    </CommentShell>
   );
 }
 
@@ -328,7 +279,7 @@ function AddComment({ milestone, me }) {
   const [active, _, activate, deactivate] = useBoolState(false);
 
   if (active) {
-    return <AddCommentActive milestone={milestone} me={me} />;
+    return <AddCommentActive milestone={milestone} me={me} deactivate={deactivate} />;
   } else {
     return <AddCommentInactive activate={activate} me={me} />;
   }
@@ -337,12 +288,15 @@ function AddComment({ milestone, me }) {
 function AddCommentInactive({ me, activate }) {
   return (
     <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
-      <div className="shrink-0">
-        <Avatar person={me} size="normal" />
-      </div>
+      <div className="w-1/5"></div>
+      <div className="flex-1 flex items-center gap-3">
+        <div className="shrink-0">
+          <Avatar person={me} size="normal" />
+        </div>
 
-      <div className="flex-1 text-content-dimmed mt-1 cursor-pointer" onClick={activate}>
-        Add a comment...
+        <div className="flex-1 text-content-dimmed mt-1 cursor-pointer" onClick={activate}>
+          Add a comment...
+        </div>
       </div>
     </div>
   );
@@ -403,9 +357,11 @@ function AddCommentActive({ milestone, me, deactivate }) {
 
   return (
     <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
-      <div className="shrink-0">{avatar}</div>
-
-      <div className="flex-1">{commentBox}</div>
+      <div className="w-1/5"></div>
+      <div className="flex-1 flex items-start gap-3">
+        <div className="shrink-0">{avatar}</div>
+        <div className="flex-1">{commentBox}</div>
+      </div>
     </div>
   );
 }
