@@ -43,9 +43,17 @@ export function Page() {
               <DueDate milestone={milestone} />
             </div>
 
-            <GhostButton size="xs" onClick={() => {}} data-test-id="edit-milestone">
-              Complete Milestone
-            </GhostButton>
+            {milestone.status === "pending" && (
+              <GhostButton size="xs" onClick={form.completeMilestone} data-test-id="complete-milestone">
+                Complete Milestone
+              </GhostButton>
+            )}
+
+            {milestone.status === "done" && (
+              <GhostButton size="xs" onClick={form.reopenMilestone} data-test-id="reopen-milestone" type="secondary">
+                Re-Open Milestone
+              </GhostButton>
+            )}
           </div>
 
           <div className="border-t border-stroke-base mb-8 pt-4">
@@ -83,11 +91,11 @@ function Status({ milestone }) {
   }
   if (Milestones.isUpcoming(milestone)) {
     title = "Upcoming";
-    color = "text-green-500";
+    color = "text-yellow-500";
   }
   if (Milestones.isDone(milestone)) {
     title = "Completed";
-    color = "text-purple-500";
+    color = "text-green-500";
   }
 
   return (
@@ -197,7 +205,7 @@ function Comments({ milestone, me }) {
 
       {milestone.comments.map((comment) => (
         <React.Fragment key={comment.id}>
-          <Comment key={comment.id} comment={comment.comment} />
+          {comment.comment.message !== "null" && <Comment key={comment.id} comment={comment.comment} />}
           {comment.action === "complete" && <CompletedComment comment={comment.comment} />}
           {comment.action === "reopen" && <ReopenedComment comment={comment.comment} />}
         </React.Fragment>

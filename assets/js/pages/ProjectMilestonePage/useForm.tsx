@@ -7,15 +7,59 @@ import { useRefresh } from "./loader";
 
 interface FormState {
   description: DescriptionState;
+  completeMilestone: () => void;
+  reopenMilestone: () => void;
 }
 
 export function useFormState(milestone: Milestones.Milestone): FormState {
   const description = useDescriptionState(milestone);
+  const completeMilestone = useCompleteMilestone(milestone);
+  const reopenMilestone = useReopenMilestone(milestone);
 
   return {
     description,
+    completeMilestone,
+    reopenMilestone,
   };
 }
+
+const useCompleteMilestone = (milestone: Milestones.Milestone) => {
+  const refresh = useRefresh();
+  const [post] = Milestones.usePostComment();
+
+  return async () => {
+    await post({
+      variables: {
+        input: {
+          milestoneID: milestone.id,
+          content: null,
+          action: "complete",
+        },
+      },
+    });
+
+    refresh();
+  };
+};
+
+const useReopenMilestone = (milestone: Milestones.Milestone) => {
+  const refresh = useRefresh();
+  const [post] = Milestones.usePostComment();
+
+  return async () => {
+    await post({
+      variables: {
+        input: {
+          milestoneID: milestone.id,
+          content: null,
+          action: "reopen",
+        },
+      },
+    });
+
+    refresh();
+  };
+};
 
 interface DescriptionState {
   state: "show" | "edit";
