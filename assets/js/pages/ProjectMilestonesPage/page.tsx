@@ -1,43 +1,21 @@
 import React from "react";
 
-import { useDocumentTitle } from "@/layouts/header";
-
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Milestones from "@/graphql/Projects/milestones";
+import * as Pages from "@/components/Pages";
 
 import Button from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
 
-import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
-import * as Me from "@/graphql/Me";
 
 import * as Time from "@/utils/time";
 
-interface LoaderResult {
-  project: Projects.Project;
-  me: any;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  let projectData = await client.query({
-    query: Projects.GET_PROJECT,
-    variables: { id: params.projectID },
-    fetchPolicy: "network-only",
-  });
-
-  let meData = await client.query({
-    query: Me.GET_ME,
-  });
-
-  return {
-    project: projectData.data.project,
-    me: meData.data.me,
-  };
-}
+import { useLoadedData, useRefresh } from "./loader";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 
 interface ContextValue {
   project: Projects.Project;
@@ -48,9 +26,8 @@ interface ContextValue {
 const Context = React.createContext<ContextValue | null>(null);
 
 export function Page() {
-  const [{ project, me }, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
-
-  useDocumentTitle(project.name);
+  const { project, me } = useLoadedData();
+  const refetch = useRefresh();
 
   const [formVisible, setFormVisible] = React.useState(false);
   const showForm = () => setFormVisible(true);
@@ -63,22 +40,19 @@ export function Page() {
   const editable = project.champion?.id === me.id;
 
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${project.id}`}>
-          <Icons.IconClipboardList size={16} />
-          {project.name}
-        </Paper.NavItem>
-      </Paper.Navigation>
+    <Pages.Page title={["Milestones", project.name]}>
+      <Paper.Root>
+        <ProjectPageNavigation project={project} />
 
-      <Paper.Body>
-        <Context.Provider value={{ project, refetch, editable }}>
-          <Title onAddClick={showForm} />
-          <AddMilestoneForm visible={formVisible} onCancel={hideForm} onSubmit={refetchAndHideForm} />
-          <Content />
-        </Context.Provider>
-      </Paper.Body>
-    </Paper.Root>
+        <Paper.Body>
+          <Context.Provider value={{ project, refetch, editable }}>
+            <Title onAddClick={showForm} />
+            <AddMilestoneForm visible={formVisible} onCancel={hideForm} onSubmit={refetchAndHideForm} />
+            <Content />
+          </Context.Provider>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
