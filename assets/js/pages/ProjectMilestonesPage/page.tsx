@@ -6,7 +6,7 @@ import * as Forms from "@/components/Form";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as Pages from "@/components/Pages";
 
-import Button from "@/components/Button";
+import Button, { GhostButton } from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
 
@@ -14,6 +14,8 @@ import * as Time from "@/utils/time";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { createPath } from "@/utils/paths";
+import { Link } from "@/components/Link";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -29,7 +31,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Milestones", project.name]}>
-      <Paper.Root>
+      <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
@@ -53,10 +55,9 @@ function Title({ onAddClick }) {
 
       <div>
         {project.permissions.canEditMilestone && (
-          <Button variant="success" onClick={onAddClick} data-test-id="add-milestone">
-            <Icons.IconPlus size={20} />
-            Add
-          </Button>
+          <GhostButton onClick={onAddClick} data-test-id="add-milestone">
+            Add Milestone
+          </GhostButton>
         )}
       </div>
     </div>
@@ -189,37 +190,18 @@ function ItemEdit({ milestone, onCancel, onSubmit }) {
 }
 
 function ItemShow({ milestone, onEditClick }) {
-  const refetch = useRefresh();
   const { project } = useLoadedData();
-
-  const [setStatus] = Milestones.useSetStatus({ onCompleted: refetch });
-
-  const toggleComplete = async () => {
-    await setStatus({
-      variables: {
-        milestoneId: milestone.id,
-        status: milestone.status === "pending" ? "done" : "pending",
-      },
-    });
-  };
+  const path = createPath("projects", project.id, "milestones", milestone.id);
 
   return (
-    <div className="flex items-center bg-surface-dimmed px-4 py-2 rounded-lg gap-2">
-      {project.permissions.canEditMilestone && (
-        <div className="shrink-0 cursor-pointer" onClick={toggleComplete}>
-          {milestone.status === "done" ? (
-            <Icons.IconSquareCheck size={20} className="text-green-500" />
-          ) : (
-            <Icons.IconSquare size={20} className="text-content-accent" />
-          )}
-        </div>
-      )}
-
+    <div className="flex items-center bg-surface-dimmed px-4 py-2 rounded-lg gap-2 border border-surface-outline">
       <div className="shrink-0">
         <Icons.IconFlag3Filled size={16} className="text-yellow-500" />
       </div>
 
-      <div className="flex-1 font-medium">{milestone.title}</div>
+      <div className="flex-1 font-bold">
+        <Link to={path}>{milestone.title}</Link>
+      </div>
 
       <div className="shrink-0">
         <FormattedTime time={milestone.deadlineAt} format="long-date" />
