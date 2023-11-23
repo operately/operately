@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 
 export * from "./GhostButton";
-export * from "./IconButton";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "attention" | "success" | "secondary" | "danger";

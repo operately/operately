@@ -14,7 +14,7 @@ import { Comments } from "./Comments";
 export function Page() {
   const { project, milestone, me } = useLoadedData();
 
-  const form = useFormState(milestone);
+  const form = useFormState(project, milestone);
 
   return (
     <Pages.Page title={[milestone.title, project.name]}>

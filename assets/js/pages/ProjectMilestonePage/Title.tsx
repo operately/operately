@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { GhostButton } from "@/components/Button";
+import { Options } from "./Options";
 
 export function Title({ milestone, form }) {
   if (form.title.state === "edit") {
@@ -12,12 +13,14 @@ export function Title({ milestone, form }) {
 
 function DisplayTitle({ milestone, form }) {
   return (
-    <div className="flex gap-2 items-center mb-4">
-      <div className="text-2xl font-extrabold text-content-accent hover:bg-shade-1 -m-1.5 p-1.5">{milestone.title}</div>
+    <div className="flex items-start justify-between gap-4">
+      <div className="flex gap-2 items-center mb-4">
+        <div className="text-2xl font-extrabold text-content-accent hover:bg-shade-1 -m-1.5 p-1.5">
+          {milestone.title}
+        </div>
+      </div>
 
-      <GhostButton size="xxs" onClick={form.title.startEditing} data-test-id="edit-milestone" type="secondary">
-        Edit
-      </GhostButton>
+      <Options form={form} />
     </div>
   );
 }

@@ -1,31 +1,37 @@
 import * as React from "react";
 import * as Milestones from "@/graphql/Projects/milestones";
+import * as Projects from "@/graphql/Projects";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
 import * as Time from "@/utils/time";
 
 import { useRefresh } from "./loader";
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import { createPath } from "@/utils/paths";
 
 interface FormState {
   description: DescriptionState;
   title: TitleState;
   deadline: DeadlineState;
-  setDeadline: (value: Date) => void;
+
+  archive: () => void;
   completeMilestone: () => void;
   reopenMilestone: () => void;
 }
 
-export function useFormState(milestone: Milestones.Milestone): FormState {
+export function useFormState(project: Projects.Project, milestone: Milestones.Milestone): FormState {
   const description = useDescriptionState(milestone);
   const title = useTitleState(milestone);
   const deadline = useDeadlineState(milestone);
   const completeMilestone = useCompleteMilestone(milestone);
   const reopenMilestone = useReopenMilestone(milestone);
+  const archive = useArchiveMilestone(project, milestone);
 
   return {
     description,
     title,
     deadline,
+    archive,
     completeMilestone,
     reopenMilestone,
   };
@@ -62,6 +68,23 @@ const useReopenMilestone = (milestone: Milestones.Milestone) => {
           content: null,
           action: "reopen",
         },
+      },
+    });
+
+    refresh();
+  };
+};
+
+const useArchiveMilestone = (project: Projects.Project, milestone: Milestones.Milestone) => {
+  const refresh = useRefresh();
+  const gotoProject = useNavigateTo(createPath("projects", project.id));
+
+  const [post] = Milestones.useRemoveMilestone({ onCompleted: gotoProject });
+
+  return async () => {
+    await post({
+      variables: {
+        milestoneId: milestone.id,
       },
     });
 
