@@ -4,6 +4,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as Pages from "@/components/Pages";
+import * as Time from "@/utils/time";
 
 import { GhostButton } from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
@@ -17,12 +18,13 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Milestones", project.name]}>
+    <Pages.Page title={["Timeline", project.name]}>
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
           <Title project={project} />
+          <Dates project={project} />
           <MilestoneList project={project} />
         </Paper.Body>
       </Paper.Root>
@@ -35,15 +37,42 @@ function Title({ project }) {
 
   return (
     <div className="flex items-center justify-between mb-8">
-      <div className="text-2xl font-extrabold ">Milestones</div>
+      <div className="text-2xl font-extrabold leading-none">Project Timeline</div>
 
       {project.permissions.canEditMilestone && (
         <div>
-          <GhostButton linkTo={editTimeline} data-test-id="add-milestone">
-            Add Milestones
+          <GhostButton linkTo={editTimeline} data-test-id="add-milestone" size="sm">
+            Edit Timeline
           </GhostButton>
         </div>
       )}
+    </div>
+  );
+}
+
+function Dates({ project }) {
+  const start = Time.parse(project.startedAt);
+  const end = Time.parse(project.deadline);
+
+  return (
+    <div className="flex items-center gap-12 mb-8">
+      <div className="flex flex-col">
+        <div className="text-sm font-bold">Start Date</div>
+        <div className="text-content-accent">
+          <FormattedTime time={start} format="long-date" />
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <div className="text-sm font-bold">Due Date</div>
+        {end ? (
+          <div className="text-content-accent">
+            <FormattedTime time={end} format="long-date" />
+          </div>
+        ) : (
+          <div className="text-content-dimmed">No due date</div>
+        )}
+      </div>
     </div>
   );
 }
@@ -58,9 +87,18 @@ function MilestoneList({ project }) {
 
   const showCompletedSeperator = pending.length > 0 && completed.length > 0;
 
+  if (pending.length === 0 && completed.length === 0) {
+    return (
+      <div className="flex flex-col mb-8 gap-1 mt-4">
+        <h2 className="font-bold">Upcomming Milestones</h2>
+        <div className="">No milestones defined yet.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col mb-8 gap-2 mt-4">
-      {<h2 className="font-bold">Upcoming</h2>}
+      {<h2 className="font-bold">Upcomming Milestones</h2>}
 
       <div>
         {pending.map((m) => (
@@ -68,7 +106,7 @@ function MilestoneList({ project }) {
         ))}
       </div>
 
-      {showCompletedSeperator && <h2 className="font-bold mt-12">Completed</h2>}
+      {showCompletedSeperator && <h2 className="font-bold mt-12">Completed Milestones</h2>}
 
       <div>
         {completed.map((m) => (
@@ -96,6 +134,12 @@ function Item({ project, milestone }) {
 
       <div className="shrink-0 text-sm ml-6">
         Due Date: <FormattedTime time={milestone.deadlineAt} format="long-date" />
+        {milestone.completedAt && (
+          <>
+            {" "}
+            &middot; Completed on <FormattedTime time={milestone.completedAt} format="long-date" />
+          </>
+        )}
       </div>
     </div>
   );

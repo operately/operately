@@ -68,7 +68,11 @@ export function Page() {
                   <div className="font-bold text-sm">Timeline</div>
 
                   <div className="text-sm">
-                    {showEditMilestones(project) && <Link to={`/projects/${project.id}/edit/timeline`}>Edit</Link>}
+                    {showEditMilestones(project) && (
+                      <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
+                        Manage
+                      </Link>
+                    )}
                   </div>
                 </div>
 

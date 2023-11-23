@@ -31,13 +31,15 @@ function Completion({ project }: { project: Projects.Project }) {
   const done = project.milestones!.filter((m) => m!.status === "done");
   const total = pending.length + done.length;
 
+  console.log(pending.length, done.length, total);
+
   return (
     <div>
       <DimmedLabel>Completion</DimmedLabel>
 
       {pending.length === 0 && done.length === 0 && <NoMilestones />}
       {pending.length === 0 && done.length > 0 && <AllCompleted />}
-      {pending.length > 0 && <CompletionPieChart pending={pending.length} total={total} />}
+      {pending.length > 0 && <CompletionPieChart done={done.length} total={total} />}
     </div>
   );
 }
@@ -55,12 +57,12 @@ function AllCompleted() {
   );
 }
 
-function CompletionPieChart({ pending, total }) {
+function CompletionPieChart({ done, total }) {
   return (
     <div className="flex items-center gap-2">
-      <MiniPieChart completed={pending} total={total} />
+      <MiniPieChart completed={done} total={total} />
       <span className="font-medium">
-        {pending}/{total} milestones completed
+        {done}/{total} milestones completed
       </span>
     </div>
   );

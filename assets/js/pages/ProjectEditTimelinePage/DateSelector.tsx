@@ -1,4 +1,5 @@
 import React from "react";
+import classnames from "classnames";
 
 import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
@@ -12,15 +13,34 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
     onChange(date);
   }, []);
 
+  const onLabelClick = React.useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const className = classnames(
+    {
+      "bg-surface-dimmed hover:bg-surface-accent": date,
+      "bg-surface hover:bg-surface-accent": !date,
+    },
+    "border border-surface-outline",
+    "rounded px-2 py-2",
+    "relative",
+    "group",
+    "cursor-pointer",
+    "w-full outline-none leading-none",
+  );
+
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <div
-          className="bg-surface-dimmed hover:bg-surface-accent border border-surface-outline rounded px-2 py-2 relative group cursor-pointer w-full outline-none leading-none"
-          onClick={() => setOpen(true)}
-          data-test-id={testID}
-        >
-          {date ? <FormattedTime time={date} format="short-date" /> : placeholder}
+        <div className={className} onClick={onLabelClick} data-test-id={testID}>
+          {date ? (
+            <span className="text-content-accent">
+              <FormattedTime time={date} format="short-date" />
+            </span>
+          ) : (
+            <span className="text-content-subtle">{placeholder}</span>
+          )}
         </div>
       </Popover.Trigger>
 

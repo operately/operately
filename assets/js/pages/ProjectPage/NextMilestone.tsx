@@ -15,7 +15,7 @@ export function NextMilestone({ project }) {
     return <MilestonesZeroState project={project} />;
   }
 
-  const nextMilestones = getNextMilestones(project, 3);
+  const nextMilestones = getNextMilestones(project);
 
   if (nextMilestones.length === 0) {
     return <AllMilestonesCompleted project={project} />;
@@ -57,7 +57,7 @@ function AllMilestonesCompleted({ project }) {
 function NextMilestoneList({ project, nextMilestones }) {
   return (
     <div>
-      <DimmedLabel>Next Milestones</DimmedLabel>
+      <DimmedLabel>Upcomming Milestones</DimmedLabel>
 
       {nextMilestones.map((milestone) => (
         <MilestoneLink key={milestone.id} project={project} milestone={milestone} />
@@ -85,9 +85,8 @@ function MilestoneLink({ project, milestone }) {
   );
 }
 
-function getNextMilestones(project: Projects.Project, n: number) {
-  const pending = Milestones.filterPending(project.milestones);
-  const milestones = Milestones.sortByDeadline(pending);
+function getNextMilestones(project: Projects.Project) {
+  const pending = Milestones.filterPending(project.milestones!);
 
-  return milestones.slice(0, n);
+  return Milestones.sortByDeadline(pending);
 }
