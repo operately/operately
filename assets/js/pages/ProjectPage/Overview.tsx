@@ -26,12 +26,9 @@ function Status({ project }: { project: Projects.Project }) {
 }
 
 function Completion({ project }: { project: Projects.Project }) {
-  console.log(project.milestones);
   const pending = project.milestones!.filter((m) => m!.status === "pending");
   const done = project.milestones!.filter((m) => m!.status === "done");
   const total = pending.length + done.length;
-
-  console.log(pending.length, done.length, total);
 
   return (
     <div>

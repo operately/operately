@@ -6,7 +6,6 @@ export const DropFilePlugin = new Plugin({
     handleDOMEvents: {
       dragover: (view, _event) => {
         if (!view.editable) return false;
-        console.log(view.editable);
 
         view.dom.classList.add("dragover");
         return true;

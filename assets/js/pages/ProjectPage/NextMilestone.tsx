@@ -26,7 +26,7 @@ export function NextMilestone({ project }) {
 
 function MilestonesZeroState({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestoes-link">
+    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestones-link">
       Add milestones
     </Link>
   );

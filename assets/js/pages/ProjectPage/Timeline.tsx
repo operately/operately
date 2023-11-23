@@ -1,14 +1,13 @@
 import React from "react";
 
 import * as Time from "@/utils/time";
+import * as Projects from "@/graphql/Projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
 import { DimmedLabel } from "./Label";
-import { Indicator } from "@/components/ProjectHealthIndicators";
 import { GhostButton } from "@/components/Button";
-import * as Projects from "@/graphql/Projects";
 import { NextMilestone } from "./NextMilestone";
 
 export default function Timeline({ project }) {
@@ -22,15 +21,6 @@ export default function Timeline({ project }) {
       </div>
 
       <NextMilestone project={project} />
-    </div>
-  );
-}
-
-function Status({ project }: { project: Projects.Project }) {
-  return (
-    <div>
-      <DimmedLabel>Status</DimmedLabel>
-      <Indicator value={project.health} type="status" />
     </div>
   );
 }

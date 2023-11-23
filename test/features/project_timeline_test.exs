@@ -24,6 +24,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> UI.click(testid: "save")
 
     ctx
+    |> ProjectSteps.visit_project_page()
     |> ProjectFeedSteps.assert_project_timeline_edited(
       author: ctx.champion, 
       messages: [
@@ -79,13 +80,16 @@ defmodule Operately.Features.ProjectsTimelineTest do
     })
 
     ctx
-    |> visit_page()
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "manage-timeline")
+    |> UI.click(testid: "edit-timeline")
     |> choose_day(field: "project-start", day: 10)
     |> choose_day(field: "project-due", day: 20)
     |> edit_milestone("contract-signed", "Contract Updated with Provider", 16)
     |> UI.click(testid: "save")
 
     ctx
+    |> ProjectSteps.visit_project_page()
     |> ProjectFeedSteps.assert_project_timeline_edited(
       author: ctx.champion, 
       messages: [
@@ -108,7 +112,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
   defp visit_page(ctx) do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "edit-project-timeline")
+    |> UI.click(testid: "add-milestones-link")
   end
 
   defp choose_day(ctx, field: field, day: day) do

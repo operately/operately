@@ -41,7 +41,7 @@ function Title({ project }) {
 
       {project.permissions.canEditMilestone && (
         <div>
-          <GhostButton linkTo={editTimeline} data-test-id="add-milestone" size="sm">
+          <GhostButton linkTo={editTimeline} testId="edit-timeline" size="sm">
             Edit Timeline
           </GhostButton>
         </div>
