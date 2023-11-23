@@ -1,5 +1,6 @@
 import React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as Pages from "@/components/Pages";
 
 import * as Time from "@/utils/time";
 
@@ -14,45 +15,44 @@ import Avatar from "@/components/Avatar";
 import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
 
-import { useDocumentTitle } from "@/layouts/header";
 import { useBoolState } from "@/utils/useBoolState";
-
 import { useLoadedData, useRefresh } from "./loader";
+import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
 
 export function Page() {
   const { project, milestone, me } = useLoadedData();
   const refetch = useRefresh();
 
-  useDocumentTitle(`${milestone.title} - ${project.name}`);
-
   return (
-    <Paper.Root>
-      <Navigation project={project} />
+    <Pages.Page title={[milestone.title, project.name]}>
+      <Paper.Root>
+        <ProjectMilestonesNavigation project={project} />
 
-      <Paper.Body>
-        <div className="flex items-start gap-4">
-          <div className="w-32 flex flex-row-reverse shrink-0 mt-1">
-            <Icons.IconFlagFilled size={24} className="text-yellow-400" />
+        <Paper.Body>
+          <div className="flex items-start gap-4">
+            <div className="w-32 flex flex-row-reverse shrink-0 mt-1">
+              <Icons.IconFlagFilled size={24} className="text-yellow-400" />
+            </div>
+
+            <MilestoneName milestone={milestone} />
           </div>
 
-          <MilestoneName milestone={milestone} />
-        </div>
+          <Separator />
 
-        <Separator />
+          <DetailList>
+            <DetailListItem title="Status" value={<StatusBadge milestone={milestone} />} />
+            <DetailListItem title="Due Date" value={<DueDate milestone={milestone} />} />
+            <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
+          </DetailList>
 
-        <DetailList>
-          <DetailListItem title="Status" value={<StatusBadge milestone={milestone} />} />
-          <DetailListItem title="Due Date" value={<DueDate milestone={milestone} />} />
-          <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
-        </DetailList>
+          <Separator />
 
-        <Separator />
+          <Comments milestone={milestone} refetch={refetch} />
 
-        <Comments milestone={milestone} refetch={refetch} />
-
-        <AddComment milestone={milestone} me={me} />
-      </Paper.Body>
-    </Paper.Root>
+          <AddComment milestone={milestone} me={me} />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
@@ -508,16 +508,5 @@ function MilestoneNameEdit({ milestone, onSave, onCancel }) {
         data-test-id="cancel-edit-milestone-title"
       ></IconButton>
     </div>
-  );
-}
-
-function Navigation({ project }) {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${project.id}`}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
-    </Paper.Navigation>
   );
 }
