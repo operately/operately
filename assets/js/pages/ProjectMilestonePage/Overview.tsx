@@ -5,6 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 
 import { GhostButton } from "@/components/Button";
+import { ButtonLink } from "@/components/Link";
 
 export function Overview({ milestone, form }) {
   return (
@@ -65,6 +66,10 @@ function DueDate({ milestone }) {
         <div className="font-medium text-content-accent leading-none">
           <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday" />
         </div>
+        &middot;
+        <ButtonLink onClick={milestone.openEditModal} data-test-id="edit-milestone">
+          Edit
+        </ButtonLink>
       </div>
     </div>
   );

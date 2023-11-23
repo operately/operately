@@ -7,17 +7,20 @@ import { useRefresh } from "./loader";
 
 interface FormState {
   description: DescriptionState;
+  title: TitleState;
   completeMilestone: () => void;
   reopenMilestone: () => void;
 }
 
 export function useFormState(milestone: Milestones.Milestone): FormState {
   const description = useDescriptionState(milestone);
+  const title = useTitleState(milestone);
   const completeMilestone = useCompleteMilestone(milestone);
   const reopenMilestone = useReopenMilestone(milestone);
 
   return {
     description,
+    title,
     completeMilestone,
     reopenMilestone,
   };
@@ -123,6 +126,65 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
     submit,
     submitting: loading,
     submittable,
+    startEditing,
+    stopEditing,
+    cancelEditing: stopEditing,
+  };
+}
+
+interface TitleState {
+  state: "show" | "edit";
+  title: string;
+  submitting: boolean;
+  submittable: boolean;
+
+  setTitle: (value: string) => void;
+  startEditing: () => void;
+  submit: (value: string) => void;
+  stopEditing: () => void;
+  cancelEditing: () => void;
+}
+
+function useTitleState(milestone: Milestones.Milestone): TitleState {
+  const refresh = useRefresh();
+
+  const [state, setState] = React.useState<"show" | "edit">("show");
+  const [title, setTitle] = React.useState(milestone.title);
+
+  const startEditing = React.useCallback(() => {
+    setState("edit");
+  }, []);
+
+  const stopEditing = React.useCallback(() => {
+    setState("show");
+  }, []);
+
+  const [post, { loading }] = Milestones.useUpdateTitle();
+
+  const submit = React.useCallback(async () => {
+    if (!title) return;
+    if (loading) return;
+
+    await post({
+      variables: {
+        input: {
+          id: milestone.id,
+          title,
+        },
+      },
+    });
+
+    refresh();
+    stopEditing();
+  }, [title, loading, milestone, stopEditing, refresh, post]);
+
+  return {
+    state,
+    title,
+    setTitle,
+    submit,
+    submitting: loading,
+    submittable: title.length > 0,
     startEditing,
     stopEditing,
     cancelEditing: stopEditing,
