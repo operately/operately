@@ -2,17 +2,15 @@ import * as React from "react";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as Icons from "@tabler/icons-react";
 
-import FormattedTime from "@/components/FormattedTime";
-
 import { GhostButton } from "@/components/Button";
-import { ButtonLink } from "@/components/Link";
+import { DateSelector } from "./Dateselector";
 
 export function Overview({ milestone, form }) {
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-12">
         <Status milestone={milestone} />
-        <DueDate milestone={milestone} />
+        <DueDate form={form} />
       </div>
 
       {milestone.status === "pending" && (
@@ -58,18 +56,19 @@ function Status({ milestone }) {
   );
 }
 
-function DueDate({ milestone }) {
+function DueDate({ form }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="uppercase text-xs font-semibold text-content-dimmed">Due Date</div>
       <div className="flex items-center gap-1">
-        <div className="font-medium text-content-accent leading-none">
-          <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday" />
-        </div>
-        &middot;
-        <ButtonLink onClick={milestone.openEditModal} data-test-id="edit-milestone">
-          Edit
-        </ButtonLink>
+        <DateSelector
+          date={form.deadline.date}
+          onChange={form.deadline.setDate}
+          minDate={null}
+          maxDate={null}
+          placeholder="Not set"
+          testID="due-date"
+        />
       </div>
     </div>
   );

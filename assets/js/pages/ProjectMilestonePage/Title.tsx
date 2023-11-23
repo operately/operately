@@ -15,7 +15,7 @@ function DisplayTitle({ milestone, form }) {
     <div className="flex gap-2 items-center mb-4">
       <div className="text-2xl font-extrabold text-content-accent hover:bg-shade-1 -m-1.5 p-1.5">{milestone.title}</div>
 
-      <GhostButton size="xs" onClick={form.title.startEditing} data-test-id="edit-milestone" type="secondary">
+      <GhostButton size="xxs" onClick={form.title.startEditing} data-test-id="edit-milestone" type="secondary">
         Edit
       </GhostButton>
     </div>

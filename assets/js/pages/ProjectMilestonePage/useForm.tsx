@@ -2,12 +2,15 @@ import * as React from "react";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
+import * as Time from "@/utils/time";
 
 import { useRefresh } from "./loader";
 
 interface FormState {
   description: DescriptionState;
   title: TitleState;
+  deadline: DeadlineState;
+  setDeadline: (value: Date) => void;
   completeMilestone: () => void;
   reopenMilestone: () => void;
 }
@@ -15,12 +18,14 @@ interface FormState {
 export function useFormState(milestone: Milestones.Milestone): FormState {
   const description = useDescriptionState(milestone);
   const title = useTitleState(milestone);
+  const deadline = useDeadlineState(milestone);
   const completeMilestone = useCompleteMilestone(milestone);
   const reopenMilestone = useReopenMilestone(milestone);
 
   return {
     description,
     title,
+    deadline,
     completeMilestone,
     reopenMilestone,
   };
@@ -188,5 +193,38 @@ function useTitleState(milestone: Milestones.Milestone): TitleState {
     startEditing,
     stopEditing,
     cancelEditing: stopEditing,
+  };
+}
+
+interface DeadlineState {
+  date: Date | null;
+  setDate: (value: Date | null) => void;
+}
+
+function useDeadlineState(milestone: Milestones.Milestone): DeadlineState {
+  const refresh = useRefresh();
+
+  const [post, { loading }] = Milestones.useSetDeadline();
+
+  const setDeadline = React.useCallback(
+    async (value: Date | null) => {
+      if (loading) return;
+      if (!value) return;
+
+      await post({
+        variables: {
+          milestoneId: milestone.id,
+          deadlineAt: Time.toDateWithoutTime(value),
+        },
+      });
+
+      refresh();
+    },
+    [milestone, refresh, post, loading],
+  );
+
+  return {
+    date: Time.parseDate(milestone.deadlineAt),
+    setDate: setDeadline,
   };
 }
