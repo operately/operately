@@ -18,6 +18,7 @@ import DatePicker from "react-datepicker";
 import { useBoolState } from "@/utils/useBoolState";
 import { useLoadedData, useRefresh } from "./loader";
 import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
+import { ButtonLink } from "@/components/Link";
 
 export function Page() {
   const { project, milestone, me } = useLoadedData();
@@ -25,73 +26,79 @@ export function Page() {
 
   return (
     <Pages.Page title={[milestone.title, project.name]}>
-      <Paper.Root>
+      <Paper.Root size="medium">
         <ProjectMilestonesNavigation project={project} />
 
-        <Paper.Body>
-          <div className="flex items-start gap-4">
-            <div className="w-32 flex flex-row-reverse shrink-0 mt-1">
-              <Icons.IconFlagFilled size={24} className="text-yellow-400" />
-            </div>
-
+        <Paper.Body minHeight="none">
+          <div className="flex items-center gap-2 mb-8">
             <MilestoneName milestone={milestone} />
           </div>
 
-          <Separator />
+          <div className="flex items-center gap-12 mb-4">
+            <Status milestone={milestone} />
+            <DueDate milestone={milestone} />
+          </div>
 
-          <DetailList>
-            <DetailListItem title="Status" value={<StatusBadge milestone={milestone} />} />
-            <DetailListItem title="Due Date" value={<DueDate milestone={milestone} />} />
-            <DetailListItem title="Description" value={<Description milestone={milestone} refetch={refetch} />} />
-          </DetailList>
+          <div className="border-t border-stroke-base mb-8 pt-4 text-sm">
+            <Description milestone={milestone} refetch={refetch} />
+          </div>
 
-          <Separator />
-
-          <Comments milestone={milestone} refetch={refetch} />
-
-          <AddComment milestone={milestone} me={me} />
+          <Comments milestone={milestone} me={me} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function StatusBadge({ milestone }) {
-  if (milestone.status === "pending") {
-    if (Milestones.isOverdue(milestone)) {
-      return (
-        <div className="bg-red-600 rounded font-bold text-content-accent px-1 text-sm inline-block uppercase tracking-wide -my-0.5">
-          Overdue
-        </div>
-      );
-    } else {
-      return (
-        <div className="bg-emerald-600 rounded font-bold text-content-accent px-1 text-sm inline-block uppercase tracking-wide -my-0.5">
-          Upcoming
-        </div>
-      );
-    }
-  } else {
-    return (
-      <div className="bg-purple-500 rounded font-bold text-content-accent px-1 text-sm inline-block uppercase tracking-wide -my-0.5">
-        Completed
-      </div>
-    );
+function Status({ milestone }) {
+  let title = "";
+  let color = "";
+
+  if (Milestones.isOverdue(milestone)) {
+    title = "Overdue";
+    color = "text-red-500";
   }
+  if (Milestones.isUpcoming(milestone)) {
+    title = "Upcoming";
+    color = "text-green-500";
+  }
+  if (Milestones.isDone(milestone)) {
+    title = "Completed";
+    color = "text-purple-500";
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="uppercase text-xs font-semibold text-content-dimmed">Status</div>
+      <div className="flex items-center gap-1">
+        <Icons.IconCircleFilled size={16} className={color} />
+        <div className="font-medium text-content-accent leading-none">{title}</div>
+      </div>
+    </div>
+  );
 }
 
-function Separator() {
-  return <div className="border-b border-stroke-base mt-4" />;
+function DueDate({ milestone }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="uppercase text-xs font-semibold text-content-dimmed">Due Date</div>
+      <div className="flex items-center gap-1">
+        <div className="font-medium text-content-accent leading-none">
+          <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function DetailList({ children }) {
-  return <div className="flex flex-col">{children}</div>;
+  return <div className="flex flex-col border-b border-stroke-base">{children}</div>;
 }
 
 function DetailListItem({ title, value }) {
   return (
-    <div className="flex items-start gap-4 pt-2 mt-2">
-      <div className="font-extrabold text-content-accent w-32 flex flex-row-reverse">{title}</div>
+    <div className="flex items-start gap-4 py-6 border-t border-stroke-base text-sm">
+      <div className="font-semibold text-content-accent w-1/5">{title}</div>
 
       <div className="flex-1">{value}</div>
     </div>
@@ -114,13 +121,15 @@ function Description({ milestone, refetch }) {
 
 function DescriptionZeroState({ onEdit }) {
   return (
-    <a
-      className="text-content-dimmed font-normal cursor-pointer hover:bg-surface-accent p-1.5 -m-1.5 w-full block"
-      onClick={onEdit}
-      data-test-id="write-milestone-description"
-    >
-      Add details or attach files...
-    </a>
+    <div>
+      <div className="text-content-dimmed">No description yet</div>
+
+      <div className="font-semibold mt-1">
+        <ButtonLink onClick={onEdit} data-test-id="write-milestone-description">
+          Add description
+        </ButtonLink>
+      </div>
+    </div>
   );
 }
 
@@ -214,67 +223,132 @@ function DescriptionEdit({ milestone, onSave, onCancel, refetch }) {
   );
 }
 
-function Comments({ milestone, refetch }) {
+function Comments({ milestone, me }) {
   return (
-    <>
+    <div className="-mx-12 px-12 -mb-10 pb-10 rounded-b bg-surface-dimmed border-t border-surface-outline">
+      <h1 className="uppercase text-xs font-semibold text-content-accent pb-4 mt-8">Comments</h1>
+
       {milestone.comments.map((comment) => (
-        <Comment key={comment.id} comment={comment} refetch={refetch} />
+        <React.Fragment key={comment.id}>
+          <Comment key={comment.id} comment={comment.comment} />
+          {comment.action === "complete" && <CompletedComment comment={comment.comment} />}
+          {comment.action === "reopen" && <ReopenedComment comment={comment.comment} />}
+        </React.Fragment>
       ))}
-    </>
+
+      <AddComment milestone={milestone} me={me} />
+    </div>
   );
 }
 
 function Comment({ comment }) {
   return (
-    <div className="border-b border-stroke-base">
-      <div className="flex items-start gap-4 py-4 ">
-        <div className="w-32 flex justify-between items-center pl-2">
-          <div className="text-content-dimmed text-xs">
-            <div className="uppercase">
-              {Time.isToday(Time.parseISO(comment.comment.insertedAt)) ? (
-                "Today"
-              ) : (
-                <FormattedTime time={comment.comment.insertedAt} format="short-date" />
-              )}
-            </div>
+    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size="normal" />
+      </div>
 
-            <div className="">
-              <FormattedTime time={comment.comment.insertedAt} format="time-only" />
-            </div>
+      <div className="flex-1">
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
+            <span className="text-content-dimmed text-sm">
+              <FormattedTime time={comment.insertedAt} format="relative" />
+            </span>
           </div>
-
-          <Avatar person={comment.comment.author} size="small" />
         </div>
-        <div className="flex-1 pr-2">
-          <div className="text-content-accent font-bold">{comment.comment.author.fullName}</div>
 
-          <RichContent jsonContent={comment.comment.message} />
+        <div className="mb-1">
+          <RichContent jsonContent={comment.message} />
         </div>
       </div>
-      {comment.action === "complete" && (
-        <div className="flex items-center gap-4 pb-4">
-          <div className="w-32 flex justify-between items-center pl-2">
-            <div></div>
-            <Icons.IconCircleCheck size={20} className="text-purple-400" />
-          </div>
-          <div className="flex-1 pr-2 font-semibold text-purple-300">Milestone Completed</div>
-        </div>
-      )}
+    </div>
+  );
+}
 
-      {comment.action === "reopen" && (
-        <div className="flex items-center gap-4 pb-4">
-          <div className="w-32 flex justify-between items-center pl-2">
-            <div></div>
-            <Icons.IconRefresh size={20} className="text-emerald-600" />
+function CompletedComment({ comment }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size="normal" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-bold -mt-0.5"></div>
           </div>
-          <div className="flex-1 pr-2 font-semibold text-emerald-300">Milestone Re-Opened</div>
         </div>
-      )}
+
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center gap-1">
+            <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
+            <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
+          </div>
+
+          <span className="text-content-dimmed text-sm">
+            <FormattedTime time={comment.insertedAt} format="relative" />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReopenedComment({ comment }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size="normal" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-bold -mt-0.5"></div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center gap-1">
+            <Icons.IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
+            <div className="flex-1 pr-2 font-semibold text-content-accent">Re-Opened the Milestone</div>
+          </div>
+
+          <span className="text-content-dimmed text-sm">
+            <FormattedTime time={comment.insertedAt} format="relative" />
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
 function AddComment({ milestone, me }) {
+  const [active, _, activate, deactivate] = useBoolState(false);
+
+  if (active) {
+    return <AddCommentActive milestone={milestone} me={me} />;
+  } else {
+    return <AddCommentInactive activate={activate} me={me} />;
+  }
+}
+
+function AddCommentInactive({ me, activate }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
+      <div className="shrink-0">
+        <Avatar person={me} size="normal" />
+      </div>
+
+      <div className="flex-1 text-content-dimmed mt-1 cursor-pointer" onClick={activate}>
+        Add a comment...
+      </div>
+    </div>
+  );
+}
+
+function AddCommentActive({ milestone, me, deactivate }) {
   const refetch = useRefresh();
 
   const { editor, submittable, focused, empty } = TipTapEditor.useEditor({
@@ -284,15 +358,6 @@ function AddComment({ milestone, me }) {
   });
 
   const [post, { loading }] = Milestones.usePostComment();
-
-  const action = milestone.status === "done" ? "reopen" : "complete";
-  const actionMessage = action === "reopen" ? "Re-open" : "Complete";
-  const actionIcon =
-    action === "reopen" ? (
-      <Icons.IconRefresh size={16} className="text-emerald-500" />
-    ) : (
-      <Icons.IconCheck size={16} className="text-purple-500" />
-    );
 
   const submit = async (action: "none" | "complete" | "reopen") => {
     if (!editor) return;
@@ -312,6 +377,7 @@ function AddComment({ milestone, me }) {
     });
 
     editor.commands.clearContent(true);
+    deactivate();
     refetch();
   };
 
@@ -331,83 +397,78 @@ function AddComment({ milestone, me }) {
         <Button variant="success" disabled={!submittable} onClick={() => submit("none")} data-test-id="post-comment">
           {submittable ? "Comment" : "Uploading..."}
         </Button>
-
-        {submittable && (
-          <Button variant="secondary" onClick={() => submit(action)} data-test-id={action + "-and-comment"}>
-            {actionIcon}
-            {empty ? actionMessage + " Milestone" : actionMessage + " with comment"}
-          </Button>
-        )}
       </div>
     </div>
   );
 
   return (
-    <DetailList>
-      <DetailListItem title={avatar} value={commentBox} />
-    </DetailList>
+    <div className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent">
+      <div className="shrink-0">{avatar}</div>
+
+      <div className="flex-1">{commentBox}</div>
+    </div>
   );
 }
 
-function DueDate({ milestone }) {
-  const [_, refetch] = Paper.useLoadedData() as [LoaderResult, () => void, number];
-  const [open, setOpen] = React.useState(false);
+// function DueDate({ milestone }) {
+//   const [_, refetch] = Paper.useLoadedData() as [LoaderResult, () => void, number];
+//   const [open, setOpen] = React.useState(false);
 
-  let deadline = Time.parseISO(milestone.deadlineAt);
+//   let deadline = Time.parseISO(milestone.deadlineAt);
 
-  const [update] = Milestones.useSetDeadline();
+//   const [update] = Milestones.useSetDeadline();
 
-  const change = async (date: Date | null) => {
-    const deadline = date ? Time.toDateWithoutTime(date) : null;
+//   const change = async (date: Date | null) => {
+//     const deadline = date ? Time.toDateWithoutTime(date) : null;
 
-    await update({
-      variables: {
-        milestoneId: milestone.id,
-        deadlineAt: deadline,
-      },
-    });
+//     await update({
+//       variables: {
+//         milestoneId: milestone.id,
+//         deadlineAt: deadline,
+//       },
+//     });
 
-    setOpen(false);
-    refetch();
-  };
+//     setOpen(false);
+//     refetch();
+//   };
 
-  return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <div
-          className="hover:bg-surface-accent -m-1.5 p-1.5 relative group cursor-pointer w-full outline-none"
-          onClick={() => setOpen(true)}
-          data-test-id="change-milestone-due-date"
-        >
-          <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
-          {!Milestones.isDone(milestone) && <DueDateExplanation milestone={milestone} />}
-        </div>
-      </Popover.Trigger>
+//   return (
+//     <Popover.Root open={open} onOpenChange={setOpen}>
+//       <Popover.Trigger asChild>
+//         <div
+//           className="hover:bg-surface-accent -m-1.5 p-1.5 relative group cursor-pointer w-full outline-none"
+//           onClick={() => setOpen(true)}
+//           data-test-id="change-milestone-due-date"
+//         >
+//           <FormattedTime time={milestone.deadlineAt} format="short-date-with-weekday-relative" />
+//           {!Milestones.isDone(milestone) && <DueDateExplanation milestone={milestone} />}
+//         </div>
+//       </Popover.Trigger>
 
-      <Popover.Portal>
-        <Popover.Content className="outline-red-400 border border-stroke-base" align="start">
-          <DatePicker inline selected={deadline} onChange={change} className="border-none"></DatePicker>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
-  );
-}
+//       <Popover.Portal>
+//         <Popover.Content className="outline-red-400 border border-stroke-base" align="start">
+//           <DatePicker inline selected={deadline} onChange={change} className="border-none"></DatePicker>
+//         </Popover.Content>
+//       </Popover.Portal>
+//     </Popover.Root>
+//   );
+// }
 
-function DueDateExplanation({ milestone }) {
-  if (Milestones.isDone(milestone)) return null;
-  if (!Milestones.isOverdue(milestone)) return null;
+// function DueDateExplanation({ milestone }) {
+//   if (Milestones.isDone(milestone)) return null;
+//   if (!Milestones.isOverdue(milestone)) return null;
 
-  const deadline = Time.parseISO(milestone.deadlineAt);
+//   const deadline = Time.parseISO(milestone.deadlineAt);
 
-  return (
-    <>
-      <TextSeparator />
-      <span className="text-red-500 font-bold">
-        <TimeToDueDate dueDate={deadline} />
-      </span>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <TextSeparator />
+//       <span className="text-red-500 font-bold">
+//         <TimeToDueDate dueDate={deadline} />
+//       </span>
+//     </>
+//   );
+// }
 
 function TimeToDueDate({ dueDate }: { dueDate: Date }) {
   const days = Time.daysBetween(Time.today(), dueDate);
