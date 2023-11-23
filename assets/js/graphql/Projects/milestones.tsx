@@ -13,6 +13,7 @@ export const FRAGMENT = `
     deadlineAt
     completedAt
     description
+    insertedAt  
 
     comments {
       id
@@ -64,36 +65,18 @@ export function isOverdue(milestone: Milestone) {
   return !isDone(milestone) && deadline < now;
 }
 
+export function isUpcoming(milestone: Milestone) {
+  if (isDone(milestone)) return false;
+  if (isOverdue(milestone)) return false;
+
+  let deadline = +new Date(milestone.deadlineAt);
+  let now = +Time.today();
+
+  return deadline > now;
+}
+
 export function isDone(milestone: Milestone) {
   return milestone.status === "done";
-}
-
-const ADD_MILESTONE = gql`
-  mutation AddProjectMilestone($projectId: ID!, $title: String!, $deadlineAt: Date) {
-    addProjectMilestone(projectId: $projectId, title: $title, deadlineAt: $deadlineAt) {
-      id
-      title
-      deadlineAt
-      status
-    }
-  }
-`;
-
-export function useAddMilestone(options = {}) {
-  return useMutation(ADD_MILESTONE, options);
-}
-
-const SET_MILESTONE_STATUS = gql`
-  mutation SetMilestoneStatus($milestoneId: ID!, $status: String!) {
-    setMilestoneStatus(milestoneId: $milestoneId, status: $status) {
-      id
-      status
-    }
-  }
-`;
-
-export function useSetStatus(options = {}) {
-  return useMutation(SET_MILESTONE_STATUS, options);
 }
 
 const SET_MILESTONE_DEADLINE = gql`
@@ -106,18 +89,6 @@ const SET_MILESTONE_DEADLINE = gql`
 
 export function useSetDeadline(options = {}) {
   return useMutation(SET_MILESTONE_DEADLINE, options);
-}
-
-const UPDATE_MILESTONE = gql`
-  mutation UpdateProjectMilestone($milestoneId: ID!, $title: String!, $deadlineAt: Date) {
-    updateProjectMilestone(milestoneId: $milestoneId, title: $title, deadlineAt: $deadlineAt) {
-      id
-    }
-  }
-`;
-
-export function useUpdateMilestone(options = {}) {
-  return useMutation(UPDATE_MILESTONE, options);
 }
 
 const REMOVE_MILESTONE = gql`

@@ -4,6 +4,7 @@ import classnames from "classnames";
 import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
 import FormattedTime from "@/components/FormattedTime";
+import { ButtonLink } from "@/components/Link";
 
 export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testID }) {
   const [open, setOpen] = React.useState(false);
@@ -17,30 +18,19 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
     setOpen(true);
   }, []);
 
-  const className = classnames(
-    {
-      "bg-surface-dimmed hover:bg-surface-accent": date,
-      "bg-surface hover:bg-surface-accent": !date,
-    },
-    "border border-surface-outline",
-    "rounded px-2 py-2",
-    "relative",
-    "group",
-    "cursor-pointer",
-    "w-full outline-none leading-none",
-  );
+  const className = classnames("flex items-center gap-1");
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <div className={className} onClick={onLabelClick} data-test-id={testID}>
-          {date ? (
-            <span className="text-content-accent">
-              <FormattedTime time={date} format="short-date" />
-            </span>
-          ) : (
-            <span className="text-content-subtle">{placeholder}</span>
-          )}
+          <div className="font-medium text-content-accent leading-none">
+            <FormattedTime time={date} format="short-date-with-weekday" />
+          </div>
+          &middot;
+          <ButtonLink onClick={onLabelClick} data-test-id="edit-milestone">
+            Edit
+          </ButtonLink>
         </div>
       </Popover.Trigger>
 

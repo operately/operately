@@ -1,35 +1,26 @@
 import React from "react";
 
 import * as Time from "@/utils/time";
+import * as Projects from "@/graphql/Projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
 import { DimmedLabel } from "./Label";
-import { Indicator } from "@/components/ProjectHealthIndicators";
 import { GhostButton } from "@/components/Button";
-import * as Projects from "@/graphql/Projects";
+import { NextMilestone } from "./NextMilestone";
 
 export default function Timeline({ project }) {
   return (
     <div>
-      <div className="flex items-start gap-12">
-        <Status project={project} />
+      <div className="flex items-start gap-12 text-sm mb-6">
         <StartDate project={project} />
         <EndDate project={project} />
         <DurationField project={project} />
         <Progress project={project} />
-        <EditTimelineButton project={project} />
       </div>
-    </div>
-  );
-}
 
-function Status({ project }: { project: Projects.Project }) {
-  return (
-    <div>
-      <DimmedLabel>Status</DimmedLabel>
-      <Indicator value={project.health} type="status" />
+      <NextMilestone project={project} />
     </div>
   );
 }

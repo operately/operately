@@ -6,7 +6,7 @@ interface GhostButton {
   linkTo?: string;
   onClick?: (e: any) => void;
   testId?: string;
-  size?: "xs" | "sm" | "base" | "lg";
+  size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
 }
 
@@ -31,11 +31,15 @@ export function GhostButton(props: GhostButton) {
   );
 }
 
-function className(size?: "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary") {
+function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary") {
   size = size || "base";
   type = type || "primary";
 
   let result = "font-medium transition-all duration-100 cursor-pointer text-center";
+
+  if (size === "xxs") {
+    result += " px-2 py-[1px] text-sm rounded-2xl";
+  }
 
   if (size === "xs") {
     result += " px-2.5 py-0.5 text-sm rounded-2xl";

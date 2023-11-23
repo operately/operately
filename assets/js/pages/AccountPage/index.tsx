@@ -72,7 +72,6 @@ function LogOutButton() {
   const [active, setActive] = React.useState(false);
 
   const handleClick = () => {
-    console.log("logOut");
     setActive(true);
 
     setTimeout(() => {
