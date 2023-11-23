@@ -10,23 +10,13 @@ import Button from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import DatePicker from "react-datepicker";
 
-import * as Projects from "@/graphql/Projects";
-
 import * as Time from "@/utils/time";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 
-interface ContextValue {
-  project: Projects.Project;
-  refetch: () => void;
-  editable: boolean;
-}
-
-const Context = React.createContext<ContextValue | null>(null);
-
 export function Page() {
-  const { project, me } = useLoadedData();
+  const { project } = useLoadedData();
   const refetch = useRefresh();
 
   const [formVisible, setFormVisible] = React.useState(false);
@@ -37,19 +27,15 @@ export function Page() {
     refetch();
   };
 
-  const editable = project.champion?.id === me.id;
-
   return (
     <Pages.Page title={["Milestones", project.name]}>
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          <Context.Provider value={{ project, refetch, editable }}>
-            <Title onAddClick={showForm} />
-            <AddMilestoneForm visible={formVisible} onCancel={hideForm} onSubmit={refetchAndHideForm} />
-            <Content />
-          </Context.Provider>
+          <Title onAddClick={showForm} />
+          <AddMilestoneForm visible={formVisible} onCancel={hideForm} onSubmit={refetchAndHideForm} />
+          <Content />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -57,7 +43,7 @@ export function Page() {
 }
 
 function Title({ onAddClick }) {
-  const { editable } = React.useContext(Context) as ContextValue;
+  const { project } = useLoadedData();
 
   return (
     <div className="flex items-center justify-between mb-8">
@@ -66,7 +52,7 @@ function Title({ onAddClick }) {
       </div>
 
       <div>
-        {editable && (
+        {project.permissions.canEditMilestone && (
           <Button variant="success" onClick={onAddClick} data-test-id="add-milestone">
             <Icons.IconPlus size={20} />
             Add
@@ -78,9 +64,9 @@ function Title({ onAddClick }) {
 }
 
 function Content() {
-  const { project } = React.useContext(Context) as ContextValue;
+  const { project } = useLoadedData();
 
-  if (project.milestones.length === 0) {
+  if (project.milestones!.length === 0) {
     return <EmptyState />;
   } else {
     return <MilestoneList />;
@@ -92,7 +78,7 @@ function EmptyState() {
 }
 
 function MilestoneList() {
-  const { project } = React.useContext(Context) as ContextValue;
+  const { project } = useLoadedData();
   const milestones = Milestones.sortByDeadline(project.milestones);
 
   const [pending, completed] = [
@@ -118,7 +104,7 @@ function MilestoneList() {
 }
 
 function Item({ milestone }) {
-  const { refetch } = React.useContext(Context) as ContextValue;
+  const refetch = useRefresh();
 
   const [state, setState] = React.useState<"view" | "edit">("view");
 
@@ -163,7 +149,7 @@ function ItemEdit({ milestone, onCancel, onSubmit }) {
   };
 
   return (
-    <div className="bg-white-1/[5%] p-8 rounded-lg mb-4">
+    <div className="bg-surface-dimmed p-8 rounded-lg mb-4">
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <Forms.TextInput
@@ -193,7 +179,7 @@ function ItemEdit({ milestone, onCancel, onSubmit }) {
           </Button>
         </div>
         <div className="flex gap-2">
-          <div className="border border-shade-3 rounded-full p-2 cursor-pointer hover:bg-red-400/10 hover:text-red-400">
+          <div className="border border-surface-dimmed rounded-full p-2 cursor-pointer hover:bg-red-400/10 hover:text-red-400">
             <Icons.IconTrash size={16} onClick={trash} />
           </div>
         </div>
@@ -203,7 +189,8 @@ function ItemEdit({ milestone, onCancel, onSubmit }) {
 }
 
 function ItemShow({ milestone, onEditClick }) {
-  const { editable, refetch } = React.useContext(Context) as ContextValue;
+  const refetch = useRefresh();
+  const { project } = useLoadedData();
 
   const [setStatus] = Milestones.useSetStatus({ onCompleted: refetch });
 
@@ -217,19 +204,19 @@ function ItemShow({ milestone, onEditClick }) {
   };
 
   return (
-    <div className="flex items-center bg-white-1/[3%] px-4 py-2 rounded-lg gap-2">
-      {editable && (
+    <div className="flex items-center bg-surface-dimmed px-4 py-2 rounded-lg gap-2">
+      {project.permissions.canEditMilestone && (
         <div className="shrink-0 cursor-pointer" onClick={toggleComplete}>
           {milestone.status === "done" ? (
-            <Icons.IconSquareCheck size={20} className="text-green-400" />
+            <Icons.IconSquareCheck size={20} className="text-green-500" />
           ) : (
-            <Icons.IconSquare size={20} className="text-white-1" />
+            <Icons.IconSquare size={20} className="text-content-accent" />
           )}
         </div>
       )}
 
       <div className="shrink-0">
-        <Icons.IconFlag3Filled size={16} className="text-yellow-400" />
+        <Icons.IconFlag3Filled size={16} className="text-yellow-500" />
       </div>
 
       <div className="flex-1 font-medium">{milestone.title}</div>
@@ -238,9 +225,9 @@ function ItemShow({ milestone, onEditClick }) {
         <FormattedTime time={milestone.deadlineAt} format="long-date" />
       </div>
 
-      {editable && (
+      {project.permissions.canEditMilestone && (
         <div className="shrink-0 pl-2" onClick={onEditClick}>
-          <Icons.IconPencil size={16} className="text-white-2 hover:text-white-1 cursor-pointer" />
+          <Icons.IconPencil size={16} className="text-content-dimmed hover:text-content-accent cursor-pointer" />
         </div>
       )}
     </div>
@@ -248,7 +235,7 @@ function ItemShow({ milestone, onEditClick }) {
 }
 
 function AddMilestoneForm({ visible, onSubmit, onCancel }) {
-  const { project } = React.useContext(Context) as ContextValue;
+  const { project } = useLoadedData();
 
   const [value, setValue] = React.useState("");
   const [deadline, setDeadline] = React.useState(null);
@@ -275,7 +262,7 @@ function AddMilestoneForm({ visible, onSubmit, onCancel }) {
   };
 
   return (
-    <div className="bg-white-1/[5%] p-8 rounded-lg mb-4">
+    <div className="bg-surface-dimmed p-8 rounded-lg mb-4">
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <Forms.TextInput
@@ -311,7 +298,7 @@ function AddMilestoneForm({ visible, onSubmit, onCancel }) {
 
 function MilestoneDueDateEdit({ selected, setSelected }) {
   return (
-    <div className="cursor-pointer">
+    <div className="cursor-pointer text-content-dimmed hover:text-content-accent">
       <DatePicker
         selected={selected}
         onChange={(date) => setSelected(date)}
