@@ -9,18 +9,19 @@ import { DimmedLabel } from "./Label";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import { GhostButton } from "@/components/Button";
 import * as Projects from "@/graphql/Projects";
+import { NextMilestone } from "./NextMilestone";
 
 export default function Timeline({ project }) {
   return (
     <div>
-      <div className="flex items-start gap-12">
-        <Status project={project} />
+      <div className="flex items-start gap-12 text-sm mb-6">
         <StartDate project={project} />
         <EndDate project={project} />
         <DurationField project={project} />
         <Progress project={project} />
-        <EditTimelineButton project={project} />
       </div>
+
+      <NextMilestone project={project} />
     </div>
   );
 }

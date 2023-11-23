@@ -5,6 +5,7 @@ import * as Pages from "@/components/Pages";
 import * as Projects from "@/graphql/Projects";
 
 import Header from "./Header";
+import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
 import ArchivedBanner from "./ArchivedBanner";
@@ -14,7 +15,6 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
 import { Feed } from "@/components/Feed";
-import { NextMilestone } from "./NextMilestone";
 import { DimmedLabel } from "./Label";
 
 import { Indicator } from "@/components/ProjectHealthIndicators";
@@ -38,7 +38,7 @@ export function Page() {
           </div>
 
           <div className="">
-            <Timeline project={project} />
+            <Overview project={project} />
 
             <div className="mt-4" />
 
@@ -65,6 +65,22 @@ export function Page() {
             <div className="border-t border-stroke-base py-6">
               <div className="flex items-start gap-4">
                 <div className="w-1/5">
+                  <div className="font-bold text-sm">Timeline</div>
+
+                  <div className="text-sm">
+                    {showEditMilestones(project) && <Link to={`/projects/${project.id}/edit/timeline`}>Edit</Link>}
+                  </div>
+                </div>
+
+                <div className="w-4/5">
+                  <Timeline project={project} />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-stroke-base py-6">
+              <div className="flex items-start gap-4">
+                <div className="w-1/5">
                   <div className="font-bold text-sm">Check-Ins</div>
                   {project.lastCheckIn && (
                     <div className="text-sm">
@@ -75,22 +91,6 @@ export function Page() {
 
                 <div className="w-4/5">
                   <LastCheckIn project={project} />
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Milestones</div>
-
-                  <div className="text-sm">
-                    {showEditMilestones(project) && <Link to={`/projects/${project.id}/milestones`}>View all</Link>}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <NextMilestone project={project} />
                 </div>
               </div>
             </div>
