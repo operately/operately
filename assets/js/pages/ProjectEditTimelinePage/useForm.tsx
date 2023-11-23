@@ -4,6 +4,7 @@ import * as Time from "@/utils/time";
 
 import { useNavigate } from "react-router-dom";
 import { useMilestoneListState, MilestoneListState } from "./useMilestoneListState";
+import { createPath } from "@/utils/paths";
 
 interface FormState {
   startTime: Date | null;
@@ -21,6 +22,7 @@ interface FormState {
 
 export function useForm(project: Projects.Project): FormState {
   const navigate = useNavigate();
+  const milestonesPath = createPath("projects", project.id, "milestones");
 
   const oldStart = Time.parse(project.startedAt);
   const oldDue = Time.parse(project.deadline);
@@ -39,9 +41,7 @@ export function useForm(project: Projects.Project): FormState {
   }, [startTime, dueDate, milestoneList]);
 
   const [edit, { loading }] = Projects.useEditProjectTimeline({
-    onCompleted: () => {
-      navigate(`/projects/${project.id}`);
-    },
+    onCompleted: () => navigate(milestonesPath),
   });
 
   const submit = async () => {
@@ -63,8 +63,6 @@ export function useForm(project: Projects.Project): FormState {
         },
       },
     });
-
-    navigate(`/projects/${project.id}`);
   };
 
   return {

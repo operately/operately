@@ -9,6 +9,7 @@ import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
 import ArchivedBanner from "./ArchivedBanner";
+
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import RichContent, { Summary } from "@/components/RichContent";
@@ -31,7 +32,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={project.space} />
 
-        <div className="p-12 border border-surface-outline bg-surface rounded shadow-xl">
+        <div className="p-12 border border-surface-outline bg-surface rounded shadow-xl relative">
           <ArchivedBanner project={project} />
           <div className="mb-8">
             <Header project={project} />
