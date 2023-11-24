@@ -11,6 +11,7 @@ import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 
 export { Project } from "@/gql";
+import { Project } from "@/gql";
 
 export { useCreateProject } from "./mutations/create";
 export { useEditProjectTimeline } from "./mutations/edit_timeline";
@@ -238,4 +239,8 @@ export function useUpdateDescriptionMutation(options = {}) {
     `,
     options,
   );
+}
+
+export function allMilestonesCompleted(project: Project) {
+  return project.milestones!.every((m) => m!.status === "done");
 }
