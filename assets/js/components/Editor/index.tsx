@@ -50,7 +50,7 @@ export function Root({ children }): JSX.Element {
   return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
 }
 
-interface EditorState {
+export interface EditorState {
   editor: any;
   submittable: boolean;
   focused: boolean;

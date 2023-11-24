@@ -31,6 +31,7 @@ const routes = createBrowserRouter([
 
       pageRoute("/projects/:projectID/archive", pages.ProjectArchivationPage),
       pageRoute("/projects/:projectID/move", pages.ProjectMovePage),
+      pageRoute("/projects/:projectID/close", pages.ProjectClosePage),
       pageRoute("/projects/:projectID/milestones", pages.ProjectMilestonesPage),
       pageRoute("/projects/:projectID/milestones/:id", pages.ProjectMilestonePage),
       pageRoute("/projects/:projectID/reviews/request/new", pages.ProjectReviewRequestNewPage),

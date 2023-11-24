@@ -19,6 +19,7 @@ import * as NotificationsPage from "./NotificationsPage";
 import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
 import * as ProjectArchivationPage from "./ProjectArchivationPage";
+import * as ProjectClosePage from "./ProjectClosePage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
 import * as ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import * as ProjectDiscussionPage from "./ProjectDiscussionPage";
@@ -108,6 +109,10 @@ export default {
   ProjectArchivationPage: {
     loader: ProjectArchivationPage.loader,
     Page: ProjectArchivationPage.Page
+  },
+  ProjectClosePage: {
+    loader: ProjectClosePage.loader,
+    Page: ProjectClosePage.Page
   },
   ProjectContributorsPage: {
     loader: ProjectContributorsPage.loader,

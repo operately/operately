@@ -377,6 +377,7 @@ export type Milestone = {
   deadlineAt?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  insertedAt?: Maybe<Scalars['Date']['output']>;
   status: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
