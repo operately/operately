@@ -9,6 +9,8 @@ import * as Projects from "@/graphql/Projects";
 
 import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
 
+import { createTestId } from "@/utils/testid";
+
 interface Props {
   project: Projects.Project;
   contributor?: Contributors.Contributor;
@@ -106,6 +108,8 @@ function Placeholder({ project, role, onEdit }) {
 }
 
 function ViewState({ project, avatar, name, responsibility, onEdit }) {
+  const editTestId = createTestId("edit-contributor", name);
+
   return (
     <div className="flex items-center justify-between border-b border-stroke-base py-2 fadeIn group">
       <div className="flex items-center gap-2">
@@ -122,7 +126,7 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
           <div
             className="rounded-full p-2 hover:bg-surface-dimmed transition-colors"
             onClick={onEdit}
-            data-test-id="edit-contributor"
+            data-test-id={editTestId}
           >
             <Icons.IconPencil
               size={20}
