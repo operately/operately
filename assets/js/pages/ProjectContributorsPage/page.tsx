@@ -2,20 +2,22 @@ import React from "react";
 
 import * as Projects from "@/graphql/Projects";
 import * as Contributors from "@/graphql/Projects/contributors";
-import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton } from "./FormElements";
 import ContributorItem from "./ContributorItem";
-import Button from "@/components/Button";
+import { GhostButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
+import { useForm } from "./useForm";
 
 export function Page() {
   const { project } = useLoadedData();
   const refetch = useRefresh();
+
+  const form = useForm(project);
 
   return (
     <Pages.Page title={["Contributors", project.name]}>
@@ -23,7 +25,7 @@ export function Page() {
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          <Title project={project} />
+          <Title form={form} />
           <ContributorList project={project} refetch={refetch} />
         </Paper.Body>
       </Paper.Root>
@@ -31,14 +33,7 @@ export function Page() {
   );
 }
 
-function Title({ project }: { project: Projects.Project }) {
-  const [addColabActive, setAddColabActive] = React.useState(false);
-
-  const activateAddColab = () => setAddColabActive(true);
-  const deactivateAddColab = () => setAddColabActive(false);
-
-  const showAddButton = project.permissions.canEditContributors && !addColabActive;
-
+function Title({ form }) {
   return (
     <div className="rounded-t-[20px] pb-12">
       <div className="flex items-center justify-between">
@@ -47,35 +42,23 @@ function Title({ project }: { project: Projects.Project }) {
           <div className="text-medium">People who are contributing to this project and their responsibilities.</div>
         </div>
 
-        {showAddButton && <AddButton onClick={activateAddColab} />}
+        {form.addContrib.hasPermission && <AddButton onClick={form.addContrib.activate} />}
       </div>
 
-      {addColabActive && <AddContribForm close={deactivateAddColab} projectID={project.id} />}
+      {form.addContrib.active && <AddContribForm form={form} />}
     </div>
   );
 }
 
-function AddContribForm({ close, projectID }) {
-  const [addColab, _s] = Projects.useAddProjectContributorMutation(projectID);
-
-  const [personID, setPersonID] = React.useState<any>(null);
-  const [responsibility, setResponsibility] = React.useState("");
-
-  const disabled = !personID || !responsibility;
-
-  const handleSubmit = async () => {
-    await addColab(personID, responsibility);
-    close();
-  };
-
+function AddContribForm({ form }) {
   return (
     <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 mt-4 py-8">
-      <ContributorSearch title="Contributor" projectID={projectID} onSelect={setPersonID} />
+      <ContributorSearch title="Contributor" projectID={form.project.id} onSelect={form.addContrib.setPersonID} />
 
-      <ResponsibilityInput value={responsibility} onChange={setResponsibility} />
+      <ResponsibilityInput value={form.addContrib.responsibility} onChange={form.addContrib.setResponsibility} />
 
       <div className="flex mt-8 gap-2">
-        <AddContribButton onClick={handleSubmit} disabled={disabled} />
+        <AddContribButton onClick={form.addContrib.submit} disabled={!form.addContrib.submittable} />
         <CancelButton onClick={close} />
       </div>
     </div>
@@ -84,10 +67,9 @@ function AddContribForm({ close, projectID }) {
 
 function AddButton({ onClick }) {
   return (
-    <Button variant="success" onClick={onClick} data-test-id="add-contributor-button">
-      <Icons.IconPlus size={20} />
+    <GhostButton onClick={onClick} testId="add-contributor-button">
       Add Contributor
-    </Button>
+    </GhostButton>
   );
 }
 
@@ -97,7 +79,6 @@ function ContributorList({ project, refetch }: { project: Projects.Project; refe
   return (
     <div className="flex flex-col">
       <ContributorItem contributor={champion} role="champion" project={project} refetch={refetch} />
-
       <ContributorItem contributor={reviewer} role="reviewer" project={project} refetch={refetch} />
 
       {contributors.map((c) => (
