@@ -65,10 +65,10 @@ export default function PeopleSearch(props: PeopleSearchProps) {
 function classNames() {
   return {
     control: () => "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3",
-    menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1",
+    menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
     option: ({ isFocused }) =>
       classnames({
-        "px-3 py-2 hover:bg-surface cursor-pointer": true,
+        "px-3 py-2 hover:bg-surface-dimmed cursor-pointer": true,
         "bg-surface": isFocused,
       }),
   };

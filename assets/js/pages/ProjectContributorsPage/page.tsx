@@ -52,14 +52,14 @@ function Title({ form }) {
 
 function AddContribForm({ form }) {
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 mt-4 py-8">
+    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 mt-4 py-8">
       <ContributorSearch title="Contributor" projectID={form.project.id} onSelect={form.addContrib.setPersonID} />
 
       <ResponsibilityInput value={form.addContrib.responsibility} onChange={form.addContrib.setResponsibility} />
 
       <div className="flex mt-8 gap-2">
         <AddContribButton onClick={form.addContrib.submit} disabled={!form.addContrib.submittable} />
-        <CancelButton onClick={close} />
+        <CancelButton onClick={form.addContrib.deactivate} />
       </div>
     </div>
   );
@@ -77,7 +77,7 @@ function ContributorList({ project, refetch }: { project: Projects.Project; refe
   const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col border-t border-stroke-base">
       <ContributorItem contributor={champion} role="champion" project={project} refetch={refetch} />
       <ContributorItem contributor={reviewer} role="reviewer" project={project} refetch={refetch} />
 
