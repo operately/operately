@@ -34,6 +34,10 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} moved this project from #{old_space.name} to #{new_space.name}")
   end
 
+  def assert_project_retrospective_sent(ctx, author: author, to: to) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} closed this project and submitted a retrospective")
+  end
+
   def assert_project_review_request_notification(ctx, author: author) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} requested a review")
   end
