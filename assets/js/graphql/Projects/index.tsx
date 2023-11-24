@@ -18,6 +18,7 @@ export { useEditProjectTimeline } from "./mutations/edit_timeline";
 export { useEditProjectName } from "./mutations/edit_name";
 export { useArchiveForm } from "./mutations/archive";
 export { useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
+export { useCloseProjectMutation } from "./mutations/close_project";
 
 const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {

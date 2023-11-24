@@ -1,6 +1,10 @@
+import * as React from "react";
 import * as Projects from "@/graphql/Projects";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
+
+import { createPath } from "@/utils/paths";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 interface FormState {
   project: Projects.Project;
@@ -18,11 +22,27 @@ export function useForm(project: Projects.Project): FormState {
   const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor();
   const whatDidYouLearn = useWhatDidYouLearnEditor();
 
-  const submit = () => {
-    console.log("submit");
-  };
+  const goToProject = useNavigateTo(createPath("project", project.id));
 
-  const submittable = whatWentWell.submittable && whatCouldHaveGoneBetter.submittable && whatDidYouLearn.submittable;
+  const [post, { loading }] = Projects.useCloseProjectMutation({
+    onCompleted: goToProject,
+  });
+
+  const submit = React.useCallback(async () => {
+    if (!submittable) return;
+
+    await post({
+      variables: {
+        id: project.id,
+        whatWentWell: whatWentWell.editor.getJSON(),
+        whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
+        whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+      },
+    });
+  }, [project.id, whatWentWell.editor, whatCouldHaveGoneBetter.editor, whatDidYouLearn.editor]);
+
+  const submittable =
+    !loading && whatWentWell.submittable && whatCouldHaveGoneBetter.submittable && whatDidYouLearn.submittable;
 
   return {
     project,
