@@ -6,6 +6,7 @@
 import * as React from "react";
 
 import ProjectArchived from "./ProjectArchived"
+import ProjectClosed from "./ProjectClosed"
 import ProjectCreated from "./ProjectCreated"
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
@@ -27,6 +28,9 @@ export default function FeedItem({activity}) {
   switch (activityType) {
     case "ActivityContentProjectArchived":
       return <ProjectArchived activity={activity} />;
+    
+    case "ActivityContentProjectClosed":
+      return <ProjectClosed activity={activity} />;
     
     case "ActivityContentProjectCreated":
       return <ProjectCreated activity={activity} />;

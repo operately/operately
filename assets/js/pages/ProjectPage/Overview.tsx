@@ -4,14 +4,18 @@ import { DimmedLabel } from "./Label";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import * as Projects from "@/graphql/Projects";
+import { createPath } from "@/utils/paths";
+import { GhostButton } from "@/components/Button";
 
 export default function Overview({ project }) {
   return (
-    <div>
+    <div className="flex items-center justify-between">
       <div className="flex items-start gap-12 text-sm">
         <Status project={project} />
         <Completion project={project} />
       </div>
+
+      <CloseButton project={project} />
     </div>
   );
 }
@@ -77,5 +81,19 @@ function MiniPieChart({ completed, total }) {
         width: "14px",
       }}
     />
+  );
+}
+
+function CloseButton({ project }: { project: Projects.Project }) {
+  if (project.status === "closed") return null;
+  if (project.isArchived) return null;
+
+  const type = Projects.allMilestonesCompleted(project) ? "primary" : "secondary";
+  const linkTo = createPath("projects", project.id, "close");
+
+  return (
+    <GhostButton type={type} linkTo={linkTo} size="sm" testId="close-project-button">
+      Close Project
+    </GhostButton>
   );
 }

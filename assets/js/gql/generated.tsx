@@ -50,12 +50,17 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
   project: Project;
   projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectClosed = {
+  __typename?: 'ActivityContentProjectClosed';
+  project: Project;
 };
 
 export type ActivityContentProjectCreated = {
@@ -220,6 +225,11 @@ export type BlobInput = {
   filename: Scalars['String']['input'];
 };
 
+export type CloseProjectInput = {
+  projectId: Scalars['ID']['input'];
+  retrospective: Scalars['String']['input'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   author?: Maybe<Person>;
@@ -377,6 +387,7 @@ export type Milestone = {
   deadlineAt?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  insertedAt?: Maybe<Scalars['Date']['output']>;
   status: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -458,10 +469,10 @@ export type Project = {
   __typename?: 'Project';
   archivedAt?: Maybe<Scalars['Date']['output']>;
   champion?: Maybe<Person>;
+  closedAt?: Maybe<Scalars['Date']['output']>;
   contributors?: Maybe<Array<Maybe<ProjectContributor>>>;
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  executionReview?: Maybe<ProjectDocument>;
   health: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
@@ -478,15 +489,14 @@ export type Project = {
   permissions: ProjectPermissions;
   phase: Scalars['String']['output'];
   phaseHistory?: Maybe<Array<Maybe<ProjectPhaseHistory>>>;
-  pitch?: Maybe<ProjectDocument>;
-  plan?: Maybe<ProjectDocument>;
   private: Scalars['Boolean']['output'];
-  retrospective?: Maybe<ProjectDocument>;
+  retrospective?: Maybe<Scalars['String']['output']>;
   reviewRequests?: Maybe<Array<Maybe<ProjectReviewRequest>>>;
   reviewer?: Maybe<Person>;
   space: Group;
   spaceId: Scalars['ID']['output'];
   startedAt?: Maybe<Scalars['Date']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
   updates?: Maybe<Array<Maybe<Update>>>;
 };
@@ -599,6 +609,7 @@ export type RootMutationType = {
   addProjectMilestone: Milestone;
   addReaction?: Maybe<Reaction>;
   archiveProject: Project;
+  closeProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGroup?: Maybe<Group>;
@@ -690,6 +701,11 @@ export type RootMutationTypeAddReactionArgs = {
 
 export type RootMutationTypeArchiveProjectArgs = {
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeCloseProjectArgs = {
+  input: CloseProjectInput;
 };
 
 

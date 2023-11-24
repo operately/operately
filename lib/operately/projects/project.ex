@@ -26,11 +26,9 @@ defmodule Operately.Projects.Project do
     field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control, :completed, :canceled, :paused], default: :planning
     field :health, Ecto.Enum, values: [:unknown, :on_track, :at_risk, :off_track], default: :unknown
 
-    # related documents
-    belongs_to :pitch, Operately.Projects.Document, foreign_key: :pitch_document_id
-    belongs_to :plan, Operately.Projects.Document, foreign_key: :plan_document_id
-    belongs_to :execution_review, Operately.Projects.Document, foreign_key: :execution_review_document_id
-    belongs_to :retrospective, Operately.Projects.Document, foreign_key: :retrospective_document_id
+    field :status, :string, default: "active"
+    field :retrospective, :map
+    field :closed_at, :utc_datetime
 
     timestamps()
     soft_delete()
@@ -52,14 +50,13 @@ defmodule Operately.Projects.Project do
       :next_update_scheduled_at,
       :phase,
       :health,
-      :pitch_document_id,
-      :plan_document_id,
-      :execution_review_document_id,
-      :retrospective_document_id,
       :company_id,
       :creator_id,
       :private,
       :deleted_at,
+      :status,
+      :retrospective,
+      :closed_at,
     ])
     |> validate_required([
       :name,

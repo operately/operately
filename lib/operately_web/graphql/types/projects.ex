@@ -69,6 +69,15 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :next_update_scheduled_at, :date
     field :private, non_null(:boolean)
 
+    field :status, :string
+    field :closed_at, :date
+
+    field :retrospective, :string do
+      resolve fn project, _, _ ->
+        {:ok, project.retrospective && Jason.encode!(project.retrospective)}
+      end
+    end
+
     field :space_id, non_null(:id) do
       resolve fn project, _, _ ->
         {:ok, project.group_id}
@@ -202,32 +211,6 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
 
           {:ok, project.contributors}
         end
-      end
-    end
-
-    # project documents
-
-    field :pitch, :project_document do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.get_pitch(project)}
-      end
-    end
-
-    field :plan, :project_document do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.get_plan(project)}
-      end
-    end
-
-    field :execution_review, :project_document do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.get_execution_review(project)}
-      end
-    end
-
-    field :retrospective, :project_document do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.get_retrospective(project)}
       end
     end
   end

@@ -4,11 +4,11 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/graphql/Projects";
 
+import Banner from "./Banner";
 import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
-import ArchivedBanner from "./ArchivedBanner";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -33,7 +33,8 @@ export function Page() {
         <Navigation space={project.space} />
 
         <div className="p-12 border border-surface-outline bg-surface rounded shadow-xl relative">
-          <ArchivedBanner project={project} />
+          <Banner project={project} />
+
           <div className="mb-8">
             <Header project={project} />
           </div>

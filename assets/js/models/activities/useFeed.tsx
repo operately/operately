@@ -14,6 +14,13 @@ export function useFeed(projectId: string) {
         content {
           __typename
 
+          ... on ActivityContentProjectClosed {
+            project {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectMoved {
             project {
               id

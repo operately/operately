@@ -53,6 +53,11 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :space_id, non_null(:id)
   end
 
+  input_object :close_project_input do
+    field :project_id, non_null(:id)
+    field :retrospective, non_null(:string)
+  end
+
   object :project_mutations do
     field :move_project_to_space, non_null(:project) do
       arg :input, non_null(:project_move_input)
@@ -63,6 +68,17 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         space_id = args.input.space_id
 
         Operately.Projects.move_project_to_space(author, project, space_id)
+      end
+    end
+
+    field :close_project, non_null(:project) do
+      arg :input, non_null(:close_project_input)
+
+      resolve fn args, %{context: context} ->
+        author = context.current_account.person
+        project = Operately.Projects.get_project!(args.input.project_id)
+
+        Operately.Projects.close_project(author, project, args.input.retrospective)
       end
     end
 

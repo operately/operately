@@ -11,12 +11,14 @@ import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 
 export { Project } from "@/gql";
+import { Project } from "@/gql";
 
 export { useCreateProject } from "./mutations/create";
 export { useEditProjectTimeline } from "./mutations/edit_timeline";
 export { useEditProjectName } from "./mutations/edit_name";
 export { useArchiveForm } from "./mutations/archive";
 export { useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
+export { useCloseProjectMutation } from "./mutations/close_project";
 
 const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -31,6 +33,7 @@ const LIST_PROJECTS = gql`
       phase
       health
       isArchived
+      status
       permissions ${Permissions.FRAGMENT}
       contributors ${fragments.CONTRIBUTOR}
       keyResources ${KeyResources.GQL_FRAGMENT}
@@ -94,9 +97,11 @@ export const GET_PROJECT = gql`
       archivedAt
       private
       spaceId
+      status
+      closedAt
+      retrospective
 
       lastCheckIn ${Updates.UPDATE_FRAGMENT}
-
       permissions ${Permissions.FRAGMENT}
 
       phaseHistory ${PhaseHistory.GQL_FRAGMENT}
@@ -238,4 +243,8 @@ export function useUpdateDescriptionMutation(options = {}) {
     `,
     options,
   );
+}
+
+export function allMilestonesCompleted(project: Project) {
+  return project.milestones!.every((m) => m!.status === "done");
 }
