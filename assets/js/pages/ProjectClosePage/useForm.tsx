@@ -22,7 +22,7 @@ export function useForm(project: Projects.Project): FormState {
   const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor();
   const whatDidYouLearn = useWhatDidYouLearnEditor();
 
-  const goToProject = useNavigateTo(createPath("project", project.id));
+  const goToProject = useNavigateTo(createPath("projects", project.id));
 
   const [post, { loading }] = Projects.useCloseProjectMutation({
     onCompleted: goToProject,
@@ -33,12 +33,14 @@ export function useForm(project: Projects.Project): FormState {
 
     await post({
       variables: {
-        projectId: project.id,
-        retrospective: JSON.stringify({
-          whatWentWell: whatWentWell.editor.getJSON(),
-          whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
-          whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
-        }),
+        input: {
+          projectId: project.id,
+          retrospective: JSON.stringify({
+            whatWentWell: whatWentWell.editor.getJSON(),
+            whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
+            whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+          }),
+        },
       },
     });
   }, [project.id, whatWentWell.editor, whatCouldHaveGoneBetter.editor, whatDidYouLearn.editor]);

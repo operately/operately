@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title><%= @title %></title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+
+      h1 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="padding: 10px 20px;">
+      <table width="100%" style="background:#fff;margin:0;padding:0;border:0;border-collapse:collapse;border-spacing:0; max-width: 40em">
+        <tr style="font-size: 22px; font-family: sans-serif; font-weight: 800;">
+          <td>
+            <%= Operately.People.Person.short_name(@author) %> closed the <a href="<%= @url %>"><%= @project.name %></a> project in Operately and submitted a retrospective.
+          </td>
+        </tr>
+
+        <tr style="height: 20px">
+          <td><%= cta_button(@cta_url, "View Retrospective") %></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

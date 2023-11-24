@@ -50,12 +50,17 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
   project: Project;
   projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectClosed = {
+  __typename?: 'ActivityContentProjectClosed';
+  project: Project;
 };
 
 export type ActivityContentProjectCreated = {
@@ -218,6 +223,11 @@ export type Blob = {
 
 export type BlobInput = {
   filename: Scalars['String']['input'];
+};
+
+export type CloseProjectInput = {
+  projectId: Scalars['ID']['input'];
+  retrospective: Scalars['String']['input'];
 };
 
 export type Comment = {
@@ -600,6 +610,7 @@ export type RootMutationType = {
   addProjectMilestone: Milestone;
   addReaction?: Maybe<Reaction>;
   archiveProject: Project;
+  closeProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGroup?: Maybe<Group>;
@@ -691,6 +702,11 @@ export type RootMutationTypeAddReactionArgs = {
 
 export type RootMutationTypeArchiveProjectArgs = {
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeCloseProjectArgs = {
+  input: CloseProjectInput;
 };
 
 

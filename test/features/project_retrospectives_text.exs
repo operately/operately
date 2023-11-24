@@ -1,7 +1,9 @@
 defmodule Operately.Features.ProjectResourcesTest do
+  alias Operately.Support.Features.ProjectFeedSteps
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.ProjectFeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -22,13 +24,21 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "close-project-button")
     |> fill_rich_text_in("what-went-well", "We built the thing")
-    |> fill_rich_text_in("what-could-be-better", "We built the thing")
-    |> fill_rich_text_in("what-we-learned", "We learned the thing")
-    |> UI.click(testid: "submit-retrospective-button")
+    |> fill_rich_text_in("what-could-ve-gone-better", "We built the thing")
+    |> fill_rich_text_in("what-did-you-learn", "We learned the thing")
+    |> UI.click(testid: "submit")
 
     ctx
-    |> UI.login_as(ctx.reviwer)
-    |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.champion, to: ctx.reviewer)
+    |> ProjectFeedSteps.assert_project_retrospective_posted(author: ctx.champion)
+    |> UI.assert_text("Project closed")
+    |> UI.click(testid: "project-retrospective-link")
+    |> UI.assert_text("We built the thing")
+    |> UI.assert_text("We learned the thing")
+    |> UI.assert_text("We built the thing")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.champion)
     |> EmailSteps.assert_project_retrospective_sent(author: ctx.champion, to: ctx.reviewer)
   end
 

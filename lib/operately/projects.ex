@@ -60,9 +60,9 @@ defmodule Operately.Projects do
 
   def close_project(author, project, retrospective) do
     attrs = %{
-      status: :closed, 
+      status: "closed",
       closed_at: DateTime.utc_now(),
-      retrospective: retrospective,
+      retrospective: Jason.decode!(retrospective)
     }
 
     Multi.new()

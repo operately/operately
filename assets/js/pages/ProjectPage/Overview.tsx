@@ -89,7 +89,7 @@ function CloseButton({ project }: { project: Projects.Project }) {
   const linkTo = createPath("projects", project.id, "close");
 
   return (
-    <GhostButton type={type} linkTo={linkTo} size="sm">
+    <GhostButton type={type} linkTo={linkTo} size="sm" testId="close-project-button">
       Close Project
     </GhostButton>
   );

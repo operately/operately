@@ -3,5 +3,8 @@ export function createTestId(...parts: string[]): string {
 }
 
 function sanitizeName(name: string) {
-  return name.replace(/[^a-z0-9-]/gi, "-").toLowerCase();
+  return name
+    .replace(/\?/g, "")
+    .replace(/[^a-z0-9-]/gi, "-")
+    .toLowerCase();
 }

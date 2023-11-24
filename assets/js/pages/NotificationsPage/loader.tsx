@@ -20,6 +20,13 @@ const query = gql`
         content {
           __typename
 
+          ... on ActivityContentProjectClosed {
+            project {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectMoved {
             project {
               id

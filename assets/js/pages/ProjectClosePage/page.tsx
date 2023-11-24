@@ -5,6 +5,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
+import { createTestId } from "@/utils/testid";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { GhostButton } from "@/components/Button";
 
@@ -32,8 +33,10 @@ export function Page() {
 }
 
 function Question({ title, editor }) {
+  const testId = createTestId(title);
+
   return (
-    <div className="">
+    <div className="" data-test-id={testId}>
       <h2 className="text-content-accent text font-bold mb-1">{title}</h2>
       <div className="border-x border-stroke-base">
         <TipTapEditor.Root>
@@ -52,7 +55,7 @@ function Question({ title, editor }) {
 function SubmitButton({ form }) {
   return (
     <div className="flex justify-center mt-8">
-      <GhostButton size="lg" onClick={form.submit}>
+      <GhostButton size="lg" onClick={form.submit} testId="submit">
         Submit & Close Project
       </GhostButton>
     </div>
