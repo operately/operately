@@ -33,6 +33,7 @@ const LIST_PROJECTS = gql`
       phase
       health
       isArchived
+      status
       permissions ${Permissions.FRAGMENT}
       contributors ${fragments.CONTRIBUTOR}
       keyResources ${KeyResources.GQL_FRAGMENT}
@@ -96,9 +97,11 @@ export const GET_PROJECT = gql`
       archivedAt
       private
       spaceId
+      status
+      closedAt
+      retrospective
 
       lastCheckIn ${Updates.UPDATE_FRAGMENT}
-
       permissions ${Permissions.FRAGMENT}
 
       phaseHistory ${PhaseHistory.GQL_FRAGMENT}

@@ -30,11 +30,12 @@ defmodule Operately.Features.ProjectResourcesTest do
 
     ctx
     |> ProjectFeedSteps.assert_project_retrospective_posted(author: ctx.champion)
-    |> UI.assert_text("Project closed")
+    |> UI.assert_text("This project was closed on")
     |> UI.click(testid: "project-retrospective-link")
     |> UI.assert_text("We built the thing")
     |> UI.assert_text("We learned the thing")
     |> UI.assert_text("We built the thing")
+    |> UI.refute_has(testid: "close-project-button")
 
     ctx
     |> UI.login_as(ctx.reviewer)

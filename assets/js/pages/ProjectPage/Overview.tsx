@@ -85,6 +85,9 @@ function MiniPieChart({ completed, total }) {
 }
 
 function CloseButton({ project }: { project: Projects.Project }) {
+  if (project.status === "closed") return null;
+  if (project.isArchived) return null;
+
   const type = Projects.allMilestonesCompleted(project) ? "primary" : "secondary";
   const linkTo = createPath("projects", project.id, "close");
 

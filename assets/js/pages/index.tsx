@@ -33,6 +33,7 @@ import * as ProjectMilestonesPage from "./ProjectMilestonesPage";
 import * as ProjectMovePage from "./ProjectMovePage";
 import * as ProjectPage from "./ProjectPage";
 import * as ProjectPhaseChangeSurveyPage from "./ProjectPhaseChangeSurveyPage";
+import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectReviewPage from "./ProjectReviewPage";
 import * as ProjectReviewRequestNewPage from "./ProjectReviewRequestNewPage";
 import * as ProjectReviewRequestPage from "./ProjectReviewRequestPage";
@@ -165,6 +166,10 @@ export default {
   ProjectPhaseChangeSurveyPage: {
     loader: ProjectPhaseChangeSurveyPage.loader,
     Page: ProjectPhaseChangeSurveyPage.Page
+  },
+  ProjectRetrospectivePage: {
+    loader: ProjectRetrospectivePage.loader,
+    Page: ProjectRetrospectivePage.Page
   },
   ProjectReviewPage: {
     loader: ProjectReviewPage.loader,

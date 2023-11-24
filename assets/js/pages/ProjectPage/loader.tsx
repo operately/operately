@@ -47,6 +47,8 @@ const GET_PROJECT = gql`
       archivedAt
 
       private
+      status
+      closedAt
 
       space {
         id

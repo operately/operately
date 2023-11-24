@@ -71,6 +71,9 @@ function DurationField({ project }: { project: Projects.Project }) {
 }
 
 function Progress({ project }: { project: Projects.Project }) {
+  if (project.status === "closed") return null;
+  if (project.isArchived) return null;
+
   const start = Time.parse(project.startedAt);
   const end = Time.parse(project.deadline);
 
@@ -83,23 +86,6 @@ function Progress({ project }: { project: Projects.Project }) {
       <div className="flex items-center gap-2 font-semibold">
         {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
       </div>
-    </div>
-  );
-}
-
-function EditTimelineButton({ project }) {
-  if (!project.permissions.canEditTimeline) return null;
-
-  return (
-    <div className="mt-2">
-      <GhostButton
-        size="xs"
-        type="secondary"
-        linkTo={`/projects/${project.id}/edit/timeline`}
-        testId="edit-project-timeline"
-      >
-        Edit Timeline
-      </GhostButton>
     </div>
   );
 }
