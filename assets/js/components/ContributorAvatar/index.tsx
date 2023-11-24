@@ -11,7 +11,7 @@ interface ContributorAvatarProps {
 export default function ContributorAvatar(props: ContributorAvatarProps) {
   return (
     <div className={`shrink-0 relative ${borderClass(props.contributor.role)}`}>
-      <Avatar person={props.contributor.person} size={40} />
+      <Avatar person={props.contributor.person} />
     </div>
   );
 }
@@ -30,7 +30,12 @@ function borderClass(role: string) {
 export function ChampionPlaceholder() {
   return (
     <div className={`shrink-0 relative ${borderClass("")}`}>
-      <Avatar person={null} />
+      <div
+        className="flex items-center justify-center bg-surface text-content-subtle rounded-full"
+        style={{ width: 32, height: 32 }}
+      >
+        <Icons.IconUser size={24} className="text-content-subtle" stroke={1} />
+      </div>
     </div>
   );
 }
@@ -40,9 +45,9 @@ export function ReviewerPlaceholder() {
     <div className={`shrink-0 relative ${borderClass("")}`}>
       <div
         className="flex items-center justify-center bg-surface text-content-subtle rounded-full"
-        style={{ width: 40, height: 40 }}
+        style={{ width: 32, height: 32 }}
       >
-        <Icons.IconUser size={32} className="text-content-subtle" stroke={1} />
+        <Icons.IconUser size={24} className="text-content-subtle" stroke={1} />
       </div>
     </div>
   );
