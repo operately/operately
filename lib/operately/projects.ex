@@ -58,6 +58,23 @@ defmodule Operately.Projects do
     |> Repo.extract_result(:project)
   end
 
+  def close_project(author, project, retrospective) do
+    attrs = %{
+      status: :closed, 
+      closed_at: DateTime.utc_now(),
+      retrospective: retrospective,
+    }
+
+    Multi.new()
+    |> Multi.update(:project, change_project(project, attrs))
+    |> Activities.insert(author.id, :project_closed, fn _changes -> %{
+      company_id: project.company_id,
+      project_id: project.id
+    } end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
+  end
+
   def archive_project(author, %Project{} = project) do
     Multi.new()
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)

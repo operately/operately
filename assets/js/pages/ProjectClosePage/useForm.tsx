@@ -33,10 +33,12 @@ export function useForm(project: Projects.Project): FormState {
 
     await post({
       variables: {
-        id: project.id,
-        whatWentWell: whatWentWell.editor.getJSON(),
-        whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
-        whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+        projectId: project.id,
+        retrospective: JSON.stringify({
+          whatWentWell: whatWentWell.editor.getJSON(),
+          whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
+          whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+        }),
       },
     });
   }, [project.id, whatWentWell.editor, whatCouldHaveGoneBetter.editor, whatDidYouLearn.editor]);
