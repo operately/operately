@@ -9,6 +9,8 @@ import * as Projects from "@/graphql/Projects";
 
 import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
 
+import { createTestId } from "@/utils/testid";
+
 interface Props {
   project: Projects.Project;
   contributor?: Contributors.Contributor;
@@ -106,8 +108,10 @@ function Placeholder({ project, role, onEdit }) {
 }
 
 function ViewState({ project, avatar, name, responsibility, onEdit }) {
+  const editTestId = createTestId("edit-contributor", name);
+
   return (
-    <div className="flex items-center justify-between border-b border-shade-1 pb-2.5 mb-2.5 fadeIn group">
+    <div className="flex items-center justify-between border-b border-stroke-base py-2 fadeIn group">
       <div className="flex items-center gap-2">
         {avatar}
 
@@ -120,11 +124,14 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
       {project.permissions.canEditContributors && (
         <div className="shrink-0">
           <div
-            className="rounded-full p-2 hover:bg-shade-2 transition-colors opacity-0 group-hover:opacity-100"
+            className="rounded-full p-2 hover:bg-surface-dimmed transition-colors"
             onClick={onEdit}
-            data-test-id="edit-contributor"
+            data-test-id={editTestId}
           >
-            <Icons.IconPencil size={20} className="cursor-pointer text-white-2 hover:text-white-1 transition-colors" />
+            <Icons.IconPencil
+              size={20}
+              className="cursor-pointer text-content-subtle hover:text-content-accent transition-colors"
+            />
           </div>
         </div>
       )}
@@ -154,7 +161,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 py-8 -mt-2.5 mb-2.5">
+    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 py-8">
       <ContributorSearch
         defaultValue={contributor.person}
         projectID={project.id}
@@ -194,7 +201,7 @@ function ChooseAssignment({ role, projectId, onSave, onClose }) {
   };
 
   return (
-    <div className="bg-shade-1 border-y border-shade-1 -mx-12 px-12 py-8 -mt-2.5 mb-2.5">
+    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 py-8">
       <ContributorSearch projectID={projectId} title={role} onSelect={setPersonID} />
 
       <div className="flex justify-between mt-8">

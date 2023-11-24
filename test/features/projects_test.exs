@@ -66,8 +66,7 @@ defmodule Operately.Features.ProjectsTest do
     ctx
     |> visit_show(ctx.project)
     |> UI.click(testid: "project-contributors")
-    |> UI.hover(testid: "contributor-#{contrib.id}")
-    |> UI.click(testid: "edit-contributor")
+    |> UI.click(testid: "edit-contributor-michael-scott")
     |> UI.click(testid: "remove-contributor")
 
     ctx

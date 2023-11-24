@@ -33,9 +33,9 @@ export function ResponsibilityInput({ value, onChange }) {
           data-test-id="contributor-responsibility-input"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-shade-3 text-white-1 placeholder-white-2 border-none rounded-lg px-3"
+          className="w-full bg-surface text-content-accent placeholder-content-dimmed border border-surface-outline rounded-lg px-3"
           type="text"
-          placeholder="ex. Responsible for the visual design of the project."
+          placeholder="e.g. Responsible for the visual design of the project."
         />
       </div>
     </div>
@@ -46,7 +46,6 @@ export function RemoveButton({ onClick }) {
   return (
     <div className="flex gap-2">
       <Button variant="danger" onClick={onClick} data-test-id="remove-contributor">
-        <Icons.IconX size={20} />
         Remove
       </Button>
     </div>
@@ -64,7 +63,6 @@ export function CancelButton({ onClick }) {
 export function SaveButton({ disabled, onClick }) {
   return (
     <Button variant="success" disabled={disabled} onClick={onClick}>
-      <Icons.IconCheck size={20} />
       Save
     </Button>
   );
