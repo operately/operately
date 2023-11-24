@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       """
       import * as Pages from "@/components/Pages";
 
-      export interface LoaderResult {
+      interface LoaderResult {
       }
 
       export async function loader({params}) : Promise<LoaderResult> {

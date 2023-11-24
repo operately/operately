@@ -26,7 +26,7 @@ defmodule Operately.Projects.Project do
     field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control, :completed, :canceled, :paused], default: :planning
     field :health, Ecto.Enum, values: [:unknown, :on_track, :at_risk, :off_track], default: :unknown
 
-    field :status, :string
+    field :status, :string, default: "active"
     field :retrospective, :map
     field :closed_at, :utc_datetime
 
