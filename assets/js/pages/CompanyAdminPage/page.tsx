@@ -8,10 +8,10 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={"CompanyAdminPage"}>
+    <Pages.Page title={[company.name, "Admininstration"]}>
       <Paper.Root>
         <Paper.Body>
-          <div className="text-content-accent text-3xl font-extrabold">CompanyAdminPage</div>
+          <div className="text-content-accent text-3xl font-extrabold">{company.name}</div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

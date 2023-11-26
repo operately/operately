@@ -13,5 +13,14 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
         {:ok, tenets}
       end
     end
+
+    field :admins, list_of(:person) do
+      resolve fn company, _, _ ->
+        # admins = Operately.Companies.list_admins(company.id)
+
+        # {:ok, admins}
+        {:ok, []}
+      end
+    end
   end
 end
