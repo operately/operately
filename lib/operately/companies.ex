@@ -41,6 +41,6 @@ defmodule Operately.Companies do
   end
 
   def list_admins(company_id) do
-    Repo.all(from p in Person, where: p.company_role == "admin" and p.company_id == ^company_id)
+    Repo.all(from p in Person, where: p.company_role == :admin and p.company_id == ^company_id)
   end
 end
