@@ -8,12 +8,13 @@ interface LoaderResult {
   company: Company;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  let companyData = client.query({
+export async function loader(): Promise<LoaderResult> {
+  let companyData = await client.query({
     query: QUERY,
     variables: {
-      id: params.id,
+      id: window.appConfig.companyID,
     },
+    fetchPolicy: "network-only",
   });
 
   return {
@@ -36,7 +37,7 @@ export const QUERY = gql`
       name
       mission
 
-      companyAdmins {
+      admins {
         id
         fullName
         avatarUrl
