@@ -1,5 +1,4 @@
-import React from "react";
-import { gql, useQuery, useApolloClient } from "@apollo/client";
+import { gql, useApolloClient } from "@apollo/client";
 
 export const FRAGMENT = `
   {

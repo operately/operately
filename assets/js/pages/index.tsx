@@ -7,6 +7,7 @@ import * as AccountAppearancePage from "./AccountAppearancePage";
 import * as AccountEditProfilePage from "./AccountEditProfilePage";
 import * as AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import * as AccountPage from "./AccountPage";
+import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupListPage from "./GroupListPage";
@@ -62,6 +63,10 @@ export default {
   AccountPage: {
     loader: AccountPage.loader,
     Page: AccountPage.Page
+  },
+  CompanyAdminPage: {
+    loader: CompanyAdminPage.loader,
+    Page: CompanyAdminPage.Page
   },
   GroupAddPage: {
     loader: GroupAddPage.loader,

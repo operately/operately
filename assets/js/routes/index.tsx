@@ -16,6 +16,8 @@ const routes = createBrowserRouter([
     children: [
       pageRoute("/", pages.GroupListPage),
 
+      pageRoute("/company/admin", pages.CompanyAdminPage),
+
       pageRoute("/account", pages.AccountPage),
       pageRoute("/account/profile", pages.AccountEditProfilePage),
       pageRoute("/account/notifications", pages.AccountNotificationSettingsPage),
