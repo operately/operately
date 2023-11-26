@@ -20,6 +20,7 @@ defmodule Operately.People.Person do
     field :notify_about_assignments, :boolean
 
     field :theme, :string
+    field :company_role, Ecto.Enum, values: [:admin, :member], default: :member
 
     timestamps()
   end
@@ -38,6 +39,7 @@ defmodule Operately.People.Person do
       :send_daily_summary,
       :notify_on_mention,
       :notify_about_assignments,
+      :company_role,
       :theme
     ])
     |> validate_required([:full_name, :company_id])

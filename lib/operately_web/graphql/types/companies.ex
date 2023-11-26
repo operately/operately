@@ -16,10 +16,9 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
 
     field :admins, list_of(:person) do
       resolve fn company, _, _ ->
-        # admins = Operately.Companies.list_admins(company.id)
+        admins = Operately.Companies.list_admins(company.id)
 
-        # {:ok, admins}
-        {:ok, []}
+        {:ok, admins}
       end
     end
   end
