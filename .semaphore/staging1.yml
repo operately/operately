@@ -19,7 +19,7 @@ blocks:
             - cd /tmp
             - git clone git@github.com:/operately/infra
             - cd infra
-            - "make update.app.image TAG=${DOCKER_TAG} > /dev/null"
+            - "make stg1.update.app.image TAG=${DOCKER_TAG} > /dev/null"
             - "make stg1.app.deploy > /tmp/deploy.txt"
             - artifact push job /tmp/deploy.txt
             - git config --global user.email "hello@operately.com"
