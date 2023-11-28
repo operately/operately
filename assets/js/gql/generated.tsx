@@ -630,6 +630,7 @@ export type RootMutationType = {
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
+  removeCompanyAdmin?: Maybe<Person>;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
@@ -807,6 +808,11 @@ export type RootMutationTypePostProjectDocumentArgs = {
   content: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
   type: Scalars['String']['input'];
+};
+
+
+export type RootMutationTypeRemoveCompanyAdminArgs = {
+  personId: Scalars['ID']['input'];
 };
 
 

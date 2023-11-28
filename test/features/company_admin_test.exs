@@ -14,13 +14,16 @@ defmodule Operately.Features.CompanyAdminTest do
       company_role: "admin"
     })
 
-    {:ok, ctx}
+    ctx = Map.put(ctx, :company, company)
+    ctx = Map.put(ctx, :admin, admin)
+
+    ctx
+    |> UI.login_as(ctx.admin)
+    |> visit_page()
   end
 
   feature "adding a new person to the company", ctx do
     ctx
-    |> UI.login_as(ctx.admin)
-    |> visit_page()
     |> UI.click(testid: "add-remove-people")
     |> UI.click(testid: "add-person")
     |> UI.fill(testid: "person-full-name", with: "Michael Scott")
@@ -40,8 +43,6 @@ defmodule Operately.Features.CompanyAdminTest do
     person = person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager"})
 
     ctx
-    |> UI.login_as(ctx.admin)
-    |> visit_page()
     |> UI.click(testid: "add-remove-admins")
     |> UI.click(testid: "add-admin")
     |> UI.fill(testid: "person-query", with: "Michael Scott")
@@ -55,27 +56,25 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   feature "demote a person from admin", ctx do
-    person = person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager"})
+    person = person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager", company_role: :admin})
 
     ctx
-    |> UI.login_as(ctx.admin)
-    |> visit_page()
-    |> UI.click(testid: "add-remove-admins")
-    |> UI.click(testid: "demote-michael-scott")
+    |> UI.click(testid: "manage-company-administrators")
+    |> UI.click(testid: "remove-michael-scott")
     |> UI.refute_text("Michael Scott")
 
-    person = Operately.People.get_by_email("m.scott@dmif.com")
+    person = Operately.People.get_person_by_name!("Michael Scott")
 
     assert person != nil
     assert person.company_id == ctx.company.id
-    assert person.company_role == "member"
+    assert person.company_role == :member
   end
 
   #
   # ======== Helper functions ========
   #
 
-  defp visit_page(ctx, project) do
+  defp visit_page(ctx) do
     UI.visit(ctx, "/company/admin")
   end
 
