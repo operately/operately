@@ -10,7 +10,7 @@ import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
 import { createPath } from "@/utils/paths";
 
 export function Page() {
-  const { company } = useLoadedData();
+  const { company, me } = useLoadedData();
 
   return (
     <Pages.Page title={[company.name, "Admininstration"]}>
@@ -30,7 +30,7 @@ export function Page() {
 
           <CompanyAdmins />
 
-          <Menu />
+          {me.companyRole === "admin" && <Menu />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

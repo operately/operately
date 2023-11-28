@@ -1,11 +1,12 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
-import { Company } from "@/gql/generated";
+import { Company, Person } from "@/gql/generated";
 
 import * as Pages from "@/components/Pages";
 
 interface LoaderResult {
   company: Company;
+  me: Person;
 }
 
 export async function loader(): Promise<LoaderResult> {
@@ -17,8 +18,23 @@ export async function loader(): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
+  let meData = await client.query({
+    query: gql`
+      query GetMe {
+        me {
+          id
+          fullName
+          avatarUrl
+          companyRole
+        }
+      }
+    `,
+    fetchPolicy: "network-only",
+  });
+
   return {
     company: companyData.data.company,
+    me: meData.data.me,
   };
 }
 

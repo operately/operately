@@ -5,10 +5,12 @@ import { Outlet } from "react-router-dom";
 import User from "./User";
 import Bell from "./Bell";
 
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-import * as Icons from "@tabler/icons-react";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+
+import { createPath } from "@/utils/paths";
+import { GhostButton } from "@/components/Button";
 
 function Logo() {
   return (
@@ -33,26 +35,15 @@ function Logo() {
   );
 }
 
-function NavigationContainer({ size, children }) {
+function NavigationContainer({ children }) {
   return <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
 }
 
-function NavigationItem({ to, title, icon }) {
-  return (
-    <NavLink to={to} className="flex items-center">
-      <span className="font-bold flex items-center gap-1 text-content-dimmed hover:text-content-accent transition-all">
-        {icon}
-        {title}
-      </span>
-    </NavLink>
-  );
-}
-
-function Navigation({ size }) {
+function Navigation() {
   const goToLobby = useNavigateTo("/");
 
   return (
-    <NavigationContainer size={size}>
+    <NavigationContainer>
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={goToLobby}>
@@ -65,14 +56,11 @@ function Navigation({ size }) {
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
           <Bell />
+          <AdminLink />
         </div>
       </div>
     </NavigationContainer>
   );
-}
-
-function VerticalDivider() {
-  return <div className="w-px h-10 mx-2" />;
 }
 
 function ScrollToTop() {
@@ -90,24 +78,24 @@ function ScrollToTop() {
 }
 
 export default function DefaultLayout() {
-  const [navigationSize, setNavigationSize] = React.useState("large");
-
-  React.useEffect(() => {
-    window.addEventListener("scroll", () => {
-      if (window.pageYOffset > 10) {
-        setNavigationSize("small");
-      } else {
-        setNavigationSize("large");
-      }
-    });
-  });
-
   return (
     <div className="">
       <ScrollToTop />
-      <Navigation size={navigationSize} />
-
+      <Navigation />
       <Outlet />
+    </div>
+  );
+}
+
+export function AdminLink() {
+  const isRootPath = useLocation().pathname === "/";
+  if (!isRootPath) return null;
+
+  return (
+    <div className="flex items-center justify-center">
+      <GhostButton linkTo={createPath("company", "admin")} size="sm" type="secondary">
+        <div className="font-bold">Company Admin</div>
+      </GhostButton>
     </div>
   );
 }

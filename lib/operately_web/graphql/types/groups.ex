@@ -6,8 +6,8 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
     field :name, non_null(:string)
     field :mission, :string
 
-    field :private_space, non_null(:string) do
-      resolve fn group, _, _ ->
+    field :private_space, non_null(:boolean) do
+      resolve fn _, _, _ ->
         {:ok, false}
       end
     end

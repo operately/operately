@@ -341,7 +341,7 @@ export type Group = {
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   pointsOfContact?: Maybe<Array<GroupContact>>;
-  privateSpace: Scalars['String']['output'];
+  privateSpace: Scalars['Boolean']['output'];
 };
 
 export type GroupContact = {
@@ -451,6 +451,7 @@ export type Person = {
   __typename?: 'Person';
   avatarUrl?: Maybe<Scalars['String']['output']>;
   company: Company;
+  companyRole?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   notifyAboutAssignments: Scalars['Boolean']['output'];
@@ -603,6 +604,7 @@ export type Reaction = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
+  addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -659,6 +661,11 @@ export type RootMutationType = {
 
 export type RootMutationTypeAcknowledgeArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeAddCompanyAdminsArgs = {
+  peopleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 
