@@ -25,6 +25,10 @@ defmodule Operately.People.Person do
     timestamps()
   end
 
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   @doc false
   def changeset(person, attrs) do
     person

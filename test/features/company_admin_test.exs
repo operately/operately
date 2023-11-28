@@ -29,9 +29,9 @@ defmodule Operately.Features.CompanyAdminTest do
     |> UI.fill(testid: "person-full-name", with: "Michael Scott")
     |> UI.fill(testid: "person-email", with: "m.scott@dmif.com")
     |> UI.fill(testid: "person-title", with: "Regional Manager")
-    |> UI.click(testid: "save")
+    |> UI.click(testid: "submit")
 
-    person = Operately.People.get_by_email("m.scott@dmif.com")
+    person = Operately.People.get_person_by_name!("Michael Scott")
 
     assert person != nil
     assert person.company_id == ctx.company.id
@@ -57,7 +57,7 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   feature "demote a person from admin", ctx do
-    person = person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager", company_role: :admin})
+    person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager", company_role: :admin})
 
     ctx
     |> UI.click(testid: "manage-company-administrators")

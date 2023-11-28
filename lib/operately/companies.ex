@@ -79,7 +79,7 @@ defmodule Operately.Companies do
         {:error, "Person is not in the same company"}
 
       true ->
-        Operately.People.update_person(person, %{company_role: :admin})
+        {:ok, _} = Operately.People.update_person(person, %{company_role: :admin})
     end
   end
 
@@ -87,5 +87,20 @@ defmodule Operately.Companies do
     Enum.map(people_ids, fn person_id ->
       add_admin(admin, person_id)
     end)
+  end
+
+  def add_member(admin, args) do
+    cond do
+      admin.company_role != :admin ->
+        {:error, "Only admins can add members"}
+
+      true ->
+        args = Map.put(args, :company_id, admin.company_id)
+        args = Map.put(args, :company_role, :member)
+
+        changeset = Person.changeset(args)
+
+        Repo.insert(changeset)
+    end
   end
 end
