@@ -3,6 +3,7 @@ import client from "@/graphql/client";
 import { Company, Person } from "@/gql/generated";
 
 import * as Pages from "@/components/Pages";
+import * as People from "@/models/people";
 
 interface LoaderResult {
   company: Company;
@@ -18,22 +19,9 @@ export async function loader(): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: gql`
-      query GetMe {
-        me {
-          id
-          fullName
-          avatarUrl
-        }
-      }
-    `,
-    fetchPolicy: "network-only",
-  });
-
   return {
     company: companyData.data.company,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

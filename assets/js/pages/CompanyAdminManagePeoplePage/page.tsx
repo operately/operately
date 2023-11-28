@@ -3,15 +3,25 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
+import { PeopleList } from "./PeopleList";
+import { AddPeopleButton } from "./AddPeopleButton";
 
 export function Page() {
-  const data = useLoadedData();
+  const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={"CompanyAdminManagePeoplePage"}>
+    <Pages.Page title={["Manage People", company.name]}>
       <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
+        </Paper.Navigation>
         <Paper.Body>
-          <div className="text-content-accent text-3xl font-extrabold">CompanyAdminManagePeoplePage</div>
+          <div className="text-content-accent text-2xl font-extrabold text-center leading-none">
+            People in {company.name}
+          </div>
+
+          <AddPeopleButton />
+          <PeopleList />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

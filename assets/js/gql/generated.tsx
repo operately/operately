@@ -245,6 +245,7 @@ export type Company = {
   id: Scalars['ID']['output'];
   mission: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  people?: Maybe<Array<Maybe<Person>>>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
 };
 
@@ -452,6 +453,7 @@ export type Person = {
   avatarUrl?: Maybe<Scalars['String']['output']>;
   company: Company;
   companyRole?: Maybe<Scalars['String']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   notifyAboutAssignments: Scalars['Boolean']['output'];

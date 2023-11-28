@@ -1,3 +1,4 @@
+export { getMe } from "./getMe";
 import { Person } from "@/gql";
 
 export function firstName(person: Person): string {

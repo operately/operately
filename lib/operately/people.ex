@@ -12,6 +12,10 @@ defmodule Operately.People do
     Repo.all(Person)
   end
 
+  def list_people(company_id) do
+    Repo.all(from p in Person, where: p.company_id == ^company_id)
+  end
+
   def get_person!(id), do: Repo.get!(Person, id)
 
   def get_person_by_name!(name) do
