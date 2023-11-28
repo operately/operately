@@ -7,6 +7,8 @@ import * as AccountAppearancePage from "./AccountAppearancePage";
 import * as AccountEditProfilePage from "./AccountEditProfilePage";
 import * as AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import * as AccountPage from "./AccountPage";
+import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
+import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
@@ -63,6 +65,14 @@ export default {
   AccountPage: {
     loader: AccountPage.loader,
     Page: AccountPage.Page
+  },
+  CompanyAdminManageAdminsPage: {
+    loader: CompanyAdminManageAdminsPage.loader,
+    Page: CompanyAdminManageAdminsPage.Page
+  },
+  CompanyAdminManagePeoplePage: {
+    loader: CompanyAdminManagePeoplePage.loader,
+    Page: CompanyAdminManagePeoplePage.Page
   },
   CompanyAdminPage: {
     loader: CompanyAdminPage.loader,

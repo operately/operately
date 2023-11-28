@@ -17,6 +17,8 @@ const routes = createBrowserRouter([
       pageRoute("/", pages.GroupListPage),
 
       pageRoute("/company/admin", pages.CompanyAdminPage),
+      pageRoute("/company/admin/manageAdmins", pages.CompanyAdminManageAdminsPage),
+      pageRoute("/company/admin/managePeople", pages.CompanyAdminManagePeoplePage),
 
       pageRoute("/account", pages.AccountPage),
       pageRoute("/account/profile", pages.AccountEditProfilePage),
