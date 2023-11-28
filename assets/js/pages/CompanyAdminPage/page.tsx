@@ -1,10 +1,13 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
 
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { CompanyAdmins } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
+import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
+import { createPath } from "@/utils/paths";
 
 export function Page() {
   const { company } = useLoadedData();
@@ -26,8 +29,24 @@ export function Page() {
           </p>
 
           <CompanyAdmins />
+
+          <Menu />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Menu() {
+  const managePeople = createPath("company", "admin", "managePeople");
+  const manageAdmins = createPath("company", "admin", "manageAdmins");
+
+  return (
+    <div className="mt-12">
+      <OptionsMenu>
+        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Add/Remove People" />
+        <OptionsMenuItem linkTo={manageAdmins} icon={Icons.IconUserShield} title="Manage Company Administrators" />
+      </OptionsMenu>
+    </div>
   );
 }
