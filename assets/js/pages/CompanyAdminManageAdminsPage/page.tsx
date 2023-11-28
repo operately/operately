@@ -17,12 +17,13 @@ export function Page() {
         <Paper.Navigation>
           <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
         </Paper.Navigation>
+
         <Paper.Body>
           <div className="text-content-accent text-2xl font-extrabold text-center leading-none">
             Administrators of {company.name}
           </div>
 
-          <AddAdminsModal />
+          <AddAdminsModal form={form} />
           <AdminList form={form} />
         </Paper.Body>
       </Paper.Root>

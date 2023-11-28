@@ -54,6 +54,7 @@ export const QUERY = gql`
 
       admins {
         id
+        title
         fullName
         avatarUrl
       }

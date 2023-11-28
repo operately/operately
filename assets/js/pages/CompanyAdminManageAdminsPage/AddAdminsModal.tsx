@@ -1,109 +1,65 @@
 import React from "react";
-import { useLoadedData } from "./loader";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import Button, { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Button";
 
 import PeopleSearch, { Option, Person } from "@/components/PeopleSearch";
-import * as Groups from "@/graphql/Groups";
-import client from "@/graphql/client";
 import * as Icons from "@tabler/icons-react";
+import { FormState } from "./useForm";
+import * as People from "@/graphql/People";
 
-interface ContextDescriptor {
-  selected: Option[];
-  add: (person: Option) => void;
-  remove: (id: string) => void;
-}
-
-const Context = React.createContext<ContextDescriptor | null>(null);
-
-export function AddAdminsModal() {
-  const { company } = useLoadedData();
-
-  // const [selected, setSelectedList] = React.useState<Option[]>([]);
-  const [isModalOpen, setIsModalOpen]: [boolean, any] = React.useState(false);
-
-  // const add = (selection: Option) => setSelectedList([...selected, selection]);
-  // const remove = (id: string) => {
-  //   setSelectedList(selected.filter((p) => p.value !== id));
-  // };
-
-  // const search = async (value: string) => {
-  //   let result = await Groups.listPotentialGroupMembers(client, {
-  //     variables: {
-  //       groupId,
-  //       query: value,
-  //       excludeIds: selected.map((p) => p.value),
-  //       limit: 10,
-  //     },
-  //   });
-
-  //   return result.data.potentialGroupMembers;
-  // };
-
-  // const submit = async () => {
-  //   await client.mutate({
-  //     mutation: Groups.ADD_MEMBERS,
-  //     variables: {
-  //       groupId,
-  //       personIds: selected.map((s) => s.person.id),
-  //     },
-  //   });
-
-  //   setIsModalOpen(false);
-  //   setSelectedList([]);
-  //   onSubmit();
-  // };
-
-  const openModal = () => setIsModalOpen(true);
+export function AddAdminsModal({ form }: { form: FormState }) {
+  const state = useAddAdminsModalState(form);
 
   return (
     <>
       <div className="flex items-center my-8 gap-2">
         <div className="h-px bg-surface-outline flex-1" />
-        <GhostButton type="primary" onClick={openModal} testId="add-group-members">
+        <GhostButton type="primary" onClick={state.openModal} testId="add-admins">
           Add Admininstrators
         </GhostButton>
         <div className="h-px bg-surface-outline flex-1" />
       </div>
+
+      <Modal title="Add administrators" isOpen={state.isModalOpen} hideModal={state.hideModal}>
+        <SearchField
+          onSelect={state.add}
+          loader={state.search}
+          placeholder={"Search for people to promote to admin"}
+          alreadySelected={state.excludeIds}
+        />
+
+        <div className="flex flex-col gap-2 mt-4">
+          <PeopleList state={state} />
+        </div>
+
+        <div className="mt-4 flex items-center justify-center">
+          <GhostButton onClick={state.submit} testId="save-admins">
+            Add Admininstrators
+          </GhostButton>
+        </div>
+      </Modal>
     </>
   );
 }
-// <SearchField
-//   onSelect={add}
-//   loader={search}
-//   placeholder={t("forms.add_group_members_search_placeholder")}
-//   alreadySelected={selected.map((p) => p.value) + members.map((p: Person) => p.id)}
-// />
 
-// <div className="flex flex-col gap-2 mt-4">
-//   <PeopleList />
-// </div>
-
-// <div className="mt-4">
-//   <Button variant="success" onClick={submit} data-test-id="submit-group-members">
-//     {t("forms.add_group_members_button")}
-//   </Button>
-// </div>
-
-function PeopleList() {
-  const { selected } = React.useContext(Context) as ContextDescriptor;
-
+function PeopleList({ state }) {
   return (
     <div className="flex flex-col gap-2">
-      {selected.map((s) => (
-        <PeopleListItem selected={s} />
+      {state.selected.map((s) => (
+        <PeopleListItem key={s.value} selected={s} state={state} />
       ))}
     </div>
   );
 }
 
-function PeopleListItem({ selected }: { selected: Option }): JSX.Element {
-  const { remove } = React.useContext(Context) as ContextDescriptor;
-
+function PeopleListItem({ selected, state }) {
   return (
-    <div className="px-2 py-1 bg-surface rounded flex justify-between items-center" key={selected.value}>
+    <div
+      className="px-2 py-2 bg-surface-dimmed border border-surface-outline rounded flex justify-between items-center"
+      key={selected.value}
+    >
       <div className="flex items-center gap-2">
         <Avatar person={selected.person} size="tiny" />
         <p>
@@ -111,7 +67,7 @@ function PeopleListItem({ selected }: { selected: Option }): JSX.Element {
         </p>
       </div>
 
-      <RemoveIcon onClick={() => remove(selected.value)} />
+      <RemoveIcon onClick={() => state.remove(selected.value)} />
     </div>
   );
 }
@@ -131,7 +87,7 @@ function SearchField({ onSelect, loader, placeholder, alreadySelected }) {
   return (
     <PeopleSearch
       placeholder={placeholder}
-      value={selected}
+      value={selected!}
       onChange={onChange}
       loader={loader}
       filterOption={filterOptions}
@@ -145,4 +101,43 @@ function RemoveIcon({ onClick }) {
       <Icons.IconX size={20} />
     </div>
   );
+}
+
+function useAddAdminsModalState(form: FormState) {
+  const search = People.usePeopleSearch();
+
+  const [selected, setSelectedList] = React.useState<Option[]>([]);
+  const [isModalOpen, setIsModalOpen]: [boolean, any] = React.useState(false);
+
+  const add = (selection: Option) => setSelectedList([...selected, selection]);
+  const remove = (id: string) => {
+    setSelectedList(selected.filter((p) => p.value !== id));
+  };
+
+  const submit = async () => {
+    await form.addAdmins(selected.map((s) => s.value));
+
+    setIsModalOpen(false);
+    setSelectedList([]);
+  };
+
+  const openModal = () => setIsModalOpen(true);
+  const hideModal = () => setIsModalOpen(false);
+
+  const excludeIds = React.useMemo(() => {
+    return selected.map((s) => s.value).concat(form.company.admins!.map((a) => a!.id));
+  }, [selected, form.company.admins]);
+
+  return {
+    selected,
+    add,
+    remove,
+    isModalOpen,
+    setIsModalOpen,
+    submit,
+    openModal,
+    hideModal,
+    search,
+    excludeIds,
+  };
 }

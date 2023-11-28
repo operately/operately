@@ -40,19 +40,20 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   feature "promote a person to admin", ctx do
-    person = person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager"})
+    person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager"})
 
     ctx
-    |> UI.click(testid: "add-remove-admins")
-    |> UI.click(testid: "add-admin")
-    |> UI.fill(testid: "person-query", with: "Michael Scott")
-    |> UI.click(testid: "add")
+    |> UI.click(testid: "manage-company-administrators")
+    |> UI.click(testid: "add-admins")
+    |> UI.fill_in(Query.css("#peopleSearch"), with: "Mich")
+    |> UI.assert_text("Michael Scott")
+    |> UI.send_keys([:enter])
+    |> UI.click(testid: "save-admins")
 
-    person = Operately.People.get_by_email("m.scott@dmif.com")
-
-    assert person != nil
-    assert person.company_id == ctx.company.id
-    assert person.company_role == "admin"
+    michael = Operately.People.get_person_by_name!("Michael Scott")
+    assert michael != nil
+    assert michael.company_id == ctx.company.id
+    assert michael.company_role == :admin
   end
 
   feature "demote a person from admin", ctx do

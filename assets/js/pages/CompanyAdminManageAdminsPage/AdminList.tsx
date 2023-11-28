@@ -39,7 +39,7 @@ function AdminListItem({ admin, form }) {
               Remove
             </GhostButton>
           ) : (
-            <span className="text-sm text-content-dimmed">You can't remove yourself</span>
+            <div className="bg-surface-dimmed px-2 py-0.5 rounded-lg text-sm text-accent-1 font-medium">This is me</div>
           )}
         </div>
       </div>
