@@ -1,9 +1,6 @@
 defmodule OperatelyWeb.AccountOauthControllerTest do
   use OperatelyWeb.ConnCase
 
-  alias Operately.People
-  alias OperatelyWeb.AccountAuth
-
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
@@ -29,6 +26,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       })
 
       conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
+      assert conn.status == 302
 
       people = Operately.People.list_people()
       assert length(people) == 1
@@ -36,12 +34,13 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       saved_person = hd(people)
       assert saved_person.email == "i.exist@text.com"
       assert saved_person.id == person.id
+      assert saved_person.avatar_url == "http://example.com/image.png"
       
       saved_account = Operately.Repo.preload(saved_person, :account).account
       assert saved_account.email == "i.exist@text.com"
     end
 
-    test "when a person with the given doens't exists it creates a new person/account combo", ctx do
+    test "when a person with the given doesn't exists it creates a new person/account combo", ctx do
       assert Operately.People.list_people() == []
 
       conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
@@ -53,6 +52,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       })
 
       conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
+      assert conn.status == 302
 
       people = Operately.People.list_people()
       assert length(people) == 1
@@ -64,6 +64,33 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       
       saved_account = Operately.Repo.preload(saved_person, :account).account
       assert saved_account.email == "new-email@text.com"
+    end
+
+    test "when the account exists, but the avatar_url is different, it updates the avatar_url", ctx do
+      assert Operately.People.list_people() == []
+
+      person = person_fixture_with_account(%{
+        company_id: ctx.company.id, 
+        email: "exist@text.com",
+        avatar_url: "http://example.com/old-image.png"
+      })
+
+      conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
+        info: %{
+          email: person.email,
+          image: "http://example.com/new-image.png",
+          name: "Test User"
+        }
+      })
+
+      conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
+      assert conn.status == 302
+
+      people = Operately.People.list_people()
+      assert length(people) == 1
+
+      saved_person = hd(people)
+      assert saved_person.avatar_url == "http://example.com/new-image.png"
     end
   end
 end
