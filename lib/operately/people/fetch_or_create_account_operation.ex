@@ -19,12 +19,19 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   # Strategies
   #
 
-  defp find_existing_account(%{email: email}) do
+  defp find_existing_account(%{email: email, image: image}) do
     account = People.get_account_by_email(email)
 
-    case account do
-      nil -> {:error, "Not found"}
-      _ -> {:ok, account}
+    if account == nil do
+      {:error, "Not found"}
+    else
+      person = Operately.Repo.preload(account, :person).person
+
+      if person.avatar_url != image do
+        {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
+      end
+
+      {:ok, account}
     end
   end
 
@@ -37,7 +44,10 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
       true -> 
         Multi.new()
         |> Multi.insert(:account, build_account(attrs))
-        |> Multi.update(:person, fn %{account: account} -> Person.changeset(person, %{account_id: account.id}) end)
+        |> Multi.update(:person, fn %{account: account} -> Person.changeset(person, %{
+          account_id: account.id,
+          avatar_url: attrs.image
+        }) end)
         |> Repo.transaction()
         |> Repo.extract_result(:account)
     end
