@@ -54,11 +54,17 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp create_new_account(attrs) do
-    Multi.new()
-    |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: random_password()}))
-    |> Multi.insert(:person, fn %{account: account} -> build_person_for_account(account, attrs) end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:account)
+    company = hd(Operately.Companies.list_companies())
+
+    if Operately.Companies.is_email_allowed?(company, attrs.email) do
+      Multi.new()
+      |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: random_password()}))
+      |> Multi.insert(:person, fn %{account: account} -> build_person_for_account(account, attrs) end)
+      |> Repo.transaction()
+      |> Repo.extract_result(:account)
+    else
+      {:error, "Not allowed"}
+    end
   end
 
   #
