@@ -1,7 +1,5 @@
 import { gql, useMutation, ApolloClient } from "@apollo/client";
 
-export { Group } from "@/gql/generated";
-
 export const GET_GROUP = gql`
   query GetGroup($id: ID!) {
     group(id: $id) {

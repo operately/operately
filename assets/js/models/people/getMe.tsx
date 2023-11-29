@@ -11,6 +11,7 @@ export async function getMe(): Promise<Person> {
           title
           fullName
           avatarUrl
+          companyRole
         }
       }
     `,
