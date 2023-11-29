@@ -2,12 +2,14 @@ defmodule OperatelyEmail.ProjectStatusUpdateAcknowledgedEmail do
   alias Operately.People.Person
 
   def send(person, activity) do
-    author = Operately.People.get_person!(activity.author_id)
-    update = Operately.Updates.get_update!(activity.content["status_update_id"])
-    project = Operately.Projects.get_project!(update.updatable_id)
-    email = compose(project, update, author, person)
+    if OperatelyEmail.send_email_to_person?(person) do
+      author = Operately.People.get_person!(activity.author_id)
+      update = Operately.Updates.get_update!(activity.content["status_update_id"])
+      project = Operately.Projects.get_project!(update.updatable_id)
+      email = compose(project, update, author, person)
 
-    OperatelyEmail.Mailer.deliver_now(email)
+      OperatelyEmail.Mailer.deliver_now(email)
+    end
   end
 
   def compose(project, update, author, recipient) do

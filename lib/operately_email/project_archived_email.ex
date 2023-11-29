@@ -2,11 +2,13 @@ defmodule OperatelyEmail.ProjectArchivedEmail do
   alias Operately.People.Person
 
   def send(person, activity) do
-    author = Operately.Repo.preload(activity, :author).author
-    project = Operately.Projects.get_project!(activity.content["project_id"])
-    email = compose(author, project, person)
+    if OperatelyEmail.send_email_to_person?(person) do
+      author = Operately.Repo.preload(activity, :author).author
+      project = Operately.Projects.get_project!(activity.content["project_id"])
+      email = compose(author, project, person)
 
-    OperatelyEmail.Mailer.deliver_now(email)
+      OperatelyEmail.Mailer.deliver_now(email)
+    end
   end
 
   def compose(author, project, recipient) do

@@ -15,4 +15,8 @@ defmodule OperatelyEmail do
   def project_milestone_url(project_id, milestone_id), do: app_url() <> "/projects/#{project_id}/milestones/#{milestone_id}"
   def project_retrospective_url(project_id), do: app_url() <> "/projects/#{project_id}/retrospective"
 
+  def send_email_to_person?(person) do
+    person.account_id != nil
+  end
+
 end

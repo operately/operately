@@ -10,8 +10,10 @@ defmodule OperatelyEmail.ProjectContributorAddedEmail do
   end
 
   def send_email(update, recipient) do
-    email = compose(update, recipient)
-    OperatelyEmail.Mailer.deliver_now(email)
+    if OperatelyEmail.send_email_to_person?(recipient) do
+      email = compose(update, recipient)
+      OperatelyEmail.Mailer.deliver_now(email)
+    end
   end
 
   def compose(update, recipient) do

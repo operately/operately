@@ -8,9 +8,9 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
 
   setup do
     company = company_fixture()
-    author = person_fixture(%{company_id: company.id})
+    author = person_fixture_with_account(%{company_id: company.id, email: "a@tex.com"})
     group = group_fixture(author, %{company_id: company.id})
-    champion = person_fixture(%{company_id: company.id})
+    champion = person_fixture_with_account(%{company_id: company.id, email: "b@tex.com"})
 
     project = Operately.Projects.create_project(%Operately.Projects.ProjectCreation{
       company_id: company.id,
@@ -24,7 +24,7 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
     {:ok, %{
       company: company, 
       project: project, 
-      reviewer: author,
+      reviewer: champion,
     }}
   end
 
