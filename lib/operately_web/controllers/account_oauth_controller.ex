@@ -11,19 +11,13 @@ defmodule OperatelyWeb.AccountOauthController do
   @rand_pass_length 32
 
   def callback(%{assigns: %{ueberauth_auth: %{info: account_info}}} = conn, %{"provider" => "google"}) do
-    account_params = %{
+    attrs = %{
       email: account_info.email,
-      password: random_password(),
-      person: %{
-        company_id: hd(Operately.Companies.list_companies()).id,
-        avatar_url: account_info.image,
-        email: account_info.email,
-        full_name: account_info.name,
-        title: "Unknown title"
-      }
+      name: account_info.name,
+      image: account_info.image
     }
 
-    case People.fetch_or_create_account(account_params) do
+    case People.log_in_or_create_account(attrs) do
       {:ok, account} ->
         AccountAuth.log_in_account(conn, account)
 

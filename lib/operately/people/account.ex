@@ -37,9 +37,13 @@ defmodule Operately.People.Account do
       submitting the form), this option can be set to `false`.
       Defaults to `true`.
   """
+  def registration_changeset(attrs) do
+    registration_changeset(%__MODULE__{}, attrs)
+  end
+
   def registration_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password]) 
     |> validate_email(opts)
     |> validate_password(opts)
   end
