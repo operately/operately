@@ -39,5 +39,29 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
         Operately.Companies.add_member(person, args.input)
       end
     end
+
+    field :add_company_trusted_email_domain, non_null(:company) do
+      arg :company_id, non_null(:id)
+      arg :domain, non_null(:string)
+
+      resolve fn _, args, %{context: context} ->
+        person = context.current_account.person
+        company = Operately.Companies.get_company!(args.company_id)
+
+        Operately.Companies.add_trusted_email_domain(company, person, args.domain)
+      end
+    end
+
+    field :remove_company_trusted_email_domain, non_null(:company) do
+      arg :company_id, non_null(:id)
+      arg :domain, non_null(:string)
+
+      resolve fn _, args, %{context: context} ->
+        person = context.current_account.person
+        company = Operately.Companies.get_company!(args.company_id)
+
+        Operately.Companies.remove_trusted_email_domain(company, person, args.domain)
+      end
+    end
   end
 end

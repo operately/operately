@@ -191,6 +191,12 @@ export type ActivityEventDataProjectCreate = {
 
 export type ActivityResourceUnion = Comment | Milestone | Project | Update;
 
+export type AddCompanyMemberInput = {
+  email: Scalars['String']['input'];
+  fullName: Scalars['String']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AddKeyResourceInput = {
   link: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
@@ -247,6 +253,7 @@ export type Company = {
   name: Scalars['String']['output'];
   people?: Maybe<Array<Maybe<Person>>>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
+  trustedEmailDomains?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
 };
 
 export type ContactInput = {
@@ -607,6 +614,7 @@ export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
+  addCompanyMember: Person;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -668,6 +676,11 @@ export type RootMutationTypeAcknowledgeArgs = {
 
 export type RootMutationTypeAddCompanyAdminsArgs = {
   peopleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
+
+export type RootMutationTypeAddCompanyMemberArgs = {
+  input: AddCompanyMemberInput;
 };
 
 

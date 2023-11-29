@@ -6,12 +6,12 @@ interface GetCompanyOpts {
 }
 
 export async function getCompany(opts?: GetCompanyOpts) {
-  let query = buildQuery(opts);
-
   let companyData = await client.query({
-    query: query,
+    query: QUERY,
     variables: {
       id: window.appConfig.companyID,
+      includeAdmins: opts?.include?.includes("admins") ?? false,
+      includePeople: opts?.include?.includes("people") ?? false,
     },
     fetchPolicy: "network-only",
   });
@@ -19,68 +19,36 @@ export async function getCompany(opts?: GetCompanyOpts) {
   return companyData.data.company;
 }
 
-function buildQuery(opts?: GetCompanyOpts) {
-  let query = COMPANY_CORE_FIELDS;
-
-  if (opts?.include?.includes("admins")) {
-    query = COMPANY_WITH_ADMINS;
-  }
-
-  if (opts?.include?.includes("people")) {
-    query = COMPANY_WITH_PEOPLE;
-  }
-
-  return query;
-}
-
-const COMPANY_CORE_FIELDS = gql`
-  query GetCompany($id: ID!) {
-    company(id: $id) {
+const QUERY = gql`
+  fragment People on Company {
+    people {
       id
-      name
-      mission
-
-      admins {
-        id
-        title
-        fullName
-        avatarUrl
-      }
+      title
+      fullName
+      avatarUrl
+      email
     }
   }
-`;
 
-const COMPANY_WITH_ADMINS = gql`
-  query GetCompany($id: ID!) {
-    company(id: $id) {
+  fragment Admins on Company {
+    admins {
       id
-      name
-      mission
-
-      admins {
-        id
-        title
-        fullName
-        avatarUrl
-      }
+      title
+      fullName
+      avatarUrl
+      email
     }
   }
-`;
 
-const COMPANY_WITH_PEOPLE = gql`
-  query GetCompany($id: ID!) {
+  query GetCompany($id: ID!, $includeAdmins: Boolean!, $includePeople: Boolean!) {
     company(id: $id) {
       id
       name
       mission
+      trustedEmailDomains
 
-      people {
-        id
-        title
-        fullName
-        avatarUrl
-        email
-      }
+      ...Admins @include(if: $includeAdmins)
+      ...People @include(if: $includePeople)
     }
   }
 `;

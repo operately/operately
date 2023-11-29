@@ -7,6 +7,7 @@ defmodule Operately.Companies.Company do
   schema "companies" do
     field :mission, :string
     field :name, :string
+    field :trusted_email_domains, {:array, :string}
 
     timestamps()
   end
@@ -14,7 +15,7 @@ defmodule Operately.Companies.Company do
   @doc false
   def changeset(company, attrs) do
     company
-    |> cast(attrs, [:name, :mission])
+    |> cast(attrs, [:name, :mission, :trusted_email_domains])
     |> validate_required([:name, :mission])
   end
 end
