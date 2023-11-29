@@ -22,6 +22,10 @@ defmodule Operately.People do
     Repo.one!(from p in Person, where: p.full_name == ^name)
   end
 
+  def get_person_by_email(email) do
+    Repo.one(from p in Person, where: p.email == ^email)
+  end
+
   def create_person(attrs \\ %{}) do
     %Person{}
     |> Person.changeset(attrs)
@@ -202,6 +206,10 @@ defmodule Operately.People do
       {:ok, %{account: account}} -> {:ok, account}
       {:error, :account, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def log_in_or_create_account(attrs) do
+    Operately.People.FetchOrCreateAccountOperation.call(attrs)
   end
 
   def fetch_or_create_account(attrs) do
