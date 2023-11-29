@@ -241,9 +241,11 @@ export type Comment = {
 
 export type Company = {
   __typename?: 'Company';
+  admins?: Maybe<Array<Maybe<Person>>>;
   id: Scalars['ID']['output'];
   mission: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  people?: Maybe<Array<Maybe<Person>>>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
 };
 
@@ -340,7 +342,7 @@ export type Group = {
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   pointsOfContact?: Maybe<Array<GroupContact>>;
-  privateSpace: Scalars['String']['output'];
+  privateSpace: Scalars['Boolean']['output'];
 };
 
 export type GroupContact = {
@@ -450,6 +452,8 @@ export type Person = {
   __typename?: 'Person';
   avatarUrl?: Maybe<Scalars['String']['output']>;
   company: Company;
+  companyRole?: Maybe<Scalars['String']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   notifyAboutAssignments: Scalars['Boolean']['output'];
@@ -602,6 +606,7 @@ export type Reaction = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
+  addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -629,6 +634,7 @@ export type RootMutationType = {
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
+  removeCompanyAdmin?: Maybe<Person>;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
@@ -657,6 +663,11 @@ export type RootMutationType = {
 
 export type RootMutationTypeAcknowledgeArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeAddCompanyAdminsArgs = {
+  peopleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 
@@ -806,6 +817,11 @@ export type RootMutationTypePostProjectDocumentArgs = {
   content: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
   type: Scalars['String']['input'];
+};
+
+
+export type RootMutationTypeRemoveCompanyAdminArgs = {
+  personId: Scalars['ID']['input'];
 };
 
 

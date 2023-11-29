@@ -79,6 +79,7 @@ defmodule OperatelyWeb.Graphql.Schema do
 
   # Mutations
   import_types OperatelyWeb.Graphql.Mutations.Blobs
+  import_types OperatelyWeb.Graphql.Mutations.Companies
   import_types OperatelyWeb.Graphql.Mutations.Dashboards
   import_types OperatelyWeb.Graphql.Mutations.Groups
   import_types OperatelyWeb.Graphql.Mutations.KeyResults
@@ -115,6 +116,7 @@ defmodule OperatelyWeb.Graphql.Schema do
 
   mutation do
     import_fields :blob_mutations
+    import_fields :company_mutations
     import_fields :dashboard_mutations
     import_fields :group_mutations
     import_fields :key_result_mutations

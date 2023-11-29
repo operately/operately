@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import * as Notifications from "@/models/notifications";
 
-export default function Bell() {
+export function Bell() {
   const count = Notifications.useUnreadCount();
 
   return (

@@ -77,17 +77,23 @@ export function TextInput({ label, value, onChange, placeholder = "", ...props }
       </label>
 
       <div className="flex-1">
-        <input
-          id={id}
-          className="w-full bg-surface text-content-accent placeholder-content-subtle border border-surface-outline rounded-lg px-3 py-1.5"
-          type="text"
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) => onChange(e.target.value)}
-          {...props}
-        />
+        <TextInputNoLabel id={id} value={value} onChange={onChange} placeholder={placeholder} {...props} />
       </div>
     </div>
+  );
+}
+
+export function TextInputNoLabel({ id, value, onChange, placeholder = "", ...props }) {
+  return (
+    <input
+      id={id}
+      className="w-full bg-surface text-content-accent placeholder-content-subtle border border-surface-outline rounded-lg px-3 py-1.5"
+      type="text"
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      {...props}
+    />
   );
 }
 
