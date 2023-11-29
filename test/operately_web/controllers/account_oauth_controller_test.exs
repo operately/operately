@@ -40,7 +40,9 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert saved_account.email == "i.exist@text.com"
     end
 
-    test "when a person with the given doesn't exists it creates a new person/account combo", ctx do
+    test "when a person with the given doesn't exists and the email is allowed => it creates a new person/account combo", ctx do
+      {:ok, _} = Operately.Companies.update_company(ctx.company, %{trusted_email_domains: ["@text.com"]})
+
       assert Operately.People.list_people() == []
 
       conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
@@ -64,6 +66,26 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       
       saved_account = Operately.Repo.preload(saved_person, :account).account
       assert saved_account.email == "new-email@text.com"
+    end
+
+    test "when a person with the given doesn't exists, but the email is not allowed => it rejects the request", ctx do
+      {:ok, _} = Operately.Companies.update_company(ctx.company, %{trusted_email_domains: ["@text.com"]})
+
+      assert Operately.People.list_people() == []
+
+      conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
+        info: %{
+          email: "new-email@dmif.com",
+          image: "http://example.com/image.png",
+          name: "Test User"
+        }
+      })
+
+      conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
+      assert conn.status == 302
+      assert get_flash(conn, :error) == "Authentication failed"
+
+      assert Operately.People.list_people() == []
     end
 
     test "when the account exists, but the avatar_url is different, it updates the avatar_url", ctx do

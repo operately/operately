@@ -24,7 +24,7 @@ defmodule Operately.Features.CompanyAdminTest do
 
   feature "adding a new person to the company", ctx do
     ctx
-    |> UI.click(testid: "add-remove-people")
+    |> UI.click(testid: "add-remove-people-manually")
     |> UI.click(testid: "add-person")
     |> UI.fill(testid: "person-full-name", with: "Michael Scott")
     |> UI.fill(testid: "person-email", with: "m.scott@dmif.com")
@@ -69,6 +69,33 @@ defmodule Operately.Features.CompanyAdminTest do
     assert person != nil
     assert person.company_id == ctx.company.id
     assert person.company_role == :member
+  end
+
+  feature "adding a trusted email domain", ctx do
+    ctx
+    |> UI.click(testid: "manage-trusted-email-domains")
+    |> UI.fill(testid: "add-trusted-email-domain-input", with: "dmif.com")
+    |> UI.click(testid: "add-trusted-email-domain-button")
+    |> UI.assert_text("@dmif.com")
+
+    company = Operately.Companies.get_company!(ctx.company.id)
+
+    assert company != nil
+    assert company.trusted_email_domains == ["@dmif.com"]
+  end
+
+  feature "removing a trusted email domain", ctx do
+    Operately.Companies.update_company(ctx.company, %{trusted_email_domains: ["@dmif.com"]})
+
+    ctx
+    |> UI.click(testid: "manage-trusted-email-domains")
+    |> UI.click(testid: "remove-trusted-email-domain--dmif-com")
+    |> UI.refute_text("@dmif.com")
+
+    company = Operately.Companies.get_company!(ctx.company.id)
+
+    assert company != nil
+    assert company.trusted_email_domains == []
   end
 
   #

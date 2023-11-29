@@ -38,13 +38,15 @@ export function Page() {
 }
 
 function Menu() {
+  const manageTrustedDomains = createPath("company", "admin", "manageTrustedEmailDomains");
   const managePeople = createPath("company", "admin", "managePeople");
   const manageAdmins = createPath("company", "admin", "manageAdmins");
 
   return (
     <div className="mt-12">
       <OptionsMenu>
-        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Add/Remove People" />
+        <OptionsMenuItem linkTo={manageTrustedDomains} icon={Icons.IconLock} title="Manage Trusted Email Domains" />
+        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Add/Remove People Manually" />
         <OptionsMenuItem linkTo={manageAdmins} icon={Icons.IconUserShield} title="Manage Company Administrators" />
       </OptionsMenu>
     </div>

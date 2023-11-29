@@ -12,7 +12,8 @@ defmodule Operately.CompaniesFixtures do
       attrs
       |> Enum.into(%{
         mission: "some mission",
-        name: "some name"
+        name: "some name",
+        trusted_email_domains: []
       })
       |> Operately.Companies.create_company()
 

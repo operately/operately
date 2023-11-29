@@ -103,4 +103,43 @@ defmodule Operately.Companies do
         Repo.insert(changeset)
     end
   end
+
+  def add_trusted_email_domain(company, admin, domain) do
+    cond do
+      admin.company_role != :admin ->
+        {:error, "Only admins can add trusted email domains"}
+      admin.company_id != company.id ->
+        {:error, "Admin is not in the same company"}
+      domain == "" ->
+        {:error, "Domain cannot be empty"}
+      String.at(domain, 0) != "@" ->
+        {:error, "Domain must start with @"}
+      true ->
+        company
+        |> Company.changeset(%{trusted_email_domains: [domain | company.trusted_email_domains]})
+        |> Repo.update()
+    end
+  end
+
+  def remove_trusted_email_domain(company, admin, domain) do
+    cond do
+      admin.company_role != :admin ->
+        {:error, "Only admins can remove trusted email domains"}
+      admin.company_id != company.id ->
+        {:error, "Admin is not in the same company"}
+      true ->
+        company
+        |> Company.changeset(%{trusted_email_domains: List.delete(company.trusted_email_domains, domain)})
+        |> Repo.update()
+    end
+  end
+
+  def is_email_allowed?(company, email) do
+    domain = String.split(email, "@") |> List.last()
+    domain = "@" <> domain
+    domain = String.downcase(domain)
+
+    Enum.member?(company.trusted_email_domains, domain)
+  end
+
 end

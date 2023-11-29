@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :mission, non_null(:string)
+    field :trusted_email_domains, list_of(:string)
 
     field :tenets, list_of(:tenet) do
       resolve fn company, _, _ ->
