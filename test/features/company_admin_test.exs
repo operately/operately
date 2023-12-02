@@ -8,9 +8,9 @@ defmodule Operately.Features.CompanyAdminTest do
     company = company_fixture(%{name: "Dunder Mifflin"})
 
     admin = person_fixture_with_account(%{
-      full_name: "Dwight Schrute", 
-      company_id: company.id, 
-      title: "Assistant to the Regional Manager", 
+      full_name: "Dwight Schrute",
+      company_id: company.id,
+      title: "Assistant to the Regional Manager",
       company_role: "admin"
     })
 
