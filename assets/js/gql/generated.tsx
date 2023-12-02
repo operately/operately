@@ -615,6 +615,7 @@ export type RootMutationType = {
   acknowledge?: Maybe<Update>;
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addCompanyMember: Person;
+  addCompanyTrustedEmailDomain: Company;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -643,6 +644,7 @@ export type RootMutationType = {
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
   removeCompanyAdmin?: Maybe<Person>;
+  removeCompanyTrustedEmailDomain: Company;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
@@ -681,6 +683,12 @@ export type RootMutationTypeAddCompanyAdminsArgs = {
 
 export type RootMutationTypeAddCompanyMemberArgs = {
   input: AddCompanyMemberInput;
+};
+
+
+export type RootMutationTypeAddCompanyTrustedEmailDomainArgs = {
+  companyId: Scalars['ID']['input'];
+  domain: Scalars['String']['input'];
 };
 
 
@@ -835,6 +843,12 @@ export type RootMutationTypePostProjectDocumentArgs = {
 
 export type RootMutationTypeRemoveCompanyAdminArgs = {
   personId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeRemoveCompanyTrustedEmailDomainArgs = {
+  companyId: Scalars['ID']['input'];
+  domain: Scalars['String']['input'];
 };
 
 
