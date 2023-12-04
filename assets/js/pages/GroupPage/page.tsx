@@ -1,5 +1,6 @@
 import React from "react";
 
+import * as Companies from "@/models/companies";
 import * as Pages from "@/components/Pages";
 import * as Groups from "@/graphql/Groups";
 import * as Icons from "@tabler/icons-react";
@@ -14,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { group } = useLoadedData();
+  const { company, group } = useLoadedData();
 
   return (
     <Pages.Page title={group.name}>
@@ -39,29 +40,35 @@ export function Page() {
           </div>
         </div>
 
-        <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
-          <div className="w-48">
-            <div className="text-content-accent font-bold">Documents</div>
-            <Link to={`/spaces/${group.id}/projects`}>Manage Calendar</Link>
+        {Companies.hasFeature(company, "space-documents") && (
+          <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
+            <div className="w-48">
+              <div className="text-content-accent font-bold">Documents</div>
+              <Link to={`/spaces/${group.id}/projects`}>Manage Documents</Link>
+            </div>
+            <div className="flex-1"></div>
           </div>
-          <div className="flex-1"></div>
-        </div>
+        )}
 
-        <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
-          <div className="w-48">
-            <div className="text-content-accent font-bold">Calendar</div>
-            <Link to={`/spaces/${group.id}/projects`}>Manage Calendar</Link>
+        {Companies.hasFeature(company, "space-calendar") && (
+          <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
+            <div className="w-48">
+              <div className="text-content-accent font-bold">Calendar</div>
+              <Link to={`/spaces/${group.id}/projects`}>Manage Calendar</Link>
+            </div>
+            <div className="flex-1"></div>
           </div>
-          <div className="flex-1"></div>
-        </div>
+        )}
 
-        <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
-          <div className="w-48">
-            <div className="text-content-accent font-bold">Goals</div>
-            <Link to={`/spaces/${group.id}/projects`}>Manage Goals</Link>
+        {Companies.hasFeature(company, "goals") && (
+          <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
+            <div className="w-48">
+              <div className="text-content-accent font-bold">Goals</div>
+              <Link to={`/spaces/${group.id}/projects`}>Manage Goals</Link>
+            </div>
+            <div className="flex-1"></div>
           </div>
-          <div className="flex-1"></div>
-        </div>
+        )}
       </div>
     </Pages.Page>
   );
@@ -106,8 +113,8 @@ function ProjectGridItem({ project }: { project: Projects.Project }) {
         </div>
 
         <div className="flex items-center gap-1">
-          {project.contributors.map((contributor) => (
-            <Avatar key={contributor.id} person={contributor.person} size="tiny" />
+          {project.contributors!.map((contributor) => (
+            <Avatar key={contributor!.id} person={contributor!.person} size="tiny" />
           ))}
         </div>
       </div>
@@ -127,13 +134,3 @@ function NextMilestone({ project }) {
     );
   }
 }
-
-// <PointsOfContact
-//   groupId={id}
-//   groupName={data.group.name}
-//   pointsOfContact={data.group.pointsOfContact}
-//   onAddContact={refetch}
-// />
-
-// <Projects groupId={id} />
-// <Objectives groupId={id} />

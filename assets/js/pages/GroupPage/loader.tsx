@@ -2,10 +2,12 @@ import client from "@/graphql/client";
 
 import * as Pages from "@/components/Pages";
 import * as Groups from "@/graphql/Groups";
+import * as Companies from "@/models/companies";
 
-import { Group } from "@/gql/generated";
+import { Company, Group } from "@/gql/generated";
 
 interface LoadedData {
+  company: Company;
   group: Group;
 }
 
@@ -16,7 +18,10 @@ export async function loader({ params }): Promise<LoadedData> {
     fetchPolicy: "network-only",
   });
 
-  return { group: groupData.data.group };
+  return {
+    company: await Companies.getCompany(),
+    group: groupData.data.group,
+  };
 }
 
 export function useLoadedData(): LoadedData {
