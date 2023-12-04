@@ -14,7 +14,9 @@ const query = gql`
         insertedAt
 
         author {
-          ...PersonCoreFields
+          id
+          fullName
+          avatarUrl
         }
 
         content {

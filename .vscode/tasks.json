@@ -4,7 +4,7 @@
         {
             "label": "run-current-test",
             "type": "shell",
-            "command": "make test FILE=${file}:${lineNumber}",
+            "command": "make test FILE=${relativeFile}:${lineNumber}",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
@@ -14,7 +14,7 @@
         {
             "label": "run-current-test-file",
             "type": "shell",
-            "command": "make test FILE=${file}",
+            "command": "make test FILE=${relativeFile}",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

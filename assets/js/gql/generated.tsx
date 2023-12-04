@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -6,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -615,6 +617,7 @@ export type RootMutationType = {
   acknowledge?: Maybe<Update>;
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addCompanyMember: Person;
+  addCompanyTrustedEmailDomain: Company;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -643,6 +646,7 @@ export type RootMutationType = {
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
   removeCompanyAdmin?: Maybe<Person>;
+  removeCompanyTrustedEmailDomain: Company;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
@@ -681,6 +685,12 @@ export type RootMutationTypeAddCompanyAdminsArgs = {
 
 export type RootMutationTypeAddCompanyMemberArgs = {
   input: AddCompanyMemberInput;
+};
+
+
+export type RootMutationTypeAddCompanyTrustedEmailDomainArgs = {
+  companyId: Scalars['ID']['input'];
+  domain: Scalars['String']['input'];
 };
 
 
@@ -835,6 +845,12 @@ export type RootMutationTypePostProjectDocumentArgs = {
 
 export type RootMutationTypeRemoveCompanyAdminArgs = {
   personId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeRemoveCompanyTrustedEmailDomainArgs = {
+  companyId: Scalars['ID']['input'];
+  domain: Scalars['String']['input'];
 };
 
 
@@ -1277,3 +1293,48 @@ export type UpdatesFilter = {
   projectId?: InputMaybe<Scalars['ID']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type AddCompanyMemberMutationVariables = Exact<{
+  input: AddCompanyMemberInput;
+}>;
+
+
+export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Person', id: string, fullName: string, email?: string | null, title?: string | null } };
+
+
+export const AddCompanyMemberDocument = gql`
+    mutation AddCompanyMember($input: AddCompanyMemberInput!) {
+  addCompanyMember(input: $input) {
+    id
+    fullName
+    email
+    title
+  }
+}
+    `;
+export type AddCompanyMemberMutationFn = Apollo.MutationFunction<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>;
+
+/**
+ * __useAddCompanyMemberMutation__
+ *
+ * To run a mutation, you first call `useAddCompanyMemberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCompanyMemberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCompanyMemberMutation, { data, loading, error }] = useAddCompanyMemberMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddCompanyMemberMutation(baseOptions?: Apollo.MutationHookOptions<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>(AddCompanyMemberDocument, options);
+      }
+export type AddCompanyMemberMutationHookResult = ReturnType<typeof useAddCompanyMemberMutation>;
+export type AddCompanyMemberMutationResult = Apollo.MutationResult<AddCompanyMemberMutation>;
+export type AddCompanyMemberMutationOptions = Apollo.BaseMutationOptions<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>;

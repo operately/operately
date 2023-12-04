@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import * as Companies from "@/models/companies";
+import { useAddCompanyMemberMutation } from "@/gql";
 
 interface FormState {
   fullName: string;
@@ -26,7 +26,7 @@ export function useForm(): FormState {
   const managePeoplePath = createPath("company", "admin", "managePeople");
   const gotoManagePeople = useNavigateTo(managePeoplePath);
 
-  const [add] = Companies.useAddMemberMutation({
+  const [add] = useAddCompanyMemberMutation({
     onCompleted: gotoManagePeople,
   });
 
