@@ -9,7 +9,7 @@ export function useFeed(projectId: string) {
 
         author {
           id
-          name
+          fullName
           avatarUrl
         }
 
