@@ -4,7 +4,7 @@ import * as Icons from "@tabler/icons-react";
 
 import classnames from "classnames";
 
-import { CommingSoonBadge } from "@/components/CommingSoonBadge";
+import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 import { Card } from "./Card";
 
 export interface SpaceCardProps {
@@ -43,7 +43,7 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name} {...cardProps}>
-      {comingSoon && <CommingSoonBadge />}
+      {comingSoon && <ComingSoonBadge />}
 
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
