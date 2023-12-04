@@ -97,7 +97,7 @@ defmodule Operately.ProjectsTest do
       assert Projects.get_milestone!(ctx.milestone.id) == ctx.milestone
     end
 
-    test "get_next_milestone/1 returns the first upcomming milestone", ctx do
+    test "get_next_milestone/1 returns the first upcoming milestone", ctx do
       milestone_fixture(ctx.person, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-11 08:16:00]})
       m2 = milestone_fixture(ctx.person, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-01 08:16:00]})
       milestone_fixture(ctx.person, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-15 08:16:00]})

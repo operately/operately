@@ -39,7 +39,7 @@ export function Page() {
               mission: "Everyone in the company",
               privateSpace: false,
             }}
-            commingSoon={true}
+            comingSoon={true}
           />
 
           <SpaceCardLink
@@ -51,7 +51,7 @@ export function Page() {
               mission: "Your own private space in Operately",
               privateSpace: true,
             }}
-            commingSoon={true}
+            comingSoon={true}
           />
         </div>
 

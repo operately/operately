@@ -68,7 +68,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   #   |> UI.assert_text("Website Launched", testid: "timeline")
   # end
 
-  # feature "mark upcomming milestone completed", ctx do
+  # feature "mark upcoming milestone completed", ctx do
   #   add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
   #   add_milestone(ctx, %{title: "Website Launched", deadline_at: ~N[2023-07-17 00:00:00]})
 

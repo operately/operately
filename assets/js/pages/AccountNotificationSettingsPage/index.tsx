@@ -60,7 +60,7 @@ function NotificationsForm({ me }) {
       <Forms.Switch label="Send me daily summary emails" value={sendDailySummary} onChange={setSendDailySummary} />
       <Forms.Switch label="Notify me when I'm mentioned" value={notifyOnMention} onChange={setNotifyOnMention} />
       <Forms.Switch
-        label="Notify me about upcomming assignments"
+        label="Notify me about upcoming assignments"
         value={notifyAboutAssignments}
         onChange={setNotifyAboutAssignment}
       />
