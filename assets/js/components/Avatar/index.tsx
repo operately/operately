@@ -1,4 +1,6 @@
 import React from "react";
+import classnames from "classnames";
+
 import * as Icons from "@tabler/icons-react";
 import { Person } from "@/gql";
 
@@ -18,7 +20,7 @@ interface AvatarProps {
   size: AvatarSize | AvatarSizeString;
 }
 
-function SizeClasses({ size }: { size: AvatarSize }): string {
+function SizeClasses({ size }: { size: AvatarSize | number }): string {
   if (size.constructor.name === "Number") {
     return "";
   }
@@ -37,16 +39,24 @@ function SizeClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.XXLarge:
       return "w-24 h-24";
   }
+
+  return "";
 }
 
-function TextClasses({ size }: { size: AvatarSize }): string {
+function TextClasses({ size }: { size: AvatarSize | number }): string {
   if (size.constructor.name === "Number") {
-    return "";
+    if ((size as number) <= 20) {
+      return "text-[10px] font-semibold";
+    }
+
+    if ((size as number) <= 24) {
+      return "text-[11px] font-bold";
+    }
   }
 
   switch (size) {
     case AvatarSize.Tiny:
-      return "text-[10px] font-semibold";
+      return "text-[9px] font-semibold";
     case AvatarSize.Small:
       return "text font-extrabold";
     case AvatarSize.Normal:
@@ -58,6 +68,8 @@ function TextClasses({ size }: { size: AvatarSize }): string {
     case AvatarSize.XXLarge:
       return "text-5xl font-bold";
   }
+
+  return "";
 }
 
 function initials(fullName: string): string {
@@ -81,8 +93,12 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const baseClass = ["flex items-center justify-center", "text-dark-1", "bg-pink-300", "rounded-full", "shrink-0"].join(
-    " ",
+  const baseClass = classnames(
+    "flex items-center justify-center",
+    "text-dark-1",
+    "bg-pink-300",
+    "rounded-full",
+    "shrink-0",
   );
 
   const sizeClass = SizeClasses({ size });

@@ -9,7 +9,7 @@ import { Card } from "./Card";
 
 export interface SpaceCardProps {
   group: Groups.Group;
-  commingSoon?: boolean;
+  comingSoon?: boolean;
   onClick?: () => void;
   shadowSize?: "base" | "lg";
   testId?: string;
@@ -18,7 +18,7 @@ export interface SpaceCardProps {
 
 export function SpaceCard(props: SpaceCardProps) {
   const { name, mission, color, icon, privateSpace } = props.group;
-  const commingSoon = props.commingSoon ?? false;
+  const comingSoon = props.comingSoon ?? false;
   const iconElement = Icons[icon];
   const shadowSize = props.shadowSize ?? "base";
 
@@ -43,7 +43,7 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name} {...cardProps}>
-      {commingSoon && <CommingSoonBadge />}
+      {comingSoon && <CommingSoonBadge />}
 
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}

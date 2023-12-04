@@ -90,7 +90,7 @@ function MilestoneList({ project }) {
   if (pending.length === 0 && completed.length === 0) {
     return (
       <div className="flex flex-col mb-8 gap-1 mt-4">
-        <h2 className="font-bold">Upcomming Milestones</h2>
+        <h2 className="font-bold">Upcoming Milestones</h2>
         <div className="">No milestones defined yet.</div>
       </div>
     );
@@ -98,7 +98,7 @@ function MilestoneList({ project }) {
 
   return (
     <div className="flex flex-col mb-8 gap-2 mt-4">
-      {<h2 className="font-bold">Upcomming Milestones</h2>}
+      {<h2 className="font-bold">Upcoming Milestones</h2>}
 
       <div>
         {pending.map((m) => (

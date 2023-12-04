@@ -57,7 +57,7 @@ function AllMilestonesCompleted({ project }) {
 function NextMilestoneList({ project, nextMilestones }) {
   return (
     <div>
-      <DimmedLabel>Upcomming Milestones</DimmedLabel>
+      <DimmedLabel>Upcoming Milestones</DimmedLabel>
 
       {nextMilestones.map((milestone) => (
         <MilestoneLink key={milestone.id} project={project} milestone={milestone} />

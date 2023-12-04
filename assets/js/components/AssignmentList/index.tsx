@@ -32,7 +32,7 @@ export function AssignmentList({ showUpcoming = true, readOnly = false }) {
 
         {showUpcoming && hasUpcoming && (
           <>
-            <Paper.SectionHeader>Upcomming</Paper.SectionHeader>
+            <Paper.SectionHeader>Upcoming</Paper.SectionHeader>
             {upcoming.map((a, i) => (
               <AssignmentItem assignment={a} key={i} />
             ))}

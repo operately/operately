@@ -250,6 +250,7 @@ export type Comment = {
 export type Company = {
   __typename?: 'Company';
   admins?: Maybe<Array<Maybe<Person>>>;
+  enabledExperimentalFeatures?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   id: Scalars['ID']['output'];
   mission: Scalars['String']['output'];
   name: Scalars['String']['output'];
