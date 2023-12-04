@@ -8,7 +8,9 @@ export function useFeed(projectId: string) {
         insertedAt
 
         author {
-          ...PersonCoreFields
+          id
+          name
+          avatarUrl
         }
 
         content {
