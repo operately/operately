@@ -46,11 +46,11 @@ function SizeClasses({ size }: { size: AvatarSize | number }): string {
 function TextClasses({ size }: { size: AvatarSize | number }): string {
   if (size.constructor.name === "Number") {
     if ((size as number) <= 20) {
-      return "text-[9px] font-semibold";
+      return "text-[10px] font-semibold";
     }
 
-    if ((size as number) <= 32) {
-      return "text-[10px] font-semibold";
+    if ((size as number) <= 24) {
+      return "text-[11px] font-bold";
     }
   }
 
