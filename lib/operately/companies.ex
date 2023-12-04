@@ -142,4 +142,12 @@ defmodule Operately.Companies do
     Enum.member?(company.trusted_email_domains, domain)
   end
 
+  def enable_experimental_feature(company, feature) do
+    features = [feature | company.enabled_experimental_features] |> Enum.uniq()
+
+    company
+    |> Company.changeset(%{enabled_experimental_features: features})
+    |> Repo.update()
+  end
+
 end
