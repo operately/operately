@@ -1,7 +1,6 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 
 import { Project } from "@/graphql/Projects";
-import { Person } from "@/graphql/People";
 
 export const GET_ME = gql`
   query GetMe {
@@ -35,46 +34,6 @@ export interface Panel {
   index: number;
 
   linkedResource?: Project;
-}
-
-export function useHomeDashboard(options = {}) {
-  return useQuery(
-    gql`
-      query GetHomeDashboard {
-        homeDashboard {
-          id
-          panels {
-            id
-            index
-            type
-
-            linkedResource {
-              ... on Project {
-                id
-                name
-                phase
-
-                contributors {
-                  role
-                  person {
-                    id
-                    fullName
-                    avatarUrl
-                  }
-                }
-
-                milestones {
-                  title
-                  status
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    options,
-  );
 }
 
 export function logOut() {
@@ -123,34 +82,6 @@ export function useUpdateNotificationsSettings(options = {}) {
       ...options,
     },
   );
-}
-
-export function useUpdateDashboard(options = {}) {
-  return useMutation(
-    gql`
-      mutation UpdateDashboard($input: UpdateDashboardInput!) {
-        updateDashboard(input: $input) {
-          id
-        }
-      }
-    `,
-    options,
-  );
-}
-
-export function sortPanelsByIndex(panels: Panel[]) {
-  let copy = ([] as Panel[]).concat(panels);
-
-  return copy.sort((a, b) => {
-    if (a.index === null) return 1;
-    if (b.index === null) return -1;
-
-    return a.index - b.index;
-  });
-}
-
-export function areNotificationsEnabled(me: Person) {
-  return me.sendDailySummary || me.notifyOnMention || me.notifyAboutAssignments;
 }
 
 export function useUpdateAppearanceMutation(options = {}) {

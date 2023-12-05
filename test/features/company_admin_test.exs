@@ -45,7 +45,7 @@ defmodule Operately.Features.CompanyAdminTest do
     ctx
     |> UI.click(testid: "manage-company-administrators")
     |> UI.click(testid: "add-admins")
-    |> UI.fill_in(Query.css("#peopleSearch"), with: "Mich")
+    |> UI.fill_in(Query.css("#people-search"), with: "Mich")
     |> UI.assert_text("Michael Scott")
     |> UI.send_keys([:enter])
     |> UI.click(testid: "save-admins")

@@ -27,7 +27,7 @@ export function GoalsSection({ group }: { group: Group }) {
   );
 }
 
-export function GoalList({ group }: { group: Group }) {
+function GoalList({ group }: { group: Group }) {
   const { data, loading, error } = Goals.useGoals(group.id);
 
   if (loading) return null;

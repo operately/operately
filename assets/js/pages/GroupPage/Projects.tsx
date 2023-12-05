@@ -27,7 +27,7 @@ export function ProjectsSection({ group }: { group: Group }) {
   );
 }
 
-export function ProjectList({ group }: { group: Group }) {
+function ProjectList({ group }: { group: Group }) {
   const { data, loading, error } = Projects.useProjects({ groupId: group.id });
 
   if (loading) return null;
