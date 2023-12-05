@@ -32,6 +32,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
   import_types OperatelyWeb.Graphql.Types.Dashboards
+  import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups
   import_types OperatelyWeb.Graphql.Types.KeyResults
   import_types OperatelyWeb.Graphql.Types.Kpis
@@ -64,6 +65,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Activities
   import_types OperatelyWeb.Graphql.Queries.Assignments
   import_types OperatelyWeb.Graphql.Queries.Companies
+  import_types OperatelyWeb.Graphql.Queries.Goals
   import_types OperatelyWeb.Graphql.Queries.Groups
   import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.KeyResults
@@ -100,6 +102,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :activity_queries
     import_fields :assignment_queries
     import_fields :company_queries
+    import_fields :goal_queries
     import_fields :group_queries
     import_fields :key_resource_queries
     import_fields :key_result_queries

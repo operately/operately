@@ -10,7 +10,6 @@ const LIST_GOALS = gql`
       name
       insertedAt
       updatedAt
-      private
       isArchived
       contributors {
         id
