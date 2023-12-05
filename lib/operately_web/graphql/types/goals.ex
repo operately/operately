@@ -15,23 +15,23 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
       end
     end
 
-    # field :champion, :person do
-    #   resolve fn project, _, _ ->
-    #     {:ok, Goals.get_person_by_role(project, :champion)}
-    #   end
-    # end
+    field :space, non_null(:group) do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.Groups.get_group!(goal.group_id)}
+      end
+    end
 
-    # field :reviewer, :person do
-    #   resolve fn project, _, _ ->
-    #     {:ok, Goals.get_person_by_role(project, :reviewer)}
-    #   end
-    # end
+    field :champion, :person do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.People.get_person!(goal.champion_id)}
+      end
+    end
 
-    # field :contributors, list_of(:goal_contributor) do
-    #   resolve fn goal, _, _ ->
-    #     {:ok, Goals.get_contributors(goal)}
-    #   end
-    # end
+    field :reviewer, :person do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.People.get_person!(goal.reviewer_id)}
+      end
+    end
   end
 
 end

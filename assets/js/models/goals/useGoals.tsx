@@ -8,18 +8,15 @@ const LIST_GOALS = gql`
       insertedAt
       updatedAt
       isArchived
-      contributors {
+      champion {
         id
-        role
-        insertedAt
-        updatedAt
-
-        person {
-          id
-          name
-          email
-          avatarUrl
-        }
+        fullName
+        title
+      }
+      reviewer {
+        id
+        fullName
+        title
       }
     }
   }

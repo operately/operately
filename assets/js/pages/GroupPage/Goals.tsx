@@ -4,8 +4,8 @@ import * as Goals from "@/models/goals";
 
 import { GhostButton } from "@/components/Button";
 import { Group } from "@/gql/generated";
-import Avatar from "@/components/Avatar";
 import { DivLink } from "@/components/Link";
+import { createPath } from "@/utils/paths";
 
 export function GoalsSection({ group }: { group: Group }) {
   return (
@@ -47,21 +47,19 @@ function GoalsGrid({ goals }: { goals: Goals.Goal[] }) {
 }
 
 function GoalGridItem({ goal }: { goal: Goals.Goal }) {
+  const path = createPath("goals", goal.id);
+
   return (
     <DivLink
       className="bg-surface rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow hover:shadow-lg overflow-hidden borderb border-surface-outline"
-      to={`/spaces/${goal.spaceId}/goals/${goal.id}`}
+      to={path}
     >
       <div className="flex flex-col justify-between h-28">
         <div>
           <div className="text-ellipsis font-bold">{goal.name}</div>
         </div>
 
-        <div className="flex items-center gap-1">
-          {goal.contributors!.map((contributor) => (
-            <Avatar key={contributor!.id} person={contributor!.person} size="tiny" />
-          ))}
-        </div>
+        <div className="flex items-center gap-1"></div>
       </div>
     </DivLink>
   );

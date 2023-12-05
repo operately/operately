@@ -278,10 +278,9 @@ export type CreateCommentInput = {
 export type CreateGoalInput = {
   championId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
-  quarter: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
-  year: Scalars['String']['input'];
+  timeframe: Scalars['String']['input'];
 };
 
 export type CreateKeyResultInput = {
@@ -359,11 +358,14 @@ export type EditProjectTimelineInput = {
 
 export type Goal = {
   __typename?: 'Goal';
+  champion?: Maybe<Person>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   private: Scalars['Boolean']['output'];
+  reviewer?: Maybe<Person>;
+  space: Group;
   updatedAt: Scalars['Date']['output'];
 };
 
@@ -1019,7 +1021,8 @@ export type RootQueryType = {
   activities?: Maybe<Array<Maybe<Activity>>>;
   assignments: Assignments;
   company: Company;
-  goals?: Maybe<Array<Maybe<Project>>>;
+  goal: Goal;
+  goals?: Maybe<Array<Maybe<Goal>>>;
   group?: Maybe<Group>;
   groups?: Maybe<Array<Maybe<Group>>>;
   homeDashboard: Dashboard;
@@ -1060,6 +1063,11 @@ export type RootQueryTypeAssignmentsArgs = {
 
 
 export type RootQueryTypeCompanyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeGoalArgs = {
   id: Scalars['ID']['input'];
 };
 

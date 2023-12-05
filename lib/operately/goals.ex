@@ -9,7 +9,7 @@ defmodule Operately.Goals do
   end
 
   def list_goals_for_space(_person, space_id) do
-    query = from(goal in Goal, where: goal.space_id == ^space_id, order_by: [asc: goal.name])
+    query = from(goal in Goal, where: goal.group_id == ^space_id)
 
     Repo.all(query)
   end
