@@ -5,7 +5,6 @@ defmodule Operately.Features.GoalCreationTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -32,5 +31,10 @@ defmodule Operately.Features.GoalCreationTest do
     |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
     |> UI.click(testid: "save")
     |> UI.assert_text("Improve support first response time")
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_goal_created_sent(author: ctx.champion, role: "reviewer")
+    |> EmailSteps.assert_goal_created_sent(author: ctx.champion, goal: "Improve support first response time", role: "reviewer", to: ctx.reviewer.email)
   end
 end

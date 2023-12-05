@@ -58,6 +58,10 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} created a new project and assigned you as the #{role}")
   end
 
+  def assert_goal_created_sent(ctx, author: author, role: role) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} added a new goal and assigned you as the #{role}")
+  end
+
   def assert_project_archived_sent(ctx, author: author, project: project) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} archived the #{project.name} project")
   end
