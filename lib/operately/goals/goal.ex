@@ -6,7 +6,15 @@ defmodule Operately.Goals.Goal do
 
   schema "goals" do
     field :name, :string
+
+    field :company_id, :binary_id
     field :group_id, :binary_id
+
+    field :champion_id, :binary_id
+    field :reviewer_id, :binary_id
+    field :creator_id, :binary_id
+
+    field :timeframe, :string
 
     timestamps()
     soft_delete()
@@ -18,7 +26,7 @@ defmodule Operately.Goals.Goal do
 
   def changeset(goal, attrs) do
     goal
-    |> cast(attrs, [:name, :group_id])
-    |> validate_required([:name, :group_id])
+    |> cast(attrs, [:name, :company_id, :group_id, :champion_id, :reviewer_id, :creator_id, :timeframe])
+    |> validate_required([:name, :company_id, :group_id, :champion_id, :reviewer_id, :creator_id, :timeframe])
   end
 end

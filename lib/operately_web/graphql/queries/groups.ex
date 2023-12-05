@@ -3,8 +3,9 @@ defmodule OperatelyWeb.Graphql.Queries.Groups do
 
   object :group_queries do
     field :groups, list_of(:group) do
-      resolve fn _, _, _ ->
-        groups = Operately.Groups.list_groups()
+      resolve fn _, _, %{context: context} ->
+        person = context.current_account.person
+        groups = Operately.Groups.list_groups_for_company(person.company_id)
 
         {:ok, groups}
       end

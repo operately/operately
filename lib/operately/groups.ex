@@ -17,6 +17,12 @@ defmodule Operately.Groups do
     Repo.all(Group)
   end
 
+  def list_groups_for_company(company_id) do
+    query = from(group in Group, where: group.company_id == ^company_id)
+
+    Repo.all(query)
+  end
+
   def list_potential_members(group_id, string_query, exclude_ids, limit) do
     member_ids = Repo.all(
       from m in Member,

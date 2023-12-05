@@ -7,6 +7,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+import { useNavigate } from "react-router-dom";
 
 interface FormState {
   spaceID: string;
@@ -52,6 +53,7 @@ interface Option {
 
 export function useForm(company: Companies.Company, me: People.Person): FormState {
   const { spaceID } = useLoadedData();
+  const navigate = useNavigate();
 
   const cancel = useNavigateTo(createPath("spaces", spaceID));
   const timeframe = useTimeframe();
@@ -63,24 +65,27 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
   const nameIsValid = () => name.length > 0;
   const championIsValid = () => champion !== null;
   const reviewerIsValid = () => reviewer !== null;
-  const timeframeIsValid = () => timeframe.year.selected !== null && timeframe.quarter.selected !== null;
+  const timeframeIsValid = () => timeframe.year.selected.value !== null && timeframe.quarter.selected.value !== null;
 
   const isValid = timeframeIsValid() && nameIsValid() && championIsValid() && reviewerIsValid();
 
   const [create, { loading: submitting }] = Goals.useCreateGoalMutation({
-    onCompleted: (data: any) => useNavigateTo(createPath("goals", data.createGoal.id)),
+    onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
   });
 
   const submit = async () => {
+    const selectedQuarter = timeframe.quarter.selected.value;
+    const selectedYear = timeframe.year.selected.value;
+    const timeframeCombined = selectedQuarter === "Whole Year" ? selectedYear : `${selectedYear}-${selectedQuarter}`;
+
     await create({
       variables: {
         input: {
-          spaceId: spaceID,
           name,
+          spaceId: spaceID,
           championID: champion,
           reviewerID: reviewer,
-          year: timeframe.year.selected.value,
-          quarter: timeframe.quarter.selected.value,
+          timeframe: timeframeCombined,
         },
       },
     });

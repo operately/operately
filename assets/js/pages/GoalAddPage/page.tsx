@@ -51,7 +51,7 @@ function Form({ form }) {
         <ContributorSearch
           title="Reviewer"
           subtitle="Reviews and acknowledges the completion of this goal"
-          onSelect={form.setChampion}
+          onSelect={form.setReviewer}
           defaultValue={null}
           inputId="reviewer-search"
         />

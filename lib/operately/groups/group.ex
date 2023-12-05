@@ -4,6 +4,7 @@ defmodule Operately.Groups.Group do
   schema "groups" do
     has_many :members, Operately.Groups.Member, foreign_key: :group_id
 
+    field :company_id, :binary_id
     field :name, :string
     field :mission, :string
     field :icon, :string, default: "IconPlanet"
@@ -18,7 +19,7 @@ defmodule Operately.Groups.Group do
 
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:name, :mission, :icon, :color])
-    |> validate_required([:name, :mission, :icon, :color])
+    |> cast(attrs, [:company_id, :name, :mission, :icon, :color])
+    |> validate_required([:company_id, :name, :mission, :icon, :color])
   end
 end

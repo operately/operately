@@ -1,7 +1,7 @@
 defmodule Operately.Goals do
   import Ecto.Query, warn: false
-  alias Operately.Repo
 
+  alias Operately.Repo
   alias Operately.Goals.Goal
 
   def list_goals do
@@ -18,10 +18,8 @@ defmodule Operately.Goals do
     Repo.get!(Goal, id)
   end
 
-  def create_goal(_creator, attrs) do
-    %Goal{}
-    |> Goal.changeset(attrs)
-    |> Repo.insert()
+  def create_goal(creator, attrs) do
+    Operately.Goals.CreateOperation.run(creator, attrs)
   end
 
   def update_goal(%Goal{} = goal, attrs) do
