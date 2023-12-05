@@ -153,10 +153,6 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def select_person(state, name) do
-    select_person_in(state, id: "peopleSearch", name: name)
-  end
-
   def select(state, testid: id, option: option_name) do
     execute(state, fn session ->
       session

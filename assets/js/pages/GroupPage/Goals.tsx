@@ -8,12 +8,14 @@ import { DivLink } from "@/components/Link";
 import { createPath } from "@/utils/paths";
 
 export function GoalsSection({ group }: { group: Group }) {
+  const newGoalPath = createPath("spaces", group.id, "goals", "new");
+
   return (
     <div className="mb-8 mt-8">
       <div className="flex items-center gap-4 w-full">
         <div className="text-content-accent font-bold text-lg">Goals</div>
         <div className="h-px bg-surface-outline flex-1"></div>
-        <GhostButton type="primary" size="sm" linkTo={`/spaces/${group.id}/goals/new`} testId="add-project">
+        <GhostButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
           Add Goal
         </GhostButton>
       </div>

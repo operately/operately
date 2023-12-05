@@ -1,19 +1,13 @@
 defmodule Operately.GoalsFixtures do
-  @moduledoc """
-  This module defines test helpers for creating
-  entities via the `Operately.Goals` context.
-  """
+  def goal_fixture(creator, attrs \\ %{}) do
+    attrs = Enum.into(attrs, %{
+      name: "some name",
+      champion_id: creator.id,
+      reviewer_id: creator.id,
+      timeframe: "2023-Q1"
+    })
 
-  @doc """
-  Generate a goal.
-  """
-  def goal_fixture(attrs \\ %{}) do
-    {:ok, goal} =
-      attrs
-      |> Enum.into(%{
-        name: "some name"
-      })
-      |> Operately.Goals.create_goal()
+    {:ok, goal} = Operately.Goals.create_goal(creator, attrs)
 
     goal
   end

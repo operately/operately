@@ -16,31 +16,6 @@ defmodule Operately.Features.ProjectsTest do
     {:ok, ctx}
   end
 
-  # @tag login_as: :champion
-  # feature "react to a comment", ctx do
-  #   {:ok, update} = add_status_update(ctx.project, "This is a status update.", ctx.champion.id)
-  #   {:ok, comment} = add_comment(update, "This is a comment.", ctx.champion.id)
-
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.assert_has(Query.text("This is a comment."))
-  #   |> UI.find(testid: "comment-#{comment.id}")
-  #   |> UI.click(testid: "reactions-button")
-  #   |> UI.click(testid: "reaction-thumbs_up-button")
-  #   |> UI.assert_has(testid: "reaction-thumbs_up")
-  # end
-
-  # @tag login_as: :champion
-  # feature "react to a status update", ctx do
-  #   add_status_update(ctx.project, "This is a status update.", ctx.champion.id)
-
-  #   ctx
-  #   |> visit_show(ctx.project)
-  #   |> UI.click(testid: "reactions-button")
-  #   |> UI.click(testid: "reaction-thumbs_up-button")
-  #   |> UI.assert_has(testid: "reaction-thumbs_up")
-  # end
-
   @tag login_as: :champion
   feature "adding a project contributor", ctx do
     contrib = person_fixture(%{full_name: "Michael Scott", title: "Manager", company_id: ctx.company.id})
@@ -49,7 +24,7 @@ defmodule Operately.Features.ProjectsTest do
     |> visit_show(ctx.project)
     |> UI.click(testid: "manage-team-button")
     |> UI.click(testid: "add-contributor-button")
-    |> UI.select_person(contrib.full_name)
+    |> UI.select_person_in(id: "people-search", name: contrib.full_name)
     |> UI.fill(testid: "contributor-responsibility-input", with: "Lead the project")
     |> UI.click(testid: "save-contributor")
 

@@ -69,8 +69,12 @@ defmodule Operately.Groups do
   end
 
   def create_group(creator, attrs \\ %{}) do
+    changeset = Group.changeset(Map.merge(attrs, %{
+      company_id: creator.company_id,
+    }))
+
     Multi.new()
-    |> Multi.insert(:group, Group.changeset(attrs))
+    |> Multi.insert(:group, changeset)
     |> Multi.insert(:creator, fn %{group: group} ->
       Member.changeset(%{group_id: group.id, person_id: creator.id})
     end)

@@ -15,7 +15,7 @@ defmodule Operately.GroupsTest do
     setup do
       company = company_fixture()
       person = person_fixture(%{company_id: company.id})
-      group = group_fixture(person)
+      group = group_fixture(person, %{company_id: company.id})
 
       %{creator: person, group: group, company: company}
     end
@@ -43,7 +43,7 @@ defmodule Operately.GroupsTest do
     end
 
     test "create_group/1 with valid data creates a group", ctx do
-      valid_attrs = %{name: "some name", mission: "some mission"}
+      valid_attrs = %{name: "some name", mission: "some mission", company_id: ctx.company.id}
 
       assert {:ok, %Group{} = group} = Groups.create_group(ctx.creator, valid_attrs)
       assert group.name == "some name"

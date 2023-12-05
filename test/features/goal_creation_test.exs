@@ -1,4 +1,4 @@
-defmodule Operately.Features.ProjectCreationTest do
+defmodule Operately.Features.GoalCreationTest do
   use Operately.FeatureCase
 
   import Operately.CompaniesFixtures
@@ -30,7 +30,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> UI.fill(testid: "name-input", with: "Improve support first response time")
     |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
-    |> UI.select(testid: "timeframe", option: "Current quarter - Q4 2023")
     |> UI.click(testid: "save")
     |> UI.assert_text("Improve support first response time")
   end
