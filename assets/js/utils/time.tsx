@@ -58,6 +58,19 @@ export function toDateWithoutTime(date: Date) {
   return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
 
+export function currentYear() {
+  return new Date().getFullYear();
+}
+
+export function currentQuarter() {
+  const month = new Date().getMonth();
+
+  if (month < 3) return 1;
+  if (month < 6) return 2;
+  if (month < 9) return 3;
+  return 4;
+}
+
 export function isCurrentYear(date: Date) {
   return date.getFullYear() === new Date().getFullYear();
 }

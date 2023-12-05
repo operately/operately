@@ -144,13 +144,17 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def select_person(state, name) do
+  def select_person_in(state, id: id, name: name) do
     execute(state, fn session ->
       session
-      |> Browser.fill_in(Query.css("#peopleSearch"), with: name)
+      |> Browser.fill_in(Query.css("#" <> id), with: name)
       |> Browser.assert_text(name)
       |> Browser.send_keys([:enter])
     end)
+  end
+
+  def select_person(state, name) do
+    select_person_in(state, id: "peopleSearch", name: name)
   end
 
   def select(state, testid: id, option: option_name) do

@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   # Types
   import_types OperatelyWeb.Graphql.Types.Activities
   import_types OperatelyWeb.Graphql.Types.ActivityContent
+  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCreated
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectArchived
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectClosed
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCreated
@@ -83,6 +84,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Blobs
   import_types OperatelyWeb.Graphql.Mutations.Companies
   import_types OperatelyWeb.Graphql.Mutations.Dashboards
+  import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
   import_types OperatelyWeb.Graphql.Mutations.KeyResults
   import_types OperatelyWeb.Graphql.Mutations.Kpis
@@ -121,6 +123,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :blob_mutations
     import_fields :company_mutations
     import_fields :dashboard_mutations
+    import_fields :goal_mutations
     import_fields :group_mutations
     import_fields :key_result_mutations
     import_fields :kpi_mutations

@@ -5,14 +5,50 @@ import CreatableSelect from "react-select/creatable";
 
 import classnames from "classnames";
 
-interface SelectBoxProps {
-  label: string;
+interface SelectBoxNoLabelProps {
   value: any;
   onChange: (value: any) => void;
   options: any[];
   allowEnteringNewValues?: boolean;
   "data-test-id"?: string;
   props?: any;
+  defaultValue?: any;
+}
+
+interface SelectBoxProps extends SelectBoxNoLabelProps {
+  label: string;
+}
+
+export function SelectBoxNoLabel(props: SelectBoxNoLabelProps) {
+  const { value, onChange, options, allowEnteringNewValues, ...rest } = props;
+
+  const element = allowEnteringNewValues ? CreatableSelect : Select;
+
+  let selectProps = {
+    unstyled: true,
+    className: "flex-1",
+    classNames: SELECT_BOX_STYLES,
+    value: value,
+    onChange: onChange,
+    options: options,
+    styles: {
+      input: (provided: any) => ({
+        ...provided,
+        "input:focus": {
+          boxShadow: "none",
+        },
+      }),
+    },
+    ...rest,
+  };
+
+  if (allowEnteringNewValues) {
+    selectProps["formatCreateLabel"] = (value: any) => {
+      return <span>Custom: {value}</span>;
+    };
+  }
+
+  return React.createElement(element, selectProps);
 }
 
 export function SelectBox({ label, value, onChange, options, allowEnteringNewValues, ...props }: SelectBoxProps) {
@@ -21,34 +57,20 @@ export function SelectBox({ label, value, onChange, options, allowEnteringNewVal
   return (
     <div className="flex flex-col" data-test-id={dataTestId}>
       <label className="font-bold mb-1 block">{label}</label>
-      {allowEnteringNewValues ? (
-        <CreatableSelect
-          unstyled
-          formatCreateLabel={(value) => {
-            return <span>Custom: {value}</span>;
-          }}
-          classNames={SELECT_BOX_STYLES}
-          value={value}
-          onChange={onChange}
-          options={options}
-          {...props}
-        />
-      ) : (
-        <Select
-          unstyled
-          classNames={SELECT_BOX_STYLES}
-          value={value}
-          onChange={onChange}
-          options={options}
-          {...props}
-        />
-      )}
+      <SelectBoxNoLabel
+        value={value}
+        onChange={onChange}
+        options={options}
+        allowEnteringNewValues={allowEnteringNewValues}
+        data-test-id={dataTestId}
+        {...props}
+      />
     </div>
   );
 }
 
 const SELECT_BOX_STYLES = {
-  control: () => "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3",
+  control: () => "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1",
   menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1",
   option: ({ isFocused }) =>
     classnames({

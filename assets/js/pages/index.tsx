@@ -12,6 +12,7 @@ import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
+import * as GoalAddPage from "./GoalAddPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupListPage from "./GroupListPage";
@@ -87,6 +88,10 @@ export default {
   CompanyAdminTrustedEmailDomainsPage: {
     loader: CompanyAdminTrustedEmailDomainsPage.loader,
     Page: CompanyAdminTrustedEmailDomainsPage.Page
+  },
+  GoalAddPage: {
+    loader: GoalAddPage.loader,
+    Page: GoalAddPage.Page
   },
   GroupAddPage: {
     loader: GroupAddPage.loader,

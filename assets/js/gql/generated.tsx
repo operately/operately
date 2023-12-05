@@ -52,7 +52,12 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentGoalCreated | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+
+export type ActivityContentGoalCreated = {
+  __typename?: 'ActivityContentGoalCreated';
+  exampleField: Scalars['String']['output'];
+};
 
 export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
@@ -270,6 +275,15 @@ export type CreateCommentInput = {
   updateId: Scalars['ID']['input'];
 };
 
+export type CreateGoalInput = {
+  championId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+  quarter: Scalars['String']['input'];
+  reviewerId: Scalars['ID']['input'];
+  spaceId: Scalars['ID']['input'];
+  year: Scalars['String']['input'];
+};
+
 export type CreateKeyResultInput = {
   name: Scalars['String']['input'];
   objectiveId: Scalars['ID']['input'];
@@ -341,6 +355,16 @@ export type EditProjectTimelineInput = {
   projectDueDate?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
   projectStartDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type Goal = {
+  __typename?: 'Goal';
+  id: Scalars['ID']['output'];
+  insertedAt: Scalars['Date']['output'];
+  isArchived: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  private: Scalars['Boolean']['output'];
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type Group = {
@@ -629,6 +653,7 @@ export type RootMutationType = {
   closeProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
+  createGoal?: Maybe<Goal>;
   createGroup?: Maybe<Group>;
   createKeyResult?: Maybe<KeyResult>;
   createKpi?: Maybe<Kpi>;
@@ -751,6 +776,11 @@ export type RootMutationTypeCreateBlobArgs = {
 
 export type RootMutationTypeCreateCommentArgs = {
   input: CreateCommentInput;
+};
+
+
+export type RootMutationTypeCreateGoalArgs = {
+  input: CreateGoalInput;
 };
 
 

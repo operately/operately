@@ -27,8 +27,10 @@ defmodule Operately.Features.ProjectCreationTest do
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-goal")
-    |> UI.fill(testid: "goal-name-input", with: "Improve support first response time")
-    |> UI.select_person(ctx.champion.full_name)
+    |> UI.fill(testid: "name-input", with: "Improve support first response time")
+    |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
+    |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
+    |> UI.select(testid: "timeframe", option: "Current quarter - Q4 2023")
     |> UI.click(testid: "save")
     |> UI.assert_text("Improve support first response time")
   end

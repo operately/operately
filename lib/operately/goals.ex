@@ -18,7 +18,7 @@ defmodule Operately.Goals do
     Repo.get!(Goal, id)
   end
 
-  def create_goal(attrs \\ %{}) do
+  def create_goal(_creator, attrs) do
     %Goal{}
     |> Goal.changeset(attrs)
     |> Repo.insert()

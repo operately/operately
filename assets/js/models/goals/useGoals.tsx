@@ -1,9 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 
 const LIST_GOALS = gql`
-  fragment ContributorFields on Contributor {
-  }
-
   query ListGols($spaceId: ID!) {
     goals(spaceId: $spaceId) {
       id

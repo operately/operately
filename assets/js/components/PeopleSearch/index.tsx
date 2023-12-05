@@ -18,13 +18,14 @@ export interface Option {
 }
 
 interface PeopleSearchProps {
-  onChange: (value: Person | null) => void;
+  onChange: (value: Option | null) => void;
   loader: (input: string) => Promise<Person[]>;
   filterOption?: (candidate: any) => boolean;
   placeholder: string;
   alreadySelected?: string[];
   defaultValue?: Person;
   value?: Person | undefined;
+  inputId?: string;
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
@@ -50,7 +51,7 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       unstyled
       placeholder={props.placeholder}
       onChange={props.onChange}
-      inputId="peopleSearch"
+      inputId={props.inputId || "people-search"}
       loadOptions={loadOptions}
       defaultValue={defaultValue}
       defaultOptions
@@ -58,14 +59,23 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       filterOption={props.filterOption || (() => true)}
       value={props.value}
       classNames={classNames()}
+      styles={{
+        input: (provided) => ({
+          ...provided,
+          "input:focus": {
+            boxShadow: "none",
+          },
+        }),
+      }}
     />
   );
 }
 
 function classNames() {
   return {
-    control: () => "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3",
+    control: () => "bg-surface placeholder-content-subtle border border-surface-outline rounded-lg px-3",
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
+    input: () => "placeholder-content-subtle focus:ring-0 outline-none",
     option: ({ isFocused }) =>
       classnames({
         "px-3 py-2 hover:bg-surface-dimmed cursor-pointer": true,
