@@ -18,6 +18,16 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def login_based_on_tag(state) do
+    field = state[:login_as]
+    if !field, do: raise "No :login_as tag found on the test"
+
+    person = state[field]
+    if !person, do: raise "The :login_as tag on the test points to a field that does not exist on the context"
+
+    login_as(state, person)
+  end
+
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 

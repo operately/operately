@@ -5,7 +5,6 @@ defmodule Operately.Features.ProjectCreationTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -17,7 +16,7 @@ defmodule Operately.Features.ProjectCreationTest do
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group})
-    ctx = ProjectSteps.login(ctx)
+    ctx = UI.login_based_on_tag(ctx)
 
     {:ok, ctx}
   end
