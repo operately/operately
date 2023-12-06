@@ -45,13 +45,13 @@ export function Page() {
   );
 }
 
-export const DimmedLabel = ({ children }) => (
+const DimmedLabel = ({ children }) => (
   <div className="text-xs uppercase font-medium mb-1 tracking-wider">{children}</div>
 );
 
-export const AvatarAndName = ({ person }) => (
-  <div className="flex items-center gap-2">
+const AvatarAndName = ({ person }) => (
+  <div className="flex items-center gap-1.5">
     <Avatar person={person} size="tiny" />
-    <div>{person.fullName}</div>
+    <div className="font-medium">{person.fullName}</div>
   </div>
 );
