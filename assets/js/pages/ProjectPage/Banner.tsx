@@ -3,6 +3,7 @@ import React from "react";
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 import { createPath } from "@/utils/paths";
+import * as Paper from "@/components/PaperContainer";
 
 export default function Banner({ project }) {
   const retroPath = createPath("projects", project.id, "retrospective");
@@ -10,27 +11,27 @@ export default function Banner({ project }) {
 
   if (project.isArchived && project.status !== "closed") {
     return (
-      <div className="mb-8 -mx-12 -mt-12  bg-yellow-400/10 text-content-accent font-bold flex items-cennter justify-center py-4 rounded-t border-b border-surface-outline leading-none">
+      <Paper.Banner>
         This project was archived on <FormattedTime time={project.archivedAt} format="long-date" />
-      </div>
+      </Paper.Banner>
     );
   }
 
   if (project.isArchived && project.status === "closed") {
     return (
-      <div className="mb-8 -mx-12 -mt-12  bg-yellow-400/10 text-content-accent font-bold flex items-cennter justify-center py-4 rounded-t border-b border-surface-outline leading-none">
+      <Paper.Banner>
         This project was archived on <FormattedTime time={project.archivedAt} format="long-date" />. View the{" "}
         <span className="font-bold ml-1">
           <Link to={retroPath}>retrospective</Link>
         </span>
         .
-      </div>
+      </Paper.Banner>
     );
   }
 
   if (project.status === "closed") {
     return (
-      <div className="mb-8 -mx-12 -mt-12  bg-yellow-400/10 text-content-accent font-bold flex items-cennter justify-center py-4 rounded-t border-b border-surface-outline leading-none">
+      <Paper.Banner>
         This project was closed on <FormattedTime time={project.closedAt} format="long-date" />. View the{" "}
         <span className="font-bold ml-1">
           <Link to={retroPath} testId="project-retrospective-link">
@@ -42,7 +43,7 @@ export default function Banner({ project }) {
           <Link to={archivePath}>archive the project</Link>
         </span>
         .
-      </div>
+      </Paper.Banner>
     );
   }
 
