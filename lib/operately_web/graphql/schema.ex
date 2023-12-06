@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   # Types
   import_types OperatelyWeb.Graphql.Types.Activities
   import_types OperatelyWeb.Graphql.Types.ActivityContent
+  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCreated
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectArchived
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectClosed
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCreated
@@ -32,6 +33,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
   import_types OperatelyWeb.Graphql.Types.Dashboards
+  import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups
   import_types OperatelyWeb.Graphql.Types.KeyResults
   import_types OperatelyWeb.Graphql.Types.Kpis
@@ -64,6 +66,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Activities
   import_types OperatelyWeb.Graphql.Queries.Assignments
   import_types OperatelyWeb.Graphql.Queries.Companies
+  import_types OperatelyWeb.Graphql.Queries.Goals
   import_types OperatelyWeb.Graphql.Queries.Groups
   import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.KeyResults
@@ -81,6 +84,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Blobs
   import_types OperatelyWeb.Graphql.Mutations.Companies
   import_types OperatelyWeb.Graphql.Mutations.Dashboards
+  import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
   import_types OperatelyWeb.Graphql.Mutations.KeyResults
   import_types OperatelyWeb.Graphql.Mutations.Kpis
@@ -100,6 +104,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :activity_queries
     import_fields :assignment_queries
     import_fields :company_queries
+    import_fields :goal_queries
     import_fields :group_queries
     import_fields :key_resource_queries
     import_fields :key_result_queries
@@ -118,6 +123,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :blob_mutations
     import_fields :company_mutations
     import_fields :dashboard_mutations
+    import_fields :goal_mutations
     import_fields :group_mutations
     import_fields :key_result_mutations
     import_fields :kpi_mutations

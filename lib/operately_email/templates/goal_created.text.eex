@@ -1,0 +1,3 @@
+<%= Person.short_name(@author) %> added the <%= @goal.name %> and assigned you as the <%= @role %>.
+
+Link: <%= @url %>

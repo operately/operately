@@ -5,7 +5,6 @@ defmodule Operately.Features.ProjectCreationTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -17,7 +16,7 @@ defmodule Operately.Features.ProjectCreationTest do
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group})
-    ctx = ProjectSteps.login(ctx)
+    ctx = UI.login_based_on_tag(ctx)
 
     {:ok, ctx}
   end
@@ -28,7 +27,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person(ctx.champion.full_name)
+    |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
   end
@@ -39,7 +38,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person(ctx.champion.full_name)
+    |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
     |> UI.select(testid: "your-role-input", option: "Reviewer")
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
@@ -56,7 +55,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person(ctx.champion.full_name)
+    |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
     |> UI.click(testid: "invite-only")
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")

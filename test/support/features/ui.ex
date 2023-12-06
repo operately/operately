@@ -18,6 +18,16 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def login_based_on_tag(state) do
+    field = state[:login_as]
+    if !field, do: raise "No :login_as tag found on the test"
+
+    person = state[field]
+    if !person, do: raise "The :login_as tag on the test points to a field that does not exist on the context"
+
+    login_as(state, person)
+  end
+
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
@@ -134,10 +144,10 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def select_person(state, name) do
+  def select_person_in(state, id: id, name: name) do
     execute(state, fn session ->
       session
-      |> Browser.fill_in(Query.css("#peopleSearch"), with: name)
+      |> Browser.fill_in(Query.css("#" <> id), with: name)
       |> Browser.assert_text(name)
       |> Browser.send_keys([:enter])
     end)

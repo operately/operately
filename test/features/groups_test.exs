@@ -69,7 +69,7 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "add-remove-members")
     |> UI.click(testid: "add-group-members")
-    |> UI.fill_in(Query.css("#peopleSearch"), with: "Mati")
+    |> UI.fill_in(Query.css("#people-search"), with: "Mati")
     |> UI.assert_text("Mati Aharoni")
     |> UI.send_keys([:enter])
     |> UI.click(testid: "submit-group-members")

@@ -21,7 +21,7 @@ defmodule Operately.Features.NotificationsTest do
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person(ctx.champion.full_name)
+    |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
     |> UI.select(testid: "your-role-input", option: "Reviewer")
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")

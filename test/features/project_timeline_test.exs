@@ -2,7 +2,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.ProjectFeedSteps
+  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
 
@@ -25,7 +25,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> ProjectFeedSteps.assert_project_timeline_edited(
+    |> FeedSteps.assert_project_timeline_edited(
       author: ctx.champion, 
       messages: [
         "The due date was set to #{Operately.Time.current_month()} 20th.",
@@ -90,7 +90,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> ProjectFeedSteps.assert_project_timeline_edited(
+    |> FeedSteps.assert_project_timeline_edited(
       author: ctx.champion, 
       messages: [
         "Updated a milestone:",

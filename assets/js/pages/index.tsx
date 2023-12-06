@@ -12,12 +12,13 @@ import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
+import * as GoalAddPage from "./GoalAddPage";
+import * as GoalPage from "./GoalPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
-import * as HomePage from "./HomePage";
 import * as MyAssignmentsPage from "./MyAssignmentsPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
@@ -88,6 +89,14 @@ export default {
     loader: CompanyAdminTrustedEmailDomainsPage.loader,
     Page: CompanyAdminTrustedEmailDomainsPage.Page
   },
+  GoalAddPage: {
+    loader: GoalAddPage.loader,
+    Page: GoalAddPage.Page
+  },
+  GoalPage: {
+    loader: GoalPage.loader,
+    Page: GoalPage.Page
+  },
   GroupAddPage: {
     loader: GroupAddPage.loader,
     Page: GroupAddPage.Page
@@ -107,10 +116,6 @@ export default {
   GroupPage: {
     loader: GroupPage.loader,
     Page: GroupPage.Page
-  },
-  HomePage: {
-    loader: HomePage.loader,
-    Page: HomePage.Page
   },
   MyAssignmentsPage: {
     loader: MyAssignmentsPage.loader,
