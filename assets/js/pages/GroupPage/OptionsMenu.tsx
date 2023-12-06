@@ -10,14 +10,14 @@ export default ({ group }) => (
     <div className="max-w-md mx-auto z-50 relative">
       <Popover.Trigger asChild>
         <div className="mt-2 cursor-pointer" data-test-id="space-settings">
-          <div className="font-medium flex items-center gap-2 justify-center ">
-            {React.createElement(Icons[group.icon], { size: 20, className: group.color, strokeWidth: 2 })}
-            <div className="font-bold">{group.name}</div>
-            <Icons.IconChevronDown size={20} className="text-content-accent" strokeWidth={2} />
+          <div className="font-medium flex items-center gap-2 justify-center mb-2">
+            {React.createElement(Icons[group.icon], { size: 40, className: group.color, strokeWidth: 1 })}
           </div>
 
+          <div className="font-bold text-3xl text-center">{group.name}</div>
+
           <div className="text-center">
-            <div className="text-content-dimmed text-sm">{group.mission}</div>
+            <div className="">{group.mission}</div>
           </div>
         </div>
       </Popover.Trigger>

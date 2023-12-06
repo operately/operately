@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Companies from "@/models/companies";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 
 import MemberList from "./MemberList";
 import { Link } from "@/components/Link";
@@ -18,37 +19,35 @@ export function Page() {
 
   return (
     <Pages.Page title={group.name}>
-      <OptionsMenu group={group} />
-
-      <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="group-members">
-        <MemberList group={group} />
-      </div>
-
-      <div className="max-w-screen-lg mx-auto w-[90%]">
-        <ProjectsSection group={group} />
-
-        {Companies.hasFeature(company, "space-documents") && (
-          <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
-            <div className="w-48">
-              <div className="text-content-accent font-bold">Documents</div>
-              <Link to={`/spaces/${group.id}/projects`}>Manage Documents</Link>
-            </div>
-            <div className="flex-1"></div>
+      <Paper.Root size="large">
+        <Paper.Body>
+          <div className="-mt-4">
+            <OptionsMenu group={group} />
           </div>
-        )}
 
-        {Companies.hasFeature(company, "space-calendar") && (
-          <div className="flex items-start justify-center mb-8 border-t border-surface-outline pt-4">
-            <div className="w-48">
-              <div className="text-content-accent font-bold">Calendar</div>
-              <Link to={`/spaces/${group.id}/projects`}>Manage Calendar</Link>
-            </div>
-            <div className="flex-1"></div>
+          <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="group-members">
+            <MemberList group={group} />
           </div>
-        )}
 
-        {Companies.hasFeature(company, "goals") && <GoalsSection group={group} />}
-      </div>
+          <div className="flex items-center gap-4 -mb-[24px] mt-5 font-medium">
+            <div className={"border-b-4 border-surface-outline p-2 "}>Overview</div>
+            <div className="border-b-4 border-transparent p-2 text-content-dimmed">Goals</div>
+            <div className="border-b-4 border-transparent p-2 text-content-dimmed">Projects</div>
+          </div>
+
+          <Paper.DimmedSection>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="rounded bg-surface p-4 border border-stroke-base shadow">
+                <div className="flex justify-between">
+                  <div className="uppercase text-xs text-center mb-4">Projects</div>
+                </div>
+
+                <div className="text-center">3 ongoing projects</div>
+              </div>
+            </div>
+          </Paper.DimmedSection>
+        </Paper.Body>
+      </Paper.Root>
     </Pages.Page>
   );
 }

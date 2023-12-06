@@ -19,7 +19,7 @@ export default function MemberList({ group }: { group: Groups.Group }) {
         data-test-id="group-members"
       >
         {group.members.map((m) => (
-          <Avatar key={m.id} person={m} size={24} />
+          <Avatar key={m.id} person={m} size={32} />
         ))}
       </div>
     </div>
