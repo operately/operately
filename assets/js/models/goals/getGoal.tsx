@@ -14,15 +14,31 @@ export async function getGoal(id: string) {
 }
 
 const QUERY = gql`
+  fragment PersonFields on Person {
+    id
+    fullName
+    avatarUrl
+    title
+  }
+
   query GetGoal($id: ID!) {
     goal(id: $id) {
       id
       name
+      timeframe
 
       space {
         id
         name
         icon
+      }
+
+      champion {
+        ...PersonFields
+      }
+
+      reviewer {
+        ...PersonFields
       }
     }
   }

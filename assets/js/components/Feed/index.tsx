@@ -6,8 +6,23 @@ import FormattedTime from "@/components/FormattedTime";
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 
-export function Feed({ project }) {
+export function FeedForProject({ project }) {
   const { activities, loading, error } = Activities.useFeed(project.id);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div></div>;
+
+  return (
+    <div className="w-full">
+      {Activities.groupByDate(activities).map((group, index) => (
+        <ActivityGroup key={index} group={group} />
+      ))}
+    </div>
+  );
+}
+
+export function FeedForGoal({ goal }) {
+  const { activities, loading, error } = Activities.useFeed(goal.id);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div></div>;

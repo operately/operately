@@ -27,6 +27,9 @@ import { useLoaderData, useRevalidator } from "react-router-dom";
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 
+import { Context } from "./Context";
+export { DimmedSection } from "./DimmedSection";
+
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 const sizes = {
@@ -36,10 +39,6 @@ const sizes = {
   xlarge: "max-w-6xl",
   xxlarge: "max-w-7xl",
 };
-
-const Context = React.createContext({
-  size: "medium",
-});
 
 interface RootProps {
   size?: Size;

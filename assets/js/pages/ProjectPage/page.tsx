@@ -15,7 +15,7 @@ import Avatar from "@/components/Avatar";
 import RichContent, { Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
-import { Feed } from "@/components/Feed";
+import { FeedForProject } from "@/components/Feed";
 import { DimmedLabel } from "./Label";
 
 import { Indicator } from "@/components/ProjectHealthIndicators";
@@ -32,7 +32,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={project.space} />
 
-        <div className="p-12 border border-surface-outline bg-surface rounded shadow-xl relative">
+        <Paper.Body>
           <Banner project={project} />
 
           <div className="mb-8">
@@ -122,11 +122,11 @@ export function Page() {
             </div>
           </div>
 
-          <div className="-m-12 mt-6 p-12 border-t border-surface-outline bg-surface-dimmed rounded-b">
+          <Paper.DimmedSection>
             <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
-            <Feed project={project} />
-          </div>
-        </div>
+            <FeedForProject project={project} />
+          </Paper.DimmedSection>
+        </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
