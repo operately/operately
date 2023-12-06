@@ -106,7 +106,7 @@ export function Body({ children, minHeight, className = "", noPadding = false })
 }
 
 Body.defaultProps = {
-  minHeight: "1000px",
+  minHeight: "none",
 };
 
 export function Title({ children }) {

@@ -5,7 +5,7 @@ defmodule Operately.Features.ProjectsTest do
   import Operately.GroupsFixtures
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.ProjectFeedSteps
+  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -63,7 +63,7 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.assert_text("Archive this project?")
     |> UI.click(testid: "archive-project-button")
     |> UI.assert_text("This project was archived on")
-    |> ProjectFeedSteps.assert_project_archived(author: ctx.champion)
+    |> FeedSteps.assert_project_archived(author: ctx.champion)
 
     ctx
     |> visit_index()
@@ -105,7 +105,7 @@ defmodule Operately.Features.ProjectsTest do
     
     ctx
     |> visit_show(ctx.project)
-    |> ProjectFeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: new_space)
+    |> FeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: new_space)
   end
 
   #

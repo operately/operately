@@ -1,9 +1,8 @@
 defmodule Operately.Features.ProjectResourcesTest do
-  alias Operately.Support.Features.ProjectFeedSteps
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.ProjectFeedSteps
+  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -29,7 +28,7 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.click(testid: "submit")
 
     ctx
-    |> ProjectFeedSteps.assert_project_retrospective_posted(author: ctx.champion)
+    |> FeedSteps.assert_project_retrospective_posted(author: ctx.champion)
     |> UI.assert_text("This project was closed on")
     |> UI.click(testid: "project-retrospective-link")
     |> UI.assert_text("We built the thing")

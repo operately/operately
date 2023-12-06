@@ -7,6 +7,7 @@ defmodule Operately.Features.GoalCreationTest do
 
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.FeedSteps
 
   setup ctx do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
@@ -32,7 +33,10 @@ defmodule Operately.Features.GoalCreationTest do
     |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
     |> UI.click(testid: "save")
+
+    ctx
     |> UI.assert_text("Improve support first response time")
+    |> FeedSteps.assert_goal_added(author: ctx.champion)
 
     ctx
     |> UI.login_as(ctx.reviewer)

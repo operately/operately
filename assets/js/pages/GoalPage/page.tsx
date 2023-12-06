@@ -12,13 +12,18 @@ export function Page() {
 
   return (
     <Pages.Page title={[goal.name]}>
-      <Paper.Root size="small">
+      <Paper.Root size="medium">
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">{goal.name}</div>
 
-          <div className="flex item-center mt-4 gap-6">
+          <div className="flex item-center mt-4 gap-12">
+            <div>
+              <DimmedLabel>Timeframe</DimmedLabel>
+              <div className="font-medium">{goal.timeframe}</div>
+            </div>
+
             <div>
               <DimmedLabel>Champion</DimmedLabel>
               <AvatarAndName person={goal.champion} />
@@ -28,15 +33,10 @@ export function Page() {
               <DimmedLabel>Reviewer</DimmedLabel>
               <AvatarAndName person={goal.reviewer} />
             </div>
-
-            <div>
-              <DimmedLabel>Timeframe</DimmedLabel>
-              <div className="font-medium">{goal.timeframe}</div>
-            </div>
           </div>
 
           <Paper.DimmedSection>
-            <div className="uppercase text-xs text-content-accent font-semibold mb-4">Goal Activity</div>
+            <div className="uppercase text-xs text-content-accent font-semibold mb-4">Activity</div>
             <FeedForGoal goal={goal} />
           </Paper.DimmedSection>
         </Paper.Body>
