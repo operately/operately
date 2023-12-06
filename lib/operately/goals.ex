@@ -35,4 +35,12 @@ defmodule Operately.Goals do
   def change_goal(%Goal{} = goal, attrs \\ %{}) do
     Goal.changeset(goal, attrs)
   end
+
+  def get_role(%Goal{} = goal, person) do
+    cond do
+      goal.champion_id == person.id -> :champion
+      goal.reviewer_id == person.id -> :reviewer
+      true -> nil
+    end
+  end
 end

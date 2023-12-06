@@ -36,12 +36,9 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :my_role, :string do
       resolve fn goal, _, %{context: context} ->
         person = context.current_account.person
+        role = Operately.Goals.get_role(goal, person)
 
-        cond do
-          person.id == goal.champion_id -> {:ok, "champion"}
-          person.id == goal.reviewer_id -> {:ok, "reviewer"}
-          true -> {:ok, nil}
-        end
+        {:ok, Atom.to_string(role)}
       end
     end
   end

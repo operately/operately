@@ -23,10 +23,12 @@ defmodule Operately.Features.GoalCreationTest do
 
   @tag login_as: :champion
   feature "add goal", ctx do
+    goal_name = "Improve support first response time"
+
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-goal")
-    |> UI.fill(testid: "name-input", with: "Improve support first response time")
+    |> UI.fill(testid: "name-input", with: goal_name)
     |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
     |> UI.click(testid: "save")
@@ -35,6 +37,6 @@ defmodule Operately.Features.GoalCreationTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_goal_created_sent(author: ctx.champion, role: "reviewer")
-    |> EmailSteps.assert_goal_created_sent(author: ctx.champion, goal: "Improve support first response time", role: "reviewer", to: ctx.reviewer.email)
+    |> EmailSteps.assert_goal_created_sent(author: ctx.champion, goal: goal_name, role: "reviewer", to: ctx.reviewer)
   end
 end

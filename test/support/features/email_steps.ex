@@ -6,8 +6,8 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} created the #{project_name} project in Operately and assigned you as a #{role}")
   end
 
-  def assert_goal_created_sent(ctx, author: author, goal: goal, to: to, role: role) do
-    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} added the #{goal} goal in Operately and assigned you as a #{role}")
+  def assert_goal_created_sent(ctx, author: author, goal: goal, role: role, to: to) do
+    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} added the #{goal} goal and assigned you as the #{role}")
   end
 
   def assert_project_retrospective_sent(ctx, author: author, to: to) do
