@@ -32,6 +32,17 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
         {:ok, Operately.People.get_person!(goal.reviewer_id)}
       end
     end
-  end
 
+    field :my_role, :string do
+      resolve fn goal, _, %{context: context} ->
+        person = context.current_account.person
+
+        cond do
+          person.id == goal.champion_id -> {:ok, "champion"}
+          person.id == goal.reviewer_id -> {:ok, "reviewer"}
+          true -> {:ok, nil}
+        end
+      end
+    end
+  end
 end

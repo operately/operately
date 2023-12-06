@@ -362,6 +362,7 @@ export type Goal = {
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
+  myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   private: Scalars['Boolean']['output'];
   reviewer?: Maybe<Person>;
