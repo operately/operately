@@ -56,7 +56,7 @@ export type ActivityContent = ActivityContentGoalCreated | ActivityContentProjec
 
 export type ActivityContentGoalCreated = {
   __typename?: 'ActivityContentGoalCreated';
-  exampleField: Scalars['String']['output'];
+  goal: Goal;
 };
 
 export type ActivityContentProjectArchived = {
@@ -364,9 +364,9 @@ export type Goal = {
   isArchived: Scalars['Boolean']['output'];
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  private: Scalars['Boolean']['output'];
   reviewer?: Maybe<Person>;
   space: Group;
+  timeframe: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
 };
 

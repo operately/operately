@@ -6,6 +6,7 @@ import { GhostButton } from "@/components/Button";
 import { Group } from "@/gql/generated";
 import { DivLink } from "@/components/Link";
 import { createPath } from "@/utils/paths";
+import Avatar from "@/components/Avatar";
 
 export function GoalsSection({ group }: { group: Group }) {
   const newGoalPath = createPath("spaces", group.id, "goals", "new");
@@ -57,11 +58,12 @@ function GoalGridItem({ goal }: { goal: Goals.Goal }) {
       to={path}
     >
       <div className="flex flex-col justify-between h-28">
-        <div>
-          <div className="text-ellipsis font-bold">{goal.name}</div>
-        </div>
+        <div className="text-ellipsis font-bold">{goal.name}</div>
 
-        <div className="flex items-center gap-1"></div>
+        <div className="flex items-center gap-1">
+          <Avatar person={goal.champion!} size="tiny" />
+          <Avatar person={goal.reviewer!} size="tiny" />
+        </div>
       </div>
     </DivLink>
   );

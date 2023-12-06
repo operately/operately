@@ -7,7 +7,8 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     field :inserted_at, non_null(:date)
     field :updated_at, non_null(:date)
-    field :private, non_null(:boolean)
+
+    field :timeframe, non_null(:string)
 
     field :is_archived, non_null(:boolean) do
       resolve fn goal, _, _ ->
