@@ -41,7 +41,7 @@ function ColorOption({ color, current, setColor }) {
   const className = classnames("w-12 h-12 rounded flex items-center justify-center cursor-pointer", fgtobg[color]);
 
   return (
-    <div className={className} onClick={() => setColor(color)}>
+    <div className={className} onClick={() => setColor(color)} data-test-id={`color-${color}`}>
       {color === current && <Icons.IconCheck className="text-content-accent" size={24} />}
     </div>
   );

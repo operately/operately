@@ -62,7 +62,7 @@ function IconOption({ color, icon, current, setIcon }) {
   });
 
   return (
-    <div className={className} onClick={() => setIcon(icon)}>
+    <div className={className} onClick={() => setIcon(icon)} data-test-id={`icon-${icon}`}>
       {React.createElement(Icon)}
     </div>
   );

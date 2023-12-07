@@ -34,12 +34,16 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(testid: "add-group")
     |> UI.fill_in(Query.text_field("Name"), with: "Marketing")
     |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products")
+    |> UI.click(testid: "color-text-green-500")
+    |> UI.click(testid: "icon-IconBolt")
     |> UI.click(Query.button("Create Space"))
     |> UI.assert_has(Query.text("Marketing"))
     |> UI.assert_has(Query.text("Let the world know about our products"))
 
     group = Operately.Groups.get_group_by_name("Marketing")
     assert group != nil
+    assert group.color == "text-green-500"
+    assert group.icon == "IconBolt"
 
     members = Operately.Groups.list_members(group)
     assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
