@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Groups from "@/graphql/Groups";
+import { GroupColorChooser } from "@/components/GroupColorChooser";
 
 export function Page() {
   return (
@@ -24,6 +25,8 @@ function Form() {
 
   const [name, setName] = React.useState("");
   const [mission, setMission] = React.useState("");
+  const [icon, setIcon] = React.useState();
+  const [color, setColor] = React.useState("text-blue-500");
 
   const onSubmit = async () => {
     const res = await createGroup({
@@ -49,6 +52,10 @@ function Form() {
         onChange={setMission}
         placeholder="e.g. Create product awareness and bring new leads"
       />
+
+      <div>
+        <GroupColorChooser color={color} setColor={setColor} name={name} />
+      </div>
 
       <Forms.SubmitArea>
         <Forms.SubmitButton>Create Space</Forms.SubmitButton>

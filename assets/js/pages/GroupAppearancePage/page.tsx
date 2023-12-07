@@ -11,6 +11,7 @@ import { GhostButton } from "@/components/Button";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import classnames from "classnames";
+import { GroupColorChooser } from "@/components/GroupColorChooser";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -33,17 +34,7 @@ export function Page() {
 
           <div className="h-px bg-stroke-base my-8"></div>
 
-          <h2 className="font-bold">Color</h2>
-          <p className="text-sm text-content-dimmed">Choose a color for the {group.name} Space.</p>
-
-          <div className="flex items-center gap-2 mt-2">
-            <ColorOption setColor={setColor} color="text-blue-500" current={color} />
-            <ColorOption setColor={setColor} color="text-green-500" current={color} />
-            <ColorOption setColor={setColor} color="text-red-500" current={color} />
-            <ColorOption setColor={setColor} color="text-yellow-500" current={color} />
-            <ColorOption setColor={setColor} color="text-purple-500" current={color} />
-            <ColorOption setColor={setColor} color="text-pink-500" current={color} />
-          </div>
+          <GroupColorChooser color={color} group={group} setColor={setColor} />
 
           <div className="h-px bg-stroke-base my-8"></div>
 
@@ -122,17 +113,6 @@ const fgtoborder = {
   "text-purple-500": "border-purple-500",
   "text-pink-500": "border-pink-500",
 };
-
-function ColorOption({ color, current, setColor }) {
-  return (
-    <div
-      className={"w-12 h-12 rounded flex items-center justify-center cursor-pointer" + " " + fgtobg[color]}
-      onClick={() => setColor(color)}
-    >
-      {color === current && <Icons.IconCheck className="text-content-accent" size={24} />}
-    </div>
-  );
-}
 
 function IconOption({ color, icon, current, setIcon }) {
   const Icon = Icons[icon];
