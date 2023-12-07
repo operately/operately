@@ -10,9 +10,11 @@ import * as Icons from "@tabler/icons-react";
 import { DateSelector } from "./DateSelector";
 
 export function MilestoneList({ form }) {
+  const milestones = Milestones.sortByDeadline(form.milestoneList.milestones);
+
   return (
     <div className="flex flex-col gap-2 my-3">
-      {form.milestoneList.milestones.map((m: Milestones.Milestone) => (
+      {milestones.map((m: Milestones.Milestone) => (
         <MilestoneListItem key={m.id} milestone={m} form={form} />
       ))}
 
