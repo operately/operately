@@ -1,6 +1,13 @@
 defmodule OperatelyWeb.Graphql.Mutations.Groups do
   use Absinthe.Schema.Notation
 
+  input_object :create_group_input do
+    field :name, non_null(:string)
+    field :mission, non_null(:string)
+    field :icon, non_null(:string)
+    field :color, non_null(:string)
+  end
+
   input_object :contact_input do
     field :name, non_null(:string)
     field :value, non_null(:string)
@@ -22,15 +29,16 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
 
   object :group_mutations do
     field :create_group, :group do
-      arg :name, non_null(:string)
-      arg :mission, non_null(:string)
+      arg :input, non_null(:create_group_input)
 
       resolve fn args, %{context: context} ->
         creator = context.current_account.person
 
         attrs = %{
-          name: args.name,
-          mission: args.mission,
+          name: args.input.name,
+          mission: args.input.mission,
+          icon: args.input.icon,
+          color: args.input.color
         }
 
         Operately.Groups.create_group(creator, attrs)
