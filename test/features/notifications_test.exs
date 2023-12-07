@@ -17,6 +17,33 @@ defmodule Operately.Features.NotificationsTest do
   end
 
   feature "unread notifications count", ctx do
+    create_a_project(ctx)
+
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_notification_count(1)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.click_on_first_notification()
+    |> NotificationsSteps.assert_no_unread_notifications()
+  end
+
+  feature "mark all unread notifications as read", ctx do
+    create_a_project(ctx)
+    create_a_project(ctx)
+
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_notification_count(2)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.click_on_first_mark_all_as_read()
+    |> NotificationsSteps.assert_no_unread_notifications()
+  end
+
+  #
+  # Helpers
+  #
+
+  defp create_a_project(ctx) do
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "add-project")
@@ -25,13 +52,6 @@ defmodule Operately.Features.NotificationsTest do
     |> UI.select(testid: "your-role-input", option: "Reviewer")
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
-
-    ctx
-    |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.assert_notification_count(1)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.click_on_first_notification()
-    |> NotificationsSteps.assert_no_unread_notifications()
   end
 
 end

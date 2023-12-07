@@ -10,6 +10,10 @@ defmodule Operately.Support.Features.NotificationsSteps do
     UI.click(ctx, testid: "notification-card")
   end
 
+  def click_on_first_mark_all_as_read(ctx) do
+    UI.click(ctx, testid: "mark-all-read")
+  end
+
   def assert_notification_exists(ctx, author: author, subject: subject) do
     ctx
     |> visit_notifications_page()

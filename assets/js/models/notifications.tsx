@@ -1,4 +1,4 @@
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 
 export function useUnreadCount() {
   const query = gql`
@@ -25,4 +25,14 @@ export function useUnreadCount() {
   }
 
   return data.unreadNotificationsCount;
+}
+
+export function useMarkAllNotificationsRead() {
+  const query = gql`
+    mutation MarkAllNotificationsAsRead {
+      markAllNotificationsAsRead
+    }
+  `;
+
+  return useMutation(query);
 }

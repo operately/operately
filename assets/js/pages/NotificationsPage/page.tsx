@@ -1,11 +1,13 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
+import * as Notifications from "@/models/notifications";
 
-import { useLoadedData, useSubscribeToChanges } from "./loader";
+import { useLoadedData, useSubscribeToChanges, useRefresh } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
 
 import NotificationItem from "./NotificationItem";
+import { GhostButton } from "@/components/Button";
 
 export function Page() {
   useDocumentTitle("Notifications");
@@ -39,6 +41,7 @@ function UnreadNotifications() {
       <div className="flex items-center gap-4 mb-3">
         <div className="text-sm uppercase font-extrabold text-orange-500">New for you</div>
         <div className="h-px bg-stroke-base flex-1" />
+        {unread.length > 0 && <MarkAllReadButton />}
       </div>
 
       {unread.length === 0 && (
@@ -52,6 +55,22 @@ function UnreadNotifications() {
         <NotificationItem key={n.id} notification={n} />
       ))}
     </div>
+  );
+}
+
+function MarkAllReadButton() {
+  const refresh = useRefresh();
+  const [markAllRead, { loading }] = Notifications.useMarkAllNotificationsRead();
+
+  const onClick = React.useCallback(async () => {
+    await markAllRead();
+    refresh();
+  }, [markAllRead]);
+
+  return (
+    <GhostButton type="secondary" size="xs" testId="mark-all-read" onClick={onClick}>
+      Mark all read
+    </GhostButton>
   );
 }
 
