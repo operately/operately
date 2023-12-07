@@ -20,7 +20,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Edit Project Timeline", project.name]}>
-      <Paper.Root size="small">
+      <Paper.Root size="medium">
         <ProjectMilestonesNavigation project={project} />
 
         <Paper.Body minHeight="none">
