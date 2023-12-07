@@ -8,19 +8,7 @@ import { Link } from "react-router-dom";
 export default ({ group }) => (
   <Popover.Root>
     <div className="max-w-md mx-auto z-50 relative">
-      <Popover.Trigger asChild>
-        <div className="mt-2 cursor-pointer" data-test-id="space-settings">
-          <div className="font-medium flex items-center gap-2 justify-center mb-2">
-            {React.createElement(Icons[group.icon], { size: 40, className: group.color, strokeWidth: 1 })}
-          </div>
-
-          <div className="font-bold text-3xl text-center">{group.name}</div>
-
-          <div className="text-center">
-            <div className="">{group.mission}</div>
-          </div>
-        </div>
-      </Popover.Trigger>
+      <Popover.Trigger asChild></Popover.Trigger>
     </div>
 
     <Popover.Portal>
