@@ -3,7 +3,6 @@ import React from "react";
 import classnames from "classnames";
 
 import * as Icons from "@tabler/icons-react";
-import { Group } from "@/gql/generated";
 
 interface GroupColorChooserProps {
   color: string;

@@ -27,8 +27,8 @@ export const GET_GROUP = gql`
 `;
 
 const CREATE_GROUP = gql`
-  mutation CreateGroup($name: String!, $mission: String!) {
-    createGroup(name: $name, mission: $mission) {
+  mutation CreateGroup($input: CreateGroupInput!) {
+    createGroup(input: $input) {
       id
       name
     }
