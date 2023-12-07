@@ -78,16 +78,14 @@ function Dates({ project }) {
 }
 
 function MilestoneList({ project }) {
-  const milestones = Milestones.sortByDeadline(project.milestones);
+  let { pending, done } = Milestones.splitByStatus(project.milestones);
 
-  const [pending, completed] = [
-    milestones.filter((m) => m.status === "pending"),
-    milestones.filter((m) => m.status === "done"),
-  ];
+  pending = Milestones.sortByDeadline(pending);
+  done = Milestones.sortByDoneAt(done);
 
-  const showCompletedSeperator = pending.length > 0 && completed.length > 0;
+  const showCompletedSeperator = pending.length > 0 && done.length > 0;
 
-  if (pending.length === 0 && completed.length === 0) {
+  if (pending.length === 0 && done.length === 0) {
     return (
       <div className="flex flex-col mb-8 gap-1 mt-4">
         <h2 className="font-bold">Upcoming Milestones</h2>
@@ -102,22 +100,50 @@ function MilestoneList({ project }) {
 
       <div>
         {pending.map((m) => (
-          <Item key={m.id} project={project} milestone={m} />
+          <PendingItem key={m.id} project={project} milestone={m} />
         ))}
       </div>
 
       {showCompletedSeperator && <h2 className="font-bold mt-12">Completed Milestones</h2>}
 
       <div>
-        {completed.map((m) => (
-          <Item key={m.id} project={project} milestone={m} />
+        {done.map((m) => (
+          <DoneItem key={m.id} project={project} milestone={m} />
         ))}
       </div>
     </div>
   );
 }
 
-function Item({ project, milestone }) {
+function PendingItem({ project, milestone }) {
+  const path = createPath("projects", project.id, "milestones", milestone.id);
+
+  return (
+    <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
+      <div className="flex items-center gap-2">
+        <div className="shrink-0 mt-1">
+          <Icons.IconFlag3Filled size={16} className="text-yellow-500" />
+        </div>
+
+        <div className="flex-1 font-bold">
+          <Link to={path}>{milestone.title}</Link>
+        </div>
+      </div>
+
+      <div className="shrink-0 text-sm ml-6">
+        Due Date: <FormattedTime time={milestone.deadlineAt} format="long-date" />
+        {milestone.completedAt && (
+          <>
+            {" "}
+            &middot; Completed on <FormattedTime time={milestone.completedAt} format="long-date" />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DoneItem({ project, milestone }) {
   const path = createPath("projects", project.id, "milestones", milestone.id);
 
   return (

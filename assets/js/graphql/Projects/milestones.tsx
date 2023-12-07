@@ -43,12 +43,34 @@ export function filterPending(milestones: Milestone[]) {
   return milestones.filter((m) => m.status === "pending");
 }
 
+export function splitByStatus(milestones: Milestone[]) {
+  return {
+    pending: milestones.filter((m) => m.status === "pending"),
+    done: milestones.filter((m) => m.status === "done"),
+  };
+}
+
 export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
   let result: Milestone[] = [];
 
   return result.concat(milestones).sort((m1, m2) => {
     let d1 = +new Date(m1.deadlineAt);
     let d2 = +new Date(m2.deadlineAt);
+
+    if (reverse) {
+      return d2 - d1;
+    } else {
+      return d1 - d2;
+    }
+  });
+}
+
+export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) {
+  let result: Milestone[] = [];
+
+  return result.concat(milestones).sort((m1, m2) => {
+    let d1 = +Time.parse(m1.completedAt)!;
+    let d2 = +Time.parse(m2.completedAt)!;
 
     if (reverse) {
       return d2 - d1;
