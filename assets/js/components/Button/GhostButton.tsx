@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader, PuffLoader } from "react-spinners";
 
 interface GhostButton {
   children: any;
@@ -8,12 +9,17 @@ interface GhostButton {
   testId?: string;
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
+  loading?: boolean;
 }
 
 export function GhostButton(props: GhostButton) {
   const navigate = useNavigate();
 
   const handleClick = (e: any) => {
+    if (props.loading) {
+      return;
+    }
+
     if (props.linkTo) {
       navigate(props.linkTo);
       return;
@@ -24,18 +30,35 @@ export function GhostButton(props: GhostButton) {
     }
   };
 
+  const klass = className(props.size, props.type, props.loading);
+
   return (
-    <div className={className(props.size, props.type)} onClick={handleClick} data-test-id={props.testId}>
+    <div className={klass} onClick={handleClick} data-test-id={props.testId}>
       {props.children}
+      <Spinner active={props.loading} />
     </div>
   );
 }
 
-function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary") {
+function Spinner({ active }: { active?: boolean }) {
+  return (
+    <div className="inset-0 flex items-center justify-center absolute">
+      {active && <PuffLoader size={24} color="var(--color-accent-1)" />}
+    </div>
+  );
+}
+
+function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary", loading?: boolean) {
   size = size || "base";
   type = type || "primary";
 
-  let result = "font-medium transition-all duration-100 cursor-pointer text-center";
+  let result = "relative font-medium transition-all duration-100 text-center";
+
+  if (loading) {
+    result += " cursor-default";
+  } else {
+    result += " cursor-pointer";
+  }
 
   if (size === "xxs") {
     result += " px-2 py-[1px] text-sm rounded-2xl";
@@ -58,12 +81,21 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
   }
 
   if (type === "primary") {
-    result += " border-2 border-accent-1 text-accent-1 hover:text-accent-1";
+    result += " border-2 border-accent-1";
+    if (loading) {
+      result += " text-content-subtle";
+    } else {
+      result += " text-accent-1 hover:text-accent-1";
+    }
   }
 
   if (type === "secondary") {
-    result +=
-      " border border-surface-outline hover:border-surface-outline text-content-dimmed hover:text-content-accent";
+    result += " border border-surface-outline hover:border-surface-outline ";
+    if (loading) {
+      result += " text-content-subtle";
+    } else {
+      result += " text-content-dimmed hover:text-content-accent";
+    }
   }
 
   return result;
