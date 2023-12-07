@@ -57,6 +57,18 @@ defmodule Operately.Notifications do
     {:ok, notification}
   end
 
+  def mark_all_as_read(person) do
+    now = DateTime.utc_now()
+
+    query = from n in Notification, where: n.person_id == ^person.id and n.read == false
+
+    Repo.update_all(query, [set: [read: true, read_at: now]])
+
+    Absinthe.Subscription.publish(OperatelyWeb.Endpoint, true, on_unread_notification_count_changed: "notifications:#{person.id}")
+
+    {:ok, true}
+  end
+
   def bulk_create(notifications) do
     alias Ecto.Multi
     alias Operately.Notifications.EmailWorker
