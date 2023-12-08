@@ -23,8 +23,10 @@ export async function loader({ params }): Promise<LoadedData> {
   const projects = await client.query({
     query: Projects.LIST_PROJECTS,
     variables: {
-      groupId: params.id,
-      includeArchived: false,
+      filters: {
+        groupId: params.id,
+        includeArchived: false,
+      },
     },
     fetchPolicy: "network-only",
   });
