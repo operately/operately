@@ -7,6 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import MemberList from "./MemberList";
 
 import { useLoadedData } from "./loader";
+import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 
 export function Page() {
   const { company, group } = useLoadedData();
@@ -15,22 +16,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <div className="-mx-16 -mt-12 mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t">
-            <div className="flex items-center justify-between px-4">
-              <div className="font-medium text-sm w-1/8">{group.name}</div>
-              <div className="flex items-center justify-center flex-1 gap-2">
-                <div className={"border-b-2 border-orange-500 px-2 -mb-px py-1 pt-2 font-bold"}>Overview</div>
-                <div className="border-b-2 border-transparent px-2 -mb-px py-1 pt-2 text-content-dimmed">
-                  Discussions
-                </div>
-                <div className="border-b-2 border-transparent px-2 -mb-px py-1 pt-2 text-content-dimmed">Goals</div>
-                <div className="border-b-2 border-transparent px-2 -mb-px py-1 pt-2 text-content-dimmed">Projects</div>
-                <div className="border-b-2 border-transparent px-2 -mb-px py-1 pt-2 text-content-dimmed">KPIs</div>
-              </div>
-
-              <div className="font-medium text-sm w-1/8">Settings</div>
-            </div>
-          </div>
+          <GroupPageNavigation groupId={group.id} groupName={group.name} activeTab="overview" />
 
           <div className="mt-12">
             <div className="font-medium flex items-center gap-2 justify-center mb-2">
