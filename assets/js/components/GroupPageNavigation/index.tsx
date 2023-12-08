@@ -4,6 +4,7 @@ import { createPath } from "@/utils/paths";
 import * as Icons from "@tabler/icons-react";
 import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
+import { Settings } from "./Settings";
 
 interface GroupPageNavigationProps {
   groupId: string;
@@ -32,7 +33,7 @@ export function GroupPageNavigation({ groupId, groupName, activeTab }: GroupPage
         </div>
 
         <div className="font-medium pr-3 flex justify-end items-center w-3/12">
-          <Icons.IconDots size={16} className="text-content-dimmed" />
+          <Settings groupId={groupId} />
         </div>
       </div>
     </div>

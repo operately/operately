@@ -37,7 +37,7 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(testid: "color-text-green-500")
     |> UI.click(testid: "icon-IconBolt")
     |> UI.click(Query.button("Create Space"))
-    |> UI.assert_has(Query.text("Marketing"))
+    |> UI.assert_has(Query.text("Marketing", count: 2))
     |> UI.assert_has(Query.text("Let the world know about our products"))
 
     group = Operately.Groups.get_group_by_name("Marketing")
@@ -104,6 +104,7 @@ defmodule Operately.Features.GroupsTest do
     ctx
     |> visit_page()
     |> UI.click(title: group.name)
+    |> UI.click(testid: "projects-tab")
     |> UI.assert_text(project1.name)
     |> UI.assert_text(project2.name)
   end
