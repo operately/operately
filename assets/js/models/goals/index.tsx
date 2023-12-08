@@ -1,5 +1,5 @@
 export type { Goal } from "@/gql/generated";
 
-export { getGoals, useGoals } from "./useGoals";
+export { getGoals } from "./getGoals";
 export { getGoal } from "./getGoal";
 export { useCreateGoalMutation } from "./useCreateGoalMutation";

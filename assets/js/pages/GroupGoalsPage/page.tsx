@@ -48,7 +48,7 @@ function Content() {
   );
 }
 
-export function GoalsGrid({ goals }: { goals: Goals.Goal[] }) {
+function GoalsGrid({ goals }: { goals: Goals.Goal[] }) {
   return (
     <div className="grid lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 gap-4">
       {goals

@@ -50,41 +50,6 @@ export const LIST_PROJECTS = gql`
   }
 `;
 
-const PROJECT_SUBSCRIPTION = gql`
-  subscription OnProjectAdded {
-    projectAdded {
-      id
-    }
-  }
-`;
-
-interface ListProjectsFilters {
-  groupId?: string;
-  groupMemberRoles?: string[];
-  limitContributorsToGroupMembers?: boolean;
-  objectiveId?: string;
-}
-
-export function useProjects(filters: ListProjectsFilters) {
-  const query = useQuery(LIST_PROJECTS, {
-    variables: { filters },
-    fetchPolicy: "network-only",
-  });
-
-  React.useEffect(() => {
-    query.subscribeToMore({
-      document: PROJECT_SUBSCRIPTION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        query.refetch();
-        return prev;
-      },
-    });
-  }, []);
-
-  return query;
-}
-
 export const GET_PROJECT = gql`
   query GetProject($id: ID!) {
     project(id: $id) {
