@@ -3,6 +3,7 @@ import { DivLink } from "../Link";
 import { createPath } from "@/utils/paths";
 import * as Icons from "@tabler/icons-react";
 import classnames from "classnames";
+import { createTestId } from "@/utils/testid";
 
 interface GroupPageNavigationProps {
   groupId: string;
@@ -56,10 +57,12 @@ function Tab({ id, activeTab, link, title }: TabProps) {
     "hover:text-content hover:border-stroke-base",
   );
 
+  let testId = createTestId(id, "tab");
+
   if (activeTab === id) return <div className={active}>{title}</div>;
 
   return (
-    <DivLink to={link} className={inactive}>
+    <DivLink to={link} className={inactive} testId={testId}>
       {title}
     </DivLink>
   );
