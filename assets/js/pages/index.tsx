@@ -16,7 +16,9 @@ import * as GoalAddPage from "./GoalAddPage";
 import * as GoalPage from "./GoalPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
+import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
 import * as GroupGoalsPage from "./GroupGoalsPage";
+import * as GroupKpisPage from "./GroupKpisPage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
@@ -107,9 +109,17 @@ export default {
     loader: GroupAppearancePage.loader,
     Page: GroupAppearancePage.Page
   },
+  GroupDiscussionsPage: {
+    loader: GroupDiscussionsPage.loader,
+    Page: GroupDiscussionsPage.Page
+  },
   GroupGoalsPage: {
     loader: GroupGoalsPage.loader,
     Page: GroupGoalsPage.Page
+  },
+  GroupKpisPage: {
+    loader: GroupKpisPage.loader,
+    Page: GroupKpisPage.Page
   },
   GroupListPage: {
     loader: GroupListPage.loader,
