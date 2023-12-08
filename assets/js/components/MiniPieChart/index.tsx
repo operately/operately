@@ -3,7 +3,13 @@ import React from "react";
 
 export function MiniPieChart({ completed, total, size = 14 }) {
   const mode = useColorMode();
-  const percentage = Math.ceil((completed / total) * 100);
+  let percentage = 0;
+
+  if (total > 0) {
+    percentage = Math.ceil((completed / total) * 100);
+  } else {
+    percentage = 0;
+  }
 
   let background = "";
 

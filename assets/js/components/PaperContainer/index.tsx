@@ -90,13 +90,13 @@ const bodyPaddings = {
   xxlarge: "px-16 py-12",
 };
 
-export function Body({ children, minHeight, className = "", noPadding = false }) {
+export function Body({ children, minHeight, className = "", noPadding = false, backgroundColor = "bg-surface" }) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
 
   return (
     <div
-      className={`relative bg-surface rounded shadow-xl ${padding} ${className} border border-surface-outline`}
+      className={`relative ${backgroundColor} rounded shadow-xl ${padding} ${className} border border-surface-outline`}
       style={{
         minHeight: minHeight,
       }}
