@@ -16,6 +16,7 @@ import * as GoalAddPage from "./GoalAddPage";
 import * as GoalPage from "./GoalPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
+import * as GroupGoalsPage from "./GroupGoalsPage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
@@ -105,6 +106,10 @@ export default {
   GroupAppearancePage: {
     loader: GroupAppearancePage.loader,
     Page: GroupAppearancePage.Page
+  },
+  GroupGoalsPage: {
+    loader: GroupGoalsPage.loader,
+    Page: GroupGoalsPage.Page
   },
   GroupListPage: {
     loader: GroupListPage.loader,

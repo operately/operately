@@ -50,6 +50,8 @@ defmodule Operately.Features.CompanyAdminTest do
     |> UI.send_keys([:enter])
     |> UI.click(testid: "save-admins")
 
+    :timer.sleep(200)
+
     michael = Operately.People.get_person_by_name!("Michael Scott")
     assert michael != nil
     assert michael.company_id == ctx.company.id

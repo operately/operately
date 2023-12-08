@@ -43,7 +43,7 @@ function ProjectList({ projects }) {
 
   return (
     <div className="border border-surface-outline rounded">
-      <div className="border-b border-surface-outline px-3 py-2 text-sm bg-surface-dimmed rounded-t">
+      <div className="border-b border-surface-outline px-3 py-2 text-sm rounded-t">
         {activeProjects.length} Projects
       </div>
 
