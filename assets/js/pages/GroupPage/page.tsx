@@ -8,6 +8,7 @@ import MemberList from "./MemberList";
 
 import { useLoadedData } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -37,8 +38,9 @@ export function Page() {
           <div className="mt-8 mb-4" />
 
           <div className="grid grid-cols-2 gap-8">
-            <div className="border border-stroke-base rounded p-12 py-8">
+            <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Quick Actions</div>
+              <ComingSoonBadge />
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Icons.IconPlus size={16} className="text-accent-1" /> Add a goal
@@ -54,8 +56,9 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border border-stroke-base rounded p-12 py-8">
+            <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Points Of Contact</div>
+              <ComingSoonBadge />
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Icons.IconBrandSlack size={16} className="text-accent-1" /> Operately Slack Channel
@@ -71,8 +74,9 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border border-stroke-base rounded p-12 py-8">
+            <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Goal Stats</div>
+              <ComingSoonBadge />
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2 underline">
                   <Icons.IconCircleFilled size={16} className="text-accent-1" /> 5 goals on track
@@ -88,8 +92,9 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border border-stroke-base rounded p-12 py-8">
+            <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Project Stats</div>
+              <ComingSoonBadge />
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2 underline">
                   <Icons.IconCircleFilled size={16} className="text-accent-1" /> 9 projects on track
@@ -109,8 +114,9 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border border-stroke-base rounded p-12 py-8">
+            <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">KPI Stats</div>
+              <ComingSoonBadge />
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2 underline">
                   <Icons.IconCircleFilled size={16} className="text-accent-1" /> COC 5% above target
@@ -130,8 +136,9 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border border-stroke-base rounded p-12 py-8">
+            <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Latest Discussions</div>
+              <ComingSoonBadge />
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Icons.IconPlus size={16} className="text-accent-1" /> Add a goal
@@ -148,7 +155,10 @@ export function Page() {
             </div>
           </div>
 
-          <Paper.DimmedSection>Activity</Paper.DimmedSection>
+          <Paper.DimmedSection>
+            <div className="uppercase text-xs font-bold">Activity</div>
+            <ComingSoonBadge />
+          </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

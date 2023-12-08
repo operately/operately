@@ -42,7 +42,11 @@ function ProjectList({ projects }) {
   const activeProjects = projects.filter((project) => !project.isArchived);
 
   return (
-    <div className="grid grid-cols-2 border-r border-b border-stroke-base">
+    <div className="border border-surface-outline rounded">
+      <div className="border-b border-surface-outline px-3 py-2 text-sm bg-surface-dimmed rounded-t">
+        {activeProjects.length} Projects
+      </div>
+
       {activeProjects.map((project) => {
         return <ProjectListItem project={project} key={project.id} />;
       })}
@@ -58,32 +62,36 @@ function ProjectListItem({ project }) {
     "flex flex-col",
     "cursor-pointer",
     "hover:bg-surface-highlight",
-    "border-t border-l border-stroke-base",
+    "not-first:border-t border-stroke-base",
+    "last:rounded-b-lg",
   );
 
   let { pending, done } = Milestones.splitByStatus(project.milestones);
 
   const completion = (
-    <div className="text-xs text-content-dimmed">
+    <div className="text-sm text-content-dimmed">
       {done.length}/{pending.length + done.length} completed
     </div>
   );
-  const name = <div className="text-ellipsis font-bold text-lg">{project.name}</div>;
+  const name = <div className="text-ellipsis font-bold leading-none">{project.name}</div>;
 
   return (
     <DivLink to={path} className={className}>
-      <div className="flex items-start justify-between h-full">
-        <div className="flex flex-col justify-between h-full">
-          <div className="flex-1">
-            {completion}
-            {name}
-            <NextMilestone project={project} pending={pending} done={done} />
-          </div>
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-2">
+          <MiniPieChart completed={done.length} total={pending.length + done.length} size={20} />
 
-          <ContribList project={project} />
+          <div className="">
+            {name}
+
+            <div className="flex items-center gap-1 mt-1">
+              {completion}
+              <NextMilestone project={project} pending={pending} done={done} />
+            </div>
+          </div>
         </div>
 
-        <MiniPieChart completed={done.length} total={pending.length + done.length} size={24} />
+        <ContribList project={project} />
       </div>
     </DivLink>
   );
@@ -94,7 +102,8 @@ function NextMilestone({ project, pending, done }) {
 
   return (
     <div className="text-sm inline-flex items-center gap-1 text-content-dimmed">
-      <Icons.IconFlag size={16} />
+      &middot;
+      <Icons.IconFlag size={12} />
       <span className="">{project.nextMilestone.title}</span>
     </div>
   );
@@ -102,7 +111,7 @@ function NextMilestone({ project, pending, done }) {
 
 function ContribList({ project }) {
   return (
-    <div className="flex items-center gap-1 mt-4">
+    <div className="flex items-center gap-1">
       {project.contributors!.map((contributor) => (
         <Avatar key={contributor!.id} person={contributor!.person} size="tiny" />
       ))}
