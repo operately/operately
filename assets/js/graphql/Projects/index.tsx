@@ -1,5 +1,4 @@
-import React from "react";
-import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
+import { gql, useMutation, useApolloClient } from "@apollo/client";
 
 import * as fragments from "@/graphql/Fragments";
 import * as KeyResources from "./key_resources";
