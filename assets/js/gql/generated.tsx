@@ -283,6 +283,13 @@ export type CreateGoalInput = {
   timeframe: Scalars['String']['input'];
 };
 
+export type CreateGroupInput = {
+  color: Scalars['String']['input'];
+  icon: Scalars['String']['input'];
+  mission: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type CreateKeyResultInput = {
   name: Scalars['String']['input'];
   objectiveId: Scalars['ID']['input'];
@@ -669,6 +676,7 @@ export type RootMutationType = {
   editKeyResource: ProjectKeyResource;
   editProjectName: Project;
   editProjectTimeline: Project;
+  markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
@@ -788,8 +796,7 @@ export type RootMutationTypeCreateGoalArgs = {
 
 
 export type RootMutationTypeCreateGroupArgs = {
-  mission: Scalars['String']['input'];
-  name: Scalars['String']['input'];
+  input: CreateGroupInput;
 };
 
 

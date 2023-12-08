@@ -28,6 +28,7 @@ defmodule Operately.Features.GoalCreationTest do
 
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.click(testid: "goals-tab")
     |> UI.click(testid: "add-goal")
     |> UI.fill(testid: "name-input", with: goal_name)
     |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)

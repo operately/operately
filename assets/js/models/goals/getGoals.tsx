@@ -1,3 +1,4 @@
+import client from "@/graphql/client";
 import { gql, useQuery } from "@apollo/client";
 
 const LIST_GOALS = gql`
@@ -25,11 +26,14 @@ const LIST_GOALS = gql`
   }
 `;
 
-export function useGoals(spaceId: string) {
-  return useQuery(LIST_GOALS, {
+export async function getGoals(spaceId: string) {
+  const data = await client.query({
+    query: LIST_GOALS,
     variables: {
       spaceId: spaceId,
     },
     fetchPolicy: "network-only",
   });
+
+  return data.data.goals;
 }

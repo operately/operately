@@ -20,7 +20,7 @@ export { useArchiveForm } from "./mutations/archive";
 export { useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
 export { useCloseProjectMutation } from "./mutations/close_project";
 
-const LIST_PROJECTS = gql`
+export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
     projects(filters: $filters) {
       id
@@ -41,44 +41,14 @@ const LIST_PROJECTS = gql`
       reviewRequests ${ReviewRequests.FRAGMENT}
       champion ${People.FRAGMENT}
       reviewer ${People.FRAGMENT}
+
+      milestones {
+        id
+        status
+      }
     }
   }
 `;
-
-const PROJECT_SUBSCRIPTION = gql`
-  subscription OnProjectAdded {
-    projectAdded {
-      id
-    }
-  }
-`;
-
-interface ListProjectsFilters {
-  groupId?: string;
-  groupMemberRoles?: string[];
-  limitContributorsToGroupMembers?: boolean;
-  objectiveId?: string;
-}
-
-export function useProjects(filters: ListProjectsFilters) {
-  const query = useQuery(LIST_PROJECTS, {
-    variables: { filters },
-    fetchPolicy: "network-only",
-  });
-
-  React.useEffect(() => {
-    query.subscribeToMore({
-      document: PROJECT_SUBSCRIPTION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        query.refetch();
-        return prev;
-      },
-    });
-  }, []);
-
-  return query;
-}
 
 export const GET_PROJECT = gql`
   query GetProject($id: ID!) {

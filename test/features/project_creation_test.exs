@@ -25,6 +25,7 @@ defmodule Operately.Features.ProjectCreationTest do
   feature "add project", ctx do
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.click(testid: "projects-tab")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
@@ -36,6 +37,7 @@ defmodule Operately.Features.ProjectCreationTest do
   feature "add project and assign someone else as champion", ctx do
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.click(testid: "projects-tab")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
@@ -53,6 +55,7 @@ defmodule Operately.Features.ProjectCreationTest do
   feature "add a private project", ctx do
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.click(testid: "projects-tab")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
     |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
