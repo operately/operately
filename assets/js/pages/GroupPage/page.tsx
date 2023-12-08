@@ -10,7 +10,7 @@ import { useLoadedData } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 
 export function Page() {
-  const { company, group } = useLoadedData();
+  const { group } = useLoadedData();
 
   return (
     <Pages.Page title={group.name}>

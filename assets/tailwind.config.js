@@ -14,6 +14,7 @@ module.exports = {
         "surface-dimmed": "var(--color-surface-dimmed)",
         "surface-outline": "var(--color-surface-outline)",
         "surface-accent": "var(--color-surface-accent)",
+        "surface-highlight": "var(--color-surface-highlight)",
 
         "content-base": "var(--color-content)",
         "content-accent": "var(--color-content-accent)",

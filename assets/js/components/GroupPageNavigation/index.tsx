@@ -11,11 +11,11 @@ interface GroupPageNavigationProps {
 }
 
 export function GroupPageNavigation({ groupId, groupName, activeTab }: GroupPageNavigationProps) {
-  const overviewPath = createPath("groups", groupId);
-  const goalsPath = createPath("groups", groupId, "goals");
-  const projectsPath = createPath("groups", groupId, "projects");
-  const discussionsPath = createPath("groups", groupId, "discussions");
-  const kpisPath = createPath("groups", groupId, "kpis");
+  const overviewPath = createPath("spaces", groupId);
+  const goalsPath = createPath("spaces", groupId, "goals");
+  const projectsPath = createPath("spaces", groupId, "projects");
+  const discussionsPath = createPath("spaces", groupId, "discussions");
+  const kpisPath = createPath("spaces", groupId, "kpis");
 
   return (
     <div className="-mx-16 -mt-12 mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t">

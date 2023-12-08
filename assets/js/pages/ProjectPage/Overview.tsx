@@ -6,6 +6,7 @@ import { Indicator } from "@/components/ProjectHealthIndicators";
 import * as Projects from "@/graphql/Projects";
 import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
+import { MiniPieChart } from "@/components/MiniPieChart";
 
 export default function Overview({ project }) {
   return (
@@ -66,21 +67,6 @@ function CompletionPieChart({ done, total }) {
         {done}/{total} milestones completed
       </span>
     </div>
-  );
-}
-
-function MiniPieChart({ completed, total }) {
-  const percentage = Math.ceil((completed / total) * 100);
-
-  return (
-    <div
-      style={{
-        borderRadius: "50%",
-        backgroundImage: `conic-gradient(var(--color-green-500) ${percentage}%, var(--color-green-300) ${percentage}% 100%)`,
-        height: "14px",
-        width: "14px",
-      }}
-    />
   );
 }
 

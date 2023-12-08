@@ -20,7 +20,7 @@ export { useArchiveForm } from "./mutations/archive";
 export { useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
 export { useCloseProjectMutation } from "./mutations/close_project";
 
-const LIST_PROJECTS = gql`
+export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
     projects(filters: $filters) {
       id
@@ -41,6 +41,11 @@ const LIST_PROJECTS = gql`
       reviewRequests ${ReviewRequests.FRAGMENT}
       champion ${People.FRAGMENT}
       reviewer ${People.FRAGMENT}
+
+      milestones {
+        id
+        status
+      }
     }
   }
 `;
