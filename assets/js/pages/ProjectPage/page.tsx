@@ -309,16 +309,18 @@ function Description({ project }) {
 }
 
 function DescriptionZeroState({ project }) {
+  const writePath = createPath("projects", project.id, "edit", "description");
+
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/description`} testId="write-project-description-link">
+    <GhostButton linkTo={writePath} testId="write-project-description-link" size="xs" type="secondary">
       Write project description
-    </Link>
+    </GhostButton>
   );
 
   return (
     <div className="text-sm">
       Project description is not yet set.
-      {project.permissions.canEditDescription && <div className="mt-1 font-bold">{editLink}</div>}
+      {project.permissions.canEditDescription && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );
 }
