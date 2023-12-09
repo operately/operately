@@ -9,6 +9,7 @@ import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
+import { GhostButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -23,6 +24,7 @@ import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
+import { createPath } from "@/utils/paths";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -133,17 +135,21 @@ export function Page() {
 }
 
 function LastCheckIn({ project }) {
+  const newCheckInPath = createPath("projects", project.id, "status_updates", "new");
+
   const checkInNowLink = (
-    <Link to={`/projects/${project.id}/status_updates/new`} testId="check-in-now">
-      Check-In Now
-    </Link>
+    <div className="flex">
+      <GhostButton linkTo={newCheckInPath} testId="check-in-now" size="xs" type="secondary">
+        Check-In Now
+      </GhostButton>
+    </div>
   );
 
   if (project.lastCheckIn === null) {
     return (
       <div className="text-sm">
         Asking the champion to check-in every Friday.
-        {project.permissions.canCheckIn && <div className="mt-1 font-bold">{checkInNowLink}</div>}
+        {project.permissions.canCheckIn && <div className="mt-2">{checkInNowLink}</div>}
       </div>
     );
   }
@@ -185,18 +191,15 @@ function LastCheckIn({ project }) {
           <HealthIssues checkIn={project.lastCheckIn} />
         </div>
 
-        <div>
-          <DimmedLabel>Next Check-In</DimmedLabel>
-          <div className="text-sm font-medium">
-            Scheduled for this Friday{" "}
-            {project.permissions.canCheckIn && (
-              <>
-                &middot; <span className="font-extrabold">{checkInNowLink}</span>
-              </>
-            )}
+        <div className="flex items-center gap-6">
+          <div>
+            <DimmedLabel>Next Check-In</DimmedLabel>
+            <div className="text-sm font-medium">Scheduled for this Friday</div>
           </div>
         </div>
       </div>
+
+      <div className="mt-6">{project.permissions.canCheckIn && checkInNowLink}</div>
     </div>
   );
 }
