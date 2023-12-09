@@ -7,7 +7,6 @@ import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";
 
 import { DimmedLabel } from "./Label";
-import { GhostButton } from "@/components/Button";
 import { NextMilestone } from "./NextMilestone";
 
 export default function Timeline({ project }) {
