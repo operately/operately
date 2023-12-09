@@ -7,6 +7,8 @@ import { Link } from "@/components/Link";
 import { DimmedLabel } from "./Label";
 import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
+import { GhostButton } from "@/components/Button";
+import { createPath } from "@/utils/paths";
 
 export function NextMilestone({ project }) {
   const milestones = project.milestones || [];
@@ -25,16 +27,18 @@ export function NextMilestone({ project }) {
 }
 
 function MilestonesZeroState({ project }) {
+  const editPath = createPath("projects", project.id, "edit", "timeline");
+
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestones-link">
-      Add milestones
-    </Link>
+    <GhostButton linkTo={editPath} testId="add-milestones-link" size="xs" type="secondary">
+      Edit Timeline
+    </GhostButton>
   );
 
   return (
     <div className="text-sm">
       No milestones defined yet.
-      {project.permissions.canEditMilestone && <div className="mt-1 font-bold">{editLink}</div>}
+      {project.permissions.canEditMilestone && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );
 }

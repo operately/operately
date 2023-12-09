@@ -253,16 +253,18 @@ function Resources({ project }) {
 }
 
 function ResourcesZeroState({ project }) {
+  const editPath = createPath("projects", project.id, "edit", "resources");
+
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/resources`} testId="add-resources-link">
-      Add links to resources
-    </Link>
+    <GhostButton linkTo={editPath} testId="add-resources-link" size="xs" type="secondary">
+      Add Resources
+    </GhostButton>
   );
 
   return (
     <div className="text-sm">
       No resources have been added yet.
-      {project.permissions.canEditResources && <div className="mt-1 font-bold">{editLink}</div>}
+      {project.permissions.canEditResources && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );
 }
