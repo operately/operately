@@ -69,7 +69,10 @@ export function useMilestoneListState(project: Projects.Project): MilestoneListS
 function getExistingMilestones(project: Projects.Project): Milestone[] {
   if (!project.milestones) return [];
 
-  return project.milestones.filter((m) => !!m).map((m) => ({ ...m, deletable: false })) as Milestone[];
+  return project.milestones
+    .filter((m) => !!m)
+    .filter((m) => m?.status === "pending")
+    .map((m) => ({ ...m, deletable: false })) as Milestone[];
 }
 
 function hasMilestoneChanged(m: Milestone, project: Projects.Project): boolean {
