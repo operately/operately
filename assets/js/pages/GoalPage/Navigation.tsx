@@ -11,6 +11,8 @@ export function Navigation({ space }: { space: Groups.Group }) {
         {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
         {space.name}
       </Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={`/spaces/${space.id}/goals`}>Goals</Paper.NavItem>
     </Paper.Navigation>
   );
 }

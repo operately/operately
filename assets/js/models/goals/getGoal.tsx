@@ -31,6 +31,7 @@ const QUERY = gql`
         id
         name
         icon
+        color
       }
 
       champion {
