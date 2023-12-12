@@ -179,54 +179,52 @@ interface TargetListState {
   targets: TargetState[];
   addTarget: () => void;
   removeTarget: (id: string) => void;
+  updateTarget: (id: string, field: any, value: any) => void;
 }
 
 interface TargetState {
   id: string;
   name: string;
-  setName: (name: string) => void;
-  value: number;
-  setValue: (value: number) => void;
-  unit: "number" | "percent" | "currency";
-  setUnit: (unit: "number" | "percent" | "currency") => void;
+  from: string;
+  to: string;
+  unit: string;
+}
 
-  unitOptions: Option[];
+function newTarget() {
+  return {
+    id: Math.random().toString(),
+    name: "",
+    from: "",
+    to: "",
+    unit: "",
+  };
 }
 
 function useTargetList(): TargetListState {
-  const [targets, setTargets] = React.useState<TargetState[]>([]);
+  const [targets, setTargets] = React.useState<TargetState[]>([newTarget(), newTarget(), newTarget()]);
 
   const addTarget = () => {
-    const newTarget = {
-      id: Math.floor(Math.random() * Date.now()).toString(16),
-
-      name: "",
-      setName: (name: string) => setTargets((prev) => prev.map((t) => (t.id === newTarget.id ? { ...t, name } : t))),
-
-      value: 0,
-      setValue: (value: number) => setTargets((prev) => prev.map((t) => (t.id === newTarget.id ? { ...t, value } : t))),
-
-      unit: "number",
-      setUnit: (unit: "number" | "percent" | "currency") =>
-        setTargets((prev) => prev.map((t) => (t.id === newTarget.id ? { ...t, unit } : t))),
-    };
-
-    setTargets((prev) => [...prev, newTarget]);
+    setTargets((prev) => [...prev, newTarget()]);
   };
 
   const removeTarget = (id: string) => {
     setTargets((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const updateTarget = (id: string, field: any, value: any) => {
+    setTargets((prev) => {
+      const target = prev.find((t) => t.id === id);
+      if (!target) return prev;
+
+      const updated = { ...target, [field]: value };
+      return prev.map((t) => (t.id === id ? updated : t));
+    });
+  };
+
   return {
     targets,
     addTarget,
     removeTarget,
-
-    unitOptions: [
-      { value: "number", label: "Number" },
-      { value: "percent", label: "Percent" },
-      { value: "currency", label: "Currency" },
-    ],
+    updateTarget,
   };
 }

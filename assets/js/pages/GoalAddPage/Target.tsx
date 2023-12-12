@@ -33,30 +33,64 @@ export function TargetHeader() {
 
 interface TargetProps {
   form: any;
+  target: any;
   index: number;
   placeholders?: string[];
 }
 
-export function Target({ form, placeholders = [], index }: TargetProps) {
+export function Target({ form, target, placeholders = [], index }: TargetProps) {
   const [active, setActive] = React.useState(false);
 
   const icon = (
     <div className="rounded-full bg-accent-1 w-5 h-5 flex items-center justify-center ml-0.5">
-      <div className="text-xs font-bold text-white-1">{index}</div>
+      <div className="text-xs font-bold text-white-1">{index + 1}</div>
     </div>
   );
 
-  const nameInput = <TextInput active={active} setActive={setActive} placeholder={placeholders[0]} />;
-  const fromInput = <NumberInput active={active} setActive={setActive} placeholder={placeholders[1]} />;
-  const toInput = <NumberInput active={active} setActive={setActive} placeholder={placeholders[2]} />;
-  const unitInput = <TextInput active={active} setActive={setActive} placeholder={placeholders[3]} />;
+  const nameInput = (
+    <TextInput
+      active={active}
+      setActive={setActive}
+      placeholder={placeholders[0]}
+      value={target.name}
+      setValue={(val: string) => form.targetList.updateTarget(target.id, "name", val)}
+    />
+  );
+
+  const fromInput = (
+    <NumberInput
+      active={active}
+      setActive={setActive}
+      placeholder={placeholders[1]}
+      value={target.from}
+      setValue={(val: string) => form.targetList.updateTarget(target.id, "from", val)}
+    />
+  );
+
+  const toInput = (
+    <NumberInput
+      active={active}
+      setActive={setActive}
+      placeholder={placeholders[2]}
+      value={target.to}
+      setValue={(val: string) => form.targetList.updateTarget(target.id, "to", val)}
+    />
+  );
+
+  const unitInput = (
+    <TextInput
+      active={active}
+      setActive={setActive}
+      placeholder={placeholders[3]}
+      value={target.unit}
+      setValue={(val: string) => form.targetList.updateTarget(target.id, "unit", val)}
+    />
+  );
 
   return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} />;
 }
 
-function TextInput({ autoFocus = false, placeholder, active, setActive }) {
-  const [value, setValue] = React.useState("");
-
+function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
   return (
     <GenericInput
       autoFocus={autoFocus}
@@ -69,8 +103,7 @@ function TextInput({ autoFocus = false, placeholder, active, setActive }) {
   );
 }
 
-function NumberInput({ autoFocus = false, placeholder, active, setActive }) {
-  const [value, setValue] = React.useState("");
+function NumberInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
   const re = /^[0-9\b\.]+$/;
 
   const onChange = (str: string) => {

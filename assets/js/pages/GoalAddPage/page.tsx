@@ -42,9 +42,15 @@ function Form({ form }) {
         <span className="font-bold text-lg">Targets</span>
         <div className="mt-4">
           <TargetHeader />
-          <Target form={form} index={1} placeholders={["e.g. Reduce Average Onboarding Time", "30", "15", "minutes"]} />
-          <Target form={form} index={2} />
-          <Target form={form} index={3} />
+          {form.targetList.targets.map((target, index) => (
+            <Target
+              key={index}
+              form={form}
+              index={index}
+              target={target}
+              placeholders={index === 0 ? ["e.g. Reduce Average Onboarding Time", "30", "15", "minutes"] : []}
+            />
+          ))}
         </div>
         <div className="font-bold text-lg mt-12">People</div>
         TODO
