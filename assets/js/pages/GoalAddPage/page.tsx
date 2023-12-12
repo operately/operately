@@ -12,7 +12,7 @@ import * as Icons from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import Button from "@/components/Button";
-import { Target, TargetHeader } from "./Target";
+import { Target, TargetHeader, AddTarget } from "./Target";
 
 export function Page() {
   const { company, me } = useLoadedData();
@@ -51,6 +51,7 @@ function Form({ form }) {
               placeholders={index === 0 ? ["e.g. Reduce Average Onboarding Time", "30", "15", "minutes"] : []}
             />
           ))}
+          <AddTarget form={form} />
         </div>
         <div className="font-bold text-lg mt-12">People</div>
         TODO

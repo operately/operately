@@ -31,6 +31,19 @@ export function TargetHeader() {
   );
 }
 
+export function AddTarget({ form }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        className="px-1.5 py-0.5 rounded text-sm text-content-dimmed mt-1 hover:bg-surface-highlight cursor-pointer"
+        onClick={form.targetList.addTarget}
+      >
+        + Add More
+      </div>
+    </div>
+  );
+}
+
 interface TargetProps {
   form: any;
   target: any;
