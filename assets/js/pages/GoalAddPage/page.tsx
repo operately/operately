@@ -53,13 +53,37 @@ function Form({ form }) {
           ))}
           <AddTarget form={form} />
         </div>
-        <div className="font-bold text-lg mt-12">People</div>
-        TODO
       </div>
 
-      <Forms.SubmitArea>
-        <Forms.SubmitButton data-test-id="save">Add Goal</Forms.SubmitButton>
-      </Forms.SubmitArea>
+      <Paper.DimmedSection>
+        <div className="flex items-center gap-6">
+          <div className="w-1/3 mt-4">
+            <ContributorSearch
+              title="Champion"
+              onSelect={form.setChampion}
+              defaultValue={form.champion}
+              inputId="champion"
+            />
+          </div>
+
+          <div className="w-1/3 mt-4">
+            <ContributorSearch
+              title="Reviewer"
+              onSelect={form.setReviewer}
+              defaultValue={form.reviewer}
+              inputId="reviewer"
+            />
+          </div>
+
+          <div className="w-1/3 mt-4">
+            <TimeframeSelector form={form} />
+          </div>
+        </div>
+
+        <Forms.SubmitArea>
+          <Forms.SubmitButton data-test-id="save">Add Goal</Forms.SubmitButton>
+        </Forms.SubmitArea>
+      </Paper.DimmedSection>
     </Forms.Form>
   );
 }
@@ -74,34 +98,27 @@ function TextInput({ form, autoFocus = false, placeholder }) {
   );
 }
 
-function TextInput2({ form, autoFocus = false, placeholder }) {
+function TimeframeSelector({ form }) {
   return (
-    <input
-      className="px-0 py-1 w-full group-hover:bg-surface-highlight"
-      placeholder={placeholder}
-      autoFocus={autoFocus}
+    <Forms.SelectBox
+      label="Timeframe"
+      value={form.timeframe}
+      onChange={form.setTimeframe}
+      options={form.timeframeOptions}
+      defaultValue={form.timeframeOptions[0]}
     />
   );
 }
 
-function TimeframeSelector({ form }) {
-  return (
-    <div className="bg-surface-highlight rounded-md px-1 text-lg border border-stroke-base inline-flex items-center gap-1">
-      2023 Q4
-    </div>
-  );
-}
-
-function ContributorSearch({ title, subtitle, onSelect, defaultValue, inputId }) {
+function ContributorSearch({ title, onSelect, defaultValue, inputId }) {
   const loader = People.usePeopleSearch();
 
   return (
     <div>
-      <label className="font-bold block">{title}</label>
-      <div className="text-sm text-content-secondary mb-2">{subtitle}</div>
+      <label className="font-semibold block mb-1">{title}</label>
       <div className="flex-1">
         <PeopleSearch
-          onChange={(option) => onSelect(option?.value)}
+          onChange={(option) => onSelect(option?.person)}
           defaultValue={defaultValue}
           placeholder="Search by name or title..."
           inputId={inputId}

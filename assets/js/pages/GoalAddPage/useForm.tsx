@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as Companies from "@/models/companies";
-import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
+import * as People from "@/models/people";
 
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
@@ -15,16 +15,18 @@ interface FormState {
   me: People.Person;
 
   name: string;
+  champion: People.Person | null;
+  reviewer: People.Person | null;
+  timeframe: TimeframeOption;
+  targets: TargetState[];
+
   setName: (name: string) => void;
-
-  champion: string | null;
-  setChampion: (champion: string | null) => void;
-
-  reviewer: string | null;
-  setReviewer: (reviewer: string | null) => void;
-
-  timeframe: TimeframeState;
-  targetList: TargetListState;
+  setChampion: (champion: People.Person | null) => void;
+  setReviewer: (reviewer: People.Person | null) => void;
+  setTimeframe: (timeframe: string) => void;
+  addTarget: () => void;
+  removeTarget: (id: string) => void;
+  updateTarget: (id: string, field: any, value: any) => void;
 
   isValid: boolean;
   submit: () => void;
@@ -32,19 +34,9 @@ interface FormState {
   submitting: boolean;
 }
 
-interface TimeframeState {
-  year: {
-    options: Option[];
-    default: Option;
-    selected: Option;
-    setSelected: (Option: string) => void;
-  };
-  quarter: {
-    options: Option[];
-    default: Option;
-    selected: Option;
-    setSelected: (Option: string) => void;
-  };
+interface TimeframeOption {
+  default: Option;
+  selected: Option;
 }
 
 interface Option {
@@ -61,13 +53,13 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
   const targetList = useTargetList();
 
   const [name, setName] = React.useState<string>("");
-  const [champion, setChampion] = React.useState<string | null>(me.id);
-  const [reviewer, setReviewer] = React.useState<string | null>(null);
+  const [champion, setChampion] = React.useState<People.Person | null>(me);
+  const [reviewer, setReviewer] = React.useState<People.Person | null>(null);
 
   const nameIsValid = () => name.length > 0;
   const championIsValid = () => champion !== null;
   const reviewerIsValid = () => reviewer !== null;
-  const timeframeIsValid = () => timeframe.year.selected.value !== null && timeframe.quarter.selected.value !== null;
+  const timeframeIsValid = () => timeframe.selected.value !== null && timeframe.selected.value !== null;
 
   const isValid = timeframeIsValid() && nameIsValid() && championIsValid() && reviewerIsValid();
 
@@ -120,43 +112,15 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
 function useTimeframe(): TimeframeState {
   const currentYear = Time.currentYear();
 
-  const lastYear = currentYear - 1;
-  const nextYear = currentYear + 1;
+  const options = [{ value: currentYear.toString(), label: `${currentYear} (Current Year)` }];
 
-  const yearOptions = [
-    { value: lastYear.toString(), label: `${lastYear} (Last Year)` },
-    { value: currentYear.toString(), label: `${currentYear} (Current)` },
-    { value: nextYear.toString(), label: `${nextYear} (Next Year)` },
-    { value: (nextYear + 1).toString(), label: `${nextYear + 1}` },
-    { value: (nextYear + 2).toString(), label: `${nextYear + 2}` },
-  ];
-
-  const [selectedYear, setSelectedYear] = React.useState<Option>(yearOptions[1] as Option);
-
-  const quarterOptions = [
-    { value: "Whole Year", label: "Whole Year" },
-    { value: "Q1", label: "Q1" + (isCurrentQuarter(1, selectedYear.value) ? " (Current)" : "") },
-    { value: "Q2", label: "Q2" + (isCurrentQuarter(2, selectedYear.value) ? " (Current)" : "") },
-    { value: "Q3", label: "Q3" + (isCurrentQuarter(3, selectedYear.value) ? " (Current)" : "") },
-    { value: "Q4", label: "Q4" + (isCurrentQuarter(4, selectedYear.value) ? " (Current)" : "") },
-  ];
-
-  const defaultQuarter = getDefaultQuarterOption(quarterOptions, selectedYear.value);
-  const [selectedQuarter, setSelectedQuarter] = React.useState<Option>(defaultQuarter);
+  const [selected, setSelected] = React.useState<Option>(options[0]);
 
   return {
-    year: {
-      options: yearOptions,
-      default: yearOptions[1] as Option,
-      selected: selectedYear,
-      setSelected: (e: any) => setSelectedYear(e as Option),
-    },
-    quarter: {
-      options: quarterOptions,
-      default: defaultQuarter,
-      selected: selectedQuarter,
-      setSelected: (e: any) => setSelectedQuarter(e as Option),
-    },
+    options: options,
+    default: options[0],
+    selected: options[0],
+    setSelected: (e: any) => setSelected(e.target.value),
   };
 }
 
