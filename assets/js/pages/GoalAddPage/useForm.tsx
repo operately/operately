@@ -24,6 +24,7 @@ interface FormState {
   setReviewer: (reviewer: string | null) => void;
 
   timeframe: TimeframeState;
+  targetList: TargetListState;
 
   isValid: boolean;
   submit: () => void;
@@ -57,6 +58,7 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
 
   const cancel = useNavigateTo(createPath("spaces", spaceID));
   const timeframe = useTimeframe();
+  const targetList = useTargetList();
 
   const [name, setName] = React.useState<string>("");
   const [champion, setChampion] = React.useState<string | null>(me.id);
@@ -106,6 +108,7 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
     setReviewer,
 
     timeframe,
+    targetList,
 
     isValid,
     submit,
@@ -170,4 +173,60 @@ function getDefaultQuarterOption(quarterOptions: Option[], year: string): Option
 
   const currentQuarter = Time.currentQuarter();
   return quarterOptions.find((o) => o.value === `Q${currentQuarter}`) as Option;
+}
+
+interface TargetListState {
+  targets: TargetState[];
+  addTarget: () => void;
+  removeTarget: (id: string) => void;
+}
+
+interface TargetState {
+  id: string;
+  name: string;
+  setName: (name: string) => void;
+  value: number;
+  setValue: (value: number) => void;
+  unit: "number" | "percent" | "currency";
+  setUnit: (unit: "number" | "percent" | "currency") => void;
+
+  unitOptions: Option[];
+}
+
+function useTargetList(): TargetListState {
+  const [targets, setTargets] = React.useState<TargetState[]>([]);
+
+  const addTarget = () => {
+    const newTarget = {
+      id: Math.floor(Math.random() * Date.now()).toString(16),
+
+      name: "",
+      setName: (name: string) => setTargets((prev) => prev.map((t) => (t.id === newTarget.id ? { ...t, name } : t))),
+
+      value: 0,
+      setValue: (value: number) => setTargets((prev) => prev.map((t) => (t.id === newTarget.id ? { ...t, value } : t))),
+
+      unit: "number",
+      setUnit: (unit: "number" | "percent" | "currency") =>
+        setTargets((prev) => prev.map((t) => (t.id === newTarget.id ? { ...t, unit } : t))),
+    };
+
+    setTargets((prev) => [...prev, newTarget]);
+  };
+
+  const removeTarget = (id: string) => {
+    setTargets((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  return {
+    targets,
+    addTarget,
+    removeTarget,
+
+    unitOptions: [
+      { value: "number", label: "Number" },
+      { value: "percent", label: "Percent" },
+      { value: "currency", label: "Currency" },
+    ],
+  };
 }
