@@ -2,9 +2,9 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-function Row({ icon, name, from, to, unit }) {
+function Row({ icon, name, from, to, unit, remove = null }) {
   return (
-    <div className="flex items-start gap-2 first:border-t border-b border-surface-outline py-2 group/row">
+    <div className="flex items-start gap-2 first:border-t border-b border-surface-outline py-2 group/row relative">
       <div className="flex-1 flex items-center gap-2">
         <div className="w-8 pl-1">{icon}</div>
 
@@ -13,6 +13,7 @@ function Row({ icon, name, from, to, unit }) {
           <div className="w-12 flex items-center">{from}</div>
           <div className="w-12 flex items-center">{to}</div>
           <div className="w-24 flex items-center">{unit}</div>
+          {remove && <div className="absolute -right-4 group-hover/row:opacity-100 opacity-0">{remove}</div>}
         </div>
       </div>
     </div>
@@ -100,7 +101,15 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
     />
   );
 
-  return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} />;
+  const removeButton = (
+    <Icons.IconX
+      className="text-content-dimmed cursor-pointer"
+      size={16}
+      onClick={() => form.targetList.removeTarget(target.id)}
+    />
+  );
+
+  return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} remove={removeButton} />;
 }
 
 function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
