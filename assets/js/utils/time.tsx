@@ -66,10 +66,6 @@ export function nextYear() {
   return new Date().getFullYear() + 1;
 }
 
-export function nextQuarter() {
-  return nQuartersFromNow(0);
-}
-
 export function nQuartersFromNow(quarters: number) {
   const currentYear = new Date().getFullYear();
   const currentQuarter = Math.floor(new Date().getMonth() / 3);

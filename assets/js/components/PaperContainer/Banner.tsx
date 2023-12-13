@@ -2,26 +2,6 @@ import React from "react";
 import classnames from "classnames";
 import { Context } from "./Context";
 
-export function HighlightedSection(props: { className: string; children: React.ReactNode }) {
-  const { size } = React.useContext(Context);
-
-  const neg = calcNegativeHorizontalMargins(size);
-  const className = classnames(props.className, "border-y border-surface-outline", neg);
-
-  return <div className={className}>{props.children}</div>;
-}
-
-export function Header(props: { className: string; children: React.ReactNode }) {
-  const { size } = React.useContext(Context);
-
-  const negHor = calcNegativeHorizontalMargins(size);
-  const negVer = calcNegativeVerticalMargins(size);
-
-  const className = classnames(props.className, "rounded-t border-b border-surface-outline", negHor, negVer);
-
-  return <div className={className}>{props.children}</div>;
-}
-
 export function Banner(props: { children: React.ReactNode }) {
   const className = classnames(
     "leading-none",
@@ -31,6 +11,17 @@ export function Banner(props: { children: React.ReactNode }) {
   );
 
   return <Header className={className}>{props.children}</Header>;
+}
+
+function Header(props: { className: string; children: React.ReactNode }) {
+  const { size } = React.useContext(Context);
+
+  const negHor = calcNegativeHorizontalMargins(size);
+  const negVer = calcNegativeVerticalMargins(size);
+
+  const className = classnames(props.className, "rounded-t border-b border-surface-outline", negHor, negVer);
+
+  return <div className={className}>{props.children}</div>;
 }
 
 function calcNegativeHorizontalMargins(size: Size) {

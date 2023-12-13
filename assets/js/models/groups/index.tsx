@@ -15,7 +15,7 @@ export async function getGroup(id: string) {
   return data.data.group;
 }
 
-export const GET_GROUP = gql`
+const GET_GROUP = gql`
   query GetGroup($id: ID!) {
     group(id: $id) {
       id
