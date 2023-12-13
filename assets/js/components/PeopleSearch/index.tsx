@@ -26,17 +26,19 @@ interface PeopleSearchProps {
   defaultValue?: Person;
   value?: Person | undefined;
   inputId?: string;
+  showTitle?: boolean;
+  error?: boolean;
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
-  const defaultValue = props.defaultValue && personAsOption(props.defaultValue);
+  const defaultValue = props.defaultValue && personAsOption(props.defaultValue, props.showTitle);
 
   const loadOptions = React.useCallback(
     throttle((input: string, callback: any) => {
       props
         .loader(input)
         .then((people) => {
-          callback(people.map(personAsOption));
+          callback(people.map((person) => personAsOption(person, props.showTitle)));
         })
         .catch((err) => {
           console.error(err);
@@ -58,7 +60,7 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
       value={props.value}
-      classNames={classNames()}
+      classNames={classNames(props.error)}
       styles={{
         input: (provided) => ({
           ...provided,
@@ -71,9 +73,15 @@ export default function PeopleSearch(props: PeopleSearchProps) {
   );
 }
 
-function classNames() {
+function classNames(error: boolean | undefined) {
   return {
-    control: () => "bg-surface placeholder-content-subtle border border-surface-outline rounded-lg px-3",
+    control: () => {
+      if (error) {
+        return "bg-surface placeholder-content-subtle border border-red-500 rounded-lg px-3";
+      } else {
+        return "bg-surface placeholder-content-subtle border border-surface-outline rounded-lg px-3";
+      }
+    },
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
     input: () => "placeholder-content-subtle focus:ring-0 outline-none",
     option: ({ isFocused }) =>
@@ -84,19 +92,20 @@ function classNames() {
   };
 }
 
-function personAsOption(person: Person): Option {
+function personAsOption(person: Person, showTitle = null): Option {
   return {
     value: person.id,
-    label: <PersonLabel person={person} />,
+    label: <PersonLabel person={person} showTitle={!!showTitle} />,
     person: person,
   };
 }
 
-function PersonLabel({ person }: { person: Person }) {
+function PersonLabel({ person, showTitle }: { person: Person; showTitle: boolean }) {
   return (
     <div className="flex items-center gap-2">
       <Avatar person={person} size={AvatarSize.Tiny} />
-      {person.fullName} &middot; {person.title}
+      {person.fullName}
+      {showTitle && <>&middot; {person.title}</>}
     </div>
   );
 }

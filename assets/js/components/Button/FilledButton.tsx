@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 
-interface GhostButton {
+interface FilledButtonProps {
   children: any;
   linkTo?: string;
   onClick?: (e: any) => void;
@@ -10,9 +10,10 @@ interface GhostButton {
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
   loading?: boolean;
+  shake?: boolean;
 }
 
-export function GhostButton(props: GhostButton) {
+export function FilledButton(props: FilledButtonProps) {
   const navigate = useNavigate();
 
   const handleClick = (e: any) => {
@@ -30,7 +31,7 @@ export function GhostButton(props: GhostButton) {
     }
   };
 
-  const klass = className(props.size, props.type, props.loading);
+  const klass = className(props.size, props.type, props.loading, props.shake);
 
   return (
     <div className={klass} onClick={handleClick} data-test-id={props.testId}>
@@ -48,7 +49,12 @@ function Spinner({ active }: { active?: boolean }) {
   );
 }
 
-function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary", loading?: boolean) {
+function className(
+  size?: "xxs" | "xs" | "sm" | "base" | "lg",
+  type?: "primary" | "secondary",
+  loading?: boolean,
+  shake?: boolean,
+) {
   size = size || "base";
   type = type || "primary";
 
@@ -81,11 +87,11 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
   }
 
   if (type === "primary") {
-    result += " border-2 border-accent-1";
+    result += " border-2 border-accent-1 bg-accent-1";
     if (loading) {
       result += " text-content-subtle";
     } else {
-      result += " text-accent-1 hover:text-accent-1";
+      result += " text-white-1";
     }
   }
 
@@ -96,6 +102,10 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
     } else {
       result += " text-content-dimmed hover:text-content-accent";
     }
+  }
+
+  if (shake) {
+    result += " animate-bzzz-wrong";
   }
 
   return result;

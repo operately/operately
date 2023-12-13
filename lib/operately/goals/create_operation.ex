@@ -1,7 +1,7 @@
 defmodule Operately.Goals.CreateOperation do
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.Goals.Goal
+  alias Operately.Goals.{Goal, Target}
   alias Operately.Groups
   alias Operately.Activities
 
@@ -20,6 +20,7 @@ defmodule Operately.Goals.CreateOperation do
 
     Multi.new()
     |> Multi.insert(:goal, changeset)
+    |> insert_targets(attrs[:targets] || [])
     |> Activities.insert(creator.id, :goal_created, fn changes -> %{
       company_id: group.company_id,
       space_id: group.id,
@@ -32,5 +33,22 @@ defmodule Operately.Goals.CreateOperation do
     } end)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
+  end
+
+  defp insert_targets(multi, targets) do
+    targets
+    |> Enum.with_index()
+    |> Enum.reduce(multi, fn {target, index}, multi ->
+      Multi.insert(multi, :"target_#{index}", fn %{goal: goal} ->
+        Target.changeset(%{
+          goal_id: goal.id,
+          name: target[:name],
+          from: target[:from],
+          to: target[:to],
+          unit: target[:unit],
+          index: index,
+        })
+      end)
+    end)
   end
 end

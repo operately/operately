@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 
+export * from "./FilledButton";
 export * from "./GhostButton";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

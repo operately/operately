@@ -1,11 +1,12 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import { FeedForGoal } from "@/components/Feed";
+import Avatar from "@/components/Avatar";
 
 import { useLoadedData } from "./loader";
+import { TargetList } from "./TargetList";
 import { Navigation } from "./Navigation";
-import Avatar from "@/components/Avatar";
-import { FeedForGoal } from "@/components/Feed";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -33,6 +34,11 @@ export function Page() {
               <DimmedLabel>Reviewer</DimmedLabel>
               <AvatarAndName person={goal.reviewer} />
             </div>
+          </div>
+
+          <div className="mt-8">
+            <DimmedLabel>Measurments</DimmedLabel>
+            <TargetList goal={goal} />
           </div>
 
           <Paper.DimmedSection>

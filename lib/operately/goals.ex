@@ -3,6 +3,7 @@ defmodule Operately.Goals do
 
   alias Operately.Repo
   alias Operately.Goals.Goal
+  alias Operately.Goals.Target
 
   def list_goals do
     Repo.all(Goal)
@@ -18,9 +19,7 @@ defmodule Operately.Goals do
     Repo.get!(Goal, id)
   end
 
-  def create_goal(creator, attrs) do
-    Operately.Goals.CreateOperation.run(creator, attrs)
-  end
+  defdelegate create_goal(creator, attrs), to: Operately.Goals.CreateOperation, as: :run
 
   def update_goal(%Goal{} = goal, attrs) do
     goal
@@ -42,5 +41,10 @@ defmodule Operately.Goals do
       goal.reviewer_id == person.id -> :reviewer
       true -> nil
     end
+  end
+
+  def list_targets(goal_id) do
+    from(target in Target, where: target.goal_id == ^goal_id, order_by: target.index)
+    |> Repo.all()
   end
 end

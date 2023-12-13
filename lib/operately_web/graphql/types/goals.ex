@@ -42,5 +42,20 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
         {:ok, Atom.to_string(role)}
       end
     end
+
+    field :targets, list_of(:target) do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.Goals.list_targets(goal.id)}
+      end
+    end
+  end
+
+  object :target do
+    field :id, non_null(:id)
+    field :index, non_null(:integer)
+    field :name, non_null(:string)
+    field :from, non_null(:float)
+    field :to, non_null(:float)
+    field :unit, non_null(:string)
   end
 end

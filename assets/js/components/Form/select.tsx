@@ -19,7 +19,7 @@ interface SelectBoxProps extends SelectBoxNoLabelProps {
   label: string;
 }
 
-export function SelectBoxNoLabel(props: SelectBoxNoLabelProps) {
+function SelectBoxNoLabel(props: SelectBoxNoLabelProps) {
   const { value, onChange, options, allowEnteringNewValues, ...rest } = props;
 
   const element = allowEnteringNewValues ? CreatableSelect : Select;

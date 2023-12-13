@@ -280,6 +280,7 @@ export type CreateGoalInput = {
   name: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
+  targets: Array<InputMaybe<CreateTargetInput>>;
   timeframe: Scalars['String']['input'];
 };
 
@@ -325,6 +326,14 @@ export type CreateProjectInput = {
 export type CreateProjectReviewRequestInput = {
   content: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
+};
+
+export type CreateTargetInput = {
+  from: Scalars['Float']['input'];
+  index: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  to: Scalars['Float']['input'];
+  unit: Scalars['String']['input'];
 };
 
 export type CreateUpdateInput = {
@@ -373,6 +382,7 @@ export type Goal = {
   name: Scalars['String']['output'];
   reviewer?: Maybe<Person>;
   space: Group;
+  targets?: Maybe<Array<Maybe<Target>>>;
   timeframe: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
 };
@@ -1182,6 +1192,16 @@ export type RootQueryTypeUpdatesArgs = {
 export type RootSubscriptionType = {
   __typename?: 'RootSubscriptionType';
   onUnreadNotificationCountChanged?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type Target = {
+  __typename?: 'Target';
+  from: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  index: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  to: Scalars['Int']['output'];
+  unit: Scalars['String']['output'];
 };
 
 export type Tenet = {

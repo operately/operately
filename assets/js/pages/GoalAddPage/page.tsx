@@ -1,109 +1,179 @@
 import React from "react";
 
-import * as Paper from "@/components/PaperContainer";
-
+import classnames from "classnames";
 import PeopleSearch from "@/components/PeopleSearch";
 
-import * as People from "@/graphql/People";
+import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
+import * as People from "@/graphql/People";
 
+import { FilledButton } from "@/components/Button";
+import { DimmedLink } from "@/components/Link";
+import { AddTarget, Target, TargetHeader } from "./Target";
 import { useLoadedData } from "./loader";
-import { useForm } from "./useForm";
+import { FormState, useForm } from "./useForm";
 
 export function Page() {
-  const { company, me } = useLoadedData();
+  const { company, space, me } = useLoadedData();
   const form = useForm(company, me);
 
   return (
     <Pages.Page title="New Goal">
-      <Paper.Root size="small">
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal</h1>
+      <Paper.Root size="medium">
+        <div className="flex items-center justify-center mb-4 gap-4">
+          <DimmedLink to={`/spaces/${form.fields.spaceID}/goals`}>Back to {space.name} Space</DimmedLink>
+        </div>
+
+        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal for {space.name}</h1>
 
         <Paper.Body minHeight="300px">
           <Form form={form} />
         </Paper.Body>
+
+        <SubmitButton form={form} />
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Form({ form }) {
+function SubmitButton({ form }: { form: FormState }) {
+  const [shake, setShake] = React.useState(false);
+
+  const onClick = async () => {
+    const res = await form.submit();
+
+    if (res === false) {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
+
   return (
-    <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={form.isValid} onCancel={form.cancel}>
-      <div className="flex flex-col gap-6">
-        <Forms.TextInput
-          label="Name"
-          value={form.name}
-          onChange={form.setName}
-          placeholder="e.g. Improve the onboarding experience"
-          data-test-id="name-input"
-        />
+    <div className="mt-8">
+      {form.errors.length > 0 && (
+        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+      )}
 
-        <ContributorSearch
-          title="Champion"
-          subtitle="Leads the effort to reach this goal"
-          onSelect={form.setChampion}
-          defaultValue={form.me}
-          inputId="champion-search"
-        />
-
-        <ContributorSearch
-          title="Reviewer"
-          subtitle="Reviews and acknowledges the completion of this goal"
-          onSelect={form.setReviewer}
-          defaultValue={null}
-          inputId="reviewer-search"
-        />
-
-        <TimeframeSelector form={form} />
-      </div>
-
-      <Forms.SubmitArea>
-        <Forms.SubmitButton data-test-id="save">Add Goal</Forms.SubmitButton>
-        <Forms.CancelButton>Cancel</Forms.CancelButton>
-      </Forms.SubmitArea>
-    </Forms.Form>
-  );
-}
-
-function TimeframeSelector({ form }) {
-  return (
-    <div className="flex flex-col">
-      <label className="font-bold mb-1 block">Timeframe</label>
-
-      <div className="flex items-center gap-4">
-        <Forms.SelectBoxNoLabel
-          value={form.timeframe.year.selected}
-          onChange={form.timeframe.year.setSelected}
-          options={form.timeframe.year.options}
-          defaultValue={form.timeframe.year.default}
-        />
-        <Forms.SelectBoxNoLabel
-          value={form.timeframe.quarter.selected}
-          onChange={form.timeframe.quarter.setSelected}
-          options={form.timeframe.quarter.options}
-          defaultValue={form.timeframe.quarter.default}
-        />
+      <div className="flex items-center justify-center gap-4">
+        <FilledButton
+          type="primary"
+          onClick={onClick}
+          loading={form.submitting}
+          size="lg"
+          testId="add-goal-button"
+          shake={shake}
+        >
+          Add Goal
+        </FilledButton>
       </div>
     </div>
   );
 }
 
-function ContributorSearch({ title, subtitle, onSelect, defaultValue, inputId }) {
+function Form({ form }: { form: FormState }) {
+  const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
+
+  return (
+    <Forms.Form onSubmit={form.submit} loading={form.submitting} onCancel={form.cancel} isValid={true}>
+      <div className="font-medium">
+        <span className="font-bold text-lg">Goal</span>
+        <div className="mt-3 mb-12 text-lg">
+          <GoalName form={form} />
+        </div>
+
+        <div className="font-bold text-lg">Measurments</div>
+        <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
+        <div className="mt-4">
+          <TargetHeader />
+          {form.fields.targets.map((target, index) => (
+            <Target key={index} form={form} index={index} target={target} placeholders={placeholders[index] || []} />
+          ))}
+          <AddTarget form={form} />
+        </div>
+      </div>
+
+      <Paper.DimmedSection>
+        <div className="flex items-center gap-6">
+          <div className="w-1/3">
+            <ContributorSearch
+              title="Champion"
+              onSelect={form.fields.setChampion}
+              defaultValue={form.fields.champion}
+              error={form.errors.find((e) => e.field === "champion")}
+              inputId="champion-search"
+            />
+          </div>
+
+          <div className="w-1/3">
+            <ContributorSearch
+              title="Reviewer"
+              onSelect={form.fields.setReviewer}
+              defaultValue={form.fields.reviewer}
+              inputId="reviewer-search"
+              error={form.errors.find((e) => e.field === "reviewer")}
+            />
+          </div>
+
+          <div className="w-1/3">
+            <TimeframeSelector form={form} />
+          </div>
+        </div>
+      </Paper.DimmedSection>
+    </Forms.Form>
+  );
+}
+
+function GoalName({ form }: { form: FormState }) {
+  const className = classnames(
+    "border-b border-surface-outline",
+    "px-0 py-1",
+    "w-full",
+    "placeholder:text-content-subtle",
+    "focus:bg-surface-highlight bg-transparent",
+    {
+      "bg-red-400/10": form.errors.find((e) => e.field === "name"),
+    },
+  );
+
+  return (
+    <input
+      className={className}
+      autoFocus
+      placeholder="e.g. Improve product onboarding"
+      value={form.fields.name}
+      onChange={(e) => form.fields.setName(e.target.value)}
+      data-test-id="goal-name"
+    />
+  );
+}
+
+function TimeframeSelector({ form }: { form: FormState }) {
+  return (
+    <Forms.SelectBox
+      label="Timeframe"
+      value={form.fields.timeframe}
+      onChange={form.fields.setTimeframe}
+      options={form.fields.timeframeOptions}
+      defaultValue={form.fields.timeframeOptions[0]}
+    />
+  );
+}
+
+function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: any) {
   const loader = People.usePeopleSearch();
 
   return (
     <div>
-      <label className="font-bold block">{title}</label>
-      <div className="text-sm text-content-secondary mb-2">{subtitle}</div>
+      <label className="font-semibold block mb-1">{title}</label>
       <div className="flex-1">
         <PeopleSearch
-          onChange={(option) => onSelect(option?.value)}
+          onChange={(option) => onSelect(option?.person)}
           defaultValue={defaultValue}
-          placeholder="Search by name or title..."
+          placeholder="Search for person..."
           inputId={inputId}
           loader={loader}
+          error={!!error}
         />
       </div>
     </div>
