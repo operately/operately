@@ -3,7 +3,7 @@ defmodule Operately.Goals do
 
   alias Operately.Repo
   alias Operately.Goals.Goal
-
+  alias Operately.Goals.Target
 
   def list_goals do
     Repo.all(Goal)
@@ -41,5 +41,10 @@ defmodule Operately.Goals do
       goal.reviewer_id == person.id -> :reviewer
       true -> nil
     end
+  end
+
+  def list_targets(goal_id) do
+    from(target in Target, where: target.goal_id == ^goal_id, order_by: target.index)
+    |> Repo.all()
   end
 end

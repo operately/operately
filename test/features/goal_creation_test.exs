@@ -54,4 +54,5 @@ defmodule Operately.Features.GoalCreationTest do
     |> NotificationsSteps.assert_goal_created_sent(author: ctx.champion, role: "reviewer")
     |> EmailSteps.assert_goal_created_sent(author: ctx.champion, goal: goal_name, role: "reviewer", to: ctx.reviewer)
   end
+  
 end

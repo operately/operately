@@ -46,6 +46,7 @@ defmodule Operately.Goals.CreateOperation do
           from: target[:from],
           to: target[:to],
           unit: target[:unit],
+          index: index,
         })
       end)
     end)

@@ -156,11 +156,12 @@ function useSubmit(fields: Fields): [() => void, () => void, boolean] {
           timeframe: fields.timeframe.value,
           targets: fields.targets
             .filter((t) => t.name.trim() !== "")
-            .map((t) => ({
+            .map((t, index) => ({
               name: t.name,
               from: parseInt(t.from),
               to: parseInt(t.to),
               unit: t.unit,
+              index: index,
             })),
         },
       },

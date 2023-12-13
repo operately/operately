@@ -11,6 +11,7 @@ defmodule Operately.Goals.Target do
     field :name, :string
     field :to, :float
     field :unit, :string
+    field :index, :integer
 
     timestamps()
   end
@@ -21,7 +22,7 @@ defmodule Operately.Goals.Target do
 
   def changeset(target, attrs) do
     target
-    |> cast(attrs, [:name, :from, :to, :unit, :goal_id])
-    |> validate_required([:name, :from, :to, :unit, :goal_id])
+    |> cast(attrs, [:name, :from, :to, :unit, :goal_id, :index])
+    |> validate_required([:name, :from, :to, :unit, :goal_id, :index])
   end
 end

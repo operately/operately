@@ -1,11 +1,16 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
 
-export async function getGoal(id: string) {
+interface GetGoalOptions {
+  includeTargets?: boolean;
+}
+
+export async function getGoal(id: string, options: GetGoalOptions = {}) {
   let data = await client.query({
     query: QUERY,
     variables: {
       id: id,
+      includeTargets: options.includeTargets || false,
     },
     fetchPolicy: "network-only",
   });
@@ -21,7 +26,17 @@ const QUERY = gql`
     title
   }
 
-  query GetGoal($id: ID!) {
+  fragment Targets on Goal {
+    targets {
+      id
+      name
+      from
+      to
+      unit
+    }
+  }
+
+  query GetGoal($id: ID!, $includeTargets: Boolean!) {
     goal(id: $id) {
       id
       name
@@ -41,6 +56,8 @@ const QUERY = gql`
       reviewer {
         ...PersonFields
       }
+
+      ...Targets @include(if: $includeTargets)
     }
   }
 `;

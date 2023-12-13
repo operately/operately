@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :from, non_null(:float)
     field :to, non_null(:float)
     field :unit, non_null(:string)
+    field :index, non_null(:integer)
   end
 
   input_object :create_goal_input do

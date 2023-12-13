@@ -44,10 +44,6 @@ function SubmitButton({ form }: { form: FormState }) {
       <FilledButton type="primary" onClick={form.submit} loading={form.submitting} size="lg" testId="add-goal-button">
         Add Goal
       </FilledButton>
-
-      <GhostButton type="primary" onClick={form.submit} loading={form.submitting} size="lg">
-        Save & Add Another
-      </GhostButton>
     </div>
   );
 }
