@@ -1,19 +1,18 @@
 import React from "react";
+
 import classnames from "classnames";
-
-import * as Paper from "@/components/PaperContainer";
-
 import PeopleSearch from "@/components/PeopleSearch";
 
-import * as People from "@/graphql/People";
+import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
+import * as People from "@/graphql/People";
 
-import { useLoadedData } from "./loader";
-import { useForm, FormState } from "./useForm";
-import { Target, TargetHeader, AddTarget } from "./Target";
-import { FilledButton, GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
+import { AddTarget, Target, TargetHeader } from "./Target";
+import { useLoadedData } from "./loader";
+import { FormState, useForm } from "./useForm";
 
 export function Page() {
   const { company, space, me } = useLoadedData();
@@ -39,11 +38,35 @@ export function Page() {
 }
 
 function SubmitButton({ form }: { form: FormState }) {
+  const [shake, setShake] = React.useState(false);
+
+  const onClick = async () => {
+    const res = await form.submit();
+
+    if (res === false) {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center mt-8 gap-4">
-      <FilledButton type="primary" onClick={form.submit} loading={form.submitting} size="lg" testId="add-goal-button">
-        Add Goal
-      </FilledButton>
+    <div className="mt-8">
+      {form.errors.length > 0 && (
+        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+      )}
+
+      <div className="flex items-center justify-center gap-4">
+        <FilledButton
+          type="primary"
+          onClick={onClick}
+          loading={form.submitting}
+          size="lg"
+          testId="add-goal-button"
+          shake={shake}
+        >
+          Add Goal
+        </FilledButton>
+      </div>
     </div>
   );
 }
@@ -52,7 +75,7 @@ function Form({ form }: { form: FormState }) {
   const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
 
   return (
-    <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={form.isValid} onCancel={form.cancel}>
+    <Forms.Form onSubmit={form.submit} loading={form.submitting} onCancel={form.cancel} isValid={true}>
       <div className="font-medium">
         <span className="font-bold text-lg">Goal</span>
         <div className="mt-3 mb-12 text-lg">
@@ -77,6 +100,7 @@ function Form({ form }: { form: FormState }) {
               title="Champion"
               onSelect={form.fields.setChampion}
               defaultValue={form.fields.champion}
+              error={form.errors.find((e) => e.field === "champion")}
               inputId="champion-search"
             />
           </div>
@@ -87,6 +111,7 @@ function Form({ form }: { form: FormState }) {
               onSelect={form.fields.setReviewer}
               defaultValue={form.fields.reviewer}
               inputId="reviewer-search"
+              error={form.errors.find((e) => e.field === "reviewer")}
             />
           </div>
 
@@ -99,13 +124,16 @@ function Form({ form }: { form: FormState }) {
   );
 }
 
-function GoalName({ form }) {
+function GoalName({ form }: { form: FormState }) {
   const className = classnames(
     "border-b border-surface-outline",
     "px-0 py-1",
     "w-full",
     "placeholder:text-content-subtle",
     "focus:bg-surface-highlight bg-transparent",
+    {
+      "bg-red-400/10": form.errors.find((e) => e.field === "name"),
+    },
   );
 
   return (
@@ -132,7 +160,7 @@ function TimeframeSelector({ form }: { form: FormState }) {
   );
 }
 
-function ContributorSearch({ title, onSelect, defaultValue, inputId }) {
+function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: any) {
   const loader = People.usePeopleSearch();
 
   return (
@@ -145,6 +173,7 @@ function ContributorSearch({ title, onSelect, defaultValue, inputId }) {
           placeholder="Search for person..."
           inputId={inputId}
           loader={loader}
+          error={!!error}
         />
       </div>
     </div>

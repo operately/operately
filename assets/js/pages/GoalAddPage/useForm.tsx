@@ -12,11 +12,16 @@ import { useListState } from "@/utils/useListState";
 
 export interface FormState {
   fields: Fields;
-  isValid: boolean;
+  errors: Error[];
   submitting: boolean;
 
-  submit: () => void;
+  submit: () => Promise<boolean>;
   cancel: () => void;
+}
+
+interface Error {
+  field: string;
+  message: string;
 }
 
 interface Fields {
@@ -83,12 +88,11 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
     updateTarget,
   };
 
-  const isValid = validateForm(fields);
-  const [submit, cancel, submitting] = useSubmit(fields);
+  const [submit, cancel, submitting, errors] = useSubmit(fields);
 
   return {
     fields,
-    isValid,
+    errors,
     submitting,
     submit,
     cancel,
@@ -128,24 +132,23 @@ function newEmptyTarget() {
   };
 }
 
-function validateForm(fields: Fields): boolean {
-  if (fields.name.length === 0) return false;
-  if (fields.champion === null) return false;
-  if (fields.reviewer === null) return false;
-  if (fields.timeframe.value === null) return false;
-  if (fields.targets.length === 0) return false;
-
-  return true;
-}
-
-function useSubmit(fields: Fields): [() => void, () => void, boolean] {
+function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
   const [create, { loading: submitting }] = Goals.useCreateGoalMutation({
     onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
   });
 
+  const [errors, setErrors] = React.useState<Error[]>([]);
+
   const submit = async () => {
+    const errors = validateForm(fields);
+
+    if (errors.length > 0) {
+      setErrors(errors);
+      return false;
+    }
+
     await create({
       variables: {
         input: {
@@ -166,9 +169,38 @@ function useSubmit(fields: Fields): [() => void, () => void, boolean] {
         },
       },
     });
+
+    return true;
   };
 
   const cancel = useNavigateTo(createPath("spaces", fields.spaceID));
 
-  return [submit, cancel, submitting];
+  return [submit, cancel, submitting, errors];
+}
+
+function validateForm(fields: Fields): Error[] {
+  const errors: Error[] = [];
+
+  if (fields.name.length === 0) errors.push({ field: "name", message: "Name is required" });
+  if (fields.champion === null) errors.push({ field: "champion", message: "Champion is required" });
+  if (fields.reviewer === null) errors.push({ field: "reviewer", message: "Reviewer is required" });
+  if (fields.timeframe.value === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
+
+  fields.targets.forEach((target, index) => {
+    let { name, from, to, unit } = target;
+
+    name = name.trim();
+    from = from.trim();
+    to = to.trim();
+    unit = unit.trim();
+
+    if (name === "" && from === "" && to === "" && unit === "") return;
+
+    if (name === "") errors.push({ field: `target-${index}-name`, message: "Name is required" });
+    if (from === "") errors.push({ field: `target-${index}-from`, message: "From is required" });
+    if (to === "") errors.push({ field: `target-${index}-to`, message: "To is required" });
+    if (unit === "") errors.push({ field: `target-${index}-unit`, message: "Unit is required" });
+  });
+
+  return errors;
 }

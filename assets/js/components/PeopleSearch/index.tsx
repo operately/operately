@@ -27,6 +27,7 @@ interface PeopleSearchProps {
   value?: Person | undefined;
   inputId?: string;
   showTitle?: boolean;
+  error?: boolean;
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
@@ -59,7 +60,7 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
       value={props.value}
-      classNames={classNames()}
+      classNames={classNames(props.error)}
       styles={{
         input: (provided) => ({
           ...provided,
@@ -72,9 +73,15 @@ export default function PeopleSearch(props: PeopleSearchProps) {
   );
 }
 
-function classNames() {
+function classNames(error: boolean | undefined) {
   return {
-    control: () => "bg-surface placeholder-content-subtle border border-surface-outline rounded-lg px-3",
+    control: () => {
+      if (error) {
+        return "bg-surface placeholder-content-subtle border border-red-500 rounded-lg px-3";
+      } else {
+        return "bg-surface placeholder-content-subtle border border-surface-outline rounded-lg px-3";
+      }
+    },
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
     input: () => "placeholder-content-subtle focus:ring-0 outline-none",
     option: ({ isFocused }) =>

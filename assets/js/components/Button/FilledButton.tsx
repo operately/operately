@@ -10,6 +10,7 @@ interface FilledButtonProps {
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
   loading?: boolean;
+  shake?: boolean;
 }
 
 export function FilledButton(props: FilledButtonProps) {
@@ -30,7 +31,7 @@ export function FilledButton(props: FilledButtonProps) {
     }
   };
 
-  const klass = className(props.size, props.type, props.loading);
+  const klass = className(props.size, props.type, props.loading, props.shake);
 
   return (
     <div className={klass} onClick={handleClick} data-test-id={props.testId}>
@@ -48,7 +49,12 @@ function Spinner({ active }: { active?: boolean }) {
   );
 }
 
-function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" | "secondary", loading?: boolean) {
+function className(
+  size?: "xxs" | "xs" | "sm" | "base" | "lg",
+  type?: "primary" | "secondary",
+  loading?: boolean,
+  shake?: boolean,
+) {
   size = size || "base";
   type = type || "primary";
 
@@ -96,6 +102,10 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
     } else {
       result += " text-content-dimmed hover:text-content-accent";
     }
+  }
+
+  if (shake) {
+    result += " animate-bzzz-wrong";
   }
 
   return result;

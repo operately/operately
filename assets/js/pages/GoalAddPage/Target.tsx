@@ -58,6 +58,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       value={target.name}
       setValue={(val: string) => form.fields.updateTarget(target.id, "name", val)}
       testId={`target-${index}-name`}
+      error={form.errors.find((e) => e.field === `target-${index}-name`)}
     />
   );
 
@@ -69,6 +70,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       value={target.from}
       setValue={(val: string) => form.fields.updateTarget(target.id, "from", val)}
       testId={`target-${index}-current`}
+      error={form.errors.find((e) => e.field === `target-${index}-from`)}
     />
   );
 
@@ -80,6 +82,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       value={target.to}
       setValue={(val: string) => form.fields.updateTarget(target.id, "to", val)}
       testId={`target-${index}-target`}
+      error={form.errors.find((e) => e.field === `target-${index}-to`)}
     />
   );
 
@@ -91,6 +94,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       value={target.unit}
       setValue={(val: string) => form.fields.updateTarget(target.id, "unit", val)}
       testId={`target-${index}-unit`}
+      error={form.errors.find((e) => e.field === `target-${index}-unit`)}
     />
   );
 
@@ -105,7 +109,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
   return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} remove={removeButton} />;
 }
 
-function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "" }) {
+function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
   return (
     <GenericInput
       autoFocus={autoFocus}
@@ -115,11 +119,12 @@ function TextInput({ autoFocus = false, placeholder, active, setActive, value, s
       value={value}
       setValue={setValue}
       testId={testId}
+      error={error}
     />
   );
 }
 
-function NumberInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "" }) {
+function NumberInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
   const re = /^[0-9\b\.]+$/;
 
   const onChange = (str: string) => {
@@ -137,17 +142,24 @@ function NumberInput({ autoFocus = false, placeholder, active, setActive, value,
       value={value}
       setValue={onChange}
       testId={testId}
+      error={error}
     />
   );
 }
 
-function GenericInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "" }) {
+function GenericInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
+  const className = classnames(
+    "placeholder:text-content-subtle px-0 py-1 w-full group-hover/row:bg-surface-highlight",
+    {
+      "bg-surface-highlight": active,
+      "bg-transparent": !active,
+      "bg-red-400/10": error,
+    },
+  );
+
   return (
     <input
-      className={
-        "placeholder:text-content-subtle px-0 py-1 w-full group-hover/row:bg-surface-highlight " +
-        (active ? "bg-surface-highlight" : "bg-transparent")
-      }
+      className={className}
       placeholder={placeholder}
       value={value}
       onChange={(e) => setValue(e.target.value)}
