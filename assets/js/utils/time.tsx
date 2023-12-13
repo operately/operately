@@ -62,13 +62,22 @@ export function currentYear() {
   return new Date().getFullYear();
 }
 
-export function currentQuarter() {
-  const month = new Date().getMonth();
+export function nextYear() {
+  return new Date().getFullYear() + 1;
+}
 
-  if (month < 3) return 1;
-  if (month < 6) return 2;
-  if (month < 9) return 3;
-  return 4;
+export function nextQuarter() {
+  return nQuartersFromNow(0);
+}
+
+export function nQuartersFromNow(quarters: number) {
+  const currentYear = new Date().getFullYear();
+  const currentQuarter = Math.floor(new Date().getMonth() / 3);
+
+  const year = currentYear + Math.floor((currentQuarter + quarters) / 4);
+  const quarter = (currentQuarter + quarters) % 4;
+
+  return `Q${quarter + 1} ${year}`;
 }
 
 export function isCurrentYear(date: Date) {

@@ -1,24 +1,7 @@
 import React from "react";
-
+import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
-
-function Row({ icon, name, from, to, unit, remove = null }) {
-  return (
-    <div className="flex items-start gap-2 first:border-t border-b border-surface-outline py-2 group/row relative">
-      <div className="flex-1 flex items-center gap-2">
-        <div className="w-8 pl-1">{icon}</div>
-
-        <div className="flex-1 flex items-center gap-2">
-          <div className="flex-1 flex items-center">{name}</div>
-          <div className="w-12 flex items-center">{from}</div>
-          <div className="w-12 flex items-center">{to}</div>
-          <div className="w-24 flex items-center">{unit}</div>
-          {remove && <div className="absolute -right-4 group-hover/row:opacity-100 opacity-0">{remove}</div>}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { FormState } from "./useForm";
 
 export function TargetHeader() {
   return (
@@ -32,13 +15,19 @@ export function TargetHeader() {
   );
 }
 
-export function AddTarget({ form }) {
+export function AddTarget({ form }: { form: FormState }) {
+  const className = classnames(
+    "mt-1",
+    "px-1.5 py-0.5",
+    "rounded",
+    "text-sm text-content-dimmed",
+    "hover:bg-surface-highlight",
+    "cursor-pointer",
+  );
+
   return (
     <div className="flex items-center gap-2">
-      <div
-        className="px-1.5 py-0.5 rounded text-sm text-content-dimmed mt-1 hover:bg-surface-highlight cursor-pointer"
-        onClick={form.targetList.addTarget}
-      >
+      <div className={className} onClick={form.fields.addTarget}>
         + Add More
       </div>
     </div>
@@ -46,7 +35,7 @@ export function AddTarget({ form }) {
 }
 
 interface TargetProps {
-  form: any;
+  form: FormState;
   target: any;
   index: number;
   placeholders?: string[];
@@ -67,7 +56,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       setActive={setActive}
       placeholder={placeholders[0]}
       value={target.name}
-      setValue={(val: string) => form.targetList.updateTarget(target.id, "name", val)}
+      setValue={(val: string) => form.fields.updateTarget(target.id, "name", val)}
     />
   );
 
@@ -77,7 +66,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       setActive={setActive}
       placeholder={placeholders[1]}
       value={target.from}
-      setValue={(val: string) => form.targetList.updateTarget(target.id, "from", val)}
+      setValue={(val: string) => form.fields.updateTarget(target.id, "from", val)}
     />
   );
 
@@ -87,7 +76,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       setActive={setActive}
       placeholder={placeholders[2]}
       value={target.to}
-      setValue={(val: string) => form.targetList.updateTarget(target.id, "to", val)}
+      setValue={(val: string) => form.fields.updateTarget(target.id, "to", val)}
     />
   );
 
@@ -97,7 +86,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       setActive={setActive}
       placeholder={placeholders[3]}
       value={target.unit}
-      setValue={(val: string) => form.targetList.updateTarget(target.id, "unit", val)}
+      setValue={(val: string) => form.fields.updateTarget(target.id, "unit", val)}
     />
   );
 
@@ -105,7 +94,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
     <Icons.IconX
       className="text-content-dimmed cursor-pointer"
       size={16}
-      onClick={() => form.targetList.removeTarget(target.id)}
+      onClick={() => form.fields.removeTarget(target.id)}
     />
   );
 
@@ -113,6 +102,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
 }
 
 function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
+
   return (
     <GenericInput
       autoFocus={autoFocus}
@@ -160,5 +150,37 @@ function GenericInput({ autoFocus = false, placeholder, active, setActive, value
       onFocus={() => setActive(true)}
       onBlur={() => setActive(false)}
     />
+  );
+}
+
+function Row({
+  icon,
+  name,
+  from,
+  to,
+  unit,
+  remove = null,
+}: {
+  icon: any;
+  name: any;
+  from: any;
+  to: any;
+  unit: any;
+  remove?: any;
+}) {
+  return (
+    <div className="flex items-start gap-2 first:border-t border-b border-surface-outline py-2 group/row relative">
+      <div className="flex-1 flex items-center gap-2">
+        <div className="w-8 pl-1">{icon}</div>
+
+        <div className="flex-1 flex items-center gap-2">
+          <div className="flex-1 flex items-center">{name}</div>
+          <div className="w-12 flex items-center">{from}</div>
+          <div className="w-12 flex items-center">{to}</div>
+          <div className="w-24 flex items-center">{unit}</div>
+          {remove && <div className="absolute -right-4 group-hover/row:opacity-100 opacity-0">{remove}</div>}
+        </div>
+      </div>
+    </div>
   );
 }

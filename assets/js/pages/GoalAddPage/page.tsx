@@ -1,4 +1,5 @@
 import React from "react";
+import classnames from "classnames";
 
 import * as Paper from "@/components/PaperContainer";
 
@@ -9,7 +10,7 @@ import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
-import { useForm } from "./useForm";
+import { useForm, FormState } from "./useForm";
 import { Target, TargetHeader, AddTarget } from "./Target";
 
 export function Page() {
@@ -29,18 +30,18 @@ export function Page() {
   );
 }
 
-function Form({ form }) {
+function Form({ form }: { form: FormState }) {
   return (
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={form.isValid} onCancel={form.cancel}>
       <div className="font-medium">
         <span className="font-bold text-lg">Goal</span>
         <div className="mt-3 mb-12 text-lg">
-          <TextInput form={form} autoFocus={true} placeholder="e.g. Improve product onboarding" />
+          <GoalName form={form} />
         </div>
         <span className="font-bold text-lg">Targets</span>
         <div className="mt-4">
           <TargetHeader />
-          {form.targetList.targets.map((target, index) => (
+          {form.fields.targets.map((target, index) => (
             <Target
               key={index}
               form={form}
@@ -58,8 +59,8 @@ function Form({ form }) {
           <div className="w-1/3 mt-4">
             <ContributorSearch
               title="Champion"
-              onSelect={form.setChampion}
-              defaultValue={form.champion}
+              onSelect={form.fields.setChampion}
+              defaultValue={form.fields.champion}
               inputId="champion"
             />
           </div>
@@ -67,8 +68,8 @@ function Form({ form }) {
           <div className="w-1/3 mt-4">
             <ContributorSearch
               title="Reviewer"
-              onSelect={form.setReviewer}
-              defaultValue={form.reviewer}
+              onSelect={form.fields.setReviewer}
+              defaultValue={form.fields.reviewer}
               inputId="reviewer"
             />
           </div>
@@ -86,24 +87,34 @@ function Form({ form }) {
   );
 }
 
-function TextInput({ form, autoFocus = false, placeholder }) {
+function GoalName({ form }) {
+  const className = classnames(
+    "border-b border-surface-outline",
+    "px-0 py-1",
+    "w-full",
+    "placeholder:text-content-subtle",
+    "focus:bg-surface-highlight bg-transparent",
+  );
+
   return (
     <input
-      className="border-b border-surface-outline px-0 py-1 w-full placeholder:text-content-subtle focus:bg-surface-highlight bg-transparent"
-      placeholder={placeholder}
-      autoFocus={autoFocus}
+      className={className}
+      autoFocus={true}
+      placeholder="e.g. Improve product onboarding"
+      value={form.name}
+      onChange={form.setName}
     />
   );
 }
 
-function TimeframeSelector({ form }) {
+function TimeframeSelector({ form }: { form: FormState }) {
   return (
     <Forms.SelectBox
       label="Timeframe"
-      value={form.timeframe}
-      onChange={form.setTimeframe}
-      options={form.timeframeOptions}
-      defaultValue={form.timeframeOptions[0]}
+      value={form.fields.timeframe}
+      onChange={form.fields.setTimeframe}
+      options={form.fields.timeframeOptions}
+      defaultValue={form.fields.timeframeOptions[0]}
     />
   );
 }
