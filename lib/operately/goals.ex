@@ -4,6 +4,7 @@ defmodule Operately.Goals do
   alias Operately.Repo
   alias Operately.Goals.Goal
 
+
   def list_goals do
     Repo.all(Goal)
   end
@@ -18,9 +19,7 @@ defmodule Operately.Goals do
     Repo.get!(Goal, id)
   end
 
-  def create_goal(creator, attrs) do
-    Operately.Goals.CreateOperation.run(creator, attrs)
-  end
+  defdelegate create_goal(creator, attrs), to: Operately.Goals.CreateOperation, as: :run
 
   def update_goal(%Goal{} = goal, attrs) do
     goal

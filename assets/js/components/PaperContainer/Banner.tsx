@@ -2,29 +2,62 @@ import React from "react";
 import classnames from "classnames";
 import { Context } from "./Context";
 
-export function Banner(props: { children: React.ReactNode }) {
+export function HighlightedSection(props: { className: string; children: React.ReactNode }) {
   const { size } = React.useContext(Context);
 
-  const negativeMargin = calcNegativeMargins(size);
-  const className = classnames(
-    "bg-yellow-400/10",
-    "text-content-accent font-bold",
-    "flex items-center justify-center",
-    "rounded-t border-b border-surface-outline leading-none",
-    negativeMargin,
-  );
+  const neg = calcNegativeHorizontalMargins(size);
+  const className = classnames(props.className, "border-y border-surface-outline", neg);
 
   return <div className={className}>{props.children}</div>;
 }
 
-function calcNegativeMargins(size: string) {
+export function Header(props: { className: string; children: React.ReactNode }) {
+  const { size } = React.useContext(Context);
+
+  const negHor = calcNegativeHorizontalMargins(size);
+  const negVer = calcNegativeVerticalMargins(size);
+
+  const className = classnames(props.className, "rounded-t border-b border-surface-outline", negHor, negVer);
+
+  return <div className={className}>{props.children}</div>;
+}
+
+export function Banner(props: { children: React.ReactNode }) {
+  const className = classnames(
+    "leading-none",
+    "bg-yellow-400/10",
+    "text-content-accent font-bold",
+    "flex items-center justify-center",
+  );
+
+  return <Header className={className}>{props.children}</Header>;
+}
+
+function calcNegativeHorizontalMargins(size: Size) {
   switch (size) {
     case "small":
-      return "-mx-10 -mt-8 mb-6 py-4";
+      return "-mx-10";
     case "medium":
-      return "-mx-12 -mt-10 mb-6 py-4";
+      return "-mx-12";
     case "large":
-      return "-mx-16 -mt-12 mb-6 py-4";
+      return "-mx-16";
+    case "xlarge":
+      throw new Error("XLarge not supported");
+    case "xxlarge":
+      throw new Error("XXLarge not supported");
+    default:
+      throw new Error(`Unknown size ${size}`);
+  }
+}
+
+function calcNegativeVerticalMargins(size: Size) {
+  switch (size) {
+    case "small":
+      return "-mt-8 mb-6 py-4";
+    case "medium":
+      return "-mt-10 mb-6 py-4";
+    case "large":
+      return "-mt-12 mb-6 py-4";
     case "xlarge":
       throw new Error("XLarge not supported");
     case "xxlarge":

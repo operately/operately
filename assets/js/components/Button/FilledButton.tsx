@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 
-interface GhostButton {
+interface FilledButtonProps {
   children: any;
   linkTo?: string;
   onClick?: (e: any) => void;
@@ -12,7 +12,7 @@ interface GhostButton {
   loading?: boolean;
 }
 
-export function GhostButton(props: GhostButton) {
+export function FilledButton(props: FilledButtonProps) {
   const navigate = useNavigate();
 
   const handleClick = (e: any) => {
@@ -81,11 +81,11 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
   }
 
   if (type === "primary") {
-    result += " border-2 border-accent-1";
+    result += " border-2 border-accent-1 bg-accent-1";
     if (loading) {
       result += " text-content-subtle";
     } else {
-      result += " text-accent-1 hover:text-accent-1";
+      result += " text-white-1";
     }
   }
 

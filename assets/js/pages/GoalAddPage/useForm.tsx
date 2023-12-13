@@ -154,6 +154,12 @@ function useSubmit(fields: Fields): [() => void, () => void, boolean] {
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
+          targets: fields.targets.map((t) => ({
+            name: t.name,
+            from: parseInt(t.from),
+            to: parseInt(t.to),
+            unit: t.unit,
+          })),
         },
       },
     });

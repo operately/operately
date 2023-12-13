@@ -12,21 +12,43 @@ import * as Pages from "@/components/Pages";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 import { Target, TargetHeader, AddTarget } from "./Target";
+import { FilledButton, GhostButton } from "@/components/Button";
+import { DimmedLink } from "@/components/Link";
 
 export function Page() {
-  const { company, me } = useLoadedData();
+  const { company, space, me } = useLoadedData();
   const form = useForm(company, me);
 
   return (
     <Pages.Page title="New Goal">
       <Paper.Root size="medium">
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal</h1>
+        <div className="flex items-center justify-center mb-4 gap-4">
+          <DimmedLink to={`/spaces/${form.fields.spaceID}/goals`}>Back to {space.name} Space</DimmedLink>
+        </div>
+
+        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal for {space.name}</h1>
 
         <Paper.Body minHeight="300px">
           <Form form={form} />
         </Paper.Body>
+
+        <SubmitButton form={form} />
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function SubmitButton({ form }: { form: FormState }) {
+  return (
+    <div className="flex items-center justify-center mt-8 gap-4">
+      <FilledButton type="primary" onClick={form.submit} loading={form.submitting} size="lg">
+        Add Goal
+      </FilledButton>
+
+      <GhostButton type="primary" onClick={form.submit} loading={form.submitting} size="lg">
+        Save & Add Another
+      </GhostButton>
+    </div>
   );
 }
 
@@ -56,7 +78,7 @@ function Form({ form }: { form: FormState }) {
 
       <Paper.DimmedSection>
         <div className="flex items-center gap-6">
-          <div className="w-1/3 mt-4">
+          <div className="w-1/3">
             <ContributorSearch
               title="Champion"
               onSelect={form.fields.setChampion}
@@ -65,7 +87,7 @@ function Form({ form }: { form: FormState }) {
             />
           </div>
 
-          <div className="w-1/3 mt-4">
+          <div className="w-1/3">
             <ContributorSearch
               title="Reviewer"
               onSelect={form.fields.setReviewer}
@@ -74,14 +96,10 @@ function Form({ form }: { form: FormState }) {
             />
           </div>
 
-          <div className="w-1/3 mt-4">
+          <div className="w-1/3">
             <TimeframeSelector form={form} />
           </div>
         </div>
-
-        <Forms.SubmitArea>
-          <Forms.SubmitButton data-test-id="save">Add Goal</Forms.SubmitButton>
-        </Forms.SubmitArea>
       </Paper.DimmedSection>
     </Forms.Form>
   );
@@ -99,7 +117,7 @@ function GoalName({ form }) {
   return (
     <input
       className={className}
-      autoFocus={true}
+      autoFocus
       placeholder="e.g. Improve product onboarding"
       value={form.name}
       onChange={form.setName}
@@ -129,7 +147,7 @@ function ContributorSearch({ title, onSelect, defaultValue, inputId }) {
         <PeopleSearch
           onChange={(option) => onSelect(option?.person)}
           defaultValue={defaultValue}
-          placeholder="Search by name or title..."
+          placeholder="Search for person..."
           inputId={inputId}
           loader={loader}
         />
