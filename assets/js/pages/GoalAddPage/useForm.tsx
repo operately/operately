@@ -146,6 +146,7 @@ function useSubmit(fields: Fields): [() => void, () => void, boolean] {
   });
 
   const submit = async () => {
+    console.log("submitting", fields);
     await create({
       variables: {
         input: {

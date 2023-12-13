@@ -53,11 +53,7 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
-  const placeholders = [
-    ["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"],
-    ["e.g. ", "30", "15", "minutes"],
-    []
-  ];
+  const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
 
   return (
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={form.isValid} onCancel={form.cancel}>
@@ -72,13 +68,7 @@ function Form({ form }: { form: FormState }) {
         <div className="mt-4">
           <TargetHeader />
           {form.fields.targets.map((target, index) => (
-            <Target
-              key={index}
-              form={form}
-              index={index}
-              target={target}
-              placeholders={index === 0 ?  : []}
-            />
+            <Target key={index} form={form} index={index} target={target} placeholders={placeholders[index] || []} />
           ))}
           <AddTarget form={form} />
         </div>
@@ -127,8 +117,8 @@ function GoalName({ form }) {
       className={className}
       autoFocus
       placeholder="e.g. Improve product onboarding"
-      value={form.name}
-      onChange={form.setName}
+      value={form.fields.name}
+      onChange={(e) => form.fields.setName(e.target.value)}
     />
   );
 }

@@ -36,19 +36,18 @@ defmodule Operately.Goals.CreateOperation do
   end
 
   defp insert_targets(multi, targets) do
-    multi
-    # targets
-    # |> Enum.with_index()
-    # |> Enum.reduce(multi, fn {target, index}, multi ->
-    #   target_changeset = Target.changeset(%{
-    #     goal_id: multi[:goal].id,
-    #     name: target[:name],
-    #     from: target[:from],
-    #     to: target[:to],
-    #     unit: target[:unit],
-    #   })
-
-    #   Multi.insert(multi, :"target_#{index}", target_changeset)
-    # end)
+    targets
+    |> Enum.with_index()
+    |> Enum.reduce(multi, fn {target, index}, multi ->
+      Multi.insert(multi, :"target_#{index}", fn %{goal: goal} ->
+        Target.changeset(%{
+          goal_id: goal.id,
+          name: target[:name],
+          from: target[:from],
+          to: target[:to],
+          unit: target[:unit],
+        })
+      end)
+    end)
   end
 end
