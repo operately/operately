@@ -13,7 +13,7 @@ defmodule Operately.GoalsTest do
     company = company_fixture()
     person = person_fixture(%{company_id: company.id})
     group = group_fixture(person, %{company_id: company.id})
-    goal = goal_fixture(person, %{space_id: group.id})
+    goal = goal_fixture(person, %{space_id: group.id, targets: []})
 
     %{goal: goal, person: person, group: group, company: company}
   end

@@ -20,7 +20,7 @@ defmodule Operately.Goals.CreateOperation do
 
     Multi.new()
     |> Multi.insert(:goal, changeset)
-    |> insert_targets(attrs[:targets])
+    |> insert_targets(attrs[:targets] || [])
     |> Activities.insert(creator.id, :goal_created, fn changes -> %{
       company_id: group.company_id,
       space_id: group.id,

@@ -41,7 +41,7 @@ export function Page() {
 function SubmitButton({ form }: { form: FormState }) {
   return (
     <div className="flex items-center justify-center mt-8 gap-4">
-      <FilledButton type="primary" onClick={form.submit} loading={form.submitting} size="lg">
+      <FilledButton type="primary" onClick={form.submit} loading={form.submitting} size="lg" testId="add-goal-button">
         Add Goal
       </FilledButton>
 
@@ -81,7 +81,7 @@ function Form({ form }: { form: FormState }) {
               title="Champion"
               onSelect={form.fields.setChampion}
               defaultValue={form.fields.champion}
-              inputId="champion"
+              inputId="champion-search"
             />
           </div>
 
@@ -90,7 +90,7 @@ function Form({ form }: { form: FormState }) {
               title="Reviewer"
               onSelect={form.fields.setReviewer}
               defaultValue={form.fields.reviewer}
-              inputId="reviewer"
+              inputId="reviewer-search"
             />
           </div>
 
@@ -119,6 +119,7 @@ function GoalName({ form }) {
       placeholder="e.g. Improve product onboarding"
       value={form.fields.name}
       onChange={(e) => form.fields.setName(e.target.value)}
+      data-test-id="goal-name"
     />
   );
 }

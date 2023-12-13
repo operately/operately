@@ -146,7 +146,6 @@ function useSubmit(fields: Fields): [() => void, () => void, boolean] {
   });
 
   const submit = async () => {
-    console.log("submitting", fields);
     await create({
       variables: {
         input: {
@@ -155,12 +154,14 @@ function useSubmit(fields: Fields): [() => void, () => void, boolean] {
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
-          targets: fields.targets.map((t) => ({
-            name: t.name,
-            from: parseInt(t.from),
-            to: parseInt(t.to),
-            unit: t.unit,
-          })),
+          targets: fields.targets
+            .filter((t) => t.name.trim() !== "")
+            .map((t) => ({
+              name: t.name,
+              from: parseInt(t.from),
+              to: parseInt(t.to),
+              unit: t.unit,
+            })),
         },
       },
     });

@@ -57,6 +57,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       placeholder={placeholders[0]}
       value={target.name}
       setValue={(val: string) => form.fields.updateTarget(target.id, "name", val)}
+      testId={`target-${index}-name`}
     />
   );
 
@@ -67,6 +68,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       placeholder={placeholders[1]}
       value={target.from}
       setValue={(val: string) => form.fields.updateTarget(target.id, "from", val)}
+      testId={`target-${index}-current`}
     />
   );
 
@@ -77,6 +79,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       placeholder={placeholders[2]}
       value={target.to}
       setValue={(val: string) => form.fields.updateTarget(target.id, "to", val)}
+      testId={`target-${index}-target`}
     />
   );
 
@@ -87,6 +90,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
       placeholder={placeholders[3]}
       value={target.unit}
       setValue={(val: string) => form.fields.updateTarget(target.id, "unit", val)}
+      testId={`target-${index}-unit`}
     />
   );
 
@@ -101,7 +105,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
   return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} remove={removeButton} />;
 }
 
-function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
+function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "" }) {
   return (
     <GenericInput
       autoFocus={autoFocus}
@@ -110,11 +114,12 @@ function TextInput({ autoFocus = false, placeholder, active, setActive, value, s
       setActive={setActive}
       value={value}
       setValue={setValue}
+      testId={testId}
     />
   );
 }
 
-function NumberInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
+function NumberInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "" }) {
   const re = /^[0-9\b\.]+$/;
 
   const onChange = (str: string) => {
@@ -131,11 +136,12 @@ function NumberInput({ autoFocus = false, placeholder, active, setActive, value,
       setActive={setActive}
       value={value}
       setValue={onChange}
+      testId={testId}
     />
   );
 }
 
-function GenericInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
+function GenericInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "" }) {
   return (
     <input
       className={
@@ -148,6 +154,7 @@ function GenericInput({ autoFocus = false, placeholder, active, setActive, value
       autoFocus={autoFocus}
       onFocus={() => setActive(true)}
       onBlur={() => setActive(false)}
+      data-test-id={testId}
     />
   );
 }
