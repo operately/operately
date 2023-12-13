@@ -7,11 +7,9 @@ import PeopleSearch from "@/components/PeopleSearch";
 import * as People from "@/graphql/People";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
-import Button from "@/components/Button";
 import { Target, TargetHeader, AddTarget } from "./Target";
 
 export function Page() {
