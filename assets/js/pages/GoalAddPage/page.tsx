@@ -53,6 +53,12 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
+  const placeholders = [
+    ["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"],
+    ["e.g. ", "30", "15", "minutes"],
+    []
+  ];
+
   return (
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={form.isValid} onCancel={form.cancel}>
       <div className="font-medium">
@@ -60,7 +66,9 @@ function Form({ form }: { form: FormState }) {
         <div className="mt-3 mb-12 text-lg">
           <GoalName form={form} />
         </div>
-        <span className="font-bold text-lg">Targets</span>
+
+        <div className="font-bold text-lg">Measurments</div>
+        <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
         <div className="mt-4">
           <TargetHeader />
           {form.fields.targets.map((target, index) => (
@@ -69,7 +77,7 @@ function Form({ form }: { form: FormState }) {
               form={form}
               index={index}
               target={target}
-              placeholders={index === 0 ? ["e.g. Reduce Average Onboarding Time", "30", "15", "minutes"] : []}
+              placeholders={index === 0 ?  : []}
             />
           ))}
           <AddTarget form={form} />

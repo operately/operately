@@ -8,8 +8,8 @@ export function TargetHeader() {
     <Row
       icon={<Icons.IconHash className="text-content-base ml-1.5" size={12} />}
       name={<div className="text-xs font-bold">NAME</div>}
-      from={<div className="text-xs font-bold">FROM</div>}
-      to={<div className="text-xs font-bold">TO</div>}
+      from={<div className="text-xs font-bold">CURRENT</div>}
+      to={<div className="text-xs font-bold">TARGET</div>}
       unit={<div className="text-xs font-bold">UNIT</div>}
     />
   );
@@ -102,7 +102,6 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
 }
 
 function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue }) {
-
   return (
     <GenericInput
       autoFocus={autoFocus}
@@ -175,9 +174,9 @@ function Row({
 
         <div className="flex-1 flex items-center gap-2">
           <div className="flex-1 flex items-center">{name}</div>
-          <div className="w-12 flex items-center">{from}</div>
-          <div className="w-12 flex items-center">{to}</div>
-          <div className="w-24 flex items-center">{unit}</div>
+          <div className="w-16 flex items-center">{from}</div>
+          <div className="w-16 flex items-center">{to}</div>
+          <div className="w-20 flex items-center">{unit}</div>
           {remove && <div className="absolute -right-4 group-hover/row:opacity-100 opacity-0">{remove}</div>}
         </div>
       </div>
