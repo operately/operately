@@ -38,19 +38,9 @@ export function Page() {
 }
 
 function ResourceList({ project }: { project: Projects.Project }) {
-  if (project.keyResources!.length === 0) {
-    return <ResourcesListZeroState />;
-  } else {
+  if (project.keyResources!.length > 0) {
     return <ResourcesListWithData project={project} />;
   }
-}
-
-function ResourcesListZeroState() {
-  return (
-    <div className="text-content-dimmed font-medium mt-4 tracking-wide">
-      There are no key resources for this project yet.
-    </div>
-  );
 }
 
 function ResourcesListWithData({ project }: { project: Projects.Project }) {
@@ -76,16 +66,15 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
   const editId = createTestId("edit-resource", title);
 
   return (
-    <div className="rounded border border-stroke-base text-center">
+    <div className="rounded border border-stroke-base text-center flex flex-col">
       <DivLink
         to={resource!.link}
-        className="flex flex-col items-center justify-center text-center border border-transparent hover:border-surface-outline"
+        className="flex flex-col items-center justify-center text-center border border-transparent hover:border-surface-outline flex-1"
         target="_blank"
       >
         <div className="pt-6 pb-3">{icon}</div>
         <div className="pb-6 px-5">
           <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
-          <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
         </div>
       </DivLink>
 
@@ -133,10 +122,9 @@ function PotentialResourceListItem({ resourceType }: { resourceType: string }) {
 
   return (
     <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">
-      <div className="pt-6 pb-3">{icon}</div>
-      <div className="pb-6 px-5">
+      <div className="pt-8 pb-3">{icon}</div>
+      <div className="pb-7 px-5">
         <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
-        <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
       </div>
 
       <div className="border-t border-stroke-base w-full text-sm py-1 bg-surface-dimmed font-semibold">

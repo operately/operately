@@ -294,7 +294,6 @@ function Resource({ icon, title, href }) {
       <div className="pt-6 pb-3">{icon}</div>
       <div className="pb-6 px-5">
         <div className="text-content-accent text-sm font-semibold leading-snug">{title}</div>
-        <div className="text-content-accent text-xs text-green-600 font-medium leading-none mt-1">external link</div>
       </div>
     </a>
   );
