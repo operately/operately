@@ -16,7 +16,7 @@ defmodule OperatelyEmail.Views.Assignments do
   def assignment_to_text(assignment) do
     case assignment.type do
     :status_update ->
-      "- Post a status update #{assignment.url}"
+      "- Check-In #{assignment.url}"
     :milestone ->
       "- Complete the #{assignment.name} milestone #{assignment.url}"
     end
