@@ -263,34 +263,34 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def assert_email_sent(_state, title, to: to) do
+  def list_sent_emails(_state) do
     {:messages, messages} = Process.info(self(), :messages)
 
-    emails = Enum.filter(messages, fn m ->
+    Enum.filter(messages, fn m ->
       case m do
         {:delivered_email, _} -> true
         _ -> false
       end
-    end)
-
-    sent_emails = Enum.map(emails, fn {:delivered_email, email} -> {email.subject, elem(hd(email.to), 1)} end)
-
-    assert {title, to} in sent_emails
+    end) 
+    |> Enum.map(fn {:delivered_email, email} -> email end)
   end
 
-  def refute_email_sent(_state, title, to: to) do
-    {:messages, messages} = Process.info(self(), :messages)
+  def assert_email_sent(state, title, to: to) do
+    emails = 
+      state
+      |> list_sent_emails()
+      |> Enum.map(fn email -> {email.subject, elem(hd(email.to), 1)} end)
 
-    emails = Enum.filter(messages, fn m ->
-      case m do
-        {:delivered_email, _} -> true
-        _ -> false
-      end
-    end)
+    assert {title, to} in emails
+  end
 
-    sent_emails = Enum.map(emails, fn {:delivered_email, email} -> {email.subject, elem(hd(email.to), 1)} end)
+  def refute_email_sent(state, title, to: to) do
+    emails =
+      state
+      |> list_sent_emails()
+      |> Enum.map(fn email -> {email.subject, elem(hd(email.to), 1)} end)
 
-    refute {title, to} in sent_emails
+    refute {title, to} in emails
   end
 
   defp execute(state, callback) do
