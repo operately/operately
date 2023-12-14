@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :value, non_null(:string)
   end
 
-  object :edit_group_input do
+  input_object :edit_group_input do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :mission, non_null(:string)

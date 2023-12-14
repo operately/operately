@@ -1,8 +1,4 @@
 defmodule Operately.Groups do
-  @moduledoc """
-  The Groups context.
-  """
-
   import Ecto.Query, warn: false
   alias Operately.Repo
 
@@ -12,6 +8,7 @@ defmodule Operately.Groups do
 
   alias Operately.People.Person
   alias Ecto.Multi
+  alias Operately.Activities
 
   def list_groups do
     Repo.all(Group)
@@ -80,9 +77,12 @@ defmodule Operately.Groups do
     Multi.new()
     |> Multi.update(:group, changeset)
     |> Activities.insert(author.id, :group_edited, %{
+      company_id: group.company_id,
       group_id: group.id,
-      name: group.name,
-      mission: group.mission
+      old_name: group.name,
+      old_mission: group.mission,
+      new_name: attrs.name,
+      new_mission: attrs.mission
     })
     |> Repo.transaction()
     |> Repo.extract_result(:group)
