@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import client from "@/graphql/client";
 
 export type { Group } from "@/gql/generated";
+export { useEditGroupMutation } from "./useEditGroupMutation";
 
 export async function getGroup(id: string) {
   let data = await client.query({

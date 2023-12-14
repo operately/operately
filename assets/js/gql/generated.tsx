@@ -1196,11 +1196,11 @@ export type RootSubscriptionType = {
 
 export type Target = {
   __typename?: 'Target';
-  from: Scalars['Int']['output'];
+  from: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   index: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  to: Scalars['Int']['output'];
+  to: Scalars['Float']['output'];
   unit: Scalars['String']['output'];
 };
 

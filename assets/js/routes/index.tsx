@@ -31,6 +31,7 @@ const routes = createBrowserRouter([
 
       pageRoute("/spaces/new", pages.GroupAddPage),
       pageRoute("/spaces/:id", pages.GroupPage),
+      pageRoute("/spaces/:id/edit", pages.GroupEditPage),
       pageRoute("/spaces/:id/members", pages.GroupMembersPage),
       pageRoute("/spaces/:id/appearance", pages.GroupAppearancePage),
       pageRoute("/spaces/:id/projects/new", pages.ProjectAddPage),
