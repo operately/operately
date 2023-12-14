@@ -30,7 +30,7 @@ export function Card({ notification, author, title, link, where, when, who }) {
 
   return (
     <div
-      className="flex items-center gap-3 hover:bg-surface-accent rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
+      className="flex items-center gap-3 hover:bg-surface-highlight rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
       onClick={clickHandler}
       data-test-id="notification-card"
     >
