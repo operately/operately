@@ -30,8 +30,8 @@ interface Fields {
 }
 
 export function useForm(group: Groups.Group): FormState {
-  const [name, setName] = React.useState<string>("");
-  const [purpose, setPurpose] = React.useState<string>("");
+  const [name, setName] = React.useState<string>(group.name);
+  const [purpose, setPurpose] = React.useState<string>(group.mission || "");
 
   const fields = {
     group,
