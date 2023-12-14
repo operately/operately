@@ -38,17 +38,6 @@ export function Page() {
 }
 
 function SubmitButton({ form }: { form: FormState }) {
-  const [shake, setShake] = React.useState(false);
-
-  const onClick = async () => {
-    const res = await form.submit();
-
-    if (res === false) {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-    }
-  };
-
   return (
     <div className="mt-8">
       {form.errors.length > 0 && (
@@ -58,11 +47,11 @@ function SubmitButton({ form }: { form: FormState }) {
       <div className="flex items-center justify-center gap-4">
         <FilledButton
           type="primary"
-          onClick={onClick}
+          onClick={form.submit}
           loading={form.submitting}
           size="lg"
           testId="add-goal-button"
-          shake={shake}
+          bzzzOnClickFailure
         >
           Add Goal
         </FilledButton>

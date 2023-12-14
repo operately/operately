@@ -39,6 +39,13 @@ function OptionsDropdown({ groupId, closeOptions }) {
       <CloseOptions onClick={closeOptions} />
 
       <Option
+        icon={Icons.IconPencil}
+        title="Edit name and purpose"
+        link={`/spaces/${groupId}/edit`}
+        dataTestId="edit-name-and-purpose"
+      />
+
+      <Option
         icon={Icons.IconUserPlus}
         title="Add/Remove members"
         link={`/spaces/${groupId}/members`}

@@ -109,18 +109,21 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_text(project2.name)
   end
 
-  # feature "listing goals in a group", ctx do
-  #   group = create_group("Marketing")
+  feature "editing group's name and purpose", ctx do
+    group = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
 
-  #   goal1 = crete_goal("Increase traffic", group: group)
-  #   goal2 = crete_goal("Raise brand awareness", group: group)
-
-  #   ctx
-  #   |> visit_page()
-  #   |> UI.click_link(group.name)
-  #   |> UI.assert_text(goal1.name)
-  #   |> UI.assert_text(goal2.name)
-  # end
+    ctx
+    |> visit_page()
+    |> UI.click(title: group.name)
+    |> UI.click(testid: "space-settings")
+    |> UI.click(testid: "edit-name-and-purpose")
+    |> UI.fill_in(Query.text_field("Name"), with: "Marketing 2")
+    |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products 2")
+    |> UI.click(testid: "save")
+    |> UI.assert_page("/spaces/#{group.id}")
+    |> UI.assert_has(Query.text("Marketing 2", count: 2))
+    |> UI.assert_has(Query.text("Let the world know about our products 2"))
+  end
 
   # # ===========================================================================
 

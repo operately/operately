@@ -67,7 +67,7 @@ export function CancelButton({ children }) {
   );
 }
 
-export function TextInput({ label, value, onChange, placeholder = "", ...props }) {
+export function TextInput({ label, value, onChange, placeholder = "", error, ...props }) {
   const id = React.useMemo(() => Math.random().toString(36), []);
 
   return (
@@ -77,17 +77,32 @@ export function TextInput({ label, value, onChange, placeholder = "", ...props }
       </label>
 
       <div className="flex-1">
-        <TextInputNoLabel id={id} value={value} onChange={onChange} placeholder={placeholder} {...props} />
+        <TextInputNoLabel
+          id={id}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          error={error}
+          {...props}
+        />
       </div>
     </div>
   );
 }
 
-export function TextInputNoLabel({ id, value, onChange, placeholder = "", ...props }) {
+export function TextInputNoLabel({ id, value, onChange, placeholder = "", error = false, ...props }) {
+  const className = classname(
+    "w-full bg-surface text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
+    {
+      "border-surface-outline": !error,
+      "border-red-500": error,
+    },
+  );
+
   return (
     <input
       id={id}
-      className="w-full bg-surface text-content-accent placeholder-content-subtle border border-surface-outline rounded-lg px-3 py-1.5"
+      className={className}
       type="text"
       value={value}
       placeholder={placeholder}

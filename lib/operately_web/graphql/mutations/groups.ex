@@ -27,6 +27,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :value, non_null(:string)
   end
 
+  input_object :edit_group_input do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :mission, non_null(:string)
+  end
+
   object :group_mutations do
     field :create_group, :group do
       arg :input, non_null(:create_group_input)
@@ -42,6 +48,23 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
         }
 
         Operately.Groups.create_group(creator, attrs)
+      end
+    end
+
+    field :edit_group, :group do
+      arg :input, non_null(:edit_group_input)
+
+      resolve fn args, %{context: context} ->
+        author = context.current_account.person
+
+        group = Operately.Groups.get_group!(args.input.id)
+
+        {:ok, _} = Operately.Groups.edit_group_name_and_purpose(author, group, %{
+          name: args.input.name,
+          mission: args.input.mission
+        })
+
+        {:ok, group}
       end
     end
 
