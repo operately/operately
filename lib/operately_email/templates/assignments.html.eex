@@ -43,7 +43,7 @@
             <%= case assignment.type do %>
             <% :status_update -> %>
               <tr style="font-size: 16px; font-family: sans-serif;">
-                <td><span><a href="<%= assignment.url %>">Post a Status Update</a> <span style="color: #999999"><%= assignment.due %></span></td> 
+                <td><span><a href="<%= assignment.url %>">Check-In</a> <span style="color: #999999"><%= assignment.due %></span></td>
               <tr>
             <% :milestone -> %>
               <tr style="font-size: 16px; font-family: sans-serif;">

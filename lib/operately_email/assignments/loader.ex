@@ -28,7 +28,7 @@ defmodule OperatelyEmail.Assignments.Loader do
         %{
           type: :status_update,
           due: relative_due(project.next_update_scheduled_at),
-          url: project_status_update_url(project),
+          url: OperatelyEmail.project_new_status_update_url(project.id),
           name: "Status Update"
         }
       ]
@@ -49,18 +49,10 @@ defmodule OperatelyEmail.Assignments.Loader do
       %{
         type: :milestone,
         due: relative_due(milestone.deadline_at),
-        url: project_milestone_url(project, milestone),
+        url: OperatelyEmail.project_milestone_url(project.id, milestone.id),
         name: milestone.title
       }
     end)
-  end
-
-  defp project_status_update_url(project) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/updates/new?messageType=status_update"
-  end
-
-  defp project_milestone_url(project, milestone) do
-    OperatelyWeb.Endpoint.url() <> "/projects/#{project.id}/milestones/#{milestone.id}"
   end
 
   defp milestone_due?(milestone) do
