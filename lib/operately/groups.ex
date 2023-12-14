@@ -76,14 +76,14 @@ defmodule Operately.Groups do
 
     Multi.new()
     |> Multi.update(:group, changeset)
-    |> Activities.insert(author.id, :group_edited, %{
+    |> Activities.insert(author.id, :group_edited, fn _ -> %{
       company_id: group.company_id,
       group_id: group.id,
       old_name: group.name,
       old_mission: group.mission,
       new_name: attrs.name,
       new_mission: attrs.mission
-    })
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:group)
   end

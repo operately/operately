@@ -51,10 +51,15 @@ export function Page() {
 
 function SubmitButton({ form }: { form: FormState }) {
   return (
-    <div className="flex items-center justify-center mt-8">
-      <FilledButton onClick={form.submit} testId="save">
-        Save
-      </FilledButton>
+    <div className="mt-8">
+      {form.errors.length > 0 && (
+        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+      )}
+      <div className="flex items-center justify-center">
+        <FilledButton onClick={form.submit} testId="save" bzzzOnClickFailure>
+          Save
+        </FilledButton>
+      </div>
     </div>
   );
 }

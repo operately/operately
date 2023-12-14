@@ -119,8 +119,9 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(testid: "edit-name-and-purpose")
     |> UI.fill_in(Query.text_field("Name"), with: "Marketing 2")
     |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products 2")
-    |> UI.click(testid: "save-space-settings")
-    |> UI.assert_has(Query.text("Marketing 2"))
+    |> UI.click(testid: "save")
+    |> UI.assert_page("/spaces/#{group.id}")
+    |> UI.assert_has(Query.text("Marketing 2", count: 2))
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
   end
 

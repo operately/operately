@@ -74,6 +74,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
     await create({
       variables: {
         input: {
+          id: fields.group.id,
           name: fields.name,
           mission: fields.purpose,
         },

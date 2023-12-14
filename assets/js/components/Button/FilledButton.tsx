@@ -5,18 +5,19 @@ import { PuffLoader } from "react-spinners";
 interface FilledButtonProps {
   children: any;
   linkTo?: string;
-  onClick?: (e: any) => void;
+  onClick?: (e: any) => Promise<boolean>;
   testId?: string;
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
   loading?: boolean;
-  shake?: boolean;
+  bzzzOnClickFailure?: boolean;
 }
 
 export function FilledButton(props: FilledButtonProps) {
+  const [shake, setShake] = React.useState(false);
   const navigate = useNavigate();
 
-  const handleClick = (e: any) => {
+  const handleClick = async (e: any) => {
     if (props.loading) {
       return;
     }
@@ -27,11 +28,16 @@ export function FilledButton(props: FilledButtonProps) {
     }
 
     if (props.onClick) {
-      props.onClick(e);
+      const res = await props.onClick(e);
+
+      if (res === false && props.bzzzOnClickFailure) {
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
+      }
     }
   };
 
-  const klass = className(props.size, props.type, props.loading, props.shake);
+  const klass = className(props.size, props.type, props.loading, shake);
 
   return (
     <div className={klass} onClick={handleClick} data-test-id={props.testId}>
