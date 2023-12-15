@@ -15,7 +15,7 @@ defmodule Operately.Features.AssignmentsEmailTest do
     champion_with_account = Operately.Repo.preload(ctx.champion, :account)
     OperatelyEmail.AssignmentsEmail.send(champion_with_account)
 
-    email = UI.list_sent_emails(ctx) |> hd()
+    email = UI.list_sent_emails(ctx) |> List.last()
     link = find_check_in_link(email)
 
     ctx

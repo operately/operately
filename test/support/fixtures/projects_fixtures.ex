@@ -13,7 +13,8 @@ defmodule Operately.ProjectsFixtures do
     attrs = Map.merge(%{
       name: "some name",
       visibility: "everyone",
-      champion_id: attrs[:champion_id] || attrs[:creator_id]
+      champion_id: attrs[:champion_id] || attrs[:creator_id],
+      reviewer_id: attrs[:reviewer_id] || attrs[:creator_id]
     }, attrs)
 
     attrs = struct!(Operately.Projects.ProjectCreation, attrs)

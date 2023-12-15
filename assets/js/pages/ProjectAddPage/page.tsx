@@ -1,113 +1,142 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import * as Paper from "@/components/PaperContainer";
 
 import PeopleSearch from "@/components/PeopleSearch";
 
 import * as People from "@/graphql/People";
-import * as Projects from "@/graphql/Projects";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
+import { useForm, FormState } from "./useForm";
+import { FilledButton } from "@/components/Button";
+import { DimmedLink } from "@/components/Link";
 
 export function Page() {
-  const { company, me } = useLoadedData();
+  const { company, space, me } = useLoadedData();
+  const form = useForm(company, space.id, me);
 
   return (
     <Pages.Page title="New Project">
       <Paper.Root size="small">
-        <h1 className="mb-4 font-bold text-3xl text-center">Create a new project</h1>
+        <div className="flex items-center justify-center mb-4 gap-4">
+          <DimmedLink to={`/spaces/${form.fields.spaceID}/projects`}>Back to {space.name} Space</DimmedLink>
+        </div>
+
+        <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space.name}</h1>
 
         <Paper.Body minHeight="300px">
-          <Form company={company} me={me} />
+          <Form form={form} />
         </Paper.Body>
+
+        <SubmitButton form={form} />
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Form({ company, me }) {
-  const { spaceID } = useLoadedData();
-  const navigate = useNavigate();
+function SubmitButton({ form }: { form: FormState }) {
+  return (
+    <div className="mt-8">
+      {form.errors.length > 0 && (
+        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+      )}
 
-  const [projectName, setProjectName] = React.useState("");
-  const [projectChampion, setProjectChampion] = React.useState<string>(me.id);
-  const [visibility, setVisibility] = React.useState<string | null>("everyone");
-  const [creatorRole, setCreatorRole] = React.useState<{ value: string; label: string } | null>(null);
+      <div className="flex items-center justify-center gap-4">
+        <FilledButton
+          type="primary"
+          onClick={form.submit}
+          loading={form.submitting}
+          size="lg"
+          testId="save"
+          bzzzOnClickFailure
+        >
+          Add Project
+        </FilledButton>
+      </div>
+    </div>
+  );
+}
 
-  const [add, { loading }] = Projects.useCreateProject({
-    onCompleted: (data: any) => navigate(`/projects/${data?.createProject?.id}`),
-  });
-
-  const handleSubmit = () => {
-    add({
-      variables: {
-        input: {
-          name: projectName,
-          championId: projectChampion,
-          visibility: visibility,
-          creatorRole: creatorRole?.value,
-          spaceId: spaceID,
-        },
-      },
-    });
-  };
-
-  const handleCancel = () => navigate(`/spaces/${spaceID}`);
-
-  const isValid =
-    projectName.length > 0 &&
-    projectChampion !== null &&
-    visibility !== null &&
-    (projectChampion === me.id || (creatorRole !== null && creatorRole.value.length > 0));
+function Form({ form }: { form: FormState }) {
+  const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
 
   return (
-    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid} onCancel={handleCancel}>
-      <div className="flex flex-col gap-6">
+    <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={true} onCancel={form.cancel}>
+      <div className="flex flex-col gap-8">
         <Forms.TextInput
-          label="Name"
-          value={projectName}
-          onChange={setProjectName}
+          autoFocus
+          label="Project Name"
+          value={form.fields.name}
+          onChange={form.fields.setName}
           placeholder="e.g. HR System Update"
           data-test-id="project-name-input"
+          error={!!form.errors.find((e) => e.field === "name")?.message}
         />
 
-        <ContributorSearch title="Champion" onSelect={setProjectChampion} defaultValue={me} />
-
-        {projectChampion !== me.id && (
-          <Forms.SelectBox
-            label="What is your role on this project?"
-            value={creatorRole}
-            onChange={setCreatorRole}
-            allowEnteringNewValues
-            options={[
-              { value: "Reviewer", label: "Reviewer" },
-              { value: "Project Manager", label: "Project Manager" },
-              { value: "Product Manager", label: "Product Manager" },
-              { value: "Designer", label: "Designer" },
-              { value: "Developer", label: "Developer" },
-              { value: "QA", label: "QA" },
-            ]}
-            defaultValue="Reviewer"
-            data-test-id="your-role-input"
+        <div className="grid grid-cols-2 gap-4">
+          <ContributorSearch
+            title="Champion"
+            onSelect={form.fields.setChampion}
+            defaultValue={form.fields.champion}
+            error={!!form.errors.find((e) => e.field === "champion")?.message}
           />
-        )}
+          <ContributorSearch
+            title="Reviewer"
+            onSelect={form.fields.setReviewer}
+            defaultValue={form.fields.reviewer}
+            error={!!form.errors.find((e) => e.field === "reviewer")?.message}
+          />
+        </div>
 
+        {showWillYouContribute && (
+          <div>
+            <div className="font-bold">Will you contribute?</div>
+
+            <Forms.RadioGroup
+              name="creatorIsContributor"
+              defaultValue={form.fields.creatorIsContributor}
+              onChange={form.fields.setCreatorIsContributor}
+            >
+              <div className="flex flex-col gap-1 mt-3">
+                <Forms.Radio
+                  label={"No, I'm just setting it up for someone else"}
+                  value="no"
+                  data-test-id="no-contributor"
+                />
+                <Forms.Radio label="Yes, I'll contribute" value="yes" data-test-id="yes-contributor" />
+              </div>
+            </Forms.RadioGroup>
+
+            {form.fields.creatorIsContributor === "yes" && (
+              <div className="mt-4">
+                <Forms.TextInput
+                  label="What is your responsibility on this project?"
+                  value={form.fields.creatorRole}
+                  onChange={form.fields.setCreatorRole}
+                  placeholder="e.g. Responsible for managing the project and coordinating tasks"
+                  data-test-id="creator-responsibility-input"
+                  error={!!form.errors.find((e) => e.field === "creatorRole")?.message}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <Paper.DimmedSection>
         <Forms.RadioGroupWithLabel
           label="Who can see this project?"
           name="visibility"
           defaultValue="everyone"
-          onChange={(v: string | null) => setVisibility(v)}
+          onChange={form.fields.setVisibility}
         >
           <Forms.RadioWithExplanation
             label="All-Access"
-            explanation={"Anyone from " + company.name + " can see this project"}
+            explanation={"Anyone from " + form.fields.company.name + " can see this project"}
             value="everyone"
           />
-
           <Forms.RadioWithExplanation
             label={"Invite-only"}
             explanation={"Only people you invite can see this project"}
@@ -115,17 +144,20 @@ function Form({ company, me }) {
             data-test-id="invite-only"
           />
         </Forms.RadioGroupWithLabel>
-      </div>
 
-      <Forms.SubmitArea>
-        <Forms.SubmitButton data-test-id="save">Create Project</Forms.SubmitButton>
-        <Forms.CancelButton>Cancel</Forms.CancelButton>
-      </Forms.SubmitArea>
+        {form.fields.noAccess && (
+          <div className="font-medium mt-8 pt-4 flex flex-col text-center border-t border-stroke-base">
+            <div className="font-bold mb-2">Are you sure?</div>
+            Access to this project is invite-only and restricted to contributors. You will not have access. The champion
+            and reviewer will be informed.
+          </div>
+        )}
+      </Paper.DimmedSection>
     </Forms.Form>
   );
 }
 
-function ContributorSearch({ title, onSelect, defaultValue }) {
+function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
   const loader = People.usePeopleSearch();
 
   return (
@@ -133,10 +165,12 @@ function ContributorSearch({ title, onSelect, defaultValue }) {
       <label className="font-bold mb-1 block">{title}</label>
       <div className="flex-1">
         <PeopleSearch
-          onChange={(option) => onSelect(option?.value)}
+          onChange={(option) => onSelect(option?.person)}
           defaultValue={defaultValue}
-          placeholder="Search by name or title..."
+          placeholder="Search by name..."
           loader={loader}
+          inputId={title}
+          error={error}
         />
       </div>
     </div>

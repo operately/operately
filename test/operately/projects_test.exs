@@ -10,16 +10,19 @@ defmodule Operately.ProjectsTest do
 
   setup do
     company = company_fixture()
-    person = person_fixture(%{company_id: company.id})
-    group = group_fixture(person, %{company_id: company.id})
+    champion = person_fixture(%{company_id: company.id})
+    reviewer = person_fixture(%{company_id: company.id})
+    group = group_fixture(champion, %{company_id: company.id})
 
     project = project_fixture(%{
       company_id: company.id,
-      creator_id: person.id,
+      creator_id: champion.id,
+      champion_id: champion.id,
+      reviewer_id: reviewer.id,
       group_id: group.id
     })
 
-    {:ok, company: company, project: project, person: person, group: group}
+    {:ok, company: company, project: project, champion: champion, reviewer: reviewer, group: group}
   end
 
   describe "projects" do
@@ -30,7 +33,7 @@ defmodule Operately.ProjectsTest do
     @invalid_attrs %{description: nil, name: nil}
 
     test "list_projects/0 returns all projects", ctx do
-      assert Projects.list_projects(ctx.person) == [ctx.project]
+      assert Projects.list_projects(ctx.champion) == [ctx.project]
     end
 
     test "get_project!/1 returns the project with given id", ctx do
@@ -41,9 +44,10 @@ defmodule Operately.ProjectsTest do
       project_attrs = %Operately.Projects.ProjectCreation{
         name: "some name",
         company_id: ctx.company.id,
-        creator_id: ctx.person.id,
         group_id: ctx.group.id,
-        champion_id: ctx.person.id,
+        champion_id: ctx.champion.id,
+        reviewer_id: ctx.reviewer.id,
+        creator_id: ctx.champion.id,
       }
 
       assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
@@ -63,7 +67,7 @@ defmodule Operately.ProjectsTest do
     end
 
     test "archive_project/1 archives the project", ctx do
-      assert {:ok, project} = Projects.archive_project(ctx.person, ctx.project)
+      assert {:ok, project} = Projects.archive_project(ctx.champion, ctx.project)
       assert project.deleted_at != nil
     end
 
@@ -84,7 +88,7 @@ defmodule Operately.ProjectsTest do
       # so that I can test the create_milestone/1 function
       Operately.Repo.delete_all(Milestone)
 
-      milestone = milestone_fixture(ctx.person, %{project_id: ctx.project.id})
+      milestone = milestone_fixture(ctx.champion, %{project_id: ctx.project.id})
 
       {:ok, milestone: milestone}
     end
@@ -98,9 +102,9 @@ defmodule Operately.ProjectsTest do
     end
 
     test "get_next_milestone/1 returns the first upcoming milestone", ctx do
-      milestone_fixture(ctx.person, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-11 08:16:00]})
-      m2 = milestone_fixture(ctx.person, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-01 08:16:00]})
-      milestone_fixture(ctx.person, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-15 08:16:00]})
+      milestone_fixture(ctx.champion, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-11 08:16:00]})
+      m2 = milestone_fixture(ctx.champion, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-01 08:16:00]})
+      milestone_fixture(ctx.champion, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-15 08:16:00]})
 
       assert Projects.get_next_milestone(ctx.project) == m2
     end
@@ -112,13 +116,13 @@ defmodule Operately.ProjectsTest do
         title: "some title"
       }
 
-      assert {:ok, %Milestone{} = milestone} = Projects.create_milestone(ctx.person, valid_attrs)
+      assert {:ok, %Milestone{} = milestone} = Projects.create_milestone(ctx.champion, valid_attrs)
       assert milestone.deadline_at == ~N[2023-05-10 08:16:00]
       assert milestone.title == "some title"
     end
 
     test "create_milestone/1 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_milestone(ctx.person, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Projects.create_milestone(ctx.champion, @invalid_attrs)
     end
 
     test "update_milestone/2 with valid data updates the milestone", ctx do
@@ -135,7 +139,7 @@ defmodule Operately.ProjectsTest do
     end
 
     test "delete_milestone/1 deletes the milestone", ctx do
-      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.person, ctx.milestone)
+      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.champion, ctx.milestone)
       assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(ctx.milestone.id) end
     end
 
@@ -150,7 +154,7 @@ defmodule Operately.ProjectsTest do
     setup ctx do
       contributor = contributor_fixture(%{
         project_id: ctx.project.id,
-        person_id: ctx.person.id
+        person_id: ctx.champion.id
       })
 
       {:ok, contributor: contributor}
@@ -167,7 +171,7 @@ defmodule Operately.ProjectsTest do
     test "create_contributor/1 with valid data creates a contributor", ctx do
       valid_attrs = %{
         project_id: ctx.project.id,
-        person_id: ctx.person.id,
+        person_id: ctx.champion.id,
         responsibility: "some responsibility"
       }
 
@@ -202,7 +206,7 @@ defmodule Operately.ProjectsTest do
     setup ctx do
       document = document_fixture(%{
         project_id: ctx.project.id, 
-        author_id: ctx.person.id
+        author_id: ctx.champion.id
       })
 
       {:ok, document: document}
@@ -220,7 +224,7 @@ defmodule Operately.ProjectsTest do
       valid_attrs = %{
         content: %{}, 
         title: "some title", 
-        author_id: ctx.person.id, 
+        author_id: ctx.champion.id,
         project_id: ctx.project.id
       }
 
@@ -393,13 +397,13 @@ defmodule Operately.ProjectsTest do
     import Operately.Support.RichText
 
     setup ctx do
-      {:ok, review_request} = Operately.Projects.create_review_request(ctx.person, %{
-        author_id: ctx.person.id,
+      {:ok, review_request} = Operately.Projects.create_review_request(ctx.champion, %{
+        author_id: ctx.champion.id,
         project_id: ctx.project.id, 
         content: rich_text("hello")
       })
 
-      {:ok, author: ctx.person, review_request: review_request}
+      {:ok, author: ctx.champion, review_request: review_request}
     end
 
     test "list_project_review_requests/0 returns all project_review_requests", ctx do

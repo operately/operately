@@ -9,11 +9,13 @@ defmodule Operately.Features.NotificationsTest do
   
   setup ctx do
     ctx = Map.put(ctx, :company, company_fixture(%{name: "Test Org"}))
-    ctx = Map.put(ctx, :person, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John Champion"}))
-    ctx = Map.put(ctx, :group, group_fixture(ctx.person, %{company_id: ctx.company.id, name: "Designers"}))
-    ctx = Map.put(ctx, :champion, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Dorcy Devonshire"}))
 
-    UI.login_as(ctx, ctx.person)
+    ctx = Map.put(ctx, :champion, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Dorcy Devonshire"}))
+    ctx = Map.put(ctx, :reviewer, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John Reviewer"}))
+
+    ctx = Map.put(ctx, :group, group_fixture(ctx.champion, %{company_id: ctx.company.id, name: "Designers"}))
+
+    UI.login_as(ctx, ctx.reviewer)
   end
 
   feature "unread notifications count", ctx do
@@ -49,8 +51,8 @@ defmodule Operately.Features.NotificationsTest do
     |> UI.click(testid: "projects-tab")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person_in(id: "people-search", name: ctx.champion.full_name)
-    |> UI.select(testid: "your-role-input", option: "Reviewer")
+    |> UI.select_person_in(id: "Champion", name: ctx.champion.full_name)
+    |> UI.select_person_in(id: "Reviewer", name: ctx.reviewer.full_name)
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
   end
