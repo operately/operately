@@ -8,27 +8,30 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
 
   setup do
     company = company_fixture()
-    author = person_fixture_with_account(%{company_id: company.id, email: "a@tex.com"})
-    group = group_fixture(author, %{company_id: company.id})
+
     champion = person_fixture_with_account(%{company_id: company.id, email: "b@tex.com"})
+    reviewer = person_fixture_with_account(%{company_id: company.id, email: "a@tex.com"})
+
+    group = group_fixture(champion, %{company_id: company.id})
 
     project = Operately.Projects.create_project(%Operately.Projects.ProjectCreation{
       company_id: company.id,
       name: "Hello",
+      creator_id: reviewer.id,
       champion_id: champion.id,
-      creator_id: author.id,
-      creator_role: "Reviewer",
+      reviewer_id: reviewer.id,
       group_id: group.id,
     })
 
     {:ok, %{
       company: company, 
       project: project, 
-      reviewer: champion,
+      champion: champion,
+      reviewer: reviewer,
     }}
   end
 
   test "sends an email to the project contributors", ctx do
-    assert_email_delivered_with(to: [{nil, ctx.reviewer.email}])
+    assert_email_delivered_with(to: [{nil, ctx.champion.email}])
   end
 end
