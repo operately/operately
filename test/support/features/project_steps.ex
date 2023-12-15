@@ -16,6 +16,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       company_id: company.id,
       name: name,
       champion_id: champion.id,
+      reviewer_id: reviewer.id,
       creator_id: champion.id,
       creator_role: nil,
       visibility: "everyone",
@@ -23,13 +24,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     }
 
     {:ok, project} = Operately.Projects.create_project(params)
-
-    {:ok, _} = Operately.Projects.create_contributor(%{
-      person_id: reviewer.id,
-      role: :reviewer,
-      project_id: project.id,
-      responsibility: " "
-    })
 
     Map.merge(ctx, %{company: company, champion: champion, project: project, reviewer: reviewer, group: group})
   end
