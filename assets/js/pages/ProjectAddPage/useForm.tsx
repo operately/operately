@@ -21,18 +21,17 @@ interface Fields {
 
   name: string;
   champion: People.Person | null;
-  creatorRole: Option | null;
+  reviewer: People.Person | null;
+  creatorRole: string | null;
   visibility: string | null;
+  creatorIsContributor: string;
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person) => void;
-  setCreatorRole: (role: Option) => void;
+  setReviewer: (reviewer: People.Person) => void;
+  setCreatorRole: (role: string) => void;
   setVisibility: (visibility: string) => void;
-}
-
-interface Option {
-  value: string;
-  label: string;
+  setCreatorIsContributor: (contributor: string) => void;
 }
 
 interface Error {
@@ -43,8 +42,10 @@ interface Error {
 export function useForm(company: Companies.Company, spaceID: string, me: People.Person): FormState {
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
+  const [reviewer, setReviewer] = React.useState<People.Person | null>(null);
   const [visibility, setVisibility] = React.useState<string | null>("everyone");
-  const [creatorRole, setCreatorRole] = React.useState<{ value: string; label: string } | null>(null);
+  const [creatorRole, setCreatorRole] = React.useState<string | null>(null);
+  const [creatorIsContributor, setCreatorIsContributor] = React.useState<string>("no");
 
   const fields = {
     company: company,
@@ -53,13 +54,17 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
 
     name,
     champion,
+    reviewer,
     creatorRole,
     visibility,
+    creatorIsContributor,
 
     setName,
     setChampion,
+    setReviewer,
     setCreatorRole,
     setVisibility,
+    setCreatorIsContributor,
   };
 
   const { submit, submitting, cancel, errors } = useSubmit(fields);
@@ -126,12 +131,20 @@ function validate(fields: Fields): Error[] {
     result.push({ field: "champion", message: "Champion is required" });
   }
 
+  if (fields.reviewer === null) {
+    result.push({ field: "reviewer", message: "Reviewer is required" });
+  }
+
   if (fields.visibility === null) {
     result.push({ field: "visibility", message: "Visibility is required" });
   }
 
-  if (fields.champion?.id !== fields.me.id && fields.creatorRole === null) {
-    result.push({ field: "creatorRole", message: "Role is required" });
+  if (fields.champion?.id !== fields.me.id && fields.reviewer?.id !== fields.me.id) {
+    if (fields.creatorIsContributor === "yes") {
+      if (fields.creatorRole === null) {
+        result.push({ field: "creatorRole", message: "Role is required" });
+      }
+    }
   }
 
   return result;

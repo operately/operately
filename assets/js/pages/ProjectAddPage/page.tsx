@@ -60,6 +60,9 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
+  const showWillYouContribute =
+    form.fields.champion?.id !== form.fields.me.id && form.fields.reviewer?.id !== form.fields.me.id;
+
   return (
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={true} onCancel={form.cancel}>
       <div className="flex flex-col gap-8">
@@ -70,28 +73,50 @@ function Form({ form }: { form: FormState }) {
           onChange={form.fields.setName}
           placeholder="e.g. HR System Update"
           data-test-id="project-name-input"
-          error={form.errors.find((e) => e.field === "name")?.message}
+          error={!!form.errors.find((e) => e.field === "name")?.message}
         />
 
-        <ContributorSearch title="Champion" onSelect={form.fields.setChampion} defaultValue={form.fields.champion} />
-        {form.fields.champion?.id !== form.fields.me.id && (
-          <Forms.SelectBox
-            label="What is your role on this project?"
-            value={form.fields.creatorRole}
-            onChange={form.fields.setCreatorRole}
-            allowEnteringNewValues
-            options={[
-              { value: "Reviewer", label: "Reviewer" },
-              { value: "Project Manager", label: "Project Manager" },
-              { value: "Product Manager", label: "Product Manager" },
-              { value: "Designer", label: "Designer" },
-              { value: "Developer", label: "Developer" },
-              { value: "QA", label: "QA" },
-            ]}
-            defaultValue="Reviewer"
-            data-test-id="your-role-input"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <ContributorSearch title="Champion" onSelect={form.fields.setChampion} defaultValue={form.fields.champion} />
+          <ContributorSearch title="Reviewer" onSelect={form.fields.setReviewer} defaultValue={form.fields.reviewer} />
+        </div>
+
+        {showWillYouContribute && (
+          <div>
+            <div className="font-bold">Will you contribute?</div>
+
+            <Forms.RadioGroup
+              name="creatorIsContributor"
+              defaultValue={form.fields.creatorIsContributor}
+              onChange={form.fields.setCreatorIsContributor}
+            >
+              <div className="flex flex-col gap-1 mt-3">
+                <Forms.Radio
+                  label={"No, I'm just setting it up for someone else"}
+                  value="no"
+                  data-test-id="no-contributor"
+                />
+                <Forms.Radio label="Yes, I'll contribute" value="yes" data-test-id="yes-contributor" />
+              </div>
+            </Forms.RadioGroup>
+
+            {form.fields.creatorIsContributor === "yes" && (
+              <div className="mt-4">
+                <Forms.TextInput
+                  label="What is your responsibility on this project?"
+                  value={form.fields.creatorRole}
+                  onChange={form.fields.setCreatorRole}
+                  placeholder="e.g. Responsible for managing the project and coordinating tasks"
+                  data-test-id="project-name-input"
+                  error={!!form.errors.find((e) => e.field === "creatorRole")?.message}
+                />
+              </div>
+            )}
+          </div>
         )}
+      </div>
+
+      <Paper.DimmedSection>
         <Forms.RadioGroupWithLabel
           label="Who can see this project?"
           name="visibility"
@@ -110,7 +135,7 @@ function Form({ form }: { form: FormState }) {
             data-test-id="invite-only"
           />
         </Forms.RadioGroupWithLabel>
-      </div>
+      </Paper.DimmedSection>
     </Forms.Form>
   );
 }
@@ -125,7 +150,7 @@ function ContributorSearch({ title, onSelect, defaultValue }) {
         <PeopleSearch
           onChange={(option) => onSelect(option?.person)}
           defaultValue={defaultValue}
-          placeholder="Search by name ..."
+          placeholder="Search by name..."
           loader={loader}
         />
       </div>
