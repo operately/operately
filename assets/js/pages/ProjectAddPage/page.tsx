@@ -103,6 +103,7 @@ function Form({ form }: { form: FormState }) {
                 <Forms.Radio
                   label={"No, I'm just setting it up for someone else"}
                   value="no"
+                  disabled={form.fields.visibility === "invite"}
                   data-test-id="no-contributor"
                 />
                 <Forms.Radio label="Yes, I'll contribute" value="yes" data-test-id="yes-contributor" />
@@ -144,14 +145,6 @@ function Form({ form }: { form: FormState }) {
             data-test-id="invite-only"
           />
         </Forms.RadioGroupWithLabel>
-
-        {form.fields.noAccess && (
-          <div className="font-medium mt-8 pt-4 flex flex-col text-center border-t border-stroke-base">
-            <div className="font-bold mb-2">Are you sure?</div>
-            Access to this project is invite-only and restricted to contributors. You will not have access. The champion
-            and reviewer will be informed.
-          </div>
-        )}
       </Paper.DimmedSection>
     </Forms.Form>
   );

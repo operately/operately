@@ -18,6 +18,10 @@ export function RadioGroup({ name, defaultValue, onChange, children }) {
     onChange(value);
   };
 
+  React.useEffect(() => {
+    setChecked(defaultValue);
+  }, [defaultValue]);
+
   return <RadioContext.Provider value={{ name, checked, changeChecked }}>{children}</RadioContext.Provider>;
 }
 
@@ -32,11 +36,11 @@ export function RadioGroupWithLabel({ label, name, defaultValue, onChange, child
   );
 }
 
-export function Radio({ label, value, ...props }) {
+export function Radio({ label, value, disabled = false, ...props }) {
   return (
     <label className="flex items-center gap-2">
-      <InputElement value={value} {...props} />
-      {label}
+      <InputElement value={value} disabled={disabled} {...props} />
+      <span className={disabled ? "text-content-subtle" : "text-content-accent"}>{label}</span>
     </label>
   );
 }
@@ -67,6 +71,7 @@ function InputElement({ value, ...props }) {
         "checked:border-blue-400 checked:border-y-[5px] checked:border-x-[5px] checked:bg-shade-1",
         "checked:hover:border-blue-400 checked:hover:border-y-[4px] checked:hover:border-x-[4px] checked:hover:bg-shade-1",
         "focus:outline-none focus:checked:border-blue-400 focus:checked:border-y-[5px] focus:checked:border-x-[5px] focus:shadow-white focus:checked:bg-shade-1",
+        "disabled:opacity-50 disabled:cursor-not-allowed disabled:border-surface-outline",
       )}
       style={{
         backgroundImage: "none",

@@ -36,7 +36,6 @@ interface Fields {
   amIChampion: boolean;
   amIReviewer: boolean;
   amIContributor: boolean;
-  noAccess: boolean;
 }
 
 interface Error {
@@ -55,7 +54,16 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
   const amIChampion = champion?.id === me.id;
   const amIReviewer = reviewer?.id === me.id;
   const amIContributor = amIChampion || amIReviewer || creatorIsContributor === "yes";
-  const noAccess = !amIChampion && !amIReviewer && !amIContributor && visibility === "invite";
+
+  //
+  // If the creator is not a contributor, then they can't set the visibility to invite only
+  // So we set the visibility to everyone
+  //
+  React.useEffect(() => {
+    if (visibility === "invite") {
+      setCreatorIsContributor("yes");
+    }
+  }, [visibility]);
 
   const fields = {
     company: company,
@@ -79,7 +87,6 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
     amIChampion,
     amIReviewer,
     amIContributor,
-    noAccess,
   };
 
   const { submit, submitting, cancel, errors } = useSubmit(fields);

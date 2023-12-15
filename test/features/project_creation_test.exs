@@ -168,19 +168,4 @@ defmodule Operately.Features.ProjectCreationTest do
     |> UI.assert_text("Website Redesign")
     |> UI.assert_has(testid: "private-project-indicator")
   end
-
-  @tag login_as: :non_contributor
-  feature "add a private project as a non-contributor", ctx do
-    ctx
-    |> UI.visit("/spaces/#{ctx.group.id}")
-    |> UI.click(testid: "projects-tab")
-    |> UI.click(testid: "add-project")
-    |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person_in(id: "Champion", name: ctx.champion.full_name)
-    |> UI.select_person_in(id: "Reviewer", name: ctx.reviewer.full_name)
-    |> UI.click(testid: "invite-only")
-    |> UI.assert_text("Are you sure?")
-    |> UI.click(testid: "save")
-    |> UI.assert_page("/spaces/#{ctx.group.id}")
-  end
 end
