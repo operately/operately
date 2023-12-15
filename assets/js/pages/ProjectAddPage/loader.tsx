@@ -1,16 +1,17 @@
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
+import * as Groups from "@/models/groups";
 
 interface LoaderResult {
   company: Companies.Company;
   me: People.Person;
-  spaceID: string;
+  space: Groups.Group;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    spaceID: params.id,
+    space: await Groups.getGroup(params.id),
     company: await Companies.getCompany(),
     me: await People.getMe(),
   };
