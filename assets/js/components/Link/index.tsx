@@ -11,6 +11,7 @@ interface Props {
 
 interface LinkProps extends Props {
   to: string;
+  underline?: boolean;
 }
 
 interface ButtonLinkProps extends Props {
@@ -21,6 +22,13 @@ interface DivLinkProps extends Props {
   to: string;
   className?: string;
 }
+
+const baseClassNoUnderline = classnames(
+  "text-link-base hover:text-link-hover",
+  "hover:underline underline-offset-2",
+  "cursor-pointer",
+  "transition-colors",
+);
 
 const baseClassName = classnames(
   "text-link-base hover:text-link-hover",
@@ -36,9 +44,11 @@ const dimmedClassName = classnames(
   "transition-colors",
 );
 
-export function Link({ to, children, target, testId }: LinkProps) {
+export function Link({ to, children, target, underline = true, testId }: LinkProps) {
+  const className = underline ? baseClassName : baseClassNoUnderline;
+
   return (
-    <Router.Link to={to} className={baseClassName} data-test-id={testId} target={target}>
+    <Router.Link to={to} className={className} data-test-id={testId} target={target}>
       {children}
     </Router.Link>
   );

@@ -93,7 +93,7 @@ export function Indicator({ value, type }): JSX.Element {
   const { title, color } = findOptions(type, value);
 
   return (
-    <span className="font-medium flex items-center gap-2">
+    <span className="font-medium flex items-center gap-1">
       <Icons.IconCircleFilled size={16} className={color} />
       {title}
     </span>

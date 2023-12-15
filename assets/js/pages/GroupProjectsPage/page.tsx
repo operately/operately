@@ -8,11 +8,12 @@ import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
 import { GhostButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { DivLink } from "@/components/Link";
+import { Link, DivLink } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { createPath } from "@/utils/paths";
 import classnames from "classnames";
 import { useLoadedData } from "./loader";
+import { Indicator } from "@/components/ProjectHealthIndicators";
 
 export function Page() {
   const { group, projects } = useLoadedData();
@@ -42,11 +43,7 @@ function ProjectList({ projects }) {
   const activeProjects = projects.filter((project) => !project.isArchived);
 
   return (
-    <div className="border border-surface-outline rounded">
-      <div className="border-b border-surface-outline px-3 py-2 text-sm rounded-t">
-        {activeProjects.length} Projects
-      </div>
-
+    <div className="">
       {activeProjects.map((project) => {
         return <ProjectListItem project={project} key={project.id} />;
       })}
@@ -56,36 +53,38 @@ function ProjectList({ projects }) {
 
 function ProjectListItem({ project }) {
   const path = createPath("projects", project.id);
-  const className = classnames(
-    "py-3 px-3",
-    "bg-surface",
-    "flex flex-col",
-    "cursor-pointer",
-    "hover:bg-surface-highlight",
-    "not-first:border-t border-stroke-base",
-    "last:rounded-b-lg",
-  );
+  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t border-stroke-base");
 
   let { pending, done } = Milestones.splitByStatus(project.milestones);
+  const totalCount = pending.length + done.length;
 
   const completion = (
-    <div className="text-sm text-content-dimmed">
-      {done.length}/{pending.length + done.length} completed
+    <div className="flex items-center gap-2">
+      <MiniPieChart completed={done.length} total={totalCount} size={16} />
+      {done.length}/{totalCount} completed
     </div>
   );
-  const name = <div className="text-ellipsis font-bold leading-none">{project.name}</div>;
+
+  const name = (
+    <div className="font-extrabold">
+      <Link to={path} underline={false}>
+        {project.name}
+      </Link>
+
+      {project.private && <Icons.IconLock size={16} className="inline-block ml-2" />}
+    </div>
+  );
 
   return (
-    <DivLink to={path} className={className}>
-      <div className="flex items-start justify-between">
+    <div className={className}>
+      <div className="flex items-center justify-between">
         <div className="flex items-start gap-2">
-          <MiniPieChart completed={done.length} total={pending.length + done.length} size={20} />
-
           <div className="">
             {name}
 
-            <div className="flex items-center gap-1 mt-1">
-              {completion}
+            <div className="flex items-center gap-5 mt-2 text-sm">
+              <Status project={project} />
+              {totalCount > 0 && completion}
               <NextMilestone project={project} pending={pending} done={done} />
             </div>
           </div>
@@ -93,17 +92,20 @@ function ProjectListItem({ project }) {
 
         <ContribList project={project} />
       </div>
-    </DivLink>
+    </div>
   );
+}
+
+function Status({ project }) {
+  return <Indicator value={project.health} type="status" />;
 }
 
 function NextMilestone({ project, pending, done }) {
   if (project.nextMilestone === null) return null;
 
   return (
-    <div className="text-sm inline-flex items-center gap-1 text-content-dimmed">
-      &middot;
-      <Icons.IconFlag size={12} />
+    <div className="inline-flex items-center gap-2">
+      <Icons.IconFlagFilled size={16} className="text-green-600" />
       <span className="">{project.nextMilestone.title}</span>
     </div>
   );
@@ -113,7 +115,7 @@ function ContribList({ project }) {
   return (
     <div className="flex items-center gap-1">
       {project.contributors!.map((contributor) => (
-        <Avatar key={contributor!.id} person={contributor!.person} size="tiny" />
+        <Avatar key={contributor!.id} person={contributor!.person} size={24} />
       ))}
     </div>
   );
