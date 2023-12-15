@@ -53,7 +53,7 @@ function ProjectList({ projects }) {
 
 function ProjectListItem({ project }) {
   const path = createPath("projects", project.id);
-  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t border-stroke-base");
+  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t last:border-b border-stroke-base");
 
   let { pending, done } = Milestones.splitByStatus(project.milestones);
   const totalCount = pending.length + done.length;
