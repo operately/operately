@@ -74,7 +74,7 @@ export function Page() {
                   <div className="text-sm">
                     {showEditMilestones(project) && (
                       <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
-                        Manage
+                        View
                       </Link>
                     )}
                   </div>
