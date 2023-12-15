@@ -34,8 +34,8 @@ body[data-theme="light"] {
 
   --color-stroke-base: rgba(0, 0, 0, 0.1);
 
-  --color-link-base: rgba(20, 120, 197, 1);
-  --color-link-hover: rgba(15, 92, 151, 1);
+  --color-link-base: var(--color-sky-700);
+  --color-link-hover: var(--color-sky-600);
 
   --color-accent-1: rgba(37, 155, 105, 1);
 }
@@ -56,8 +56,8 @@ body[data-theme="dark"] {
 
   --color-stroke-base: rgba(255, 255, 255, 0.1);
 
-  --color-link-base: rgba(96, 165, 250, 1);
-  --color-link-hover: rgba(147, 197, 253, 1);
+  --color-link-base: var(--color-sky-500);
+  --color-link-hover: var(--color-sky-400);
 
   --color-accent-1: rgba(37, 155, 105, 1);
 }
