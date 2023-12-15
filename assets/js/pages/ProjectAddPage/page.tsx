@@ -21,7 +21,7 @@ export function Page() {
     <Pages.Page title="New Project">
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/spaces/${form.fields.spaceID}/goals`}>Back to {space.name} Space</DimmedLink>
+          <DimmedLink to={`/spaces/${form.fields.spaceID}/projects`}>Back to {space.name} Space</DimmedLink>
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space.name}</h1>
