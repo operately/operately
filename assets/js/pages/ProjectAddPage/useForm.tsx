@@ -32,6 +32,11 @@ interface Fields {
   setCreatorRole: (role: string) => void;
   setVisibility: (visibility: string) => void;
   setCreatorIsContributor: (contributor: string) => void;
+
+  amIChampion: boolean;
+  amIReviewer: boolean;
+  amIContributor: boolean;
+  noAccess: boolean;
 }
 
 interface Error {
@@ -46,6 +51,11 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
   const [visibility, setVisibility] = React.useState<string | null>("everyone");
   const [creatorRole, setCreatorRole] = React.useState<string | null>(null);
   const [creatorIsContributor, setCreatorIsContributor] = React.useState<string>("no");
+
+  const amIChampion = champion?.id === me.id;
+  const amIReviewer = reviewer?.id === me.id;
+  const amIContributor = amIChampion || amIReviewer || creatorIsContributor === "yes";
+  const noAccess = !amIChampion && !amIReviewer && !amIContributor && visibility === "invite";
 
   const fields = {
     company: company,
@@ -65,6 +75,11 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
     setCreatorRole,
     setVisibility,
     setCreatorIsContributor,
+
+    amIChampion,
+    amIReviewer,
+    amIContributor,
+    noAccess,
   };
 
   const { submit, submitting, cancel, errors } = useSubmit(fields);
@@ -84,7 +99,13 @@ function useSubmit(fields: Fields) {
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const [add, { loading: submitting }] = Projects.useCreateProject({
-    onCompleted: (data: any) => navigate(`/projects/${data?.createProject?.id}`),
+    onCompleted: (data: any) => {
+      if (fields.noAccess) {
+        navigate(`/spaces/${fields.spaceID}`);
+      } else {
+        navigate(`/projects/${data?.createProject?.id}`);
+      }
+    },
   });
 
   const submit = async () => {
@@ -100,8 +121,10 @@ function useSubmit(fields: Fields) {
         input: {
           name: fields.name,
           championId: fields.champion!.id,
+          reviewerId: fields.reviewer!.id,
           visibility: fields.visibility,
-          creatorRole: fields.creatorRole?.value,
+          creatorIsContributor: fields.creatorIsContributor,
+          creatorRole: fields.creatorRole,
           spaceId: fields.spaceID,
         },
       },

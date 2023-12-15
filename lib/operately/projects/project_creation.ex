@@ -6,7 +6,17 @@ defmodule Operately.Projects.ProjectCreation do
   alias Operately.Activities
   alias Ecto.Multi
 
-  defstruct [:company_id, :name, :champion_id, :creator_id, :creator_role, :visibility, :group_id]
+  defstruct [
+    :company_id, 
+    :name, 
+    :champion_id, 
+    :reviewer_id,
+    :creator_id, 
+    :creator_role, 
+    :creator_is_contributor,
+    :visibility, 
+    :group_id
+  ]
 
   def run(%__MODULE__{} = params) do
     Multi.new()
@@ -31,6 +41,14 @@ defmodule Operately.Projects.ProjectCreation do
         role: :champion
       })
     end)
+    |> Multi.insert(:reviewer, fn changes ->
+      Contributor.changeset(%{
+        project_id: changes.project.id,
+        person_id: params.reviewer_id,
+        responsibility: " ",
+        role: :reviewer
+      })
+    end)
     |> Multi.run(:creator_role, fn _repo, changes -> assign_creator_role(changes.project, params) end)
     |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
     |> Activities.insert(params.creator_id, :project_created, fn changes -> %{project_id: changes.project.id} end)
@@ -43,17 +61,13 @@ defmodule Operately.Projects.ProjectCreation do
       params.champion_id == params.creator_id ->
         {:ok, "Champion"}
 
-      params.creator_role == "Reviewer" ->
-        {:ok, _} = Projects.create_contributor(%{
-          project_id: project.id,
-          person_id: params.creator_id,
-          responsibility: " ",
-          role: :reviewer
-        })
-
+      params.reviewer_id == params.creator_id ->
         {:ok, "Reviewer"}
 
-      true ->
+      params.creator_is_contributor == "no" ->
+        {:ok, "not contributing"}
+
+      params.creator_is_contributor == "yes" ->
         {:ok, _} = Projects.create_contributor(%{
           project_id: project.id,
           person_id: params.creator_id,

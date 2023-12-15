@@ -60,8 +60,7 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
-  const showWillYouContribute =
-    form.fields.champion?.id !== form.fields.me.id && form.fields.reviewer?.id !== form.fields.me.id;
+  const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
 
   return (
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={true} onCancel={form.cancel}>
@@ -77,8 +76,18 @@ function Form({ form }: { form: FormState }) {
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <ContributorSearch title="Champion" onSelect={form.fields.setChampion} defaultValue={form.fields.champion} />
-          <ContributorSearch title="Reviewer" onSelect={form.fields.setReviewer} defaultValue={form.fields.reviewer} />
+          <ContributorSearch
+            title="Champion"
+            onSelect={form.fields.setChampion}
+            defaultValue={form.fields.champion}
+            error={!!form.errors.find((e) => e.field === "champion")?.message}
+          />
+          <ContributorSearch
+            title="Reviewer"
+            onSelect={form.fields.setReviewer}
+            defaultValue={form.fields.reviewer}
+            error={!!form.errors.find((e) => e.field === "reviewer")?.message}
+          />
         </div>
 
         {showWillYouContribute && (
@@ -107,7 +116,7 @@ function Form({ form }: { form: FormState }) {
                   value={form.fields.creatorRole}
                   onChange={form.fields.setCreatorRole}
                   placeholder="e.g. Responsible for managing the project and coordinating tasks"
-                  data-test-id="project-name-input"
+                  data-test-id="creator-responsibility-input"
                   error={!!form.errors.find((e) => e.field === "creatorRole")?.message}
                 />
               </div>
@@ -135,12 +144,20 @@ function Form({ form }: { form: FormState }) {
             data-test-id="invite-only"
           />
         </Forms.RadioGroupWithLabel>
+
+        {form.fields.noAccess && (
+          <div className="font-medium mt-8 pt-4 flex flex-col text-center border-t border-stroke-base">
+            <div className="font-bold mb-2">Are you sure?</div>
+            Access to this project is invite-only and restricted to contributors. You will not have access. The champion
+            and reviewer will be informed.
+          </div>
+        )}
       </Paper.DimmedSection>
     </Forms.Form>
   );
 }
 
-function ContributorSearch({ title, onSelect, defaultValue }) {
+function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
   const loader = People.usePeopleSearch();
 
   return (
@@ -152,6 +169,8 @@ function ContributorSearch({ title, onSelect, defaultValue }) {
           defaultValue={defaultValue}
           placeholder="Search by name..."
           loader={loader}
+          inputId={title}
+          error={error}
         />
       </div>
     </div>

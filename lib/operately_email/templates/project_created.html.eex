@@ -31,9 +31,11 @@
           <td>- You are the <%= @role %></td>
         <tr>
 
-        <tr style="font-size: 16px; font-family: sans-serif;">
-          <td>- <%= Person.short_name(@author) %> is a <%= @author_role %></td>
-        <tr>
+        <%= if @author_role do %>
+          <tr style="font-size: 16px; font-family: sans-serif;">
+            <td>- <%= Person.short_name(@author) %> is a <%= @author_role %></td>
+          <tr>
+        <% end %>
 
         <tr style="height: 20px">
           <td></td>

@@ -45,6 +45,7 @@ defmodule OperatelyEmail.ProjectCreatedEmail do
       :champion -> "Champion"
       :reviewer -> "Reviewer"
       :contributor -> "Contributor"
+      nil -> nil
     end
   end
 end
