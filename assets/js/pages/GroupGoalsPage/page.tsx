@@ -1,9 +1,10 @@
 import React from "react";
+import classnames from "classnames";
 
 import Avatar from "@/components/Avatar";
 import { GhostButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { DivLink } from "@/components/Link";
+import { Link } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
@@ -43,39 +44,52 @@ function Content() {
         </GhostButton>
       </div>
 
-      <GoalsGrid goals={goals} />
+      <GoalList goals={goals} />
     </>
   );
 }
 
-function GoalsGrid({ goals }: { goals: Goals.Goal[] }) {
+function GoalList({ goals }: { goals: Goals.Goal[] }) {
   return (
-    <div className="grid lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 gap-4">
+    <div className="">
       {goals
         .filter((goal) => !goal.isArchived)
         .map((goal) => {
-          return <GoalGridItem goal={goal} key={goal.id} />;
+          return <GoalItem goal={goal} key={goal.id} />;
         })}
     </div>
   );
 }
 
-function GoalGridItem({ goal }: { goal: Goals.Goal }) {
+function GoalItem({ goal }: { goal: Goals.Goal }) {
   const path = createPath("goals", goal.id);
+  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t last:border-b border-stroke-base");
 
   return (
-    <DivLink
-      className="bg-surface rounded-lg p-4 flex flex-col gap-2 cursor-pointer shadow hover:shadow-lg overflow-hidden border border-stroke-base"
-      to={path}
-    >
-      <div className="flex flex-col justify-between h-28">
-        <div className="text-ellipsis font-bold">{goal.name}</div>
+    <div className={className}>
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-ellipsis font-bold">
+            <Link to={path} underline={false}>
+              {goal.name}
+            </Link>
+          </div>
+
+          {goal.targets!.map((target) => (
+            <div key={target!.id} className="text-sm flex items-center gap-1">
+              <div className="text-ellipsis w-96">{target!.name}</div>
+              <div className="text-ellipsis w-24 bg-surface-dimmed relative h-2 rounded-lg overflow-none">
+                <div className="absolute top-0 left-0 h-full bg-accent-1" style={{ width: "50%" }} />
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="flex items-center gap-1">
-          <Avatar person={goal.champion!} size="tiny" />
-          <Avatar person={goal.reviewer!} size="tiny" />
+          <Avatar person={goal.champion!} size={24} />
+          <Avatar person={goal.reviewer!} size={24} />
         </div>
       </div>
-    </DivLink>
+    </div>
   );
 }

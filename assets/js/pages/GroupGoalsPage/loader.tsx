@@ -22,7 +22,7 @@ export async function loader({ params }): Promise<LoadedData> {
 
   return {
     company: await Companies.getCompany(),
-    goals: await Goals.getGoals(params.id),
+    goals: await Goals.getGoals(params.id, { includeTargets: true }),
     group: groupData.data.group,
   };
 }
