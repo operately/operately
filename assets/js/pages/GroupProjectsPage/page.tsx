@@ -14,6 +14,7 @@ import { createPath } from "@/utils/paths";
 import classnames from "classnames";
 import { useLoadedData } from "./loader";
 import { Indicator } from "@/components/ProjectHealthIndicators";
+import { TextTooltip } from "@/components/Tooltip";
 
 export function Page() {
   const { group, projects } = useLoadedData();
@@ -51,6 +52,18 @@ function ProjectList({ projects }) {
   );
 }
 
+function PrivateIndicator({ project }) {
+  if (!project.private) return null;
+
+  return (
+    <TextTooltip text="Private project. Visible only to contributors.">
+      <div data-test-id="private-project-indicator">
+        <Icons.IconLock size={16} />
+      </div>
+    </TextTooltip>
+  );
+}
+
 function ProjectListItem({ project }) {
   const path = createPath("projects", project.id);
   const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t last:border-b border-stroke-base");
@@ -66,12 +79,12 @@ function ProjectListItem({ project }) {
   );
 
   const name = (
-    <div className="font-extrabold">
+    <div className="font-extrabold flex items-center gap-2">
       <Link to={path} underline={false}>
         {project.name}
       </Link>
 
-      {project.private && <Icons.IconLock size={16} className="inline-block ml-2" />}
+      <PrivateIndicator project={project} />
     </div>
   );
 
