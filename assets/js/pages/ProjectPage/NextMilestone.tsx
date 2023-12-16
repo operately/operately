@@ -76,15 +76,16 @@ function MilestoneLink({ project, milestone }) {
   const deadline = milestone.deadlineAt;
 
   return (
-    <div className="flex items-center gap-1.5 mt-1">
-      <Icons.IconFlagFilled size={16} className="text-yellow-400" />
-      <div className="font-semibold">
-        <Link to={path}>{title}</Link>
-      </div>
+    <div className="mt-1">
+      <Icons.IconFlagFilled size={16} className="text-yellow-400 inline-block" />
 
-      <div className="text-sm font-medium">
+      <span className="font-semibold mx-1">
+        <Link to={path}>{title}</Link>
+      </span>
+
+      <span className="text-sm font-medium">
         &middot; Due date on <FormattedTime time={deadline} format="short-date" />
-      </div>
+      </span>
     </div>
   );
 }
