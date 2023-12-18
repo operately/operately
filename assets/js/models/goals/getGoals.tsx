@@ -1,8 +1,14 @@
 import client from "@/graphql/client";
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 
 const LIST_GOALS = gql`
-  query ListGols($spaceId: ID!) {
+  fragment Targets on Goal {
+    targets {
+      name
+    }
+  }
+
+  query ListGols($spaceId: ID!, $includeTargets: Boolean!) {
     goals(spaceId: $spaceId) {
       id
       name
@@ -22,15 +28,22 @@ const LIST_GOALS = gql`
         avatarUrl
         title
       }
+
+      ...Targets @include(if: $includeTargets)
     }
   }
 `;
 
-export async function getGoals(spaceId: string) {
+interface GetGoalsOptions {
+  includeTargets?: boolean;
+}
+
+export async function getGoals(spaceId: string, options: GetGoalsOptions = {}): Promise<Goals.Goal[]> {
   const data = await client.query({
     query: LIST_GOALS,
     variables: {
       spaceId: spaceId,
+      includeTargets: options.includeTargets,
     },
     fetchPolicy: "network-only",
   });
