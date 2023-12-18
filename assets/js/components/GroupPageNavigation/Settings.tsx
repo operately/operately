@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { DivLink } from "../Link";
 
 export function Settings({ groupId }) {
@@ -18,20 +17,6 @@ export function Settings({ groupId }) {
     </div>
   );
 }
-
-// <Option
-//   icon={Icons.IconId}
-//   title="Edit name and purpose"
-//   link={`/spaces/${groupId}/edit`}
-//   dataTestId="edit-name-and-purpose"
-// />
-
-// <Option
-//   icon={Icons.IconLock}
-//   title="Change Visibility"
-//   link={`/spaces/${groupId}/visibility`}
-//   dataTestId="change-visiblity"
-// />
 
 function OptionsDropdown({ groupId, closeOptions }) {
   return (
