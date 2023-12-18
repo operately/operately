@@ -12,6 +12,7 @@ import * as Companies from "@/models/companies";
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import { ComingSoonBadge } from "@/components/ComingSoonBadge";
+import { TextTooltip } from "@/components/Tooltip";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -75,14 +76,14 @@ function GoalItem({ goal }: { goal: Goals.Goal }) {
             </Link>
           </div>
 
-          {goal.targets!.map((target) => (
-            <div key={target!.id} className="text-sm flex items-center gap-1">
-              <div className="text-ellipsis w-96">{target!.name}</div>
-              <div className="text-ellipsis w-24 bg-surface-dimmed relative h-2 rounded-lg overflow-none">
-                <div className="absolute top-0 left-0 h-full bg-accent-1" style={{ width: "50%" }} />
+          <div className="flex flex-col gap-1 mt-1">
+            {goal.targets!.map((target) => (
+              <div key={target!.id} className="text-sm flex items-center gap-1">
+                <div className="text-ellipsis w-96">{target!.name}</div>
+                <ProgressBar progress={target} />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-1">
@@ -91,5 +92,22 @@ function GoalItem({ goal }: { goal: Goals.Goal }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProgressBar({ target }: { target: Goals.Target }) {
+  const progress = Math.floor(Math.random() * 100.0);
+
+  let color = "";
+  if (progress < 20) color = "bg-yellow-300";
+  if (progress >= 40 && progress < 80) color = "bg-yellow-500";
+  if (progress >= 70) color = "bg-green-600";
+
+  return (
+    <TextTooltip text={"hello"}>
+      <div className="text-ellipsis w-20 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
+        <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
+      </div>
+    </TextTooltip>
   );
 }
