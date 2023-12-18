@@ -52,7 +52,12 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+
+export type ActivityContentGoalArchived = {
+  __typename?: 'ActivityContentGoalArchived';
+  goal: Goal;
+};
 
 export type ActivityContentGoalCreated = {
   __typename?: 'ActivityContentGoalCreated';
@@ -322,8 +327,10 @@ export type CreateObjectiveInput = {
 
 export type CreateProjectInput = {
   championId: Scalars['ID']['input'];
+  creatorIsContributor: Scalars['String']['input'];
   creatorRole?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
   visibility: Scalars['String']['input'];
 };
@@ -680,6 +687,7 @@ export type RootMutationType = {
   addProjectContributor: ProjectContributor;
   addProjectMilestone: Milestone;
   addReaction?: Maybe<Reaction>;
+  archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
   closeProject: Project;
   createBlob: Blob;
@@ -789,6 +797,11 @@ export type RootMutationTypeAddReactionArgs = {
   entityId: Scalars['ID']['input'];
   entityType: Scalars['String']['input'];
   type: Scalars['String']['input'];
+};
+
+
+export type RootMutationTypeArchiveGoalArgs = {
+  goalId: Scalars['ID']['input'];
 };
 
 

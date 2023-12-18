@@ -9,6 +9,7 @@ import { useLoadedData } from "./loader";
 import { TargetList } from "./TargetList";
 import { Options } from "./Options";
 import { Navigation } from "./Navigation";
+import { Banner } from "./Banner";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -19,6 +20,8 @@ export function Page() {
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
+          <Banner goal={goal} />
+
           <div className="flex items-center justify-between">
             <div
               className={classnames(
@@ -33,7 +36,7 @@ export function Page() {
             </div>
 
             <div className="flex gap-4 items-center">
-              <Options goalId={goal.id} />
+              <Options goal={goal} />
             </div>
           </div>
 

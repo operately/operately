@@ -30,6 +30,13 @@ const query = gql`
             }
           }
 
+          ... on ActivityContentGoalArchived {
+            goal {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectClosed {
             project {
               id

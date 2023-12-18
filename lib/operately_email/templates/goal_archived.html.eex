@@ -1,0 +1,13 @@
+<html>
+  <%= head(@title) %>
+
+  <%= body do %>
+    <%= title("#{Person.short_name(@author)} archived the #{@goal.name} goal in Operately") %>
+
+    <%= spacer() %>
+
+    <%= row do %>
+      <%= cta_button(@cta_url, "View Archived Goal") %>
+    <% end %>
+  <% end %>
+</html>

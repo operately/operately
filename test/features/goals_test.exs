@@ -2,6 +2,8 @@ defmodule Operately.Features.GoalCreationTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.GoalSteps
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
 
   setup ctx do
     ctx = GoalSteps.create_goal(ctx)
@@ -18,16 +20,16 @@ defmodule Operately.Features.GoalCreationTest do
     |> UI.click(testid: "archive-goal")
     |> UI.assert_text("Archive this goal?")
     |> UI.click(testid: "confirm-archive-goal")
-    |> UI.assert_text("Goal archived on")
+    |> UI.assert_text("This goal was archived on")
 
     ctx
-    |> UI.visit_goal_list()
+    |> GoalSteps.visit_goal_list_page()
     |> UI.refute_has(Query.text(ctx.goal.name))
 
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, project: ctx.project)
-    |> EmailSteps.assert_goal_archived_sent(author: ctx.champion, project: ctx.project, to: ctx.reviewer)
+    |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal)
+    |> EmailSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal, to: ctx.reviewer)
   end
   
 end

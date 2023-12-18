@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { DivLink } from "@/components/Link";
 
-export function Options({ goalId }) {
+export function Options({ goal }) {
   const [showOptions, setShowOptions] = React.useState(false);
 
   const openOptions = () => setShowOptions(true);
@@ -13,17 +13,19 @@ export function Options({ goalId }) {
     <div>
       <OpenOptions onClick={openOptions} testId="goal-options" />
 
-      {showOptions && <OptionsDropdown goalId={goalId} closeOptions={closeOptions} />}
+      {showOptions && <OptionsDropdown goal={goal} closeOptions={closeOptions} />}
     </div>
   );
 }
 
-function OptionsDropdown({ goalId, closeOptions }) {
+function OptionsDropdown({ goal, closeOptions }) {
   return (
     <div className="absolute right-0 top-0 z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col">
       <CloseOptions onClick={closeOptions} testId="close-goal-options" />
 
-      <Option icon={Icons.IconTrash} title="Archive" link={`/goals/${goalId}/archive`} dataTestId="archive-goal" />
+      {!goal.isArchived && (
+        <Option icon={Icons.IconTrash} title="Archive" link={`/goals/${goal.id}/archive`} dataTestId="archive-goal" />
+      )}
     </div>
   );
 }

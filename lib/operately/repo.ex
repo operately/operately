@@ -3,6 +3,16 @@ defmodule Operately.Repo do
 
   import Ecto.Query
 
+  def get_by_id(queryable, id) do
+    query = from g in queryable, where: g.id == ^id
+    __MODULE__.one(query)
+  end
+
+  def get_by_id(queryable, id, :with_deleted) do
+    query = from g in queryable, where: g.id == ^id
+    __MODULE__.one(query, with_deleted: true)
+  end
+
   #
   # Soft Delete
   #

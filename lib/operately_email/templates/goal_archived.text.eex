@@ -1,0 +1,3 @@
+<%= Operately.People.Person.first_name(@author) %> archived the <%= @goal.name %> goal.
+
+Link: <%= @cta_url %>

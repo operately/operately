@@ -12,24 +12,27 @@ defmodule Operately.Support.Features.GoalSteps do
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
-    goal = Operately.Goals.create_goal(champion, %{
+    {:ok, goal} = Operately.Goals.create_goal(champion, %{
       company_id: company.id,
-      group_id: group.id,
+      space_id: group.id,
       name: "Improve support first response time",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
+      timeframe: "2023-Q4",
       targets: [
         %{
           name: "First response time",
-          current: 30,
-          target: 15,
-          unit: "minutes"
+          from: 30,
+          to: 15,
+          unit: "minutes",
+          index: 0
         },
         %{
           name: "Increase feedback score to 90%",
-          current: 80,
-          target: 90,
-          unit: "percent"
+          from: 80,
+          to: 90,
+          unit: "percent",
+          index: 1
         }
       ]
     })
@@ -41,7 +44,7 @@ defmodule Operately.Support.Features.GoalSteps do
     UI.visit(ctx, "/goals/#{ctx.goal.id}")
   end
 
-  def visit_goal_list(ctx) do
+  def visit_goal_list_page(ctx) do
     UI.visit(ctx, "/spaces/#{ctx.group.id}/goals")
   end
 end

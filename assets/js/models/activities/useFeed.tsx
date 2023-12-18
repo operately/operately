@@ -49,6 +49,14 @@ const query = gql`
           }
         }
 
+        ... on ActivityContentGoalArchived {
+          goal {
+            id
+            name
+            myRole
+          }
+        }
+
         ... on ActivityContentProjectMoved {
           project {
             id

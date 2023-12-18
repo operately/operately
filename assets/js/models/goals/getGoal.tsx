@@ -41,6 +41,8 @@ const QUERY = gql`
       id
       name
       timeframe
+      isArchived
+      archivedAt
 
       space {
         id
