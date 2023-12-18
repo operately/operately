@@ -16,6 +16,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
       end
     end
 
+    field :archived_at, :date do
+      resolve fn goal, _, _ ->
+        {:ok, goal.deleted_at}
+      end
+    end
+
     field :space, non_null(:group) do
       resolve fn goal, _, _ ->
         {:ok, Operately.Groups.get_group!(goal.group_id)}

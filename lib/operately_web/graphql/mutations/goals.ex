@@ -28,5 +28,16 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
         Operately.Goals.create_goal(creator, args.input)
       end
     end
+
+    field :archive_goal, :goal do
+      arg :goal_id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        author = context.current_account.person
+        goal = Operately.Goals.get_goal!(args.goal_id)
+
+        Operately.Goals.archive_goal(author, goal)
+      end
+    end
   end
 end

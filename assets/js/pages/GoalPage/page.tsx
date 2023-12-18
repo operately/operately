@@ -1,4 +1,5 @@
 import * as React from "react";
+import classnames from "classnames";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import { FeedForGoal } from "@/components/Feed";
@@ -6,7 +7,9 @@ import Avatar from "@/components/Avatar";
 
 import { useLoadedData } from "./loader";
 import { TargetList } from "./TargetList";
+import { Options } from "./Options";
 import { Navigation } from "./Navigation";
+import { Banner } from "./Banner";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -17,7 +20,25 @@ export function Page() {
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
-          <div className="text-content-accent text-3xl font-extrabold">{goal.name}</div>
+          <Banner goal={goal} />
+
+          <div className="flex items-center justify-between">
+            <div
+              className={classnames(
+                "flex gap-2 items-center",
+                "font-bold",
+                "break-all",
+                "text-3xl",
+                "text-content-accent",
+              )}
+            >
+              {goal.name}
+            </div>
+
+            <div className="flex gap-4 items-center">
+              <Options goal={goal} />
+            </div>
+          </div>
 
           <div className="flex item-center mt-4 gap-12">
             <div>

@@ -18,6 +18,10 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} archived the #{project.name} project in Operately")
   end
 
+  def assert_goal_archived_sent(ctx, author: author, goal: goal, to: to) do
+    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} archived the #{goal.name} goal in Operately")
+  end
+
   def assert_project_update_acknowledged_sent(ctx, author: author, to: to) do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} acknowledged your status update for #{ctx.project.name}")
   end

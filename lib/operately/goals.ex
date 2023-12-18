@@ -15,11 +15,10 @@ defmodule Operately.Goals do
     Repo.all(query)
   end
 
-  def get_goal!(id) do
-    Repo.get!(Goal, id)
-  end
+  def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
 
   defdelegate create_goal(creator, attrs), to: Operately.Goals.CreateOperation, as: :run
+  defdelegate archive_goal(author, goal), to: Operately.Goals.ArchiveOperation, as: :run
 
   def update_goal(%Goal{} = goal, attrs) do
     goal

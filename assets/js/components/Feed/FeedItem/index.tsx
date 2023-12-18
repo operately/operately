@@ -5,6 +5,7 @@
 
 import * as React from "react";
 
+import GoalArchived from "./GoalArchived"
 import GoalCreated from "./GoalCreated"
 import ProjectArchived from "./ProjectArchived"
 import ProjectClosed from "./ProjectClosed"
@@ -27,6 +28,9 @@ export default function FeedItem({activity}) {
   const activityType = activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentGoalArchived":
+      return <GoalArchived activity={activity} />;
+    
     case "ActivityContentGoalCreated":
       return <GoalCreated activity={activity} />;
     

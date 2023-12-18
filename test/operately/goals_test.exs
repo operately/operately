@@ -61,11 +61,6 @@ defmodule Operately.GoalsTest do
       assert ctx.goal == Goals.get_goal!(ctx.goal.id)
     end
 
-    test "delete_goal/1 deletes the goal", ctx do
-      assert {:ok, %Goal{}} = Goals.delete_goal(ctx.goal)
-      assert_raise Ecto.NoResultsError, fn -> Goals.get_goal!(ctx.goal.id) end
-    end
-
     test "change_goal/1 returns a goal changeset", ctx do
       assert %Ecto.Changeset{} = Goals.change_goal(ctx.goal)
     end

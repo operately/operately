@@ -77,8 +77,8 @@ function GoalItem({ goal }: { goal: Goals.Goal }) {
           </div>
 
           <div className="flex flex-col gap-1 mt-1">
-            {goal.targets!.map((target) => (
-              <div key={target!.id} className="text-sm flex items-center gap-1">
+            {goal.targets!.map((target, index) => (
+              <div key={index} className="text-sm flex items-center gap-1">
                 <div className="text-ellipsis w-96">{target!.name}</div>
                 <ProgressBar progress={target} />
               </div>
