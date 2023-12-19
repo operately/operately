@@ -37,9 +37,15 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.refute_has(testid: "close-project-button")
 
     ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer, 
+      author: ctx.champion, 
+      action: "closed the #{ctx.project.name} project and submitted a retrospective"
+    })
+
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.champion)
-    |> EmailSteps.assert_project_retrospective_sent(author: ctx.champion, to: ctx.reviewer)
   end
 
   #
