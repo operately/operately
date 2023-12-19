@@ -70,9 +70,15 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.refute_has(Query.text(ctx.project.name))
 
     ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer, 
+      author: ctx.champion, 
+      action: "archived the #{ctx.project.name} project"
+    })
+
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_archived_sent(author: ctx.champion, project: ctx.project)
-    |> EmailSteps.assert_project_archived_sent(author: ctx.champion, project: ctx.project, to: ctx.reviewer)
   end
 
   @tag login_as: :champion

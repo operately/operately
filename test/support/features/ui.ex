@@ -37,6 +37,7 @@ defmodule Operately.Support.Features.UI do
       |> Browser.set_cookie("_operately_key", "")
       |> Browser.visit(path)
     end)
+    |> Map.put(:last_login, person)
   end
 
   def get_account() do
@@ -281,7 +282,16 @@ defmodule Operately.Support.Features.UI do
       |> list_sent_emails()
       |> Enum.map(fn email -> {email.subject, elem(hd(email.to), 1)} end)
 
-    assert {title, to} in emails
+    found = {title, to} in emails
+
+    assert found, """
+    Expected email to be sent:
+      - Title: #{inspect(title)}
+        To: #{inspect(to)}
+
+    Sent emails:
+    #{emails |> Enum.map(fn {title, to} -> "  - Title: #{inspect(title)}\n    To: #{inspect(to)}" end) |> Enum.join("\n")}
+    """
   end
 
   def refute_email_sent(state, title, to: to) do

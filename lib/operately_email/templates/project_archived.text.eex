@@ -1,3 +1,3 @@
-<%= Operately.People.Person.first_name(@author) %> archived the <%= @project.name %> project.
+<%= short_name(@author) %> archived the <%= @project.name %> project.
 
-Link: <%= @url %>
+Link: <%= OperatelyEmail.project_url(@project.id) %>

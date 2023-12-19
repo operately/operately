@@ -1,6 +1,10 @@
 defmodule OperatelyEmail.Views.UIComponents do
   import Phoenix.HTML.Tag, only: [content_tag: 3, content_tag: 2]
 
+  def short_name(person) do
+    Operately.People.Person.short_name(person)
+  end
+
   def head(title) do
     """
       <head>
