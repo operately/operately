@@ -4,6 +4,14 @@ defmodule OperatelyEmail.Assignments.Loader do
   alias Operately.Projects.Project
 
   def load(person) do
+    if person.account_id == nil do
+      []
+    else
+      load_for_person(person)
+    end
+  end
+
+  defp load_for_person(person) do
     projects = Repo.all(
       from p in Project,
         join: a in assoc(p, :contributors),

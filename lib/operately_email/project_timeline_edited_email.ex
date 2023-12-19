@@ -4,9 +4,7 @@ defmodule OperatelyEmail.ProjectTimelineEditedEmail do
   alias Operately.People.Person
 
   def send(person, activity) do
-    if OperatelyEmail.send_email_to_person?(person) do
-      compose(activity, person) |> OperatelyEmail.Mailer.deliver_now()
-    end
+    compose(activity, person) |> OperatelyEmail.Mailer.deliver_now()
   end
 
   def compose(activity, recipient) do

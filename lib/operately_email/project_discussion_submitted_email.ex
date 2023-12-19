@@ -2,13 +2,11 @@ defmodule OperatelyEmail.ProjectDiscussionSubmittedEmail do
   alias Operately.People.Person
 
   def send(person, activity) do
-    if OperatelyEmail.send_email_to_person?(person) do
-      update = Operately.Updates.get_update!(activity.content["discussion_id"])
-      project = Operately.Projects.get_project!(update.updatable_id)
-      email = compose(project, update, person)
+    update = Operately.Updates.get_update!(activity.content["discussion_id"])
+    project = Operately.Projects.get_project!(update.updatable_id)
+    email = compose(project, update, person)
 
-      OperatelyEmail.Mailer.deliver_now(email)
-    end
+    OperatelyEmail.Mailer.deliver_now(email)
   end
 
   def compose(project, update, recipient) do

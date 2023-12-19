@@ -17,8 +17,4 @@ defmodule OperatelyEmail do
   def project_retrospective_url(project_id), do: app_url() <> "/projects/#{project_id}/retrospective"
   def goal_url(goal_id), do: app_url() <> "/goals/#{goal_id}"
 
-  def send_email_to_person?(person) do
-    person.account_id != nil
-  end
-
 end

@@ -13,9 +13,7 @@ defmodule OperatelyEmail.AssignmentsEmail do
     if result == [] do
       IO.puts("No assignments for #{person.account.email}")
     else
-      if OperatelyEmail.send_email_to_person?(person) do
-        compose(person, result) |> OperatelyEmail.Mailer.deliver_now()
-      end
+      compose(person, result) |> OperatelyEmail.Mailer.deliver_now()
     end
   end
 
