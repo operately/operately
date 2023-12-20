@@ -1,18 +1,11 @@
 defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
-  @view OperatelyEmail.Views.ProjectTimelineEdited
-
-  alias Operately.People.Person
+  import OperatelyEmail.Mailers.ActivityMailer
+  alias Operately.{Repo, Projects}
 
   def send(person, activity) do
-    compose(activity, person) |> OperatelyEmail.Mailer.deliver_now()
-  end
-
-  def compose(activity, recipient) do
-    import Bamboo.Email
-
-    author = Operately.Repo.preload(activity, :author).author
-    company = Operately.Repo.preload(author, :company).company
-    project = Operately.Projects.get_project!(activity.content["project_id"])
+    author = Repo.preload(activity, :author).author
+    company = Repo.preload(author, :company).company
+    project = Projects.get_project!(activity.content["project_id"])
 
     content = activity.content
 
@@ -21,30 +14,21 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     duration_changed = old_duration != new_duration
 
     new_milestones = Enum.map(activity.content["new_milestones"], fn milestone ->
-      Operately.Projects.get_milestone!(milestone["milestone_id"])
+      Projects.get_milestone!(milestone["milestone_id"])
     end)
 
-    assigns = %{
-      company: company,
-      project: project,
-      activity: activity,
-      duration_changed: duration_changed,
-      old_duration: old_duration,
-      new_duration: new_duration,
-      new_milestones: new_milestones,
-      author: Person.short_name(author),
-      project_url: OperatelyEmail.project_url(project.id),
-      cta_url: OperatelyEmail.project_url(project.id),
-      title: subject(company, author, project)
-    }
-
-    new_email(
-      to: recipient.email,
-      from: OperatelyEmail.sender(company),
-      subject: subject(company, author, project),
-      html_body: @view.html(assigns),
-      text_body: @view.text(assigns)
-    )
+    company
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "changed the timeline for #{project.name}")
+    |> assign(:author, author)
+    |> assign(:project, project)
+    |> assign(:activity, activity)
+    |> assign(:duration_changed, duration_changed)
+    |> assign(:old_duration, old_duration)
+    |> assign(:new_duration, new_duration)
+    |> assign(:new_milestones, new_milestones)
+    |> render("project_timeline_edited")
   end
 
   defp calculate_duration(start_time, end_time) do
@@ -68,9 +52,5 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     else
       :undefined
     end
-  end
-
-  def subject(company, author, project) do
-    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(author)} changed the timeline for #{project.name}"
   end
 end

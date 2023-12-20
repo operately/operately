@@ -1,3 +1,3 @@
-<%= @author %> changed the project timeline for <%= @project.name %>.
+<%= short_name(@author) %> changed the project timeline for <%= @project.name %>.
 
-Link: <%= @cta_url %>
+Link: <%= OperatelyEmail.project_url(@project.id) %>
