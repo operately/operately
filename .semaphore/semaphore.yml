@@ -4,6 +4,7 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu2004
+
 blocks:
   - name: Tests
     dependencies: []
@@ -25,22 +26,19 @@ blocks:
             - cache store
             - cd assets && cache store && cd .. # cache node_packages
       jobs:
-        - name: Mix & JS Unit Tests
+        - name: Unit Tests
           commands:
             - make test.mix.unit
             - make test.npm
 
         - name: Features
-          parallelism: 3
+          parallelism: 2
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
-        - name: license check
+        - name: Linters
           commands:
             - make test.license.check
-
-        - name: dead code
-          commands:
             - make test.js.dead.code
 
   - name: Docker Build
@@ -60,6 +58,13 @@ blocks:
             - docker pull operately/operately:latest
             - make docker.build
             - make docker.push
+
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
 
 promotions:
   - name: Staging 1
