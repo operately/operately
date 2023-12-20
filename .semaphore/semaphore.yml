@@ -32,7 +32,7 @@ blocks:
             - make test.npm
 
         - name: Features
-          parallelism: 2
+          parallelism: 4
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
