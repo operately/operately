@@ -1,39 +1,33 @@
-<html>
-  <%= head(@title) %>
+<%= title("#{short_name(@author)} changed the timeline for #{@project.name}") %>
 
-  <%= body do %>
-    <%= title("#{@author} changed the timeline for #{@project.name}") %>
+<%= spacer() %>
 
-    <%= spacer() %>
+<%= if @duration_changed && @old_duration == :undefined do %>
+  <%= row do %>
+    The duration is now <%= @new_duration %>.
+  <% end %>
+<% end %>
 
-    <%= if @duration_changed && @old_duration == :undefined do %>
-      <%= row do %>
-        The duration is now <%= @new_duration %>.
-      <% end %>
-    <% end %>
+<%= if @duration_changed && @old_duration != :undefined do %>
+  <%= row do %>
+    The duration was changed from <%= @old_duration %> to <%= @new_duration %>.
+  <% end %>
+<% end %>
 
-    <%= if @duration_changed && @old_duration != :undefined do %>
-      <%= row do %>
-        The duration was changed from <%= @old_duration %> to <%= @new_duration %>.
-      <% end %>
-    <% end %>
+<%= if Enum.any?(@new_milestones) do %>
+  <%= row do %>
+    New milestones added:
+  <% end %>
 
-    <%= if Enum.any?(@new_milestones) do %>
-      <%= row do %>
-        New milestones added:
-      <% end %>
-
-      <%= for milestone <- @new_milestones do %>
-        <%= row do %>
-          - <%= milestone.title %>
-        <% end %>
-      <% end %>
-    <% end %>
-
-    <%= spacer() %>
-
+  <%= for milestone <- @new_milestones do %>
     <%= row do %>
-      <%= cta_button(@cta_url, "View Project") %>
+      - <%= milestone.title %>
     <% end %>
   <% end %>
-</html>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.project_url(@project.id), "View Project") %>
+<% end %>

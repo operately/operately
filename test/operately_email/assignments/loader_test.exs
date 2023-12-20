@@ -10,7 +10,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
 
   setup do
     company = company_fixture()
-    champion = person_fixture(%{company_id: company.id})
+    champion = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(champion, %{company_id: company.id})
     project = project_fixture(%{company_id: company.id, creator_id: champion.id, group_id: group.id})
 

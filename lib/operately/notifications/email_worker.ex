@@ -8,13 +8,18 @@ defmodule Operately.Notifications.EmailWorker do
     person = Operately.People.get_person!(notification.person_id)
     activity = Operately.Activities.get_activity!(notification.activity_id)
 
-    module = String.to_existing_atom("Elixir.OperatelyEmail.#{Macro.camelize(activity.action)}Email")
-
-    apply(module, :send, [person, activity])
+    if person.account_id != nil do
+      module = email_module(activity)
+      apply(module, :send, [person, activity])
+    end
   rescue
     e ->
       Logger.error("Failed to send email")
       Logger.error(Exception.format(:error, e, __STACKTRACE__))
       {:error, e}
+  end
+
+  defp email_module(activity) do
+    String.to_existing_atom("Elixir.OperatelyEmail.Emails.#{Macro.camelize(activity.action)}Email")
   end
 end

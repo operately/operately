@@ -193,7 +193,8 @@ defmodule Operately.Projects do
     Repo.one(from c in Contributor,
       where: c.project_id == ^project.id,
       where: c.person_id == ^person_id,
-      select: c.role)
+      select: c.role,
+      limit: 1)
   end
 
   def get_person_by_role(project, role) do

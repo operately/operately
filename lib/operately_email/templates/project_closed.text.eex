@@ -1,3 +1,3 @@
-<%= @author.full_name %> closed the project and submitted a retrospective.
+<%= short_name(@author) %> closed the project and submitted a retrospective.
 
-View the retrospective: <%= @cta_url %>
+Link: <%= OperatelyEmail.project_retrospective_url(@project.id) %>

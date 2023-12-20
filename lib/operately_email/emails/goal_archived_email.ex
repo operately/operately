@@ -1,0 +1,18 @@
+defmodule OperatelyEmail.Emails.GoalArchivedEmail do
+  import OperatelyEmail.Mailers.ActivityMailer
+  alias Operately.{Repo, Goals}
+
+  def send(person, activity) do
+    author = Repo.preload(activity, :author).author
+    goal = Goals.get_goal!(activity.content["goal_id"])
+    company = Repo.preload(author, :company).company
+
+    company
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "archived the #{goal.name} goal")
+    |> assign(:author, author)
+    |> assign(:goal, goal)
+    |> render("goal_archived")
+  end
+end

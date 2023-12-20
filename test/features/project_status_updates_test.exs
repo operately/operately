@@ -38,9 +38,15 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     |> UI.assert_text("Check-in #{Operately.Time.current_month()} #{Operately.Time.current_day()}")
 
     ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "submitted a check-in for the #{ctx.project.name} project"
+    })  
+
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
-    |> EmailSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
   end
 
   @tag login_as: :champion
@@ -80,7 +86,13 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_project_update_acknowledged_sent(author: ctx.reviewer)
-    |> EmailSteps.assert_project_update_acknowledged_sent(author: ctx.reviewer, to: ctx.champion)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "acknowledged your check-in for #{ctx.project.name}"
+    })  
   end
 
   @tag login_as: :champion
@@ -99,7 +111,13 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_project_update_commented_sent(author: ctx.reviewer)
-    |> EmailSteps.assert_project_update_commented_sent(author: ctx.reviewer, to: ctx.champion)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on a check-in for #{ctx.project.name}"
+    })  
   end
 
   @tag login_as: :champion

@@ -1,3 +1,0 @@
-<%= @author %> acknowledged your review for <%= @project.name %>.
-
-Link: <%= @cta_url %>

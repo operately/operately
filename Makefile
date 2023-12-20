@@ -163,9 +163,7 @@ dev.image.push:
 # Testing tasks
 #
 
-test:
-	mkdir -p $(SCREENSHOTS_DIR)
-	mkdir -p $(REPORTS_DIR)
+test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
 	elif [[ "$(FILE)" == test/* ]]; then \
@@ -174,19 +172,29 @@ test:
 		$(MAKE) test.all; \
 	fi
 
-test.all:
+test.init:
+	@mkdir -p $(SCREENSHOTS_DIR)
+	@mkdir -p $(REPORTS_DIR)
+
+test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
 
-test.mix:
+test.mix: test.init
 	$(TEST_CONTAINER) mix test $(FILE)
 
-test.npm:
+test.mix.unit: test.init
+	$(TEST_CONTAINER) mix test $$(find test -name "*_test.exs" | grep -v "test/features")
+
+test.mix.features: test.init
+	$(TEST_CONTAINER) mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
+
+test.npm: test.init
 	$(TEST_CONTAINER) bash -c "cd assets && npm test"
 
 test.db.migrate:
 	$(TEST_CONTAINER) mix ecto.migrate
 
-test.watch:
+test.watch: test.init
 	$(TEST_CONTAINER) mix test.watch $(FILE)
 
 test.db.create:

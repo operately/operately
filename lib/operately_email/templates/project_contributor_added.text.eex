@@ -1,5 +1,3 @@
-<%= @author %> added you to <%= @project.name %> in Operately as a <%= @role %>.
+<%= "#{short_name(@author)} added you as a #{@role} on #{@project}" %>
 
-<%= @responsibility %>
-
-Link: <%= @url %>
+Link: <%= OperatelyEmail.project_url(@project.id) %>
