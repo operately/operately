@@ -2,16 +2,36 @@
 
 batch_index = ARGV[0].to_i    # based on SEMAPHORE_JOB_INDEX (1-based)
 batch_count = ARGV[1].to_i    # based on SEMAPHORE_JOB_COUNT
-batch_index = batch_index - 1 # convert to 0-based
+
+if batch_index == 0 || batch_count == 0 || batch_index > batch_count
+  puts "Invalid arguments"
+  exit 1
+end
 
 files = $stdin.readlines.map(&:strip)
 
-batch_size = (files.size / batch_count.to_f).ceil
+class Batch
+  attr_reader :files, :size
 
-start_index = batch_index * batch_size
-end_index = start_index + batch_size
+  def initialize
+    @files = []
+    @size = 0
+  end
 
-files = files[start_index...end_index]
+  def add_file(file, size)
+    @files << file
+    @size += size
+  end
+end
+
+batches = batch_count.times.map { Batch.new }
+
+files.sort_by { |file| File.size(file) }.each do |file|
+  batch = batches.min_by(&:size)
+  batch.add_file(file, File.size(file))
+end
+
+files = batches[batch_index - 1].files
 
 if files.empty?
   puts "No files to process"
