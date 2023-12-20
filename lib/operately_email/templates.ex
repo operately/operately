@@ -27,7 +27,7 @@ defmodule OperatelyEmail.Templates do
   def rich_text(content) do
     opts = [domain: OperatelyWeb.Endpoint.url()]
 
-    Prosemirror2Html.convert(content, opts)
+    {:safe, Prosemirror2Html.convert(content, opts)}
   end
 
   def assignments_to_text(assignments) do

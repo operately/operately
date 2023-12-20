@@ -1,5 +1,0 @@
-<%= @author %> added you to <%= @project.name %> in Operately as a <%= @role %>.
-
-<%= @responsibility %>
-
-Link: <%= @url %>

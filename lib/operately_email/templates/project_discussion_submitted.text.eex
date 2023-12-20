@@ -1,3 +1,0 @@
-<%= @discussion.content["title"] %>
-
-Link: <%= @cta_url %>
