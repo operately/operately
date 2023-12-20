@@ -73,9 +73,15 @@ defmodule Operately.Features.ProjectCreationTest do
     |> UI.assert_text("Website Redesign")
 
     ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "added the Website Redesign project"
+    })
+
+    ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_project_created_notification_sent(author: ctx.reviewer, role: "champion")
-    |> EmailSteps.assert_project_created_email_sent(author: ctx.reviewer, project: "Website Redesign", to: ctx.champion, role: "Champion")
 
     project = Operately.Repo.get_by!(Operately.Projects.Project, name: "Website Redesign")
     project = Operately.Repo.preload(project, :contributors)

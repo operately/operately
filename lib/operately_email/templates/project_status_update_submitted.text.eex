@@ -1,3 +1,3 @@
-A new status update was submitted for <%= @project.name %>.
+<%= "#{short_name(@author)} submitted a check-in for the #{@project.name} project" %>.
 
-Link: <%= @cta_url %>
+Link: <%= OperatelyEmail.project_status_update_url(@project.id, @update.id) %>

@@ -12,7 +12,7 @@ defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
     company
     |> new()
     |> to(person)
-    |> subject(who: author, action: "archived the #{project.name} project")
+    |> subject(who: author, action: "added the #{project.name} project")
     |> assign(:author, author)
     |> assign(:author_role, author_role)
     |> assign(:role, role)
