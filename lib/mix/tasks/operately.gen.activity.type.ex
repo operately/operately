@@ -96,26 +96,21 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
   end
 
   def gen_email_template(name) do
-    generate_file("lib/operately_email/#{Macro.underscore(name <> "Email")}.ex", fn _ ->
+    generate_file("lib/operately_email/emails/#{Macro.underscore(name <> "Email")}.ex", fn _ ->
       """
-      defmodule OperatelyEmail.#{name <> "Email"} do
+      defmodule OperatelyEmail.Emails.#{name <> "Email"} do
         def send(person, activity) do
-          raise "Not implemented"
+          raise "Email for #{name} not implemented"
+
+          author = Repo.preload(activity, :author).author
+
+          company
+          |> new()
+          |> to(person)
+          |> subject(who: author, action: "did something")
+          |> assign(:author, author)
+          |> render("#{Macro.underscore(name)}")
         end
-      end
-      """
-    end)
-
-    generate_file("lib/operately_email/views/#{Macro.underscore(name)}.ex", fn _ ->
-      """
-      defmodule OperatelyEmail.Views.#{name} do
-        require EEx
-        @templates_root "lib/operately_email/templates"
-
-        import OperatelyEmail.Views.UIComponents
-
-        EEx.function_from_file(:def, :html, "#\{@templates_root\}/#{Macro.underscore(name)}.html.eex", [:assigns])
-        EEx.function_from_file(:def, :text, "#\{@templates_root\}/#{Macro.underscore(name)}.text.eex", [:assigns])
       end
       """
     end)
