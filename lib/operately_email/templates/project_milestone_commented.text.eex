@@ -1,3 +1,3 @@
-<%= @title %>.
+<%= "#{short_name(@author)} #{@action_text}" %>
 
-Link: <%= @cta_url %>
+Link: <%= OperatelyEmail.project_milestone_url(@project.id, @milestone.id) %>
