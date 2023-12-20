@@ -1,0 +1,5 @@
+<tr>
+  <td>
+    <%= @content %>
+  </td>
+</td>

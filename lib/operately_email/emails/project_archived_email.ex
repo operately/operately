@@ -1,5 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectArchivedEmail do
-  alias OperatelyEmail.ActivityEmail
+  import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
   def send(person, activity) do
@@ -8,11 +8,11 @@ defmodule OperatelyEmail.Emails.ProjectArchivedEmail do
     company = Repo.preload(project, :company).company
 
     company
-    |> ActivityEmail.new()
-    |> ActivityEmail.to(person)
-    |> ActivityEmail.subject(who: author, action: "archived the #{project.name} project")
-    |> ActivityEmail.assign(:author, author)
-    |> ActivityEmail.assign(:project, project)
-    |> ActivityEmail.deliver(OperatelyEmail.Views.ProjectArchived)
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "archived the #{project.name} project")
+    |> assign(:author, author)
+    |> assign(:project, project)
+    |> render("project_archived")
   end
 end

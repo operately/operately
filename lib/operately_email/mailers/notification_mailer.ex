@@ -20,6 +20,10 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
   end
 
   def render(email, template) do
+    unless email.subject, do: raise "You must set a subject before rendering an email"
+    unless email.from, do: raise "You must set a from before rendering an email"
+    unless email.to, do: raise "You must set a to before rendering an email"
+
     import Bamboo.Email
 
     full_assigns = Map.put(email.assigns, :subject, email.subject)
@@ -28,10 +32,29 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
       to: email.to,
       from: email.from,
       subject: email.subject,
-      html_body: OperatelyEmail.Templates.render(template <> ".html", full_assigns),
-      text_body: OperatelyEmail.Templates.render(template <> ".html", full_assigns)
+      html_body: html(template, full_assigns),
+      text_body: text(template, full_assigns)
     )
 
-    OperatelyEmail.Mailer.deliver_now(email)
+    OperatelyEmail.Mailers.BaseMailer.deliver_now(email)
   end
+
+  #
+  # Utils
+  #
+
+  def html(template, assigns) do
+    full_assigns = Map.put(assigns, :layout, {OperatelyEmail.Layouts, "activity.html"})
+
+    Phoenix.View.render_to_string(
+      OperatelyEmail.Templates, 
+      template <> ".html", 
+      full_assigns
+    )
+  end
+
+  def text(template, assigns) do
+    Phoenix.View.render_to_string(OperatelyEmail.Templates, template <> ".text", assigns)
+  end
+
 end

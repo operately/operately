@@ -13,6 +13,7 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
     |> to(person)
     |> subject(who: author, action: "closed the #{project.name} project and submitted a retrospective")
     |> assign(:project, project)
+    |> assign(:author, author)
     |> render("project_closed")
   end
 end

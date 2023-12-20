@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title><%= @subject %></title>
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 16px;
+      }
+
+      h1 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body class="padding: 10px 20px;">
+    <table class=""background: #fff; margin:0; padding:0; border:0; border-collapse:collapse; border-spacing:0; max-width: 40em">
+      <%= @inner_content %>
+    </table>
+  </body>
+</html>

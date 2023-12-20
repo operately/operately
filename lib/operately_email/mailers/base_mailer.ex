@@ -5,11 +5,8 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
 
   defp adapter do
     cond do
-      Application.get_env(:operately, :dev_routes) ->
-        IO.inspect("sending to local")
-        Bamboo.LocalAdapter
-      Application.get_env(:operately, :test_routes) ->
-        Bamboo.TestAdapter
+      Application.get_env(:operately, :dev_routes)  -> Bamboo.LocalAdapter
+      Application.get_env(:operately, :test_routes) -> Bamboo.TestAdapter
       true ->
         Bamboo.SendGridAdapter
     end
