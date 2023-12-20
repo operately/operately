@@ -1,0 +1,3 @@
+<%= "#{short_name(@author)} added you as a #{@role} on #{@project}" %>
+
+Link: <%= OperatelyEmail.project_url(@project.id) %>

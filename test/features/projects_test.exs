@@ -18,7 +18,11 @@ defmodule Operately.Features.ProjectsTest do
 
   @tag login_as: :champion
   feature "adding a project contributor", ctx do
-    contrib = person_fixture(%{full_name: "Michael Scott", title: "Manager", company_id: ctx.company.id})
+    contrib = person_fixture_with_account(%{
+      full_name: "Michael Scott", 
+      title: "Manager", 
+      company_id: ctx.company.id
+    })
 
     ctx
     |> visit_show(ctx.project)
@@ -29,8 +33,11 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.click(testid: "save-contributor")
 
     # ctx
-    # |> visit_show(ctx.project)
-    # |> UI.assert_text(short_name(ctx.champion) <> " added " <> short_name(contrib) <> " to the project.")
+    # |> EmailSteps.assert_activity_email_sent(%{
+    #   to: contrib,
+    #   author: ctx.champion,
+    #   action: "added you as a contributor on #{ctx.project.name}"
+    # })
   end
 
   @tag login_as: :champion
