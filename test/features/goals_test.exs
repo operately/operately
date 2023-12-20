@@ -23,13 +23,19 @@ defmodule Operately.Features.GoalCreationTest do
     |> UI.assert_text("This goal was archived on")
 
     ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer, 
+      author: ctx.champion, 
+      action: "archived the #{ctx.goal.name} goal"
+    })
+
+    ctx
     |> GoalSteps.visit_goal_list_page()
     |> UI.refute_has(Query.text(ctx.goal.name))
 
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal)
-    |> EmailSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal, to: ctx.reviewer)
   end
   
 end

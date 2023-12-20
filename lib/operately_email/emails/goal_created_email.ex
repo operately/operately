@@ -1,39 +1,20 @@
 defmodule OperatelyEmail.Emails.GoalCreatedEmail do
-  @view OperatelyEmail.Views.GoalCreated
-  alias Operately.People.Person
+  import OperatelyEmail.Mailers.ActivityMailer
+  alias Operately.{Repo, Goals}
 
   def send(person, activity) do
-    author = Operately.Repo.preload(activity, :author).author
-    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-    email = compose(author, goal, person)
+    author = Repo.preload(activity, :author).author
+    company = Repo.preload(author, :company).company
+    goal = Goals.get_goal!(activity.content["goal_id"])
+    role = Goals.get_role(goal, person) |> Atom.to_string()
 
-    OperatelyEmail.Mailer.deliver_now(email)
-  end
-
-  def compose(author, goal, recipient) do
-    import Bamboo.Email
-
-    company = Operately.Repo.preload(author, :company).company
-    role = Operately.Goals.get_role(goal, recipient) |> Atom.to_string()
-
-    assigns = %{
-      title: subject(company, author, goal, role),
-      author: author,
-      role: role,
-      goal: goal,
-      url: OperatelyEmail.goal_url(goal.id)
-    }
-
-    new_email(
-      to: recipient.email,
-      from: OperatelyEmail.sender(company),
-      subject: subject(company, author, goal, role),
-      html_body: @view.html(assigns),
-      text_body: @view.text(assigns)
-    )
-  end
-
-  def subject(company, author, goal, role) do
-    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(author)} added the #{goal.name} goal and assigned you as the #{role}"
+    company
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "added the #{goal.name} goal")
+    |> assign(:author, author)
+    |> assign(:goal, goal)
+    |> assign(:role, role)
+    |> render("goal_created")
   end
 end

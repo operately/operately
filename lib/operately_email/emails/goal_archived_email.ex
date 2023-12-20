@@ -1,38 +1,18 @@
 defmodule OperatelyEmail.Emails.GoalArchivedEmail do
-  @view OperatelyEmail.Views.GoalArchived
-
-  alias Operately.People.Person
+  import OperatelyEmail.Mailers.ActivityMailer
+  alias Operately.{Repo, Goals}
 
   def send(person, activity) do
-    author = Operately.Repo.preload(activity, :author).author
-    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-    email = compose(author, goal, person)
+    author = Repo.preload(activity, :author).author
+    goal = Goals.get_goal!(activity.content["goal_id"])
+    company = Repo.preload(author, :company).company
 
-    OperatelyEmail.Mailer.deliver_now(email)
-  end
-
-  def compose(author, goal, recipient) do
-    import Bamboo.Email
-
-    company = Operately.Repo.preload(author, :company).company
-
-    assigns = %{
-      title: subject(company, author, goal),
-      author: author,
-      goal: goal,
-      cta_url: OperatelyEmail.goal_url(goal.id),
-    }
-
-    new_email(
-      to: recipient.email,
-      from: OperatelyEmail.sender(company),
-      subject: subject(company, author, goal),
-      html_body: @view.html(assigns),
-      text_body: @view.text(assigns)
-    )
-  end
-
-  def subject(company, author, goal) do
-    "#{OperatelyEmail.sender_name(company)}: #{Person.short_name(author)} archived the #{goal.name} goal in Operately"
+    company
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "archived the #{goal.name} goal")
+    |> assign(:author, author)
+    |> assign(:goal, goal)
+    |> render("goal_archived")
   end
 end

@@ -1,6 +1,4 @@
 defmodule OperatelyEmail.Templates do
-  alias Operately.People.Person
-
   use Phoenix.View, root: "lib/operately_email", namespace: OperatelyEmail, pattern: "**/*"
 
   #
