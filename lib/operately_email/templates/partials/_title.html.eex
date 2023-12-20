@@ -1,4 +1,4 @@
-<tr style="font-size: 24px; font-family: sans-serif; font-weight: 800;">
+<tr style="font-size: <%= @font_size %>px; font-family: sans-serif; font-weight: 800;">
   <td>
     <%= @text %>
   </td>

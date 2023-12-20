@@ -15,7 +15,7 @@ defmodule OperatelyEmail.Assignments.Cron do
 
   def send_assignments do
     people_who_want_assignment_emails() 
-    |> Enum.each(&OperatelyEmail.AssignmentsEmail.send/1)
+    |> Enum.each(&OperatelyEmail.Emails.AssignmentsEmail.send/1)
 
     :ok
   end

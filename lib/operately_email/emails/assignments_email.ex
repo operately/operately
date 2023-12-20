@@ -1,6 +1,8 @@
 defmodule OperatelyEmail.Emails.AssignmentsEmail do
+  import OperatelyEmail.Mailers.NotificationMailer
+
   alias Operately.Repo
-  import Bamboo.Email
+  require Logger
 
   #
   # Sending out an email to remind people of their assignments.
@@ -10,29 +12,19 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   def send(person) do
     result = OperatelyEmail.Assignments.Loader.load(person)
 
-    if result == [] do
-      IO.puts("No assignments for #{person.account.email}")
+    if result != [] do
+      company = Repo.preload(person, [:company]).company
+
+      company
+      |> new()
+      |> to(person)
+      |> subject("Your assignments for today")
+      |> assign(:company, company)
+      |> assign(:assignment_groups, result)
+      |> render("assignments")
     else
-      compose(person, result) |> OperatelyEmail.Mailer.deliver_now()
+      Logger.info("No assignments for #{person.name}")
     end
-  end
-
-  def compose(person, assignment_groups) do
-    company = Repo.preload(person, [:company]).company
-    account = Repo.preload(person, [:account]).account
-
-    assigns = %{
-      company: company,
-      assignment_groups: assignment_groups
-    }
-
-    new_email(
-      to: account.email,
-      from: OperatelyEmail.sender(company),
-      subject: "#{OperatelyEmail.sender_name(company)}: Your assignments for today",
-      html_body: OperatelyEmail.Views.Assignments.html(assigns),
-      text_body: OperatelyEmail.Views.Assignments.text(assigns)
-    )
   end
 
 end

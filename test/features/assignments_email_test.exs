@@ -13,7 +13,7 @@ defmodule Operately.Features.AssignmentsEmailTest do
     {:ok, _} = Operately.Projects.update_project(ctx.project, %{next_update_scheduled_at: one_hour_ago})
 
     champion_with_account = Operately.Repo.preload(ctx.champion, :account)
-    OperatelyEmail.AssignmentsEmail.send(champion_with_account)
+    OperatelyEmail.Emails.AssignmentsEmail.send(champion_with_account)
 
     email = UI.list_sent_emails(ctx) |> List.last()
     link = find_check_in_link(email)

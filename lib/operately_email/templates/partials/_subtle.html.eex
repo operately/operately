@@ -1,0 +1,1 @@
+<span style="color: #999999"><%= @text %></span>

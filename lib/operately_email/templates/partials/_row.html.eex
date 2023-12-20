@@ -1,5 +1,5 @@
 <tr>
-  <td>
+  <td style="padding-top: <%= @padding_top %>px; padding-bottom: <%= @padding_bottom %>px;">
     <%= @content %>
   </td>
 </td>
