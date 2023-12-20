@@ -50,9 +50,15 @@ defmodule Operately.Features.GoalCreationTest do
     |> FeedSteps.assert_goal_added(author: ctx.champion)
 
     ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "added the #{goal_name} goal"
+    })
+
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_goal_created_sent(author: ctx.champion, role: "reviewer")
-    |> EmailSteps.assert_goal_created_sent(author: ctx.champion, goal: goal_name, role: "reviewer", to: ctx.reviewer)
   end
   
 end
