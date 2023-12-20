@@ -180,6 +180,12 @@ test.all:
 test.mix:
 	$(TEST_CONTAINER) mix test $(FILE)
 
+test.mix.unit:
+	$(TEST_CONTAINER) mix test $$(find test -name "*_test.exs" | grep -v "test/features")
+
+test.mix.features:
+	$(TEST_CONTAINER) mix test $(find test -name "*_test.exs" | grep -v "test/system" | ./scripts/split.rb $(INDEX) $(TOTAL))
+
 test.npm:
 	$(TEST_CONTAINER) bash -c "cd assets && npm test"
 

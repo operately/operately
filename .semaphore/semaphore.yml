@@ -25,12 +25,20 @@ blocks:
             - cache store
             - cd assets && cache store && cd .. # cache node_packages
       jobs:
-        - name: mix test
+        - name: Mix & JS Unit Tests
           commands:
-            - make test
+            - make test.mix.unit
+            - make test.npm
+
+        - name: Features
+          parallelism: 3
+          commands:
+            - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
+
         - name: license check
           commands:
             - make test.license.check
+
         - name: dead code
           commands:
             - make test.js.dead.code
