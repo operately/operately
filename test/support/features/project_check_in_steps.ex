@@ -66,6 +66,7 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
       |> UI.fill_rich_text(opts.risks_comments)
     end)
     |> UI.click(testid: "post-status-update")
+    |> UI.assert_text("Check-In from")
   end
 
   defp in_accordion(ctx, accordion_test_id, cb) do
