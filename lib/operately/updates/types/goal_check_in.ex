@@ -9,12 +9,13 @@ defmodule Operately.Updates.Types.GoalCheckIn do
     @primary_key false
 
     embedded_schema do
+      field :target_id, :string
       field :target_name, :string
-      field :value, :string
+      field :value, :float
     end
 
     def changeset(value, attrs) do
-      value |> cast(attrs, [:target_name, :value])
+      value |> cast(attrs, [:target_id, :target_name, :value])
     end
   end
 
@@ -27,9 +28,9 @@ defmodule Operately.Updates.Types.GoalCheckIn do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:message, :target_values])
-    |> cast_embed(:target_values, required: true)
-    |> validate_required([:message, :target_values])
+    |> cast(attrs, [:message])
+    |> cast_embed(:target_values)
+    |> validate_required([:message])
   end
 
   def build(target_values, message) do
@@ -40,6 +41,7 @@ defmodule Operately.Updates.Types.GoalCheckIn do
     result = Map.merge(result, %{
       :target_values => Enum.map(target_values, fn target_value ->
         %{
+          :target_id => target_value.target_id,
           :target_name => target_value.target_name,
           :value => target_value.value,
         }

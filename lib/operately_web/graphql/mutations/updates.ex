@@ -28,8 +28,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
 
         case args.input.message_type do
           "goal-check-in" ->
+            target_values = Jason.decode!(args.input.new_target_values)
             goal = Operately.Goals.get_goal!(args.input.updatable_id)
-            Operately.Updates.record_status_update(author, goal, args.input.new_target_values, content)
+            Operately.Operations.GoalCheckIn.run(author, goal, content, target_values)
 
           "status_update" ->
             project = Operately.Projects.get_project!(args.input.updatable_id)
