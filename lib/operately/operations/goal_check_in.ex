@@ -16,6 +16,12 @@ defmodule Operately.Operations.GoalCheckIn do
     Multi.new()
     |> Multi.insert(:update, changeset)
     |> Multi.update(:goal, Goal.changeset(goal, %{next_update_scheduled_at: next_check_in}))
+    |> Enum.reduce(new_target_values, fn target_value, multi ->
+      target = Operational.Goals.get_target(target_value.id)
+      changeset = Target.changeset(target, %{value: target_value.value})
+
+      Multi.update(multi, :target, changeset)
+    end)
     |> Activities.insert(author.id, action, fn changes -> %{
       company_id: goal.company_id,
       goal_id: goal.id,

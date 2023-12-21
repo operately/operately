@@ -27,7 +27,16 @@ defmodule Operately.Goals.Goal do
 
   def changeset(goal, attrs) do
     goal
-    |> cast(attrs, [:name, :company_id, :group_id, :champion_id, :reviewer_id, :creator_id, :timeframe])
+    |> cast(attrs, [
+      :name, 
+      :company_id, 
+      :group_id, 
+      :champion_id, 
+      :reviewer_id, 
+      :creator_id, 
+      :timeframe, 
+      :next_update_scheduled_at
+    ])
     |> validate_required([:name, :company_id, :group_id, :champion_id, :reviewer_id, :creator_id, :timeframe])
   end
 end
