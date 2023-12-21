@@ -48,7 +48,7 @@ function ZeroState({ project }: { project: Projects.Project }) {
   const writePath = createPath("projects", project.id, "edit", "goal");
 
   const editLink = (
-    <GhostButton linkTo={writePath} testId="write-project-description-link" size="xs" type="secondary">
+    <GhostButton linkTo={writePath} testId="connect-goal" size="xs" type="secondary">
       Connect a Goal
     </GhostButton>
   );
