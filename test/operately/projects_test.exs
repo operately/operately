@@ -33,7 +33,7 @@ defmodule Operately.ProjectsTest do
     @invalid_attrs %{description: nil, name: nil}
 
     test "list_projects/0 returns all projects", ctx do
-      assert Projects.list_projects(ctx.champion) == [ctx.project]
+      assert Projects.list_projects(ctx.champion, %{}) == [ctx.project]
     end
 
     test "get_project!/1 returns the project with given id", ctx do

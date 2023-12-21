@@ -3,6 +3,7 @@ import client from "@/graphql/client";
 
 interface GetGoalOptions {
   includeTargets?: boolean;
+  includeProjects?: boolean;
 }
 
 export async function getGoal(id: string, options: GetGoalOptions = {}) {
@@ -11,6 +12,7 @@ export async function getGoal(id: string, options: GetGoalOptions = {}) {
     variables: {
       id: id,
       includeTargets: options.includeTargets || false,
+      includeProjects: options.includeProjects || false,
     },
     fetchPolicy: "network-only",
   });
@@ -36,7 +38,38 @@ const QUERY = gql`
     }
   }
 
-  query GetGoal($id: ID!, $includeTargets: Boolean!) {
+  fragment Projects on Goal {
+    projects {
+      id
+      name
+      health
+
+      contributors {
+        id
+        responsibility
+        role
+        person {
+          ...PersonFields
+        }
+      }
+
+      nextMilestone {
+        id
+        title
+        deadlineAt
+        status
+      }
+
+      milestones {
+        id
+        title
+        deadlineAt
+        status
+      }
+    }
+  }
+
+  query GetGoal($id: ID!, $includeTargets: Boolean!, $includeProjects: Boolean!) {
     goal(id: $id) {
       id
       name
@@ -60,6 +93,7 @@ const QUERY = gql`
       }
 
       ...Targets @include(if: $includeTargets)
+      ...Projects @include(if: $includeProjects)
     }
   }
 `;

@@ -1,0 +1,7 @@
+<%= title("#{short_name(@author)} disconnected the #{@project.name} project from the #{@goal.name} goal") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.project_url(@project.id), "View Project") %>
+<% end %>

@@ -15,6 +15,12 @@ defmodule Operately.Goals do
     Repo.all(query)
   end
 
+  def list_goals_for_company(_person, company_id) do
+    query = from(goal in Goal, where: goal.company_id == ^company_id)
+
+    Repo.all(query)
+  end
+
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
 
   defdelegate create_goal(creator, attrs), to: Operately.Goals.CreateOperation, as: :run

@@ -9,7 +9,7 @@ defmodule Operately.Projects.Project do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
-    belongs_to :objective, Operately.Okrs.Objective, foreign_key: :objective_id
+    belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
 
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
@@ -46,7 +46,7 @@ defmodule Operately.Projects.Project do
       :group_id,
       :started_at,
       :deadline,
-      :objective_id,
+      :goal_id,
       :next_update_scheduled_at,
       :phase,
       :health,

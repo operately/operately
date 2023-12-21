@@ -378,6 +378,32 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       end
     end
 
+    field :connect_goal_to_project, non_null(:project) do
+      arg :project_id, non_null(:id)
+      arg :goal_id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+        project = Operately.Projects.get_project!(args.project_id)
+        goal = Operately.Goals.get_goal!(args.goal_id)
+
+        Operately.Operations.ProjectGoalConnection.run(person, project, goal)
+      end
+    end
+
+    field :disconnect_goal_from_project, non_null(:project) do
+      arg :project_id, non_null(:id)
+      arg :goal_id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        person = context.current_account.person
+        project = Operately.Projects.get_project!(args.project_id)
+        goal = Operately.Goals.get_goal!(args.goal_id)
+
+        Operately.Operations.ProjectGoalDisconnection.run(person, project, goal)
+      end
+    end
+
     defp parse_date(date) do
       if date do
         NaiveDateTime.new!(date, ~T[00:00:00])

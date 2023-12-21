@@ -10,8 +10,10 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import * as Permissions from "@/graphql/Projects/permissions";
 import * as Updates from "@/graphql/Projects/updates";
 import * as People from "@/graphql/People";
+import * as Companies from "@/models/companies";
 
 interface LoaderResult {
+  company: Companies.Company;
   project: Projects.Project;
 }
 
@@ -23,6 +25,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   });
 
   return {
+    company: await Companies.getCompany(),
     project: projectData.data.project,
   };
 }
@@ -32,6 +35,31 @@ export function useLoadedData() {
 }
 
 const GET_PROJECT = gql`
+  fragment ProjectGoal on Project {
+    goal {
+      id
+      name
+
+      targets {
+        name
+      }
+
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+  }
+
   query GetProject($id: ID!) {
     project(id: $id) {
       id
@@ -57,6 +85,8 @@ const GET_PROJECT = gql`
         color
       }
 
+      ...ProjectGoal
+
       lastCheckIn ${Updates.UPDATE_FRAGMENT}
       permissions ${Permissions.FRAGMENT}
 
@@ -68,6 +98,10 @@ const GET_PROJECT = gql`
       reviewer ${People.FRAGMENT}
 
       nextMilestone ${Milestones.FRAGMENT}
+
+      goal {
+        id
+      }
     }
   }
 `;
