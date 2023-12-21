@@ -48,6 +48,26 @@ export function Page() {
 
             <div className="mt-4" />
 
+            <div className="border-t border-stroke-base py-6">
+              <div className="flex items-start gap-4">
+                <div className="w-1/5">
+                  <div className="font-bold text-sm">Overview</div>
+
+                  <div className="text-sm">
+                    {showEditDescription(project) && (
+                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
+                        Edit
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                <div className="w-4/5">
+                  <Description project={project} />
+                </div>
+              </div>
+            </div>
+
             {Companies.hasFeature(company, "goals") && (
               <div className="border-t border-stroke-base py-6">
                 <div className="flex items-start gap-4">
@@ -69,26 +89,6 @@ export function Page() {
                 </div>
               </div>
             )}
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Overview</div>
-
-                  <div className="text-sm">
-                    {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Description project={project} />
-                </div>
-              </div>
-            </div>
 
             <div className="border-t border-stroke-base py-6">
               <div className="flex items-start gap-4">

@@ -35,6 +35,31 @@ export function useLoadedData() {
 }
 
 const GET_PROJECT = gql`
+  fragment ProjectGoal on Project {
+    goal {
+      id
+      name
+
+      targets {
+        name
+      }
+
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+  }
+
   query GetProject($id: ID!) {
     project(id: $id) {
       id
@@ -59,6 +84,8 @@ const GET_PROJECT = gql`
         icon
         color
       }
+
+      ...ProjectGoal
 
       lastCheckIn ${Updates.UPDATE_FRAGMENT}
       permissions ${Permissions.FRAGMENT}
