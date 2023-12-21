@@ -6,6 +6,7 @@
 import * as React from "react";
 
 import GoalArchived from "./GoalArchived"
+import GoalCheckIn from "./GoalCheckIn"
 import GoalCreated from "./GoalCreated"
 import ProjectArchived from "./ProjectArchived"
 import ProjectClosed from "./ProjectClosed"
@@ -32,6 +33,9 @@ export default function NotificationItem({notification}) {
   switch (activityType) {
     case "ActivityContentGoalArchived":
       return <GoalArchived notification={notification} />;
+    
+    case "ActivityContentGoalCheckIn":
+      return <GoalCheckIn notification={notification} />;
     
     case "ActivityContentGoalCreated":
       return <GoalCreated notification={notification} />;
