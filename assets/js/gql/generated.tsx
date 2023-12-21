@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentGoalArchived = {
   __typename?: 'ActivityContentGoalArchived';
@@ -100,6 +100,11 @@ export type ActivityContentProjectDiscussionSubmitted = {
   project: Project;
   projectId: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectGoalConnection = {
+  __typename?: 'ActivityContentProjectGoalConnection';
+  exampleField: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectMilestoneCommented = {
@@ -1124,7 +1129,7 @@ export type RootQueryTypeGoalArgs = {
 
 
 export type RootQueryTypeGoalsArgs = {
-  spaceId: Scalars['ID']['input'];
+  spaceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

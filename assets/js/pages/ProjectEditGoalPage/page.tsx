@@ -6,8 +6,12 @@ import * as Groups from "@/models/groups";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { FilledButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Button";
 import { createTestId } from "@/utils/testid";
+import { createPath } from "@/utils/paths";
+import { Link } from "@/components/Link";
+import Avatar from "@/components/Avatar";
+import { TextTooltip } from "@/components/Tooltip";
 
 export function Page() {
   const { project, goals } = useLoadedData();
@@ -18,12 +22,17 @@ export function Page() {
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          <div className="text-content-accent text-3xl font-extrabold">Select a goal to connect</div>
-          <div className="max-w-prose mt-2">
-            By connecting a goal, you are marking that this project is contributing to the fulfillment of that goal.
-          </div>
+          {project.goal && <SelectedGoal goal={project.goal} />}
 
-          <SelectableGoals goals={goals} />
+          <Paper.DimmedSection>
+            <div className="text-content-accent font-extrabold">Select a different goal to connect</div>
+
+            <div className="max-w-prose mt-2">
+              Linking a goal indicates that this project contributes to achieving that goal.
+            </div>
+
+            <SelectableGoals goals={goals} />
+          </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -31,7 +40,10 @@ export function Page() {
 }
 
 function SelectableGoals({ goals }: { goals: Goals.Goal[] }) {
-  const groups = Goals.groupBySpace(goals);
+  const { project } = useLoadedData();
+
+  const goalsWithoutConnected = goals.filter((goal) => goal.id !== project.goal?.id);
+  const groups = Goals.groupBySpace(goalsWithoutConnected);
 
   return (
     <>
@@ -86,5 +98,80 @@ function SelectableGoal({ goal }: { goal: Goals.Goal }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function SelectedGoal({ goal }: { goal: Goals.Goal }) {
+  const { project } = useLoadedData();
+  const refresh = useRefresh();
+
+  const testId = createTestId("select-goal", goal.name);
+
+  const [connect, { loading }] = Goals.useDisconnectGoalFromProjectMutation({
+    onCompleted: () => refresh(),
+  });
+
+  const handleClick = async (): Promise<boolean> => {
+    connect({
+      variables: {
+        goalId: goal.id,
+        projectId: project.id,
+      },
+    });
+
+    return true;
+  };
+
+  const goalPath = createPath("goals", goal.id);
+
+  return (
+    <>
+      <div className="uppercase text-content-primary text-xs font-bold mb-2">Connected Goal</div>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-content-primary text-xl font-bold">
+            <Link to={goalPath}>{goal.name}</Link>
+          </div>
+
+          <div className="">
+            {goal.targets!.map((target) => (
+              <div key={target!.id} className="py-1.5 flex items-center gap-1">
+                <div className="text-ellipsis w-96">{target!.name}</div>
+                <ProgressBar progress={target} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Avatar person={goal.champion!} />
+          <Avatar person={goal.reviewer!} />
+        </div>
+      </div>
+
+      <div className="flex mt-4">
+        <GhostButton type="secondary" size="xs" onClick={handleClick} loading={loading} testId={testId}>
+          Disconnect
+        </GhostButton>
+      </div>
+    </>
+  );
+}
+
+function ProgressBar({ target }: { target: Goals.Target }) {
+  const progress = Math.floor(Math.random() * 100.0);
+
+  let color = "";
+  if (progress < 20) color = "bg-yellow-300";
+  if (progress >= 40 && progress < 80) color = "bg-yellow-500";
+  if (progress >= 70) color = "bg-green-600";
+
+  return (
+    <TextTooltip text={"hello"}>
+      <div className="text-ellipsis w-20 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
+        <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
+      </div>
+    </TextTooltip>
   );
 }

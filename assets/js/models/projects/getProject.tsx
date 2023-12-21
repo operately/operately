@@ -22,6 +22,25 @@ const QUERY = gql`
   fragment ProjectGoal on Project {
     goal {
       id
+      name
+
+      targets {
+        name
+      }
+
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
     }
   }
 

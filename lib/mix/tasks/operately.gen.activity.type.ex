@@ -99,17 +99,19 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     generate_file("lib/operately_email/emails/#{Macro.underscore(name <> "Email")}.ex", fn _ ->
       """
       defmodule OperatelyEmail.Emails.#{name <> "Email"} do
+        import OperatelyEmail.Mailers.ActivityMailer
+
         def send(person, activity) do
           raise "Email for #{name} not implemented"
 
-          author = Repo.preload(activity, :author).author
+          # author = Repo.preload(activity, :author).author
 
-          company
-          |> new()
-          |> to(person)
-          |> subject(who: author, action: "did something")
-          |> assign(:author, author)
-          |> render("#{Macro.underscore(name)}")
+          # company
+          # |> new()
+          # |> to(person)
+          # |> subject(who: author, action: "did something")
+          # |> assign(:author, author)
+          # |> render("#{Macro.underscore(name)}")
         end
       end
       """
