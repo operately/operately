@@ -15,7 +15,7 @@ export function FeedForProject({ project }) {
   return (
     <div className="w-full">
       {Activities.groupByDate(activities).map((group, index) => (
-        <ActivityGroup key={index} group={group} />
+        <ActivityGroup key={index} group={group} page="project" />
       ))}
     </div>
   );
@@ -30,13 +30,13 @@ export function FeedForGoal({ goal }) {
   return (
     <div className="w-full">
       {Activities.groupByDate(activities).map((group, index) => (
-        <ActivityGroup key={index} group={group} />
+        <ActivityGroup key={index} group={group} page="goal" />
       ))}
     </div>
   );
 }
 
-function ActivityGroup({ group }: { group: Activities.ActivityGroup }) {
+function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page: string }) {
   return (
     <div className="w-full border-t border-stroke-base py-4">
       <div className="flex items-start gap-2">
@@ -49,7 +49,7 @@ function ActivityGroup({ group }: { group: Activities.ActivityGroup }) {
 
         <div className="flex-1">
           {group.activities.map((activity) => (
-            <FeedItem key={activity.id} activity={activity} />
+            <FeedItem key={activity.id} activity={activity} page={page} />
           ))}
         </div>
       </div>

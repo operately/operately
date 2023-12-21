@@ -104,7 +104,8 @@ export type ActivityContentProjectDiscussionSubmitted = {
 
 export type ActivityContentProjectGoalConnection = {
   __typename?: 'ActivityContentProjectGoalConnection';
-  exampleField: Scalars['String']['output'];
+  goal: Goal;
+  project: Project;
 };
 
 export type ActivityContentProjectGoalDisconnection = {
@@ -513,7 +514,6 @@ export type Objective = {
   keyResults?: Maybe<Array<Maybe<KeyResult>>>;
   name: Scalars['String']['output'];
   owner?: Maybe<Person>;
-  projects?: Maybe<Array<Maybe<Project>>>;
 };
 
 export type Panel = {

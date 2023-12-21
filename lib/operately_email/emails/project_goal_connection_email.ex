@@ -1,16 +1,21 @@
 defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
+  alias Operately.Repo
+  alias Operately.Projects
+  alias Operately.Goals
+
   def send(person, activity) do
-    raise "Email for ProjectGoalConnection not implemented"
+    author = Repo.preload(activity, :author).author
+    project = Projects.get_project!(activity.content["project_id"])
+    goal = Goals.get_goal!(activity.content["goal_id"])
+    company = Repo.preload(project, :company).company
 
-    # author = Repo.preload(activity, :author).author
-
-    # company
-    # |> new()
-    # |> to(person)
-    # |> subject(who: author, action: "did something")
-    # |> assign(:author, author)
-    # |> render("project_goal_connection")
+    company
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "connected the #{project.name} project to the #{goal.name} goal")
+    |> assign(:author, author)
+    |> render("project_goal_connection")
   end
 end

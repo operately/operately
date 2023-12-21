@@ -27,8 +27,8 @@ function ConnectedGoalState({ project }: { project: Projects.Project }) {
         </div>
 
         <div className="mt-2">
-          {goal.targets!.map((target) => (
-            <div key={target!.id} className="flex items-center gap-1 text-sm">
+          {goal.targets!.map((target, index) => (
+            <div key={index} className="flex items-center gap-1 text-sm">
               <div className="text-ellipsis w-96">{target!.name}</div>
               <ProgressBar progress={target} />
             </div>

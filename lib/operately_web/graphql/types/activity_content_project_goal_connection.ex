@@ -2,9 +2,21 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectGoalConnection do
   use Absinthe.Schema.Notation
 
   object :activity_content_project_goal_connection do
-    field :example_field, non_null(:string) do
-      resolve fn _parent, _args, _resolution ->
-        "Hello World"
+    field :project, non_null(:project) do
+      resolve fn activity, _, _ ->
+        project_id = activity.content["project_id"]
+
+        project = Operately.Projects.get_project!(project_id)
+
+        {:ok, project}
+      end
+    end
+
+    field :goal, non_null(:goal) do
+      resolve fn activity, _, _ ->
+        id = activity.content["goal_id"]
+
+        {:ok, Operately.Goals.get_goal!(id)}
       end
     end
   end

@@ -12,6 +12,7 @@ import ProjectClosed from "./ProjectClosed"
 import ProjectCreated from "./ProjectCreated"
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
+import ProjectGoalConnection from "./ProjectGoalConnection"
 import ProjectMilestoneCommented from "./ProjectMilestoneCommented"
 import ProjectMoved from "./ProjectMoved"
 import ProjectRenamed from "./ProjectRenamed"
@@ -24,63 +25,66 @@ import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 
-export default function FeedItem({activity}) {
+export default function FeedItem({activity, page}) {
   const activityType = activity.content.__typename;
 
   switch (activityType) {
     case "ActivityContentGoalArchived":
-      return <GoalArchived activity={activity} />;
+      return <GoalArchived activity={activity} page={page} />;
     
     case "ActivityContentGoalCreated":
-      return <GoalCreated activity={activity} />;
+      return <GoalCreated activity={activity} page={page} />;
     
     case "ActivityContentProjectArchived":
-      return <ProjectArchived activity={activity} />;
+      return <ProjectArchived activity={activity} page={page} />;
     
     case "ActivityContentProjectClosed":
-      return <ProjectClosed activity={activity} />;
+      return <ProjectClosed activity={activity} page={page} />;
     
     case "ActivityContentProjectCreated":
-      return <ProjectCreated activity={activity} />;
+      return <ProjectCreated activity={activity} page={page} />;
     
     case "ActivityContentProjectDiscussionCommentSubmitted":
-      return <ProjectDiscussionCommentSubmitted activity={activity} />;
+      return <ProjectDiscussionCommentSubmitted activity={activity} page={page} />;
     
     case "ActivityContentProjectDiscussionSubmitted":
-      return <ProjectDiscussionSubmitted activity={activity} />;
+      return <ProjectDiscussionSubmitted activity={activity} page={page} />;
+    
+    case "ActivityContentProjectGoalConnection":
+      return <ProjectGoalConnection activity={activity} page={page} />;
     
     case "ActivityContentProjectMilestoneCommented":
-      return <ProjectMilestoneCommented activity={activity} />;
+      return <ProjectMilestoneCommented activity={activity} page={page} />;
     
     case "ActivityContentProjectMoved":
-      return <ProjectMoved activity={activity} />;
+      return <ProjectMoved activity={activity} page={page} />;
     
     case "ActivityContentProjectRenamed":
-      return <ProjectRenamed activity={activity} />;
+      return <ProjectRenamed activity={activity} page={page} />;
     
     case "ActivityContentProjectReviewAcknowledged":
-      return <ProjectReviewAcknowledged activity={activity} />;
+      return <ProjectReviewAcknowledged activity={activity} page={page} />;
     
     case "ActivityContentProjectReviewCommented":
-      return <ProjectReviewCommented activity={activity} />;
+      return <ProjectReviewCommented activity={activity} page={page} />;
     
     case "ActivityContentProjectReviewRequestSubmitted":
-      return <ProjectReviewRequestSubmitted activity={activity} />;
+      return <ProjectReviewRequestSubmitted activity={activity} page={page} />;
     
     case "ActivityContentProjectReviewSubmitted":
-      return <ProjectReviewSubmitted activity={activity} />;
+      return <ProjectReviewSubmitted activity={activity} page={page} />;
     
     case "ActivityContentProjectStatusUpdateAcknowledged":
-      return <ProjectStatusUpdateAcknowledged activity={activity} />;
+      return <ProjectStatusUpdateAcknowledged activity={activity} page={page} />;
     
     case "ActivityContentProjectStatusUpdateCommented":
-      return <ProjectStatusUpdateCommented activity={activity} />;
+      return <ProjectStatusUpdateCommented activity={activity} page={page} />;
     
     case "ActivityContentProjectStatusUpdateSubmitted":
-      return <ProjectStatusUpdateSubmitted activity={activity} />;
+      return <ProjectStatusUpdateSubmitted activity={activity} page={page} />;
     
     case "ActivityContentProjectTimelineEdited":
-      return <ProjectTimelineEdited activity={activity} />;
+      return <ProjectTimelineEdited activity={activity} page={page} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/components/Feed/FeedItem/index.tsx";

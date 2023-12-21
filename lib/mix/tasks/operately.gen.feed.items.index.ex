@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Operately.Gen.Feed.Items.Index do
 
       #{import_types(types)}
 
-      export default function FeedItem({activity}) {
+      export default function FeedItem({activity, page}) {
         const activityType = activity.content.__typename;
 
         switch (activityType) {
@@ -50,7 +50,7 @@ defmodule Mix.Tasks.Operately.Gen.Feed.Items.Index do
 
     """
     case \"#{full_type_name}\":
-      return <#{type} activity={activity} />;
+      return <#{type} activity={activity} page={page} />;
     """
   end
 

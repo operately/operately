@@ -7,23 +7,34 @@ defmodule Operately.Features.ProjectGoalTest do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
     ctx = ProjectSteps.login(ctx)
 
+    Operately.Companies.enable_experimental_feature(ctx.company, "goals")
+
     ctx = create_goal(ctx, "Improve support first response time")
     ctx = create_goal(ctx, "Increase feedback score to 90%")
 
     {:ok, ctx}
   end
 
+  @tag login_as: :champion
   feature "connect goal to project", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "connect-goal")
     |> UI.assert_text("Improve support first response time")
     |> UI.assert_text("Increase feedback score to 90%")
-    |> UI.click(testid: "connect-goal-improve-support-first-response-time")
+    |> UI.click(testid: "select-goal-improve-support-first-response-time")
+    |> UI.assert_text("CONNECTED GOAL")
 
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.assert_text("Improve support first response time")
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "connected the #{ctx.project.name} project to the Improve support first response time goal",
+    })
   end
 
   #
