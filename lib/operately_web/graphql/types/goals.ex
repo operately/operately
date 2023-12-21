@@ -10,6 +10,14 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     field :timeframe, non_null(:string)
 
+    field :permissions, non_null(:goal_permissions) do
+      resolve fn goal, _, %{context: context} ->
+        person = context.current_account.person
+
+        {:ok, Operately.Goals.get_permissions(goal, person)}
+      end
+    end
+
     field :is_archived, non_null(:boolean) do
       resolve fn goal, _, _ ->
         {:ok, goal.deleted_at != nil}

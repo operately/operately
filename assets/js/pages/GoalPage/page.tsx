@@ -8,8 +8,8 @@ import Avatar from "@/components/Avatar";
 import { useLoadedData } from "./loader";
 import { TargetList } from "./TargetList";
 import { ProjectList } from "./ProjectList";
-import { CheckIns } from "./CheckIns";
 import { Options } from "./Options";
+import { CheckIns } from "./CheckIns";
 import { Navigation } from "./Navigation";
 import { Banner } from "./Banner";
 

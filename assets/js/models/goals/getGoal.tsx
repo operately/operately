@@ -84,6 +84,10 @@ const QUERY = gql`
         color
       }
 
+      permissions {
+        canCheckIn
+      }
+
       champion {
         ...PersonFields
       }

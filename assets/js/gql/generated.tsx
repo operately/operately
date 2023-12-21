@@ -411,12 +411,18 @@ export type Goal = {
   isArchived: Scalars['Boolean']['output'];
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  persmissions: GoalPermissions;
   projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
   space: Group;
   targets?: Maybe<Array<Maybe<Target>>>;
   timeframe: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
+};
+
+export type GoalPermissions = {
+  __typename?: 'GoalPermissions';
+  canCheckIn: Scalars['Boolean']['output'];
 };
 
 export type Group = {

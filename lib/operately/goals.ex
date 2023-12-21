@@ -25,6 +25,7 @@ defmodule Operately.Goals do
 
   defdelegate create_goal(creator, attrs), to: Operately.Goals.CreateOperation, as: :run
   defdelegate archive_goal(author, goal), to: Operately.Goals.ArchiveOperation, as: :run
+  defdelegate get_permissions(goal, person), to: Operately.Goals.Permissions, as: :calculate
 
   def update_goal(%Goal{} = goal, attrs) do
     goal
