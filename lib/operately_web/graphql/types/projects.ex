@@ -72,6 +72,14 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :status, :string
     field :closed_at, :date
 
+    field :goal, :goal do
+      resolve fn project, _, _ ->
+        goal = Operately.Repo.preload(project, :goal).goal
+
+        {:ok, goal}
+      end
+    end
+
     field :retrospective, :string do
       resolve fn project, _, _ ->
         {:ok, project.retrospective && Jason.encode!(project.retrospective)}

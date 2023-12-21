@@ -371,10 +371,7 @@ function showEditMilestones(project: Projects.Project) {
 }
 
 function showEditGoal(project: Projects.Project) {
-  return false;
+  if (!project.permissions.canEditGoal) return false;
 
-  // TODO
-  // if (!project.permissions.canEditGoal) return false;
-
-  // return project.goal !== null;
+  return project.goal !== null;
 }

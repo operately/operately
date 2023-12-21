@@ -71,6 +71,10 @@ const GET_PROJECT = gql`
       reviewer ${People.FRAGMENT}
 
       nextMilestone ${Milestones.FRAGMENT}
+
+      goal {
+        id
+      }
     }
   }
 `;

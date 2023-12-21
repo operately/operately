@@ -392,6 +392,7 @@ export type EditProjectTimelineInput = {
 
 export type Goal = {
   __typename?: 'Goal';
+  archivedAt?: Maybe<Scalars['Date']['output']>;
   champion?: Maybe<Person>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
@@ -549,6 +550,7 @@ export type Project = {
   contributors?: Maybe<Array<Maybe<ProjectContributor>>>;
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  goal?: Maybe<Goal>;
   health: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
@@ -642,6 +644,7 @@ export type ProjectPermissions = {
   canDeleteMilestone: Scalars['Boolean']['output'];
   canEditContributors: Scalars['Boolean']['output'];
   canEditDescription: Scalars['Boolean']['output'];
+  canEditGoal: Scalars['Boolean']['output'];
   canEditMilestone: Scalars['Boolean']['output'];
   canEditResources: Scalars['Boolean']['output'];
   canEditTimeline: Scalars['Boolean']['output'];
