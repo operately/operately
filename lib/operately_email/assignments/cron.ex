@@ -4,6 +4,8 @@ defmodule OperatelyEmail.Assignments.Cron do
   alias Operately.People.{Person, Account}
   alias Operately.Repo
 
+  require Logger
+
   @impl Oban.Worker
   def perform(_) do
     if is_workday?() do
@@ -14,10 +16,23 @@ defmodule OperatelyEmail.Assignments.Cron do
   end
 
   def send_assignments do
-    people_who_want_assignment_emails() 
-    |> Enum.each(&OperatelyEmail.Emails.AssignmentsEmail.send/1)
+    people = people_who_want_assignment_emails() 
+
+    Enum.each(people, fn person ->
+      catch_and_log_errors(fn ->
+        OperatelyEmail.Emails.AssignmentsEmail.send(person)
+      end)
+    end)
 
     :ok
+  end
+
+  defp catch_and_log_errors(cb) do
+    try do
+      cb.()
+    rescue
+      e -> Logger.error("Error in OperatelyEmail.Assignments.Cron: #{inspect(e)}")
+    end
   end
 
   def people_who_want_assignment_emails do
