@@ -411,7 +411,7 @@ export type Goal = {
   isArchived: Scalars['Boolean']['output'];
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  persmissions: GoalPermissions;
+  permissions: GoalPermissions;
   projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
   space: Group;

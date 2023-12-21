@@ -14,6 +14,7 @@ import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
 import * as GoalAddPage from "./GoalAddPage";
 import * as GoalArchivePage from "./GoalArchivePage";
+import * as GoalNewCheckInPage from "./GoalNewCheckInPage";
 import * as GoalPage from "./GoalPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
@@ -103,6 +104,10 @@ export default {
   GoalArchivePage: {
     loader: GoalArchivePage.loader,
     Page: GoalArchivePage.Page
+  },
+  GoalNewCheckInPage: {
+    loader: GoalNewCheckInPage.loader,
+    Page: GoalNewCheckInPage.Page
   },
   GoalPage: {
     loader: GoalPage.loader,
