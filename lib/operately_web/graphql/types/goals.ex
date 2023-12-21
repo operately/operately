@@ -54,6 +54,14 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
         {:ok, Operately.Goals.list_targets(goal.id)}
       end
     end
+
+    field :projects, list_of(:project) do
+      resolve fn goal, _, %{context: context} ->
+        person = context.current_account.person
+        
+        {:ok, Operately.Projects.list_projects(person, %{goal_id: goal.id})}
+      end
+    end
   end
 
   object :target do

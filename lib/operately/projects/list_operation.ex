@@ -9,7 +9,7 @@ defmodule Operately.Projects.ListOperation do
 
     query = apply_visibility_filter(query, person)
     query = apply_group_filter(query, filters[:group_id])
-    query = apply_objective_filter(query, filters[:objective_id])
+    query = apply_goal_filter(query, filters[:goal_id])
 
     Repo.all(query, [with_deleted: filters[:include_archived]])
   end
@@ -30,9 +30,9 @@ defmodule Operately.Projects.ListOperation do
     from p in query, where: p.group_id == ^group_id
   end
 
-  defp apply_objective_filter(query, nil), do: query
-  defp apply_objective_filter(query, objective_id) do
-    from p in query, where: p.objective_id == ^objective_id
+  defp apply_goal_filter(query, nil), do: query
+  defp apply_goal_filter(query, objective_id) do
+    from p in query, where: p.goal_id == ^objective_id
   end
 
 end

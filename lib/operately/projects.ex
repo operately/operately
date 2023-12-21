@@ -24,13 +24,8 @@ defmodule Operately.Projects do
     Repo.one(query, with_deleted: true)
   end
 
-  def create_project(%Operately.Projects.ProjectCreation{} = params) do
-    Operately.Projects.ProjectCreation.run(params)
-  end
-
-  def list_projects(person, filters \\ %{}) do
-    Operately.Projects.ListOperation.run(person, filters) 
-  end
+  defdelegate create_project(params), to: Operately.Projects.ProjectCreation, as: :run
+  defdelegate list_projects(person, filters), to: Operately.Projects.ListOperation, as: :run
 
   def update_project(%Project{} = project, attrs) do
     project

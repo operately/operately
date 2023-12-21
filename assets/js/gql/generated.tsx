@@ -409,6 +409,7 @@ export type Goal = {
   isArchived: Scalars['Boolean']['output'];
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
   space: Group;
   targets?: Maybe<Array<Maybe<Target>>>;
@@ -716,6 +717,7 @@ export type RootMutationType = {
   createProjectReviewRequest?: Maybe<ProjectReviewRequest>;
   createTenet?: Maybe<Tenet>;
   createUpdate: Update;
+  disconnectGoalFromProject: Project;
   editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
   editProjectName: Project;
@@ -894,6 +896,12 @@ export type RootMutationTypeCreateTenetArgs = {
 
 export type RootMutationTypeCreateUpdateArgs = {
   input: CreateUpdateInput;
+};
+
+
+export type RootMutationTypeDisconnectGoalFromProjectArgs = {
+  goalId: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
 };
 
 
