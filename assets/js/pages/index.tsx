@@ -36,6 +36,7 @@ import * as ProjectContributorsPage from "./ProjectContributorsPage";
 import * as ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import * as ProjectDiscussionPage from "./ProjectDiscussionPage";
 import * as ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
+import * as ProjectEditGoalPage from "./ProjectEditGoalPage";
 import * as ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
 import * as ProjectEditResourcePage from "./ProjectEditResourcePage";
 import * as ProjectEditResourcesPage from "./ProjectEditResourcesPage";
@@ -190,6 +191,10 @@ export default {
   ProjectEditDescriptionPage: {
     loader: ProjectEditDescriptionPage.loader,
     Page: ProjectEditDescriptionPage.Page
+  },
+  ProjectEditGoalPage: {
+    loader: ProjectEditGoalPage.loader,
+    Page: ProjectEditGoalPage.Page
   },
   ProjectEditProjectNamePage: {
     loader: ProjectEditProjectNamePage.loader,
