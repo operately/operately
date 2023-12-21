@@ -8,6 +8,7 @@ import Avatar from "@/components/Avatar";
 import { useLoadedData } from "./loader";
 import { TargetList } from "./TargetList";
 import { ProjectList } from "./ProjectList";
+import { CheckIns } from "./CheckIns";
 import { Options } from "./Options";
 import { Navigation } from "./Navigation";
 import { Banner } from "./Banner";
@@ -66,6 +67,11 @@ export function Page() {
           <div className="mt-8">
             <DimmedLabel>Projects</DimmedLabel>
             <ProjectList goal={goal} />
+          </div>
+
+          <div className="mt-8">
+            <DimmedLabel>Last Check-in</DimmedLabel>
+            <CheckIns goal={goal} />
           </div>
 
           <Paper.DimmedSection>
