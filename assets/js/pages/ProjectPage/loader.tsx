@@ -10,8 +10,10 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import * as Permissions from "@/graphql/Projects/permissions";
 import * as Updates from "@/graphql/Projects/updates";
 import * as People from "@/graphql/People";
+import * as Companies from "@/models/companies";
 
 interface LoaderResult {
+  company: Companies.Company;
   project: Projects.Project;
 }
 
@@ -23,6 +25,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   });
 
   return {
+    company: await Companies.getCompany(),
     project: projectData.data.project,
   };
 }
