@@ -15,6 +15,7 @@ defmodule Operately.Goals.Goal do
     field :creator_id, :binary_id
 
     field :timeframe, :string
+    field :next_update_scheduled_at, :utc_datetime
 
     timestamps()
     soft_delete()

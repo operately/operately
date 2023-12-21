@@ -18,6 +18,8 @@ export function useForm() {
     className: "min-h-[350px] py-2 font-medium",
   });
 
+  const [targets, { update: updateTarget }] = useTargetListState(goal);
+
   const [post, { loading: submitting }] = Projects.usePostUpdate({
     onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.createUpdate.id}`),
   });
@@ -32,13 +34,12 @@ export function useForm() {
           updatableType: "goal",
           updatableId: goal.id,
           content: JSON.stringify(editor.editor.getJSON()),
-          messageType: "check-in",
+          messageType: "goal-check-in",
+          newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
         },
       },
     });
   };
-
-  const [targets, { update: updateTarget }] = useTargetListState(goal);
 
   return { editor, targets, updateTarget, submit, submitting };
 }
