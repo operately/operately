@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentGoalArchived = {
   __typename?: 'ActivityContentGoalArchived';
@@ -104,6 +104,11 @@ export type ActivityContentProjectDiscussionSubmitted = {
 
 export type ActivityContentProjectGoalConnection = {
   __typename?: 'ActivityContentProjectGoalConnection';
+  exampleField: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectGoalDisconnection = {
+  __typename?: 'ActivityContentProjectGoalDisconnection';
   exampleField: Scalars['String']['output'];
 };
 
@@ -698,6 +703,7 @@ export type RootMutationType = {
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
   closeProject: Project;
+  connectGoalToProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
@@ -820,6 +826,12 @@ export type RootMutationTypeArchiveProjectArgs = {
 
 export type RootMutationTypeCloseProjectArgs = {
   input: CloseProjectInput;
+};
+
+
+export type RootMutationTypeConnectGoalToProjectArgs = {
+  goalId: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
 };
 
 

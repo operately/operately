@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Groups from "@/models/groups";
+import * as Projects from "@/models/projects";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
@@ -22,20 +23,42 @@ export function Page() {
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          {project.goal && <SelectedGoal goal={project.goal} />}
-
-          <Paper.DimmedSection>
-            <div className="text-content-accent font-extrabold">Select a different goal to connect</div>
-
-            <div className="max-w-prose mt-2">
-              Linking a goal indicates that this project contributes to achieving that goal.
-            </div>
-
-            <SelectableGoals goals={goals} />
-          </Paper.DimmedSection>
+          {project.goal ? <ConnectedState project={project} goals={goals} /> : <ZeroState goals={goals} />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function ZeroState({ goals }: { goals: Goals.Goal[] }) {
+  return (
+    <>
+      <div className="text-content-accent font-extrabold text-3xl">Select a goal to connect</div>
+
+      <div className="max-w-prose mt-2">
+        Linking a goal indicates that this project contributes to achieving that goal.
+      </div>
+
+      <SelectableGoals goals={goals} />
+    </>
+  );
+}
+
+function ConnectedState({ project, goals }: { project: Projects.Project; goals: Goals.Goal[] }) {
+  return (
+    <>
+      <SelectedGoal goal={project.goal!} />
+
+      <Paper.DimmedSection>
+        <div className="text-content-accent font-extrabold">Select a different goal to connect</div>
+
+        <div className="max-w-prose mt-2">
+          Linking a goal indicates that this project contributes to achieving that goal.
+        </div>
+
+        <SelectableGoals goals={goals} />
+      </Paper.DimmedSection>
+    </>
   );
 }
 
@@ -128,15 +151,15 @@ function SelectedGoal({ goal }: { goal: Goals.Goal }) {
     <>
       <div className="uppercase text-content-primary text-xs font-bold mb-2">Connected Goal</div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
           <div className="text-content-primary text-xl font-bold">
             <Link to={goalPath}>{goal.name}</Link>
           </div>
 
-          <div className="">
+          <div className="mt-2">
             {goal.targets!.map((target) => (
-              <div key={target!.id} className="py-1.5 flex items-center gap-1">
+              <div key={target!.id} className="flex items-center gap-1">
                 <div className="text-ellipsis w-96">{target!.name}</div>
                 <ProgressBar progress={target} />
               </div>
