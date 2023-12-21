@@ -1,1 +1,3 @@
-<%= raise "Text Email for ProjectGoalConnection not implemented" %>
+<%= "#{short_name(@author)} connected the #{@project.name} project to the #{@goal.name} goal" %>
+
+Link: <%= OperatelyEmail.project_url(@project.id) %>

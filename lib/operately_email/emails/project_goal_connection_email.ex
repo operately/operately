@@ -16,6 +16,8 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
     |> to(person)
     |> subject(who: author, action: "connected the #{project.name} project to the #{goal.name} goal")
     |> assign(:author, author)
+    |> assign(:project, project)
+    |> assign(:goal, goal)
     |> render("project_goal_connection")
   end
 end

@@ -2,6 +2,8 @@ defmodule Operately.Features.ProjectGoalTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.NotificationsSteps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -32,6 +34,13 @@ defmodule Operately.Features.ProjectGoalTest do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       to: ctx.reviewer,
+      author: ctx.champion,
+      action: "connected the #{ctx.project.name} project to the Improve support first response time goal",
+    })
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "connected the #{ctx.project.name} project to the Improve support first response time goal",
     })
