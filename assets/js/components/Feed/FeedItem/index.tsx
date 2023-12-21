@@ -13,6 +13,7 @@ import ProjectCreated from "./ProjectCreated"
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
 import ProjectGoalConnection from "./ProjectGoalConnection"
+import ProjectGoalDisconnection from "./ProjectGoalDisconnection"
 import ProjectMilestoneCommented from "./ProjectMilestoneCommented"
 import ProjectMoved from "./ProjectMoved"
 import ProjectRenamed from "./ProjectRenamed"
@@ -52,6 +53,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentProjectGoalConnection":
       return <ProjectGoalConnection activity={activity} page={page} />;
+    
+    case "ActivityContentProjectGoalDisconnection":
+      return <ProjectGoalDisconnection activity={activity} page={page} />;
     
     case "ActivityContentProjectMilestoneCommented":
       return <ProjectMilestoneCommented activity={activity} page={page} />;

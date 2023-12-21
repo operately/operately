@@ -110,7 +110,8 @@ export type ActivityContentProjectGoalConnection = {
 
 export type ActivityContentProjectGoalDisconnection = {
   __typename?: 'ActivityContentProjectGoalDisconnection';
-  exampleField: Scalars['String']['output'];
+  goal: Goal;
+  project: Project;
 };
 
 export type ActivityContentProjectMilestoneCommented = {

@@ -128,8 +128,6 @@ function SelectedGoal({ goal }: { goal: Goals.Goal }) {
   const { project } = useLoadedData();
   const refresh = useRefresh();
 
-  const testId = createTestId("select-goal", goal.name);
-
   const [connect, { loading }] = Goals.useDisconnectGoalFromProjectMutation({
     onCompleted: () => refresh(),
   });
@@ -174,7 +172,7 @@ function SelectedGoal({ goal }: { goal: Goals.Goal }) {
       </div>
 
       <div className="flex mt-4">
-        <GhostButton type="secondary" size="xs" onClick={handleClick} loading={loading} testId={testId}>
+        <GhostButton type="secondary" size="xs" onClick={handleClick} loading={loading} testId="disconnect-goal">
           Disconnect
         </GhostButton>
       </div>

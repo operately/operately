@@ -6,6 +6,7 @@ import { createPath } from "@/utils/paths";
 import Avatar from "@/components/Avatar";
 import { Link } from "@/components/Link";
 import { TextTooltip } from "@/components/Tooltip";
+import { createTestId } from "@/utils/testid";
 
 export default function Goal({ project }: { project: Projects.Project }) {
   if (project.goal) {
@@ -18,12 +19,15 @@ export default function Goal({ project }: { project: Projects.Project }) {
 function ConnectedGoalState({ project }: { project: Projects.Project }) {
   const goal = project.goal!;
   const goalPath = createPath("goals", project.goal!.id);
+  const testid = createTestId("visit-goal", goal.name);
 
   return (
     <div className="flex items-start justify-between">
       <div>
         <div className="text-content-primary font-bold">
-          <Link to={goalPath}>{goal.name}</Link>
+          <Link to={goalPath} testId={testid}>
+            {goal.name}
+          </Link>
         </div>
 
         <div className="mt-2">

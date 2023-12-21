@@ -3,6 +3,8 @@ defmodule Operately.Activities.Content.ProjectGoalDisconnection do
 
   embedded_schema do
     field :company_id, :string
+    field :project_id, :string
+    field :goal_id, :string
   end
 
   def changeset(attrs) do
@@ -12,6 +14,6 @@ defmodule Operately.Activities.Content.ProjectGoalDisconnection do
   end
 
   def build(params) do
-    raise "not implemented"
+    changeset(params)
   end
 end

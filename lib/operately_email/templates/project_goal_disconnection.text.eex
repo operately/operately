@@ -1,1 +1,3 @@
-<%= raise "Text Email for ProjectGoalDisconnection not implemented" %>
+<%= "#{short_name(@author)} disconnected the #{@project.name} project from the #{@goal.name} goal" %>
+
+Link: <%= OperatelyEmail.project_url(@project.id) %>

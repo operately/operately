@@ -34,6 +34,18 @@ const query = gql`
             }
           }
 
+          ... on ActivityContentProjectGoalDisconnection {
+            goal {
+              id
+              name
+            }
+
+            project {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentGoalCreated {
             goal {
               id
