@@ -23,7 +23,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
       |> assign(:assignment_groups, result)
       |> render("assignments")
     else
-      Logger.info("No assignments for #{person.name}")
+      Logger.info("No assignments for #{person.full_name}")
     end
   end
 
