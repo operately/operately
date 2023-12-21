@@ -2,14 +2,15 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as TipTapEditor from "@/components/Editor";
+import * as Forms from "@/components/Form";
 
+import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 
-import Button from "@/components/Button";
-
 export function Page() {
   const { goal } = useLoadedData();
+  const form = useForm();
 
   return (
     <Pages.Page title={["Check-In", goal.name]}>
@@ -18,8 +19,10 @@ export function Page() {
 
         <Paper.Body>
           <Header />
-          <Editor />
+          <Editor form={form} />
         </Paper.Body>
+
+        <SubmitButton form={form} />
       </Paper.Root>
     </Pages.Page>
   );
@@ -46,32 +49,74 @@ function Header() {
   );
 }
 
-function Editor() {
-  const { goal } = useLoadedData();
-  const { editor, submit } = useForm();
-
+function Editor({ form }) {
   return (
     <div className="mt-4">
       <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={editor.editor} variant="large" />
+        <TipTapEditor.Toolbar editor={form.editor.editor} variant="large" />
 
         <div
           className="mb-8 text-content-accent text-lg relative border-b border-stroke-base"
           style={{ minHeight: "350px" }}
         >
-          <TipTapEditor.EditorContent editor={editor.editor} />
-          <TipTapEditor.LinkEditForm editor={editor.editor} />
+          <TipTapEditor.EditorContent editor={form.editor.editor} />
+          <TipTapEditor.LinkEditForm editor={form.editor.editor} />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button onClick={submit} variant="success" data-test-id="post-status-update" disabled={editor.uploading}>
-            {editor.uploading ? "Uploading..." : "Submit"}
-          </Button>
-          <Button variant="secondary" linkTo={`/goals/${goal.id}`}>
-            Cancel
-          </Button>
-        </div>
+        <p className="font-bold text-lg">Measurments</p>
+        <p className="text-content-dimmed">Please adjust the values below.</p>
+
+        <TargetInputs form={form} />
       </TipTapEditor.Root>
+    </div>
+  );
+}
+
+function TargetInputs({ form }) {
+  return (
+    <div className="my-4 flex flex-col gap-4">
+      {form.targets.map((target, index) => {
+        return (
+          <div
+            className="flex items-center justify-between bg-surface-dimmed border border-stroke-base p-3 rounded"
+            key={index}
+          >
+            <div className="flex flex-col">
+              <div className="font-semibold text-content-accent">{target.name}</div>
+              <div className="text-content-dimmed">
+                {target.from} → {target.to} {target.unit}
+              </div>
+            </div>
+
+            <div className="">
+              <Forms.TextInputNoLabel
+                id={target.id}
+                value={target.value}
+                onChange={(value) => form.updateTarget(target.id, Number(value))}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SubmitButton({ form }) {
+  return (
+    <div className="mt-8">
+      <div className="flex items-center justify-center gap-4">
+        <FilledButton
+          type="primary"
+          onClick={form.submit}
+          loading={form.submitting}
+          size="lg"
+          testId="subit-check-in"
+          bzzzOnClickFailure
+        >
+          Submit Check-In
+        </FilledButton>
+      </div>
     </div>
   );
 }
