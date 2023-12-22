@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Notifications.GoalCheckIn do
+defmodule Operately.Activities.Notifications.GoalCheckInAcknowledgement do
   def dispatch(activity) do
     goal_id = activity.content.goal_id
     goal = Operately.Goals.get_goal!(goal_id)

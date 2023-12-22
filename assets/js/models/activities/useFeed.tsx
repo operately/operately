@@ -188,6 +188,19 @@ const query = gql`
           }
         }
 
+        ... on ActivityContentGoalCheckInAcknowledgement {
+          goal {
+            id
+            name
+          }
+
+          update {
+            id
+            insertedAt
+            message
+          }
+        }
+
         ... on ActivityContentProjectStatusUpdateCommented {
           projectId
 

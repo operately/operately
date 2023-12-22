@@ -1,0 +1,3 @@
+<%= short_name(@author) %> acknowledged your check-in for <%= @goal.name %>.
+
+Link: <%= OperatelyEmail.goal_check_in_url(@goal.id, @update.id) %>

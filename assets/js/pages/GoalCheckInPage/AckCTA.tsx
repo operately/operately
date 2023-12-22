@@ -26,7 +26,7 @@ export function AckCTA() {
 
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
-      <GhostButton size="lg" testId="acknowledge-update" onClick={handleAck}>
+      <GhostButton size="lg" testId="acknowledge-check-in" onClick={handleAck}>
         Acknowledge this Check-In
       </GhostButton>
     </div>
