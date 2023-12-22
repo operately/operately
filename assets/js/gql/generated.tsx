@@ -1309,7 +1309,12 @@ export type UpdateAppearanceInput = {
   theme?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateContent = UpdateContentMessage | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectCreated | UpdateContentProjectDiscussion | UpdateContentProjectEndTimeChanged | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentProjectStartTimeChanged | UpdateContentReview | UpdateContentStatusUpdate;
+export type UpdateContent = UpdateContentGoalCheckIn | UpdateContentMessage | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectCreated | UpdateContentProjectDiscussion | UpdateContentProjectEndTimeChanged | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentProjectStartTimeChanged | UpdateContentReview | UpdateContentStatusUpdate;
+
+export type UpdateContentGoalCheckIn = {
+  __typename?: 'UpdateContentGoalCheckIn';
+  message: Scalars['String']['output'];
+};
 
 export type UpdateContentMessage = {
   __typename?: 'UpdateContentMessage';
@@ -1435,6 +1440,7 @@ export type UpdateProfileInput = {
 };
 
 export type UpdatesFilter = {
+  goalId?: InputMaybe<Scalars['ID']['input']>;
   projectId?: InputMaybe<Scalars['ID']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };

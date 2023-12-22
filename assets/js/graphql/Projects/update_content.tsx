@@ -6,6 +6,7 @@ export type UpdateMessageType =
   | "message"
   | "review"
   | "status_update"
+  | "goal_check_in"
   | "phase_change"
   | "health_change"
   | "project_created"
@@ -31,6 +32,10 @@ export const FRAGMENT = `
       newPhase
       reviewReason
       reviewRequestId
+    }
+
+    ... on UpdateContentGoalCheckIn {
+      message
     }
 
     ... on UpdateContentStatusUpdate {
