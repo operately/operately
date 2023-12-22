@@ -10,6 +10,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal(params.id, {
       includeTargets: true,
       includeProjects: true,
+      includeLastCheckIn: true,
     }),
   };
 }

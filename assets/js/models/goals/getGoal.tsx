@@ -1,9 +1,11 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
+import * as UpdateContent from "@/graphql/Projects/update_content";
 
 interface GetGoalOptions {
   includeTargets?: boolean;
   includeProjects?: boolean;
+  includeLastCheckIn?: boolean;
 }
 
 export async function getGoal(id: string, options: GetGoalOptions = {}) {
@@ -13,6 +15,7 @@ export async function getGoal(id: string, options: GetGoalOptions = {}) {
       id: id,
       includeTargets: options.includeTargets || false,
       includeProjects: options.includeProjects || false,
+      includeLastCheckIn: options.includeLastCheckIn || false,
     },
     fetchPolicy: "network-only",
   });
@@ -69,7 +72,18 @@ const QUERY = gql`
     }
   }
 
-  query GetGoal($id: ID!, $includeTargets: Boolean!, $includeProjects: Boolean!) {
+  fragment LastCheckIn on Goal {
+    lastCheckIn {
+      insertedAt
+      author {
+        ...PersonFields
+      }
+
+      content ${UpdateContent.FRAGMENT}
+    }
+  }
+
+  query GetGoal($id: ID!, $includeTargets: Boolean!, $includeProjects: Boolean!, $includeLastCheckIn: Boolean!) {
     goal(id: $id) {
       id
       name
@@ -99,6 +113,7 @@ const QUERY = gql`
 
       ...Targets @include(if: $includeTargets)
       ...Projects @include(if: $includeProjects)
+      ...LastCheckIn @include(if: $includeLastCheckIn)
     }
   }
 `;

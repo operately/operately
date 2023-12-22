@@ -5,7 +5,6 @@ import { GhostButton } from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import { Summary } from "@/components/RichContent";
 import { createPath } from "@/utils/paths";
-import { DimmedLabel } from "../ProjectPage/Label";
 import { Link } from "@/components/Link";
 
 import * as People from "@/models/people";
@@ -37,7 +36,6 @@ export function CheckIns({ goal }) {
 
   return (
     <div>
-      <DimmedLabel>Last Check-In</DimmedLabel>
       <div className="flex items-start gap-2 max-w-xl mt-2">
         <div className="flex flex-col gap-1">
           <div className="font-bold flex items-center gap-1">
@@ -51,7 +49,8 @@ export function CheckIns({ goal }) {
         </div>
       </div>
 
-      <div className="mt-6">{goal.permissions.canCheckIn && checkInNowLink}</div>
+      <div className="text-sm font-medium mt-6">Next check-in scheduled for this Friday</div>
+      <div className="mt-2">{goal.permissions.canCheckIn && checkInNowLink}</div>
     </div>
   );
 }

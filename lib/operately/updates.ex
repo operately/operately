@@ -65,6 +65,17 @@ defmodule Operately.Updates do
     Repo.one(query)
   end
 
+  def get_last_goal_check_in(updatable_id) do
+    query = from u in Update,
+      where: u.updatable_id == ^updatable_id,
+      where: u.updatable_type == :goal,
+      where: u.type == :goal_check_in,
+      order_by: [desc: u.inserted_at],
+      limit: 1
+
+    Repo.one(query)
+  end
+
   def record_status_update(author, project, health, content) do
     action = :project_status_update_submitted
 

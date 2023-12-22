@@ -10,6 +10,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     field :timeframe, non_null(:string)
 
+    field :last_check_in, :update do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.Updates.get_last_goal_check_in(goal.id)}
+      end
+    end
+
     field :permissions, non_null(:goal_permissions) do
       resolve fn goal, _, %{context: context} ->
         person = context.current_account.person
