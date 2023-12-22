@@ -428,6 +428,7 @@ export type Goal = {
 
 export type GoalPermissions = {
   __typename?: 'GoalPermissions';
+  canAcknowledgeCheckIn: Scalars['Boolean']['output'];
   canCheckIn: Scalars['Boolean']['output'];
 };
 

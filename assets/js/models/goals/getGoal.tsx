@@ -86,6 +86,7 @@ const QUERY = gql`
 
       permissions {
         canCheckIn
+        canAcknowledgeCheckIn
       }
 
       champion {
