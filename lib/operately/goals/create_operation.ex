@@ -45,6 +45,7 @@ defmodule Operately.Goals.CreateOperation do
           name: target[:name],
           from: target[:from],
           to: target[:to],
+          value: target[:from],
           unit: target[:unit],
           index: index,
         })

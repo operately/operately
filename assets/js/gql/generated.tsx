@@ -415,6 +415,7 @@ export type Goal = {
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
+  lastCheckIn?: Maybe<Update>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   permissions: GoalPermissions;
@@ -1274,6 +1275,7 @@ export type Target = {
   name: Scalars['String']['output'];
   to: Scalars['Float']['output'];
   unit: Scalars['String']['output'];
+  value: Scalars['Float']['output'];
 };
 
 export type Tenet = {
