@@ -75,6 +75,7 @@ const QUERY = gql`
 
   fragment LastCheckIn on Goal {
     lastCheckIn {
+      id
       insertedAt
       author {
         ...PersonFields
