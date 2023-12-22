@@ -80,9 +80,6 @@ defmodule Operately.Updates.Update do
   defp validate_content_on_schema(changeset, content, schema) do
     change = schema.changeset(content)
 
-    IO.inspect("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    IO.inspect(change)
-
     if change.valid? do
       changeset
     else

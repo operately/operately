@@ -61,7 +61,8 @@ export type ActivityContentGoalArchived = {
 
 export type ActivityContentGoalCheckIn = {
   __typename?: 'ActivityContentGoalCheckIn';
-  exampleField: Scalars['String']['output'];
+  goal: Goal;
+  update: Update;
 };
 
 export type ActivityContentGoalCreated = {

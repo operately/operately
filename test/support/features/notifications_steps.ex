@@ -58,6 +58,10 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on the project review")
   end
 
+  def assert_goal_check_in_sent(ctx, author: author) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a check-in")
+  end
+
   def assert_project_status_update_submitted_sent(ctx, author: author) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a status update")
   end

@@ -111,7 +111,7 @@ function SubmitButton({ form }) {
           onClick={form.submit}
           loading={form.submitting}
           size="lg"
-          testId="subit-check-in"
+          testId="submit-check-in"
           bzzzOnClickFailure
         >
           Submit Check-In
