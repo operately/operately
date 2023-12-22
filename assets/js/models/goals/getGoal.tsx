@@ -38,6 +38,7 @@ const QUERY = gql`
       from
       to
       unit
+      value
     }
   }
 

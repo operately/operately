@@ -26,6 +26,9 @@ const LIST_GOALS = gql`
   fragment Targets on Goal {
     targets {
       name
+      from
+      to
+      value
     }
   }
 

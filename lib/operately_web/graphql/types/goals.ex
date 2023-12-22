@@ -85,5 +85,6 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :from, non_null(:float)
     field :to, non_null(:float)
     field :unit, non_null(:string)
+    field :value, non_null(:float)
   end
 end
