@@ -58,7 +58,7 @@ function useTargetListState(goal: Goals.Goal): [TargetState[], { update: (id: st
     goal.targets!.map((target) => ({
       id: target!.id,
       name: target!.name,
-      value: target!.from,
+      value: target!.value,
       from: target!.from,
       to: target!.to,
       unit: target!.unit,
