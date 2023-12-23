@@ -38,15 +38,15 @@ defmodule Operately.UpdatesTest do
           "message" => %{},
           "health" => update_health_fixture(),
         },
-        type: :status_update,
+        type: :goal_check_in,
         updatable_id: "7488a646-e31f-11e4-aace-600308960662",
-        updatable_type: :objective,
+        updatable_type: :goal,
         author_id: ctx.person.id
       }
 
       assert {:ok, %Update{} = update} = Updates.create_update(valid_attrs)
       assert update.updatable_id == "7488a646-e31f-11e4-aace-600308960662"
-      assert update.updatable_type == :objective
+      assert update.updatable_type == :goal
     end
 
     test "create_update/1 with invalid data returns error changeset" do
