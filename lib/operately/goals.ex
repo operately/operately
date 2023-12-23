@@ -23,7 +23,7 @@ defmodule Operately.Goals do
 
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
 
-  defdelegate create_goal(creator, attrs), to: Operately.Goals.CreateOperation, as: :run
+  defdelegate create_goal(creator, attrs), to: Operately.Operations.GoalCreation, as: :run
   defdelegate archive_goal(author, goal), to: Operately.Goals.ArchiveOperation, as: :run
   defdelegate get_permissions(goal, person), to: Operately.Goals.Permissions, as: :calculate
 
