@@ -5,20 +5,45 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.CompaniesFixtures
+  import Operately.GoalsFixtures
   
   alias Operately.Projects.Project
+  alias Operately.Goals.Goal
 
   setup do
     company = company_fixture()
     champion = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(champion, %{company_id: company.id})
     project = project_fixture(%{company_id: company.id, creator_id: champion.id, group_id: group.id})
+    goal = goal_fixture(champion, %{company_id: company.id, space_id: group.id})
 
     {:ok, project} = Operately.Repo.update(Project.changeset(project, %{
       next_update_scheduled_at: days_from_now(10)
     }))
 
-    {:ok, %{company: company, champion: champion, project: project}}
+    {:ok, %{company: company, champion: champion, project: project, goal: goal}}
+  end
+
+  describe "goal check-in" do
+    test "it sends if goal check is due", ctx do
+      {:ok, _} = Operately.Repo.update(Goal.changeset(ctx.goal, %{
+        next_update_scheduled_at: days_from_now(0)
+      }))
+
+      assignments = OperatelyEmail.Assignments.Loader.load(ctx.champion)
+
+      assert Enum.member?(assignment_types(assignments), :goal_check_in)
+    end
+
+    test "it doesn't send if goal check is not due", ctx do
+      {:ok, _} = Operately.Repo.update(Goal.changeset(ctx.goal, %{
+        next_update_scheduled_at: days_from_now(10)
+      }))
+
+      assignments = OperatelyEmail.Assignments.Loader.load(ctx.champion)
+
+      refute Enum.member?(assignment_types(assignments), :goal_check_in)
+    end
   end
 
   describe "project milestones" do
@@ -65,6 +90,10 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
 
   defp assignment_names(assignment_groups) do
     Enum.flat_map(assignment_groups, &(&1.assignments)) |> Enum.map(&(&1.name))
+  end
+
+  defp assignment_types(assignment_groups) do
+    Enum.flat_map(assignment_groups, &(&1.assignments)) |> Enum.map(&(&1.type))
   end
 
   defp days_ago(days) do

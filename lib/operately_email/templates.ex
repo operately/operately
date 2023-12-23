@@ -54,6 +54,8 @@ defmodule OperatelyEmail.Templates do
     case assignment.type do
     :status_update ->
       "- Check-In #{assignment.url}"
+    :goal_check_in ->
+      "- Check-In #{assignment.url}"
     :milestone ->
       "- Complete the #{assignment.name} milestone #{assignment.url}"
     end

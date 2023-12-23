@@ -2,6 +2,7 @@ defmodule OperatelyEmail.Assignments.Loader do
   import Ecto.Query
   alias Operately.Repo
   alias Operately.Projects.Project
+  alias Operately.Goals.Goal
 
   def load(person) do
     if person.account_id == nil do
@@ -19,19 +20,32 @@ defmodule OperatelyEmail.Assignments.Loader do
         preload: [:milestones]
     )
 
-    projects |> Enum.map(fn project ->
+    goals = Repo.all(from g in Goal, where: g.champion_id == ^person.id)
+
+    assignment_groups = []
+
+    assignment_groups = assignment_groups ++ Enum.map(projects, fn project ->
       %{
         name: project.name,
-        assignments: status_updates(project) ++ milestones(project)
+        assignments: project_check_ins(project) ++ milestones(project)
       }
     end)
+
+    assignment_groups = assignment_groups ++ Enum.map(goals, fn goal ->
+      %{
+        name: goal.name,
+        assignments: goal_check_ins(goal)
+      }
+    end)
+
+    assignment_groups
     |> Enum.filter(fn assignment_group -> 
       !Enum.empty?(assignment_group.assignments) 
     end)
   end
 
-  defp status_updates(project) do
-    if status_update_due?(project) do
+  defp project_check_ins(project) do
+    if due?(project.next_update_scheduled_at) do
       [
         %{
           type: :status_update,
@@ -45,8 +59,23 @@ defmodule OperatelyEmail.Assignments.Loader do
     end
   end
 
-  defp status_update_due?(project) do
-    DateTime.compare(project.next_update_scheduled_at, DateTime.utc_now()) in [:lt, :eq]
+  defp goal_check_ins(goal) do
+    if due?(goal.next_update_scheduled_at) do
+      [
+        %{
+          type: :goal_check_in,
+          due: relative_due(goal.next_update_scheduled_at),
+          url: OperatelyEmail.goal_new_check_in_url(goal.id),
+          name: "Check-in"
+        }
+      ]
+    else
+      []
+    end
+  end
+
+  defp due?(due) do
+    DateTime.compare(due, DateTime.utc_now()) in [:lt, :eq]
   end
 
   defp milestones(project) do
