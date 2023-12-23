@@ -1,11 +1,12 @@
 import * as fragments from "@/graphql/Fragments";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 
 import * as Comments from "./comments";
 import * as Reactions from "./reactions";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 
 import * as Time from "@/utils/time";
+import type { Person } from "@/models/people";
 
 export const UPDATE_FRAGMENT = `
   {
@@ -63,13 +64,6 @@ interface Comment {
   updatedAt: Date;
 
   reactions: Reaction[];
-}
-
-interface Person {
-  id: string;
-  fullName: string;
-  title: string;
-  avatarUrl: string;
 }
 
 export interface Reaction {

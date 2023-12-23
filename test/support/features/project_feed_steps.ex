@@ -6,6 +6,14 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "added this goal", "")
   end
 
+  def assert_goal_check_in(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "submitted", "")
+  end
+
+  def assert_goal_check_in_acknowledgement(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "acknowledged", "")
+  end
+
   def assert_project_moved(ctx, author: author, old_space: old_space, new_space: new_space) do
     ctx |> assert_feed_item_exists(author, "moved the project", "From #{old_space.name} to #{new_space.name}")
   end

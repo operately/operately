@@ -9,7 +9,7 @@ defmodule Operately.Updates.Update do
     belongs_to :author, Operately.People.Person
 
     field :updatable_id, Ecto.UUID
-    field :updatable_type, Ecto.Enum, values: [:objective, :project]
+    field :updatable_type, Ecto.Enum, values: [:goal, :project]
 
     field :type, Ecto.Enum, values: [
       :message, 
@@ -26,7 +26,8 @@ defmodule Operately.Updates.Update do
       :project_milestone_created,
       :project_milestone_completed,
       :project_milestone_deadline_changed,
-      :project_milestone_deleted
+      :project_milestone_deleted,
+      :goal_check_in
     ]
 
     field :content, :map

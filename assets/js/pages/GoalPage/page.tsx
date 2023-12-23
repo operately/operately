@@ -9,6 +9,7 @@ import { useLoadedData } from "./loader";
 import { TargetList } from "./TargetList";
 import { ProjectList } from "./ProjectList";
 import { Options } from "./Options";
+import { CheckIns } from "./CheckIns";
 import { Navigation } from "./Navigation";
 import { Banner } from "./Banner";
 
@@ -66,6 +67,11 @@ export function Page() {
           <div className="mt-8">
             <DimmedLabel>Projects</DimmedLabel>
             <ProjectList goal={goal} />
+          </div>
+
+          <div className="mt-8">
+            <DimmedLabel>Last Check-in</DimmedLabel>
+            <CheckIns goal={goal} />
           </div>
 
           <Paper.DimmedSection>

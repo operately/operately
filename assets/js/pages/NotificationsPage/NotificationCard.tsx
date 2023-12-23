@@ -10,7 +10,7 @@ import { TextSeparator } from "@/components/TextSeparator";
 import { gql, useMutation } from "@apollo/client";
 import { useRefresh } from "./loader";
 
-export function Card({ notification, author, title, link, where, when, who }) {
+export function Card({ notification, author, title, link, where, when, who, testId }: any) {
   const goToActivity = useNavigateTo(link);
   const [mark] = useMarkAsRead();
   const refresh = useRefresh();
@@ -32,7 +32,7 @@ export function Card({ notification, author, title, link, where, when, who }) {
     <div
       className="flex items-center gap-3 hover:bg-surface-highlight rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
       onClick={clickHandler}
-      data-test-id="notification-card"
+      data-test-id={testId || "notification-card"}
     >
       <div className="shrink-0">
         <Avatar person={author} size="small" />

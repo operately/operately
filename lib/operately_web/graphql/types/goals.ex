@@ -10,6 +10,20 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     field :timeframe, non_null(:string)
 
+    field :last_check_in, :update do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.Updates.get_last_goal_check_in(goal.id)}
+      end
+    end
+
+    field :permissions, non_null(:goal_permissions) do
+      resolve fn goal, _, %{context: context} ->
+        person = context.current_account.person
+
+        {:ok, Operately.Goals.get_permissions(goal, person)}
+      end
+    end
+
     field :is_archived, non_null(:boolean) do
       resolve fn goal, _, _ ->
         {:ok, goal.deleted_at != nil}
@@ -71,5 +85,6 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :from, non_null(:float)
     field :to, non_null(:float)
     field :unit, non_null(:string)
+    field :value, non_null(:float)
   end
 end

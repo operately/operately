@@ -65,6 +65,17 @@ defmodule Operately.Updates do
     Repo.one(query)
   end
 
+  def get_last_goal_check_in(updatable_id) do
+    query = from u in Update,
+      where: u.updatable_id == ^updatable_id,
+      where: u.updatable_type == :goal,
+      where: u.type == :goal_check_in,
+      order_by: [desc: u.inserted_at],
+      limit: 1
+
+    Repo.one(query)
+  end
+
   def record_status_update(author, project, health, content) do
     action = :project_status_update_submitted
 
@@ -283,12 +294,26 @@ defmodule Operately.Updates do
       :project_discussion -> :project_discussion_acknowledged
       :status_update -> :project_status_update_acknowledged
       :review -> :project_review_acknowledged
+      :goal_check_in -> :goal_check_in_acknowledgement
       _ -> raise "Unknown update type"
     end
 
     Multi.new()
     |> Multi.update(:update, changeset)
-    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.update.updatable_id} end)
+    |> Activities.insert(author.id, action, fn _changes -> 
+      if update.type == :goal_check_in do
+        %{
+          company_id: author.company_id,
+          goal_id: update.updatable_id,
+          update_id: update.id
+        }
+      else
+        %{
+          project_id: update.updatable_id,
+          update_id: update.id
+        }
+      end
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
   end

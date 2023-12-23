@@ -52,11 +52,23 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentGoalArchived = {
   __typename?: 'ActivityContentGoalArchived';
   goal: Goal;
+};
+
+export type ActivityContentGoalCheckIn = {
+  __typename?: 'ActivityContentGoalCheckIn';
+  goal: Goal;
+  update: Update;
+};
+
+export type ActivityContentGoalCheckInAcknowledgement = {
+  __typename?: 'ActivityContentGoalCheckInAcknowledgement';
+  goal: Goal;
+  update: Update;
 };
 
 export type ActivityContentGoalCreated = {
@@ -364,6 +376,7 @@ export type CreateUpdateInput = {
   content: Scalars['String']['input'];
   health?: InputMaybe<Scalars['String']['input']>;
   messageType?: InputMaybe<Scalars['String']['input']>;
+  newTargetValues?: InputMaybe<Scalars['String']['input']>;
   phase?: InputMaybe<Scalars['String']['input']>;
   reviewRequestId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
@@ -409,14 +422,22 @@ export type Goal = {
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
+  lastCheckIn?: Maybe<Update>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  permissions: GoalPermissions;
   projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
   space: Group;
   targets?: Maybe<Array<Maybe<Target>>>;
   timeframe: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
+};
+
+export type GoalPermissions = {
+  __typename?: 'GoalPermissions';
+  canAcknowledgeCheckIn: Scalars['Boolean']['output'];
+  canCheckIn: Scalars['Boolean']['output'];
 };
 
 export type Group = {
@@ -1261,6 +1282,7 @@ export type Target = {
   name: Scalars['String']['output'];
   to: Scalars['Float']['output'];
   unit: Scalars['String']['output'];
+  value: Scalars['Float']['output'];
 };
 
 export type Tenet = {
@@ -1296,7 +1318,12 @@ export type UpdateAppearanceInput = {
   theme?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateContent = UpdateContentMessage | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectCreated | UpdateContentProjectDiscussion | UpdateContentProjectEndTimeChanged | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentProjectStartTimeChanged | UpdateContentReview | UpdateContentStatusUpdate;
+export type UpdateContent = UpdateContentGoalCheckIn | UpdateContentMessage | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectCreated | UpdateContentProjectDiscussion | UpdateContentProjectEndTimeChanged | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentProjectStartTimeChanged | UpdateContentReview | UpdateContentStatusUpdate;
+
+export type UpdateContentGoalCheckIn = {
+  __typename?: 'UpdateContentGoalCheckIn';
+  message: Scalars['String']['output'];
+};
 
 export type UpdateContentMessage = {
   __typename?: 'UpdateContentMessage';
@@ -1422,6 +1449,7 @@ export type UpdateProfileInput = {
 };
 
 export type UpdatesFilter = {
+  goalId?: InputMaybe<Scalars['ID']['input']>;
   projectId?: InputMaybe<Scalars['ID']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };

@@ -13,6 +13,10 @@
       <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
         <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.due) %>
       <% end %>
+    <% :goal_check_in -> %>
+      <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
+        <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.due) %>
+      <% end %>
     <% :milestone -> %>
       <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
         <%= link(assignment.url, "Complete the #{assignment.name} milestone") %> <%= subtle(assignment.due) %>

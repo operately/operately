@@ -3,7 +3,7 @@ import * as Goals from "@/models/goals";
 
 export function TargetList({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-4">
       {goal.targets!.map((target) => (
         <TargetItem key={target!.id} target={target!} />
       ))}
@@ -13,22 +13,38 @@ export function TargetList({ goal }: { goal: Goals.Goal }) {
 
 function TargetItem({ target }: { target: Goals.Target }) {
   return (
-    <div className="flex items-start gap-3">
-      <TargetIndex index={0} />
-      <div className="flex flex-col -mt-1">
-        <div className="font-medium text-lg">{target.name}</div>
-        <div className="text-content-dimmed">
-          {target.from} → {target.to} {target.unit}
+    <div className="flex items-center justify-between border border-stroke-base py-3 px-5 rounded-lg">
+      <div className="flex flex-col">
+        <div className="font-semibold text-content-accent">{target.name}</div>
+        <div className="text-content-dimmed text-sm">
+          Current: {target.value} {target.unit} &middot; Target {target.to} {target.unit}
         </div>
+      </div>
+
+      <div className="flex flex-col gap1">
+        <ProgressBar target={target} />
       </div>
     </div>
   );
 }
 
-function TargetIndex({ index }: { index: number }) {
+function ProgressBar({ target }: { target: Goals.Target }) {
+  const from = target!.from!;
+  const to = target!.to!;
+  const value = target!.value!;
+
+  let progress = Math.round(((value - from) / (to - from)) * 100);
+  if (progress < 0) progress = 0;
+  if (progress > 100) progress = 100;
+
+  let color = "";
+  if (progress < 20) color = "bg-yellow-300";
+  if (progress >= 40 && progress < 80) color = "bg-yellow-500";
+  if (progress >= 70) color = "bg-green-600";
+
   return (
-    <div className="rounded-full bg-accent-1 w-5 h-5 flex items-center justify-center ml-0.5">
-      <div className="text-xs font-bold text-white-1">{index + 1}</div>
+    <div className="text-ellipsis w-40 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
+      <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
     </div>
   );
 }

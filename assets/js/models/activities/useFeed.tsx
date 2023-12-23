@@ -152,6 +152,19 @@ const query = gql`
           }
         }
 
+        ... on ActivityContentGoalCheckIn {
+          goal {
+            id
+            name
+          }
+
+          update {
+            id
+            insertedAt
+            message
+          }
+        }
+
         ... on ActivityContentProjectStatusUpdateSubmitted {
           project {
             id
@@ -167,6 +180,19 @@ const query = gql`
 
         ... on ActivityContentProjectStatusUpdateAcknowledged {
           projectId
+
+          update {
+            id
+            insertedAt
+            message
+          }
+        }
+
+        ... on ActivityContentGoalCheckInAcknowledgement {
+          goal {
+            id
+            name
+          }
 
           update {
             id

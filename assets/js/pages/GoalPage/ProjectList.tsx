@@ -24,7 +24,7 @@ export function ProjectList({ goal }: { goal: Goals.Goal }) {
 
 function ProjectListItem({ project }) {
   const path = createPath("projects", project.id);
-  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t last:border-b border-stroke-base");
+  const className = classnames("py-3 px-5", "bg-surface", "flex flex-col", "border border-stroke-base rounded-lg");
 
   let { pending, done } = Milestones.splitByStatus(project.milestones);
   const totalCount = pending.length + done.length;

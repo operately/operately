@@ -121,6 +121,28 @@ const query = gql`
             }
           }
 
+          ... on ActivityContentGoalCheckIn {
+            goal {
+              id
+              name
+            }
+
+            update {
+              id
+            }
+          }
+
+          ... on ActivityContentGoalCheckInAcknowledgement {
+            goal {
+              id
+              name
+            }
+
+            update {
+              id
+            }
+          }
+
           ... on ActivityContentProjectStatusUpdateAcknowledged {
             projectId
             statusUpdateId
