@@ -179,7 +179,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
           <CancelButton onClick={onClose} />
         </div>
 
-        {Contributors.isResponsibilityRemovable(contributor) && <RemoveButton onClick={handleRemove} />}
+        {Contributors.isResponsibilityRemovable(contributor.role) && <RemoveButton onClick={handleRemove} />}
       </div>
     </div>
   );
