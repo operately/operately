@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Operately.Gen.Elixir.Graphql.Schema do
-  import Mix.Operately, only: [indent: 2, generate_file: 2, list_files: 3]
+  import Mix.Operately, only: [indent: 2, generate_file!: 2, list_files: 3]
 
   def run(_args) do
     gen_activity_type_union()
