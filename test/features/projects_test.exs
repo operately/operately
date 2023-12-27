@@ -41,12 +41,12 @@ defmodule Operately.Features.ProjectsTest do
       title: "added #{Person.short_name(contrib)} to the project",
     })
 
-    # ctx
-    # |> EmailSteps.assert_activity_email_sent(%{
-    #   to: contrib,
-    #   author: ctx.champion, 
-    #   action: "added you as a contributor on #{ctx.project.name}"
-    # })
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: contrib,
+      author: ctx.champion, 
+      action: "added you as a contributor on #{ctx.project.name}"
+    })
 
     ctx
     |> UI.login_as(contrib)

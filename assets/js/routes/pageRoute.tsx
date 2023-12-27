@@ -8,12 +8,12 @@ export function pageRoute(path: string, pageModule: any) {
 
   return {
     path: path,
-    loader: showProgress(loader),
+    loader: showProgress(path, loader),
     element: <Element />,
   };
 }
 
-function showProgress(loader: ({ params }: { params: any }) => Promise<any>) {
+function showProgress(path: string, loader: ({ params }: { params: any }) => Promise<any>) {
   return async (req: any) => {
     let samePage = req.request.url === document.URL;
 
@@ -33,7 +33,7 @@ function showProgress(loader: ({ params }: { params: any }) => Promise<any>) {
 
       return data;
     } catch (error) {
-      console.log(error);
+      console.log("Error loading page", path, error);
       if (!samePage) nprogress.done();
     }
   };
