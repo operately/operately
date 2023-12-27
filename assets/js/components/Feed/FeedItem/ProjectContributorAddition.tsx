@@ -1,9 +1,16 @@
 import * as React from "react";
-
-import { Card } from "../NotificationCard";
-
 import * as People from "@/models/people";
 
-export default function({ notification, page }) {
-  throw "Not implemented";
+import { Container } from "../FeedItemElements";
+
+export default function ({ activity }) {
+  const person = People.shortName(activity.content.person);
+
+  return (
+    <Container
+      title={People.shortName(activity.author) + " added " + person + " to the project"}
+      author={activity.author}
+      time={activity.insertedAt}
+    />
+  );
 }

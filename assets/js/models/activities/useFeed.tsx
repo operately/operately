@@ -34,6 +34,15 @@ const query = gql`
       content {
         __typename
 
+        ... on ActivityContentProjectContributorAddition {
+          person {
+            id
+            fullName
+            avatarUrl
+            title
+          }
+        }
+
         ... on ActivityContentProjectClosed {
           project {
             id

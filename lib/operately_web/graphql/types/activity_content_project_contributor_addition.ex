@@ -21,6 +21,11 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectContributorAddition d
         {:ok, activity.content["person_id"]}
       end
     end
-    
+
+    field :person, non_null(:person) do
+      resolve fn activity, _, _ ->
+        {:ok, Operately.People.get_person!(activity.content["person_id"])}
+      end
+    end
   end
 end

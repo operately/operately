@@ -95,6 +95,7 @@ export type ActivityContentProjectClosed = {
 export type ActivityContentProjectContributorAddition = {
   __typename?: 'ActivityContentProjectContributorAddition';
   companyId: Scalars['String']['output'];
+  person: Person;
   personId: Scalars['String']['output'];
   projectId: Scalars['String']['output'];
 };

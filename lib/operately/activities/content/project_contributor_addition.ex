@@ -3,8 +3,11 @@ defmodule Operately.Activities.Content.ProjectContributorAddition do
 
   embedded_schema do
     field :company_id, :string
-  field :project_id, :string
-  field :person_id, :string
+    field :project_id, :string
+    field :person_id, :string
+    field :contributor_id, :string
+    field :responsibility, :string
+    field :role, :string
   end
 
   def changeset(attrs) do
