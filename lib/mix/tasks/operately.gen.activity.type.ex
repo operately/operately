@@ -11,12 +11,36 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     name = parse_name(name)
     fields = parse_fields(fields)
 
+    gen_operation(name)
     gen_graphql_type(name, fields)
     gen_activity_content_schema(name, fields)
     gen_notificaiton_dispatcher(name)
     gen_notification_item(name)
     gen_feed_item(name)
     gen_email_template(name)
+  end
+
+  def gen_operation(name) do
+    module_name = name
+    file_name = Macro.underscore(module_name)
+
+    generate_file("lib/operately/operations/#{file_name}.ex", fn _ ->
+      """
+      defmodule Operately.Operations.#{module_name} do
+        alias Ecto.Multi
+        alias Operately.Repo
+        alias Operately.Activities
+
+        def run(creator, attrs) do
+          raise "Operation for #{module_name} not implemented"
+
+          # Multi.new()
+          # |> Multi.insert(:something, ...)
+          # |> Repo.transaction()
+          # |> Repo.extract_result(:goal)
+        end
+      """
+    end)
   end
 
   def gen_graphql_type(name, fields) do
