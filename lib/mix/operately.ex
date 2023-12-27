@@ -6,9 +6,13 @@ defmodule Mix.Operately do
       IO.puts "#{IO.ANSI.green()}Aborting#{IO.ANSI.reset()} #{path} already exists"
       System.halt(1)
     else
-      IO.puts "#{IO.ANSI.green()}Generating#{IO.ANSI.reset()} #{path}"
-      File.write!(path, generator.(path))
+      generate_file!(path, generator)
     end
+  end
+
+  def generate_file!(path, generator) do
+    IO.puts "#{IO.ANSI.green()}Generating#{IO.ANSI.reset()} #{path}"
+    File.write!(path, generator.(path))
   end
 
   def indent(lines, spaces) do
