@@ -11,6 +11,7 @@ import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
 import GoalCreated from "./GoalCreated"
 import ProjectArchived from "./ProjectArchived"
 import ProjectClosed from "./ProjectClosed"
+import ProjectContributorAddition from "./ProjectContributorAddition"
 import ProjectCreated from "./ProjectCreated"
 import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
@@ -49,6 +50,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentProjectClosed":
       return <ProjectClosed activity={activity} page={page} />;
+    
+    case "ActivityContentProjectContributorAddition":
+      return <ProjectContributorAddition activity={activity} page={page} />;
     
     case "ActivityContentProjectCreated":
       return <ProjectCreated activity={activity} page={page} />;
