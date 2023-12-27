@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Operately.Gen.Elixir.Graphql.Schema do
-  import Mix.Operately, only: [indent: 2, generate_file: 2, list_files: 3]
+  import Mix.Operately, only: [indent: 2, generate_file!: 2, list_files: 3]
 
   def run(_args) do
     gen_activity_type_union()
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Operately.Gen.Elixir.Graphql.Schema do
   def gen_activity_type_union() do
     types = list_files("lib/operately_web/graphql/types/activity_content_*.ex", :basename, exclude: [])
 
-    generate_file("lib/operately_web/graphql/types/activity_content.ex", fn _ ->
+    generate_file!("lib/operately_web/graphql/types/activity_content.ex", fn _ ->
       """
       defmodule OperatelyWeb.Graphql.Types.ActivityContent do
         #
@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Operately.Gen.Elixir.Graphql.Schema do
   end
 
   def gen_graphql_schema() do
-    generate_file("lib/operately_web/graphql/schema.ex", fn _ ->
+    generate_file!("lib/operately_web/graphql/schema.ex", fn _ ->
       """
       defmodule OperatelyWeb.Graphql.Schema do
         #

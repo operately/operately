@@ -309,22 +309,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       resolve fn args, %{context: context} ->
         person = context.current_account.person
 
-        Operately.Repo.transaction(fn ->
-          {:ok, contributor} = Operately.Projects.create_contributor(%{
-            project_id: args.project_id,
-            person_id: args.person_id,
-            responsibility: args.responsibility,
-            role: args.role
-          })
-
-          {:ok, _} = Operately.Updates.record_project_contributor_added(
-            person, 
-            args.project_id,
-            contributor
-          )
-          
-          contributor
-        end)
+        Operately.Operations.ProjectContributorAddition.run(person, %{
+          project_id: args.project_id,
+          person_id: args.person_id,
+          responsibility: args.responsibility,
+          role: args.role
+        })
       end
     end
 

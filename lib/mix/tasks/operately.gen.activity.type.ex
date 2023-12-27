@@ -1,24 +1,63 @@
 defmodule Mix.Tasks.Operately.Gen.Activity.Type do
-  import Mix.Operately, only: [generate_file: 2]
+  import Mix.Operately, only: [generate_file: 2, indent: 2]
+
+  @supported_types ~w(string integer float boolean)
 
   #
   # Usage example:
-  # mix operately.gen.activity.type ProjectDiscussionSubmitted
+  # mix operately.gen.activity.type ProjectCreation company_id:string space_id:string name:string
   #
-  def run([name]) do
-    check_name(name)
+  def run([name | fields]) do
+    name = parse_name(name)
+    fields = parse_fields(fields)
 
-    gen_graphql_type(name)
-    gen_activity_content_schema(name)
+    gen_operation(name)
+    gen_graphql_type(name, fields)
+    gen_activity_content_schema(name, fields)
     gen_notificaiton_dispatcher(name)
     gen_notification_item(name)
+    gen_feed_item(name)
     gen_email_template(name)
   end
 
-  def gen_graphql_type(name) do
+  def gen_operation(name) do
+    module_name = name
+    file_name = Macro.underscore(module_name)
+
+    generate_file("lib/operately/operations/#{file_name}.ex", fn _ ->
+      """
+      defmodule Operately.Operations.#{module_name} do
+        alias Ecto.Multi
+        alias Operately.Repo
+        alias Operately.Activities
+
+        def run(creator, attrs) do
+          raise "Operation for #{module_name} not implemented"
+
+          # Multi.new()
+          # |> Multi.insert(:something, ...)
+          # |> Repo.transaction()
+          # |> Repo.extract_result(:goal)
+        end
+      end
+      """
+    end)
+  end
+
+  def gen_graphql_type(name, fields) do
     module_name = "ActivityContent#{name}"
     file_name = Macro.underscore(module_name)
     object_name = Macro.underscore(module_name)
+
+    field_fragments = Enum.map(fields, fn {field_name, field_type} ->
+      """
+      field :#{field_name}, non_null(:#{field_type}) do
+        resolve fn activity, _, _ ->
+          {:ok, activity.content["#{field_name}"]}
+        end
+      end
+      """
+    end)
 
     generate_file("lib/operately_web/graphql/types/#{file_name}.ex", fn _ ->
       """
@@ -26,18 +65,14 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
         use Absinthe.Schema.Notation
 
         object :#{object_name} do
-          field :example_field, non_null(:string) do
-            resolve fn _parent, _args, _resolution ->
-              "Hello World"
-            end
-          end
+          #{field_fragments |> Enum.join("\n\n") |> indent(4)}
         end
       end
       """
     end)
   end
 
-  def gen_activity_content_schema(name) do
+  def gen_activity_content_schema(name, fields) do
     module_name = name
     file_name = Macro.underscore(name)
 
@@ -47,7 +82,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
         use Operately.Activities.Content
 
         embedded_schema do
-          field :company_id, :string
+          #{Enum.map(fields, fn {field_name, field_type} -> "field :#{field_name}, :#{field_type}" end) |> Enum.join("\n") |> indent(2)}
         end
 
         def changeset(attrs) do
@@ -57,7 +92,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
         end
 
         def build(params) do
-          raise "not implemented"
+          changeset(params)
         end
       end
       """
@@ -88,7 +123,23 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
 
       import * as People from "@/models/people";
 
-      export default function #{name}({ notification }) {
+      export default function({ notification }) {
+        throw "Not implemented";
+      }
+      """
+    end)
+  end
+
+  def gen_feed_item(name) do
+    generate_file("assets/js/components/Feed/FeedItem/#{name}.tsx", fn _ ->
+      """
+      import * as React from "react";
+
+      import { Card } from "../NotificationCard";
+
+      import * as People from "@/models/people";
+
+      export default function({ notification, page }) {
         throw "Not implemented";
       }
       """
@@ -130,7 +181,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     end)
   end
 
-  defp check_name(name) do
+  defp parse_name(name) do
     if String.contains?(name, "-") do
       raise """
       Activity name should be camel case. Example: ProjectDiscussionSubmitted
@@ -142,6 +193,36 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
       Activity name should be camel case. Example: ProjectDiscussionSubmitted
       """
     end
+
+    name
   end
 
+  defp parse_fields(fields) do
+    if Enum.empty?(fields) do
+      raise """
+      Activity should have at least one field. Example: mix operately.gen.activity.type ProjectCreation company_id:string space_id:string name:string
+      """
+    end
+
+    Enum.each(fields, fn field ->
+      unless String.contains?(field, ":") do
+        raise """
+        Every field should have a type. Example: mix operately.gen.activity.type ProjectCreation company_id:string space_id:string name:string
+        """
+      end
+      
+      [name, fieldType] = String.split(field, ":")
+
+      unless Enum.member?(@supported_types, fieldType) do
+        raise """
+        #{fieldType} is not a supported type in #{name}:#{fieldType}. Supported types are: #{@supported_types}
+        """
+      end
+    end)
+
+    fields |> Enum.map(fn field ->
+      [name, fieldType] = String.split(field, ":")
+      {name, fieldType}
+    end)
+  end
 end

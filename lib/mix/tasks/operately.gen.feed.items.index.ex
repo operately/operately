@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Operately.Gen.Feed.Items.Index do
-  import Mix.Operately, only: [generate_file: 2, list_files: 3, indent: 2]
+  import Mix.Operately, only: [generate_file!: 2, list_files: 3, indent: 2]
 
   @path "assets/js/components/Feed/FeedItem"
   @pattern @path <> "/*.tsx"
@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Operately.Gen.Feed.Items.Index do
   end
 
   def generate_index(types) do
-    generate_file("#{@path}/index.tsx", fn _path ->
+    generate_file!("#{@path}/index.tsx", fn _path ->
       """
       //
       // Automatically generated with mix operate.gen.feed.items.index

@@ -22,6 +22,13 @@ const query = gql`
         content {
           __typename
 
+          ... on ActivityContentProjectContributorAddition {
+            project {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectGoalConnection {
             goal {
               id

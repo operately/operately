@@ -1,14 +1,13 @@
-defmodule OperatelyEmail.Emails.ProjectContributorAddedEmail do
+defmodule OperatelyEmail.Emails.ProjectContributorAdditionEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
-    project = Projects.get_project!(activity.updatable_id)
-    contributor = Projects.get_contributor!(person_id: person.id, project_id: project.id)
-
-    role = stringify_role(contributor.role)
+    project = Projects.get_project!(activity.content["project_id"])
+    contributor = Projects.get_contributor!(activity.content["contributor_id"])
+    role = activity.content["role"]
     responsibility = construct_responsibility(contributor)
 
     company
@@ -16,18 +15,10 @@ defmodule OperatelyEmail.Emails.ProjectContributorAddedEmail do
     |> to(person)
     |> subject(who: author, action: "added you as a #{role} on #{project.name}")
     |> assign(:author, author)
-    |> assign(:role, role)
     |> assign(:project, project)
     |> assign(:responsibility, responsibility)
-    |> render("project_contributor_added")
-  end
-
-  def stringify_role(role) do
-    case role do
-      :champion -> "Champion"
-      :reviewer -> "Reviewer"
-      :contributor -> "Contributor"
-    end
+    |> assign(:role, role)
+    |> render("project_contributor_addition")
   end
 
   def construct_responsibility(contributor) do
