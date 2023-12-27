@@ -39,6 +39,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
           # |> Repo.transaction()
           # |> Repo.extract_result(:goal)
         end
+      end
       """
     end)
   end
