@@ -43,7 +43,11 @@ defmodule Operately.Support.Features.FeedSteps do
   # Utility functions
   #
 
-  defp assert_feed_item_exists(ctx, author, title, subtitle) do
+  def assert_feed_item_exists(ctx, %{author: author, title: title}) do
+    ctx |> assert_feed_item_exists(author, title, "")
+  end
+
+  def assert_feed_item_exists(ctx, author, title, subtitle) do
     ctx
     |> UI.assert_text(Person.short_name(author))
     |> UI.assert_text(title)

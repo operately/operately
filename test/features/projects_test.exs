@@ -4,10 +4,12 @@ defmodule Operately.Features.ProjectsTest do
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
 
+  alias Operately.People.Person
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.FeedSteps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -32,12 +34,26 @@ defmodule Operately.Features.ProjectsTest do
     |> UI.fill(testid: "contributor-responsibility-input", with: "Lead the project")
     |> UI.click(testid: "save-contributor")
 
+    ctx
+    |> visit_show(ctx.project)
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "added #{Person.short_name(contrib)} to the project",
+    })
+
     # ctx
     # |> EmailSteps.assert_activity_email_sent(%{
     #   to: contrib,
-    #   author: ctx.champion,
+    #   author: ctx.champion, 
     #   action: "added you as a contributor on #{ctx.project.name}"
     # })
+
+    ctx
+    |> UI.login_as(contrib)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "added you as a contributor"
+    })
   end
 
   @tag login_as: :champion
