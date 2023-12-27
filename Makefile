@@ -115,7 +115,7 @@ gen.page:
 	$(MAKE) gen
 
 gen.activity:
-	$(DEV_CONTAINER) mix operately.gen.activity.type $(NAME)
+	$(DEV_CONTAINER) mix operately.gen.activity.type $(NAME) $(FIELDS)
 	$(MAKE) gen
 
 #
