@@ -97,6 +97,7 @@ export type ActivityContentProjectContributorAddition = {
   companyId: Scalars['String']['output'];
   person: Person;
   personId: Scalars['String']['output'];
+  project: Project;
   projectId: Scalars['String']['output'];
 };
 

@@ -13,7 +13,7 @@ export function Banner(props: { children: React.ReactNode }) {
   return <Header className={className}>{props.children}</Header>;
 }
 
-function Header(props: { className: string; children: React.ReactNode }) {
+export function Header(props: { className: string; children: React.ReactNode }) {
   const { size } = React.useContext(Context);
 
   const negHor = calcNegativeHorizontalMargins(size);
