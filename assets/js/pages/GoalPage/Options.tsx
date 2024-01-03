@@ -23,6 +23,10 @@ function OptionsDropdown({ goal, closeOptions }) {
     <div className="absolute right-0 top-0 z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col">
       <CloseOptions onClick={closeOptions} testId="close-goal-options" />
 
+      {!goal.permissions.canEdit && (
+        <Option icon={Icons.IconEdit} title="Edit Goal" link={`/goals/${goal.id}/edit`} dataTestId="edit-goal" />
+      )}
+
       {!goal.isArchived && (
         <Option icon={Icons.IconTrash} title="Archive" link={`/goals/${goal.id}/archive`} dataTestId="archive-goal" />
       )}

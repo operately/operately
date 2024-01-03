@@ -5,7 +5,7 @@ import { PuffLoader } from "react-spinners";
 interface FilledButtonProps {
   children: any;
   linkTo?: string;
-  onClick?: (e: any) => Promise<boolean>;
+  onClick?: ((e: any) => Promise<boolean>) | ((e: any) => void);
   testId?: string;
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
