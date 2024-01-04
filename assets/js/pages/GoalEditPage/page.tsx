@@ -32,10 +32,6 @@ export function Page() {
 function SubmitButton({ form }: { form: FormState }) {
   return (
     <div className="">
-      {form.errors.length > 0 && (
-        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
-      )}
-
       <Paper.Header className="bg-surface-dimmed">
         <div className="flex items-end justify-between mx-10 my-2">
           <h1 className="text-xl font-extrabold">Editing the goal</h1>
@@ -58,6 +54,10 @@ function SubmitButton({ form }: { form: FormState }) {
           </div>
         </div>
       </Paper.Header>
+
+      {form.errors.length > 0 && (
+        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+      )}
     </div>
   );
 }
