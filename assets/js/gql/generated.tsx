@@ -416,6 +416,16 @@ export type Dashboard = {
   panels?: Maybe<Array<Maybe<Panel>>>;
 };
 
+export type EditGoalInput = {
+  addedTargets: Array<InputMaybe<CreateTargetInput>>;
+  championId: Scalars['ID']['input'];
+  goalId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+  reviewerId: Scalars['ID']['input'];
+  timeframe: Scalars['String']['input'];
+  updatedTargets: Array<InputMaybe<UpdateTargetInput>>;
+};
+
 export type EditGroupInput = {
   id: Scalars['ID']['input'];
   mission: Scalars['String']['input'];
@@ -766,6 +776,7 @@ export type RootMutationType = {
   createTenet?: Maybe<Tenet>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
+  editGoal?: Maybe<Goal>;
   editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
   editProjectName: Project;
@@ -950,6 +961,11 @@ export type RootMutationTypeCreateUpdateArgs = {
 export type RootMutationTypeDisconnectGoalFromProjectArgs = {
   goalId: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeEditGoalArgs = {
+  input: EditGoalInput;
 };
 
 
@@ -1472,6 +1488,15 @@ export type UpdateNotificationSettingsInput = {
 export type UpdateProfileInput = {
   fullName?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTargetInput = {
+  from: Scalars['Float']['input'];
+  id: Scalars['ID']['input'];
+  index: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  to: Scalars['Float']['input'];
+  unit: Scalars['String']['input'];
 };
 
 export type UpdatesFilter = {
