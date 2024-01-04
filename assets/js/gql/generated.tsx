@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
 
 export type ActivityContentGoalArchived = {
   __typename?: 'ActivityContentGoalArchived';
@@ -74,6 +74,23 @@ export type ActivityContentGoalCheckInAcknowledgement = {
 export type ActivityContentGoalCreated = {
   __typename?: 'ActivityContentGoalCreated';
   goal: Goal;
+};
+
+export type ActivityContentGoalEditing = {
+  __typename?: 'ActivityContentGoalEditing';
+  addedTargets: Scalars['String']['output'];
+  companyId: Scalars['String']['output'];
+  goalId: Scalars['String']['output'];
+  newChampionId: Scalars['String']['output'];
+  newName: Scalars['String']['output'];
+  newReviewerId: Scalars['String']['output'];
+  newTimeframe: Scalars['String']['output'];
+  oldChampionId: Scalars['String']['output'];
+  oldName: Scalars['String']['output'];
+  oldReviewerId: Scalars['String']['output'];
+  oldTimeframe: Scalars['String']['output'];
+  removedTargets: Scalars['String']['output'];
+  updatedTargets: Scalars['String']['output'];
 };
 
 export type ActivityContentGroupEdited = {
