@@ -51,6 +51,7 @@ interface TimeframeOption {
 }
 
 interface Target {
+  isNew?: boolean;
   id: string;
   name: string;
   from: string;
@@ -117,9 +118,7 @@ function useTimeframe(current: string): [TimeframeOption, (timeframe: TimeframeO
   return [timeframe, setTimeframe, options];
 }
 
-function useTargets(
-  goal: Goals.Goal,
-): [Target[], () => void, (id: string) => void, (id: string, field: any, value: any) => void] {
+function useTargets(goal: Goals.Goal): [Target[], Fields["addTarget"], Fields["removeTarget"], Fields["updateTarget"]] {
   const [list, { add, remove, update }] = useListState<Target>(initialTargets(goal));
 
   const addTarget = () => add(newEmptyTarget());
@@ -129,6 +128,7 @@ function useTargets(
 
 function initialTargets(goal: Goals.Goal): Target[] {
   return goal.targets!.map((t) => ({
+    isNew: false,
     id: t!.id,
     name: t!.name,
     from: t!.from.toString(),
@@ -137,8 +137,9 @@ function initialTargets(goal: Goals.Goal): Target[] {
   }));
 }
 
-function newEmptyTarget() {
+function newEmptyTarget(): Target {
   return {
+    isNew: true,
     id: Math.random().toString(),
     name: "",
     from: "",
@@ -147,7 +148,9 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(
+  fields: Fields,
+): [FormState["submit"], FormState["cancel"], FormState["submitting"], FormState["errors"]] {
   const navigate = useNavigate();
 
   const [edit, { loading: submitting }] = Goals.useEditGoalMutation({
@@ -172,8 +175,19 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
-          targets: fields.targets
+          addedTargets: fields.targets
             .filter((t) => t.name.trim() !== "")
+            .filter((t) => t.isNew)
+            .map((t, index) => ({
+              name: t.name,
+              from: parseInt(t.from),
+              to: parseInt(t.to),
+              unit: t.unit,
+              index: index,
+            })),
+          updatedTargets: fields.targets
+            .filter((t) => t.name.trim() !== "")
+            .filter((t) => !t.isNew)
             .map((t, index) => ({
               id: t.id,
               name: t.name,
