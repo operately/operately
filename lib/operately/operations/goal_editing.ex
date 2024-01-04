@@ -5,13 +5,18 @@ defmodule Operately.Operations.GoalEditing do
   alias Operately.Goals.Goal
 
   def run(author, goal, attrs) do
-    changeset = Goal.changeset(goal, attrs)
+    changeset = Goal.changeset(goal, %{
+      name: attrs.name,
+      champion_id: attrs.champion_id,
+      reviewer_id: attrs.reviewer_id,
+      timeframe: attrs.timeframe,
+    })
 
     Multi.new()
     |> Multi.update(:goal, changeset)
     |> Activities.insert(author.id, :goal_editing, fn changes ->
       %{
-        company_id: changes.company.id,
+        company_id: goal.company_id,
         goal_id: changes.goal.id,
         old_name: goal.name,
         new_name: changes.goal.name,

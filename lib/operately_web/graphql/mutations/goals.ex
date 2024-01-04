@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
   end
 
   input_object :edit_target_input do
-    field :target_id, non_null(:id)
+    field :id, non_null(:id)
     field :name, non_null(:string)
     field :from, non_null(:float)
     field :to, non_null(:float)
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
       resolve fn args, %{context: context} ->
         creator = context.current_account.person
 
-        Operately.Goals.create_goal(creator, args.input)
+        Operately.Operations.GoalCreation.run(creator, args.input)
       end
     end
 
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
         author = context.current_account.person
         goal = Operately.Goals.get_goal!(args.goal_id)
 
-        Operately.Goals.archive_goal(author, goal)
+        Operately.Operations.GoalArchived.run(author, goal)
       end
     end
 

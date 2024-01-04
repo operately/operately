@@ -65,7 +65,7 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
   const [champion, setChampion] = React.useState<People.Person | null>(goal.champion!);
   const [reviewer, setReviewer] = React.useState<People.Person | null>(goal.reviewer!);
   const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(goal.timeframe);
-  const [targets, addTarget, removeTarget, updateTarget] = useTargets(goal.targets);
+  const [targets, addTarget, removeTarget, updateTarget] = useTargets(goal);
 
   const fields = {
     company,
@@ -100,7 +100,7 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
 }
 
 function useTimeframe(current: string): [TimeframeOption, (timeframe: TimeframeOption) => void, TimeframeOption[]] {
-  const options: TimeframeOption[] = [
+  let options: TimeframeOption[] = [
     { value: Time.nQuartersFromNow(0), label: `${Time.nQuartersFromNow(0)}` },
     { value: Time.nQuartersFromNow(1), label: `${Time.nQuartersFromNow(1)}` },
     { value: Time.nQuartersFromNow(2), label: `${Time.nQuartersFromNow(2)}` },
@@ -109,19 +109,32 @@ function useTimeframe(current: string): [TimeframeOption, (timeframe: TimeframeO
     { value: Time.nextYear().toString(), label: `${Time.nextYear()}` },
   ];
 
+  options = options.filter((o) => o.value !== current);
+  options.unshift({ value: current, label: current });
+
   const [timeframe, setTimeframe] = React.useState<TimeframeOption>(options[0]!);
 
   return [timeframe, setTimeframe, options];
 }
 
 function useTargets(
-  existing: Target,
+  goal: Goals.Goal,
 ): [Target[], () => void, (id: string) => void, (id: string, field: any, value: any) => void] {
-  const [list, { add, remove, update }] = useListState<Target>(existing);
+  const [list, { add, remove, update }] = useListState<Target>(initialTargets(goal));
 
   const addTarget = () => add(newEmptyTarget());
 
   return [list, addTarget, remove, update];
+}
+
+function initialTargets(goal: Goals.Goal): Target[] {
+  return goal.targets!.map((t) => ({
+    id: t!.id,
+    name: t!.name,
+    from: t!.from.toString(),
+    to: t!.to.toString(),
+    unit: t!.unit,
+  }));
 }
 
 function newEmptyTarget() {
@@ -138,7 +151,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
   const navigate = useNavigate();
 
   const [edit, { loading: submitting }] = Goals.useEditGoalMutation({
-    onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
+    onCompleted: (data: any) => navigate(createPath("goals", data.editGoal.id)),
   });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -154,6 +167,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
     await edit({
       variables: {
         input: {
+          goalId: fields.goal.id,
           name: fields.name,
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,

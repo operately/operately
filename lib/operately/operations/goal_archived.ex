@@ -1,4 +1,4 @@
-defmodule Operately.Goals.ArchiveOperation do
+defmodule Operately.Operations.GoalArchived do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
