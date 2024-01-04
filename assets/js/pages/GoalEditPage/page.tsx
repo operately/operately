@@ -14,7 +14,7 @@ import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
 export function Page() {
-  const { company, goal, me } = useLoadedData();
+  const { company, me } = useLoadedData();
   const form = useForm(company, me);
 
   return (

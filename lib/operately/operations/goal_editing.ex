@@ -5,10 +5,12 @@ defmodule Operately.Operations.GoalEditing do
   alias Operately.Goals.{Goal, Target}
 
   def run(author, goal, attrs) do
+    targets = Repo.preload(goal, :targets).targets
+
     Multi.new()
     |> update_goal(goal, attrs)
-    |> update_targets(goal, attrs)
-    |> insert_activity(author, goal)
+    |> update_targets(goal, targets, attrs)
+    |> insert_activity(author, goal, targets)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
   end
@@ -24,9 +26,7 @@ defmodule Operately.Operations.GoalEditing do
     Multi.update(multi, :goal, changeset)
   end
 
-  defp update_targets(multi, goal, attrs) do
-    targets = Repo.preload(goal, :targets).targets
-
+  defp update_targets(multi, goal, targets, attrs) do
     multi = Enum.reduce(attrs.updated_targets, multi, fn target_attrs, multi ->
       target = Enum.find(targets, fn target -> target.id == target_attrs.id end)
       changeset = Target.changeset(target, target_attrs)
@@ -52,7 +52,7 @@ defmodule Operately.Operations.GoalEditing do
     multi
   end
 
-  defp insert_activity(multi, author, goal) do
+  defp insert_activity(multi, author, goal, targets) do
     Activities.insert(multi, author.id, :goal_editing, fn changes ->
       %{
         company_id: goal.company_id,
@@ -65,7 +65,60 @@ defmodule Operately.Operations.GoalEditing do
         new_reviewer_id: changes.goal.reviewer_id,
         old_timeframe: goal.timeframe,
         new_timeframe: changes.goal.timeframe,
+        added_targets: serialize_added_targets(changes),
+        updated_targets: serialize_updated_targets(targets, changes),
+        deleted_targets: serialize_deleted_targets(changes),
       }
+    end)
+  end
+
+  defp serialize_added_targets(changes) do
+    changes
+    |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "added_target_") end)
+    |> Enum.map(fn {_, target} -> %{
+      id: target.id,
+      name: target.name,
+      from: target.from,
+      to: target.to,
+      unit: target.unit,
+      index: target.index,
+    } end)
+  end
+
+  defp serialize_updated_targets(targets, changes) do
+    changes
+    |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "updated_target_") end)
+    |> Enum.map(fn {_, target} -> 
+      old = Enum.find(targets, fn t -> t.id == target.id end)
+
+      %{
+        id: target.id,
+        old_name: old.name,
+        new_name: target.name,
+        old_from: old.from,
+        new_from: target.from,
+        old_to: old.to,
+        new_to: target.to,
+        old_unit: old.unit,
+        new_unit: target.unit,
+        old_index: old.index,
+        new_index: target.index,
+      } 
+    end)
+  end
+
+  defp serialize_deleted_targets(changes) do
+    changes
+    |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "deleted_target_") end)
+    |> Enum.map(fn {_, target} -> 
+      %{
+        id: target.id,
+        name: target.name,
+        from: target.from,
+        to: target.to,
+        unit: target.unit,
+        index: target.index,
+      } 
     end)
   end
 end
