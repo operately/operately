@@ -11,6 +11,8 @@ defmodule Operately.Notifications.EmailWorker do
     if person.account_id != nil do
       module = email_module(activity)
       apply(module, :send, [person, activity])
+    else
+      :ok
     end
   rescue
     e ->

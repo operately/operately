@@ -1,1 +1,3 @@
-<%= raise "Text Email for GoalEditing not implemented" %>
+<%= "#{short_name(@author)} edited the #{@goal.name} goal" %>
+
+Link: <%= OperatelyEmail.goal_url(@goal.id) %>

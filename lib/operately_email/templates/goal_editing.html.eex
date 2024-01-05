@@ -1,1 +1,75 @@
-<%= raise "HTML Email for GoalEditing not implemented" %>
+<%= title("#{short_name(@author)} edited the #{@goal.name} goal") %>
+
+<%= spacer() %>
+
+<%= if @content.old_name != @content.new_name do %>
+  <%= row do %>
+    The name was changed from <%= @content.old_name %> to <%= @content.new_name %>.
+  <% end %>
+<% end %>
+
+<%= if @content.old_timeframe != @content.new_timeframe do %>
+  <%= row do %>
+    The timeframe was changed from <%= @content.old_timeframe %> to <%= @content.new_timeframe %>.
+  <% end %>
+<% end %>
+
+<%= if @content.old_champion_id != @content.new_champion_id do %>
+  <%= row do %>
+    The champion was changed from <%= short_name(@old_champion) %> to <%= short_name(@new_champion) %>
+  <% end %>
+<% end %>
+
+<%= if @content.old_reviewer_id != @content.new_reviewer_id do %>
+  <%= row do %>
+    The reviewer was changed from <%= short_name(@old_reviewer) %> to <%= short_name(@new_reviewer) %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= if @content.added_targets != [] do %>
+  <%= row do %>
+    The following measurements were added:
+  <% end %>
+
+  <%= for target <- @content.added_targets do %>
+    <%= row do %>
+      - <%= target.name %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= if @content.updated_targets != [] do %>
+  <%= row do %>
+    The following measurements were updated:
+  <% end %>
+
+  <%= for target <- @content.updated_targets do %>
+    <%= row do %>
+      - <%= target.new_name %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= if @content.deleted_targets != [] do %>
+  <%= row do %>
+    The following measurements were deleted:
+  <% end %>
+
+  <%= for target <- @content.deleted_targets do %>
+    <%= row do %>
+      - <%= target.name %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.goal_url(@goal.id), "View Goal") %>
+<% end %>
