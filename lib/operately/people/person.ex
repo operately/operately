@@ -50,7 +50,11 @@ defmodule Operately.People.Person do
   end
 
   def short_name(person) do
-    [first_name, last_name] = String.split(person.full_name, " ")
+    parts = String.split(person.full_name, " ")
+
+    first_name = Enum.at(parts, 0)
+    last_name = Enum.at(parts, -1)
+
     last_name_initial = String.first(last_name)
 
     "#{first_name} #{last_name_initial}."
