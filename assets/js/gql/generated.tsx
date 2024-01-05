@@ -78,19 +78,21 @@ export type ActivityContentGoalCreated = {
 
 export type ActivityContentGoalEditing = {
   __typename?: 'ActivityContentGoalEditing';
-  addedTargets: Scalars['String']['output'];
+  addedTargets: Array<Maybe<Target>>;
   companyId: Scalars['String']['output'];
+  deletedTargets: Array<Maybe<Target>>;
   goalId: Scalars['String']['output'];
+  newChampion: Person;
   newChampionId: Scalars['String']['output'];
   newName: Scalars['String']['output'];
+  newReviewer: Person;
   newReviewerId: Scalars['String']['output'];
   newTimeframe: Scalars['String']['output'];
   oldChampionId: Scalars['String']['output'];
   oldName: Scalars['String']['output'];
   oldReviewerId: Scalars['String']['output'];
   oldTimeframe: Scalars['String']['output'];
-  removedTargets: Scalars['String']['output'];
-  updatedTargets: Scalars['String']['output'];
+  updatedTargets: Array<Maybe<GoalEditingUpdatedTarget>>;
 };
 
 export type ActivityContentGroupEdited = {
@@ -468,6 +470,13 @@ export type Goal = {
   targets?: Maybe<Array<Maybe<Target>>>;
   timeframe: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
+};
+
+export type GoalEditingUpdatedTarget = {
+  __typename?: 'GoalEditingUpdatedTarget';
+  id: Scalars['String']['output'];
+  newName: Scalars['String']['output'];
+  oldName: Scalars['String']['output'];
 };
 
 export type GoalPermissions = {

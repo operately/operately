@@ -22,6 +22,27 @@ const query = gql`
         content {
           __typename
 
+          ... on ActivityContentGoalEditing {
+            goalId
+            oldName
+            newName
+            oldTimeframe
+            newTimeframe
+            oldChampionId
+            newChampionId
+            oldReviewerId
+            newReviewerId
+            addedTargets {
+              id
+            }
+            updatedTargets {
+              id
+            }
+            deletedTargets {
+              id
+            }
+          }
+
           ... on ActivityContentProjectContributorAddition {
             project {
               id

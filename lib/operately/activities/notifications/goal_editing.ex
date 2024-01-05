@@ -10,6 +10,7 @@ defmodule Operately.Activities.Notifications.GoalEditing do
     notifications = 
       people
       |> Enum.uniq()
+      |> Enum.filter(fn person_id -> person_id != activity.author_id end)
       |> Enum.map(fn person_id -> 
         %{
           person_id: person_id,
