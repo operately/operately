@@ -29,7 +29,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { Context } from "./Context";
 export { DimmedSection } from "./DimmedSection";
-export { Banner } from "./Banner";
+export { Banner, Header } from "./Banner";
 
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 

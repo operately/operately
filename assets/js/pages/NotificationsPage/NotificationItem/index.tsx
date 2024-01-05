@@ -9,6 +9,7 @@ import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
 import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
 import GoalCreated from "./GoalCreated"
+import GoalEditing from "./GoalEditing"
 import ProjectArchived from "./ProjectArchived"
 import ProjectClosed from "./ProjectClosed"
 import ProjectContributorAddition from "./ProjectContributorAddition"
@@ -44,6 +45,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentGoalCreated":
       return <GoalCreated notification={notification} />;
+    
+    case "ActivityContentGoalEditing":
+      return <GoalEditing notification={notification} />;
     
     case "ActivityContentProjectArchived":
       return <ProjectArchived notification={notification} />;

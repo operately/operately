@@ -6,6 +6,10 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "added this goal", "")
   end
 
+  def assert_goal_edited(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "edited the goal", "")
+  end
+
   def assert_goal_check_in(ctx, author: author) do
     ctx |> assert_feed_item_exists(author, "submitted", "")
   end

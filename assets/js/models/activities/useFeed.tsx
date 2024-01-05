@@ -82,6 +82,45 @@ const query = gql`
           }
         }
 
+        ... on ActivityContentGoalEditing {
+          oldName
+          newName
+          oldTimeframe
+          newTimeframe
+          oldChampionId
+          newChampionId
+          newChampion {
+            id
+            fullName
+            avatarUrl
+            title
+          }
+          oldReviewerId
+          newReviewerId
+          newReviewer {
+            id
+            fullName
+            avatarUrl
+            title
+          }
+
+          addedTargets {
+            id
+            name
+          }
+
+          updatedTargets {
+            id
+            oldName
+            newName
+          }
+
+          deletedTargets {
+            id
+            name
+          }
+        }
+
         ... on ActivityContentGoalArchived {
           goal {
             id

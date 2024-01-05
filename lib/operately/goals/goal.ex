@@ -5,6 +5,8 @@ defmodule Operately.Goals.Goal do
   import Operately.SoftDelete.Schema
 
   schema "goals" do
+    has_many :targets, Operately.Goals.Target
+
     field :name, :string
 
     field :company_id, :binary_id

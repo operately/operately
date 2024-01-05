@@ -6,6 +6,7 @@ export { getGoal } from "./getGoal";
 export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
 export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromProjectMutation";
 export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutation";
+export { useEditGoalMutation } from "./useEditGoalMutation";
 export { useCreateGoalMutation } from "./useCreateGoalMutation";
 
 export { groupBySpace } from "./groupBySpace";
