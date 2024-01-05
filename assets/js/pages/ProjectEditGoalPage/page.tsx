@@ -12,7 +12,6 @@ import { createTestId } from "@/utils/testid";
 import { createPath } from "@/utils/paths";
 import { Link } from "@/components/Link";
 import Avatar from "@/components/Avatar";
-import { TextTooltip } from "@/components/Tooltip";
 
 export function Page() {
   const { project, goals } = useLoadedData();
@@ -159,7 +158,7 @@ function SelectedGoal({ goal }: { goal: Goals.Goal }) {
             {goal.targets!.map((target) => (
               <div key={target!.id} className="flex items-center gap-1">
                 <div className="text-ellipsis w-96">{target!.name}</div>
-                <ProgressBar progress={target} />
+                <ProgressBar target={target!} />
               </div>
             ))}
           </div>
@@ -181,7 +180,13 @@ function SelectedGoal({ goal }: { goal: Goals.Goal }) {
 }
 
 function ProgressBar({ target }: { target: Goals.Target }) {
-  const progress = Math.floor(Math.random() * 100.0);
+  const from = target!.from!;
+  const to = target!.to!;
+  const value = target!.value!;
+
+  let progress = Math.round(((value - from) / (to - from)) * 100);
+  if (progress < 0) progress = 0;
+  if (progress > 100) progress = 100;
 
   let color = "";
   if (progress < 20) color = "bg-yellow-300";
@@ -189,10 +194,8 @@ function ProgressBar({ target }: { target: Goals.Target }) {
   if (progress >= 70) color = "bg-green-600";
 
   return (
-    <TextTooltip text={"hello"}>
-      <div className="text-ellipsis w-20 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
-        <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
-      </div>
-    </TextTooltip>
+    <div className="text-ellipsis w-40 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
+      <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
+    </div>
   );
 }
