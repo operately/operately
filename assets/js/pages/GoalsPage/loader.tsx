@@ -29,10 +29,6 @@ export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
 }
 
-export function useRefresh() {
-  return Pages.useRefresh();
-}
-
 export function useTimeframeControles() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timeframe = searchParams.get("timeframe") || Time.currentQuarter();
