@@ -19,6 +19,7 @@ import * as GoalCheckInsPage from "./GoalCheckInsPage";
 import * as GoalEditPage from "./GoalEditPage";
 import * as GoalNewCheckInPage from "./GoalNewCheckInPage";
 import * as GoalPage from "./GoalPage";
+import * as GoalsPage from "./GoalsPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
@@ -127,6 +128,10 @@ export default {
   GoalPage: {
     loader: GoalPage.loader,
     Page: GoalPage.Page
+  },
+  GoalsPage: {
+    loader: GoalsPage.loader,
+    Page: GoalsPage.Page
   },
   GroupAddPage: {
     loader: GroupAddPage.loader,
