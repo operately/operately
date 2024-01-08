@@ -1,20 +1,21 @@
 defmodule OperatelyWeb.Graphql.Queries.Goals do
   use Absinthe.Schema.Notation
 
-  alias Operately.Goals
-
   object :goal_queries do
     field :goals, list_of(:goal) do
       arg :space_id, :id
+      arg :timeframe, :string
+      arg :include_longer_timeframes, :boolean
 
       resolve fn _, args, %{context: context} ->
         person = context.current_account.person
 
-        goals = if args[:space_id] do
-          Goals.list_goals_for_space(person, args.space_id)
-        else
-          Goals.list_goals_for_company(person, person.company_id)
-        end
+        goals = Operately.Goals.list_goals(%{
+          company_id: person.company_id,
+          space_id: args[:space_id],
+          timeframe: args[:timeframe],
+          include_longer_timeframes: args[:include_longer_timeframes]
+        })
 
         {:ok, goals}
       end

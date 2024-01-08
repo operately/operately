@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useTimeframeControles } from "./loader";
 import { Link } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
@@ -26,11 +26,13 @@ export function Page() {
 }
 
 function TimeframeSelector() {
+  const [timeframe, next, prev] = useTimeframeControles();
+
   return (
     <div className="flex items-center justify-center gap-4">
-      <Icons.IconChevronLeft />
-      <span className="font-medium text-content-accent leading-loose">Q1 2024</span>
-      <Icons.IconChevronRight />
+      <Icons.IconChevronLeft onClick={prev} className="cursor-pointer" />
+      <span className="font-medium text-content-accent leading-loose">{timeframe}</span>
+      <Icons.IconChevronRight onClick={next} className="cursor-pointer" />
     </div>
   );
 }
@@ -39,7 +41,7 @@ function GoalGroups({ groups }) {
   return (
     <div className="flex flex-col gap-8">
       {groups.map((group) => (
-        <GoalGroup key={group.space} group={group} />
+        <GoalGroup key={group.space.id} group={group} />
       ))}
     </div>
   );
@@ -96,7 +98,7 @@ function TargetList({ targets }: { targets: Goals.Target[] }) {
   return (
     <ul>
       {targets.map((target) => (
-        <TargetListItem key={target.id} target={target} />
+        <TargetListItem key={target.name} target={target} />
       ))}
     </ul>
   );
