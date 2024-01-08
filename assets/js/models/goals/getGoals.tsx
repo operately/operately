@@ -6,6 +6,8 @@ interface GetGoalsOptions {
   spaceId?: string;
   includeTargets?: boolean;
   includeSpace?: boolean;
+  timeframe?: string;
+  includeLongerTimeframes?: boolean;
 }
 
 export async function getGoals(options: GetGoalsOptions = {}): Promise<Goal[]> {
@@ -15,6 +17,8 @@ export async function getGoals(options: GetGoalsOptions = {}): Promise<Goal[]> {
       spaceId: options.spaceId,
       includeTargets: !!options.includeTargets,
       includeSpace: !!options.includeSpace,
+      timeframe: options.timeframe,
+      includeLongerTimeframes: options.includeLongerTimeframes || false,
     },
     fetchPolicy: "network-only",
   });
@@ -39,8 +43,14 @@ const LIST_GOALS = gql`
     }
   }
 
-  query ListGols($spaceId: ID, $includeTargets: Boolean!, $includeSpace: Boolean!) {
-    goals(spaceId: $spaceId) {
+  query ListGols(
+    $spaceId: ID
+    $timeframe: String
+    $includeTargets: Boolean!
+    $includeSpace: Boolean!
+    $includeLongerTimeframes: Boolean!
+  ) {
+    goals(spaceId: $spaceId, timeframe: $timeframe, includeLongerTimeframes: $includeLongerTimeframes) {
       id
       name
       insertedAt

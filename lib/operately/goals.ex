@@ -9,16 +9,29 @@ defmodule Operately.Goals do
     Repo.all(Goal)
   end
 
-  def list_goals_for_space(_person, space_id) do
-    query = from(goal in Goal, where: goal.group_id == ^space_id)
+  def list_goals(filter) do
+    from(goal in Goal)
+    |> apply_if(filter.space_id, fn query -> 
+      from(goal in query, where: goal.group_id == ^filter.space_id) 
+    end)
+    |> apply_if(filter.company_id, fn query -> 
+      from(goal in query, where: goal.company_id == ^filter.company_id) 
+    end)
+    |> apply_if(filter.timeframe, fn query ->
+      timeframes = 
+        if filter.include_longer_timeframes do
+          [filter.timeframe, String.split(filter.timeframe, " ") |> List.last()]
+        else
+          [filter.timeframe]
+        end
 
-    Repo.all(query)
+      from(goal in query, where: goal.timeframe in ^timeframes)
+    end)
+    |> Repo.all()
   end
 
-  def list_goals_for_company(_person, company_id) do
-    query = from(goal in Goal, where: goal.company_id == ^company_id)
-
-    Repo.all(query)
+  defp apply_if(query, condition, fun) do
+    if condition, do: fun.(query), else: query
   end
 
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
