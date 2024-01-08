@@ -67,18 +67,20 @@ function GoalItem({ goal }: { goal: Goals.Goal }) {
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4">
         <div>
+          <div className="text-xs text-content-accent font-medium">{goal.timeframe}</div>
+
           <div className="text-ellipsis font-bold">
             <Link to={path} underline={false}>
               {goal.name}
             </Link>
           </div>
 
-          <div className="flex flex-col gap-1 mt-1">
+          <div className="flex flex-col gap-1 mt-1 w-full">
             {goal.targets!.map((target, index) => (
-              <div key={index} className="text-sm flex items-center gap-1">
-                <div className="text-ellipsis w-96">{target!.name}</div>
+              <div key={index} className="text-sm flex justify-between items-center">
+                <div>{target!.name}</div>
                 <ProgressBar target={target} />
               </div>
             ))}
@@ -86,8 +88,8 @@ function GoalItem({ goal }: { goal: Goals.Goal }) {
         </div>
 
         <div className="flex items-center gap-1">
-          <Avatar person={goal.champion!} size={24} />
-          <Avatar person={goal.reviewer!} size={24} />
+          <Avatar person={goal.champion!} size={20} />
+          <Avatar person={goal.reviewer!} size={20} />
         </div>
       </div>
     </div>

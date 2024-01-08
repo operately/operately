@@ -1222,7 +1222,9 @@ export type RootQueryTypeGoalArgs = {
 
 
 export type RootQueryTypeGoalsArgs = {
+  includeLongerTimeframes?: InputMaybe<Scalars['Boolean']['input']>;
   spaceId?: InputMaybe<Scalars['ID']['input']>;
+  timeframe?: InputMaybe<Scalars['String']['input']>;
 };
 
 

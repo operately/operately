@@ -18,7 +18,7 @@ export async function getGoals(options: GetGoalsOptions = {}): Promise<Goal[]> {
       includeTargets: !!options.includeTargets,
       includeSpace: !!options.includeSpace,
       timeframe: options.timeframe,
-      includeLongerTimeframes: options.includeLongerTimeframes,
+      includeLongerTimeframes: options.includeLongerTimeframes || false,
     },
     fetchPolicy: "network-only",
   });
