@@ -59,6 +59,7 @@ import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPag
 import * as ProjectStatusUpdateListPage from "./ProjectStatusUpdateListPage";
 import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
+import * as ProjectsPage from "./ProjectsPage";
 
 //
 // We are explocily exporting the pages here to avoid false positives
@@ -288,5 +289,9 @@ export default {
   ProjectStatusUpdatePage: {
     loader: ProjectStatusUpdatePage.loader,
     Page: ProjectStatusUpdatePage.Page
+  },
+  ProjectsPage: {
+    loader: ProjectsPage.loader,
+    Page: ProjectsPage.Page
   }
 };
