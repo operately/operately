@@ -38,11 +38,11 @@ export function useTimeframeControles() {
   const timeframe = searchParams.get("timeframe") || Time.currentQuarter();
 
   const next = () => {
-    setSearchParams({ timeframe: "Q2 2021" });
+    setSearchParams({ timeframe: Time.nextQuarter(timeframe) });
   };
 
   const prev = () => {
-    setSearchParams({ timeframe: "Q1 2021" });
+    setSearchParams({ timeframe: Time.prevQuarter(timeframe) });
   };
 
   return [timeframe, next, prev] as const;

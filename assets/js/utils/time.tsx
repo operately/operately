@@ -1,4 +1,5 @@
 import * as datefsn from "date-fns";
+import * as Quarters from "./quarters";
 
 export function today() {
   return datefsn.startOfDay(new Date());
@@ -70,14 +71,25 @@ export function currentQuarter() {
   return nQuartersFromNow(0);
 }
 
+export function nextQuarter(from: string) {
+  const q = Quarters.fromString(from);
+  const next = Quarters.next(q);
+
+  return Quarters.toString(next);
+}
+
+export function prevQuarter(from: string) {
+  const q = Quarters.fromString(from);
+  const prev = Quarters.prev(q);
+
+  return Quarters.toString(prev);
+}
+
 export function nQuartersFromNow(quarters: number) {
-  const currentYear = new Date().getFullYear();
-  const currentQuarter = Math.floor(new Date().getMonth() / 3);
+  const current = Quarters.current();
+  const result = Quarters.addQuarters(current, quarters);
 
-  const year = currentYear + Math.floor((currentQuarter + quarters) / 4);
-  const quarter = (currentQuarter + quarters) % 4;
-
-  return `Q${quarter + 1} ${year}`;
+  return Quarters.toString(result);
 }
 
 export function isCurrentYear(date: Date) {
