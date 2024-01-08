@@ -11,13 +11,15 @@ interface LoaderResult {
   goals: Goals.Goal[];
 }
 
-export async function loader(): Promise<LoaderResult> {
+export async function loader({ request }): Promise<LoaderResult> {
+  const timeframe = new URL(request.url).searchParams.get("timeframe") || Time.currentQuarter();
+
   return {
     company: await Companies.getCompany(),
     goals: await Goals.getGoals({
       includeTargets: true,
       includeSpace: true,
-      timeframe: getTimeframe(),
+      timeframe: timeframe,
       includeLongerTimeframes: true,
     }),
   };
@@ -32,9 +34,8 @@ export function useRefresh() {
 }
 
 export function useTimeframeControles() {
-  const timeframe = getTimeframe();
-
-  let [_searchParams, setSearchParams] = useSearchParams();
+  let [searchParams, setSearchParams] = useSearchParams();
+  const timeframe = searchParams.get("timeframe") || Time.currentQuarter();
 
   const next = () => {
     setSearchParams({ timeframe: "Q2 2021" });
@@ -45,15 +46,4 @@ export function useTimeframeControles() {
   };
 
   return [timeframe, next, prev] as const;
-}
-
-function getTimeframe(): string {
-  const query = new URLSearchParams(window.location.search);
-
-  const timeframe = query.get("timeframe");
-  if (timeframe) {
-    return timeframe;
-  } else {
-    return Time.currentQuarter();
-  }
 }
