@@ -7,6 +7,8 @@ import { Link } from "@/components/Link";
 import type { ProjectGroup } from "@/models/projects/groupBySpace";
 import { useLoadedData } from "./loader";
 
+import Avatar from "@/components/Avatar";
+
 export function Page() {
   const { projects, company } = useLoadedData();
 
@@ -66,8 +68,25 @@ function ProjectListItem({ project }: { project: Projects.Project }) {
       </div>
 
       <div className="flex items-center gap-4 mt-4">
-        <div className="flex items-center gap-1"></div>
+        <ContribList project={project} />
       </div>
+    </div>
+  );
+}
+
+function ContribList({ project }: { project: Projects.Project }) {
+  const sortedContributors = [...project.contributors!].sort((a, b) => {
+    if (a!.role === "champion") return -2;
+    if (b!.role === "reviewer") return 1;
+
+    return 0;
+  });
+
+  return (
+    <div className="flex items-center gap-1">
+      {sortedContributors.map((contributor) => (
+        <Avatar key={contributor!.id} person={contributor!.person} size={20} />
+      ))}
     </div>
   );
 }
