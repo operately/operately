@@ -22,7 +22,7 @@ export async function getProjects(options: GetProjectsOptions = {}) {
   return data.data.projects;
 }
 
-export const QUERY = gql`
+const QUERY = gql`
   fragment NextMilestone on Project {
     nextMilestone {
       id
