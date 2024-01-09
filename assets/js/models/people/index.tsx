@@ -1,7 +1,8 @@
-export { getMe } from "./getMe";
-
-export type { Person } from "@/gql/generated";
 import type { Person } from "@/gql";
+export type { Person } from "@/gql/generated";
+
+export { getPeople } from "./getPeople";
+export { getMe } from "./getMe";
 
 export function firstName(person: Person): string {
   return person.fullName.split(" ")[0]!;
