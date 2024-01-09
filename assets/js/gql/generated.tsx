@@ -1184,6 +1184,7 @@ export type RootQueryType = {
   notifications?: Maybe<Array<Notification>>;
   objective?: Maybe<Objective>;
   objectives?: Maybe<Array<Maybe<Objective>>>;
+  people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
   potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
   project?: Maybe<Project>;
