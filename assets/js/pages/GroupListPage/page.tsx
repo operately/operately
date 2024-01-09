@@ -16,11 +16,6 @@ export function Page() {
 
   return (
     <Pages.Page title="Lobby">
-      <div className="font-medium flex items-center gap-2 w-full justify-center mt-3">
-        <Icons.IconPlant2 size={20} className="text-accent-1" strokeWidth={2} />
-        Lobby &middot; Choose a Space to get started
-      </div>
-
       <Paper.Root size="large">
         <div className="flex justify-center gap-4 pt-16 flex-wrap">
           <div className="relative w-64 px-4 py-3">
