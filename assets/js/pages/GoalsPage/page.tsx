@@ -14,7 +14,7 @@ export function Page() {
   const groups = Goals.groupBySpace(goals);
 
   return (
-    <Pages.Page title={"GoalsPage"}>
+    <Pages.Page title={"Goals"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
         <TimeframeSelector />
         <h1 className="text-3xl font-bold text-center mt-2 mb-16">Goals in {company.name}</h1>
