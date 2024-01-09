@@ -51,9 +51,7 @@ export function Root({ size, children }: RootProps): JSX.Element {
 
   return (
     <Context.Provider value={{ size }}>
-      <div className="fixed top-0 left-0 right-0 bottom-0 overflow-y-auto">
-        <div className={classnames("flex-1 mx-auto my-16 relative", sizes[size])}>{children}</div>
-      </div>
+      <div className={classnames("flex-1 mx-auto my-20 relative", sizes[size])}>{children}</div>
     </Context.Provider>
   );
 }

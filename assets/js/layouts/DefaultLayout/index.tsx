@@ -8,9 +8,15 @@ import { User } from "./User";
 import { Bell } from "./Bell";
 import { AdminLink } from "./AdminLink";
 import { Logo } from "./Logo";
+import { DivLink } from "@/components/Link";
+import * as Icons from "@tabler/icons-react";
 
 function NavigationContainer({ children }) {
-  return <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5">{children}</div>;
+  return (
+    <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
+      {children}
+    </div>
+  );
 }
 
 function Navigation() {
@@ -24,6 +30,20 @@ function Navigation() {
             <Logo />
             <div className="font-semibold">Operately</div>
           </div>
+
+          <div className="flex items-center gap-5 border-l border-surface-outline px-4">
+            <SectionLink to="/" icon={Icons.IconHome2}>
+              Home
+            </SectionLink>
+
+            <SectionLink to="/goals" icon={Icons.IconTargetArrow}>
+              Goals
+            </SectionLink>
+
+            <SectionLink to="/projects" icon={Icons.IconTable}>
+              Projects
+            </SectionLink>
+          </div>
         </div>
         <div className="flex-1"></div>
 
@@ -34,6 +54,15 @@ function Navigation() {
         </div>
       </div>
     </NavigationContainer>
+  );
+}
+
+function SectionLink({ to, children, icon }) {
+  return (
+    <DivLink to={to} className="font-semibold flex items-center gap-1 cursor-pointer group">
+      {React.createElement(icon, { size: 16 })}
+      {children}
+    </DivLink>
   );
 }
 

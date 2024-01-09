@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
         filters = Map.get(args, :filters, %{})
 
         projects = Operately.Projects.list_projects(person, %{
+          company_id: person.company_id,
           group_id: filters[:group_id],
           objective_id: filters[:objective_id],
           include_archived: filters[:include_archived]
