@@ -16,7 +16,8 @@ import { Indicator } from "@/components/ProjectHealthIndicators";
 export function Page() {
   const { projects, company } = useLoadedData();
 
-  const groups = Projects.groupBySpace(projects);
+  const ongoingProjects = projects.filter((project) => project.status === "active");
+  const groups = Projects.groupBySpace(ongoingProjects);
 
   return (
     <Pages.Page title={"Projects"}>
@@ -40,6 +41,8 @@ function ProjectGroups({ groups }: { groups: ProjectGroup[] }) {
 }
 
 function ProjectGroup({ group }: { group: ProjectGroup }) {
+  const projects = Projects.sortByName(group.projects);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="uppercase text-xs font-medium tracking-wide text-center flex items-center gap-4 w-full">
@@ -47,7 +50,7 @@ function ProjectGroup({ group }: { group: ProjectGroup }) {
         {group.space.name}
         <div className="h-px bg-stroke-base w-full" />
       </div>
-      <ProjectList projects={group.projects} />
+      <ProjectList projects={projects} />
     </div>
   );
 }
