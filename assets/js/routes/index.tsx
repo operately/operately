@@ -28,6 +28,7 @@ const routes = createBrowserRouter([
       pageRoute("/account/appearance", pages.AccountAppearancePage),
 
       pageRoute("/notifications", pages.NotificationsPage),
+      pageRoute("/people", pages.PeoplePage),
 
       pageRoute("/spaces/new", pages.GroupAddPage),
       pageRoute("/spaces/:id", pages.GroupPage),

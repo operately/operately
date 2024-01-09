@@ -43,6 +43,10 @@ function Navigation() {
             <SectionLink to="/projects" icon={Icons.IconTable}>
               Projects
             </SectionLink>
+
+            <SectionLink to="/people" icon={Icons.IconUserCircle}>
+              People
+            </SectionLink>
           </div>
         </div>
         <div className="flex-1"></div>
