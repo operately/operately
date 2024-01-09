@@ -1,13 +1,17 @@
 import * as React from "react";
+import type { ProjectGroup } from "@/models/projects/groupBySpace";
+
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-
-import { Link } from "@/components/Link";
-
-import type { ProjectGroup } from "@/models/projects/groupBySpace";
-import { useLoadedData } from "./loader";
+import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
+import { TextTooltip } from "@/components/Tooltip";
+import { Link } from "@/components/Link";
+import { useLoadedData } from "./loader";
+import { MiniPieChart } from "@/components/MiniPieChart";
+import * as Milestones from "@/graphql/Projects/milestones";
+import { Indicator } from "@/components/ProjectHealthIndicators";
 
 export function Page() {
   const { projects, company } = useLoadedData();
@@ -59,12 +63,29 @@ function ProjectList({ projects }: { projects: Projects.Project[] }) {
 }
 
 function ProjectListItem({ project }: { project: Projects.Project }) {
+  let { pending, done } = Milestones.splitByStatus(project.milestones);
+  const totalCount = pending.length + done.length;
+
+  const completion = (
+    <div className="flex items-center gap-2">
+      <MiniPieChart completed={done.length} total={totalCount} size={16} />
+      {done.length}/{totalCount} completed
+    </div>
+  );
+
   return (
     <div className="px-4 py-4 bg-surface border border-stroke-base shadow rounded">
-      <div className="font-bold mb-2">
+      <div className="font-bold flex items-center gap-2 mb-2">
         <Link underline={false} to={`/projects/${project.id}`}>
           {project.name}
         </Link>
+        <PrivateIndicator project={project} />
+      </div>
+
+      <div className="flex items-center gap-5 mt-2 text-sm">
+        <Status project={project} />
+        {totalCount > 0 && completion}
+        <NextMilestone project={project} />
       </div>
 
       <div className="flex items-center gap-4 mt-4">
@@ -89,4 +110,31 @@ function ContribList({ project }: { project: Projects.Project }) {
       ))}
     </div>
   );
+}
+
+function PrivateIndicator({ project }) {
+  if (!project.private) return null;
+
+  return (
+    <TextTooltip text="Private project. Visible only to contributors.">
+      <div data-test-id="private-project-indicator">
+        <Icons.IconLock size={16} />
+      </div>
+    </TextTooltip>
+  );
+}
+
+function NextMilestone({ project }) {
+  if (project.nextMilestone === null) return null;
+
+  return (
+    <div className="inline-flex items-center gap-2">
+      <Icons.IconFlagFilled size={16} className="text-green-600" />
+      <span className="">{project.nextMilestone.title}</span>
+    </div>
+  );
+}
+
+function Status({ project }) {
+  return <Indicator value={project.health} type="status" />;
 }

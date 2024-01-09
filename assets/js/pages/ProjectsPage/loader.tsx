@@ -13,6 +13,7 @@ export async function loader(): Promise<LoaderResult> {
     projects: await Projects.getProjects({
       includeSpace: true,
       includeContributors: true,
+      includeMilestones: true,
     }),
   };
 }

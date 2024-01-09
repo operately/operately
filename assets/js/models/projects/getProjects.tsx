@@ -4,6 +4,7 @@ import client from "@/graphql/client";
 interface GetProjectsOptions {
   includeSpace?: boolean;
   includeContributors?: boolean;
+  includeMilestones?: boolean;
 }
 
 export async function getProjects(options: GetProjectsOptions = {}) {
@@ -12,6 +13,7 @@ export async function getProjects(options: GetProjectsOptions = {}) {
     variables: {
       includeSpace: !!options.includeSpace,
       includeContributors: !!options.includeContributors,
+      includeMilestones: !!options.includeMilestones,
       filters: {},
     },
     fetchPolicy: "network-only",
@@ -21,8 +23,27 @@ export async function getProjects(options: GetProjectsOptions = {}) {
 }
 
 export const QUERY = gql`
+  fragment NextMilestone on Project {
+    nextMilestone {
+      id
+      title
+      status
+      insertedAt
+    }
+  }
+
+  fragment Milestones on Project {
+    milestones {
+      id
+      title
+      status
+      insertedAt
+    }
+  }
+
   fragment Contributors on Project {
     contributors {
+      id
       role
       person {
         id
@@ -40,7 +61,12 @@ export const QUERY = gql`
     }
   }
 
-  query ListProjects($filters: ProjectListFilters, $includeContributors: Boolean!, $includeSpace: Boolean!) {
+  query ListProjects(
+    $filters: ProjectListFilters
+    $includeSpace: Boolean!
+    $includeMilestones: Boolean!
+    $includeContributors: Boolean!
+  ) {
     projects(filters: $filters) {
       id
       name
@@ -56,6 +82,8 @@ export const QUERY = gql`
 
       ...Contributors @include(if: $includeContributors)
       ...Space @include(if: $includeSpace)
+      ...Milestones @include(if: $includeMilestones)
+      ...NextMilestone @include(if: $includeMilestones)
     }
   }
 `;
