@@ -2,6 +2,7 @@ import type { Person } from "@/gql";
 export type { Person } from "@/gql/generated";
 
 export { getPeople } from "./getPeople";
+export { getPerson } from "./getPerson";
 export { getMe } from "./getMe";
 
 export function firstName(person: Person): string {
