@@ -10,6 +10,9 @@ defmodule Operately.People.Person do
     belongs_to(:company, Operately.Companies.Company)
     belongs_to(:home_dashboard, Operately.Dashboards.Dashboard)
 
+    belongs_to(:manager, Operately.People.Person)
+    has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
+
     field :full_name, :string
     field :title, :string
     field :avatar_url, :string
@@ -39,6 +42,7 @@ defmodule Operately.People.Person do
       :email,
       :account_id,
       :company_id,
+      :manager_id,
       :home_dashboard_id,
       :send_daily_summary,
       :notify_on_mention,
