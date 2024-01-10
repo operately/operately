@@ -22,6 +22,7 @@ const QUERY = gql`
       fullName
       title
       avatarUrl
+      managerId
     }
   }
 `;
