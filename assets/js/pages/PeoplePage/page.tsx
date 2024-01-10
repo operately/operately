@@ -16,6 +16,11 @@ export function Page() {
   return (
     <Pages.Page title={"PeoplePage"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+        <div className="flex items-center gap-4 justify-center">
+          <div className="font-medium">Employee List</div>
+          <Link to="/people/org-chart">Org Chart</Link>
+        </div>
+
         <h1 className="text-3xl font-bold text-center mt-2 mb-16">Members of {company.name}</h1>
 
         <PeopleList people={sortedPeople} />
