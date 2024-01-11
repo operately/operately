@@ -1,8 +1,25 @@
-import { gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import client from "@/graphql/client";
 
 interface GetCompanyOpts {
   include?: ("admins" | "people")[];
+}
+
+export function useCompany(opts?: GetCompanyOpts) {
+  let { data, loading, error } = useQuery(QUERY, {
+    variables: {
+      id: window.appConfig.companyID,
+      includeAdmins: opts?.include?.includes("admins") ?? false,
+      includePeople: opts?.include?.includes("people") ?? false,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  return {
+    company: data?.company,
+    loading,
+    error,
+  };
 }
 
 export async function getCompany(opts?: GetCompanyOpts) {
