@@ -37,7 +37,7 @@ export function Page() {
 
 function Root({ chart }: { chart: OrgChart }) {
   return (
-    <div className="flex items-center justify-center gap-4">
+    <div className="flex items-center justify-center gap-4 flex-wrap">
       {chart.root.map((node) => (
         <PersonCard key={node.person.id} node={node} chart={chart} />
       ))}
