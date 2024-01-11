@@ -7,14 +7,15 @@ import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
 import { TextTooltip } from "@/components/Tooltip";
-import { Link } from "@/components/Link";
-import { useLoadedData } from "./loader";
+import { ButtonLink, Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import * as Milestones from "@/graphql/Projects/milestones";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
+import { useLoadedData, useFilters } from "./loader";
+
 export function Page() {
-  const { projects, company } = useLoadedData();
+  const { projects } = useLoadedData();
 
   const ongoingProjects = projects.filter((project) => project.status === "active");
   const groups = Projects.groupBySpace(ongoingProjects);
@@ -22,11 +23,33 @@ export function Page() {
   return (
     <Pages.Page title={"Projects"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
-        <h1 className="text-3xl font-bold text-center mt-2 mb-16">Projects in {company.name}</h1>
+        <Filters />
+        <Title />
 
         <ProjectGroups groups={groups} />
       </div>
     </Pages.Page>
+  );
+}
+
+function Title() {
+  const { company, showingAllProjects } = useLoadedData();
+
+  if (showingAllProjects) {
+    return <h1 className="text-3xl font-bold text-center mt-2 mb-16">All projects in {company.name}</h1>;
+  } else {
+    return <h1 className="text-3xl font-bold text-center mt-2 mb-16">My projects in {company.name}</h1>;
+  }
+}
+
+function Filters() {
+  const { showMyProjects, showAllProjects } = useFilters();
+
+  return (
+    <div className="flex items-center gap-4 justify-center">
+      <ButtonLink onClick={showMyProjects}>My Projects</ButtonLink>
+      <ButtonLink onClick={showAllProjects}>All Projects</ButtonLink>
+    </div>
   );
 }
 
