@@ -33,11 +33,16 @@ export function useOrgChart(people: Person[]): OrgChart {
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
   const expand = (personId: string) => {
-    setExpanded((ids) => [...ids, personId]);
+    const managerId = nodes.find((n) => n.person.id === personId)?.person.managerId;
+    const indexOfManager = expanded.indexOf(managerId!);
+
+    setExpanded((ids) => [...ids.slice(0, indexOfManager + 1), personId]);
   };
 
   const collapse = (personId: string) => {
-    setExpanded((ids) => ids.filter((id) => id !== personId));
+    const index = expanded.indexOf(personId);
+
+    setExpanded((ids) => [...ids.slice(0, index)]);
   };
 
   const toggle = (personId: string) => {
