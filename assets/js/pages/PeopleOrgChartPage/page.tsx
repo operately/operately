@@ -103,11 +103,17 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
       <div className="flex items-center justify-center">
         <div
           className={classNames({
-            "rounded-xl text-xs px-1.5 py-0.5 flex items-center gap-0.5 cursor-pointer": true,
+            "rounded-xl text-xs px-1.5 py-0.5 flex items-center gap-0.5 ": true,
             "bg-dark-3 text-white-1": chart.expanded.includes(person.id),
             "bg-stone-400 text-white-1": !chart.expanded.includes(person.id),
+            "opacity-0": node.totalReports === 0,
+            "cursor-pointer": node.totalReports > 0,
           })}
-          onClick={() => chart.toggle(person.id)}
+          onClick={() => {
+            if (node.totalReports > 0) {
+              chart.toggle(person.id);
+            }
+          }}
         >
           {node.totalReports}
           {chart.expanded.includes(person.id) ? <Icons.IconChevronUp size={14} /> : <Icons.IconChevronDown size={14} />}
