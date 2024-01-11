@@ -607,8 +607,11 @@ export type Person = {
   email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  manager?: Maybe<Person>;
+  managerId?: Maybe<Scalars['String']['output']>;
   notifyAboutAssignments: Scalars['Boolean']['output'];
   notifyOnMention: Scalars['Boolean']['output'];
+  reports?: Maybe<Array<Maybe<Person>>>;
   sendDailySummary: Scalars['Boolean']['output'];
   theme?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;

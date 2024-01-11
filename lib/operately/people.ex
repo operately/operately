@@ -38,6 +38,14 @@ defmodule Operately.People do
     |> Repo.update()
   end
 
+  def get_manager(%Person{} = person) do
+    Repo.get_by(Person, id: person.manager_id)
+  end
+
+  def get_reports(%Person{} = person) do
+    Repo.all(from p in Person, where: p.manager_id == ^person.id)
+  end
+
   def delete_person(%Person{} = person) do
     Repo.delete(person)
   end

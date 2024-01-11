@@ -10,6 +10,7 @@ import { AdminLink } from "./AdminLink";
 import { Logo } from "./Logo";
 import { DivLink } from "@/components/Link";
 import * as Icons from "@tabler/icons-react";
+import * as Companies from "@/models/companies";
 
 function NavigationContainer({ children }) {
   return (
@@ -21,6 +22,10 @@ function NavigationContainer({ children }) {
 
 function Navigation() {
   const goToLobby = useNavigateTo("/");
+  const { company, loading, error } = Companies.useCompany();
+
+  const showGoals = !loading && !error && Companies.hasFeature(company, "goals");
+  const showPeople = !loading && !error && Companies.hasFeature(company, "goals");
 
   return (
     <NavigationContainer>
@@ -36,17 +41,21 @@ function Navigation() {
               Home
             </SectionLink>
 
-            <SectionLink to="/goals" icon={Icons.IconTargetArrow}>
-              Goals
-            </SectionLink>
+            {showGoals && (
+              <SectionLink to="/goals" icon={Icons.IconTargetArrow}>
+                Goals
+              </SectionLink>
+            )}
 
             <SectionLink to="/projects" icon={Icons.IconTable}>
               Projects
             </SectionLink>
 
-            <SectionLink to="/people" icon={Icons.IconUserCircle}>
-              People
-            </SectionLink>
+            {showPeople && (
+              <SectionLink to="/people" icon={Icons.IconUserCircle}>
+                People
+              </SectionLink>
+            )}
           </div>
         </div>
         <div className="flex-1"></div>

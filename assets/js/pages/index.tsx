@@ -33,6 +33,7 @@ import * as GroupProjectsPage from "./GroupProjectsPage";
 import * as MyAssignmentsPage from "./MyAssignmentsPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
+import * as PeopleOrgChartPage from "./PeopleOrgChartPage";
 import * as PeoplePage from "./PeoplePage";
 import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
@@ -187,6 +188,10 @@ export default {
   NotificationsPage: {
     loader: NotificationsPage.loader,
     Page: NotificationsPage.Page
+  },
+  PeopleOrgChartPage: {
+    loader: PeopleOrgChartPage.loader,
+    Page: PeopleOrgChartPage.Page
   },
   PeoplePage: {
     loader: PeoplePage.loader,

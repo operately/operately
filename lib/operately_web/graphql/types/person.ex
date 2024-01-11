@@ -26,5 +26,20 @@ defmodule OperatelyWeb.Graphql.Types.Person do
         {:ok, company}
       end
     end
+
+    field :manager_id, :string
+
+    field :manager, :person do
+      resolve fn person, _, _ ->
+        {:ok, Operately.People.get_manager(person)}
+      end
+    end
+
+    field :reports, list_of(:person) do
+      resolve fn person, _, _ ->
+        reports = Operately.People.get_reports(person)
+        {:ok, reports}
+      end
+    end
   end
 end
