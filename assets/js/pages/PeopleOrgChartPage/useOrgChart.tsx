@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Person } from "@/models/people";
 
-export type ExpandNodeFn = (personId: string) => void;
-export type CollapseNodeFn = (personId: string) => void;
-export type ToggleNodeFn = (personId: string) => void;
+type ExpandNodeFn = (personId: string) => void;
+type CollapseNodeFn = (personId: string) => void;
+type ToggleNodeFn = (personId: string) => void;
 
 export interface OrgChartNode {
   person: Person;

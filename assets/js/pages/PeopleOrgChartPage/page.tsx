@@ -6,7 +6,7 @@ import Avatar from "@/components/Avatar";
 import { Link } from "@/components/Link";
 import * as Icons from "@tabler/icons-react";
 
-import { useOrgChart, OrgChart, OrgChartNode, ExpandNodeFn } from "./useOrgChart";
+import { useOrgChart, OrgChart, OrgChartNode } from "./useOrgChart";
 import classNames from "classnames";
 
 export function Page() {
