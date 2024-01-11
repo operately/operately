@@ -15,7 +15,7 @@ export function Page() {
   const chart = useOrgChart(people);
 
   return (
-    <Pages.Page title={"PeoplePage"}>
+    <Pages.Page title={"Org Chart"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
         <div className="flex items-center gap-4 justify-center mb-16">
           <Link to="/people">Employee List</Link>
@@ -36,20 +36,12 @@ export function Page() {
 }
 
 function Root({ chart }: { chart: OrgChart }) {
-  return (
-    <div className="flex items-center justify-center gap-4 flex-wrap">
-      {chart.root.map((node) => (
-        <PersonCard key={node.person.id} node={node} chart={chart} />
-      ))}
-    </div>
-  );
+  const sortedReports = [...chart.root].sort((a, b) => b.totalReports - a.totalReports);
+
+  return <Reports reports={sortedReports} chart={chart} />;
 }
 
 function Reports({ reports, chart }: { reports: OrgChartNode[]; chart: OrgChart }) {
-  if (reports.length === 0) {
-    return <div className="text-sm text-content-dimmed text-center">No reports</div>;
-  }
-
   return (
     <div className="flex items-center justify-center gap-4 flex-wrap">
       {reports.map((node) => (
@@ -99,12 +91,12 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
 
       <div className="bg-surface border border-stroke-base rounded-2xl w-52 -mt-[25px] pt-[25px] -mb-3 pb-3">
         <div className="my-3">
-          <div className="font-semibold leading-tight text-center text-sm">
+          <div className="font-semibold leading-tight text-center text-sm px-4 mb-1">
             <Link to={path} underline={false}>
               {person.fullName}
             </Link>
           </div>
-          <div className="font-medium text-sm text-content-dimmed text-center">{person.title}</div>
+          <div className="font-medium text-sm text-content-dimmed text-center px-4">{person.title}</div>
         </div>
       </div>
 

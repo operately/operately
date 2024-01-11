@@ -14,7 +14,7 @@ export function Page() {
   }, [people]);
 
   return (
-    <Pages.Page title={"PeoplePage"}>
+    <Pages.Page title={"People"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
         <div className="flex items-center gap-4 justify-center">
           <div className="font-medium">Employee List</div>
