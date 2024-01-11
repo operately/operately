@@ -3,6 +3,7 @@ import { Person } from "@/models/people";
 
 export type ExpandNodeFn = (personId: string) => void;
 export type CollapseNodeFn = (personId: string) => void;
+export type ToggleNodeFn = (personId: string) => void;
 
 export interface OrgChartNode {
   person: Person;
@@ -16,6 +17,7 @@ export interface OrgChart {
   expanded: string[];
   expand: ExpandNodeFn;
   collapse: CollapseNodeFn;
+  toggle: ToggleNodeFn;
 }
 
 export function useOrgChart(people: Person[]): OrgChart {
@@ -38,5 +40,13 @@ export function useOrgChart(people: Person[]): OrgChart {
     setExpanded((ids) => ids.filter((id) => id !== personId));
   };
 
-  return { root, nodes, expanded, expand, collapse };
+  const toggle = (personId: string) => {
+    if (expanded.includes(personId)) {
+      collapse(personId);
+    } else {
+      expand(personId);
+    }
+  };
+
+  return { root, nodes, expanded, expand, collapse, toggle };
 }
