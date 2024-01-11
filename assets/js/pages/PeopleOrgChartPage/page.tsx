@@ -36,7 +36,7 @@ export function Page() {
 }
 
 function Root({ chart }: { chart: OrgChart }) {
-  const sortedReports = [...chart.root].sort((a, b) => b.totalReports - a.totalReports);
+  const sortedReports = sortNodes(chart.root);
 
   return <Reports reports={sortedReports} chart={chart} />;
 }
@@ -53,7 +53,7 @@ function Reports({ reports, chart }: { reports: OrgChartNode[]; chart: OrgChart 
 
 function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
   const reports = chart.nodes.filter((n) => n.person.managerId === node.person.id);
-  const sortedReports = [...reports].sort((a, b) => b.totalReports - a.totalReports);
+  const sortedReports = sortNodes(reports);
 
   return (
     <div className="mt-12">
@@ -121,4 +121,13 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
       </div>
     </div>
   );
+}
+
+function sortNodes(nodes: OrgChartNode[]) {
+  return [...nodes].sort((a, b) => {
+    if (a.totalReports > b.totalReports) return -1;
+    if (a.totalReports < b.totalReports) return 1;
+
+    return a.person.fullName.localeCompare(b.person.fullName);
+  });
 }
