@@ -7,6 +7,7 @@ import { useLoadedData, useTimeframeControles } from "./loader";
 import { Link } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
+import { FilledButton } from "@/components/Button";
 
 export function Page() {
   const { company, goals } = useLoadedData();
@@ -16,6 +17,10 @@ export function Page() {
   return (
     <Pages.Page title={"Goals"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+        <div className="flex gap-4 -mb-8">
+          <FilledButton linkTo={"/goals/new"}>Add Goal</FilledButton>
+        </div>
+
         <TimeframeSelector />
         <h1 className="text-3xl font-bold text-center mt-2 mb-16">Goals in {company.name}</h1>
 
