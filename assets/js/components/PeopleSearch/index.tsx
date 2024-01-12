@@ -84,6 +84,7 @@ function classNames(error: boolean | undefined) {
     },
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
     input: () => "placeholder-content-subtle focus:ring-0 outline-none",
+    placeholder: () => "truncate",
     option: ({ isFocused }) =>
       classnames({
         "px-3 py-2 hover:bg-surface-dimmed cursor-pointer": true,

@@ -15,17 +15,51 @@ import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
 export function Page() {
-  const { company, space, me } = useLoadedData();
+  const { spaceID } = useLoadedData();
+
+  if (spaceID) {
+    return <NewGoalForSpacePage />;
+  } else {
+    return <NewGoalPage />;
+  }
+}
+
+function NewGoalForSpacePage() {
+  const { company, me, space } = useLoadedData();
+  const form = useForm(company, me, space!.id);
+
+  return (
+    <Pages.Page title="New Goal">
+      <Paper.Root size="large">
+        <div className="flex items-center justify-center mb-4 gap-4">
+          <DimmedLink to={`/spaces/${form.fields.spaceID}/goals`}>Back to {space!.name} Space</DimmedLink>
+        </div>
+
+        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal for {space!.name}</h1>
+
+        <Paper.Body minHeight="300px">
+          <Form form={form} />
+        </Paper.Body>
+
+        <SubmitButton form={form} />
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function NewGoalPage() {
+  const { company, me } = useLoadedData();
+
   const form = useForm(company, me);
 
   return (
     <Pages.Page title="New Goal">
-      <Paper.Root size="medium">
+      <Paper.Root size="large">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/spaces/${form.fields.spaceID}/goals`}>Back to {space.name} Space</DimmedLink>
+          <DimmedLink to={`/goals`}>Back to Goals</DimmedLink>
         </div>
 
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal for {space.name}</h1>
+        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal</h1>
 
         <Paper.Body minHeight="300px">
           <Form form={form} />
@@ -61,55 +95,80 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
+  return (
+    <Forms.Form onSubmit={form.submit} loading={form.submitting} onCancel={form.cancel} isValid={true}>
+      <FormMain form={form} />
+      <FormFooter form={form} />
+    </Forms.Form>
+  );
+}
+
+function FormMain({ form }: { form: FormState }) {
   const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
 
   return (
-    <Forms.Form onSubmit={form.submit} loading={form.submitting} onCancel={form.cancel} isValid={true}>
-      <div className="font-medium">
-        <span className="font-bold text-lg">Goal</span>
-        <div className="mt-3 mb-12 text-lg">
-          <GoalName form={form} />
-        </div>
-
-        <div className="font-bold text-lg">Measurments</div>
-        <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
-        <div className="mt-4">
-          <TargetHeader />
-          {form.fields.targets.map((target, index) => (
-            <Target key={index} form={form} index={index} target={target} placeholders={placeholders[index] || []} />
-          ))}
-          <AddTarget form={form} />
-        </div>
+    <div className="font-medium">
+      <span className="font-bold text-lg">Goal</span>
+      <div className="mt-3 mb-12 text-lg">
+        <GoalName form={form} />
       </div>
 
-      <Paper.DimmedSection>
-        <div className="flex items-center gap-6">
-          <div className="w-1/3">
-            <ContributorSearch
-              title="Champion"
-              onSelect={form.fields.setChampion}
-              defaultValue={form.fields.champion}
-              error={form.errors.find((e) => e.field === "champion")}
-              inputId="champion-search"
-            />
-          </div>
+      <div className="font-bold text-lg">Success Conditions</div>
+      <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
+      <div className="mt-4">
+        <TargetHeader />
+        {form.fields.targets.map((target, index) => (
+          <Target key={index} form={form} index={index} target={target} placeholders={placeholders[index] || []} />
+        ))}
+        <AddTarget form={form} />
+      </div>
+    </div>
+  );
+}
 
-          <div className="w-1/3">
-            <ContributorSearch
-              title="Reviewer"
-              onSelect={form.fields.setReviewer}
-              defaultValue={form.fields.reviewer}
-              inputId="reviewer-search"
-              error={form.errors.find((e) => e.field === "reviewer")}
-            />
-          </div>
+function FormFooter({ form }: { form: FormState }) {
+  const { allowSpaceSelection } = useLoadedData();
 
-          <div className="w-1/3">
-            <TimeframeSelector form={form} />
+  const bottomGridStyle = classnames({
+    "grid grid-cols-1 sm:grid-cols-2 gap-4": true,
+    "lg:grid-cols-3": !allowSpaceSelection,
+    "lg:grid-cols-4": allowSpaceSelection,
+  });
+
+  return (
+    <Paper.DimmedSection>
+      <div className={bottomGridStyle}>
+        {allowSpaceSelection && (
+          <div className="basis-1/4">
+            <SpaceSelector form={form} />
           </div>
+        )}
+
+        <div>
+          <ContributorSearch
+            title="Champion"
+            onSelect={form.fields.setChampion}
+            defaultValue={form.fields.champion}
+            error={form.errors.find((e) => e.field === "champion")}
+            inputId="champion-search"
+          />
         </div>
-      </Paper.DimmedSection>
-    </Forms.Form>
+
+        <div>
+          <ContributorSearch
+            title="Reviewer"
+            onSelect={form.fields.setReviewer}
+            defaultValue={form.fields.reviewer}
+            inputId="reviewer-search"
+            error={form.errors.find((e) => e.field === "reviewer")}
+          />
+        </div>
+
+        <div>
+          <TimeframeSelector form={form} />
+        </div>
+      </div>
+    </Paper.DimmedSection>
   );
 }
 
@@ -133,6 +192,21 @@ function GoalName({ form }: { form: FormState }) {
       value={form.fields.name}
       onChange={(e) => form.fields.setName(e.target.value)}
       data-test-id="goal-name"
+    />
+  );
+}
+
+function SpaceSelector({ form }: { form: FormState }) {
+  const hasError = !!form.errors.find((e) => e.field === "space");
+
+  return (
+    <Forms.SelectBox
+      label="Space"
+      value={form.fields.space}
+      onChange={form.fields.setSpace}
+      options={form.fields.spaceOptions}
+      defaultValue={null}
+      error={hasError}
     />
   );
 }

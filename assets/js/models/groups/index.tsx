@@ -27,3 +27,24 @@ const GET_GROUP = gql`
     }
   }
 `;
+
+export async function getGroups() {
+  let data = await client.query({
+    query: GET_GROUPS,
+    fetchPolicy: "network-only",
+  });
+
+  return data.data.groups;
+}
+
+const GET_GROUPS = gql`
+  query GetGroups {
+    groups {
+      id
+      name
+      mission
+      icon
+      color
+    }
+  }
+`;

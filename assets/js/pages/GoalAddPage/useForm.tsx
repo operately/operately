@@ -4,11 +4,11 @@ import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 
-import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
+import { useLoadedData } from "./loader";
 
 export interface FormState {
   fields: Fields;
@@ -25,7 +25,6 @@ interface Error {
 }
 
 interface Fields {
-  spaceID: string;
   company: Companies.Company;
   me: People.Person;
 
@@ -35,6 +34,8 @@ interface Fields {
   timeframe: TimeframeOption;
   timeframeOptions: TimeframeOption[];
   targets: Target[];
+  space: SpaceOption | null;
+  spaceOptions: SpaceOption[];
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person | null) => void;
@@ -43,9 +44,15 @@ interface Fields {
   addTarget: () => void;
   removeTarget: (id: string) => void;
   updateTarget: (id: string, field: any, value: any) => void;
+  setSpace: (space: SpaceOption | null) => void;
 }
 
 interface TimeframeOption {
+  value: string;
+  label: string;
+}
+
+interface SpaceOption {
   value: string;
   label: string;
 }
@@ -58,17 +65,15 @@ interface Target {
   unit: string;
 }
 
-export function useForm(company: Companies.Company, me: People.Person): FormState {
-  const { spaceID } = useLoadedData();
-
+export function useForm(company: Companies.Company, me: People.Person, initialSpaceId?: string): FormState {
   const [name, setName] = React.useState<string>("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
   const [reviewer, setReviewer] = React.useState<People.Person | null>(null);
   const [timeframe, setTimeframe, timeframeOptions] = useTimeframe();
   const [targets, addTarget, removeTarget, updateTarget] = useTargets();
+  const [space, setSpace, spaceOptions] = useSpaces();
 
   const fields = {
-    spaceID,
     company,
     me,
 
@@ -78,6 +83,8 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
     timeframe,
     timeframeOptions,
     targets,
+    space,
+    spaceOptions,
 
     setName,
     setChampion,
@@ -86,9 +93,12 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
     addTarget,
     removeTarget,
     updateTarget,
+    setSpace,
   };
 
-  const [submit, cancel, submitting, errors] = useSubmit(fields);
+  const cancelPath = initialSpaceId ? createPath("group", initialSpaceId) : "/goals";
+
+  const [submit, cancel, submitting, errors] = useSubmit(fields, cancelPath);
 
   return {
     fields,
@@ -114,6 +124,28 @@ function useTimeframe(): [TimeframeOption, (timeframe: TimeframeOption) => void,
   return [timeframe, setTimeframe, options];
 }
 
+function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions"]] {
+  const loaded = useLoadedData();
+
+  const [space, setSpace] = React.useState<Fields["space"]>(() => {
+    if (loaded.allowSpaceSelection) {
+      return null;
+    } else {
+      return { value: loaded.space!.id, label: loaded.space!.name };
+    }
+  });
+
+  const options = React.useMemo(() => {
+    if (loaded.allowSpaceSelection) {
+      return loaded.spaces!.map((space) => ({ value: space.id, label: space.name }));
+    } else {
+      return [];
+    }
+  }, [loaded.spaces]);
+
+  return [space, setSpace, options];
+}
+
 function useTargets(): [Target[], () => void, (id: string) => void, (id: string, field: any, value: any) => void] {
   const [list, { add, remove, update }] = useListState<Target>([newEmptyTarget(), newEmptyTarget(), newEmptyTarget()]);
 
@@ -132,7 +164,7 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
   const [create, { loading: submitting }] = Goals.useCreateGoalMutation({
@@ -153,7 +185,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
       variables: {
         input: {
           name: fields.name,
-          spaceId: fields.spaceID,
+          spaceId: fields.space!.value,
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
@@ -173,7 +205,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
     return true;
   };
 
-  const cancel = useNavigateTo(createPath("spaces", fields.spaceID));
+  const cancel = useNavigateTo(cancelPath);
 
   return [submit, cancel, submitting, errors];
 }
@@ -185,6 +217,7 @@ function validateForm(fields: Fields): Error[] {
   if (fields.champion === null) errors.push({ field: "champion", message: "Champion is required" });
   if (fields.reviewer === null) errors.push({ field: "reviewer", message: "Reviewer is required" });
   if (fields.timeframe.value === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
+  if (fields.space === null) errors.push({ field: "space", message: "Space is required" });
 
   fields.targets.forEach((target, index) => {
     let { name, from, to, unit } = target;
