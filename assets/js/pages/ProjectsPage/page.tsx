@@ -13,6 +13,7 @@ import * as Milestones from "@/graphql/Projects/milestones";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import { useLoadedData, useFilters } from "./loader";
+import { FilledButton } from "@/components/Button";
 
 export function Page() {
   const { projects } = useLoadedData();
@@ -23,6 +24,10 @@ export function Page() {
   return (
     <Pages.Page title={"Projects"}>
       <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+        <div className="flex gap-4 -mb-8">
+          <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
+        </div>
+
         <Filters />
         <Title />
 

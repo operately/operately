@@ -14,17 +14,49 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 
 export function Page() {
-  const { company, space, me } = useLoadedData();
-  const form = useForm(company, space.id, me);
+  const { spaceID } = useLoadedData();
+
+  if (spaceID) {
+    return <NewProjectForSpacePage />;
+  } else {
+    return <NewProjectPage />;
+  }
+}
+
+function NewProjectForSpacePage() {
+  const { space } = useLoadedData();
+  const form = useForm();
 
   return (
     <Pages.Page title="New Project">
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/spaces/${form.fields.spaceID}/projects`}>Back to {space.name} Space</DimmedLink>
+          <DimmedLink to={`/spaces/${form.fields.spaceID}/projects`}>Back to {space!.name} Space</DimmedLink>
         </div>
 
-        <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space.name}</h1>
+        <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
+
+        <Paper.Body minHeight="300px">
+          <Form form={form} />
+        </Paper.Body>
+
+        <SubmitButton form={form} />
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function NewProjectPage() {
+  const form = useForm();
+
+  return (
+    <Pages.Page title="New Project">
+      <Paper.Root size="small">
+        <div className="flex items-center justify-center mb-4 gap-4">
+          <DimmedLink to={`/projects`}>Back to Projects</DimmedLink>
+        </div>
+
+        <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
 
         <Paper.Body minHeight="300px">
           <Form form={form} />
@@ -60,6 +92,7 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
+  const { allowSpaceSelection } = useLoadedData();
   const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
 
   return (
@@ -74,6 +107,8 @@ function Form({ form }: { form: FormState }) {
           data-test-id="project-name-input"
           error={!!form.errors.find((e) => e.field === "name")?.message}
         />
+
+        {allowSpaceSelection && <SpaceSelector form={form} />}
 
         <div className="grid grid-cols-2 gap-4">
           <ContributorSearch
@@ -167,5 +202,20 @@ function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
         />
       </div>
     </div>
+  );
+}
+
+function SpaceSelector({ form }: { form: FormState }) {
+  const hasError = !!form.errors.find((e) => e.field === "space");
+
+  return (
+    <Forms.SelectBox
+      label="Space"
+      value={form.fields.space}
+      onChange={form.fields.setSpace}
+      options={form.fields.spaceOptions}
+      defaultValue={null}
+      error={hasError}
+    />
   );
 }
