@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
   input_object :update_profile_input do
     field :full_name, :string
     field :title, :string
+    field :manager_id, :id
   end
 
   input_object :update_notification_settings_input do
@@ -32,7 +33,11 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
       resolve fn _, args, %{context: context} ->
         person = context.current_account.person
 
-        Operately.People.update_person(person, args.input)
+        Operately.People.update_person(person, %{
+          full_name: args.input.full_name,
+          title: args.input.title,
+          manager_id: args.input[:manager_id]
+        })
       end
     end
 

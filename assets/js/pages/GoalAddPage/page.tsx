@@ -32,7 +32,7 @@ function NewGoalForSpacePage() {
     <Pages.Page title="New Goal">
       <Paper.Root size="large">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/spaces/${form.fields.spaceID}/goals`}>Back to {space!.name} Space</DimmedLink>
+          <DimmedLink to={`/spaces/${space!.id}/goals`}>Back to {space!.name} Space</DimmedLink>
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal for {space!.name}</h1>

@@ -1,27 +1,9 @@
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useMutation, gql } from "@apollo/client";
 
 import { Project } from "@/graphql/Projects";
+import { GET_ME_QUERY } from "@/models/people/getMe";
 
-export const GET_ME = gql`
-  query GetMe {
-    me {
-      id
-      fullName
-      avatarUrl
-      title
-
-      sendDailySummary
-      notifyOnMention
-      notifyAboutAssignments
-
-      theme
-    }
-  }
-`;
-
-export function useMe() {
-  return useQuery(GET_ME);
-}
+export { useMe } from "@/models/people/getMe";
 
 export interface Dashboard {
   id: string;
@@ -60,7 +42,14 @@ export function useProfileMutation(options = {}) {
       }
     `,
     {
-      refetchQueries: [{ query: GET_ME }],
+      refetchQueries: [
+        {
+          query: GET_ME_QUERY,
+          variables: {
+            includeManager: true,
+          },
+        },
+      ],
       ...options,
     },
   );
@@ -78,7 +67,14 @@ export function useUpdateNotificationsSettings(options = {}) {
       }
     `,
     {
-      refetchQueries: [{ query: GET_ME }],
+      refetchQueries: [
+        {
+          query: GET_ME_QUERY,
+          variables: {
+            includeManager: true,
+          },
+        },
+      ],
       ...options,
     },
   );
