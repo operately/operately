@@ -4,7 +4,6 @@ import * as Icons from "@tabler/icons-react";
 
 import classnames from "classnames";
 
-import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 import { Card } from "./Card";
 
 export interface SpaceCardProps {
@@ -43,12 +42,13 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name} {...cardProps}>
-      {comingSoon && <ComingSoonBadge />}
-
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
-      <div className="text-content-dimmed text-xs truncate">{mission}</div>
+      <div className="text-content-dimmed text-xs truncate">
+        {comingSoon && <span className="bg-surface-dimmed uppercase text-[9px] py-0.5 px-1">Comming Soon</span>}{" "}
+        {mission}
+      </div>
 
       {privateSpace && (
         <div className="absolute top-2 right-2 text-accent-1">

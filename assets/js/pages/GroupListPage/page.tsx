@@ -1,7 +1,6 @@
 import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 
 import { GhostButton } from "@/components/Button";
@@ -12,7 +11,11 @@ import { SpaceCardLink, SpaceCardGrid } from "@/components/SpaceCards";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { groups } = useLoadedData();
+  const { company, groups } = useLoadedData();
+
+  const sortedAndFilteredGroups = [...groups]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .filter((group) => group.id !== company.companySpaceId);
 
   return (
     <Pages.Page title="Lobby">
@@ -30,11 +33,10 @@ export function Page() {
               name: "Company Space",
               color: "text-cyan-500",
               icon: "IconBuildingEstate",
-              id: "company",
+              id: company.companySpaceId!,
               mission: "Everyone in the company",
               privateSpace: false,
             }}
-            comingSoon={true}
           />
 
           <SpaceCardLink
@@ -61,7 +63,7 @@ export function Page() {
         </div>
 
         <SpaceCardGrid>
-          {groups.map((group) => (
+          {sortedAndFilteredGroups.map((group) => (
             <SpaceCardLink key={group.id} group={group} />
           ))}
         </SpaceCardGrid>

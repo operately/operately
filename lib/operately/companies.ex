@@ -1,6 +1,7 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
   alias Operately.Repo
+  alias Ecto.Multi
 
   alias Operately.Companies.Company
   alias Operately.Tenets.Tenet
@@ -24,6 +25,21 @@ defmodule Operately.Companies do
     %Company{}
     |> Company.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_company_space(company) do
+    Multi.new()
+    |> Multi.insert(:group, Operately.Groups.Group.changeset(%{
+      name: "Company Space",
+      mission: "Everyone in the company",
+      company_id: company.id,
+      icon: "IconBuildingEstate",
+      color: "text-cyan-500"
+    }))
+    |> Multi.update(:company, fn %{group: group} ->
+      Company.changeset(company, %{company_space_id: group.id})
+    end)
+    |> Repo.transaction()
   end
 
   def update_company(%Company{} = company, attrs) do

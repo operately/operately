@@ -1,9 +1,11 @@
 import * as Groups from "@/graphql/Groups";
 import * as Pages from "@/components/Pages";
+import * as Companies from "@/models/companies";
 
 import client from "@/graphql/client";
 
 interface LoaderData {
+  company: Companies.Company;
   groups: Groups.Group[];
 }
 
@@ -14,6 +16,7 @@ export async function loader(): Promise<LoaderData> {
   });
 
   return {
+    company: await Companies.getCompany(),
     groups: groupData.data.groups,
   };
 }
