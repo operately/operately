@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
 import { TextTooltip } from "@/components/Tooltip";
-import { ButtonLink, Link } from "@/components/Link";
+import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import * as Milestones from "@/graphql/Projects/milestones";
 import { Indicator } from "@/components/ProjectHealthIndicators";
@@ -39,29 +39,32 @@ export function Page() {
 }
 
 function Title() {
-  const { company, showingAllProjects } = useLoadedData();
+  const { company, activeFilter } = useLoadedData();
 
-  if (showingAllProjects) {
-    return <h1 className="text-3xl font-bold text-center mb-6 leading-none">All projects in {company.name}</h1>;
-  } else {
-    return <h1 className="text-3xl font-bold text-center mb-6 leading-none">My projects in {company.name}</h1>;
+  switch (activeFilter) {
+    case "my-projects":
+      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">My projects in {company.name}</h1>;
+    case "reviewed-by-me":
+      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">Reviewed by me in {company.name}</h1>;
+    case "all-projects":
+      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">All projects in {company.name}</h1>;
   }
 }
 
 function Filters() {
-  const { showingAllProjects } = useLoadedData();
-  const { showMyProjects, showAllProjects } = useFilters();
+  const { activeFilter } = useLoadedData();
+  const { setFilter } = useFilters();
 
   return (
     <div className="flex items-center justify-center mb-6 gap-2">
       <div className="border border-stroke-base shadow text-sm font-medium rounded-full flex items-center bg-dark-8">
-        <FilterButton onClick={showMyProjects} active={!showingAllProjects}>
+        <FilterButton onClick={() => setFilter("my-projects")} active={activeFilter === "my-projects"}>
           My Projects
         </FilterButton>
-        <FilterButton onClick={showMyProjects} active={false}>
+        <FilterButton onClick={() => setFilter("reviewed-by-me")} active={activeFilter === "reviewed-by-me"}>
           Reviewed by Me
         </FilterButton>
-        <FilterButton onClick={showAllProjects} active={showingAllProjects}>
+        <FilterButton onClick={() => setFilter("all-projects")} active={activeFilter === "all-projects"}>
           All Projects
         </FilterButton>
       </div>
