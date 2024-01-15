@@ -64,6 +64,7 @@ const QUERY = gql`
       mission
       trustedEmailDomains
       enabledExperimentalFeatures
+      companySpaceId
 
       ...Admins @include(if: $includeAdmins)
       ...People @include(if: $includePeople)

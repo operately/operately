@@ -9,6 +9,7 @@ defmodule Operately.Companies.Company do
     field :name, :string
     field :trusted_email_domains, {:array, :string}
     field :enabled_experimental_features, {:array, :string}, default: []
+    field :company_space_id, :binary_id
 
     timestamps()
   end
@@ -16,7 +17,7 @@ defmodule Operately.Companies.Company do
   @doc false
   def changeset(company, attrs) do
     company
-    |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features])
+    |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features, :company_space_id])
     |> validate_required([:name, :mission])
   end
 end
