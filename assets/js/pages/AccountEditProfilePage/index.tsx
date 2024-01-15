@@ -1,6 +1,7 @@
 import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
+import * as People from "@/graphql/People";
 
 import { useProfileMutation } from "@/graphql/Me";
 
@@ -9,13 +10,14 @@ import { useMe } from "@/graphql/Me";
 
 import * as Forms from "@/components/Form";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+import PeopleSearch from "@/components/PeopleSearch";
 
 export async function loader(): Promise<null> {
   return null;
 }
 
 export function Page() {
-  const { data } = useMe();
+  const { data } = useMe({ includeManager: true });
 
   if (!data) {
     return null;
@@ -52,6 +54,8 @@ function ProfileForm({ me }) {
 
   const [name, setName] = React.useState(me.fullName);
   const [title, setTitle] = React.useState(me.title);
+  const [manager, setManager] = React.useState(me.manager);
+  const [managerStatus, setManagerStatus] = React.useState(me.manager ? "select-from-list" : "no-manager");
 
   const handleSubmit = () => {
     update({
@@ -59,6 +63,7 @@ function ProfileForm({ me }) {
         input: {
           fullName: name,
           title: title,
+          managerId: managerStatus === "select-from-list" ? manager?.id : null,
         },
       },
     });
@@ -71,9 +76,44 @@ function ProfileForm({ me }) {
       <Forms.TextInput value={name} onChange={setName} label="Name" />
       <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" />
 
+      <ManagerSearch
+        manager={manager}
+        setManager={setManager}
+        managerStatus={managerStatus}
+        setManagerStatus={setManagerStatus}
+      />
+
       <Forms.SubmitArea>
         <Forms.SubmitButton>Save Changes</Forms.SubmitButton>
       </Forms.SubmitArea>
     </Forms.Form>
+  );
+}
+
+function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus }) {
+  const loader = People.usePeopleSearch();
+
+  return (
+    <div>
+      <label className="font-semibold block mb-1">Who is your manager?</label>
+      <div className="flex-1">
+        <Forms.RadioGroup name="manager-status" defaultValue={managerStatus} onChange={setManagerStatus}>
+          <Forms.Radio value="no-manager" label="I don't have a manager" />
+          <Forms.Radio value="select-from-list" label="Select my manager from a list" />
+        </Forms.RadioGroup>
+
+        {managerStatus !== "select-from-list" ? null : (
+          <div className="mt-2">
+            <PeopleSearch
+              onChange={(option) => setManager(option?.person)}
+              defaultValue={manager}
+              placeholder="Search for person..."
+              inputId={"manager-search"}
+              loader={loader}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
