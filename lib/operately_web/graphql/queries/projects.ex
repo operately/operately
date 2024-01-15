@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
     field :group_id, :id
     field :objective_id, :id
     field :include_archived, :boolean
-    field :only_my_projects, :boolean
+    field :filter, :string
   end
 
   object :project_queries do
@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
           group_id: filters[:group_id],
           objective_id: filters[:objective_id],
           include_archived: filters[:include_archived],
-          only_my_projects: filters[:only_my_projects]
+          filter: filters[:filter],
         })
 
         projects = preload_contributors(projects, filters)

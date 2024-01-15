@@ -4,16 +4,19 @@ import * as Companies from "@/models/companies";
 
 import { useSearchParams } from "react-router-dom";
 
+type Filter = "my-projects" | "reviewed-by-me" | "all-projects";
+
 interface LoaderResult {
   company: Companies.Company;
   projects: Projects.Project[];
-  showingAllProjects: boolean;
+  activeFilter: Filter;
 }
 
 export async function loader({ request }): Promise<LoaderResult> {
   const searchParams = new URL(request.url).searchParams;
+  const filter = parseFilter(searchParams);
 
-  let showAllProjects = (searchParams.get("allProjects") || "false") === "true";
+  console.log("filter", filter);
 
   return {
     company: await Companies.getCompany(),
@@ -21,9 +24,9 @@ export async function loader({ request }): Promise<LoaderResult> {
       includeSpace: true,
       includeContributors: true,
       includeMilestones: true,
-      onlyMyProjects: !showAllProjects,
+      filter: filter,
     }),
-    showingAllProjects: showAllProjects,
+    activeFilter: filter,
   };
 }
 
@@ -32,21 +35,28 @@ export function useLoadedData(): LoaderResult {
 }
 
 export function useFilters() {
-  let [searchParams, setSearchParams] = useSearchParams();
+  let [_searchParams, setSearchParams] = useSearchParams();
 
-  const showMyProjects = () => {
-    setSearchParams(() => {
-      searchParams.delete("allProjects");
-      return searchParams;
-    });
-  };
-
-  const showAllProjects = () => {
-    setSearchParams({ allProjects: "true" });
+  const setFilter = (filter: Filter) => {
+    setSearchParams({ filter });
   };
 
   return {
-    showMyProjects,
-    showAllProjects,
+    setFilter,
   };
+}
+
+function parseFilter(searchParams: URLSearchParams): Filter {
+  const fitler = searchParams.get("filter");
+
+  switch (fitler) {
+    case "my-projects":
+      return "my-projects";
+    case "reviewed-by-me":
+      return "reviewed-by-me";
+    case "all-projects":
+      return "all-projects";
+    default:
+      return "my-projects";
+  }
 }

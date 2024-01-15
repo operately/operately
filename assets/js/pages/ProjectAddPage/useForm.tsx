@@ -6,6 +6,8 @@ import * as People from "@/models/people";
 import * as Projects from "@/graphql/Projects";
 import * as Companies from "@/models/companies";
 
+import { useLoadedData } from "./loader";
+
 export interface FormState {
   fields: Fields;
   errors: Error[];
@@ -16,7 +18,6 @@ export interface FormState {
 
 interface Fields {
   company: Companies.Company;
-  spaceID: string;
   me: People.Person;
 
   name: string;
@@ -25,6 +26,8 @@ interface Fields {
   creatorRole: string | null;
   visibility: string | null;
   creatorIsContributor: string;
+  space: SpaceOption | null;
+  spaceOptions: SpaceOption[];
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person) => void;
@@ -32,10 +35,16 @@ interface Fields {
   setCreatorRole: (role: string) => void;
   setVisibility: (visibility: string) => void;
   setCreatorIsContributor: (contributor: string) => void;
+  setSpace: (space: SpaceOption | null) => void;
 
   amIChampion: boolean;
   amIReviewer: boolean;
   amIContributor: boolean;
+}
+
+interface SpaceOption {
+  value: string;
+  label: string;
 }
 
 interface Error {
@@ -43,13 +52,16 @@ interface Error {
   message: string;
 }
 
-export function useForm(company: Companies.Company, spaceID: string, me: People.Person): FormState {
+export function useForm() {
+  const { company, me, spaceID } = useLoadedData();
+
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
   const [reviewer, setReviewer] = React.useState<People.Person | null>(null);
   const [visibility, setVisibility] = React.useState<string | null>("everyone");
   const [creatorRole, setCreatorRole] = React.useState<string | null>(null);
   const [creatorIsContributor, setCreatorIsContributor] = React.useState<string>("no");
+  const [space, setSpace, spaceOptions] = useSpaces();
 
   const amIChampion = champion?.id === me.id;
   const amIReviewer = reviewer?.id === me.id;
@@ -76,6 +88,8 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
     creatorRole,
     visibility,
     creatorIsContributor,
+    space,
+    spaceOptions,
 
     setName,
     setChampion,
@@ -83,13 +97,16 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
     setCreatorRole,
     setVisibility,
     setCreatorIsContributor,
+    setSpace,
 
     amIChampion,
     amIReviewer,
     amIContributor,
   };
 
-  const { submit, submitting, cancel, errors } = useSubmit(fields);
+  const cancelPath = spaceID ? `/spaces/${spaceID}` : "/projects";
+
+  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath);
 
   return {
     fields,
@@ -100,7 +117,7 @@ export function useForm(company: Companies.Company, spaceID: string, me: People.
   };
 }
 
-function useSubmit(fields: Fields) {
+function useSubmit(fields: Fields, cancelPath: string) {
   const navigate = useNavigate();
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -108,7 +125,7 @@ function useSubmit(fields: Fields) {
   const [add, { loading: submitting }] = Projects.useCreateProject({
     onCompleted: (data: any) => {
       if (fields.noAccess) {
-        navigate(`/spaces/${fields.spaceID}`);
+        navigate(`/spaces/${fields.space!.value}`);
       } else {
         navigate(`/projects/${data?.createProject?.id}`);
       }
@@ -132,7 +149,7 @@ function useSubmit(fields: Fields) {
           visibility: fields.visibility,
           creatorIsContributor: fields.creatorIsContributor,
           creatorRole: fields.creatorRole,
-          spaceId: fields.spaceID,
+          spaceId: fields.space!.value,
         },
       },
     });
@@ -140,7 +157,7 @@ function useSubmit(fields: Fields) {
     return true;
   };
 
-  const cancel = () => navigate(`/spaces/${fields.spaceID}`);
+  const cancel = () => navigate(cancelPath);
 
   return {
     submit,
@@ -169,6 +186,10 @@ function validate(fields: Fields): Error[] {
     result.push({ field: "visibility", message: "Visibility is required" });
   }
 
+  if (fields.space === null) {
+    result.push({ field: "space", message: "Space is required" });
+  }
+
   if (fields.champion?.id !== fields.me.id && fields.reviewer?.id !== fields.me.id) {
     if (fields.creatorIsContributor === "yes") {
       if (fields.creatorRole === null) {
@@ -178,4 +199,26 @@ function validate(fields: Fields): Error[] {
   }
 
   return result;
+}
+
+function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions"]] {
+  const loaded = useLoadedData();
+
+  const [space, setSpace] = React.useState<Fields["space"]>(() => {
+    if (loaded.allowSpaceSelection) {
+      return null;
+    } else {
+      return { value: loaded.space!.id, label: loaded.space!.name };
+    }
+  });
+
+  const options = React.useMemo(() => {
+    if (loaded.allowSpaceSelection) {
+      return loaded.spaces!.map((space) => ({ value: space.id, label: space.name }));
+    } else {
+      return [];
+    }
+  }, [loaded.spaces]);
+
+  return [space, setSpace, options];
 }

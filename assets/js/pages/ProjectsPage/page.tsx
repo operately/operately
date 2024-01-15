@@ -7,12 +7,14 @@ import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
 import { TextTooltip } from "@/components/Tooltip";
-import { ButtonLink, Link } from "@/components/Link";
+import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import * as Milestones from "@/graphql/Projects/milestones";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import { useLoadedData, useFilters } from "./loader";
+import { FilledButton } from "@/components/Button";
+import classNames from "classnames";
 
 export function Page() {
   const { projects } = useLoadedData();
@@ -22,9 +24,13 @@ export function Page() {
 
   return (
     <Pages.Page title={"Projects"}>
-      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-10">
         <Filters />
         <Title />
+
+        <div className="flex items-center justify-center mb-10 gap-4">
+          <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
+        </div>
 
         <ProjectGroups groups={groups} />
       </div>
@@ -33,22 +39,48 @@ export function Page() {
 }
 
 function Title() {
-  const { company, showingAllProjects } = useLoadedData();
+  const { company, activeFilter } = useLoadedData();
 
-  if (showingAllProjects) {
-    return <h1 className="text-3xl font-bold text-center mt-2 mb-16">All projects in {company.name}</h1>;
-  } else {
-    return <h1 className="text-3xl font-bold text-center mt-2 mb-16">My projects in {company.name}</h1>;
+  switch (activeFilter) {
+    case "my-projects":
+      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">My projects in {company.name}</h1>;
+    case "reviewed-by-me":
+      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">Reviewed by me in {company.name}</h1>;
+    case "all-projects":
+      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">All projects in {company.name}</h1>;
   }
 }
 
 function Filters() {
-  const { showMyProjects, showAllProjects } = useFilters();
+  const { activeFilter } = useLoadedData();
+  const { setFilter } = useFilters();
 
   return (
-    <div className="flex items-center gap-4 justify-center">
-      <ButtonLink onClick={showMyProjects}>My Projects</ButtonLink>
-      <ButtonLink onClick={showAllProjects}>All Projects</ButtonLink>
+    <div className="flex items-center justify-center mb-6 gap-2">
+      <div className="border border-stroke-base shadow text-sm font-medium rounded-full flex items-center bg-dark-8">
+        <FilterButton onClick={() => setFilter("my-projects")} active={activeFilter === "my-projects"}>
+          My Projects
+        </FilterButton>
+        <FilterButton onClick={() => setFilter("reviewed-by-me")} active={activeFilter === "reviewed-by-me"}>
+          Reviewed by Me
+        </FilterButton>
+        <FilterButton onClick={() => setFilter("all-projects")} active={activeFilter === "all-projects"}>
+          All Projects
+        </FilterButton>
+      </div>
+    </div>
+  );
+}
+
+function FilterButton({ onClick, children, active }) {
+  const className = classNames(
+    "px-3 py-1 text-sm font-medium rounded-full",
+    active ? "bg-surface cursor-pointer" : "bg-transparent cursor-pointer text-white-1",
+  );
+
+  return (
+    <div className={className} onClick={onClick}>
+      {children}
     </div>
   );
 }
@@ -70,7 +102,7 @@ function ProjectGroup({ group }: { group: ProjectGroup }) {
     <div className="flex flex-col gap-4">
       <div className="uppercase text-xs font-medium tracking-wide text-center flex items-center gap-4 w-full">
         <div className="h-px bg-stroke-base w-full" />
-        {group.space.name}
+        <span className="whitespace-nowrap">{group.space.name}</span>
         <div className="h-px bg-stroke-base w-full" />
       </div>
       <ProjectList projects={projects} />

@@ -700,6 +700,7 @@ export type ProjectKeyResource = {
 };
 
 export type ProjectListFilters = {
+  filter?: InputMaybe<Scalars['String']['input']>;
   groupId?: InputMaybe<Scalars['ID']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   objectiveId?: InputMaybe<Scalars['ID']['input']>;
@@ -1502,6 +1503,7 @@ export type UpdateNotificationSettingsInput = {
 
 export type UpdateProfileInput = {
   fullName?: InputMaybe<Scalars['String']['input']>;
+  managerId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
