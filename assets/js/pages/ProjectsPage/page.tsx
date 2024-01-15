@@ -14,6 +14,7 @@ import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import { useLoadedData, useFilters } from "./loader";
 import { FilledButton } from "@/components/Button";
+import classNames from "classnames";
 
 export function Page() {
   const { projects } = useLoadedData();
@@ -23,13 +24,13 @@ export function Page() {
 
   return (
     <Pages.Page title={"Projects"}>
-      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
-        <div className="flex gap-4 -mb-8">
-          <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
-        </div>
-
+      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-10">
         <Filters />
         <Title />
+
+        <div className="flex items-center justify-center mb-10 gap-4">
+          <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
+        </div>
 
         <ProjectGroups groups={groups} />
       </div>
@@ -41,19 +42,42 @@ function Title() {
   const { company, showingAllProjects } = useLoadedData();
 
   if (showingAllProjects) {
-    return <h1 className="text-3xl font-bold text-center mt-2 mb-16">All projects in {company.name}</h1>;
+    return <h1 className="text-3xl font-bold text-center mb-6 leading-none">All projects in {company.name}</h1>;
   } else {
-    return <h1 className="text-3xl font-bold text-center mt-2 mb-16">My projects in {company.name}</h1>;
+    return <h1 className="text-3xl font-bold text-center mb-6 leading-none">My projects in {company.name}</h1>;
   }
 }
 
 function Filters() {
+  const { showingAllProjects } = useLoadedData();
   const { showMyProjects, showAllProjects } = useFilters();
 
   return (
-    <div className="flex items-center gap-4 justify-center">
-      <ButtonLink onClick={showMyProjects}>My Projects</ButtonLink>
-      <ButtonLink onClick={showAllProjects}>All Projects</ButtonLink>
+    <div className="flex items-center justify-center mb-6 gap-2">
+      <div className="border border-stroke-base shadow text-sm font-medium rounded-full flex items-center bg-dark-8">
+        <FilterButton onClick={showMyProjects} active={!showingAllProjects}>
+          My Projects
+        </FilterButton>
+        <FilterButton onClick={showMyProjects} active={false}>
+          Reviewed by Me
+        </FilterButton>
+        <FilterButton onClick={showAllProjects} active={showingAllProjects}>
+          All Projects
+        </FilterButton>
+      </div>
+    </div>
+  );
+}
+
+function FilterButton({ onClick, children, active }) {
+  const className = classNames(
+    "px-3 py-1 text-sm font-medium rounded-full",
+    active ? "bg-surface cursor-pointer" : "bg-transparent cursor-pointer text-white-1",
+  );
+
+  return (
+    <div className={className} onClick={onClick}>
+      {children}
     </div>
   );
 }
