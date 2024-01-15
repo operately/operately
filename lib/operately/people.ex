@@ -39,7 +39,11 @@ defmodule Operately.People do
   end
 
   def get_manager(%Person{} = person) do
-    Repo.get_by(Person, id: person.manager_id)
+    if person.manager_id == nil do
+      nil
+    else
+      Repo.get_by(Person, id: person.manager_id)
+    end
   end
 
   def get_reports(%Person{} = person) do
