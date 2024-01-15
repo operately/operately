@@ -2,9 +2,8 @@ import client from "@/graphql/client";
 
 import * as Paper from "@/components/PaperContainer";
 
-import * as Me from "@/graphql/Me";
 import * as Projects from "@/graphql/Projects";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as Updates from "@/graphql/Projects/updates";
 
 interface LoaderResult {
@@ -26,15 +25,10 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectDate.data.project,
     update: updateData.data.update,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

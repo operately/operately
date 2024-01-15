@@ -4,6 +4,7 @@ export type { Person } from "@/gql/generated";
 export { getPeople } from "./getPeople";
 export { getPerson } from "./getPerson";
 export { getMe } from "./getMe";
+export { usePeopleSearch } from "@/graphql/People";
 
 export function firstName(person: Person): string {
   return person.fullName.split(" ")[0]!;

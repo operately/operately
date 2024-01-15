@@ -1,10 +1,9 @@
 import client from "@/graphql/client";
 
 import * as Projects from "@/graphql/Projects";
-import * as Me from "@/graphql/Me";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as Pages from "@/components/Pages";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -25,15 +24,10 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectData.data.project,
     milestone: milestoneData.data.milestone,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

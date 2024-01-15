@@ -3,8 +3,7 @@ import * as Icons from "@tabler/icons-react";
 
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
-import * as People from "@/graphql/People";
-import * as Me from "@/graphql/Me";
+import * as People from "@/models/people";
 import * as Paper from "@/components/PaperContainer";
 import * as TipTapEditor from "@/components/Editor";
 
@@ -26,14 +25,9 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectData.data.project,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

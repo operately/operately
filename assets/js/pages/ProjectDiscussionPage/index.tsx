@@ -3,13 +3,12 @@ import React from "react";
 import FormattedTime from "@/components/FormattedTime";
 
 import * as Icons from "@tabler/icons-react";
-import * as People from "@/graphql/People";
 import * as Paper from "@/components/PaperContainer";
 
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
-import * as Me from "@/graphql/Me";
+import * as People from "@/models/people";
 import * as Projects from "@/graphql/Projects";
 import * as Updates from "@/graphql/Projects/updates";
 import client from "@/graphql/client";
@@ -40,15 +39,10 @@ export async function loader({ params }): Promise<LoaderData> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectDate.data.project,
     update: updateData.data.update,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

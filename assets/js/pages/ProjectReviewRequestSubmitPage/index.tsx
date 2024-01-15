@@ -4,8 +4,7 @@ import * as Icons from "@tabler/icons-react";
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
 import * as ProjectReviewRequests from "@/graphql/ProjectReviewRequests";
-import * as People from "@/graphql/People";
-import * as Me from "@/graphql/Me";
+import * as People from "@/models/people";
 import * as Paper from "@/components/PaperContainer";
 import * as Updates from "@/graphql/Projects/updates";
 
@@ -35,15 +34,10 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectData.data.project,
     request: requestData.data.projectReviewRequest,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

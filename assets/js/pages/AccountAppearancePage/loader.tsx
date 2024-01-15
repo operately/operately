@@ -1,20 +1,13 @@
-import client from "@/graphql/client";
-
 import * as Pages from "@/components/Pages";
-import * as Me from "@/graphql/Me";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 interface LoadedData {
   me: People.Person;
 }
 
 export async function loader(): Promise<LoadedData> {
-  let meData = await client.query({
-    query: Me.GET_ME,
-  });
-
   return {
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 

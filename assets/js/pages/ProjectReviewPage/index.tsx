@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import client from "@/graphql/client";
 import * as Projects from "@/graphql/Projects";
-import * as People from "@/graphql/People";
-import * as Me from "@/graphql/Me";
+import * as People from "@/models/people";
 import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Paper from "@/components/PaperContainer";
@@ -46,15 +45,10 @@ export async function loader({ params }): Promise<LoaderResult> {
     fetchPolicy: "network-only",
   });
 
-  let meData = await client.query({
-    query: Me.GET_ME,
-    fetchPolicy: "network-only",
-  });
-
   return {
     project: projectData.data.project,
     review: reviewData.data.update,
-    me: meData.data.me,
+    me: await People.getMe(),
   };
 }
 
