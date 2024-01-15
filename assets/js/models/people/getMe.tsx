@@ -50,6 +50,8 @@ export const GET_ME_QUERY = gql`
 
       theme
 
+      companyRole
+
       ...Manager @include(if: $includeManager)
     }
   }
