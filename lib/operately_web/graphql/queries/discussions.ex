@@ -11,5 +11,18 @@ defmodule OperatelyWeb.Graphql.Queries.Discussions do
         {:ok, update}
       end
     end
+
+    field :discussions, list_of(:discussion) do
+      arg :space_id, non_null(:id)
+
+      resolve fn _, args, _ ->
+        update = Operately.Updates.list_updates(
+          args.space_id, 
+          :space,
+          :project_discussion)
+
+        {:ok, update}
+      end
+    end
   end
 end
