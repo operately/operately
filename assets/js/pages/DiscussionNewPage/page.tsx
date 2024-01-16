@@ -50,7 +50,7 @@ function Navigation({ space }) {
 function Submit({ form }: { form: FormState }) {
   return (
     <div className="flex justify-center items-center mt-8">
-      <FilledButton loading={form.loading} data-test-id="submit-discussion-button" onClick={form.submit} size="lg">
+      <FilledButton loading={form.loading} testId="post-discussion" onClick={form.submit} size="lg">
         {form.uploading ? "Uploading..." : "Post Discussion"}
       </FilledButton>
     </div>
@@ -94,7 +94,7 @@ function Title({ form }: { form: FormState }) {
       placeholder="Title&hellip;"
       value={form.fields.title}
       onChange={(e) => form.fields.setTitle(e.target.value)}
-      data-test-id="discussion-title-input"
+      data-test-id="discussion-title"
     ></textarea>
   );
 }

@@ -28,6 +28,12 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentDiscussionPosting do
         {:ok, activity.content["discussion_id"]}
       end
     end
-    
+
+    field :space, non_null(:group) do
+      resolve fn activity, _, _ ->
+        group = Operately.Groups.get_group!(activity.content["space_id"])
+        {:ok, group}
+      end
+    end
   end
 end

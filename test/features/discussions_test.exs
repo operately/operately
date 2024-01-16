@@ -1,0 +1,82 @@
+defmodule Operately.Features.DiscussionsTest do
+  use Operately.FeatureCase
+
+  import Operately.CompaniesFixtures
+  import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
+
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
+
+  setup ctx do
+    company = company_fixture(%{name: "Test Org"})
+    author = person_fixture_with_account(%{full_name: "Andy Author", company_id: company.id})
+    reader = person_fixture_with_account(%{full_name: "Randy Reader", company_id: company.id})
+
+    space = group_fixture(author, %{name: "Marketing", mission: "Let the world know about our products"})
+
+    Operately.Groups.add_member(space, author.id)
+    Operately.Groups.add_member(space, reader.id)
+
+    ctx = Map.merge(ctx, %{company: company, author: author, reader: reader, space: space})
+    ctx = UI.login_as(ctx, ctx.author)
+
+    {:ok, ctx}
+  end
+
+  @tag login_as: :author
+  feature "post a discussion", ctx do
+    ctx
+    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.click(testid: "new-discussion")
+    |> UI.fill(testid: "discussion-title", with: "This is a discussion")
+    |> UI.fill_rich_text("This is the body of the discussion.")
+    |> UI.click(testid: "post-discussion")
+
+    discussion = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+
+    ctx
+    |> UI.visit("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
+    |> UI.assert_text("This is a discussion")
+    |> UI.assert_text("This is the body of the discussion.")
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reader,
+      author: ctx.author,
+      action: "posted: This is a discussion"
+    })  
+
+    ctx
+    |> UI.login_as(ctx.reader)
+    |> NotificationsSteps.assert_discussion_posted(
+      author: ctx.author, 
+      title: "This is a discussion"
+    )
+  end
+
+  # @tag login_as: :reader
+  # feature "leave a comment on an update", ctx do
+  #   ctx
+  #   |> ProjectCheckInSteps.submit_check_in(@check_in_values)
+
+  #   ctx
+  #   |> UI.login_as(ctx.reviewer)
+  #   |> ProjectSteps.visit_project_page()
+  #   |> ProjectSteps.follow_last_check_in()
+  #   |> UI.click(testid: "add-comment")
+  #   |> UI.fill_rich_text("This is a comment.")
+  #   |> UI.click(testid: "post-comment")
+
+  #   ctx
+  #   |> UI.login_as(ctx.champion)
+  #   |> NotificationsSteps.assert_project_update_commented_sent(author: ctx.reviewer)
+
+  #   ctx
+  #   |> EmailSteps.assert_activity_email_sent(%{
+  #     to: ctx.champion,
+  #     author: ctx.reviewer,
+  #     action: "commented on a check-in for #{ctx.project.name}"
+  #   })  
+  # end
+end

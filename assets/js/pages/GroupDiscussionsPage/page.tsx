@@ -21,7 +21,11 @@ export function Page() {
           <GroupPageNavigation groupId={space.id} groupName={space.name} activeTab="discussions" />
           <div className="mt-4 mb-8 flex items-center justify-between">
             <div className="text-2xl font-extrabold">Discussions</div>
-            <FilledButton linkTo={createPath("spaces", space.id, "discussions", "new")} size="sm">
+            <FilledButton
+              linkTo={createPath("spaces", space.id, "discussions", "new")}
+              size="sm"
+              testId="new-discussion"
+            >
               New Discussion
             </FilledButton>
           </div>

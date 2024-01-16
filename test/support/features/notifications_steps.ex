@@ -34,6 +34,10 @@ defmodule Operately.Support.Features.NotificationsSteps do
     UI.refute_has(ctx, testid: "unread-notifications-count")
   end
 
+  def assert_discussion_posted(ctx, author: author, title: title) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} posted: #{title}")
+  end
+
   def assert_activity_notification(ctx, %{author: author, action: action}) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} #{action}")
   end

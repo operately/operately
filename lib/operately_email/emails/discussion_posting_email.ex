@@ -1,16 +1,24 @@
 defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
+  alias Operately.Repo
+  alias Operately.Updates
+
   def send(person, activity) do
-    raise "Email for DiscussionPosting not implemented"
+    author = Repo.preload(activity, :author).author
+    discussion = Updates.get_update!(activity.content["discussion_id"])
+    company = Repo.preload(author, :company).company
+    space = Operately.Groups.get_group!(activity.content["space_id"])
+    title = discussion.content["title"]
 
-    # author = Repo.preload(activity, :author).author
-
-    # company
-    # |> new()
-    # |> to(person)
-    # |> subject(who: author, action: "did something")
-    # |> assign(:author, author)
-    # |> render("discussion_posting")
+    company
+    |> new()
+    |> to(person)
+    |> subject(who: author, action: "posted: #{title}")
+    |> assign(:author, author)
+    |> assign(:discussion, discussion)
+    |> assign(:title, title)
+    |> assign(:space, space)
+    |> render("discussion_posting")
   end
 end

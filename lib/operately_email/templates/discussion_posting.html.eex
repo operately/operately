@@ -1,1 +1,11 @@
-<%= raise "HTML Email for DiscussionPosting not implemented" %>
+<%= title("#{short_name(@author)} posted: #{@title}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= rich_text(@discussion.content["body"]) %>
+<% end %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.discussion_url(@space.id, @discussion.id), "View Discussion") %>
+<% end %>
