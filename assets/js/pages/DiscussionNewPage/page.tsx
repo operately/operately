@@ -92,7 +92,10 @@ function Message({ editor }) {
       <TipTapEditor.Root>
         <TipTapEditor.Toolbar editor={editor} variant="large" />
 
-        <div className="mb-8 text-white-1 relative border-b border-shade-2" style={{ minHeight: "350px" }}>
+        <div
+          className="mb-8 text-content-base font-medium relative border-b border-shade-2"
+          style={{ minHeight: "350px" }}
+        >
           <TipTapEditor.EditorContent editor={editor} />
           <TipTapEditor.LinkEditForm editor={editor} />
         </div>
