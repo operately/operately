@@ -12,7 +12,6 @@ import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { useAddReaction } from "./useAddReaction";
 import * as Feed from "@/features/feed";
-import * as UpdateContent from "@/graphql/Projects/update_content";
 import { CommentSection } from "./CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";

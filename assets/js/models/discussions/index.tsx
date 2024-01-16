@@ -51,7 +51,7 @@ const QUERY = gql`
 
       reactions {
         id
-        reaction_type
+        reactionType
         person {
           id
           fullName
