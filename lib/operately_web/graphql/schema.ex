@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
   import_types OperatelyWeb.Graphql.Types.Dashboards
-  import_types OperatelyWeb.Graphql.Types.Discusssions
+  import_types OperatelyWeb.Graphql.Types.Discussions
   import_types OperatelyWeb.Graphql.Types.GoalPermissions
   import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups

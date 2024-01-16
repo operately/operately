@@ -5,7 +5,7 @@ export function usePost(options = {}) {
 }
 
 const MUTATION = gql`
-  mutation PostDiscussion($input: CreateDiscussionInput!) {
+  mutation PostDiscussion($input: PostDiscussionInput!) {
     postDiscussion(input: $input) {
       id
     }
