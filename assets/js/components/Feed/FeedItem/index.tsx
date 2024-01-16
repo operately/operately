@@ -5,6 +5,7 @@
 
 import * as React from "react";
 
+import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
 import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
@@ -34,6 +35,9 @@ export default function FeedItem({activity, page}) {
   const activityType = activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentDiscussionPosting":
+      return <DiscussionPosting activity={activity} page={page} />;
+    
     case "ActivityContentGoalArchived":
       return <GoalArchived activity={activity} page={page} />;
     

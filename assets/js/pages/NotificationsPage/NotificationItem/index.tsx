@@ -5,6 +5,7 @@
 
 import * as React from "react";
 
+import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
 import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
@@ -34,6 +35,9 @@ export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentDiscussionPosting":
+      return <DiscussionPosting notification={notification} />;
+    
     case "ActivityContentGoalArchived":
       return <GoalArchived notification={notification} />;
     

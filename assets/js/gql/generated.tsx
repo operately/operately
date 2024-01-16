@@ -52,7 +52,15 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+
+export type ActivityContentDiscussionPosting = {
+  __typename?: 'ActivityContentDiscussionPosting';
+  companyId: Scalars['String']['output'];
+  discussionId: Scalars['String']['output'];
+  spaceId: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
 
 export type ActivityContentGoalArchived = {
   __typename?: 'ActivityContentGoalArchived';
@@ -419,6 +427,16 @@ export type Dashboard = {
   panels?: Maybe<Array<Maybe<Panel>>>;
 };
 
+export type Discussion = {
+  __typename?: 'Discussion';
+  id: Scalars['ID']['output'];
+  insertedAt: Scalars['Date']['output'];
+  message: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['Date']['output'];
+};
+
 export type EditGoalInput = {
   addedTargets: Array<InputMaybe<CreateTargetInput>>;
   championId: Scalars['ID']['input'];
@@ -618,6 +636,11 @@ export type Person = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
+export type PostDiscussionInput = {
+  message: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type PostMilestoneCommentInput = {
   action: Scalars['String']['input'];
   content?: InputMaybe<Scalars['String']['input']>;
@@ -799,6 +822,7 @@ export type RootMutationType = {
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
+  postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
   postProjectDocument: ProjectDocument;
   removeCompanyAdmin?: Maybe<Person>;
@@ -1015,6 +1039,11 @@ export type RootMutationTypeMoveProjectToSpaceArgs = {
 
 export type RootMutationTypePinProjectToHomePageArgs = {
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypePostDiscussionArgs = {
+  input: PostDiscussionInput;
 };
 
 

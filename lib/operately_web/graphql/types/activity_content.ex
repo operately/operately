@@ -8,7 +8,8 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
 
   union :activity_content do
     types [
-      :activity_content_goal_archived,
+      :activity_content_discussion_posting,
+    :activity_content_goal_archived,
     :activity_content_goal_check_in,
     :activity_content_goal_check_in_acknowledgement,
     :activity_content_goal_created,
