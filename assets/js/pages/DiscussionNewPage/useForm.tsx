@@ -43,7 +43,7 @@ export function useForm(): FormState {
   });
 
   const [post, { loading }] = Discussions.usePost({
-    onCompleted: (data: any) => navigate(`/spaces/${space.id}/discussions/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(`/spaces/${space.id}/discussions/${data.postDiscussion.id}`),
   });
 
   const submit = async () => {
@@ -53,13 +53,9 @@ export function useForm(): FormState {
     await post({
       variables: {
         input: {
-          updatableType: "group",
-          updatableId: space.id,
-          content: JSON.stringify({
-            title: title,
-            body: editor.getJSON(),
-          }),
-          messageType: "project_discussion",
+          spaceId: space.id,
+          title: title,
+          body: JSON.stringify(editor.getJSON()),
         },
       },
     });

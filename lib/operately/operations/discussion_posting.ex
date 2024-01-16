@@ -3,12 +3,27 @@ defmodule Operately.Operations.DiscussionPosting do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, attrs) do
-    raise "Operation for DiscussionPosting not implemented"
+  def run(creator, space, title, message) do
+    update = Operately.Updates.Update.changeset(%{
+      author_id: creator.id,
+      updatable_id: space.id,
+      updatable_type: "space",
+      type: "project_discussion",
+      content: %{
+        title: title,
+        body: Jason.decode!(message)
+      }
+    })
 
-    # Multi.new()
-    # |> Multi.insert(:something, ...)
-    # |> Repo.transaction()
-    # |> Repo.extract_result(:goal)
+    Multi.new()
+    |> Multi.insert(:update, update)
+    |> Activities.insert(creator.id, :discussion_posting, fn changes -> %{
+      company_id: space.company_id,
+      space_id: space.id,
+      discussion_id: changes.update.id,
+      title: title,
+    } end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:update)
   end
 end

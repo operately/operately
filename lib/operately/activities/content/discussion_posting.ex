@@ -3,9 +3,9 @@ defmodule Operately.Activities.Content.DiscussionPosting do
 
   embedded_schema do
     field :company_id, :string
-  field :space_id, :string
-  field :title, :string
-  field :discussion_id, :string
+    field :space_id, :string
+    field :title, :string
+    field :discussion_id, :string
   end
 
   def changeset(attrs) do
