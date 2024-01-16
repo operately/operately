@@ -429,10 +429,14 @@ export type Dashboard = {
 
 export type Discussion = {
   __typename?: 'Discussion';
+  author: Person;
+  body: Scalars['String']['output'];
+  comments?: Maybe<Array<Maybe<Comment>>>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
-  message: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  reactions?: Maybe<Array<Maybe<Reaction>>>;
+  space: Group;
   title: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
 };
@@ -637,7 +641,8 @@ export type Person = {
 };
 
 export type PostDiscussionInput = {
-  message: Scalars['String']['input'];
+  body: Scalars['String']['input'];
+  spaceId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
 };
 
@@ -1204,6 +1209,7 @@ export type RootQueryType = {
   activities?: Maybe<Array<Maybe<Activity>>>;
   assignments: Assignments;
   company: Company;
+  discussion: Discussion;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
   group?: Maybe<Group>;
@@ -1247,6 +1253,11 @@ export type RootQueryTypeAssignmentsArgs = {
 
 
 export type RootQueryTypeCompanyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeDiscussionArgs = {
   id: Scalars['ID']['input'];
 };
 
