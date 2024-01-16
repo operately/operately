@@ -26,7 +26,7 @@ export function Page() {
 
         <Paper.Body>
           <Title form={form} />
-          <Message editor={form.editor} />
+          <Message editor={form.fields.editor} />
           <Spacer size={4} />
         </Paper.Body>
 
@@ -84,7 +84,7 @@ function Title({ form }: { form: FormState }) {
     textareaRef.current.style.height = "0px";
     const scrollHeight = textareaRef.current.scrollHeight;
     textareaRef.current.style.height = scrollHeight + "px";
-  }, [form.title]);
+  }, [form.fields.title]);
 
   return (
     <textarea
@@ -92,8 +92,8 @@ function Title({ form }: { form: FormState }) {
       autoFocus
       className={className}
       placeholder="Title&hellip;"
-      value={form.title}
-      onChange={(e) => form.setTitle(e.target.value)}
+      value={form.fields.title}
+      onChange={(e) => form.fields.setTitle(e.target.value)}
       data-test-id="discussion-title-input"
     ></textarea>
   );

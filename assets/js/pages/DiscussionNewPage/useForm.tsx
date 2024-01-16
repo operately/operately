@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
+import * as Discussions from "@/models/discussions";
 import * as People from "@/models/people";
+
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
@@ -9,15 +11,20 @@ interface Error {
   message: string;
 }
 
+interface Fields {
+  title: string;
+  editor: string;
+  setTitle: (title: string) => void;
+}
+
 export interface FormState {
   errors: Error[];
-  title: string;
-  editor: TipTapEditor.Editor | null;
+  fields: Fields;
+
   empty: boolean;
   uploading: boolean;
   loading: boolean;
 
-  setTitle: (title: string) => void;
   submit: () => void;
 }
 
@@ -35,11 +42,9 @@ export function useForm(): FormState {
     className: "min-h-[350px] py-2 px-1",
   });
 
-  // const [post, { loading }] = Projects.usePostUpdate({
-  //   onCompleted: (data: any) => navigate(`/spaces/${space.id}/discussions/${data.createUpdate.id}`),
-  // });
-
-  const [post, { loading }] = [() => null, { loading: false }];
+  const [post, { loading }] = Discussions.usePost({
+    onCompleted: (data: any) => navigate(`/spaces/${space.id}/discussions/${data.createUpdate.id}`),
+  });
 
   const submit = async () => {
     if (!editor) return;
@@ -60,10 +65,14 @@ export function useForm(): FormState {
     });
   };
 
-  return {
+  const fields: Fields = {
     title,
     setTitle,
     editor,
+  };
+
+  return {
+    fields,
     uploading,
     empty,
     submit,
