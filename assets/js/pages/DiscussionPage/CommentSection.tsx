@@ -122,7 +122,7 @@ function CommentBox({ update, refetch, me }) {
 function AddCommentNonActive({ onClick, me }) {
   return (
     <div
-      className="py-3 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3 px-3"
+      className="py-3 border-t border-stroke-base cursor-pointer flex items-center gap-3 px-3"
       data-test-id="add-comment"
       onClick={onClick}
     >
