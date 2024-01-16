@@ -1,15 +1,17 @@
 import React from "react";
 
-import * as Paper from "@/components/PaperContainer";
 import * as TipTapEditor from "@/components/Editor";
+import * as Paper from "@/components/PaperContainer";
+import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
 
-import Button from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 import { Spacer } from "@/components/Spacer";
 
 import { useDocumentTitle } from "@/layouts/header";
-import { useLoadedData } from "./loader";
-import { useForm, FormState } from "./useForm";
 import classnames from "classnames";
+import { useLoadedData } from "./loader";
+import { FormState, useForm } from "./useForm";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -17,30 +19,41 @@ export function Page() {
 
   useDocumentTitle(["New Discussion", space.name]);
 
-  const submitDisabled = form.uploading || !form.title || form.empty;
-
   return (
-    <Paper.Root>
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={`/projects/${space.id}`}>{space.name}</Paper.NavItem>
-      </Paper.Navigation>
+    <Pages.Page title="New Discussion">
+      <Paper.Root>
+        <Navigation space={space} />
 
-      <Paper.Body>
-        <Title form={form} />
-        <Message editor={form.editor} />
-        <Spacer size={4} />
+        <Paper.Body>
+          <Title form={form} />
+          <Message editor={form.editor} />
+          <Spacer size={4} />
+        </Paper.Body>
 
-        <Button
-          variant="success"
-          disabled={submitDisabled}
-          loading={form.loading}
-          data-test-id="submit-discussion-button"
-          onClick={form.submit}
-        >
-          {form.uploading ? "Uploading..." : "Post this message"}
-        </Button>
-      </Paper.Body>
-    </Paper.Root>
+        <Submit form={form} />
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function Navigation({ space }) {
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={`/spaces/${space.id}/discussions`}>
+        {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
+        {space.name}
+      </Paper.NavItem>
+    </Paper.Navigation>
+  );
+}
+
+function Submit({ form }: { form: FormState }) {
+  return (
+    <div className="flex justify-center items-center mt-8">
+      <FilledButton loading={form.loading} data-test-id="submit-discussion-button" onClick={form.submit} size="lg">
+        {form.uploading ? "Uploading..." : "Post Discussion"}
+      </FilledButton>
+    </div>
   );
 }
 
