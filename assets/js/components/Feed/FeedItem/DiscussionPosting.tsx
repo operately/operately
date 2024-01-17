@@ -1,9 +1,3 @@
-import * as React from "react";
-
-import { Card } from "../NotificationCard";
-
-import * as People from "@/models/people";
-
-export default function({ notification, page }) {
+export default function ({}) {
   throw "Not implemented";
 }
