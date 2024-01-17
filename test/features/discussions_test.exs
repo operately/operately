@@ -33,7 +33,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.fill_rich_text("This is the body of the discussion.")
     |> UI.click(testid: "post-discussion")
 
-    discussion = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+    discussion = last_discussion(ctx)
 
     ctx
     |> UI.visit("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
@@ -55,28 +55,40 @@ defmodule Operately.Features.DiscussionsTest do
     )
   end
 
-  # @tag login_as: :reader
-  # feature "leave a comment on an update", ctx do
-  #   ctx
-  #   |> ProjectCheckInSteps.submit_check_in(@check_in_values)
+  @tag login_as: :author
+  feature "leave a comment on a discussion", ctx do
+    ctx
+    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.click(testid: "new-discussion")
+    |> UI.fill(testid: "discussion-title", with: "This is a discussion")
+    |> UI.fill_rich_text("This is the body of the discussion.")
+    |> UI.click(testid: "post-discussion")
 
-  #   ctx
-  #   |> UI.login_as(ctx.reviewer)
-  #   |> ProjectSteps.visit_project_page()
-  #   |> ProjectSteps.follow_last_check_in()
-  #   |> UI.click(testid: "add-comment")
-  #   |> UI.fill_rich_text("This is a comment.")
-  #   |> UI.click(testid: "post-comment")
+    discussion = last_discussion(ctx)
 
-  #   ctx
-  #   |> UI.login_as(ctx.champion)
-  #   |> NotificationsSteps.assert_project_update_commented_sent(author: ctx.reviewer)
+    ctx
+    |> UI.login_as(ctx.reader)
+    |> UI.visit("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
 
-  #   ctx
-  #   |> EmailSteps.assert_activity_email_sent(%{
-  #     to: ctx.champion,
-  #     author: ctx.reviewer,
-  #     action: "commented on a check-in for #{ctx.project.name}"
-  #   })  
-  # end
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_discussion_commented_sent(author: ctx.reader, title: "This is a discussion")
+
+    # ctx
+    # |> EmailSteps.assert_activity_email_sent(%{
+    #   to: ctx.champion,
+    #   author: ctx.reviewer,
+    #   action: "commented on: This is a discussion"
+    # })  
+  end
+
+  #
+  # Utilities
+  #
+  defp last_discussion(ctx) do
+    Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+  end
 end

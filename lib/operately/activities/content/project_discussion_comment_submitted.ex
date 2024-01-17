@@ -3,7 +3,7 @@ defmodule Operately.Activities.Content.ProjectDiscussionCommentSubmitted do
 
   embedded_schema do
     field :company_id, :binary_id
-    field :project_id, :binary_id
+    field :space_id, :binary_id
     field :discussion_id, :binary_id
     field :comment_id, :binary_id
   end
@@ -19,7 +19,7 @@ defmodule Operately.Activities.Content.ProjectDiscussionCommentSubmitted do
 
     changeset(%{
       company_id: project.company_id,
-      project_id: project.id,
+      space_id: project.space_id,
       discussion_id: params["update_id"],
       comment_id: params["comment_id"]
     })

@@ -358,20 +358,26 @@ defmodule Operately.Updates do
       content: %{"message" => content}
     })
 
-    action = case update.type do
-      :project_discussion -> :project_discussion_comment_submitted
-      :status_update -> :project_status_update_commented
-      :review -> :project_review_commented
-      _ -> raise "Unknown update type"
-    end
-
     Multi.new()
     |> Multi.insert(:comment, changeset)
-    |> Activities.insert(author.id, action, fn changes -> %{
-      project_id: update.updatable_id, 
-      update_id: update.id, 
-      comment_id: changes.comment.id
-    } end)
+    |> then(fn multi ->
+      case update.type do
+        :project_discussion ->
+          Activities.insert(multi, author.id, :project_discussion_comment_submitted, fn changes -> %{
+            space_id: update.updatable_id, 
+            update_id: update.id, 
+            comment_id: changes.comment.id
+          } end)
+        :status_update ->
+          Activities.insert(multi, author.id, :project_status_update_commented, fn changes -> %{
+            project_id: update.updatable_id,
+            update_id: update.id, 
+            comment_id: changes.comment.id
+          } end)
+        _ ->
+          raise "Unknown update type"
+      end
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:comment)
   end

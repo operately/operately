@@ -142,11 +142,11 @@ const query = gql`
           }
 
           ... on ActivityContentProjectDiscussionCommentSubmitted {
-            projectId
             discussionId
-            discussionTitle
+            title
 
-            project {
+            space {
+              id
               name
             }
           }
