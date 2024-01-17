@@ -141,7 +141,7 @@ const query = gql`
             }
           }
 
-          ... on ActivityContentProjectDiscussionCommentSubmitted {
+          ... on ActivityContentDiscussionCommentSubmitted {
             discussionId
             title
 

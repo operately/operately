@@ -363,13 +363,15 @@ defmodule Operately.Updates do
     |> then(fn multi ->
       case update.type do
         :project_discussion ->
-          Activities.insert(multi, author.id, :project_discussion_comment_submitted, fn changes -> %{
+          Activities.insert(multi, author.id, :discussion_comment_submitted, fn changes -> %{
+            company_id: author.company_id,
             space_id: update.updatable_id, 
-            update_id: update.id, 
+            discussion_id: update.id, 
             comment_id: changes.comment.id
           } end)
         :status_update ->
           Activities.insert(multi, author.id, :project_status_update_commented, fn changes -> %{
+            company_id: author.company_id,
             project_id: update.updatable_id,
             update_id: update.id, 
             comment_id: changes.comment.id

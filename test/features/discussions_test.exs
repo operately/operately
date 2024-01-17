@@ -63,6 +63,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.fill(testid: "discussion-title", with: "This is a discussion")
     |> UI.fill_rich_text("This is the body of the discussion.")
     |> UI.click(testid: "post-discussion")
+    |> UI.assert_text("Posted on")
 
     discussion = last_discussion(ctx)
 
@@ -74,15 +75,15 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.click(testid: "post-comment")
 
     ctx
-    |> UI.login_as(ctx.champion)
+    |> UI.login_as(ctx.author)
     |> NotificationsSteps.assert_discussion_commented_sent(author: ctx.reader, title: "This is a discussion")
 
-    # ctx
-    # |> EmailSteps.assert_activity_email_sent(%{
-    #   to: ctx.champion,
-    #   author: ctx.reviewer,
-    #   action: "commented on: This is a discussion"
-    # })  
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.author,
+      author: ctx.reader,
+      action: "commented on: This is a discussion"
+    })  
   end
 
   #

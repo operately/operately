@@ -1,7 +1,7 @@
-defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubmitted do
+defmodule OperatelyWeb.Graphql.Types.ActivityContentDiscussionCommentSubmitted do
   use Absinthe.Schema.Notation
 
-  object :activity_content_project_discussion_comment_submitted do
+  object :activity_content_discussion_comment_submitted do
     field :space_id, non_null(:string) do
       resolve fn activity, _, _ ->
         {:ok, activity.content["space_id"]}

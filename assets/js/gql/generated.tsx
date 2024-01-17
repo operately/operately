@@ -52,12 +52,21 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionCommentSubmitted | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+
+export type ActivityContentDiscussionCommentSubmitted = {
+  __typename?: 'ActivityContentDiscussionCommentSubmitted';
+  discussionId: Scalars['String']['output'];
+  space: Group;
+  spaceId: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
 
 export type ActivityContentDiscussionPosting = {
   __typename?: 'ActivityContentDiscussionPosting';
   companyId: Scalars['String']['output'];
   discussionId: Scalars['String']['output'];
+  space: Group;
   spaceId: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -130,14 +139,6 @@ export type ActivityContentProjectContributorAddition = {
 
 export type ActivityContentProjectCreated = {
   __typename?: 'ActivityContentProjectCreated';
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectDiscussionCommentSubmitted = {
-  __typename?: 'ActivityContentProjectDiscussionCommentSubmitted';
-  discussionId: Scalars['String']['output'];
-  discussionTitle: Scalars['String']['output'];
   project: Project;
   projectId: Scalars['String']['output'];
 };

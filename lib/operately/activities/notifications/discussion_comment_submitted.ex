@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Notifications.ProjectDiscussionCommentSubmitted do
+defmodule Operately.Activities.Notifications.DiscussionCommentSubmitted do
   def dispatch(activity) do
     author_id = activity.author_id
     space_id = activity.content.space_id
@@ -10,7 +10,7 @@ defmodule Operately.Activities.Notifications.ProjectDiscussionCommentSubmitted d
     discussion = Operately.Updates.get_update!(discussion_id)
     discussion_author = Operately.People.get_person!(discussion.author_id)
 
-    comments = Operately.Updates.list_comments(discussion)
+    comments = Operately.Updates.list_comments(discussion_id)
     comment_authors = Enum.map(comments, fn comment ->
       comment_author = Operately.People.get_person!(comment.author_id)
       comment_author

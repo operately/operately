@@ -5,7 +5,7 @@ import { createPath } from "@/utils/paths";
 
 import * as People from "@/models/people";
 
-export default function ProjectDiscussionCommentSubmitted({ notification }) {
+export default function ({ notification }) {
   const author = notification.activity.author;
   const title = notification.activity.content.title;
   const space = notification.activity.content.space;

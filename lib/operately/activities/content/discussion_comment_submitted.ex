@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Content.ProjectDiscussionCommentSubmitted do
+defmodule Operately.Activities.Content.DiscussionCommentSubmitted do
   use Operately.Activities.Content
 
   embedded_schema do
@@ -15,13 +15,6 @@ defmodule Operately.Activities.Content.ProjectDiscussionCommentSubmitted do
   end
 
   def build(params) do
-    project = Operately.Projects.get_project!(params["project_id"])
-
-    changeset(%{
-      company_id: project.company_id,
-      space_id: project.space_id,
-      discussion_id: params["update_id"],
-      comment_id: params["comment_id"]
-    })
+    changeset(params)
   end
 end
