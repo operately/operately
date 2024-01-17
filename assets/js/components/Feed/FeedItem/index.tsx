@@ -5,6 +5,7 @@
 
 import * as React from "react";
 
+import DiscussionCommentSubmitted from "./DiscussionCommentSubmitted"
 import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
@@ -15,7 +16,6 @@ import ProjectArchived from "./ProjectArchived"
 import ProjectClosed from "./ProjectClosed"
 import ProjectContributorAddition from "./ProjectContributorAddition"
 import ProjectCreated from "./ProjectCreated"
-import ProjectDiscussionCommentSubmitted from "./ProjectDiscussionCommentSubmitted"
 import ProjectDiscussionSubmitted from "./ProjectDiscussionSubmitted"
 import ProjectGoalConnection from "./ProjectGoalConnection"
 import ProjectGoalDisconnection from "./ProjectGoalDisconnection"
@@ -35,6 +35,9 @@ export default function FeedItem({activity, page}) {
   const activityType = activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentDiscussionCommentSubmitted":
+      return <DiscussionCommentSubmitted activity={activity} page={page} />;
+    
     case "ActivityContentDiscussionPosting":
       return <DiscussionPosting activity={activity} page={page} />;
     
@@ -64,9 +67,6 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentProjectCreated":
       return <ProjectCreated activity={activity} page={page} />;
-    
-    case "ActivityContentProjectDiscussionCommentSubmitted":
-      return <ProjectDiscussionCommentSubmitted activity={activity} page={page} />;
     
     case "ActivityContentProjectDiscussionSubmitted":
       return <ProjectDiscussionSubmitted activity={activity} page={page} />;
