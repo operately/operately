@@ -9,7 +9,7 @@ defmodule Operately.Updates.Update do
     belongs_to :author, Operately.People.Person
 
     field :updatable_id, Ecto.UUID
-    field :updatable_type, Ecto.Enum, values: [:goal, :project]
+    field :updatable_type, Ecto.Enum, values: [:goal, :project, :space]
 
     field :type, Ecto.Enum, values: [
       :message, 

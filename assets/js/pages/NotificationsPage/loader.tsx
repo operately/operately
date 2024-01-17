@@ -43,6 +43,17 @@ const query = gql`
             }
           }
 
+          ... on ActivityContentDiscussionPosting {
+            title
+            discussionId
+            space {
+              id
+              name
+              icon
+              color
+            }
+          }
+
           ... on ActivityContentProjectContributorAddition {
             project {
               id
@@ -130,12 +141,12 @@ const query = gql`
             }
           }
 
-          ... on ActivityContentProjectDiscussionCommentSubmitted {
-            projectId
+          ... on ActivityContentDiscussionCommentSubmitted {
             discussionId
-            discussionTitle
+            title
 
-            project {
+            space {
+              id
               name
             }
           }

@@ -1,22 +1,25 @@
 import * as React from "react";
 
 import { Card } from "../NotificationCard";
+import { createPath } from "@/utils/paths";
 
 import * as People from "@/models/people";
 
-export default function ProjectDiscussionCommentSubmitted({ notification }) {
+export default function ({ notification }) {
   const author = notification.activity.author;
-  const title = notification.activity.content.discussionTitle;
-  const projectName = notification.activity.content.project.name;
-  const link = `/projects/${notification.activity.content.projectId}/discussions/${notification.activity.content.discussionId}`;
+  const title = notification.activity.content.title;
+  const space = notification.activity.content.space;
+  const id = notification.activity.content.discussionId;
+
+  const path = createPath("spaces", space.id, "discussions", id);
 
   return (
     <Card
       notification={notification}
       title={People.firstName(author) + " commented on: " + title}
       author={author}
-      link={link}
-      where={projectName}
+      link={path}
+      where={space.name}
       who={notification.activity.author.fullName}
       when={notification.activity.insertedAt}
     />

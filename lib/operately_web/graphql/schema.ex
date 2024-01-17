@@ -11,6 +11,8 @@ defmodule OperatelyWeb.Graphql.Schema do
   # Types
   import_types OperatelyWeb.Graphql.Types.Activities
   import_types OperatelyWeb.Graphql.Types.ActivityContent
+  import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionCommentSubmitted
+  import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionPosting
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalArchived
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckIn
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckInAcknowledgement
@@ -21,7 +23,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectClosed
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectContributorAddition
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCreated
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectGoalConnection
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectGoalDisconnection
@@ -41,6 +42,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
   import_types OperatelyWeb.Graphql.Types.Dashboards
+  import_types OperatelyWeb.Graphql.Types.Discussions
   import_types OperatelyWeb.Graphql.Types.GoalPermissions
   import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups
@@ -76,6 +78,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Activities
   import_types OperatelyWeb.Graphql.Queries.Assignments
   import_types OperatelyWeb.Graphql.Queries.Companies
+  import_types OperatelyWeb.Graphql.Queries.Discussions
   import_types OperatelyWeb.Graphql.Queries.Goals
   import_types OperatelyWeb.Graphql.Queries.Groups
   import_types OperatelyWeb.Graphql.Queries.KeyResources
@@ -94,6 +97,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Blobs
   import_types OperatelyWeb.Graphql.Mutations.Companies
   import_types OperatelyWeb.Graphql.Mutations.Dashboards
+  import_types OperatelyWeb.Graphql.Mutations.Discussions
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
   import_types OperatelyWeb.Graphql.Mutations.KeyResults
@@ -114,6 +118,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :activity_queries
     import_fields :assignment_queries
     import_fields :company_queries
+    import_fields :discussion_queries
     import_fields :goal_queries
     import_fields :group_queries
     import_fields :key_resource_queries
@@ -133,6 +138,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :blob_mutations
     import_fields :company_mutations
     import_fields :dashboard_mutations
+    import_fields :discussion_mutations
     import_fields :goal_mutations
     import_fields :group_mutations
     import_fields :key_result_mutations

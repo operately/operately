@@ -190,12 +190,13 @@ const query = gql`
           }
         }
 
-        ... on ActivityContentProjectDiscussionCommentSubmitted {
-          projectId
+        ... on ActivityContentDiscussionCommentSubmitted {
+          spaceId
           discussionId
-          discussionTitle
+          title
 
-          project {
+          space {
+            id
             name
           }
         }

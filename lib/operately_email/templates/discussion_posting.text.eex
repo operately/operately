@@ -1,0 +1,3 @@
+<%= short_name(@author) %> posted: <%= @title %>
+
+Link: <%= OperatelyEmail.discussion_url(@space.id, @discussion.id) %>

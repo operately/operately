@@ -12,6 +12,8 @@ import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
+import * as DiscussionNewPage from "./DiscussionNewPage";
+import * as DiscussionPage from "./DiscussionPage";
 import * as GoalAddPage from "./GoalAddPage";
 import * as GoalArchivePage from "./GoalArchivePage";
 import * as GoalCheckInPage from "./GoalCheckInPage";
@@ -41,8 +43,6 @@ import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
 import * as ProjectArchivationPage from "./ProjectArchivationPage";
 import * as ProjectClosePage from "./ProjectClosePage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
-import * as ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
-import * as ProjectDiscussionPage from "./ProjectDiscussionPage";
 import * as ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
 import * as ProjectEditGoalPage from "./ProjectEditGoalPage";
 import * as ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
@@ -104,6 +104,14 @@ export default {
   CompanyAdminTrustedEmailDomainsPage: {
     loader: CompanyAdminTrustedEmailDomainsPage.loader,
     Page: CompanyAdminTrustedEmailDomainsPage.Page
+  },
+  DiscussionNewPage: {
+    loader: DiscussionNewPage.loader,
+    Page: DiscussionNewPage.Page
+  },
+  DiscussionPage: {
+    loader: DiscussionPage.loader,
+    Page: DiscussionPage.Page
   },
   GoalAddPage: {
     loader: GoalAddPage.loader,
@@ -220,14 +228,6 @@ export default {
   ProjectContributorsPage: {
     loader: ProjectContributorsPage.loader,
     Page: ProjectContributorsPage.Page
-  },
-  ProjectDiscussionNewPage: {
-    loader: ProjectDiscussionNewPage.loader,
-    Page: ProjectDiscussionNewPage.Page
-  },
-  ProjectDiscussionPage: {
-    loader: ProjectDiscussionPage.loader,
-    Page: ProjectDiscussionPage.Page
   },
   ProjectEditDescriptionPage: {
     loader: ProjectEditDescriptionPage.loader,

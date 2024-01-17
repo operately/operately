@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubmitted do
+defmodule OperatelyWeb.Graphql.Types.ActivityContentDiscussionCommentSubmitted do
   use Absinthe.Schema.Notation
 
-  object :activity_content_project_discussion_comment_submitted do
-    field :project_id, non_null(:string) do
+  object :activity_content_discussion_comment_submitted do
+    field :space_id, non_null(:string) do
       resolve fn activity, _, _ ->
-        {:ok, activity.content["project_id"]}
+        {:ok, activity.content["space_id"]}
       end
     end
 
@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubm
       end
     end
 
-    field :discussion_title, non_null(:string) do
+    field :title, non_null(:string) do
       resolve fn activity, _, _ ->
         discussion_id = activity.content["discussion_id"]
         discussion = Operately.Updates.get_update!(discussion_id)
@@ -23,13 +23,13 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionCommentSubm
       end
     end
 
-    field :project, non_null(:project) do
+    field :space, non_null(:group) do
       resolve fn activity, _, _ ->
-        project_id = activity.content["project_id"]
+        space_id = activity.content["space_id"]
 
-        project = Operately.Projects.get_project!(project_id)
+        space = Operately.Groups.get_group!(space_id)
 
-        {:ok, project}
+        {:ok, space}
       end
     end
   end

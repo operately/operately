@@ -1,26 +1,19 @@
-import client from "@/graphql/client";
-
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/graphql/Groups";
+import * as Groups from "@/models/groups";
 import * as Companies from "@/models/companies";
-
-import { Company, Group } from "@/gql/generated";
+import * as Discussions from "@/models/discussions";
 
 interface LoadedData {
-  company: Company;
-  group: Group;
+  company: Companies.Company;
+  space: Groups.Group;
+  discussions: Discussions.Discussion[];
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const groupData = await client.query({
-    query: Groups.GET_GROUP,
-    variables: { id: params.id },
-    fetchPolicy: "network-only",
-  });
-
   return {
     company: await Companies.getCompany(),
-    group: groupData.data.group,
+    space: await Groups.getGroup(params.id),
+    discussions: await Discussions.getDiscussions({ spaceId: params.id }),
   };
 }
 
