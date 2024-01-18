@@ -21,7 +21,7 @@ ARG GROUP_ID
 # We will call this user 'dev' inside of the development container.
 # The name might differ from your host machine, but the UID and GID will be the same.
 
-RUN apk update && apk add --no-cache bash git openssh nodejs npm inotify-tools chromium chromium-chromedriver postgresql-client make
+RUN apk update && apk add --no-cache bash git openssh nodejs npm inotify-tools chromium chromium-chromedriver postgresql-client make gcc musl-dev build-base
 RUN addgroup -g ${GROUP_ID} dev && adduser -u ${USER_ID} -G dev -s /bin/ash -D dev
 
 # Switch to the 'dev' user.
