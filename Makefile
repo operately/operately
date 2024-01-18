@@ -89,8 +89,8 @@ dev.setup:
 test.setup:
 	./devenv mix deps.get
 	./devenv bash -c "MIX_ENV=test mix deps.compile"
-	./devenv bash -c "cd assets && npm install"
-	./devenv mix assets.deploy
+	./devenv bash -c "MIX_ENV=test cd assets && npm install"
+	./devenv bash -c "MIX_ENV=test mix assets.deploy"
 
 test.seed.env:
 	touch .env
