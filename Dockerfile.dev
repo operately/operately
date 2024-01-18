@@ -1,4 +1,4 @@
-FROM operately/dev-image:latest
+FROM elixir:1.14.2-alpine
 
 # This is a development image. It is not intended to be used in production.
 # It is intended to be used for development and testing.
@@ -21,8 +21,8 @@ ARG GROUP_ID
 # We will call this user 'dev' inside of the development container.
 # The name might differ from your host machine, but the UID and GID will be the same.
 
-RUN groupadd --force --gid ${GROUP_ID} dev \
- && useradd --uid ${USER_ID} --gid dev --shell /bin/bash --create-home dev
+RUN apk update && apk add --no-cache bash git openssh nodejs npm inotify-tools chromium chromium-chromedriver postgresql-client
+RUN addgroup -g ${GROUP_ID} dev && adduser -u ${USER_ID} -G dev -s /bin/ash -D dev
 
 # Switch to the 'dev' user.
 

@@ -3,4 +3,12 @@
 export GROUP_ID=$(id -g) 
 export USER_ID=$(id -u) 
 
-docker compose exec app "$@"
+FIRST_ARG=$1
+
+if [ "$FIRST_ARG" = "bash" ]; then
+  docker compose exec app bash
+elif [ "$FIRST_ARG" = "build" ]; then
+  docker compose build --no-cache
+else
+  docker compose exec app "$@"
+fi
