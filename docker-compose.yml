@@ -27,9 +27,12 @@ services:
       - OPERATELY_JS_SENTRY_DSN=not-set
     env_file:
       - .env
+    profiles:
+      - dev
+      - ci
 
   db:
-    image: postgres:14.5
+    image: ${POSTGRES_IMAGE:-postgres:14.5}
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: keyboard-cat
@@ -37,6 +40,9 @@ services:
     restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    profiles:
+      - dev
+      - ci
 
   screenshots-server:
     image: python:3
@@ -47,6 +53,8 @@ services:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./screenshots:/screenshots
+    profiles:
+      - dev
 
   pgweb:
     container_name: pgweb
@@ -61,6 +69,8 @@ services:
       - PGWEB_DATABASE_URL=postgres://postgres:keyboard-cat@db:5432/postgres?sslmode=disable
     depends_on:
       - db
+    profiles:
+      - dev
 
 volumes:
   postgres-data:
