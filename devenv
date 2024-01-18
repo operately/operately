@@ -9,6 +9,8 @@ if [ "$FIRST_ARG" = "shell" ]; then
   docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
   docker compose up -d
+elif [ "$FIRST_ARG" = "stop" ]; then
+  docker compose stop
 elif [ "$FIRST_ARG" = "build" ]; then
   docker compose build --no-cache
 else
