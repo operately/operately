@@ -16,6 +16,7 @@ blocks:
           - cd assets && cache restore && cd .. # cache node_packages
           - mkdir -p screenshots && sudo chmod -R 777 screenshots # create a screenshots folder and allow writting to it from a container
           - make test.seed.env
+          - echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=$(uuidgen)" >> .env
           - ./devenv up
           - make test.setup
       epilogue:
