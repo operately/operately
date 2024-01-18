@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+export GROUP_ID=$(id -g) 
+export USER_ID=$(id -u) 
+
+docker compose exec -e MIX_ENV=dev app bash -c "$@"
