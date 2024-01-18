@@ -88,8 +88,7 @@ dev.setup:
 
 test.setup:
 	./devenv mix deps.get
-	./devenv mix deps.get
-	./devenv mix compile
+	./devenv mix deps.compile
 	./devenv bash -c "cd assets && npm install"
 	./devenv mix assets.deploy
 
