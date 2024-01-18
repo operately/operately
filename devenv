@@ -12,7 +12,7 @@ else
 fi
 
 if [ "$FIRST_ARG" = "shell" ]; then
-  docker compose exec --profile ${PROFILE} app bash
+  docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
   docker compose --profile ${PROFILE} up -d
 elif [ "$FIRST_ARG" = "stop" ]; then
@@ -20,5 +20,5 @@ elif [ "$FIRST_ARG" = "stop" ]; then
 elif [ "$FIRST_ARG" = "build" ]; then
   docker compose build --profile ${PROFILE} --no-cache
 else
-  docker compose exec --profile ${PROFILE} app "$@"
+  docker compose exec app "$@"
 fi
