@@ -2,8 +2,8 @@ defmodule Operately.Support.Features.EmailSteps do
   alias Operately.Support.Features.UI
   alias Operately.People.Person
 
-  def assert_activity_email_sent(ctx, %{to: to, author: author, action: action}) do
-    subject = "Operately (#{ctx.company.name}): #{Person.short_name(author)} #{action}"
+  def assert_activity_email_sent(ctx, %{where: where, to: to, author: author, action: action}) do
+    subject = "(#{where}) #{Person.short_name(author)} #{action}"
 
     ctx |> UI.assert_email_sent(subject, to: to.email)
   end
