@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+export GROUP_ID=$(id -g) 
+export USER_ID=$(id -u) 
+
+FIRST_ARG=$1
+
+if [ "$CI" = "true" ]; then
+  PROFILE="ci"
+else
+  PROFILE="dev"
+fi
+
+if [ "$FIRST_ARG" = "shell" ]; then
+  docker compose exec app bash
+elif [ "$FIRST_ARG" = "up" ]; then
+  docker compose --profile ${PROFILE} up -d
+elif [ "$FIRST_ARG" = "stop" ]; then
+  docker compose --profile ${PROFILE} stop
+elif [ "$FIRST_ARG" = "build" ]; then
+  docker compose build --profile ${PROFILE} --no-cache
+else
+  docker compose exec app "$@"
+fi

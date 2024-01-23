@@ -87,14 +87,14 @@ dev.setup:
 	$(DEV_CONTAINER) mix compile
 
 test.setup:
-	$(USER_CONTEXT) && docker compose build
-	$(TEST_CONTAINER) mix deps.get
-	$(TEST_CONTAINER) mix compile
-	$(TEST_CONTAINER) bash -c "cd assets && npm install"
-	$(TEST_CONTAINER) mix assets.deploy
+	./devenv mix deps.get
+	./devenv bash -c "MIX_ENV=test mix deps.compile"
+	./devenv bash -c "MIX_ENV=test cd assets && npm install"
+	./devenv bash -c "MIX_ENV=test mix assets.deploy"
 
 test.seed.env:
 	touch .env
+	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
 
 #
 # Generate code
@@ -180,31 +180,31 @@ test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
 
 test.mix: test.init
-	$(TEST_CONTAINER) mix test $(FILE)
+	./devenv mix test $(FILE)
 
 test.mix.unit: test.init
-	$(TEST_CONTAINER) mix test $$(find test -name "*_test.exs" | grep -v "test/features")
+	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features")
 
 test.mix.features: test.init
-	$(TEST_CONTAINER) mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
+	./devenv mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
 
 test.npm: test.init
-	$(TEST_CONTAINER) bash -c "cd assets && npm test"
+	./devenv bash -c "cd assets && npm test"
 
 test.db.migrate:
-	$(TEST_CONTAINER) mix ecto.migrate
+	./devenv mix ecto.migrate
 
 test.watch: test.init
-	$(TEST_CONTAINER) mix test.watch $(FILE)
+	./devenv mix test.watch $(FILE)
 
 test.db.create:
-	$(TEST_CONTAINER) mix ecto.create
+	./devenv mix ecto.create
 
 test.db.reset:
-	$(TEST_CONTAINER) mix ecto.reset
+	./devenv mix ecto.reset
 
 test.assets.compile:
-	$(TEST_CONTAINER) mix assets.build
+	./devenv mix assets.build
 
 test.screenshots.clear:
 	rm -rf $(SCREENSHOTS_DIR)/*
@@ -214,7 +214,7 @@ test.license.check:
 	bash scripts/license-check.sh
 
 test.js.dead.code:
-	$(TEST_CONTAINER) bash -c "cd assets && npm --no-update-notifier run knip"
+	./devenv bash -c "cd assets && npm --no-update-notifier run knip"
 
 #
 # Building a docker image
