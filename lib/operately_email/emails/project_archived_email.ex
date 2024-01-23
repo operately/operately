@@ -6,11 +6,13 @@ defmodule OperatelyEmail.Emails.ProjectArchivedEmail do
     author = Repo.preload(activity, :author).author
     project = Projects.get_project!(activity.content["project_id"])
     company = Repo.preload(project, :company).company
+    space = Operately.Groups.get_group!(project.group_id)
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "archived the #{project.name} project")
+    |> subject(where: space.name, who: author, action: "archived the #{project.name} project")
     |> assign(:author, author)
     |> assign(:project, project)
     |> render("project_archived")
