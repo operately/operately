@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} submitted a check-in for the #{@project.name} project") %>
+<%= title("#{short_name(@author)} #{@action}") %>
 
 <%= spacer() %>
 

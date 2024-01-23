@@ -30,6 +30,10 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "closed this project and submitted a retrospective", "")
   end
 
+  def assert_project_paused(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "paused the project with", "")
+  end
+
   def assert_project_timeline_edited(ctx, author: author, messages: messages) do
     ctx
     |> UI.assert_text(Person.short_name(author))

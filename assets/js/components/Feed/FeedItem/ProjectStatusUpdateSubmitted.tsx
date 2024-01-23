@@ -13,15 +13,19 @@ export default function ({ activity }) {
   const content = activity.content;
   const update = content.update;
   const project = content.project;
+  const status = update.content.health.status;
 
   const insertedAt = Time.parseISO(update.insertedAt);
   const time = <FormattedTime time={insertedAt} format="long-date" />;
 
   const path = `/projects/${project.id}/status_updates/${update.id}`;
   const link = <Link to={path}>Check-In on {time}</Link>;
+
+  const action = status === "paused" ? "paused the project with" : "submitted";
+
   const title = (
     <>
-      {People.shortName(activity.author)} submitted: {link}
+      {People.shortName(activity.author)} {action}: {link}
     </>
   );
 

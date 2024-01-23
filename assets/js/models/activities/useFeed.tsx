@@ -224,6 +224,16 @@ const query = gql`
             id
             insertedAt
             message
+
+            content {
+              __typename
+
+              ... on UpdateContentStatusUpdate {
+                health {
+                  status
+                }
+              }
+            }
           }
         }
 
