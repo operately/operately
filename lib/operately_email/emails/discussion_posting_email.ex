@@ -13,8 +13,9 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "posted: #{title}")
+    |> subject(where: space.name, who: author, action: "posted: #{title}")
     |> assign(:author, author)
     |> assign(:discussion, discussion)
     |> assign(:title, title)

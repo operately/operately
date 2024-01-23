@@ -8,7 +8,11 @@ defmodule OperatelyEmail.Mailers.ActivityMailer do
   defdelegate render(email, template), to: NotificationMailer
   defdelegate assign(email, key, value), to: NotificationMailer
 
-  def subject(email, who: who, action: action) do
-    NotificationMailer.subject(email, "#{Person.short_name(who)} #{action}")
+  def from(email, person) do
+    NotificationMailer.from(email, person.full_name <> " (Operately)")
+  end
+
+  def subject(email, where: where, who: who, action: action) do
+    NotificationMailer.subject(email, "(#{where}) #{Person.short_name(who)} #{action}")
   end
 end

@@ -43,9 +43,10 @@ defmodule Operately.Features.ProjectsTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: contrib,
       author: ctx.champion, 
-      action: "added you as a contributor on #{ctx.project.name}"
+      action: "added you as a contributor"
     })
 
     ctx
@@ -94,6 +95,7 @@ defmodule Operately.Features.ProjectsTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
       to: ctx.reviewer, 
       author: ctx.champion, 
       action: "archived the #{ctx.project.name} project"

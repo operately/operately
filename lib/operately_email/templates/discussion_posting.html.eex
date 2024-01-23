@@ -6,6 +6,9 @@
   <%= rich_text(@discussion.content["body"]) %>
 <% end %>
 
+<%= spacer() %>
+<%= spacer() %>
+
 <%= row do %>
   <%= cta_button(OperatelyEmail.discussion_url(@space.id, @discussion.id), "View Discussion") %>
 <% end %>

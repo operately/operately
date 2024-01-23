@@ -10,8 +10,9 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "closed the #{project.name} project and submitted a retrospective")
+    |> subject(where: project.name, who: author, action: "closed the project and submitted a retrospective")
     |> assign(:project, project)
     |> assign(:author, author)
     |> render("project_closed")

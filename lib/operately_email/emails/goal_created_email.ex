@@ -7,11 +7,13 @@ defmodule OperatelyEmail.Emails.GoalCreatedEmail do
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
     role = Goals.get_role(goal, person) |> Atom.to_string()
+    space = Operately.Groups.get_group!(goal.group_id)
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "added the #{goal.name} goal")
+    |> subject(where: space.name, who: author, action: "added the #{goal.name} goal")
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:role, role)

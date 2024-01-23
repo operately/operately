@@ -42,6 +42,7 @@ defmodule Operately.Features.DiscussionsTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
       to: ctx.reader,
       author: ctx.author,
       action: "posted: This is a discussion"
@@ -80,6 +81,7 @@ defmodule Operately.Features.DiscussionsTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
       to: ctx.author,
       author: ctx.reader,
       action: "commented on: This is a discussion"

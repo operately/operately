@@ -35,9 +35,10 @@ defmodule Operately.Features.ProjectGoalTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "connected the #{ctx.project.name} project to the Improve support first response time goal",
+      action: "connected the project to the Improve support first response time goal",
     })
 
     ctx
@@ -66,9 +67,10 @@ defmodule Operately.Features.ProjectGoalTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "disconnected the #{ctx.project.name} project from the Improve support first response time goal",
+      action: "disconnected the project from the Improve support first response time goal",
     })
 
     ctx

@@ -19,8 +19,9 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "changed the timeline for #{project.name}")
+    |> subject(where: project.name, who: author, action: "edited the timeline")
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:activity, activity)

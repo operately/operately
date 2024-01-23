@@ -2,7 +2,7 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
   defstruct [:company, :to, :from, :subject, :assigns]
 
   def new(company) do
-    %__MODULE__{company: company, assigns: %{}, from: OperatelyEmail.sender(company)}
+    %__MODULE__{company: company, assigns: %{}}
   end
 
   def to(email, person) do
@@ -14,9 +14,11 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
   end
 
   def subject(email, subject) do
-    sender = OperatelyEmail.sender_name(email.company)
+    %{email | subject: subject}
+  end
 
-    %{email | subject: "#{sender}: #{subject}"}
+  def from(email, name) do
+    %{email | from: {name, OperatelyEmail.notification_email_address()}}
   end
 
   def render(email, template) do

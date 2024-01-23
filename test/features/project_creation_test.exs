@@ -74,6 +74,7 @@ defmodule Operately.Features.ProjectCreationTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
       to: ctx.champion,
       author: ctx.reviewer,
       action: "added the Website Redesign project"

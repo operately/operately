@@ -28,9 +28,10 @@ defmodule Operately.Features.GoalCheckInTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
       to: ctx.reviewer, 
       author: ctx.champion, 
-      action: "submitted a check-in for the #{ctx.goal.name} goal"
+      action: "submitted a check-in"
     })
   end
 
@@ -52,9 +53,10 @@ defmodule Operately.Features.GoalCheckInTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "acknowledged your check-in for #{ctx.goal.name}"
+      action: "acknowledged your check-in"
     })
 
     ctx

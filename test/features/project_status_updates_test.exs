@@ -40,9 +40,10 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "submitted a check-in for the #{ctx.project.name} project"
+      action: "submitted a check-in"
     })  
 
     ctx
@@ -90,9 +91,10 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "acknowledged your check-in for #{ctx.project.name}"
+      action: "acknowledged your check-in"
     })  
   end
 
@@ -115,9 +117,10 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "commented on a check-in for #{ctx.project.name}"
+      action: "commented on a check-in" 
     })  
   end
 
@@ -148,9 +151,10 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "paused the #{ctx.project.name} project"
+      action: "paused the project"
     })  
 
     ctx

@@ -8,11 +8,13 @@ defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
     company = Repo.preload(project, :company).company
     role = Projects.get_contributor_role!(project, person.id) |> stringify_role()
     author_role = Projects.get_contributor_role!(project, author.id) |> stringify_role()
+    space = Operately.Groups.get_group!(project.group_id)
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "added the #{project.name} project")
+    |> subject(where: space.name, who: author, action: "added the #{project.name} project")
     |> assign(:author, author)
     |> assign(:author_role, author_role)
     |> assign(:role, role)

@@ -51,6 +51,7 @@ defmodule Operately.Features.GoalCreationTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
       to: ctx.reviewer,
       author: ctx.champion,
       action: "added the #{goal_name} goal"

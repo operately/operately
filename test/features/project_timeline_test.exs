@@ -41,7 +41,12 @@ defmodule Operately.Features.ProjectsTimelineTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
-    |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "edited the timeline"
+    })
   end
 
   @tag login_as: :champion
@@ -102,7 +107,12 @@ defmodule Operately.Features.ProjectsTimelineTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
-    |> EmailSteps.assert_project_timeline_edited_sent(author: ctx.champion, to: ctx.reviewer)
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "edited the timeline"
+    })
   end
 
   #

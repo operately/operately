@@ -5,12 +5,14 @@ defmodule OperatelyEmail.Emails.GoalArchivedEmail do
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     goal = Goals.get_goal!(activity.content["goal_id"])
+    space = Operately.Groups.get_group!(goal.group_id)
     company = Repo.preload(author, :company).company
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "archived the #{goal.name} goal")
+    |> subject(where: space.name, who: author, action: "archived the #{goal.name} goal")
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> render("goal_archived")
