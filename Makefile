@@ -94,7 +94,7 @@ test.setup:
 
 test.seed.env:
 	touch .env
-	echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"$$(uuidgen)\"" >> .env
+	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
 
 #
 # Generate code
