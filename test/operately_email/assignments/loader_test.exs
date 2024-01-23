@@ -46,6 +46,36 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
     end
   end
 
+  describe "project check-in" do
+    test "it doesn't send if project check is not due", ctx do
+      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{
+        next_update_scheduled_at: days_from_now(10)
+      }))
+
+      assert load_names(ctx) == []
+    end
+
+    test "it sends if project check is due", ctx do
+      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{
+        next_update_scheduled_at: days_from_now(0)
+      }))
+
+      assert Enum.member?(load_names(ctx), "Status Update")
+    end
+
+    test "it doesn't send if project is paused", ctx do
+      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{health: :paused}))
+
+      assert load_names(ctx) == []
+    end
+
+    test "it doesn't send if project is archived", ctx do
+      {:ok, _} = Operately.Projects.archive_project(ctx.champion, ctx.project)
+
+      assert load_names(ctx) == []
+    end
+  end
+
   describe "project milestones" do
     setup ctx do
       milestone(ctx, "Buy domain", :done, days_ago(10))
@@ -53,25 +83,35 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
       milestone(ctx, "Update website", :pending, days_ago(1))
       milestone(ctx, "Gain 1000 followers", :pending, days_from_now(10))
 
-      assignments = OperatelyEmail.Assignments.Loader.load(ctx.champion)
-
-      {:ok, %{names: assignment_names(assignments)}}
+      ctx
     end
 
     test "it sends pending overdue milestones", ctx do
-      assert Enum.member?(ctx.names, "Publish book")
+      assert Enum.member?(load_names(ctx), "Publish book")
     end
 
     test "it sends pending milestones due today", ctx do
-      assert Enum.member?(ctx.names, "Update website")
+      assert Enum.member?(load_names(ctx), "Update website")
     end
 
     test "it doesn't send already completed milestones", ctx do
-      refute Enum.member?(ctx.names, "Buy domain")
+      refute Enum.member?(load_names(ctx), "Buy domain")
     end
 
     test "it doesn't send milestones due in the future", ctx do
-      refute Enum.member?(ctx.names, "Buy domain")
+      refute Enum.member?(load_names(ctx), "Buy domain")
+    end
+
+    test "it doesn't send reminder for paused projects", ctx do
+      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{health: :paused}))
+
+      assert load_names(ctx) == []
+    end
+
+    test "it doesn't send reminder for archived projects", ctx do
+      {:ok, _} = Operately.Projects.archive_project(ctx.champion, ctx.project)
+
+      assert load_names(ctx) == []
     end
   end
 
@@ -88,8 +128,9 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
     })
   end
 
-  defp assignment_names(assignment_groups) do
-    Enum.flat_map(assignment_groups, &(&1.assignments)) |> Enum.map(&(&1.name))
+  defp load_names(ctx) do
+    OperatelyEmail.Assignments.Loader.load(ctx.champion) 
+    |> Enum.flat_map(&(&1.assignments)) |> Enum.map(&(&1.name))
   end
 
   defp assignment_types(assignment_groups) do
