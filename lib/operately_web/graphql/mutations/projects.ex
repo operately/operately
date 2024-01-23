@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         author = context.current_account.person
         project = Operately.Projects.get_project!(args.input.project_id)
 
-        Operately.Projects.close_project(author, project, args.input.retrospective)
+        Operately.Operations.ProjectClosed.run(author, project, args.input.retrospective)
       end
     end
 

@@ -1,6 +1,28 @@
 <%= title("#{short_name(@author)} closed the #{@project.name} project and submitted a retrospective") %>
 
 <%= spacer() %>
+<%= title("What went well?", font_size: 20) %>
+
+<%= row do %>
+  <%= rich_text(@project.retrospective["whatWentWell"]) %>
+<% end %>
+
+<%= spacer() %>
+<%= title("What could've gone better?", font_size: 20) %>
+
+<%= row do %>
+  <%= rich_text(@project.retrospective["whatCouldHaveGoneBetter"]) %>
+<% end %>
+
+<%= spacer() %>
+<%= title("What did you learn?", font_size: 20) %>
+
+<%= row do %>
+  <%= rich_text(@project.retrospective["whatDidYouLearn"]) %>
+<% end %>
+
+<%= spacer() %>
+<%= spacer() %>
 
 <%= row do %>
   <%= cta_button(OperatelyEmail.project_retrospective_url(@project.id), "View Retrospective") %>

@@ -43,6 +43,11 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
       action: "closed the #{ctx.project.name} project and submitted a retrospective"
     })
 
+    email = UI.list_sent_emails(ctx) |> List.last()
+    assert email.html_body =~ "We built the thing"
+    assert email.html_body =~ "We learned the thing"
+    assert email.html_body =~ "We built the thing"
+
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.champion)
