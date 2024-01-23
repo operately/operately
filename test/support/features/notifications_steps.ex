@@ -74,6 +74,10 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a status update")
   end
 
+  def assert_project_paused_sent(ctx, author: author) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} paused the project")
+  end
+
   def assert_project_created_notification_sent(ctx, author: author, role: role) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} created a new project and assigned you as the #{role}")
   end

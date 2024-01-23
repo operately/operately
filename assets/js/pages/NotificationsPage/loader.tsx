@@ -157,6 +157,19 @@ const query = gql`
 
             project {
               name
+              health
+            }
+
+            update {
+              content {
+                __typename
+
+                ... on UpdateContentStatusUpdate {
+                  health {
+                    status
+                  }
+                }
+              }
             }
           }
 

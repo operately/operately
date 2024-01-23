@@ -5,6 +5,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   alias Operately.Support.Features.ProjectCheckInSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.FeedSteps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -129,5 +130,31 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     ctx
     |> ProjectCheckInSteps.start_check_in()
     |> ProjectCheckInSteps.assert_previous_check_in_values(@check_in_values)
+  end
+
+  @tag login_as: :champion
+  feature "pausing a project", ctx do
+    check_in_paused = @check_in_values |> Map.put(:status, "paused")
+
+    ctx
+    |> ProjectCheckInSteps.submit_check_in(check_in_paused)
+    |> ProjectCheckInSteps.assert_check_in_submitted(check_in_paused)
+
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.assert_text("Check-in #{Operately.Time.current_month()} #{Operately.Time.current_day()}")
+    |> UI.assert_text("Paused")
+    |> FeedSteps.assert_project_paused(author: ctx.champion)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "paused the #{ctx.project.name} project"
+    })  
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_project_paused_sent(author: ctx.champion)
   end
 end
