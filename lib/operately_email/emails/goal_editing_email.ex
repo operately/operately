@@ -14,8 +14,9 @@ defmodule OperatelyEmail.Emails.GoalEditingEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "edited the #{goal.name} goal")
+    |> subject(where: goal.name, who: author, action: "edited the goal")
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:content, atomize_keys(activity.content))

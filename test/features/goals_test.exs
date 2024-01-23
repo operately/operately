@@ -64,16 +64,18 @@ defmodule Operately.Features.GoalCreationTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: "New Goal Name",
       to: new_champion,
       author: ctx.champion,
-      action: "edited the New Goal Name goal"
+      action: "edited the goal"
     })
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: "New Goal Name",
       to: new_reviewer,
       author: ctx.champion,
-      action: "edited the New Goal Name goal"
+      action: "edited the goal"
     })
   end
   
