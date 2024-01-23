@@ -33,8 +33,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
             Operately.Operations.GoalCheckIn.run(author, goal, content, target_values)
 
           "status_update" ->
+            health = args.input.health
             project = Operately.Projects.get_project!(args.input.updatable_id)
-            Operately.Updates.record_status_update(author, project, args.input.health, content)
+            Operately.Operations.ProjectCheckIn.run(author, project, health, content)
 
           "review" ->
             review_request_id = args.input[:review_request_id]

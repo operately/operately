@@ -14,11 +14,13 @@ fi
 if [ "$FIRST_ARG" = "shell" ]; then
   docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
-  docker compose --profile ${PROFILE} up -d
+  docker compose --profile ${PROFILE} up -d --force-recreate
 elif [ "$FIRST_ARG" = "stop" ]; then
   docker compose --profile ${PROFILE} stop
+elif [ "$FIRST_ARG" = "down" ]; then
+  docker compose --profile ${PROFILE} down
 elif [ "$FIRST_ARG" = "build" ]; then
-  docker compose build --profile ${PROFILE} --no-cache
+  docker compose build --no-cache
 else
   docker compose exec app "$@"
 fi

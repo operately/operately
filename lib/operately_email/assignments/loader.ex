@@ -17,6 +17,8 @@ defmodule OperatelyEmail.Assignments.Loader do
       from p in Project,
         join: a in assoc(p, :contributors),
         where: a.person_id == ^person.id and a.role == :champion,
+        where: p.health != :paused,
+        where: p.status == "active",
         preload: [:milestones]
     )
 
