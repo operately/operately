@@ -13,8 +13,9 @@ defmodule OperatelyEmail.Emails.ProjectGoalDisconnectionEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "disconnected the #{project.name} project from the #{goal.name} goal")
+    |> subject(where: project.name, who: author, action: "disconnected the project from the #{goal.name} goal")
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:goal, goal)

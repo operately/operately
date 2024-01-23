@@ -11,8 +11,9 @@ defmodule OperatelyEmail.Emails.ProjectStatusUpdateCommentedEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "commented on a check-in for #{project.name}")
+    |> subject(where: project.name, who: author, action: "commented on a check-in")
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:update, update)

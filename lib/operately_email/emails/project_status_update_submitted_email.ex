@@ -10,20 +10,21 @@ defmodule OperatelyEmail.Emails.ProjectStatusUpdateSubmittedEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: action(project, update))
-    |> assign(:action, action(project, update))
+    |> subject(where: project.name, who: author, action: action(update))
+    |> assign(:action, action(update))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:update, update)
     |> render("project_status_update_submitted")
   end
 
-  defp action(project, update) do
+  defp action(update) do
     if update.content["health"]["status"]["value"] == "paused" do
-      "paused the #{project.name} project"
+      "paused the project"
     else
-      "submitted a check-in for the #{project.name} project"
+      "submitted a check-in"
     end
   end
 end

@@ -38,9 +38,10 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
 
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
       to: ctx.reviewer, 
       author: ctx.champion, 
-      action: "closed the #{ctx.project.name} project and submitted a retrospective"
+      action: "closed the project and submitted a retrospective"
     })
 
     email = UI.list_sent_emails(ctx) |> List.last()

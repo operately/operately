@@ -10,8 +10,9 @@ defmodule OperatelyEmail.Emails.ProjectStatusUpdateAcknowledgedEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "acknowledged your check-in for #{project.name}")
+    |> subject(where: project.name, who: author, action: "acknowledged your check-in")
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:update, update)

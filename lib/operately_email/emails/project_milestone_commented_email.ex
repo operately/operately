@@ -12,8 +12,9 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: action_text(milestone, action))
+    |> subject(where: project.name, who: author, action: action_text(milestone, action))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:content, comment.content["message"])

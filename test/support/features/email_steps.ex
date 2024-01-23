@@ -44,10 +44,6 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} commented on a status update for #{ctx.project.name}")
   end
 
-  def assert_project_timeline_edited_sent(ctx, author: author, to: to) do
-    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} changed the timeline for #{ctx.project.name}")
-  end
-
   def assert_milestone_comment_sent(ctx, author: author, to: to, title: title) do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} commented on the #{title} milestone")
   end
@@ -68,7 +64,7 @@ defmodule Operately.Support.Features.EmailSteps do
   # Private
   #
   defp assert_sent(ctx, to: to, subject: subject) do
-    ctx |> UI.assert_email_sent("Operately (#{ctx.company.name}): #{subject}", to: to.email)
+    ctx |> UI.assert_email_sent(subject, to: to.email)
   end
 
   defp refute_sent(ctx, to: to, subject: subject) do

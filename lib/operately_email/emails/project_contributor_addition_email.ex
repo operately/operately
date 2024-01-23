@@ -12,8 +12,9 @@ defmodule OperatelyEmail.Emails.ProjectContributorAdditionEmail do
 
     company
     |> new()
+    |> from(author)
     |> to(person)
-    |> subject(who: author, action: "added you as a #{role} on #{project.name}")
+    |> subject(where: project.name, who: author, action: "added you as a #{role}")
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:responsibility, responsibility)
