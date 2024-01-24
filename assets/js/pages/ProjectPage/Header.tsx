@@ -6,7 +6,7 @@ import ContributorAvatar from "@/components/ContributorAvatar";
 import { Link } from "react-router-dom";
 import { Project } from "@/graphql/Projects";
 import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import { TextTooltip } from "@/components/Tooltip";
 import Options from "./Options";
@@ -58,13 +58,13 @@ function PrivateIndicator({ project }) {
 
 function ContributorList({ project }: { project: Projects.Project }) {
   const contributorsPath = `/projects/${project.id}/contributors`;
-  const contributors = (project.contributors || []).filter((c) => c !== null);
+  const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
 
   return (
     <div className="flex items-center">
       <Link to={contributorsPath} data-test-id="project-contributors">
         <div className="flex items-center justify-center gap-1 cursor-pointer">
-          {contributors.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
+          {sortedContributors.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
 
           {project.permissions.canEditContributors && (
             <div className="ml-2">
