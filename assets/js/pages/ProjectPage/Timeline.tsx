@@ -82,8 +82,14 @@ function Progress({ project }: { project: Projects.Project }) {
   return (
     <div>
       <DimmedLabel>Progress</DimmedLabel>
-      <div className="flex items-center gap-2 font-semibold">
-        {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
+      <div className="flex items-center gap-2 ">
+        {Time.isPast(start) ? (
+          <span className="font-semibold">
+            {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
+          </span>
+        ) : (
+          <>Not yet started</>
+        )}
       </div>
     </div>
   );
