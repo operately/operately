@@ -9,8 +9,8 @@ import { AddBlobsEditorCommand } from "./Blob/AddBlobsEditorCommand";
 
 function MenuBarToggle({ children, isActive, onClick }): JSX.Element {
   let className = classnames("p-1 text-content-accent rounded", {
-    "bg-surface-accent": isActive,
-    "hover:bg-surface-accent": !isActive,
+    "bg-surface-highlight": isActive,
+    "hover:bg-surface-highlight": !isActive,
   });
 
   return (
@@ -30,6 +30,28 @@ function MenuBarButton({ children, onClick, disabled = false }): JSX.Element {
     <button onClick={onClick} className={className} disabled={disabled}>
       {children}
     </button>
+  );
+}
+
+function H1Button({ editor, iconSize }): JSX.Element {
+  return (
+    <MenuBarToggle
+      onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+      isActive={editor.isActive("heading", { level: 1 })}
+    >
+      <Icons.IconH1 size={iconSize} />
+    </MenuBarToggle>
+  );
+}
+
+function H2Button({ editor, iconSize }): JSX.Element {
+  return (
+    <MenuBarToggle
+      onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+      isActive={editor.isActive("heading", { level: 2 })}
+    >
+      <Icons.IconH2 size={iconSize} />
+    </MenuBarToggle>
   );
 }
 
@@ -199,6 +221,9 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
         </div>
 
         <div className="flex items-center border border-shade-2 rounded-lg">
+          <H1Button editor={editor} iconSize={20} />
+          <H2Button editor={editor} iconSize={20} />
+
           <BlockquoteButton editor={editor} iconSize={20} />
           <LinkButton editor={editor} iconSize={20} />
           <AttachmentButton editor={editor} iconSize={20} />
@@ -223,6 +248,9 @@ export default function MenuBar({ editor, variant }: MenuBarProps): JSX.Element 
 
             <BulletListButton editor={editor} iconSize={20} />
             <NumberListButton editor={editor} iconSize={20} />
+
+            <H1Button editor={editor} iconSize={20} />
+            <H2Button editor={editor} iconSize={20} />
 
             <BlockquoteButton editor={editor} iconSize={20} />
             <LinkButton editor={editor} iconSize={20} />
