@@ -22,6 +22,14 @@
   padding-bottom: 1em;
 }
 
+.ProseMirror h1 {
+  @apply text-2xl;
+}
+
+.ProseMirror h2 {
+  @apply text-xl;
+}
+
 .ProseMirror hr {
   height: 1px;
   background-color: var(--color-stroke-base);
