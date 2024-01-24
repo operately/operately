@@ -154,12 +154,7 @@ function ProjectListItem({ project }: { project: Projects.Project }) {
 }
 
 function ContribList({ project }: { project: Projects.Project }) {
-  const sortedContributors = [...project.contributors!].sort((a, b) => {
-    if (a!.role === "champion") return -2;
-    if (b!.role === "reviewer") return 1;
-
-    return 0;
-  });
+  const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
 
   return (
     <div className="flex items-center gap-1">

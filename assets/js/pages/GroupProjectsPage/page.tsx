@@ -4,11 +4,12 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as Icons from "@tabler/icons-react";
+import * as Projects from "@/models/projects";
 
 import Avatar from "@/components/Avatar";
 import { GhostButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { Link, DivLink } from "@/components/Link";
+import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { createPath } from "@/utils/paths";
 import classnames from "classnames";
@@ -98,7 +99,7 @@ function ProjectListItem({ project }) {
             <div className="flex items-center gap-5 mt-2 text-sm">
               <Status project={project} />
               {totalCount > 0 && completion}
-              <NextMilestone project={project} pending={pending} done={done} />
+              <NextMilestone project={project} />
             </div>
           </div>
         </div>
@@ -113,7 +114,7 @@ function Status({ project }) {
   return <Indicator value={project.health} type="status" />;
 }
 
-function NextMilestone({ project, pending, done }) {
+function NextMilestone({ project }) {
   if (project.nextMilestone === null) return null;
 
   return (
@@ -125,9 +126,11 @@ function NextMilestone({ project, pending, done }) {
 }
 
 function ContribList({ project }) {
+  const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
+
   return (
     <div className="flex items-center gap-1">
-      {project.contributors!.map((contributor) => (
+      {sortedContributors.map((contributor) => (
         <Avatar key={contributor!.id} person={contributor!.person} size={24} />
       ))}
     </div>
