@@ -59,10 +59,10 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     |> ProjectCheckInSteps.submit_check_in(check_in_with_missing)
     |> UI.assert_text("Check-In from")
     |> UI.assert_has(testid: "status-content")
-    |> UI.assert_has(testid: "schedule-content")
-    |> UI.assert_has(testid: "budget-content")
-    |> UI.refute_has(testid: "team-content")
-    |> UI.assert_has(testid: "risks-content")
+    |> UI.assert_has(testid: "schedule-accordion-content")
+    |> UI.assert_has(testid: "budget-accordion-content")
+    |> UI.refute_has(testid: "team-acccordion-content")
+    |> UI.assert_has(testid: "risks-accordion-content")
   end
 
   @tag login_as: :champion

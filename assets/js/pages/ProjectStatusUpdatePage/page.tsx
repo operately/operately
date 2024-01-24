@@ -99,18 +99,6 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
   return (
     <div className="flex flex-col gap-3">
       <Accordion
-        title={<Indicator type="status" value={health.status} />}
-        testId="status"
-        initialOpen={!empty(health.statusComments)}
-        openable={!empty(health.statusComments)}
-        nonOpenableMessage="No comments"
-      >
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.statusComments} />
-        </div>
-      </Accordion>
-
-      <Accordion
         title={<Indicator type="schedule" value={health.schedule} />}
         testId="schedule-accordion"
         initialOpen={!empty(health.scheduleComments)}
@@ -155,6 +143,18 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
       >
         <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.risksComments} />
+        </div>
+      </Accordion>
+
+      <Accordion
+        title={<Indicator type="status" value={health.status} />}
+        testId="status"
+        initialOpen={!empty(health.statusComments)}
+        openable={!empty(health.statusComments)}
+        nonOpenableMessage="No comments"
+      >
+        <div className="p-4 bg-surface-dimmed">
+          <RichContent jsonContent={health.statusComments} />
         </div>
       </Accordion>
     </div>

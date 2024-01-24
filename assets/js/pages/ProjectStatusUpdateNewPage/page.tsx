@@ -92,14 +92,6 @@ function Health({ state }: { state: HealthState }) {
 
       <div className="my-6 mb-10 flex flex-col gap-3">
         <AccordionWithOptions
-          name="status"
-          title="Status"
-          value={state.status}
-          options={options.status}
-          onChange={state.setStatus}
-          commentsEditor={state.statusEditor}
-        />
-        <AccordionWithOptions
           name="schedule"
           title="Schedule"
           value={state.schedule}
@@ -130,6 +122,14 @@ function Health({ state }: { state: HealthState }) {
           options={options.risks}
           onChange={state.setRisks}
           commentsEditor={state.risksEditor}
+        />
+        <AccordionWithOptions
+          name="status"
+          title="Status"
+          value={state.status}
+          options={options.status}
+          onChange={state.setStatus}
+          commentsEditor={state.statusEditor}
         />
       </div>
     </div>
