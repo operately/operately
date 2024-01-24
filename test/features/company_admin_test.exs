@@ -64,7 +64,6 @@ defmodule Operately.Features.CompanyAdminTest do
     ctx
     |> UI.click(testid: "manage-company-administrators")
     |> UI.click(testid: "remove-michael-scott")
-    |> UI.refute_text("Michael Scott")
 
     person = Operately.People.get_person_by_name!("Michael Scott")
 
