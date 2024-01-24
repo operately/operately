@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import classNames from "classnames";
 
 interface AccordionProps {
   title: React.ReactNode | JSX.Element | string;
@@ -11,10 +12,13 @@ interface AccordionProps {
   openable?: boolean;
 
   testId?: string;
+
+  initialOpen?: boolean;
+  nonOpenableMessage?: string;
 }
 
 export function Accordion(props: AccordionProps) {
-  const [open, setOpen] = React.useState<boolean>(false);
+  const [open, setOpen] = React.useState<boolean>(props.initialOpen || false);
 
   const toggle = () => {
     if (props.openable === false) return;
@@ -25,7 +29,10 @@ export function Accordion(props: AccordionProps) {
   return (
     <div className="border border-surface-outline rounded bg-surface-accent" data-test-id={props.testId}>
       <div
-        className="flex items-center justify-between cursor-pointer py-2.5 px-2.5"
+        className={classNames({
+          "flex items-center justify-between py-2.5 px-2.5 border-b border-stroke-base": true,
+          "cursor-pointer": props.openable,
+        })}
         onClick={toggle}
         data-test-id="open-close-toggle"
       >
@@ -35,12 +42,18 @@ export function Accordion(props: AccordionProps) {
           <Status status={props.status} showStatusWhenOpen={props.showStatusWhenOpen} open={open} />
         </div>
 
-        {props.openable !== false && (
+        {props.openable ? (
           <div>{open ? <Icons.IconChevronUp size={20} /> : <Icons.IconChevronDown size={20} />}</div>
+        ) : (
+          <div className="text-content-dimmed text-xs">{props.nonOpenableMessage}</div>
         )}
       </div>
 
-      {open && <div className="">{props.children}</div>}
+      {open && (
+        <div className="rounded-b overflow-hidden" data-test-id={props.testId + "-content"}>
+          {props.children}
+        </div>
+      )}
     </div>
   );
 }

@@ -52,6 +52,20 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   end
 
   @tag login_as: :champion
+  feature "submitted non-empty health statuses are expanded by default", ctx do
+    check_in_with_missing = @check_in_values |> Map.put(:team_comments, "")
+
+    ctx
+    |> ProjectCheckInSteps.submit_check_in(check_in_with_missing)
+    |> UI.assert_text("Check-In from")
+    |> UI.assert_has(testid: "status-content")
+    |> UI.assert_has(testid: "schedule-content")
+    |> UI.assert_has(testid: "budget-content")
+    |> UI.refute_has(testid: "team-content")
+    |> UI.assert_has(testid: "risks-content")
+  end
+
+  @tag login_as: :champion
   feature "submitting a status update is allowed to the champion only", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
