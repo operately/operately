@@ -5,8 +5,6 @@ import * as Paper from "@/components/PaperContainer";
 
 import { GhostButton } from "@/components/Button";
 
-import * as Time from "@/utils/time";
-
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 
@@ -38,9 +36,6 @@ export function Page() {
 
           {form.hasChanges && (
             <>
-              <Section title="Summary" />
-              <Summary form={form} />
-
               <div className="mt-12 flex items-center justify-center">
                 <GhostButton type="primary" onClick={form.submit} testId="save">
                   Save timeline changes
@@ -96,26 +91,4 @@ function DueDate({ form }) {
       </div>
     </div>
   );
-}
-
-function Summary({ form }) {
-  const newMilestones = form.milestoneList.newMilestones.length;
-  const updatedMilestones = form.milestoneList.updatedMilestones.length;
-
-  return (
-    <div className="mt-4">
-      {form.startTime && form.dueDate && (
-        <div className="">
-          Total project duration is {Time.daysBetween(form.startTime, form.dueDate)} days. (~
-          {Time.humanDuration(form.startTime, form.dueDate)}).
-        </div>
-      )}
-      {newMilestones > 0 && <div className="mt-2">{milestoneCount(newMilestones)} added.</div>}
-      {updatedMilestones > 0 && <div className="mt-2">{milestoneCount(updatedMilestones)} edited.</div>}
-    </div>
-  );
-}
-
-function milestoneCount(count: number) {
-  return count === 1 ? "One milestone has been" : count + " milestones have been";
 }
