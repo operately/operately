@@ -77,7 +77,7 @@ function MilestoneLink({ project, milestone }) {
 
   return (
     <div className="mt-1">
-      <Icons.IconFlagFilled size={16} className="text-yellow-400 inline-block" />
+      <Icons.IconFlag3Filled size={16} className="inline-block" />
 
       <span className="font-semibold mx-1">
         <Link to={path}>{title}</Link>

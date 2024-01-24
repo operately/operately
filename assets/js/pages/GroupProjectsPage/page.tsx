@@ -119,7 +119,7 @@ function NextMilestone({ project }) {
 
   return (
     <div className="inline-flex items-center gap-2">
-      <Icons.IconFlagFilled size={16} className="text-green-600" />
+      <Icons.IconFlag3Filled size={16} />
       <span className="">{project.nextMilestone.title}</span>
     </div>
   );

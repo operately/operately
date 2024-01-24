@@ -56,7 +56,7 @@ function ProjectListItem({ project }) {
             <div className="flex items-center gap-5 mt-2 text-sm">
               <Status project={project} />
               {totalCount > 0 && completion}
-              <NextMilestone project={project} pending={pending} done={done} />
+              <NextMilestone project={project} />
             </div>
           </div>
         </div>
@@ -83,12 +83,12 @@ function Status({ project }) {
   return <Indicator value={project.health} type="status" />;
 }
 
-function NextMilestone({ project, pending, done }) {
+function NextMilestone({ project }) {
   if (project.nextMilestone === null) return null;
 
   return (
     <div className="inline-flex items-center gap-2">
-      <Icons.IconFlagFilled size={16} className="text-green-600" />
+      <Icons.IconFlag3Filled size={16} />
       <span className="">{project.nextMilestone.title}</span>
     </div>
   );
