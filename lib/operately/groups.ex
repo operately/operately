@@ -10,6 +10,12 @@ defmodule Operately.Groups do
   alias Ecto.Multi
   alias Operately.Activities
 
+  def archive(group) do
+    group
+    |> Group.changeset(%{deleted_at: DateTime.utc_now()})
+    |> Repo.update()
+  end
+
   def list_groups do
     Repo.all(Group)
   end
