@@ -98,39 +98,70 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
 function Health({ health }: { health: UpdateContent.ProjectHealth }) {
   return (
     <div className="flex flex-col gap-3">
-      <Accordion title={<Indicator type="status" value={health.status} />} testId="status">
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.statusComments} />
-        </div>
-      </Accordion>
-
       <Accordion
         title={<Indicator type="schedule" value={health.schedule} />}
-        showStatusWhenOpen
         testId="schedule-accordion"
+        initialOpen={!empty(health.scheduleComments)}
+        openable={!empty(health.scheduleComments)}
+        nonOpenableMessage="No comments"
       >
         <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.scheduleComments} />
         </div>
       </Accordion>
 
-      <Accordion title={<Indicator type="budget" value={health.budget} />} testId="budget-accordion">
+      <Accordion
+        title={<Indicator type="budget" value={health.budget} />}
+        testId="budget-accordion"
+        initialOpen={!empty(health.budgetComments)}
+        openable={!empty(health.budgetComments)}
+        nonOpenableMessage="No comments"
+      >
         <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.budgetComments} />
         </div>
       </Accordion>
 
-      <Accordion title={<Indicator type="team" value={health.team} />} testId="team-accordion">
+      <Accordion
+        title={<Indicator type="team" value={health.team} />}
+        testId="team-accordion"
+        initialOpen={!empty(health.teamComments)}
+        openable={!empty(health.teamComments)}
+        nonOpenableMessage="No comments"
+      >
         <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.teamComments} />
         </div>
       </Accordion>
 
-      <Accordion title={<Indicator type="risks" value={health.risks} />} testId="risks-accordion">
+      <Accordion
+        title={<Indicator type="risks" value={health.risks} />}
+        testId="risks-accordion"
+        initialOpen={!empty(health.risksComments)}
+        openable={!empty(health.risksComments)}
+        nonOpenableMessage="No comments"
+      >
         <div className="p-4 bg-surface-dimmed">
           <RichContent jsonContent={health.risksComments} />
         </div>
       </Accordion>
+
+      <Accordion
+        title={<Indicator type="status" value={health.status} />}
+        testId="status"
+        initialOpen={!empty(health.statusComments)}
+        openable={!empty(health.statusComments)}
+        nonOpenableMessage="No comments"
+      >
+        <div className="p-4 bg-surface-dimmed">
+          <RichContent jsonContent={health.statusComments} />
+        </div>
+      </Accordion>
     </div>
   );
+}
+
+function empty(json: any) {
+  const cannonicalJSON = JSON.stringify(JSON.parse(json));
+  return cannonicalJSON === `{"content":[{"type":"paragraph"}],"type":"doc"}`;
 }
