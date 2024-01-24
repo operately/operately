@@ -41,17 +41,30 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
     });
   };
 
+  const image = (
+    <img
+      src={node.attrs.src}
+      alt={node.attrs.alt}
+      title={node.attrs.title}
+      className={classnames({
+        "group-hover:border-stroke-base transition-colors": view.editable,
+        "cursor-pointer": !view.editable,
+      })}
+      data-drag-handle
+    />
+  );
+
+  const imgNode = view.editable ? (
+    image
+  ) : (
+    <a href={node.attrs.src} target="_blank">
+      {image}
+    </a>
+  );
+
   return (
     <NodeViewWrapper className="blob-container blob-image relative group">
-      <img
-        src={node.attrs.src}
-        alt={node.attrs.alt}
-        title={node.attrs.title}
-        className={classnames({
-          "group-hover:border-stroke-base transition-colors": view.editable,
-        })}
-        data-drag-handle
-      />
+      {imgNode}
 
       <div className="footer flex items-center gap-1 justify-center">
         <NodeViewContent
