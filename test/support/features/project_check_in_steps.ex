@@ -91,18 +91,11 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> UI.assert_text(@labels.budget[opts.budget])
     |> UI.assert_text(@labels.team[opts.team])
     |> UI.assert_text(@labels.risks[opts.risks])
-    |> in_accordion("schedule", fn el ->
-      el |> UI.assert_text(opts.schedule_comments)
-    end)
-    |> in_accordion("budget", fn el ->
-      el |> UI.assert_text(opts.budget_comments)
-    end)
-    |> in_accordion("team", fn el ->
-      el |> UI.assert_text(opts.team_comments)
-    end)
-    |> in_accordion("risks", fn el ->
-      el |> UI.assert_text(opts.risks_comments)
-    end)
+    |> UI.assert_text(opts.schedule_comments)
+    |> UI.assert_text(opts.budget_comments)
+    |> UI.assert_text(opts.team_comments)
+    |> UI.assert_text(opts.risks_comments)
+    |> UI.assert_text(opts.status_comments)
   end
   
   def assert_previous_check_in_values(ctx, opts) do
