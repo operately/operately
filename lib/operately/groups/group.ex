@@ -11,6 +11,7 @@ defmodule Operately.Groups.Group do
     field :color, :string, default: "text-green-500"
 
     timestamps()
+    soft_delete()
   end
 
   def changeset(attrs) do
