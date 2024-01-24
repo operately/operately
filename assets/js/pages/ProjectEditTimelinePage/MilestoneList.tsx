@@ -100,7 +100,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
       <div className="flex items-center justify-between">
         <div className="flex flex-col flex-1">
           <div className="font-bold flex items-center gap-1">
-            <Icons.IconFlagFilled size={16} className="text-accent-1 shrink-0" />
+            <Icons.IconFlag3Filled size={16} className="shrink-0" />
             {milestone.title}
           </div>
 

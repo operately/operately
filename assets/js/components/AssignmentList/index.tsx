@@ -131,7 +131,7 @@ function IconMilestone() {
         background: "linear-gradient(to right top, var(--color-green-400), var(--color-sky-400))",
       }}
     >
-      <Icons.IconFlag size={24} stroke={2} className="text-dark-1" />
+      <Icons.IconFlag3Filled size={24} stroke={2} />
     </div>
   );
 }
