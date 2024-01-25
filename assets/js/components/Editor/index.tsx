@@ -48,13 +48,18 @@ interface UseEditorProps {
 
 export function Root({ editor, children }): JSX.Element {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
-  const handleClick = useLinkEditFormClose();
 
   return (
-    <div onClick={handleClick}>
-      <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>
-    </div>
+    <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>
+      <RootBody children={children}></RootBody>
+    </EditorContext.Provider>
   );
+}
+
+function RootBody({ children }) {
+  const handleClick = useLinkEditFormClose();
+
+  return <div onClick={handleClick}>{children}</div>;
 }
 
 export interface EditorState {
@@ -114,10 +119,14 @@ function useEditor(props: UseEditorProps): EditorState {
         multicolor: true,
       }),
     ],
-    onFocus() {
+    onFocus({ editor }) {
+      editor.chain().unsetHighlight().run(); // remove highlighted text for link edit
+
       setFocused(true);
     },
     onBlur: ({ editor }) => {
+      editor.chain().setHighlight({ color: "var(--color-stale-selection)" }).run();
+
       setFocused(false);
 
       if (!props.onBlur) return;
