@@ -58,7 +58,7 @@ function Editor() {
 
   return (
     <div className="mt-4">
-      <TipTapEditor.Root>
+      <TipTapEditor.Root editor={editor.editor}>
         <TipTapEditor.Toolbar editor={editor.editor} />
 
         <div

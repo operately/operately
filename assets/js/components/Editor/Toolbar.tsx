@@ -148,10 +148,6 @@ function LinkButton({ editor, iconSize }): JSX.Element {
   const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext);
 
   const toggleLink = React.useCallback(() => {
-    if (!editor.isActive("link")) {
-      editor.chain().toggleHighlight({ color: "#74c0fc" }).run();
-    }
-
     if (linkEditActive) {
       setLinkEditActive(false);
     } else {

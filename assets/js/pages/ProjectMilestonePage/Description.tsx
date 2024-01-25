@@ -65,7 +65,7 @@ function DescriptionFilled({ milestone }) {
 function DescriptionEdit({ form }) {
   return (
     <div className="border-x border-b border-stroke-base rounded" data-test-id="milestone-description-editor">
-      <TipTapEditor.Root>
+      <TipTapEditor.Root editor={form.description.editor}>
         <TipTapEditor.Toolbar editor={form.description.editor} />
 
         <div className="p-2">

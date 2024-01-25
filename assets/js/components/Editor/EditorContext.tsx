@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface Context {
+  editor: any;
   linkEditActive: boolean;
   setLinkEditActive: (active: boolean) => void;
 }

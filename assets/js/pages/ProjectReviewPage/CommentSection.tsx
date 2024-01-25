@@ -158,7 +158,7 @@ function AddCommentActive({ update, onBlur, onPost }) {
   };
 
   return (
-    <TipTapEditor.Root>
+    <TipTapEditor.Root editor={editor}>
       <div className="not-first:border-t border-dark-8 overflow-hidden relative bg-shade-1">
         <TipTapEditor.EditorContent editor={editor} />
 

@@ -52,7 +52,7 @@ function Header() {
 function Editor({ form }) {
   return (
     <div className="mt-4">
-      <TipTapEditor.Root>
+      <TipTapEditor.Root editor={form.editor.editor}>
         <TipTapEditor.Toolbar editor={form.editor.editor} />
 
         <div

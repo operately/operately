@@ -161,7 +161,7 @@ function AddCommentActive({ me, update, onBlur, onPost }) {
   };
 
   return (
-    <TipTapEditor.Root>
+    <TipTapEditor.Root editor={editor}>
       <div className="border-t border-stroke-base pl-4 py-4 text-content-accent flex items-start gap-4">
         <Avatar person={me} size="tiny" />
 

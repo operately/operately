@@ -146,7 +146,7 @@ function TextAreaQuestion({ state }: { state: TextAreaState }) {
 
 function EditorView({ editor, focused }: { editor: TipTapEditor.Editor; focused?: boolean }) {
   return (
-    <TipTapEditor.Root>
+    <TipTapEditor.Root editor={editor}>
       <div className="bg-dark-2 rounded overflow-hidden relative">
         <TipTapEditor.EditorContent editor={editor} />
 

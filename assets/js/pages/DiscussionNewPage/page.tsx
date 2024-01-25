@@ -102,7 +102,7 @@ function Title({ form }: { form: FormState }) {
 function Message({ editor }) {
   return (
     <div className="text-lg">
-      <TipTapEditor.Root>
+      <TipTapEditor.Root editor={editor}>
         <TipTapEditor.Toolbar editor={editor} />
 
         <div

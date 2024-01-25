@@ -165,7 +165,7 @@ function AddCommentActive({ milestone, me, deactivate }) {
   const avatar = <Avatar person={me} size="small" />;
   const commentBox = (
     <div data-test-id="milestone-comment-editor">
-      <TipTapEditor.Root>
+      <TipTapEditor.Root editor={editor}>
         <div className="rounded border-x border-b border-stroke-base bg-surface">
           <TipTapEditor.Toolbar editor={editor} />
           <TipTapEditor.EditorContent editor={editor} />

@@ -15,6 +15,7 @@ import Blob, { isUploadInProgress } from "./Blob";
 export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
 import { EditorContext } from "./EditorContext";
+import { useLinkEditFormClose } from "./LinkEditForm";
 
 type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
@@ -45,25 +46,13 @@ interface UseEditorProps {
   editable?: boolean;
 }
 
-export function Root({ children }): JSX.Element {
+export function Root({ editor, children }): JSX.Element {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
-
-  const handleClick = React.useCallback(
-    (e: any) => {
-      // close link edit form if clicked outside the link edit form
-      if (linkEditActive && !e.target.matches("[data-link-edit-form]  *")) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        setLinkEditActive(false);
-      }
-    },
-    [linkEditActive],
-  );
+  const handleClick = useLinkEditFormClose();
 
   return (
     <div onClick={handleClick}>
-      <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>
+      <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>
     </div>
   );
 }
@@ -107,7 +96,9 @@ function useEditor(props: UseEditorProps): EditorState {
         dropcursor: false,
       }),
       Blob,
-      Link.configure({
+      Link.extend({
+        inclusive: false,
+      }).configure({
         openOnClick: false,
       }),
       Placeholder.configure({
