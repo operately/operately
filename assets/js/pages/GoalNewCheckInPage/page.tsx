@@ -53,7 +53,7 @@ function Editor({ form }) {
   return (
     <div className="mt-4">
       <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={form.editor.editor} variant="large" />
+        <TipTapEditor.Toolbar editor={form.editor.editor} />
 
         <div
           className="mb-8 text-content-accent text-lg relative border-b border-stroke-base"

@@ -166,8 +166,8 @@ function AddCommentActive({ milestone, me, deactivate }) {
   const commentBox = (
     <div data-test-id="milestone-comment-editor">
       <TipTapEditor.Root>
-        <div className="rounded relative border-x border-b border-stroke-base">
-          <TipTapEditor.Toolbar editor={editor} variant="large" />
+        <div className="rounded border-x border-b border-stroke-base bg-surface">
+          <TipTapEditor.Toolbar editor={editor} />
           <TipTapEditor.EditorContent editor={editor} />
           <div className={"p-2 flex flex-row-reverse" + " " + (focused ? "opacity-100" : "opacity-0")}></div>
           <TipTapEditor.LinkEditForm editor={editor} />

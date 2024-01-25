@@ -167,8 +167,8 @@ function AddCommentActive({ onBlur, onPost }) {
       <Avatar person={me} size="normal" />
       <div className="flex-1">
         <TipTapEditor.Root>
-          <div className="border border-surface-outline overflow-hidden relative">
-            <TipTapEditor.Toolbar editor={editor} variant="large" />
+          <div className="border border-surface-outline">
+            <TipTapEditor.Toolbar editor={editor} />
             <TipTapEditor.EditorContent editor={editor} />
 
             <div className="flex justify-between items-center m-4">

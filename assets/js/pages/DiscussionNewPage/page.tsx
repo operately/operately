@@ -103,7 +103,7 @@ function Message({ editor }) {
   return (
     <div className="text-lg">
       <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={editor} variant="large" />
+        <TipTapEditor.Toolbar editor={editor} />
 
         <div
           className="mb-8 text-content-base font-medium relative border-b border-shade-2"

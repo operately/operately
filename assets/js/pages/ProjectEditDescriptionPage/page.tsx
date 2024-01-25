@@ -65,7 +65,7 @@ function Editor() {
   return (
     <div className="mt-4">
       <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={editor.editor} variant="large" />
+        <TipTapEditor.Toolbar editor={editor.editor} />
 
         <div className="mb-8 text-content-accent relative border-b border-stroke-base" style={{ minHeight: "350px" }}>
           <TipTapEditor.EditorContent editor={editor.editor} />
