@@ -1,16 +1,22 @@
 import React from "react";
 
-import Button from "@/components/Button";
-
 import { EditorContext, Context } from "./EditorContext";
+import { FilledButton } from "@/components/Button";
+import classNames from "classnames";
 
 export function LinkEditForm({ editor }): JSX.Element {
   const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext) as Context;
   const [link, setLink] = React.useState(editor?.getAttributes("link")?.href || "");
 
+  const isSelectionLink = React.useMemo(() => {
+    if (!editor) return false;
+    return editor.isActive("link");
+  }, [editor]);
+
   const unlink = React.useCallback(() => {
     editor.chain().focus().unsetLink().run();
     setLinkEditActive(false);
+    editor.chain().toggleHighlight({ color: "#74c0fc" }).run();
   }, [editor]);
 
   const save = React.useCallback(() => {
@@ -19,29 +25,46 @@ export function LinkEditForm({ editor }): JSX.Element {
   }, [editor, link]);
 
   if (!editor) return <></>;
-  if (!editor.isActive("link")) return <></>;
   if (!linkEditActive) return <></>;
 
   return (
-    <div className="bg-surface border-b border-stroke-base">
-      <div className="p-1 flex flex-col gap-1 w-full">
-        <div className="flex items-center gap-4">
+    <div className="border-b border-stroke-base" data-link-edit-form>
+      <div className="p-1.5 flex flex-col gap-1 w-full">
+        <div className="flex items-center gap-1">
           <input
             autoFocus
             type="text"
-            className="flex-1 px-2 py-1 border border-surface-outline rounded-lg text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-surface-outline text-content-accent"
+            className={classNames(
+              "flex-1 px-2 py-1.5 border border-surface-outline",
+              "rounded-lg text-sm focus:outline-none focus:ring-0",
+              "text-content-accent bg-surface",
+            )}
             value={link}
             placeholder="ex. https://example.com"
             onChange={(e) => setLink(e.target.value)}
           />
 
-          <Button onClick={save} variant="success" size="small">
-            Save
-          </Button>
+          {isSelectionLink ? (
+            <>
+              <FilledButton onClick={save} size="xxs" type="primary">
+                Save
+              </FilledButton>
 
-          <Button onClick={unlink} variant="secondary" size="small">
-            Unlink
-          </Button>
+              <FilledButton onClick={unlink} size="xxs" type="secondary">
+                Unlink
+              </FilledButton>
+            </>
+          ) : (
+            <>
+              <FilledButton onClick={save} size="xxs" type="primary">
+                Add
+              </FilledButton>
+
+              <FilledButton onClick={unlink} size="xxs" type="secondary">
+                Cancel
+              </FilledButton>
+            </>
+          )}
         </div>
       </div>
     </div>

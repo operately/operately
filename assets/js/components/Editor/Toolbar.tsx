@@ -145,19 +145,22 @@ function RedoButton({ editor, iconSize }): JSX.Element {
 }
 
 function LinkButton({ editor, iconSize }): JSX.Element {
-  const { setLinkEditActive } = React.useContext(EditorContext) as Context;
+  const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext);
 
-  const setLink = React.useCallback(() => {
-    if (editor.isActive("link")) {
-      editor.chain().focus().unsetLink().run();
+  const toggleLink = React.useCallback(() => {
+    if (!editor.isActive("link")) {
+      editor.chain().toggleHighlight({ color: "#74c0fc" }).run();
+    }
+
+    if (linkEditActive) {
+      setLinkEditActive(false);
     } else {
-      editor.chain().focus().extendMarkRange("link").setLink({ href: "https://" }).run();
       setLinkEditActive(true);
     }
   }, [editor]);
 
   return (
-    <MenuBarToggle onClick={setLink} isActive={editor.isActive("link")} title="Add Link">
+    <MenuBarToggle onClick={toggleLink} isActive={editor.isActive("link") || linkEditActive} title="Add/Edit Links">
       <Icons.IconLink size={iconSize} />
     </MenuBarToggle>
   );

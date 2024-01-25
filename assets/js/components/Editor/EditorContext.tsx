@@ -5,4 +5,4 @@ export interface Context {
   setLinkEditActive: (active: boolean) => void;
 }
 
-export const EditorContext = React.createContext<Context | null>(null);
+export const EditorContext = React.createContext<Context>({} as Context);

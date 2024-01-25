@@ -6,6 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Mention from "@tiptap/extension-mention";
 import Link from "@tiptap/extension-link";
+import Highlight from "@tiptap/extension-highlight";
 
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
@@ -47,7 +48,24 @@ interface UseEditorProps {
 export function Root({ children }): JSX.Element {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
 
-  return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
+  const handleClick = React.useCallback(
+    (e: any) => {
+      // close link edit form if clicked outside the link edit form
+      if (linkEditActive && !e.target.matches("[data-link-edit-form]  *")) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setLinkEditActive(false);
+      }
+    },
+    [linkEditActive],
+  );
+
+  return (
+    <div onClick={handleClick}>
+      <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>
+    </div>
+  );
 }
 
 export interface EditorState {
@@ -100,6 +118,9 @@ function useEditor(props: UseEditorProps): EditorState {
           render: () => new MentionPopup(),
           items: props.peopleSearch,
         },
+      }),
+      Highlight.configure({
+        multicolor: true,
       }),
     ],
     onFocus() {
