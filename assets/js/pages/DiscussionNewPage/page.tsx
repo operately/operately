@@ -59,6 +59,7 @@ function Submit({ form }: { form: FormState }) {
 
 function Title({ form }: { form: FormState }) {
   const className = classnames(
+    "bg-surface",
     "text-3xl",
     "font-semibold",
     "border-none",
