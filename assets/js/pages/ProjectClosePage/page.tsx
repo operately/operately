@@ -39,12 +39,11 @@ function Question({ title, editor }) {
     <div className="" data-test-id={testId}>
       <h2 className="text-content-accent text font-bold mb-1">{title}</h2>
       <div className="border-x border-stroke-base">
-        <TipTapEditor.Root>
-          <TipTapEditor.Toolbar editor={editor} variant="large" />
+        <TipTapEditor.Root editor={editor}>
+          <TipTapEditor.Toolbar editor={editor} />
 
           <div className="mb-8 text-content-accent relative border-b border-stroke-base px-2">
             <TipTapEditor.EditorContent editor={editor} />
-            <TipTapEditor.LinkEditForm editor={editor} />
           </div>
         </TipTapEditor.Root>
       </div>

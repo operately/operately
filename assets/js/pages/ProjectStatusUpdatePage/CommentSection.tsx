@@ -166,9 +166,9 @@ function AddCommentActive({ onBlur, onPost }) {
     <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
       <Avatar person={me} size="normal" />
       <div className="flex-1">
-        <TipTapEditor.Root>
-          <div className="border border-surface-outline overflow-hidden relative">
-            <TipTapEditor.Toolbar editor={editor} variant="large" />
+        <TipTapEditor.Root editor={editor}>
+          <div className="border border-surface-outline">
+            <TipTapEditor.Toolbar editor={editor} />
             <TipTapEditor.EditorContent editor={editor} />
 
             <div className="flex justify-between items-center m-4">
@@ -189,8 +189,6 @@ function AddCommentActive({ onBlur, onPost }) {
                 </Button>
               </div>
             </div>
-
-            <TipTapEditor.LinkEditForm editor={editor} />
           </div>
         </TipTapEditor.Root>
       </div>

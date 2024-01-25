@@ -37,6 +37,9 @@ body[data-theme="light"] {
   --color-link-base: var(--color-sky-700);
   --color-link-hover: var(--color-sky-600);
 
+  --color-toggle-active: var(--color-sky-200);
+  --color-stale-selection: var(--color-sky-100);
+
   --color-accent-1: rgba(37, 155, 105, 1);
 }
 
@@ -58,6 +61,9 @@ body[data-theme="dark"] {
 
   --color-link-base: var(--color-sky-500);
   --color-link-hover: var(--color-sky-400);
+
+  --color-toggle-active: var(--color-sky-700);
+  --color-stale-selection: var(--color-sky-900);
 
   --color-accent-1: rgba(37, 155, 105, 1);
 }

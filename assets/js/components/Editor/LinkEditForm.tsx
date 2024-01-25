@@ -1,12 +1,34 @@
 import React from "react";
 
-import Button from "@/components/Button";
-
 import { EditorContext, Context } from "./EditorContext";
+import { FilledButton } from "@/components/Button";
+import classNames from "classnames";
+
+export function useLinkEditFormClose() {
+  const { editor, linkEditActive, setLinkEditActive } = React.useContext(EditorContext) as Context;
+
+  return React.useCallback(
+    (e: any) => {
+      if (!editor) return;
+
+      // close link edit form if clicked outside the link edit form
+      if (linkEditActive && !e.target.matches("[data-link-edit-form]  *")) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setLinkEditActive(false);
+      }
+    },
+    [linkEditActive, editor],
+  );
+}
 
 export function LinkEditForm({ editor }): JSX.Element {
   const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext) as Context;
-  const [link, setLink] = React.useState(editor?.getAttributes("link")?.href || "");
+  const [link, setLink] = React.useState("");
+  const [error, setError] = React.useState(false);
+
+  const isSelectionLink = editor?.isActive("link");
 
   const unlink = React.useCallback(() => {
     editor.chain().focus().unsetLink().run();
@@ -14,36 +36,73 @@ export function LinkEditForm({ editor }): JSX.Element {
   }, [editor]);
 
   const save = React.useCallback(() => {
-    editor.chain().focus().setLink({ href: link }).run();
+    const hasError = link.trim().length === 0 || !link.trim().match(/^(https?:\/\/|mailto:)/);
+    setError(hasError);
+    if (hasError) return;
+
+    editor.chain().focus().setLink({ href: link.trim() }).run();
     setLinkEditActive(false);
   }, [editor, link]);
 
+  React.useEffect(() => {
+    setLink(editor?.isActive("link") ? editor?.getAttributes("link").href : "");
+
+    if (linkEditActive) {
+      editor.chain().setHighlight({ color: "var(--color-stale-selection)" }).run();
+    } else {
+      editor.chain().unsetHighlight().run();
+    }
+  }, [editor, linkEditActive, isSelectionLink]);
+
   if (!editor) return <></>;
-  if (!editor.isActive("link")) return <></>;
   if (!linkEditActive) return <></>;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-24 bg-surface-dimmed border-t border-stroke-base">
-      <div className="p-4 flex flex-col gap-1 w-full h-full">
-        <label className="text-sm font-bold">Link URL:</label>
-
-        <div className="flex items-center gap-2">
+    <div className="border-b border-stroke-base" data-link-edit-form>
+      <div className="p-1.5 flex flex-col gap-1 w-full">
+        <div className="flex items-center gap-1">
           <input
             autoFocus
             type="text"
-            className="flex-1 px-2 py-1 border border-surface-outline rounded-lg text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-surface-outline text-content-accent"
+            className={classNames(
+              "flex-1 px-2 py-1 border border-surface-outline",
+              "rounded-lg text-sm focus:outline-none focus:ring-0",
+              "text-content-accent bg-surface",
+              {
+                "border-red-400": error,
+              },
+            )}
             value={link}
             placeholder="ex. https://example.com"
             onChange={(e) => setLink(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                save();
+              }
+            }}
           />
 
-          <Button onClick={save} variant="success" size="small">
-            Save
-          </Button>
+          {isSelectionLink ? (
+            <>
+              <FilledButton onClick={save} size="xxs" type="primary">
+                Save
+              </FilledButton>
 
-          <Button onClick={unlink} variant="secondary" size="small">
-            Unlink
-          </Button>
+              <FilledButton onClick={unlink} size="xxs" type="secondary">
+                Unlink
+              </FilledButton>
+            </>
+          ) : (
+            <>
+              <FilledButton onClick={save} size="xxs" type="primary">
+                Add
+              </FilledButton>
+
+              <FilledButton onClick={unlink} size="xxs" type="secondary">
+                Cancel
+              </FilledButton>
+            </>
+          )}
         </div>
       </div>
     </div>

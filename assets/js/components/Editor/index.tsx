@@ -6,6 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Mention from "@tiptap/extension-mention";
 import Link from "@tiptap/extension-link";
+import Highlight from "@tiptap/extension-highlight";
 
 import Toolbar from "./Toolbar";
 import MentionPopup from "./MentionPopup";
@@ -14,6 +15,7 @@ import Blob, { isUploadInProgress } from "./Blob";
 export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
 import { EditorContext } from "./EditorContext";
+import { useLinkEditFormClose } from "./LinkEditForm";
 
 type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
@@ -44,10 +46,20 @@ interface UseEditorProps {
   editable?: boolean;
 }
 
-export function Root({ children }): JSX.Element {
+export function Root({ editor, children }): JSX.Element {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
 
-  return <EditorContext.Provider value={{ linkEditActive, setLinkEditActive }}>{children}</EditorContext.Provider>;
+  return (
+    <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>
+      <RootBody children={children}></RootBody>
+    </EditorContext.Provider>
+  );
+}
+
+function RootBody({ children }) {
+  const handleClick = useLinkEditFormClose();
+
+  return <div onClick={handleClick}>{children}</div>;
 }
 
 export interface EditorState {
@@ -89,7 +101,9 @@ function useEditor(props: UseEditorProps): EditorState {
         dropcursor: false,
       }),
       Blob,
-      Link.configure({
+      Link.extend({
+        inclusive: false,
+      }).configure({
         openOnClick: false,
       }),
       Placeholder.configure({
@@ -101,8 +115,13 @@ function useEditor(props: UseEditorProps): EditorState {
           items: props.peopleSearch,
         },
       }),
+      Highlight.configure({
+        multicolor: true,
+      }),
     ],
-    onFocus() {
+    onFocus({ editor }) {
+      editor.chain().unsetHighlight().run(); // remove highlighted text for link edit
+
       setFocused(true);
     },
     onBlur: ({ editor }) => {

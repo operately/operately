@@ -64,12 +64,9 @@ function DescriptionFilled({ milestone }) {
 
 function DescriptionEdit({ form }) {
   return (
-    <div
-      className="border-x border-b border-stroke-base rounded relative overflow-hidden"
-      data-test-id="milestone-description-editor"
-    >
-      <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={form.description.editor} variant="large" />
+    <div className="border-x border-b border-stroke-base rounded" data-test-id="milestone-description-editor">
+      <TipTapEditor.Root editor={form.description.editor}>
+        <TipTapEditor.Toolbar editor={form.description.editor} />
 
         <div className="p-2">
           <TipTapEditor.EditorContent editor={form.description.editor} className="min-h-[200px]" />
@@ -93,8 +90,6 @@ function DescriptionEdit({ form }) {
             </div>
           </div>
         </div>
-
-        <TipTapEditor.LinkEditForm editor={form.description.editor} />
       </TipTapEditor.Root>
     </div>
   );

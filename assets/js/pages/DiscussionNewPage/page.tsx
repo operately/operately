@@ -59,6 +59,7 @@ function Submit({ form }: { form: FormState }) {
 
 function Title({ form }: { form: FormState }) {
   const className = classnames(
+    "bg-surface",
     "text-3xl",
     "font-semibold",
     "border-none",
@@ -102,15 +103,14 @@ function Title({ form }: { form: FormState }) {
 function Message({ editor }) {
   return (
     <div className="text-lg">
-      <TipTapEditor.Root>
-        <TipTapEditor.Toolbar editor={editor} variant="large" />
+      <TipTapEditor.Root editor={editor}>
+        <TipTapEditor.Toolbar editor={editor} />
 
         <div
           className="mb-8 text-content-base font-medium relative border-b border-shade-2"
           style={{ minHeight: "350px" }}
         >
           <TipTapEditor.EditorContent editor={editor} />
-          <TipTapEditor.LinkEditForm editor={editor} />
         </div>
       </TipTapEditor.Root>
     </div>

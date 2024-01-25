@@ -107,12 +107,11 @@ export function Page() {
 
 function Message({ editor }) {
   return (
-    <TipTapEditor.Root>
-      <TipTapEditor.Toolbar editor={editor} variant="large" />
+    <TipTapEditor.Root editor={editor}>
+      <TipTapEditor.Toolbar editor={editor} />
 
       <div className="mb-8 text-white-1 relative border-b border-shade-2" style={{ minHeight: "350px" }}>
         <TipTapEditor.EditorContent editor={editor} />
-        <TipTapEditor.LinkEditForm editor={editor} />
       </div>
     </TipTapEditor.Root>
   );
