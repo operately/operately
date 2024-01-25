@@ -110,7 +110,6 @@ function Message({ editor }) {
           style={{ minHeight: "350px" }}
         >
           <TipTapEditor.EditorContent editor={editor} />
-          <TipTapEditor.LinkEditForm editor={editor} />
         </div>
       </TipTapEditor.Root>
     </div>

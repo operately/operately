@@ -90,8 +90,6 @@ function DescriptionEdit({ form }) {
             </div>
           </div>
         </div>
-
-        <TipTapEditor.LinkEditForm editor={form.description.editor} />
       </TipTapEditor.Root>
     </div>
   );

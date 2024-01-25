@@ -189,8 +189,6 @@ function AddCommentActive({ onBlur, onPost }) {
                 </Button>
               </div>
             </div>
-
-            <TipTapEditor.LinkEditForm editor={editor} />
           </div>
         </TipTapEditor.Root>
       </div>

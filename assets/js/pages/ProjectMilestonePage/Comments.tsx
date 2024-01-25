@@ -170,7 +170,6 @@ function AddCommentActive({ milestone, me, deactivate }) {
           <TipTapEditor.Toolbar editor={editor} />
           <TipTapEditor.EditorContent editor={editor} />
           <div className={"p-2 flex flex-row-reverse" + " " + (focused ? "opacity-100" : "opacity-0")}></div>
-          <TipTapEditor.LinkEditForm editor={editor} />
         </div>
       </TipTapEditor.Root>
 

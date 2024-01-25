@@ -48,7 +48,7 @@ function Editor() {
     placeholder: `Write your updates here...`,
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[350px] py-2 font-medium",
-    content: JSON.parse(project.description),
+    content: JSON.parse(project.description!),
   });
 
   const submit = React.useCallback(async () => {
@@ -69,7 +69,6 @@ function Editor() {
 
         <div className="mb-8 text-content-accent relative border-b border-stroke-base" style={{ minHeight: "350px" }}>
           <TipTapEditor.EditorContent editor={editor.editor} />
-          <TipTapEditor.LinkEditForm editor={editor.editor} />
         </div>
 
         <div className="flex items-center gap-4">

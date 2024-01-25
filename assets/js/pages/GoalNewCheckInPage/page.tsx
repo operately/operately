@@ -60,7 +60,6 @@ function Editor({ form }) {
           style={{ minHeight: "350px" }}
         >
           <TipTapEditor.EditorContent editor={form.editor.editor} />
-          <TipTapEditor.LinkEditForm editor={form.editor.editor} />
         </div>
 
         <p className="font-bold text-lg">Measurments</p>

@@ -180,10 +180,8 @@ function AddCommentActive({ update, onBlur, onPost }) {
             </Button>
           </div>
 
-          <TipTapEditor.Toolbar editor={editor} variant="small" />
+          <TipTapEditor.Toolbar editor={editor} />
         </div>
-
-        <TipTapEditor.LinkEditForm editor={editor} />
       </div>
     </TipTapEditor.Root>
   );

@@ -44,7 +44,6 @@ function Question({ title, editor }) {
 
           <div className="mb-8 text-content-accent relative border-b border-stroke-base px-2">
             <TipTapEditor.EditorContent editor={editor} />
-            <TipTapEditor.LinkEditForm editor={editor} />
           </div>
         </TipTapEditor.Root>
       </div>

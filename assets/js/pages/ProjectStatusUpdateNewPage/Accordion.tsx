@@ -54,7 +54,6 @@ function Comments({ editor }: { editor: ReturnType<typeof TipTapEditor.useEditor
 
         <div className="text-content-base relative" style={{ minHeight: "150px" }}>
           <TipTapEditor.EditorContent editor={editor.editor} />
-          <TipTapEditor.LinkEditForm editor={editor.editor} />
         </div>
       </TipTapEditor.Root>
     </div>

@@ -23,11 +23,9 @@ export function LinkEditForm({ editor }): JSX.Element {
   if (!linkEditActive) return <></>;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-24 bg-surface-dimmed border-t border-stroke-base">
-      <div className="p-4 flex flex-col gap-1 w-full h-full">
-        <label className="text-sm font-bold">Link URL:</label>
-
-        <div className="flex items-center gap-2">
+    <div className="bg-surface border-b border-stroke-base">
+      <div className="p-1 flex flex-col gap-1 w-full">
+        <div className="flex items-center gap-4">
           <input
             autoFocus
             type="text"

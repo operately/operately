@@ -1,9 +1,9 @@
-import React from "react";
+import React, { Context } from "react";
 
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 
-import { EditorContext } from "./index";
+import { EditorContext, LinkEditForm } from "./index";
 import { AddBlobsEditorCommand } from "./Blob/AddBlobsEditorCommand";
 
 function MenuBarToggle({ children, isActive, title, onClick }): JSX.Element {
@@ -207,29 +207,33 @@ export default function ({ editor }: MenuBarProps): JSX.Element {
   if (!editor) return <></>;
 
   return (
-    <div className="flex items-center gap-3 border-y border-stroke-base sticky top-11 bg-surface z-10">
-      <div className="flex justify-between items-center w-full">
-        <div className="flex items-center">
-          <BoldButton editor={editor} iconSize={20} />
-          <ItalicButton editor={editor} iconSize={20} />
-          <StrikeButton editor={editor} iconSize={20} />
-          <LinkButton editor={editor} iconSize={20} />
+    <div className="sticky top-11 bg-surface z-10">
+      <div className="flex items-center gap-3 border-y border-stroke-base ">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center">
+            <BoldButton editor={editor} iconSize={20} />
+            <ItalicButton editor={editor} iconSize={20} />
+            <StrikeButton editor={editor} iconSize={20} />
+            <LinkButton editor={editor} iconSize={20} />
 
-          <BulletListButton editor={editor} iconSize={20} />
-          <NumberListButton editor={editor} iconSize={20} />
+            <BulletListButton editor={editor} iconSize={20} />
+            <NumberListButton editor={editor} iconSize={20} />
 
-          <H1Button editor={editor} iconSize={20} />
-          <H2Button editor={editor} iconSize={20} />
+            <H1Button editor={editor} iconSize={20} />
+            <H2Button editor={editor} iconSize={20} />
 
-          <BlockquoteButton editor={editor} iconSize={20} />
-          <AttachmentButton editor={editor} iconSize={20} />
-        </div>
+            <BlockquoteButton editor={editor} iconSize={20} />
+            <AttachmentButton editor={editor} iconSize={20} />
+          </div>
 
-        <div className="flex items-center gap-1">
-          <UndoButton editor={editor} iconSize={20} />
-          <RedoButton editor={editor} iconSize={20} />
+          <div className="flex items-center gap-1">
+            <UndoButton editor={editor} iconSize={20} />
+            <RedoButton editor={editor} iconSize={20} />
+          </div>
         </div>
       </div>
+
+      <LinkEditForm editor={editor} />
     </div>
   );
 }

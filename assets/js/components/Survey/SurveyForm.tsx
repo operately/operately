@@ -151,10 +151,8 @@ function EditorView({ editor, focused }: { editor: TipTapEditor.Editor; focused?
         <TipTapEditor.EditorContent editor={editor} />
 
         <div className="flex flex-row-reverse p-2 transition-opacity duration-200" style={{ opacity: focused ? 1 : 0 }}>
-          <TipTapEditor.Toolbar editor={editor} variant="small" />
+          <TipTapEditor.Toolbar editor={editor} />
         </div>
-
-        <TipTapEditor.LinkEditForm editor={editor} />
       </div>
     </TipTapEditor.Root>
   );
