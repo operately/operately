@@ -125,8 +125,6 @@ function useEditor(props: UseEditorProps): EditorState {
       setFocused(true);
     },
     onBlur: ({ editor }) => {
-      editor.chain().setHighlight({ color: "var(--color-stale-selection)" }).run();
-
       setFocused(false);
 
       if (!props.onBlur) return;

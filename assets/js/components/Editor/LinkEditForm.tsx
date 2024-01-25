@@ -46,6 +46,12 @@ export function LinkEditForm({ editor }): JSX.Element {
 
   React.useEffect(() => {
     setLink(editor?.isActive("link") ? editor?.getAttributes("link").href : "");
+
+    if (linkEditActive) {
+      editor.chain().setHighlight({ color: "var(--color-stale-selection)" }).run();
+    } else {
+      editor.chain().unsetHighlight().run();
+    }
   }, [editor, linkEditActive, isSelectionLink]);
 
   if (!editor) return <></>;
