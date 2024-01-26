@@ -76,6 +76,7 @@ function AddMilestoneForm({ form, close }) {
       id={Math.random().toString(36)}
       initialTitle=""
       initialDueDate={null}
+      initialDescription={null}
       onSubmit={onSubmit}
       onCancel={close}
     />
@@ -159,6 +160,7 @@ function MilestoneEdit({ milestone, form, close }) {
       id={milestone.id}
       initialTitle={milestone.title}
       initialDueDate={Time.parse(milestone.deadlineAt)}
+      initialDescription={milestone.description && JSON.parse(milestone.description)}
       onSubmit={onSubmit}
       onCancel={close}
     />
@@ -169,7 +171,7 @@ function milestoneTestID(milestone: Milestones.Milestone) {
   return "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-");
 }
 
-function MilestoneForm({ form, id, initialTitle, initialDueDate, onSubmit, onCancel }) {
+function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescription, onSubmit, onCancel }) {
   const [title, setTitle] = React.useState(initialTitle);
   const [dueDate, setDueDate] = React.useState<Date | null>(initialDueDate);
 
@@ -177,7 +179,8 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, onSubmit, onCan
     autoFocus: false,
     placeholder: "Write here...",
     peopleSearch: People.usePeopleSearch(),
-    className: "min-h-[100px] p-2 py-1",
+    className: "min-h-[150px] p-2 py-1 text-sm",
+    content: initialDescription,
   });
 
   const [errors, setErrors] = React.useState<string[]>([]);
