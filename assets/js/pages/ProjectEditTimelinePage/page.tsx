@@ -40,22 +40,24 @@ function Header({ form }: { form: FormState }) {
         <div className="flex items-end justify-between mx-10 my-2">
           <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
 
-          <div className="flex items-center gap-2">
-            <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
-              Cancel
-            </FilledButton>
+          {form.milestoneBeingEdited ? null : (
+            <div className="flex items-center gap-2">
+              <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+                Cancel
+              </FilledButton>
 
-            <FilledButton
-              type="primary"
-              onClick={form.submit}
-              loading={form.submitting}
-              size="sm"
-              testId="save-changes"
-              bzzzOnClickFailure
-            >
-              Save Changes
-            </FilledButton>
-          </div>
+              <FilledButton
+                type="primary"
+                onClick={form.submit}
+                loading={form.submitting}
+                size="sm"
+                testId="save-changes"
+                bzzzOnClickFailure
+              >
+                Save Changes
+              </FilledButton>
+            </div>
+          )}
         </div>
       </Paper.Header>
 

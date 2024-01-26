@@ -37,7 +37,7 @@ function AddMilestone({ form }) {
   if (active) {
     return <AddMilestoneForm form={form} close={close} />;
   } else {
-    return <AddMilestoneButton onClick={() => setActive(true)} />;
+    return form.milestoneBeingEdited ? null : <AddMilestoneButton onClick={() => setActive(true)} />;
   }
 }
 
@@ -86,8 +86,14 @@ function AddMilestoneForm({ form, close }) {
 function MilestoneListItem({ milestone, form }) {
   const [editing, setEditing] = React.useState(false);
 
-  const edit = () => setEditing(true);
-  const close = () => setEditing(false);
+  const edit = () => {
+    form.setMilestoneBeingEdited(milestone.id);
+    setEditing(true);
+  };
+  const close = () => {
+    form.setMilestoneBeingEdited(null);
+    setEditing(false);
+  };
 
   if (!editing) {
     return <MilestoneDisplay milestone={milestone} form={form} edit={edit} />;
@@ -118,25 +124,27 @@ function MilestoneDisplay({ milestone, form, edit }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 -mr-1.5">
-          <div
-            className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-accent-1 transition-colors"
-            onClick={edit}
-            data-test-id={"edit-" + milestoneTestID(milestone)}
-          >
-            <Icons.IconPencil size={16} />
-          </div>
-
-          {milestone.deletable && (
+        {form.milestoneBeingEdited === null && (
+          <div className="flex items-center gap-2 -mr-1.5">
             <div
-              className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-red-500 transition-colors"
-              onClick={() => form.milestoneList.remove(milestone.id)}
-              data-test-id={"remove-" + milestoneTestID(milestone)}
+              className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-accent-1 transition-colors"
+              onClick={edit}
+              data-test-id={"edit-" + milestoneTestID(milestone)}
             >
-              <Icons.IconTrash size={16} />
+              <Icons.IconPencil size={16} />
             </div>
-          )}
-        </div>
+
+            {milestone.deletable && (
+              <div
+                className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-red-500 transition-colors"
+                onClick={() => form.milestoneList.remove(milestone.id)}
+                data-test-id={"remove-" + milestoneTestID(milestone)}
+              >
+                <Icons.IconTrash size={16} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
