@@ -25,6 +25,8 @@ export interface FormState {
   errors: Error[];
   hasChanges: boolean;
   submitting: boolean;
+
+  blockLeavingPage: () => boolean;
 }
 
 export function useForm(project: Projects.Project): FormState {
@@ -37,6 +39,9 @@ export function useForm(project: Projects.Project): FormState {
   const [startTime, setStartTime] = React.useState<Date | null>(oldStart);
   const [dueDate, setDueDate] = React.useState<Date | null>(oldDue);
 
+  const submitted = React.useRef(false);
+  const canceled = React.useRef(false);
+
   const milestoneList = useMilestoneListState(project);
 
   const hasChanges = React.useMemo(() => {
@@ -48,7 +53,10 @@ export function useForm(project: Projects.Project): FormState {
   }, [startTime, dueDate, milestoneList]);
 
   const [edit, { loading }] = Projects.useEditProjectTimeline({
-    onCompleted: () => navigate(milestonesPath),
+    onCompleted: () => {
+      submitted.current = true;
+      navigate(milestonesPath);
+    },
   });
 
   const submit = async () => {
@@ -72,7 +80,11 @@ export function useForm(project: Projects.Project): FormState {
     });
   };
 
-  const cancel = () => navigate(milestonesPath);
+  const cancel = () => {
+    canceled.current = true;
+    navigate(milestonesPath);
+  };
+
   const errors = [];
 
   return {
@@ -87,5 +99,11 @@ export function useForm(project: Projects.Project): FormState {
     errors,
     hasChanges,
     submitting: loading,
+
+    blockLeavingPage: () => {
+      if (submitted.current || canceled.current) return false;
+
+      return hasChanges;
+    },
   };
 }

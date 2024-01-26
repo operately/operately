@@ -10,10 +10,16 @@ import { useForm, FormState } from "./useForm";
 
 import { DateSelector } from "./DateSelector";
 import { MilestoneList } from "./MilestoneList";
+import { unstable_usePrompt } from "react-router-dom";
 
 export function Page() {
   const { project } = useLoadedData();
   const form = useForm(project);
+
+  unstable_usePrompt({
+    message: "You have unsaved changes. Are you sure you want to leave?",
+    when: form.blockLeavingPage, // the type says that it can only be a boolean, but it can also be a function
+  });
 
   return (
     <Pages.Page title={["Edit Project Timeline", project.name]}>
