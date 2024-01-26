@@ -26,6 +26,7 @@ defmodule Operately.Projects.EditTimelineOperation do
 
       changeset = Operately.Projects.Milestone.changeset(milestone, %{
         title: milestone_update.title,
+        description: milestone_update.description,
         deadline_at: milestone_update.due_time
       })
 
@@ -40,6 +41,7 @@ defmodule Operately.Projects.EditTimelineOperation do
       changeset = Milestone.changeset(%{
         project_id: project.id,
         title: milestone.title,
+        description: milestone.description,
         deadline_at: milestone.due_time
       })
 

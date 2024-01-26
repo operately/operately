@@ -33,10 +33,6 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def update_project_timeline(author, project, attrs) do
-    Operately.Projects.EditTimelineOperation.run(author, project, attrs)
-  end
-
   def move_project_to_space(author, project, space_id) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{group_id: space_id}))
