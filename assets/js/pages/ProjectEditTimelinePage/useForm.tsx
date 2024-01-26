@@ -6,7 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { useMilestoneListState, MilestoneListState } from "./useMilestoneListState";
 import { createPath } from "@/utils/paths";
 
-interface FormState {
+interface Error {
+  field: string;
+  message: string;
+}
+
+export interface FormState {
   startTime: Date | null;
   setStartTime: (date: Date | null) => void;
 
@@ -16,6 +21,8 @@ interface FormState {
   milestoneList: MilestoneListState;
 
   submit: () => void;
+  cancel: () => void;
+  errors: Error[];
   hasChanges: boolean;
   submitting: boolean;
 }
@@ -65,6 +72,9 @@ export function useForm(project: Projects.Project): FormState {
     });
   };
 
+  const cancel = () => navigate(milestonesPath);
+  const errors = [];
+
   return {
     startTime,
     setStartTime,
@@ -73,6 +83,8 @@ export function useForm(project: Projects.Project): FormState {
     milestoneList,
 
     submit,
+    cancel,
+    errors,
     hasChanges,
     submitting: loading,
   };
