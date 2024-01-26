@@ -30,14 +30,21 @@ export function MilestoneList({ form }) {
 function AddMilestone({ form }) {
   const [active, setActive] = React.useState(false);
 
+  const startEditing = React.useCallback(() => {
+    form.setMilestoneBeingEdited("new");
+    setActive(true);
+  }, []);
+
   const close = React.useCallback(() => {
+    form.setMilestoneBeingEdited(null);
+
     setActive(false);
   }, []);
 
   if (active) {
     return <AddMilestoneForm form={form} close={close} />;
   } else {
-    return form.milestoneBeingEdited ? null : <AddMilestoneButton onClick={() => setActive(true)} />;
+    return form.milestoneBeingEdited ? null : <AddMilestoneButton onClick={startEditing} />;
   }
 }
 
@@ -90,6 +97,7 @@ function MilestoneListItem({ milestone, form }) {
     form.setMilestoneBeingEdited(milestone.id);
     setEditing(true);
   };
+
   const close = () => {
     form.setMilestoneBeingEdited(null);
     setEditing(false);
@@ -262,13 +270,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
           Cancel
         </FilledButton>
 
-        <FilledButton
-          size="sm"
-          type="primary"
-          onClick={addMilestone}
-          data-test-id="save-milestone-button"
-          bzzzOnClickFailure
-        >
+        <FilledButton size="sm" type="primary" onClick={addMilestone} testId="save-milestone-button" bzzzOnClickFailure>
           Save
         </FilledButton>
       </div>

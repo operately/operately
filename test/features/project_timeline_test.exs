@@ -21,7 +21,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> choose_day(field: "project-due", day: 20)
     |> add_milestone(title: "Contract Signed", due_day: 15)
     |> add_milestone(title: "Website Launched", due_day: 16)
-    |> UI.click(testid: "save")
+    |> UI.click(testid: "save-changes")
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -91,7 +91,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> choose_day(field: "project-start", day: 10)
     |> choose_day(field: "project-due", day: 20)
     |> edit_milestone("contract-signed", "Contract Updated with Provider", 16)
-    |> UI.click(testid: "save")
+    |> UI.click(testid: "save-changes")
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -140,6 +140,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> UI.click(testid: "new-milestone-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{attrs.due_day}")
     |> UI.click(testid: "save-milestone-button")
+    |> UI.assert_text("Save Changes")
   end
 
   defp remove_milestone(ctx, title: title) do
@@ -154,5 +155,6 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> UI.click(testid: "new-milestone-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{due_day}")
     |> UI.click(testid: "save-milestone-button")
+    |> UI.assert_text("Save Changes")
   end
 end
