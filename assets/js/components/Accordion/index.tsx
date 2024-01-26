@@ -58,6 +58,10 @@ export function Accordion(props: AccordionProps) {
   );
 }
 
+Accordion.defaultProps = {
+  openable: true,
+};
+
 function Status({ status, showStatusWhenOpen, open }) {
   if (!status) return null;
   if (open && !showStatusWhenOpen) return null;
