@@ -27,11 +27,13 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
   input_object :milestone_update_input do
     field :id, non_null(:id)
     field :title, non_null(:string)
+    field :description, :string
     field :due_time, non_null(:date)
   end
 
   input_object :new_milestone_input do
     field :title, non_null(:string)
+    field :description, :string
     field :due_time, non_null(:date)
   end
 
@@ -111,6 +113,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
             %{
               milestone_id: update.id,
               title: update.title,
+              description: update[:description] && Jason.decode!(update.description),
               due_time: parse_date(update.due_time)
             }
           end),
@@ -118,12 +121,13 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           new_milestones: Enum.map(args.input.new_milestones, fn milestone ->
             %{
               title: milestone.title,
+              description: milestone[:description] && Jason.decode!(milestone.description),
               due_time: parse_date(milestone.due_time)
             }
           end)
         }
 
-        Operately.Projects.update_project_timeline(author, project, attrs)
+        Operately.Projects.EditTimelineOperation.run(author, project, attrs)
       end
     end
 

@@ -5,7 +5,7 @@ import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
 import FormattedTime from "@/components/FormattedTime";
 
-export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testID }) {
+export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testID, error = false }) {
   const [open, setOpen] = React.useState(false);
 
   const onChangeDate = React.useCallback((date: Date) => {
@@ -21,6 +21,7 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
     {
       "bg-surface-dimmed hover:bg-surface-accent": date,
       "bg-surface hover:bg-surface-accent": !date,
+      "border border-red-500": error,
     },
     "border border-surface-outline",
     "rounded px-2 py-2",
@@ -45,7 +46,7 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Content className="outline-red-400 border border-surface-outline" align="start">
+        <Popover.Content className="outline-red-400 border border-surface-outline z-50" align="start">
           <DatePicker
             inline
             selected={date}

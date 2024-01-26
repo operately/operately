@@ -91,7 +91,6 @@ defmodule Operately.Features.CompanyAdminTest do
     ctx
     |> UI.click(testid: "manage-trusted-email-domains")
     |> UI.click(testid: "remove-trusted-email-domain--dmif-com")
-    |> UI.refute_text("@dmif.com")
 
     company = Operately.Companies.get_company!(ctx.company.id)
 

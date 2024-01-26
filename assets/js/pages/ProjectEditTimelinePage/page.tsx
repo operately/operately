@@ -3,49 +3,82 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
 import { useLoadedData } from "./loader";
-import { useForm } from "./useForm";
+import { useForm, FormState } from "./useForm";
 
 import { DateSelector } from "./DateSelector";
 import { MilestoneList } from "./MilestoneList";
-import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
+import { unstable_usePrompt } from "react-router-dom";
 
 export function Page() {
   const { project } = useLoadedData();
   const form = useForm(project);
 
+  unstable_usePrompt({
+    message: "You have unsaved changes. Are you sure you want to leave?",
+    when: form.blockLeavingPage, // the type says that it can only be a boolean, but it can also be a function
+  });
+
   return (
     <Pages.Page title={["Edit Project Timeline", project.name]}>
       <Paper.Root size="medium">
-        <ProjectMilestonesNavigation project={project} />
-
-        <Paper.Body minHeight="none">
-          <h1 className="mb-12 font-extrabold text-content-accent text-3xl text-center">
-            Editing the project timeline
-          </h1>
-
-          <div className="flex items-start gap-4">
-            <StartDate form={form} />
-            <DueDate form={form} />
-          </div>
-
-          <Section title="Milestones" />
-          <MilestoneList form={form} />
-
-          {form.hasChanges && (
-            <>
-              <div className="mt-12 flex items-center justify-center">
-                <GhostButton type="primary" onClick={form.submit} testId="save">
-                  Save timeline changes
-                </GhostButton>
-              </div>
-            </>
-          )}
+        <Paper.Body minHeight="300px">
+          <Header form={form} />
+          <Form form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Header({ form }: { form: FormState }) {
+  return (
+    <div className="">
+      <Paper.Header className="bg-surface-dimmed">
+        <div className="flex items-end justify-between mx-10 my-2">
+          <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
+
+          {form.milestoneBeingEdited ? null : (
+            <div className="flex items-center gap-2">
+              <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+                Cancel
+              </FilledButton>
+
+              <FilledButton
+                type="primary"
+                onClick={form.submit}
+                loading={form.submitting}
+                size="sm"
+                testId="save-changes"
+                bzzzOnClickFailure
+              >
+                Save Changes
+              </FilledButton>
+            </div>
+          )}
+        </div>
+      </Paper.Header>
+
+      {form.errors.length > 0 && (
+        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+      )}
+    </div>
+  );
+}
+
+function Form({ form }: { form: FormState }) {
+  return (
+    <div>
+      <div className="flex items-start gap-4">
+        <StartDate form={form} />
+        <DueDate form={form} />
+      </div>
+
+      <Section title="Milestones" />
+      <MilestoneList form={form} />
+    </div>
   );
 }
 

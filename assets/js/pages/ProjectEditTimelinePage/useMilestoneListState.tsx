@@ -31,15 +31,18 @@ export function useMilestoneListState(project: Projects.Project): MilestoneListS
     setMilestones((milestones) => milestones.filter((m) => m.id !== id));
   }, []);
 
-  const edit = React.useCallback(({ id, title, deadlineAt }: { id: string; title: string; deadlineAt: string }) => {
-    setMilestones((milestones) =>
-      milestones.map((m) => {
-        if (m.id !== id) return m;
+  const edit = React.useCallback(
+    ({ id, title, deadlineAt, description }: { id: string; title: string; deadlineAt: string; description: any }) => {
+      setMilestones((milestones) =>
+        milestones.map((m) => {
+          if (m.id !== id) return m;
 
-        return { ...m, title, deadlineAt };
-      }),
-    );
-  }, []);
+          return { ...m, title, deadlineAt, description };
+        }),
+      );
+    },
+    [],
+  );
 
   const newMilestones = React.useMemo(() => {
     return milestones.filter((m) => m.deletable);
@@ -83,9 +86,11 @@ function hasMilestoneChanged(m: Milestone, project: Projects.Project): boolean {
 
   const originalTitle = original.title;
   const originalDeadline = Time.parse(original.deadlineAt);
+  const originalDescription = original.description;
 
   if (originalTitle !== m.title) return true;
   if (Time.dateChanged(originalDeadline, Time.parse(m.deadlineAt))) return true;
+  if (originalDescription !== m.description) return true;
 
   return false;
 }

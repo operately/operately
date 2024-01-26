@@ -18,10 +18,10 @@ export function Page() {
   const form = useForm(company, me);
 
   return (
-    <Pages.Page title="New Goal">
+    <Pages.Page title={["Edit", form.fields.goal.name]}>
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
-          <SubmitButton form={form} />
+          <Header form={form} />
           <Form form={form} />
         </Paper.Body>
       </Paper.Root>
@@ -29,7 +29,7 @@ export function Page() {
   );
 }
 
-function SubmitButton({ form }: { form: FormState }) {
+function Header({ form }: { form: FormState }) {
   return (
     <div className="">
       <Paper.Header className="bg-surface-dimmed">
