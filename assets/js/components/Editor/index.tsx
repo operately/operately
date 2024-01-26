@@ -44,6 +44,7 @@ interface UseEditorProps {
   onBlur?: (data: OnBlurData) => void;
   className?: string;
   editable?: boolean;
+  autoFocus: boolean;
 }
 
 export function Root({ editor, children }): JSX.Element {
@@ -77,11 +78,12 @@ function useEditor(props: UseEditorProps): EditorState {
   const [uploading, setUploading] = React.useState(false);
 
   const editable = props.editable === undefined ? true : props.editable;
+  const autoFocus = props.autoFocus === undefined ? true : props.autoFocus;
 
   const editor = TipTap.useEditor({
     editable: editable,
     content: props.content,
-    autofocus: editable,
+    autofocus: autoFocus,
     injectCSS: false,
     editorProps: {
       attributes: {

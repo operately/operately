@@ -1,13 +1,16 @@
 import * as React from "react";
 import * as Milestones from "@/graphql/Projects/milestones";
 
-import Button from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
+import * as TipTapEditor from "@/components/Editor";
+import * as People from "@/graphql/People";
 
 import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";
 
 import { DateSelector } from "./DateSelector";
+import classNames from "classnames";
 
 export function MilestoneList({ form }) {
   const milestones = Milestones.sortByDeadline(form.milestoneList.milestones);
@@ -55,10 +58,11 @@ function AddMilestoneButton({ onClick }) {
 }
 
 function AddMilestoneForm({ form, close }) {
-  const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date) => {
+  const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date, description: any) => {
     await form.milestoneList.add({
       id: id,
       title,
+      description: description,
       deadlineAt: dueDate.toISOString(),
     });
 
@@ -68,7 +72,6 @@ function AddMilestoneForm({ form, close }) {
   return (
     <MilestoneForm
       form={form}
-      formTitle="Add milestone"
       id={Math.random().toString(36)}
       initialTitle=""
       initialDueDate={null}
@@ -134,10 +137,11 @@ function MilestoneDisplay({ milestone, form, edit }) {
 }
 
 function MilestoneEdit({ milestone, form, close }) {
-  const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date) => {
+  const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date, description: any) => {
     await form.milestoneList.edit({
       id: id,
       title,
+      description: description,
       deadlineAt: dueDate.toISOString(),
     });
 
@@ -147,7 +151,6 @@ function MilestoneEdit({ milestone, form, close }) {
   return (
     <MilestoneForm
       form={form}
-      formTitle="Editing milestone"
       id={milestone.id}
       initialTitle={milestone.title}
       initialDueDate={Time.parse(milestone.deadlineAt)}
@@ -161,67 +164,97 @@ function milestoneTestID(milestone: Milestones.Milestone) {
   return "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-");
 }
 
-function MilestoneForm({ form, formTitle, id, initialTitle, initialDueDate, onSubmit, onCancel }) {
+function MilestoneForm({ form, id, initialTitle, initialDueDate, onSubmit, onCancel }) {
   const [title, setTitle] = React.useState(initialTitle);
   const [dueDate, setDueDate] = React.useState<Date | null>(initialDueDate);
 
-  const valid = React.useMemo(() => {
-    return title.length > 0 && dueDate;
-  }, [title, dueDate]);
+  const { editor } = TipTapEditor.useEditor({
+    autoFocus: false,
+    placeholder: "Write here...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "min-h-[100px] p-2 py-1",
+  });
 
-  const addMilestone = React.useCallback(async () => {
-    if (!valid) return;
-    if (!dueDate) return;
+  const [errors, setErrors] = React.useState<string[]>([]);
 
-    await onSubmit(id, title, dueDate);
+  const addMilestone = React.useCallback(async (): Promise<boolean> => {
+    if (!editor) return false;
 
-    close();
-  }, [valid, title, dueDate]);
+    const newErrors: string[] = [];
+
+    if (title.trim().length === 0) {
+      newErrors.push("title");
+    }
+
+    if (!dueDate) {
+      newErrors.push("dueDate");
+    }
+
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
+      return false;
+    }
+
+    await onSubmit(id, title, dueDate, editor.getJSON());
+    return true;
+  }, [editor, title, dueDate]);
 
   return (
-    <div className="bg-surface px-3 py-3 border border-surface-outline rounded">
-      <div className="uppercase text-xs mb-2">{formTitle}</div>
-
-      <div className="flex items-center gap-2 ">
-        <div className="w-2/3 shrink-0">
-          <input
-            type="text"
-            autoFocus
-            className="w-full bg-surface-accent rounded px-2 py-1 outline-none border border-surface-outline ring-0"
-            placeholder="ex. Website launch"
-            value={title}
-            data-test-id="new-milestone-title"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div className="w-1/3 flex items-center gap-2">
-          <div className="flex-1">
-            <DateSelector
-              date={dueDate}
-              onChange={setDueDate}
-              minDate={form.startTime}
-              maxDate={form.dueDate}
-              placeholder="Select due date"
-              testID="new-milestone-due"
-            />
-          </div>
-        </div>
+    <div className="border border-surface-outline rounded bg-surface p-3 shadow-xl">
+      <div className="text-xs uppercase tracking-wide mb-1 mt-2">Title</div>
+      <div className="">
+        <input
+          autoFocus
+          type="text"
+          className={classNames(
+            "w-full bg-surface px-2 py-1 outline-none border border-stroke-base ring-0 placeholder-content-dimmed",
+            {
+              "border-red-500": errors.includes("title"),
+            },
+          )}
+          placeholder="ex. Website launch"
+          value={title}
+          data-test-id="new-milestone-title"
+          onChange={(e) => setTitle(e.target.value)}
+        />
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
-        <Button
-          size="small"
-          type="submit"
-          variant="success"
+      <div className="text-xs uppercase tracking-wide mt-4 mb-1">Description (optional)</div>
+      <TipTapEditor.Root editor={editor}>
+        <div className="border-x border-b border-stroke-base flex-1">
+          <TipTapEditor.Toolbar editor={editor} />
+          <TipTapEditor.EditorContent editor={editor} />
+        </div>
+      </TipTapEditor.Root>
+
+      <div className="text-xs uppercase tracking-wide mt-4 mb-1">Due Date</div>
+
+      <div className="flex-1 w-64">
+        <DateSelector
+          date={dueDate}
+          onChange={setDueDate}
+          minDate={form.startTime}
+          maxDate={form.dueDate}
+          placeholder="Select due date"
+          testID="new-milestone-due"
+          error={errors.includes("dueDate")}
+        />
+      </div>
+
+      <div className="mt-4 flex items-center gap-2 justify-end border-t border-stroke-base pt-2">
+        <FilledButton size="sm" type="secondary" onClick={onCancel}>
+          Cancel
+        </FilledButton>
+
+        <FilledButton
+          size="sm"
+          type="primary"
           onClick={addMilestone}
-          disabled={!valid}
           data-test-id="save-milestone-button"
+          bzzzOnClickFailure
         >
           Save
-        </Button>
-        <Button size="small" type="button" variant="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
+        </FilledButton>
       </div>
     </div>
   );
