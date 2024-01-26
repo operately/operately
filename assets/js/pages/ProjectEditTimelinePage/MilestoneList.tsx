@@ -11,6 +11,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { DateSelector } from "./DateSelector";
 import classNames from "classnames";
+import { Summary } from "@/components/RichContent";
 
 export function MilestoneList({ form }) {
   const milestones = Milestones.sortByDeadline(form.milestoneList.milestones);
@@ -100,11 +101,15 @@ function MilestoneDisplay({ milestone, form, edit }) {
       className="py-2 px-3 border border-surface-outline bg-surface-accent rounded"
       data-test-id={milestoneTestID(milestone) + "-due"}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div className="flex flex-col flex-1">
           <div className="font-bold flex items-center gap-1">
             <Icons.IconFlag3Filled size={16} className="shrink-0" />
             {milestone.title}
+          </div>
+
+          <div className="text-sm max-w-lg mb-2">
+            <Summary jsonContent={milestone.description} characterCount={200} />
           </div>
 
           <div className="text-sm">
@@ -112,7 +117,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 -mr-1.5">
           <div
             className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-accent-1 transition-colors"
             onClick={edit}
@@ -195,7 +200,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, onSubmit, onCan
       return false;
     }
 
-    await onSubmit(id, title, dueDate, editor.getJSON());
+    await onSubmit(id, title, dueDate, JSON.stringify(editor.getJSON()));
     return true;
   }, [editor, title, dueDate]);
 
