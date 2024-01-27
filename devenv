@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
 
-export GROUP_ID=$(id -g) 
-export USER_ID=$(id -u) 
+case "$OSTYPE" in
+  linux*)
+    export GROUP_ID=$(id -g)
+    export USER_ID=$(id -u)
+    ;;
+
+  darwin*)
+    export GROUP_ID=1000
+    export USER_ID=1000
+    ;;
+
+  *)
+    echo "Not supported: $OSTYPE"
+    exit 1
+    ;;
+esac
+
 
 FIRST_ARG=$1
 

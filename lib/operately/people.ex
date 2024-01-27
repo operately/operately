@@ -229,7 +229,7 @@ defmodule Operately.People do
 
     get_account_by_email(attrs.email)
     |> case do
-      %Account{} = account -> 
+      %Account{} = account ->
         {:ok, account}
       _ -> create_account(attrs)
     end
@@ -322,7 +322,7 @@ defmodule Operately.People do
           # })
 
           dashboard
-        {:error, changeset} -> 
+        {:error, changeset} ->
           {:error, changeset}
       end
     end)
@@ -339,7 +339,7 @@ defmodule Operately.People do
     )
 
     milestones = Repo.all(
-      from m in Milestone, 
+      from m in Milestone,
         where: m.project_id in ^(Enum.map(projects, & &1.id)),
         where: not is_nil(m.deadline_at),
         where: m.deadline_at > ^time_range_start,
@@ -355,14 +355,14 @@ defmodule Operately.People do
         where: p.next_update_scheduled_at < ^time_range_end
     )
 
-    assignments = [] 
+    assignments = []
       ++ Enum.map(milestones, fn milestone ->
         %{
           type: "milestone",
           due: milestone.deadline_at,
           resource: milestone
         }
-      end) 
+      end)
         ++ Enum.map(pending_status_updates, fn project_status_update ->
           %{
             type: "project_status_update",
@@ -373,5 +373,4 @@ defmodule Operately.People do
 
     Enum.sort_by(assignments, & &1.due)
   end
-
 end

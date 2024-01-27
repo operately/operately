@@ -31,8 +31,8 @@ export function Page() {
         <Paper.Body>
           <div className="px-16">
             <div className="flex flex-col items-center">
-              <div className="text-content-accent text-3xl font-extrabold text-center">{discussion.title}</div>
-              <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
+              <div className="text-content-accent text-center text-3xl font-extrabold">{discussion.title}</div>
+              <div className="text-content-accent mt-1 flex flex-row items-center gap-0.5 font-medium">
                 <div className="flex items-center gap-2">
                   <Avatar person={discussion.author} size="tiny" /> {discussion.author.fullName}
                 </div>

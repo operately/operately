@@ -14,7 +14,7 @@ services:
       - ./media:/media
       - ./screenshots:/tmp/screenshots
     ports:
-      - "127.0.0.1:4000:4000"
+      - "127.0.0.1:4010:4000"
     depends_on:
       - db
     environment:
@@ -49,7 +49,7 @@ services:
     command: >
       sh -c "python -m http.server 8000"
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8010:8000"
     volumes:
       - ./screenshots:/screenshots
     profiles:
@@ -61,7 +61,7 @@ services:
     image: sosedoff/pgweb
     command: ["pgweb", "--bind=0.0.0.0"]
     ports:
-      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:8020:8081"
     links:
       - db:db
     environment:

@@ -83,8 +83,8 @@ migrate:
 	$(MAKE) test.db.migrate
 
 dev.setup:
-	$(DEV_CONTAINER) mix deps.get
-	$(DEV_CONTAINER) mix compile
+	./devenv mix deps.get
+	./devenv mix compile
 
 test.setup:
 	./devenv mix deps.get
