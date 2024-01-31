@@ -69,6 +69,12 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> UI.assert_text("Check-In from")
   end
 
+  def edit_check_in(ctx) do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-check-in")
+  end
+
   defp in_accordion(ctx, accordion_test_id, cb) do
     ctx
     |> UI.find(UI.query(testid: "#{accordion_test_id}-accordion"), fn el ->
