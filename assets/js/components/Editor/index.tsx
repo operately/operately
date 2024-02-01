@@ -44,7 +44,7 @@ interface UseEditorProps {
   onBlur?: (data: OnBlurData) => void;
   className?: string;
   editable?: boolean;
-  autoFocus: boolean;
+  autoFocus?: boolean;
 }
 
 export function Root({ editor, children }): JSX.Element {

@@ -131,7 +131,7 @@ export type Content =
   | ProjectMilestoneDeadlineChanged
   | ProjectDiscussion;
 
-interface StatusUpdate {
+export interface StatusUpdate {
   message: string;
   oldHealth: string;
   newHealth: string;

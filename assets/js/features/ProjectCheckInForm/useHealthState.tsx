@@ -1,30 +1,31 @@
 import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
-import * as Projects from "@/graphql/Projects";
+import * as Updates from "@/graphql/Projects/updates";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 
 export interface HealthState {
   status: string;
-  setStatus: (value: string) => void;
   schedule: string;
-  setSchedule: (value: string) => void;
   budget: string;
-  setBudget: (value: string) => void;
   team: string;
-  setTeam: (value: string) => void;
   risks: string;
+
+  setStatus: (value: string) => void;
+  setSchedule: (value: string) => void;
+  setBudget: (value: string) => void;
+  setTeam: (value: string) => void;
   setRisks: (value: string) => void;
 
-  statusEditor: ReturnType<typeof TipTapEditor.useEditor>;
-  scheduleEditor: ReturnType<typeof TipTapEditor.useEditor>;
-  budgetEditor: ReturnType<typeof TipTapEditor.useEditor>;
-  teamEditor: ReturnType<typeof TipTapEditor.useEditor>;
-  risksEditor: ReturnType<typeof TipTapEditor.useEditor>;
+  statusEditor: TipTapEditor.EditorState;
+  scheduleEditor: TipTapEditor.EditorState;
+  budgetEditor: TipTapEditor.EditorState;
+  teamEditor: TipTapEditor.EditorState;
+  risksEditor: TipTapEditor.EditorState;
 }
 
-export function useHealthState(project: Projects.Project): HealthState {
-  const lastHealthState = lastKnownHealthState(project);
+export function useHealthState(checkIn: Updates.Update | null): HealthState {
+  const lastHealthState = lastKnownHealthState(checkIn);
 
   const [status, setStatus] = React.useState(lastHealthState.status);
   const [schedule, setSchedule] = React.useState(lastHealthState.schedule);
@@ -91,13 +92,13 @@ export function useHealthState(project: Projects.Project): HealthState {
   };
 }
 
-function lastKnownHealthState(project: Projects.Project): UpdateContent.ProjectHealth {
-  const lastCheckIn = project.lastCheckIn?.content as UpdateContent.StatusUpdate | undefined;
+function lastKnownHealthState(checkIn: Updates.Update | null): UpdateContent.ProjectHealth {
+  const content = checkIn?.content as UpdateContent.StatusUpdate | undefined;
 
-  if (!lastCheckIn) return initialHealthState();
-  if (!lastCheckIn.health) return initialHealthState();
+  if (!content) return initialHealthState();
+  if (!content.health) return initialHealthState();
 
-  return lastCheckIn.health;
+  return content.health;
 }
 
 function initialHealthState(): UpdateContent.ProjectHealth {

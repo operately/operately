@@ -59,6 +59,7 @@ import * as ProjectReviewPage from "./ProjectReviewPage";
 import * as ProjectReviewRequestNewPage from "./ProjectReviewRequestNewPage";
 import * as ProjectReviewRequestPage from "./ProjectReviewRequestPage";
 import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPage";
+import * as ProjectStatusUpdateEditPage from "./ProjectStatusUpdateEditPage";
 import * as ProjectStatusUpdateListPage from "./ProjectStatusUpdateListPage";
 import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
@@ -292,6 +293,10 @@ export default {
   ProjectReviewRequestSubmitPage: {
     loader: ProjectReviewRequestSubmitPage.loader,
     Page: ProjectReviewRequestSubmitPage.Page
+  },
+  ProjectStatusUpdateEditPage: {
+    loader: ProjectStatusUpdateEditPage.loader,
+    Page: ProjectStatusUpdateEditPage.Page
   },
   ProjectStatusUpdateListPage: {
     loader: ProjectStatusUpdateListPage.loader,

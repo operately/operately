@@ -87,6 +87,19 @@ export const GET_PROJECT = gql`
   }
 `;
 
+export function useEditUpdate(options: any) {
+  return useMutation(
+    gql`
+      mutation EditUpdate($input: EditUpdateInput!) {
+        editUpdate(input: $input) {
+          id
+        }
+      }
+    `,
+    options,
+  );
+}
+
 export function usePostUpdate(options: any) {
   return useMutation(
     gql`

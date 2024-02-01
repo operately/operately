@@ -1,10 +1,12 @@
 import React from "react";
-import { DivLink } from "../Link";
-import { createPath } from "@/utils/paths";
+
 import * as Icons from "@tabler/icons-react";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
+
+import { DivLink } from "@/components/Link";
+import { createPath } from "@/utils/paths";
 import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
-import { Settings } from "./Settings";
 
 interface GroupPageNavigationProps {
   groupId: string;
@@ -66,5 +68,30 @@ function Tab({ id, activeTab, link, title }: TabProps) {
     <DivLink to={link} className={inactive} testId={testId}>
       {title}
     </DivLink>
+  );
+}
+
+export function Settings({ groupId }) {
+  return (
+    <PageOptions.Root noBorder testId="space-settings">
+      <PageOptions.Link
+        icon={Icons.IconEdit}
+        title="Edit name and purpose"
+        to={`/spaces/${groupId}/edit`}
+        dataTestId="edit-name-and-purpose"
+      />
+      <PageOptions.Link
+        icon={Icons.IconUserPlus}
+        title="Add/Remove members"
+        to={`/spaces/${groupId}/members`}
+        dataTestId="add-remove-members"
+      />
+      <PageOptions.Link
+        icon={Icons.IconPaint}
+        title="Change Appearance"
+        to={`/spaces/${groupId}/appearance`}
+        dataTestId="change-appearance"
+      />
+    </PageOptions.Root>
   );
 }

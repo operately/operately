@@ -200,14 +200,17 @@ function AttachmentButton({ editor, iconSize }): JSX.Element {
 
 interface MenuBarProps {
   editor: any;
+  noTopBorder?: boolean;
 }
 
-export default function ({ editor }: MenuBarProps): JSX.Element {
+export default function ({ editor, noTopBorder }: MenuBarProps): JSX.Element {
   if (!editor) return <></>;
+
+  const border = noTopBorder ? "border-b" : "border-y";
 
   return (
     <div className="sticky top-11 bg-surface z-10">
-      <div className="flex items-center gap-3 border-y border-stroke-base ">
+      <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center">
             <BoldButton editor={editor} iconSize={20} />

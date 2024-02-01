@@ -48,9 +48,9 @@ function Options(props: AccordionWithOptionsProps) {
 
 function Comments({ editor }: { editor: ReturnType<typeof TipTapEditor.useEditor> }) {
   return (
-    <div className="bg-surface-dimmed border-x border-b border-stroke-base">
+    <div className="bg-surface border border-surface-outline">
       <TipTapEditor.Root editor={editor}>
-        <TipTapEditor.Toolbar editor={editor.editor} />
+        <TipTapEditor.Toolbar editor={editor.editor} noTopBorder />
 
         <div className="text-content-base relative" style={{ minHeight: "150px" }}>
           <TipTapEditor.EditorContent editor={editor.editor} />

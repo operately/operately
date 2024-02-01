@@ -27,10 +27,11 @@ export function Accordion(props: AccordionProps) {
   };
 
   return (
-    <div className="border border-surface-outline rounded bg-surface-accent" data-test-id={props.testId}>
+    <div className="border border-stroke-base rounded" data-test-id={props.testId}>
       <div
         className={classNames({
-          "flex items-center justify-between py-2.5 px-2.5 border-b border-stroke-base": true,
+          "flex items-center justify-between py-2 px-2.5": true,
+          "border-b border-stroke-base": open,
           "cursor-pointer": props.openable,
         })}
         onClick={toggle}

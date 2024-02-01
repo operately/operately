@@ -15,7 +15,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   end
 
   @check_in_values %{
-    content: "This is a status update.",
+    content: "This is a check-in.",
     status: "on_track",
     schedule: "on_schedule",
     budget: "within_budget",
@@ -29,7 +29,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   }
 
   @tag login_as: :champion
-  feature "submitting a status update", ctx do
+  feature "submitting a check-in", ctx do
     ctx
     |> ProjectCheckInSteps.submit_check_in(@check_in_values)
     |> ProjectCheckInSteps.assert_check_in_submitted(@check_in_values)
@@ -44,7 +44,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
       to: ctx.reviewer,
       author: ctx.champion,
       action: "submitted a check-in"
-    })  
+    })
 
     ctx
     |> UI.login_as(ctx.reviewer)
@@ -66,7 +66,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   end
 
   @tag login_as: :champion
-  feature "submitting a status update is allowed to the champion only", ctx do
+  feature "submitting a check-in is allowed to the champion only", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.assert_has(testid: "check-in-now")
@@ -78,7 +78,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   end
 
   @tag login_as: :champion
-  feature "submitting a status update moves the next update date", ctx do
+  feature "submitting a check-in moves the next update date", ctx do
     previous_due = ctx.project.next_update_scheduled_at
 
     ProjectCheckInSteps.submit_check_in(ctx, @check_in_values)
@@ -89,7 +89,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   end
 
   @tag login_as: :champion
-  feature "acknowledge a status update", ctx do
+  feature "acknowledge a check-in", ctx do
     ctx
     |> ProjectCheckInSteps.submit_check_in(@check_in_values)
 
@@ -175,4 +175,24 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_paused_sent(author: ctx.champion)
   end
+
+  @tag login_as: :champion
+  feature "edit a submitted check-in", ctx do
+    ctx
+    |> ProjectCheckInSteps.submit_check_in(@check_in_values)
+    |> ProjectCheckInSteps.assert_check_in_submitted(@check_in_values)
+    |> ProjectCheckInSteps.edit_check_in(%{
+      content: "This is an edited check-in.",
+      risks_comments: "This is an edited risk comment."
+    })
+
+    expected_values = 
+      @check_in_values 
+      |> Map.put(:content, "This is an edited check-in.")
+      |> Map.put(:risks_comments, "This is an edited risk comment.")
+
+    ctx
+    |> ProjectCheckInSteps.assert_check_in_submitted(expected_values)
+  end
+
 end
