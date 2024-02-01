@@ -102,7 +102,7 @@ function Health({ state }: { state: HealthState }) {
         />
         <AccordionWithOptions
           name="status"
-          title="Status"
+          title="Overall Project Status"
           value={state.status}
           options={options.status}
           onChange={state.setStatus}

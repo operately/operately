@@ -98,9 +98,9 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
 
 function Health({ health }: { health: UpdateContent.ProjectHealth }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-1.5">
       <Accordion
-        title={<Indicator type="schedule" value={health.schedule} />}
+        title={<AccordionTitle indicatorType="schedule" indicatorValue={health.schedule} title="Schedule" />}
         testId="schedule-accordion"
         initialOpen={!empty(health.scheduleComments)}
         openable={!empty(health.scheduleComments)}
@@ -112,7 +112,7 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
       </Accordion>
 
       <Accordion
-        title={<Indicator type="budget" value={health.budget} />}
+        title={<AccordionTitle indicatorType="budget" indicatorValue={health.budget} title="Budget" />}
         testId="budget-accordion"
         initialOpen={!empty(health.budgetComments)}
         openable={!empty(health.budgetComments)}
@@ -124,7 +124,7 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
       </Accordion>
 
       <Accordion
-        title={<Indicator type="team" value={health.team} />}
+        title={<AccordionTitle indicatorType="team" indicatorValue={health.team} title="Team" />}
         testId="team-accordion"
         initialOpen={!empty(health.teamComments)}
         openable={!empty(health.teamComments)}
@@ -136,7 +136,7 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
       </Accordion>
 
       <Accordion
-        title={<Indicator type="risks" value={health.risks} />}
+        title={<AccordionTitle indicatorType="risks" indicatorValue={health.risks} title="Risks" />}
         testId="risks-accordion"
         initialOpen={!empty(health.risksComments)}
         openable={!empty(health.risksComments)}
@@ -148,7 +148,7 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
       </Accordion>
 
       <Accordion
-        title={<Indicator type="status" value={health.status} />}
+        title={<AccordionTitle indicatorType="status" indicatorValue={health.status} title="Overall Project Status" />}
         testId="status"
         initialOpen={!empty(health.statusComments)}
         openable={!empty(health.statusComments)}
@@ -158,6 +158,24 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
           <RichContent jsonContent={health.statusComments} />
         </div>
       </Accordion>
+    </div>
+  );
+}
+
+function AccordionTitle({
+  indicatorType,
+  indicatorValue,
+  title,
+}: {
+  indicatorType: string;
+  indicatorValue: string;
+  title: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="text-content-accent font-semibold">{title}</div>
+      <Icons.IconArrowRight size={16} />
+      <Indicator type={indicatorType} value={indicatorValue} />
     </div>
   );
 }
