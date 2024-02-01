@@ -13,6 +13,18 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
     field :new_target_values, :string
   end
 
+  input_object :edit_update_input do
+    field :content, non_null(:string)
+    field :updatable_id, non_null(:id)
+    field :updatable_type, non_null(:string)
+    field :phase, :string
+    field :health, :string
+    field :message_type, :string
+    field :title, :string
+    field :review_request_id, :string
+    field :new_target_values, :string
+  end
+
   input_object :create_comment_input do
     field :content, non_null(:string)
     field :update_id, non_null(:id)
@@ -51,6 +63,25 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
             content = Jason.decode!(args.input.content)
 
             Operately.Updates.record_project_discussion(author, project, content["title"], content["body"])
+
+          _ ->
+            raise "Unknown message type"
+        end
+      end
+    end
+
+    field :edit_update, non_null(:update) do
+      arg :input, non_null(:edit_update_input)
+
+      resolve fn args, %{context: context} ->
+        author = context.current_account.person
+        content = Jason.decode!(args.input.content)
+
+        case args.input.message_type do
+          "status_update" ->
+            health = args.input.health
+            update = Operately.Updates.get_update!(args.input.update_id)
+            Operately.Operations.ProjectStatusUpdateEdit.run(author, update, health, content)
 
           _ ->
             raise "Unknown message type"

@@ -50,6 +50,10 @@ export function useForm(options: UseFormOptions): FormState {
     onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.createUpdate.id}`),
   });
 
+  const [edit] = Projects.useEditUpdate({
+    onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.createUpdate.id}`),
+  });
+
   const submit = () => {
     if (!editor.editor) return;
     if (editor.uploading) return;
@@ -77,17 +81,34 @@ export function useForm(options: UseFormOptions): FormState {
       },
     };
 
-    post({
-      variables: {
-        input: {
-          updatableType: "project",
-          updatableId: options.project.id,
-          content: JSON.stringify(editor.editor.getJSON()),
-          health: JSON.stringify(health),
-          messageType: "status_update",
+    if (options.mode === "create") {
+      post({
+        variables: {
+          input: {
+            projectId: options.project.id,
+            content: JSON.stringify(editor.editor.getJSON()),
+            health: JSON.stringify(health),
+            messageType: "status_update",
+          },
         },
-      },
-    });
+      });
+
+      return;
+    }
+
+    if (options.mode === "edit") {
+      edit({
+        variables: {
+          input: {
+            updateId: options.checkIn!.id,
+            content: JSON.stringify(editor.editor.getJSON()),
+            health: JSON.stringify(health),
+          },
+        },
+      });
+
+      return;
+    }
   };
 
   const submitButtonLabel = React.useMemo(() => {
