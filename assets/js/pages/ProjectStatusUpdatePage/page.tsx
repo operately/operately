@@ -1,28 +1,23 @@
 import React from "react";
 
-import FormattedTime from "@/components/FormattedTime";
-
-import * as Icons from "@tabler/icons-react";
-import * as Paper from "@/components/PaperContainer";
-
-import Avatar from "@/components/Avatar";
-import RichContent from "@/components/RichContent";
-
-import * as Updates from "@/graphql/Projects/updates";
-
-import { TextSeparator } from "@/components/TextSeparator";
-import { Spacer } from "@/components/Spacer";
-import { useAddReaction } from "./useAddReaction";
-import * as Feed from "@/features/feed";
-import { CommentSection } from "./CommentSection";
-import * as UpdateContent from "@/graphql/Projects/update_content";
-
 import { Accordion } from "@/components/Accordion";
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
+import * as Paper from "@/components/PaperContainer";
+import * as Pages from "@/components/Pages";
 import { Indicator } from "@/components/ProjectHealthIndicators";
-
-import { useLoadedData, usePageRefetch } from "./loader";
-import { useDocumentTitle } from "@/layouts/header";
+import RichContent from "@/components/RichContent";
+import { Spacer } from "@/components/Spacer";
+import { TextSeparator } from "@/components/TextSeparator";
+import * as Feed from "@/features/feed";
+import * as UpdateContent from "@/graphql/Projects/update_content";
+import * as Updates from "@/graphql/Projects/updates";
+import * as Icons from "@tabler/icons-react";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { AckCTA } from "./AckCTA";
+import { CommentSection } from "./CommentSection";
+import { useLoadedData, usePageRefetch } from "./loader";
+import { useAddReaction } from "./useAddReaction";
 
 export function Page() {
   const { project, update } = useLoadedData();
@@ -31,39 +26,45 @@ export function Page() {
   const addReactionForm = useAddReaction(update.id, "update", refetch);
   const content = update.content as UpdateContent.StatusUpdate;
 
-  useDocumentTitle(["Check-In", project.name]);
-
   return (
-    <Paper.Root>
-      <Navigation project={project} />
+    <Pages.Page title={["Check-In", project.name]}>
+      <Paper.Root>
+        <Navigation project={project} />
 
-      <Paper.Body>
-        <div className="flex flex-col items-center">
-          <div className="text-content-accent text-2xl font-extrabold">
-            Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
-          </div>
-          <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
-            <div className="flex items-center gap-2">
-              <Avatar person={update.author} size="tiny" /> {update.author.fullName}
-            </div>
-            <TextSeparator />
-            <Acknowledgement update={update} />
-          </div>
+        <Paper.Body>
+          <Options />
+          <Title update={update} />
+
+          <Spacer size={4} />
+          <RichContent jsonContent={update.message} className="text-lg" />
+          <Spacer size={4} />
+          <Health health={content.health} />
+          <Spacer size={4} />
+          <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+
+          <AckCTA />
+          <Spacer size={4} />
+          <CommentSection />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function Title({ update }: { update: Updates.Update }) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="text-content-accent text-2xl font-extrabold">
+        Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
+      </div>
+      <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
+        <div className="flex items-center gap-2">
+          <Avatar person={update.author} size="tiny" /> {update.author.fullName}
         </div>
-
-        <Spacer size={4} />
-        <RichContent jsonContent={update.message} className="text-lg" />
-        <Spacer size={4} />
-        <Health health={content.health} />
-
-        <Spacer size={4} />
-        <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
-
-        <AckCTA />
-        <Spacer size={4} />
-        <CommentSection />
-      </Paper.Body>
-    </Paper.Root>
+        <TextSeparator />
+        <Acknowledgement update={update} />
+      </div>
+    </div>
   );
 }
 
@@ -164,4 +165,19 @@ function Health({ health }: { health: UpdateContent.ProjectHealth }) {
 function empty(json: any) {
   const cannonicalJSON = JSON.stringify(JSON.parse(json));
   return cannonicalJSON === `{"content":[{"type":"paragraph"}],"type":"doc"}`;
+}
+
+function Options() {
+  const { project, update } = useLoadedData();
+
+  return (
+    <PageOptions.Root position="top-right">
+      <PageOptions.Link
+        icon={Icons.IconEdit}
+        title="Edit check-in"
+        to={`/projects/${project.id}/status_updates/${update.id}/edit`}
+        dataTestId="edit-check-in"
+      />
+    </PageOptions.Root>
+  );
 }
