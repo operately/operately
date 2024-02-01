@@ -15,9 +15,14 @@ defmodule Operately.Operations.ProjectStatusUpdateEdit do
     })
 
     Multi.new()
-    |> Multi.insert(:update, changeset)
+    |> Multi.update(:update, changeset)
     |> Multi.update(:project, Project.changeset(project, %{health: status}))
-    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
+    |> Activities.insert(author.id, action, fn changes -> %{
+      company_id: project.company_id,
+      update_id: changes.update.id, 
+      project_id: changes.project.id,
+      check_in_id: check_in.id
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
   end

@@ -51,7 +51,7 @@ export function useForm(options: UseFormOptions): FormState {
   });
 
   const [edit] = Projects.useEditUpdate({
-    onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.editUpdate.id}`),
   });
 
   const submit = () => {

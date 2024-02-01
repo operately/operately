@@ -15,14 +15,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
 
   input_object :edit_update_input do
     field :content, non_null(:string)
-    field :updatable_id, non_null(:id)
-    field :updatable_type, non_null(:string)
-    field :phase, :string
+    field :update_id, non_null(:id)
     field :health, :string
-    field :message_type, :string
-    field :title, :string
-    field :review_request_id, :string
-    field :new_target_values, :string
   end
 
   input_object :create_comment_input do
@@ -76,11 +70,11 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
       resolve fn args, %{context: context} ->
         author = context.current_account.person
         content = Jason.decode!(args.input.content)
+        update = Operately.Updates.get_update!(args.input.update_id)
 
-        case args.input.message_type do
-          "status_update" ->
+        case update.type do
+          :status_update ->
             health = args.input.health
-            update = Operately.Updates.get_update!(args.input.update_id)
             Operately.Operations.ProjectStatusUpdateEdit.run(author, update, health, content)
 
           _ ->
