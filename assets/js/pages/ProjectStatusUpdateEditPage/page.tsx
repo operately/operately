@@ -31,7 +31,7 @@ function Header({ form, checkIn }) {
       <Paper.Header className="bg-surface-dimmed">
         <div className="flex items-end justify-between mx-10 my-2">
           <h1 className="text-xl font-extrabold">
-            Editing the Check-in from <FormattedTime time={checkIn.insertedAt} format="long-date" />
+            Editing the Check-In from <FormattedTime time={checkIn.insertedAt} format="long-date" />
           </h1>
 
           <div className="flex items-center gap-2">
