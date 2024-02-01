@@ -20,7 +20,7 @@ import { useLoadedData, usePageRefetch } from "./loader";
 import { useAddReaction } from "./useAddReaction";
 
 export function Page() {
-  const { project, update } = useLoadedData();
+  const { project, update, me } = useLoadedData();
   const refetch = usePageRefetch();
 
   const addReactionForm = useAddReaction(update.id, "update", refetch);
@@ -32,7 +32,7 @@ export function Page() {
         <Navigation project={project} />
 
         <Paper.Body>
-          <Options />
+          {me.id === update.author.id && <Options />}
           <Title update={update} />
 
           <Spacer size={4} />
