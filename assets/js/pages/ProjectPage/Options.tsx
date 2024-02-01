@@ -4,7 +4,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 export default function Options({ project }) {
   return (
-    <PageOptions.Root testId="project-options">
+    <PageOptions.Root testId="project-options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit project name"

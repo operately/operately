@@ -28,6 +28,7 @@ import ProjectReviewRequestSubmitted from "./ProjectReviewRequestSubmitted"
 import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
 import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
 import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
+import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 
@@ -103,6 +104,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectStatusUpdateCommented":
       return <ProjectStatusUpdateCommented notification={notification} />;
+    
+    case "ActivityContentProjectStatusUpdateEdit":
+      return <ProjectStatusUpdateEdit notification={notification} />;
     
     case "ActivityContentProjectStatusUpdateSubmitted":
       return <ProjectStatusUpdateSubmitted notification={notification} />;

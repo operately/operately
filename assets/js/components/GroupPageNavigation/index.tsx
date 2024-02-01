@@ -73,7 +73,7 @@ function Tab({ id, activeTab, link, title }: TabProps) {
 
 export function Settings({ groupId }) {
   return (
-    <PageOptions.Root noBorder>
+    <PageOptions.Root noBorder testId="space-settings">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit name and purpose"

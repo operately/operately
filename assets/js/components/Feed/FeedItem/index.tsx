@@ -28,6 +28,7 @@ import ProjectReviewRequestSubmitted from "./ProjectReviewRequestSubmitted"
 import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
 import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
 import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
+import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 
@@ -103,6 +104,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentProjectStatusUpdateCommented":
       return <ProjectStatusUpdateCommented activity={activity} page={page} />;
+    
+    case "ActivityContentProjectStatusUpdateEdit":
+      return <ProjectStatusUpdateEdit activity={activity} page={page} />;
     
     case "ActivityContentProjectStatusUpdateSubmitted":
       return <ProjectStatusUpdateSubmitted activity={activity} page={page} />;
