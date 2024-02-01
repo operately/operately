@@ -39,6 +39,7 @@ blocks:
           commands:
             - make test.license.check
             - make test.js.dead.code
+            - make test.tsc.lint
 
   - name: Docker Build
     dependencies: []

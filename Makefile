@@ -216,6 +216,9 @@ test.license.check:
 test.js.dead.code:
 	./devenv bash -c "cd assets && npm --no-update-notifier run knip"
 
+test.tsc.lint:
+	./devenv bash -c "cd assets && npx tsc --noEmit"
+
 #
 # Building a docker image
 #

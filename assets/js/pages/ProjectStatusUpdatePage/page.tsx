@@ -25,7 +25,7 @@ import { useDocumentTitle } from "@/layouts/header";
 import { AckCTA } from "./AckCTA";
 
 export function Page() {
-  const { project, update, me } = useLoadedData();
+  const { project, update } = useLoadedData();
   const refetch = usePageRefetch();
 
   const addReactionForm = useAddReaction(update.id, "update", refetch);
@@ -59,9 +59,9 @@ export function Page() {
         <Spacer size={4} />
         <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
 
-        <AckCTA project={project} update={update} refetch={refetch} me={me} />
+        <AckCTA />
         <Spacer size={4} />
-        <CommentSection update={update} refetch={refetch} me={me} />
+        <CommentSection />
       </Paper.Body>
     </Paper.Root>
   );
