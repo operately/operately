@@ -28,7 +28,7 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body>
-          <Form form={form} />
+          <Form form={form} noSubmitActions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

@@ -1,19 +1,35 @@
 import React from "react";
 
-import { FormState } from "./useForm";
-
 import * as TipTapEditor from "@/components/Editor";
+
+import { FormState } from "./useForm";
+import { HealthState } from "./useHealthState";
 import { AccordionWithOptions } from "./Accordion";
 import { options } from "./healthOptions";
 
 import Button from "@/components/Button";
 
-export function Form({ form }: { form: FormState }) {
+export function Form({ form, noSubmitActions }: { form: FormState; noSubmitActions?: boolean }) {
   return (
     <>
       <Header />
       <Editor form={form} />
+
+      {noSubmitActions && <SubmitActions form={form} />}
     </>
+  );
+}
+
+function SubmitActions({ form }: { form: FormState }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Button onClick={form.submit} variant="success" data-test-id="post-status-update" disabled={form.submitDisabled}>
+        {form.submitButtonLabel}
+      </Button>
+      <Button variant="secondary" linkTo={form.cancelPath} data-test-id="cancel">
+        Cancel
+      </Button>
+    </div>
   );
 }
 
@@ -40,20 +56,6 @@ function Editor({ form }: { form: FormState }) {
         </div>
 
         <Health state={form.healthState} />
-
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={form.submit}
-            variant="success"
-            data-test-id="post-status-update"
-            disabled={form.submitDisabled}
-          >
-            {form.submitButtonLabel}
-          </Button>
-          <Button variant="secondary" linkTo={form.cancelPath} data-test-id="cancel">
-            Cancel
-          </Button>
-        </div>
       </TipTapEditor.Root>
     </div>
   );

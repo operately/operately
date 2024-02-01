@@ -6,10 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { useHealthState, HealthState } from "./useHealthState";
 
 export interface FormState {
-  editor: TipTapEditor.Editor;
+  editor: TipTapEditor.EditorState;
   healthState: HealthState;
 
   submit: () => void;
+  submitDisabled?: boolean;
+  submitButtonLabel?: string;
+
+  cancelPath: string;
 }
 
 export function useForm(project: Projects.Project): FormState {
@@ -67,5 +71,14 @@ export function useForm(project: Projects.Project): FormState {
     });
   };
 
-  return { editor, healthState, submit };
+  return {
+    editor,
+    healthState,
+
+    submit,
+    submitDisabled: !editor.editor || editor.uploading,
+    submitButtonLabel: editor.uploading ? "Uploading..." : "Submit",
+
+    cancelPath: `/projects/${project.id}`,
+  };
 }
