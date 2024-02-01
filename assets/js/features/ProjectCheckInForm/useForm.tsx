@@ -85,7 +85,8 @@ export function useForm(options: UseFormOptions): FormState {
       post({
         variables: {
           input: {
-            projectId: options.project.id,
+            updatableId: options.project.id,
+            updatableType: "Project",
             content: JSON.stringify(editor.editor.getJSON()),
             health: JSON.stringify(health),
             messageType: "status_update",

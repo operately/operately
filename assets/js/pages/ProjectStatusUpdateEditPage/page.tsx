@@ -35,7 +35,7 @@ function Header({ form, checkIn }) {
           </h1>
 
           <div className="flex items-center gap-2">
-            <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+            <FilledButton type="secondary" linkTo={form.cancelPath} size="sm" testId="cancel-edit">
               Cancel
             </FilledButton>
 
