@@ -189,7 +189,7 @@ function Options() {
   const { project, update } = useLoadedData();
 
   return (
-    <PageOptions.Root position="top-right">
+    <PageOptions.Root position="top-right" testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"

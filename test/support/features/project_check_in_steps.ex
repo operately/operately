@@ -69,10 +69,40 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> UI.assert_text("Check-In from")
   end
 
-  def edit_check_in(ctx) do
+  def edit_check_in(ctx, updates) do
     ctx
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-check-in")
+    |> in_accordion("status", fn el ->
+      el = if Map.has_key?(updates, :status), do: UI.click(el, testid: "status-#{updates.status}"), else: el
+      el = if Map.has_key?(updates, :status_comments), do: UI.fill_rich_text(el, updates.status_comments), else: el
+      el
+    end)
+    |> in_accordion("schedule", fn el ->
+      el = if Map.has_key?(updates, :schedule), do: UI.click(el, testid: "schedule-#{updates.schedule}"), else: el
+      el = if Map.has_key?(updates, :schedule_comments), do: UI.fill_rich_text(el, updates.schedule_comments), else: el
+
+      el 
+    end)
+    |> in_accordion("budget", fn el ->
+      el = if Map.has_key?(updates, :budget), do: UI.click(el, testid: "budget-#{updates.budget}"), else: el
+      el = if Map.has_key?(updates, :budget_comments), do: UI.fill_rich_text(el, updates.budget_comments), else: el
+
+      el
+    end)
+    |> in_accordion("team", fn el ->
+      el = if Map.has_key?(updates, :team), do: UI.click(el, testid: "team-#{updates.team}"), else: el
+      el = if Map.has_key?(updates, :team_comments), do: UI.fill_rich_text(el, updates.team_comments), else: el
+
+      el 
+    end)
+    |> in_accordion("risks", fn el ->
+      el = if Map.has_key?(updates, :risks), do: UI.click(el, testid: "risks-#{updates.risks}"), else: el
+      el = if Map.has_key?(updates, :risks_comments), do: UI.fill_rich_text(el, updates.risks_comments), else: el
+
+      el 
+    end)
+    |> UI.click(testid: "save-changes")
   end
 
   defp in_accordion(ctx, accordion_test_id, cb) do
