@@ -578,12 +578,14 @@ export type MilestoneComment = {
 };
 
 export type MilestoneUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
   dueTime: Scalars['Date']['input'];
   id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
 };
 
 export type NewMilestoneInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
   dueTime: Scalars['Date']['input'];
   title: Scalars['String']['input'];
 };
