@@ -1,9 +1,18 @@
+import * as React from "react";
+
 import * as People from "@/graphql/People";
 import * as Projects from "@/graphql/Projects";
 import * as TipTapEditor from "@/components/Editor";
+import * as Updates from "@/graphql/Projects/updates";
 
 import { useNavigate } from "react-router-dom";
 import { useHealthState, HealthState } from "./useHealthState";
+
+interface UseFormOptions {
+  mode: "create" | "edit";
+  project: Projects.Project;
+  checkIn?: Updates.Update;
+}
 
 export interface FormState {
   editor: TipTapEditor.EditorState;
@@ -16,9 +25,9 @@ export interface FormState {
   cancelPath: string;
 }
 
-export function useForm(project: Projects.Project): FormState {
+export function useForm(options: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const healthState = useHealthState(project);
+  const healthState = useHealthState(options.project);
 
   const editor = TipTapEditor.useEditor({
     autoFocus: true,
@@ -28,7 +37,7 @@ export function useForm(project: Projects.Project): FormState {
   });
 
   const [post] = Projects.usePostUpdate({
-    onCompleted: (data: any) => navigate(`/projects/${project.id}/status_updates/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.createUpdate.id}`),
   });
 
   const submit = () => {
@@ -62,7 +71,7 @@ export function useForm(project: Projects.Project): FormState {
       variables: {
         input: {
           updatableType: "project",
-          updatableId: project.id,
+          updatableId: options.project.id,
           content: JSON.stringify(editor.editor.getJSON()),
           health: JSON.stringify(health),
           messageType: "status_update",
@@ -71,14 +80,21 @@ export function useForm(project: Projects.Project): FormState {
     });
   };
 
+  const submitButtonLabel = React.useMemo(() => {
+    if (editor.uploading) return "Uploading...";
+    if (options.mode === "create") return "Submit";
+
+    return "Save Changes";
+  }, [editor.uploading, options.mode]);
+
   return {
     editor,
     healthState,
 
     submit,
     submitDisabled: !editor.editor || editor.uploading,
-    submitButtonLabel: editor.uploading ? "Uploading..." : "Submit",
+    submitButtonLabel,
 
-    cancelPath: `/projects/${project.id}`,
+    cancelPath: `/projects/${options.project.id}/status_updates`,
   };
 }

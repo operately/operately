@@ -10,7 +10,7 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
     query: QUERY,
     variables: {
       id: id,
-      includeGoal: options.includeGoal,
+      includeGoal: !!options.includeGoal,
     },
     fetchPolicy: "network-only",
   });

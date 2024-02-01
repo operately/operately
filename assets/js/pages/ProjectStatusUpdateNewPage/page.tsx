@@ -11,7 +11,7 @@ import { useLoadedData } from "./loader";
 export function Page() {
   const { project } = useLoadedData();
 
-  const form = useForm(project);
+  const form = useForm({ project, mode: "create" });
 
   return (
     <Pages.Page title={["Check-In", project.name]}>
