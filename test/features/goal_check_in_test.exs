@@ -79,7 +79,7 @@ defmodule Operately.Features.GoalCheckInTest do
     |> UI.assert_text("Checking-in on my goal")
 
     ctx
-    |> UI.click(testid: "check-in-options")
+    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-check-in")
     |> UI.fill_rich_text("This is an edited check-in.")
     |> UI.click(testid: "save-changes")
