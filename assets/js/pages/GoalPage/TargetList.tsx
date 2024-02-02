@@ -3,7 +3,7 @@ import * as Goals from "@/models/goals";
 
 export function TargetList({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col border-y border-stroke-base">
       {goal.targets!.map((target) => (
         <TargetItem key={target!.id} target={target!} />
       ))}
@@ -13,11 +13,11 @@ export function TargetList({ goal }: { goal: Goals.Goal }) {
 
 function TargetItem({ target }: { target: Goals.Target }) {
   return (
-    <div className="flex items-center justify-between border border-stroke-base py-3 px-5 rounded-lg">
+    <div className="flex items-center justify-between py-2 px-1 not-first:border-t border-stroke-base">
       <div className="flex flex-col">
         <div className="font-semibold text-content-accent">{target.name}</div>
-        <div className="text-content-dimmed text-sm">
-          Current: {target.value} {target.unit} &middot; Target {target.to} {target.unit}
+        <div className="text-content-dimmed text-xs">
+          Target {target.to} {target.unit}
         </div>
       </div>
 

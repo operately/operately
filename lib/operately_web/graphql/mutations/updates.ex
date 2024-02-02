@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
     field :content, non_null(:string)
     field :update_id, non_null(:id)
     field :health, :string
+    field :new_target_values, :string
   end
 
   input_object :create_comment_input do
@@ -73,6 +74,11 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         update = Operately.Updates.get_update!(args.input.update_id)
 
         case update.type do
+          :goal_check_in ->
+            target_values = Jason.decode!(args.input.new_target_values)
+            goal = Operately.Goals.get_goal!(update.updatable_id)
+            Operately.Operations.GoalCheckInEdit.run(author, goal, update, content, target_values)
+
           :status_update ->
             health = args.input.health
             Operately.Operations.ProjectStatusUpdateEdit.run(author, update, health, content)

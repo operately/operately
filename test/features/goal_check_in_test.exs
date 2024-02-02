@@ -67,5 +67,24 @@ defmodule Operately.Features.GoalCheckInTest do
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_goal_check_acknowledgement_sent(author: ctx.reviewer)
   end
+
+  @tag login_as: :champion
+  feature "edit a submitted check-in", ctx do
+    ctx
+    |> GoalSteps.visit_page()
+    |> UI.click(testid: "check-in-now")
+    |> UI.fill_rich_text("Checking-in on my goal")
+    |> UI.click(testid: "submit-check-in")
+    |> UI.assert_text("Check-In from")
+    |> UI.assert_text("Checking-in on my goal")
+
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.fill_rich_text("This is an edited check-in.")
+    |> UI.click(testid: "save-changes")
+    |> UI.assert_text("Check-In from")
+    |> UI.assert_text("This is an edited check-in.")
+  end
   
 end

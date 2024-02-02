@@ -16,6 +16,7 @@ import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as GoalAddPage from "./GoalAddPage";
 import * as GoalArchivePage from "./GoalArchivePage";
+import * as GoalCheckInEditPage from "./GoalCheckInEditPage";
 import * as GoalCheckInPage from "./GoalCheckInPage";
 import * as GoalCheckInsPage from "./GoalCheckInsPage";
 import * as GoalEditPage from "./GoalEditPage";
@@ -121,6 +122,10 @@ export default {
   GoalArchivePage: {
     loader: GoalArchivePage.loader,
     Page: GoalArchivePage.Page
+  },
+  GoalCheckInEditPage: {
+    loader: GoalCheckInEditPage.loader,
+    Page: GoalCheckInEditPage.Page
   },
   GoalCheckInPage: {
     loader: GoalCheckInPage.loader,

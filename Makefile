@@ -101,17 +101,17 @@ test.seed.env:
 #
 gen:
 	@rm -f lib/operately_web/graphql/schema.ex
-	@$(DEV_CONTAINER) bash -c "mix operately.gen.elixir.graphql.schema && \
-		                         mix operately.gen.typescript.graphql.schema && \
-		                         mix operately.gen.notification.items.index && \
-		                         mix operately.gen.feed.items.index && \
-		                         mix operately.gen.page.index"
+	@./devenv mix operately.gen.elixir.graphql.schema
+	@./devenv mix operately.gen.typescript.graphql.schema
+	@./devenv mix operately.gen.notification.items.index
+	@./devenv mix operately.gen.feed.items.index
+	@./devenv mix operately.gen.page.index
 
 gen.migration:
 	$(DEV_CONTAINER) mix ecto.gen.migration $(NAME)
 
 gen.page:
-	$(DEV_CONTAINER) mix operately.gen.page $(NAME)
+	./devenv mix operately.gen.page $(NAME)
 	$(MAKE) gen
 
 gen.activity:
