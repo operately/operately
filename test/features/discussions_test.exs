@@ -88,6 +88,29 @@ defmodule Operately.Features.DiscussionsTest do
     })  
   end
 
+  @tag login_as: :author
+  feature "edit a posted discussion", ctx do
+    ctx
+    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.click(testid: "new-discussion")
+    |> UI.fill(testid: "discussion-title", with: "This is a discussion")
+    |> UI.fill_rich_text("This is the body of the discussion.")
+    |> UI.click(testid: "post-discussion")
+    |> UI.assert_text("Posted on")
+
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-discussion")
+    |> UI.fill(testid: "discussion-title", with: "This is an edited discussion")
+    |> UI.fill_rich_text("This is the edited body of the discussion.")
+    |> UI.click(testid: "save-changes")
+
+    ctx
+    |> UI.assert_text("Posted on")
+    |> UI.assert_text("This is an edited discussion")
+    |> UI.assert_text("This is the edited body of the discussion")
+  end
+
   #
   # Utilities
   #

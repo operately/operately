@@ -6,6 +6,7 @@
 import * as React from "react";
 
 import DiscussionCommentSubmitted from "./DiscussionCommentSubmitted"
+import DiscussionEditing from "./DiscussionEditing"
 import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
@@ -39,6 +40,9 @@ export default function FeedItem({activity, page}) {
   switch (activityType) {
     case "ActivityContentDiscussionCommentSubmitted":
       return <DiscussionCommentSubmitted activity={activity} page={page} />;
+    
+    case "ActivityContentDiscussionEditing":
+      return <DiscussionEditing activity={activity} page={page} />;
     
     case "ActivityContentDiscussionPosting":
       return <DiscussionPosting activity={activity} page={page} />;

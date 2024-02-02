@@ -6,6 +6,7 @@
 import * as React from "react";
 
 import DiscussionCommentSubmitted from "./DiscussionCommentSubmitted"
+import DiscussionEditing from "./DiscussionEditing"
 import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
@@ -39,6 +40,9 @@ export default function NotificationItem({notification}) {
   switch (activityType) {
     case "ActivityContentDiscussionCommentSubmitted":
       return <DiscussionCommentSubmitted notification={notification} />;
+    
+    case "ActivityContentDiscussionEditing":
+      return <DiscussionEditing notification={notification} />;
     
     case "ActivityContentDiscussionPosting":
       return <DiscussionPosting notification={notification} />;

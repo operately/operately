@@ -12,6 +12,7 @@ import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
+import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as GoalAddPage from "./GoalAddPage";
@@ -106,6 +107,10 @@ export default {
   CompanyAdminTrustedEmailDomainsPage: {
     loader: CompanyAdminTrustedEmailDomainsPage.loader,
     Page: CompanyAdminTrustedEmailDomainsPage.Page
+  },
+  DiscussionEditPage: {
+    loader: DiscussionEditPage.loader,
+    Page: DiscussionEditPage.Page
   },
   DiscussionNewPage: {
     loader: DiscussionNewPage.loader,
