@@ -10,6 +10,7 @@ import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
 import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
+import GoalCheckInEdit from "./GoalCheckInEdit"
 import GoalCreated from "./GoalCreated"
 import GoalEditing from "./GoalEditing"
 import ProjectArchived from "./ProjectArchived"
@@ -50,6 +51,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentGoalCheckInAcknowledgement":
       return <GoalCheckInAcknowledgement activity={activity} page={page} />;
+    
+    case "ActivityContentGoalCheckInEdit":
+      return <GoalCheckInEdit activity={activity} page={page} />;
     
     case "ActivityContentGoalCreated":
       return <GoalCreated activity={activity} page={page} />;

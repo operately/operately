@@ -38,27 +38,46 @@ export function useForm(options: UseFormOptions): FormState {
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);
 
-  const [post, { loading: submitting }] = Projects.usePostUpdate({
+  const [post, { loading: submittingPost }] = Projects.usePostUpdate({
     onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.createUpdate.id}`),
+  });
+
+  const [edit, { loading: submittingEdit }] = Projects.useEditUpdate({
+    onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.editUpdate.id}`),
   });
 
   const submit = () => {
     if (!editor.editor) return;
     if (editor.uploading) return;
 
-    post({
-      variables: {
-        input: {
-          updatableType: "goal",
-          updatableId: goal.id,
-          content: JSON.stringify(editor.editor.getJSON()),
-          messageType: "goal-check-in",
-          newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
+    if (options.mode === "create") {
+      post({
+        variables: {
+          input: {
+            updatableType: "goal",
+            updatableId: goal.id,
+            content: JSON.stringify(editor.editor.getJSON()),
+            messageType: "goal-check-in",
+            newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
+          },
         },
-      },
-    });
+      });
+      return;
+    } else {
+      edit({
+        variables: {
+          input: {
+            content: JSON.stringify(editor.editor.getJSON()),
+            newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
+          },
+        },
+      });
+
+      return;
+    }
   };
 
+  const submitting = submittingPost || submittingEdit;
   const submitButtonLabel = options.mode === "create" ? "Submit" : "Save Changes";
   const cancelPath =
     options.mode === "create" ? `/goals/${goal.id}/check-ins` : `/goals/${goal.id}/check-ins/${options.checkIn!.id}`;
