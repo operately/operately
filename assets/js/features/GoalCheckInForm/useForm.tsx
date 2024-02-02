@@ -1,16 +1,34 @@
-import { useLoadedData } from "./loader";
-import { useNavigate } from "react-router-dom";
-
+import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
+import * as Updates from "@/graphql/Projects/updates";
 import * as People from "@/graphql/People";
 import * as Projects from "@/graphql/Projects";
-import * as Goals from "@/models/goals";
+
+import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 
-export function useForm() {
-  const { goal } = useLoadedData();
+interface UseFormOptions {
+  mode: "create" | "edit";
+  goal: Goals.Goal;
+  checkIn?: Updates.Update;
+}
 
+export interface FormState {
+  editor: TipTapEditor.EditorState;
+  targets: TargetState[];
+  updateTarget: (id: string, value: number) => void;
+
+  submit: () => void;
+  submitting: boolean;
+  submitDisabled?: boolean;
+  submitButtonLabel?: string;
+
+  cancelPath: string;
+}
+
+export function useForm(options: UseFormOptions): FormState {
   const navigate = useNavigate();
+  const goal = options.goal;
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
@@ -41,7 +59,19 @@ export function useForm() {
     });
   };
 
-  return { editor, targets, updateTarget, submit, submitting };
+  const submitButtonLabel = options.mode === "create" ? "Submit" : "Save Changes";
+  const cancelPath =
+    options.mode === "create" ? `/goals/${goal.id}/check-ins` : `/goals/${goal.id}/check-ins/${options.checkIn!.id}`;
+
+  return {
+    editor,
+    targets,
+    updateTarget,
+    submit,
+    submitting,
+    submitButtonLabel,
+    cancelPath,
+  };
 }
 
 interface TargetState {
