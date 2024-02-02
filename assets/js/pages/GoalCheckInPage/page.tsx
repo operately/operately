@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as Updates from "@/graphql/Projects/updates";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { useLoadedData, useRefresh } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
@@ -20,7 +21,7 @@ import * as Feed from "@/features/feed";
 import { CommentSection } from "./CommentSection";
 
 export function Page() {
-  const { goal, update } = useLoadedData();
+  const { goal, update, me } = useLoadedData();
   const refresh = useRefresh();
 
   const addReactionForm = useAddReaction(update.id, "update", refresh);
@@ -31,6 +32,8 @@ export function Page() {
         <Navigation goal={goal} />
 
         <Paper.Body>
+          {me.id === update.author.id && <Options />}
+
           <div className="flex flex-col items-center">
             <Title update={update} />
             <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
@@ -89,5 +92,20 @@ function Navigation({ goal }) {
       <Paper.NavSeparator />
       <Paper.NavItem linkTo={goalCheckInsPath}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>
+  );
+}
+
+function Options() {
+  const { goal, update } = useLoadedData();
+
+  return (
+    <PageOptions.Root position="top-right" testId="options-button">
+      <PageOptions.Link
+        icon={Icons.IconEdit}
+        title="Edit check-in"
+        to={`/goals/${goal.id}/check-ins/${update.id}/edit`}
+        dataTestId="edit-check-in"
+      />
+    </PageOptions.Root>
   );
 }
