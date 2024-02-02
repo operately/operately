@@ -60,12 +60,12 @@ export function Page() {
           </div>
 
           <div className="mt-8">
-            <DimmedLabel>Measurments</DimmedLabel>
+            <DimmedLabel>Success Conditions</DimmedLabel>
             <TargetList goal={goal} />
           </div>
 
           <div className="mt-8">
-            <DimmedLabel>Projects</DimmedLabel>
+            {(goal.projects?.length || 0) > 0 && <DimmedLabel>Projects</DimmedLabel>}
             <ProjectList goal={goal} />
           </div>
 

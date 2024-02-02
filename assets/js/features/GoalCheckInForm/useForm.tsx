@@ -34,6 +34,7 @@ export function useForm(options: UseFormOptions): FormState {
     placeholder: `Write your updates here...`,
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[350px] py-2 font-medium",
+    content: options.checkIn && JSON.parse(options.checkIn.message),
   });
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);
@@ -67,6 +68,7 @@ export function useForm(options: UseFormOptions): FormState {
       edit({
         variables: {
           input: {
+            updateId: options.checkIn!.id,
             content: JSON.stringify(editor.editor.getJSON()),
             newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
           },

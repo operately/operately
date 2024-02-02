@@ -36,8 +36,8 @@ function Editor({ form }) {
           <TipTapEditor.EditorContent editor={form.editor.editor} />
         </div>
 
-        <p className="font-bold text-lg">Measurments</p>
-        <p className="text-content-dimmed">Please adjust the values below.</p>
+        <p className="font-bold text-lg">Success Conditions</p>
+        <p className="text-content-dimmed">What are the current values of your success conditions?</p>
 
         <TargetInputs form={form} />
       </TipTapEditor.Root>
@@ -56,8 +56,8 @@ function TargetInputs({ form }: { form: FormState }) {
           >
             <div className="flex flex-col">
               <div className="font-semibold text-content-accent">{target.name}</div>
-              <div className="text-content-dimmed">
-                {target.from} → {target.to} {target.unit}
+              <div className="text-content-dimmed text-sm">
+                Target: {target.to} {target.unit}
               </div>
             </div>
 
