@@ -103,7 +103,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.click(testid: "edit-discussion")
     |> UI.fill(testid: "discussion-title", with: "This is an edited discussion")
     |> UI.fill_rich_text("This is the edited body of the discussion.")
-    |> UI.click(testid: "post-discussion")
+    |> UI.click(testid: "save-changes")
 
     ctx
     |> UI.assert_text("Posted on")

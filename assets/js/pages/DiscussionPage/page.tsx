@@ -86,7 +86,7 @@ function Options() {
         icon={Icons.IconEdit}
         title="Edit Post"
         to={`/spaces/${discussion.space.id}/discussions/${discussion.id}/edit`}
-        dataTestId="edit-check-in"
+        dataTestId="edit-discussion"
       />
     </PageOptions.Root>
   );
