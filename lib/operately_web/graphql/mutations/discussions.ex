@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Discussions do
     field :body, non_null(:string)
   end
 
-  input_object :post_discussion_input do
+  input_object :edit_discussion_input do
     field :discussion_id, non_null(:id)
     field :title, non_null(:string)
     field :body, non_null(:string)
@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Discussions do
         person = context.current_account.person
         title = args.input.title
         body = args.input.body
-        discussion = Operately.Discussions.get_discussion!(args.input.discussion_id)
+        discussion = Operately.Updates.get_update!(args.input.discussion_id)
 
         Operately.Operations.DiscussionEditing.run(person, discussion, title, body)
       end

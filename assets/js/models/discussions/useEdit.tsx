@@ -5,8 +5,8 @@ export function useEdit(options = {}) {
 }
 
 const EDIT_MUTATION = gql`
-  mutation PostDiscussion($input: PostDiscussionInput!) {
-    postDiscussion(input: $input) {
+  mutation EditDiscussion($input: EditDiscussionInput!) {
+    editDiscussion(input: $input) {
       id
     }
   }

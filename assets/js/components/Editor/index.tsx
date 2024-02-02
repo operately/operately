@@ -74,7 +74,7 @@ export interface EditorState {
 function useEditor(props: UseEditorProps): EditorState {
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
-  const [empty, setEmpty] = React.useState(true);
+  const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
   const [uploading, setUploading] = React.useState(false);
 
   const editable = props.editable === undefined ? true : props.editable;

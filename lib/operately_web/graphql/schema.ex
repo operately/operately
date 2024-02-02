@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Activities
   import_types OperatelyWeb.Graphql.Types.ActivityContent
   import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionCommentSubmitted
+  import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionEditing
   import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionPosting
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalArchived
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckIn
