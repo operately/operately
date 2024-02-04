@@ -12,6 +12,8 @@ import { DivLink } from "@/components/Link";
 import * as Icons from "@tabler/icons-react";
 import * as Companies from "@/models/companies";
 
+import { PerfBar } from "@/features/PerfBar";
+
 function NavigationContainer({ children }) {
   return (
     <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
@@ -99,6 +101,7 @@ export default function DefaultLayout() {
       <ScrollToTop />
       <Navigation />
       <Outlet />
+      <PerfBar />
     </div>
   );
 }

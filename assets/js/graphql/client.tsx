@@ -1,6 +1,7 @@
-import { ApolloClient, InMemoryCache, createHttpLink, split, from } from "@apollo/client";
+import { ApolloLink, ApolloClient, InMemoryCache, createHttpLink, split, from } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { onError } from "@apollo/client/link/error";
+import { incrementNetworkRequests } from "@/features/PerfBar/usePerfBarData";
 
 import createGraphQLWsLink from "./wsLink";
 
@@ -14,13 +15,19 @@ const httpLink = createHttpLink({
 const wsLink = createGraphQLWsLink(domain);
 const cache = new InMemoryCache();
 
+const requestCounterLink = new ApolloLink((operation, forward) => {
+  incrementNetworkRequests();
+
+  return forward(operation);
+});
+
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
     return definition.kind === "OperationDefinition" && definition.operation === "subscription";
   },
   wsLink,
-  httpLink,
+  from([requestCounterLink, httpLink]),
 );
 
 const errorLink = onError((params) => {
