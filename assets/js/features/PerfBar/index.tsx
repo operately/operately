@@ -1,9 +1,15 @@
 import React from "react";
 
 import { usePerfBarData } from "./usePerfBarData";
+import { useMe } from "@/graphql/Me";
 
 export function PerfBar() {
+  const meData = useMe();
   const data = usePerfBarData();
+
+  if (meData?.loading) return null;
+  if (meData?.error) return null;
+  if (meData?.data?.me?.companyRole !== "admin") return null;
 
   const pageLoadColor = data.pageLoad < 500 ? "text-green-500" : "text-red-500";
 
