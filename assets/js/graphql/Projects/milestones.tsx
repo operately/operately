@@ -34,6 +34,13 @@ export interface Milestone {
   title: string;
   status: MilestoneStatus;
 
+  comments: Array<{
+    id: string;
+    action: string;
+    insertedAt: string;
+    comment: any;
+  }>;
+
   deadlineAt: string;
   completedAt: string | null;
   description: string | null;

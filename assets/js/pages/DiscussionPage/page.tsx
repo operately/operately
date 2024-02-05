@@ -14,7 +14,7 @@ import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { useAddReaction } from "./useAddReaction";
 import * as Feed from "@/features/feed";
-import { CommentSection } from "./CommentSection";
+import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";
 
@@ -23,6 +23,7 @@ export function Page() {
 
   const refresh = useRefresh();
   const addReactionForm = useAddReaction(discussion.id, "update", refresh);
+  const commentsForm = useForDiscussion(discussion);
 
   return (
     <Pages.Page title={discussion.title}>
@@ -41,7 +42,7 @@ export function Page() {
             <Feed.Reactions reactions={discussion.reactions} size={20} form={addReactionForm} />
 
             <Spacer size={4} />
-            <CommentSection update={discussion} refetch={refresh} me={me} />
+            <CommentSection form={commentsForm} me={me} refresh={refresh} />
           </div>
         </Paper.Body>
       </Paper.Root>
