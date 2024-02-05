@@ -3,7 +3,7 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= rich_text(Jason.decode!(@comment.content["message"])) %>
+  <%= rich_text(@comment.content["message"]) %>
 <% end %>
 
 <%= spacer() %>
