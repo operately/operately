@@ -1,6 +1,6 @@
 import * as People from "@/models/people";
 
-export type ItemType = "comment" | "acknowledgement";
+export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 
 export interface Comment {
   id: string;

@@ -30,6 +30,10 @@ export function CommentSection(props: CommentSectionProps) {
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {
             return <Comment key={index} comment={item.value} me={props.me} refresh={props.refresh} />;
+          } else if (item.type === "milestone-completed") {
+            return <MilestoneCompleted key={index} comment={item.value} />;
+          } else if (item.type === "milestone-reopened") {
+            return <MilestoneReopened key={index} comment={item.value} />;
           } else {
             return <AckComment key={index} update={item.value} />;
           }
@@ -108,6 +112,56 @@ function EditComment({ me, comment, onCancel, refresh }) {
             </div>
           </div>
         </TipTapEditor.Root>
+      </div>
+    </div>
+  );
+}
+
+function MilestoneCompleted({ comment }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size="normal" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 mt-1.5">
+            <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
+            <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-content-dimmed text-sm">
+              <FormattedTime time={comment.insertedAt} format="relative" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MilestoneReopened({ comment }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
+      <div className="shrink-0">
+        <Avatar person={comment.author} size="normal" />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <Icons.IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
+            <div className="flex-1 pr-2 font-semibold text-content-accent">Re-Opened the Milestone</div>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-content-dimmed text-sm">
+              <FormattedTime time={comment.insertedAt} format="relative" />
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
