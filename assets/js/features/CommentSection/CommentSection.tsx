@@ -190,16 +190,16 @@ function ViewComment({ comment, onEdit, me, refresh }) {
                 <FormattedTime time={comment.insertedAt} format="relative" />
               </span>
 
-              <PageOptions.Root testId="goal-options" noBorder>
-                {me.id === comment.author.id && (
+              {me.id === comment.author.id && (
+                <PageOptions.Root testId="goal-options" noBorder>
                   <PageOptions.Action
                     onClick={onEdit}
                     icon={Icons.IconEdit}
                     title="Edit Comment"
                     dataTestId="edit-comment"
                   />
-                )}
-              </PageOptions.Root>
+                </PageOptions.Root>
+              )}
             </div>
           </div>
         </div>
