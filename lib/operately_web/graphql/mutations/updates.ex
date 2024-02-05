@@ -25,6 +25,11 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
     field :update_id, non_null(:id)
   end
 
+  input_object :edit_comment_input do
+    field :content, non_null(:string)
+    field :comment_id, non_null(:id)
+  end
+
   object :update_mutations do
     field :create_update, non_null(:update) do
       arg :input, non_null(:create_update_input)
@@ -135,6 +140,18 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
               content: %{"message" => args.input.content}
             })
         end
+      end
+    end
+
+    field :edit_comment, :comment do
+      arg :input, non_null(:edit_comment_input)
+
+      resolve fn args, _ ->
+        comment = Operately.Updates.get_comment!(args.input.comment_id)
+
+        Operately.Updates.update_comment(comment, %{
+          content: %{"message" => args.input.content}
+        })
       end
     end
   end
