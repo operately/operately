@@ -17,7 +17,7 @@ type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxla
 
 interface AvatarProps {
   person: Person | null;
-  size: AvatarSize | AvatarSizeString;
+  size: AvatarSize | AvatarSizeString | number;
 }
 
 function SizeClasses({ size }: { size: AvatarSize | number }): string {
