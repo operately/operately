@@ -8,7 +8,7 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
     return { type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c.comment };
   });
 
-  const [post, { loading: submittingPost }] = Updates.usePostComment();
+  const [post, { loading: submittingPost }] = Milestones.usePostComment();
   const [edit, { loading: submittingEdit }] = Updates.useEditComment();
 
   const postComment = async (content: string) => {
