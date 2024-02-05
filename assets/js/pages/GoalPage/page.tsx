@@ -1,17 +1,19 @@
 import * as React from "react";
-import classnames from "classnames";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import { FeedForGoal } from "@/components/Feed";
+import * as Goals from "@/models/goals";
+
+import classnames from "classnames";
 import Avatar from "@/components/Avatar";
 
-import { useLoadedData } from "./loader";
+import { FeedForGoal } from "@/components/Feed";
 import { TargetList } from "./TargetList";
-import { ProjectList } from "./ProjectList";
 import { Options } from "./Options";
 import { CheckIns } from "./CheckIns";
 import { Navigation } from "./Navigation";
 import { Banner } from "./Banner";
+import { ProjectListItem } from "@/features/ProjectListItem";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -94,3 +96,15 @@ const AvatarAndName = ({ person }) => (
     <div className="font-medium">{person.fullName}</div>
   </div>
 );
+
+export function ProjectList({ goal }: { goal: Goals.Goal }) {
+  return (
+    <>
+      {goal.projects!.map((project) => (
+        <div key={project.id} className="py-2 bg-surface flex flex-col border-t last:border-b border-stroke-base">
+          <ProjectListItem key={project!.id} project={project} avatarPosition="right" />
+        </div>
+      ))}
+    </>
+  );
+}
