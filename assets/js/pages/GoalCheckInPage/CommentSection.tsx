@@ -41,6 +41,81 @@ export function CommentSection() {
 }
 
 function Comment({ comment }) {
+  const [editing, _, startEditing, stopEditing] = useBoolState(false);
+
+  if (editing) {
+    return <EditComment comment={comment} onCancel={stopEditing} />;
+  } else {
+    return <ViewComment comment={comment} onEdit={startEditing} />;
+  }
+}
+
+function EditComment({ comment, onCancel }) {
+  const { me } = useLoadedData();
+  const refresh = useRefresh();
+
+  const { editor, uploading } = TipTapEditor.useEditor({
+    placeholder: "Write a comment here...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "min-h-[200px] p-4",
+    content: JSON.parse(JSON.parse(comment.message)),
+  });
+
+  const [edit, { loading }] = Updates.useEditComment();
+
+  const handlePost = async () => {
+    if (!editor) return;
+    if (uploading) return;
+    if (loading) return;
+
+    await edit({
+      variables: {
+        input: {
+          commentId: comment.id,
+          content: JSON.stringify(editor.getJSON()),
+        },
+      },
+    });
+
+    refresh();
+    await onCancel();
+  };
+
+  return (
+    <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
+      <Avatar person={me} size="normal" />
+      <div className="flex-1">
+        <TipTapEditor.Root editor={editor}>
+          <div className="border border-surface-outline">
+            <TipTapEditor.Toolbar editor={editor} />
+            <TipTapEditor.EditorContent editor={editor} />
+
+            <div className="flex justify-between items-center m-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handlePost}
+                  loading={loading}
+                  variant="success"
+                  data-test-id="post-comment"
+                  size="small"
+                  disabled={uploading}
+                >
+                  {uploading ? "Uploading..." : "Save Changes"}
+                </Button>
+
+                <Button variant="secondary" onClick={onCancel} size="small">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </TipTapEditor.Root>
+      </div>
+    </div>
+  );
+}
+
+function ViewComment({ comment, onEdit }) {
   const refresh = useRefresh();
   const addReactionForm = useAddReaction(comment.id, "comment", refresh);
   const testId = "comment-" + comment.id;
@@ -50,6 +125,10 @@ function Comment({ comment }) {
       className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent"
       data-test-id={testId}
     >
+      <div onClick={onEdit} className="flex-1">
+        Edit
+      </div>
+
       <div className="shrink-0">
         <Avatar person={comment.author} size="normal" />
       </div>

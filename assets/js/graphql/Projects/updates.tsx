@@ -108,6 +108,20 @@ export function usePostComment(options = {}) {
   return useMutation(POST_COMMENT_MUTATION, options);
 }
 
+// EDIT A COMMENT
+
+const EDIT_COMMENT_MUTATION = gql`
+  mutation EditComment($input: EditCommentInput!) {
+    editComment(input: $input) {
+      id
+    }
+  }
+`;
+
+export function useEditComment(options = {}) {
+  return useMutation(EDIT_COMMENT_MUTATION, options);
+}
+
 // ACKNOWLEDGE AN UPDATE
 
 const ACKNOWLEDGE_UPDATE = gql`
