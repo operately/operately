@@ -47,6 +47,9 @@ const QUERY = gql`
       id
       name
       health
+      status
+      closedAt
+      archivedAt
 
       contributors {
         id
