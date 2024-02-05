@@ -16,6 +16,7 @@ import classnames from "classnames";
 import { useLoadedData } from "./loader";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import { TextTooltip } from "@/components/Tooltip";
+import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { group, projects } = useLoadedData();
@@ -66,9 +67,34 @@ function PrivateIndicator({ project }) {
 }
 
 function ProjectListItem({ project }) {
-  const path = createPath("projects", project.id);
-  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t last:border-b border-stroke-base");
+  return (
+    <div className="py-5 bg-surface flex flex-col border-t last:border-b border-stroke-base">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col">
+          <ProjectNameLine project={project} />
+          <ProjectStatusLine project={project} />
+        </div>
+        <ContribList project={project} />
+      </div>
+    </div>
+  );
+}
 
+function ProjectNameLine({ project }) {
+  const path = createPath("projects", project.id);
+
+  return (
+    <div className="font-extrabold flex items-center gap-2">
+      <Link to={path} underline={false}>
+        {project.name}
+      </Link>
+
+      <PrivateIndicator project={project} />
+    </div>
+  );
+}
+
+function ProjectStatusLine({ project }) {
   let { pending, done } = Milestones.splitByStatus(project.milestones);
   const totalCount = pending.length + done.length;
 
@@ -79,35 +105,22 @@ function ProjectListItem({ project }) {
     </div>
   );
 
-  const name = (
-    <div className="font-extrabold flex items-center gap-2">
-      <Link to={path} underline={false}>
-        {project.name}
-      </Link>
-
-      <PrivateIndicator project={project} />
-    </div>
-  );
-
-  return (
-    <div className={className}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-start gap-2">
-          <div className="">
-            {name}
-
-            <div className="flex items-center gap-5 mt-2 text-sm">
-              <Status project={project} />
-              {totalCount > 0 && completion}
-              <NextMilestone project={project} />
-            </div>
-          </div>
-        </div>
-
-        <ContribList project={project} />
+  if (project.status === "closed") {
+    return (
+      <div className="mt-2 text-sm font-medium">
+        Closed on <FormattedTime time={project.closedAt} format="short-date" /> &middot;{" "}
+        <Link to={createPath("projects", project.id, "retrospective")}>View retrospective</Link>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className="flex items-center gap-5 mt-2 text-sm">
+        <Status project={project} />
+        {totalCount > 0 && completion}
+        <NextMilestone project={project} />
+      </div>
+    );
+  }
 }
 
 function Status({ project }) {

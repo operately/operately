@@ -73,10 +73,13 @@ const QUERY = gql`
     projects(filters: $filters) {
       id
       name
+      private
+
       insertedAt
       updatedAt
-      private
       startedAt
+      closedAt
+
       deadline
       phase
       health
