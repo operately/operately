@@ -8,17 +8,7 @@ export function useForGoalCheckIn(update: Updates.Update): FormState {
   let items: Item[] = [];
 
   beforeAck.forEach((c) => {
-    items.push({
-      type: "comment" as ItemType,
-      insertedAt: c!.insertedAt,
-      value: {
-        id: c!.id,
-        insertedAt: c!.insertedAt,
-        message: JSON.parse(c!.message),
-        author: c!.author,
-        reactions: c!.reactions,
-      },
-    });
+    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
   });
 
   if (update.acknowledged) {
@@ -26,17 +16,7 @@ export function useForGoalCheckIn(update: Updates.Update): FormState {
   }
 
   afterAck.forEach((c) => {
-    items.push({
-      type: "comment" as ItemType,
-      insertedAt: c!.insertedAt,
-      value: {
-        id: c!.id,
-        insertedAt: c!.insertedAt,
-        message: JSON.parse(c!.message),
-        author: c!.author,
-        reactions: c!.reactions,
-      },
-    });
+    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
   });
 
   const [post, { loading: submittingPost }] = Updates.usePostComment();

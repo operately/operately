@@ -8,13 +8,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
     return {
       type: "comment" as ItemType,
       insertedAt: c!.insertedAt,
-      value: {
-        id: c!.id,
-        insertedAt: c!.insertedAt,
-        message: JSON.parse(c!.message),
-        author: c!.author,
-        reactions: c!.reactions,
-      },
+      value: c,
     };
   });
 

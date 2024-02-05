@@ -129,7 +129,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         cond do
           update.type in [:project_discussion, :status_update, :review] ->
             author = context.current_account.person
-            content = args.input.content
+            content = Jason.decode!(args.input.content)
 
             Operately.Updates.create_comment(author, update, content)
 
@@ -137,7 +137,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
             Operately.Updates.create_comment(update, %{
               author_id: context.current_account.person.id,
               update_id: args.input.update_id,
-              content: %{"message" => args.input.content}
+              content: %{"message" => Jason.decode!(args.input.content)}
             })
         end
       end
@@ -150,7 +150,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         comment = Operately.Updates.get_comment!(args.input.comment_id)
 
         Operately.Updates.update_comment(comment, %{
-          content: %{"message" => args.input.content}
+          content: %{"message" => Jason.decode!(args.input.content)}
         })
       end
     end
