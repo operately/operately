@@ -1,60 +1,60 @@
 import React from "react";
 
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as Updates from "@/graphql/Projects/updates";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-
-import { useAddReaction } from "./useAddReaction";
+import * as Feed from "@/features/feed";
+import * as TipTapEditor from "@/components/Editor";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import * as Feed from "@/features/feed";
-import * as TipTapEditor from "@/components/Editor";
 import Button from "@/components/Button";
 
+import { useAddReaction } from "./useAddReaction";
 import { useBoolState } from "@/utils/useBoolState";
-import { useLoadedData, useRefresh } from "./loader";
 
-export function CommentSection() {
-  const { update } = useLoadedData();
-  const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
+interface CommentSectionProps {
+  update: Updates.Update;
+  me: People.Person;
+  refresh: () => void;
+}
+
+export function CommentSection(props: CommentSectionProps) {
+  const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(props.update);
 
   return (
     <>
       <div className="text-content-accent font-extrabold border-b border-stroke-base pb-4">Comments</div>
       <div className="flex flex-col">
         {beforeAck.map((c) => (
-          <Comment key={c.id} comment={c} />
+          <Comment key={c.id} comment={c} me={props.me} refresh={props.refresh} />
         ))}
 
-        <AckComment update={update} />
+        <AckComment update={props.update} />
 
         {afterAck.map((c) => (
-          <Comment key={c.id} comment={c} />
+          <Comment key={c.id} comment={c} me={props.me} refresh={props.refresh} />
         ))}
 
-        <CommentBox />
+        <CommentBox refresh={props.refresh} me={props.me} update={props.update} />
       </div>
     </>
   );
 }
 
-function Comment({ comment }) {
+function Comment({ me, comment, refresh }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
-    return <EditComment comment={comment} onCancel={stopEditing} />;
+    return <EditComment me={me} comment={comment} onCancel={stopEditing} refresh={refresh} />;
   } else {
-    return <ViewComment comment={comment} onEdit={startEditing} />;
+    return <ViewComment comment={comment} onEdit={startEditing} me={me} refresh={refresh} />;
   }
 }
 
-function EditComment({ comment, onCancel }) {
-  const { me } = useLoadedData();
-  const refresh = useRefresh();
-
+function EditComment({ me, comment, onCancel, refresh }) {
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
     peopleSearch: People.usePeopleSearch(),
@@ -116,9 +116,7 @@ function EditComment({ comment, onCancel }) {
   );
 }
 
-function ViewComment({ comment, onEdit }) {
-  const { me } = useLoadedData();
-  const refresh = useRefresh();
+function ViewComment({ comment, onEdit, me, refresh }) {
   const addReactionForm = useAddReaction(comment.id, "comment", refresh);
   const testId = "comment-" + comment.id;
 
@@ -192,26 +190,22 @@ function AckComment({ update }) {
   );
 }
 
-function CommentBox() {
-  const refetch = useRefresh();
-
+function CommentBox({ refresh, me, update }) {
   const [active, _, activate, deactivate] = useBoolState(false);
 
   const onPost = () => {
     deactivate();
-    refetch();
+    refresh();
   };
 
   if (active) {
-    return <AddCommentActive onBlur={deactivate} onPost={onPost} />;
+    return <AddCommentActive onBlur={deactivate} onPost={onPost} me={me} update={update} />;
   } else {
-    return <AddCommentNonActive onClick={activate} />;
+    return <AddCommentNonActive onClick={activate} me={me} />;
   }
 }
 
-function AddCommentNonActive({ onClick }) {
-  const { me } = useLoadedData();
-
+function AddCommentNonActive({ onClick, me }) {
   return (
     <div
       className="py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
@@ -224,13 +218,10 @@ function AddCommentNonActive({ onClick }) {
   );
 }
 
-function AddCommentActive({ onBlur, onPost }) {
-  const { update, me } = useLoadedData();
-  const peopleSearch = People.usePeopleSearch();
-
+function AddCommentActive({ onBlur, onPost, me, update }) {
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
-    peopleSearch: peopleSearch,
+    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[200px] p-4",
   });
 

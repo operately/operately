@@ -15,7 +15,7 @@ import * as Updates from "@/graphql/Projects/updates";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { AckCTA } from "./AckCTA";
-import { CommentSection } from "./CommentSection";
+import { CommentSection } from "@/features/CommentSection";
 import { useLoadedData, usePageRefetch } from "./loader";
 import { useAddReaction } from "./useAddReaction";
 
@@ -44,7 +44,7 @@ export function Page() {
 
           <AckCTA />
           <Spacer size={4} />
-          <CommentSection />
+          <CommentSection update={update} me={me} refresh={refetch} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

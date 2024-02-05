@@ -18,7 +18,7 @@ import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
 import * as Feed from "@/features/feed";
-import { CommentSection } from "./CommentSection";
+import { CommentSection } from "@/features/CommentSection";
 
 export function Page() {
   const { goal, update, me } = useLoadedData();
@@ -54,7 +54,7 @@ export function Page() {
 
           <AckCTA />
           <Spacer size={4} />
-          <CommentSection />
+          <CommentSection update={update} me={me} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
