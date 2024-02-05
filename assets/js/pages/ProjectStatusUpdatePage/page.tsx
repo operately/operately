@@ -15,7 +15,7 @@ import * as Updates from "@/graphql/Projects/updates";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { AckCTA } from "./AckCTA";
-import { CommentSection } from "@/features/CommentSection";
+import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 import { useLoadedData, usePageRefetch } from "./loader";
 import { useAddReaction } from "./useAddReaction";
 
@@ -23,6 +23,7 @@ export function Page() {
   const { project, update, me } = useLoadedData();
   const refetch = usePageRefetch();
 
+  const commentsForm = useForProjectCheckIn(update);
   const addReactionForm = useAddReaction(update.id, "update", refetch);
   const content = update.content as UpdateContent.StatusUpdate;
 
@@ -44,7 +45,7 @@ export function Page() {
 
           <AckCTA />
           <Spacer size={4} />
-          <CommentSection update={update} me={me} refresh={refetch} />
+          <CommentSection form={commentsForm} me={me} refresh={refetch} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

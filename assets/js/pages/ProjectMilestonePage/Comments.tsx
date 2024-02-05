@@ -11,16 +11,12 @@ import Button from "@/components/Button";
 import Avatar from "@/components/Avatar";
 
 import { useBoolState } from "@/utils/useBoolState";
-import { useLoadedData, useRefresh } from "./loader";
+import { useRefresh } from "./loader";
 
 export function Comments({ milestone, me }) {
-  const { project } = useLoadedData();
-
   return (
     <div className="-mx-12 px-12 -mb-10 pb-10 rounded-b bg-surface-dimmed border-t border-surface-outline">
       <h1 className="uppercase text-xs font-semibold text-content-accent pb-4 mt-8">Comments</h1>
-
-      <CommentMilestoneCreated author={project.champion} milestone={milestone} />
 
       {milestone.comments.map((comment) => (
         <React.Fragment key={comment.id}>
@@ -65,7 +61,7 @@ function Comment({ comment }) {
         </div>
       </div>
 
-      <RichContent jsonContent={comment.message} />
+      <RichContent jsonContent={content} />
     </CommentShell>
   );
 }

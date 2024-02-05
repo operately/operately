@@ -18,12 +18,13 @@ import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
 import * as Feed from "@/features/feed";
-import { CommentSection } from "@/features/CommentSection";
+import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
 
 export function Page() {
   const { goal, update, me } = useLoadedData();
   const refresh = useRefresh();
 
+  const commentsForm = useForGoalCheckIn(update);
   const addReactionForm = useAddReaction(update.id, "update", refresh);
 
   return (
@@ -54,7 +55,7 @@ export function Page() {
 
           <AckCTA />
           <Spacer size={4} />
-          <CommentSection update={update} me={me} refresh={refresh} />
+          <CommentSection form={commentsForm} me={me} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
