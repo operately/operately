@@ -26,9 +26,7 @@ export default function ({ activity }) {
     </>
   );
 
-  const commentMessage = JSON.parse(comment.message);
-
-  const summary = <Summary jsonContent={commentMessage} characterCount={200} />;
+  const summary = <Summary jsonContent={comment.message} characterCount={200} />;
 
   return <Container title={title} author={activity.author} time={activity.insertedAt} content={summary} />;
 }
