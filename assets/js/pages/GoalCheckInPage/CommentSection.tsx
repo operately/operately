@@ -3,6 +3,7 @@ import React from "react";
 import * as People from "@/graphql/People";
 import * as Updates from "@/graphql/Projects/updates";
 import * as Icons from "@tabler/icons-react";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { useAddReaction } from "./useAddReaction";
 
@@ -116,30 +117,41 @@ function EditComment({ comment, onCancel }) {
 }
 
 function ViewComment({ comment, onEdit }) {
+  const { me } = useLoadedData();
   const refresh = useRefresh();
   const addReactionForm = useAddReaction(comment.id, "comment", refresh);
   const testId = "comment-" + comment.id;
 
   return (
     <div
-      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent"
+      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
       data-test-id={testId}
     >
-      <div onClick={onEdit} className="flex-1">
-        Edit
-      </div>
-
       <div className="shrink-0">
         <Avatar person={comment.author} size="normal" />
       </div>
 
       <div className="flex-1">
         <div className="flex-1">
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between">
             <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
-            <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
-            </span>
+
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-content-dimmed text-sm">
+                <FormattedTime time={comment.insertedAt} format="relative" />
+              </span>
+
+              <PageOptions.Root testId="goal-options" noBorder>
+                {me.id === comment.author.id && (
+                  <PageOptions.Action
+                    onClick={onEdit}
+                    icon={Icons.IconEdit}
+                    title="Edit Comment"
+                    dataTestId="edit-comment"
+                  />
+                )}
+              </PageOptions.Root>
+            </div>
           </div>
         </div>
 

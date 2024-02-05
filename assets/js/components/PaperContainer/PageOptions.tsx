@@ -46,6 +46,19 @@ export function Link({ icon, title, to, dataTestId }) {
   );
 }
 
+export function Action({ icon, title, onClick, dataTestId }) {
+  return (
+    <div
+      onClick={onClick}
+      className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
+      data-test-id={dataTestId}
+    >
+      {React.createElement(icon, { size: 20 })}
+      {title}
+    </div>
+  );
+}
+
 function Dropdown({ closeOptions, children }) {
   return (
     <div className="absolute right-0 top-0 z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col">
