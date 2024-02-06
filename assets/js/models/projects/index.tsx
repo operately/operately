@@ -21,5 +21,5 @@ export function sortContributorsByRole(contributors: ProjectContributor[]): Proj
 }
 
 export function isMilestoneOverdue(milestone: Milestone) {
-  return !Time.isToday(milestone.deadlineAt) || Time.isPast(milestone.deadlineAt);
+  return !Time.isToday(milestone.deadlineAt) && Time.isPast(milestone.deadlineAt);
 }
