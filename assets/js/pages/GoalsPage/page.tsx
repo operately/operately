@@ -57,7 +57,7 @@ function GoalGroup({ group }) {
     <div className="flex flex-col gap-4">
       <div className="uppercase text-xs font-medium tracking-wide text-center flex items-center gap-4 w-full">
         <div className="h-px bg-stroke-base w-full" />
-        {group.space.name}
+        <span className="whitespace-nowrap">{group.space.name}</span>
         <div className="h-px bg-stroke-base w-full" />
       </div>
       <GoalList goals={group.goals} />
