@@ -4,17 +4,32 @@ import * as Time from "../../utils/time";
 
 describe(".isMilestoneOverdue", () => {
   it("the deadline is today", () => {
-    const milestone = { deadlineAt: Time.today() } as Milestone;
+    const time = Time.toDateWithoutTime(Time.today());
+    const milestone = { deadlineAt: time, status: "pending" } as Milestone;
     expect(isMilestoneOverdue(milestone)).toBe(false);
   });
 
   it("the deadline was 10 days ago", () => {
-    const milestone = { deadlineAt: Time.daysAgo(10) } as Milestone;
+    const time = Time.toDateWithoutTime(Time.daysAgo(10));
+    const milestone = { deadlineAt: time, status: "pending" } as Milestone;
     expect(isMilestoneOverdue(milestone)).toBe(true);
   });
 
   it("the deadline is in 10 days", () => {
-    const milestone = { deadlineAt: Time.daysFromNow(10) } as Milestone;
+    const time = Time.toDateWithoutTime(Time.daysFromNow(10));
+    const milestone = { deadlineAt: time, status: "pending" } as Milestone;
+    expect(isMilestoneOverdue(milestone)).toBe(false);
+  });
+
+  it("done milestone", () => {
+    const time = Time.toDateWithoutTime(Time.daysAgo(10));
+    const milestone = { deadlineAt: time, status: "done" } as Milestone;
+    expect(isMilestoneOverdue(milestone)).toBe(false);
+  });
+
+  it("no status", () => {
+    const time = Time.toDateWithoutTime(Time.daysAgo(10));
+    const milestone = { deadlineAt: time } as Milestone;
     expect(isMilestoneOverdue(milestone)).toBe(false);
   });
 });
