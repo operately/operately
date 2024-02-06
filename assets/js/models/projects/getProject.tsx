@@ -25,7 +25,11 @@ const QUERY = gql`
       name
 
       targets {
+        id
         name
+        from
+        to
+        value
       }
 
       champion {

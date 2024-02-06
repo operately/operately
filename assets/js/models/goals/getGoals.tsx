@@ -29,6 +29,7 @@ export async function getGoals(options: GetGoalsOptions = {}): Promise<Goal[]> {
 const LIST_GOALS = gql`
   fragment Targets on Goal {
     targets {
+      id
       name
       from
       to

@@ -5,13 +5,15 @@ import * as Goals from "@/models/goals";
 import * as Groups from "@/models/groups";
 import * as Projects from "@/models/projects";
 
-import { useLoadedData, useRefresh } from "./loader";
+import Avatar from "@/components/Avatar";
+
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { FilledButton, GhostButton } from "@/components/Button";
 import { createTestId } from "@/utils/testid";
 import { createPath } from "@/utils/paths";
 import { Link } from "@/components/Link";
-import Avatar from "@/components/Avatar";
+import { useLoadedData } from "./loader";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export function Page() {
   const { project, goals } = useLoadedData();
@@ -90,13 +92,11 @@ function SelectableGoalGroup({ space, goals }: { space: Groups.Group; goals: Goa
 
 function SelectableGoal({ goal }: { goal: Goals.Goal }) {
   const { project } = useLoadedData();
-  const refresh = useRefresh();
+  const gotoProjectRoot = useNavigateTo(createPath("projects", project.id));
 
   const testId = createTestId("select-goal", goal.name);
 
-  const [connect, { loading }] = Goals.useConnectGoalToProjectMutation({
-    onCompleted: () => refresh(),
-  });
+  const [connect, { loading }] = Goals.useConnectGoalToProjectMutation({ onCompleted: gotoProjectRoot });
 
   const handleClick = async (): Promise<boolean> => {
     connect({
@@ -125,11 +125,9 @@ function SelectableGoal({ goal }: { goal: Goals.Goal }) {
 
 function SelectedGoal({ goal }: { goal: Goals.Goal }) {
   const { project } = useLoadedData();
-  const refresh = useRefresh();
+  const gotoProjectRoot = useNavigateTo(createPath("projects", project.id));
 
-  const [connect, { loading }] = Goals.useDisconnectGoalFromProjectMutation({
-    onCompleted: () => refresh(),
-  });
+  const [connect, { loading }] = Goals.useDisconnectGoalFromProjectMutation({ onCompleted: gotoProjectRoot });
 
   const handleClick = async (): Promise<boolean> => {
     connect({
