@@ -30,6 +30,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> UI.fill(testid: "person-email", with: "m.scott@dmif.com")
     |> UI.fill(testid: "person-title", with: "Regional Manager")
     |> UI.click(testid: "submit")
+    |> UI.assert_text("People in Dunder Mifflin")
 
     person = Operately.People.get_person_by_name!("Michael Scott")
 
