@@ -21,5 +21,10 @@ export function sortContributorsByRole(contributors: ProjectContributor[]): Proj
 }
 
 export function isMilestoneOverdue(milestone: Milestone) {
-  return !Time.isToday(milestone.deadlineAt) && Time.isPast(milestone.deadlineAt);
+  if (milestone.status !== "pending") return false;
+
+  const day = Time.parseDate(milestone.deadlineAt);
+  if (!day) return false;
+
+  return !Time.isToday(day) && Time.isPast(day);
 }
