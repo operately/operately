@@ -37,10 +37,11 @@ export function Page() {
 
 function ProjectList({ projects }: { projects: Projects.Project[] }) {
   const activeProjects = projects.filter((project) => !project.isArchived);
+  const sortedProjects = Projects.sortByName(activeProjects);
 
   return (
     <div className="">
-      {activeProjects.map((project) => (
+      {sortedProjects.map((project) => (
         <div key={project.id} className="py-4 bg-surface flex flex-col border-t last:border-b border-stroke-base">
           <ProjectListItem project={project} key={project.id} avatarPosition="right" />
         </div>
