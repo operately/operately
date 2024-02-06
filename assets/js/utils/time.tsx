@@ -5,6 +5,14 @@ export function today() {
   return datefsn.startOfDay(new Date());
 }
 
+export function daysAgo(days: number) {
+  return datefsn.subDays(today(), days);
+}
+
+export function daysFromNow(days: number) {
+  return datefsn.addDays(today(), days);
+}
+
 export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }
