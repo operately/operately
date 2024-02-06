@@ -115,6 +115,15 @@ defmodule Operately.Features.DiscussionsTest do
   # Utilities
   #
   defp last_discussion(ctx) do
-    Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+    discussions = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) 
+
+    if discussions != [] do
+      hd(discussions)
+    else
+      # sometimes the updates are not immediately available
+      # so we wait a bit and try again
+      :timer.sleep(300)
+      Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+    end
   end
 end
