@@ -5,10 +5,10 @@ import * as Projects from "@/graphql/Projects";
 
 import { Link } from "@/components/Link";
 import { DimmedLabel } from "./Label";
-import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 import { GhostButton } from "@/components/Button";
 import { createPath } from "@/utils/paths";
+import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 export function NextMilestone({ project }) {
   const milestones = project.milestones || [];
@@ -77,7 +77,7 @@ function MilestoneLink({ project, milestone }) {
 
   return (
     <div className="mt-1">
-      <Icons.IconFlag3Filled size={16} className="inline-block" />
+      <MilestoneIcon milestone={milestone} className="inline-block" />
 
       <span className="font-semibold mx-1">
         <Link to={path}>{title}</Link>

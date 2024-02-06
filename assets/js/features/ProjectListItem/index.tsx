@@ -11,6 +11,7 @@ import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import { TextTooltip } from "@/components/Tooltip";
+import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";
@@ -58,7 +59,7 @@ function ProjectStatusLine({ project }) {
   const totalCount = pending.length + done.length;
 
   const completion = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 shrink-0">
       <MiniPieChart completed={done.length} total={totalCount} size={16} />
       {done.length}/{totalCount} completed
     </div>
@@ -90,9 +91,11 @@ function NextMilestone({ project }) {
   if (project.nextMilestone === null) return null;
 
   return (
-    <div className="inline-flex items-center gap-2">
-      <Icons.IconFlag3Filled size={16} />
-      <span className="">{project.nextMilestone.title}</span>
+    <div className="flex items-center gap-2">
+      <MilestoneIcon milestone={project.nextMilestone} />
+      <div className="flex-1 truncate pr-2 w-96">
+        <FormattedTime time={project.nextMilestone.deadlineAt} format="short-date" />: {project.nextMilestone.title}
+      </div>
     </div>
   );
 }
