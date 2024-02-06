@@ -32,6 +32,7 @@ const QUERY = gql`
       title
       status
       insertedAt
+      deadlineAt
     }
   }
 
@@ -41,6 +42,7 @@ const QUERY = gql`
       title
       status
       insertedAt
+      deadlineAt
     }
   }
 

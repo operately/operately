@@ -11,6 +11,7 @@ import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import { TextTooltip } from "@/components/Tooltip";
+import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";
@@ -91,8 +92,8 @@ function NextMilestone({ project }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Icons.IconFlag3Filled size={16} />
-      <div className="flex-1 truncate pr-2">
+      <MilestoneIcon milestone={project.nextMilestone} />
+      <div className="flex-1 truncate pr-2 w-96">
         <FormattedTime time={project.nextMilestone.deadlineAt} format="short-date" />: {project.nextMilestone.title}
       </div>
     </div>

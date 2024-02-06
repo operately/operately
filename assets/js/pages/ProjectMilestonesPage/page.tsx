@@ -13,6 +13,7 @@ import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Link } from "@/components/Link";
+import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -122,7 +123,7 @@ function PendingItem({ project, milestone }) {
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
       <div className="flex items-center gap-2">
         <div className="shrink-0 mt-1">
-          <Icons.IconFlag3Filled size={16} />
+          <MilestoneIcon milestone={milestone} />
         </div>
 
         <div className="flex-1 font-bold">

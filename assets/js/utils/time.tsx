@@ -51,6 +51,10 @@ export function isPast(date: Date) {
   return datefsn.isPast(date);
 }
 
+export function isFuture(date: Date) {
+  return datefsn.isFuture(date);
+}
+
 export function toDateWithoutTime(date: Date) {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;

@@ -1,5 +1,7 @@
-import type { Project, ProjectContributor } from "@/gql";
-export type { Project, ProjectContributor } from "@/gql";
+import type { Project, ProjectContributor, Milestone } from "@/gql";
+export type { Project, ProjectContributor, Milestone } from "@/gql";
+
+import * as Time from "@/utils/time";
 
 export { groupBySpace } from "./groupBySpace";
 export { getProjects } from "./getProjects";
@@ -16,4 +18,8 @@ export function sortContributorsByRole(contributors: ProjectContributor[]): Proj
 
     return 0;
   });
+}
+
+export function isMilestoneOverdue(milestone: Milestone) {
+  return !Time.isToday(milestone.deadlineAt) || Time.isPast(milestone.deadlineAt);
 }
