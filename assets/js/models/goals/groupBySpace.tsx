@@ -23,5 +23,20 @@ export function groupBySpace(goals: Goal[]): GoalGroup[] {
     groups.find((group) => group!.space!.id === space!.id)!.goals.push(goal);
   }
 
+  groups.sort((a, b) => {
+    if (a.space.isCompanySpace) return -100;
+    if (b.space.isCompanySpace) return 100;
+
+    if (a.space.name < b.space.name) {
+      return -1;
+    }
+
+    if (a.space.name > b.space.name) {
+      return 1;
+    }
+
+    return 0;
+  });
+
   return groups;
 }

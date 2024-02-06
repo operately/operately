@@ -463,6 +463,11 @@ export type Discussion = {
   updatedAt: Scalars['Date']['output'];
 };
 
+export type EditCommentInput = {
+  commentId: Scalars['ID']['input'];
+  content: Scalars['String']['input'];
+};
+
 export type EditDiscussionInput = {
   body: Scalars['String']['input'];
   discussionId: Scalars['ID']['input'];
@@ -548,6 +553,7 @@ export type Group = {
   color: Scalars['String']['output'];
   icon: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isCompanySpace: Scalars['Boolean']['output'];
   members?: Maybe<Array<Person>>;
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -855,6 +861,7 @@ export type RootMutationType = {
   createTenet?: Maybe<Tenet>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
+  editComment?: Maybe<Comment>;
   editDiscussion?: Maybe<Discussion>;
   editGoal?: Maybe<Goal>;
   editGroup?: Maybe<Group>;
@@ -1043,6 +1050,11 @@ export type RootMutationTypeCreateUpdateArgs = {
 export type RootMutationTypeDisconnectGoalFromProjectArgs = {
   goalId: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeEditCommentArgs = {
+  input: EditCommentInput;
 };
 
 
