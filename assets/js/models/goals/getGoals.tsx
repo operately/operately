@@ -41,6 +41,7 @@ const LIST_GOALS = gql`
     space {
       id
       name
+      isCompanySpace
     }
   }
 

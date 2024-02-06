@@ -51,7 +51,7 @@ export function Root({ size, children }: RootProps): JSX.Element {
 
   return (
     <Context.Provider value={{ size }}>
-      <div className={classnames("flex-1 mx-auto my-20 relative", sizes[size])}>{children}</div>
+      <div className={classnames("flex-1 mx-auto my-10 relative", sizes[size])}>{children}</div>
     </Context.Provider>
   );
 }

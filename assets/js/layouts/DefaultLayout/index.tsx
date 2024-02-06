@@ -15,11 +15,7 @@ import * as Companies from "@/models/companies";
 import { PerfBar } from "@/features/PerfBar";
 
 function NavigationContainer({ children }) {
-  return (
-    <div className="fixed top-0 left-0 right-0 transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
-      {children}
-    </div>
-  );
+  return <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">{children}</div>;
 }
 
 function Navigation() {
@@ -81,26 +77,26 @@ function SectionLink({ to, children, icon }) {
   );
 }
 
-function ScrollToTop() {
+export default function DefaultLayout() {
   const { pathname } = useLocation();
+  const outletDiv = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    // "document.documentElement.scrollTo" is the magic for React Router Dom v6
-    document.documentElement.scrollTo({
+  React.useLayoutEffect(() => {
+    if (!outletDiv.current) return;
+
+    outletDiv.current.scrollTo({
       top: 0,
       left: 0,
+      behavior: "instant",
     });
-  }, [pathname]);
+  }, [pathname, outletDiv]);
 
-  return null;
-}
-
-export default function DefaultLayout() {
   return (
-    <div className="">
-      <ScrollToTop />
+    <div className="flex flex-col h-screen">
       <Navigation />
-      <Outlet />
+      <div className="flex-1 overflow-y-auto" ref={outletDiv}>
+        <Outlet />
+      </div>
       <PerfBar />
     </div>
   );

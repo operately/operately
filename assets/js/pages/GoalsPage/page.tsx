@@ -16,7 +16,7 @@ export function Page() {
 
   return (
     <Pages.Page title={"Goals"}>
-      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+      <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
         <div className="flex gap-4 -mb-8">
           <FilledButton linkTo={"/goals/new"}>Add Goal</FilledButton>
         </div>
@@ -57,7 +57,7 @@ function GoalGroup({ group }) {
     <div className="flex flex-col gap-4">
       <div className="uppercase text-xs font-medium tracking-wide text-center flex items-center gap-4 w-full">
         <div className="h-px bg-stroke-base w-full" />
-        {group.space.name}
+        <span className="whitespace-nowrap">{group.space.name}</span>
         <div className="h-px bg-stroke-base w-full" />
       </div>
       <GoalList goals={group.goals} />

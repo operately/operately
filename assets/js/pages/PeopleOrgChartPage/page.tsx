@@ -16,7 +16,7 @@ export function Page() {
 
   return (
     <Pages.Page title={"Org Chart"}>
-      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+      <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
         <div className="flex items-center gap-4 justify-center mb-16">
           <Link to="/people">Employee List</Link>
           <div className="font-medium">Org Chart</div>
