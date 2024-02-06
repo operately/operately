@@ -1,6 +1,5 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Milestones from "@/graphql/Projects/milestones";
 import * as Pages from "@/components/Pages";

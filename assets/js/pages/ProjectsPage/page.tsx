@@ -17,7 +17,7 @@ export function Page() {
 
   return (
     <Pages.Page title={"Projects"}>
-      <div className="max-w-5xl mx-auto py-6 sm:px-6 lg:px-8 mt-10">
+      <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
         <Filters />
         <Title />
 
