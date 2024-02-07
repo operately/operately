@@ -10,6 +10,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     field :timeframe, non_null(:string)
 
+    field :description, :string do
+      resolve fn goal, _, _ ->
+        {:ok, goal.description && Jason.encode!(goal.description)}
+      end
+    end
+
     field :last_check_in, :update do
       resolve fn goal, _, _ ->
         {:ok, Operately.Updates.get_last_goal_check_in(goal.id)}

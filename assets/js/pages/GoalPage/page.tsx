@@ -14,6 +14,7 @@ import { Navigation } from "./Navigation";
 import { Banner } from "./Banner";
 import { ProjectListItem } from "@/features/ProjectListItem";
 import { useLoadedData } from "./loader";
+import RichContent from "@/components/RichContent";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -61,6 +62,8 @@ export function Page() {
             </div>
           </div>
 
+          <Description goal={goal} />
+
           <div className="mt-8">
             <DimmedLabel>Success Conditions</DimmedLabel>
             <TargetList goal={goal} />
@@ -101,10 +104,21 @@ export function ProjectList({ goal }: { goal: Goals.Goal }) {
   return (
     <>
       {goal.projects!.map((project) => (
-        <div key={project.id} className="py-2 bg-surface flex flex-col border-t last:border-b border-stroke-base">
-          <ProjectListItem key={project!.id} project={project} avatarPosition="right" />
+        <div key={project!.id} className="py-2 bg-surface flex flex-col border-t last:border-b border-stroke-base">
+          <ProjectListItem key={project!.id} project={project!} avatarPosition="right" />
         </div>
       ))}
     </>
+  );
+}
+
+function Description({ goal }) {
+  if (!goal.description) return null;
+
+  return (
+    <div className="mt-8">
+      <DimmedLabel>Description</DimmedLabel>
+      <RichContent jsonContent={goal.description} />
+    </div>
   );
 }

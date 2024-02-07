@@ -95,6 +95,7 @@ const QUERY = gql`
       timeframe
       isArchived
       archivedAt
+      description
 
       space {
         id
