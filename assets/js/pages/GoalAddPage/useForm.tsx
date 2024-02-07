@@ -207,7 +207,7 @@ function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>,
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
-          description: fields.hasDescription ? JSON.stringify(fields.descriptionEditor.getJSON()) : null,
+          description: prepareDescriptionForSave(fields),
           targets: fields.targets
             .filter((t) => t.name.trim() !== "")
             .map((t, index) => ({
@@ -255,4 +255,26 @@ function validateForm(fields: Fields): Error[] {
   });
 
   return errors;
+}
+
+function prepareDescriptionForSave(fields: Fields): string | null {
+  if (!fields.hasDescription) return null;
+
+  const content = fields.descriptionEditor.getJSON();
+  if (!content) return null;
+
+  const innerContent = content["content"];
+  if (!innerContent) return null;
+  if (innerContent.length === 0) return null;
+
+  if (innerContent.length === 1 && innerContent[0]!["type"] === "paragraph") {
+    const firstElement = innerContent[0];
+    if (!firstElement) return null;
+    if (!firstElement["content"]) return null;
+
+    if (firstElement["content"].length === 0) return null;
+    if (firstElement["content"][0]!.text?.trim() === "") return null;
+  }
+
+  return JSON.stringify(content);
 }

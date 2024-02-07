@@ -11,6 +11,17 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :description, :string
   end
 
+  input_object :edit_goal_input do
+    field :goal_id, non_null(:id)
+    field :name, non_null(:string)
+    field :champion_id, non_null(:id)
+    field :reviewer_id, non_null(:id)
+    field :timeframe, non_null(:string)
+    field :added_targets, non_null(list_of(:create_target_input))
+    field :updated_targets, non_null(list_of(:update_target_input))
+    field :description, :string
+  end
+
   input_object :create_target_input do
     field :name, non_null(:string)
     field :from, non_null(:float)
@@ -26,16 +37,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :to, non_null(:float)
     field :unit, non_null(:string)
     field :index, non_null(:integer)
-  end
-
-  input_object :edit_goal_input do
-    field :goal_id, non_null(:id)
-    field :name, non_null(:string)
-    field :champion_id, non_null(:id)
-    field :reviewer_id, non_null(:id)
-    field :timeframe, non_null(:string)
-    field :added_targets, non_null(list_of(:create_target_input))
-    field :updated_targets, non_null(list_of(:update_target_input))
   end
 
   object :goal_mutations do

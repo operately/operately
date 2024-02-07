@@ -48,7 +48,6 @@ defmodule Operately.Goals.Goal do
       :reviewer_id, 
       :creator_id,
       :timeframe,
-      :description
     ])
   end
 end
