@@ -8,26 +8,37 @@ import { createPath } from "@/utils/paths";
 import { Link } from "@/components/Link";
 
 import * as People from "@/models/people";
+import * as Time from "@/utils/time";
 
 export function CheckIns({ goal }) {
-  const newCheckInPath = createPath("goals", goal.id, "check-ins", "new");
-
-  const checkInNowLink = (
-    <div className="flex">
-      <GhostButton linkTo={newCheckInPath} testId="check-in-now" size="xs" type="secondary">
-        Check-In Now
-      </GhostButton>
+  return (
+    <div>
+      <NextCheckIn goal={goal} />
+      <LastCheckIn goal={goal} />
+      <CheckInButton goal={goal} />
     </div>
   );
+}
 
-  if (!goal.lastCheckIn) {
-    return (
-      <div className="text-sm">
-        Asking the champion to check-in every Friday.
-        {goal.permissions.canCheckIn && <div className="mt-2">{checkInNowLink}</div>}
-      </div>
-    );
+function NextCheckIn({ goal }) {
+  let copy = "";
+  let scheduledAt = Time.parseDate(goal.nextUpdateScheduledAt);
+
+  if (Time.isPast(scheduledAt!)) {
+    copy = "Asking the champion to check-in monthly. It was scheduled for ";
+  } else {
+    copy = "Asking the champion to check-in monthly. Next check-in scheduled for ";
   }
+
+  return (
+    <div className="text-sm mb-2">
+      {copy} <FormattedTime time={goal.nextUpdateScheduledAt} format="long-date" />.
+    </div>
+  );
+}
+
+function LastCheckIn({ goal }) {
+  if (!goal.lastCheckIn) return null;
 
   const author = goal.lastCheckIn.author;
   const time = goal.lastCheckIn.insertedAt;
@@ -35,22 +46,30 @@ export function CheckIns({ goal }) {
   const path = `/goals/${goal.id}/check-ins/${goal.lastCheckIn.id}`;
 
   return (
-    <div>
-      <div className="flex items-start gap-2 max-w-xl mt-2">
-        <div className="flex flex-col gap-1">
-          <div className="font-bold flex items-center gap-1">
-            <Avatar person={author} size="tiny" />
-            {People.shortName(author)} submitted:
-            <Link to={path} testId="last-check-in-link">
-              Check-in <FormattedTime time={time} format="long-date" />
-            </Link>
-          </div>
-          <Summary jsonContent={message} characterCount={200} />
+    <div className="flex items-start gap-2 max-w-xl mt-2">
+      <div className="flex flex-col gap-1">
+        <div className="font-bold flex items-center gap-1">
+          <Avatar person={author} size="tiny" />
+          {People.shortName(author)} submitted:
+          <Link to={path} testId="last-check-in-link">
+            Check-in <FormattedTime time={time} format="long-date" />
+          </Link>
         </div>
+        <Summary jsonContent={message} characterCount={200} />
       </div>
+    </div>
+  );
+}
 
-      <div className="text-sm font-medium mt-6">Next check-in scheduled for this Friday</div>
-      <div className="mt-2">{goal.permissions.canCheckIn && checkInNowLink}</div>
+function CheckInButton({ goal }) {
+  if (!goal.permissions.canCheckIn) return null;
+  const newCheckInPath = createPath("goals", goal.id, "check-ins", "new");
+
+  return (
+    <div className="flex mt-2">
+      <GhostButton linkTo={newCheckInPath} testId="check-in-now" size="xs" type="secondary">
+        Check-In Now
+      </GhostButton>
     </div>
   );
 }

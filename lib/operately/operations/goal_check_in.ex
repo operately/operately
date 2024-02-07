@@ -27,7 +27,7 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp update_goal_next_check_in(multi, goal) do
-    next_check_in = Operately.Time.calculate_next_check_in(
+    next_check_in = Operately.Time.calculate_next_monthly_check_in(
       goal.next_update_scheduled_at, 
       DateTime.utc_now()
     )

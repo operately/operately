@@ -15,6 +15,21 @@ defmodule Operately.Time do
     as_datetime(date)
   end
 
+  def calculate_next_monthly_check_in(previous_due, check_in_date) do
+    previous_due = as_date(previous_due)
+    check_in_date = as_date(check_in_date)
+
+    if Date.compare(previous_due, check_in_date) == :lt do
+      first_of_next_month(check_in_date)
+    else
+      if Date.compare(previous_due, Date.add(check_in_date, 7)) == :lt do
+        first_of_next_month(previous_due)
+      else
+        as_datetime(previous_due)
+      end
+    end
+  end
+
   def calculate_next_check_in(previous_due, check_in_date) do
     previous_due = as_date(previous_due)
     check_in_date = as_date(check_in_date)
@@ -23,6 +38,16 @@ defmodule Operately.Time do
       next_week_friday(check_in_date)
     else
       next_week_friday(previous_due)
+    end
+  end
+
+  defp first_of_next_month(date) do
+    {year, month, _} = Date.to_erl(date)
+
+    if month == 12 do
+      as_datetime(Date.from_erl!({year + 1, 1, 1}))
+    else
+      as_datetime(Date.from_erl!({year, month + 1, 1}))
     end
   end
 
