@@ -8,9 +8,9 @@ defmodule Operately.Goals.Goal do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
 
-    has_one :champion, Operately.People.Person, foreign_key: :champion_id
-    has_one :reviewer, Operately.People.Person, foreign_key: :reviewer_id
-    has_one :creator, Operately.People.Person, foreign_key: :creator_id
+    belongs_to :champion, Operately.People.Person, foreign_key: :champion_id
+    belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
+    belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
     has_many :targets, Operately.Goals.Target
 
     field :name, :string

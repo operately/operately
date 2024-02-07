@@ -4,6 +4,7 @@ import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
+import * as Groups from "@/models/groups";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -152,7 +153,9 @@ function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions
 
   const options = React.useMemo(() => {
     if (loaded.allowSpaceSelection) {
-      return loaded.spaces!.map((space) => ({ value: space.id, label: space.name }));
+      const spaces = Groups.sortGroups(loaded.spaces!);
+
+      return spaces.map((space) => ({ value: space.id, label: space.name }));
     } else {
       return [];
     }
@@ -204,7 +207,7 @@ function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>,
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
-          description: fields.hasDescription ? fields.descriptionEditor.getJSON() : null,
+          description: fields.hasDescription ? JSON.stringify(fields.descriptionEditor.getJSON()) : null,
           targets: fields.targets
             .filter((t) => t.name.trim() !== "")
             .map((t, index) => ({
