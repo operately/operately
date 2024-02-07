@@ -23,5 +23,12 @@ export function groupBySpace(projects: Project[]): ProjectGroup[] {
     groups.find((group) => group!.space!.id === space!.id)!.projects.push(project);
   }
 
+  groups.sort((a, b) => {
+    if (a.space.isCompanySpace) return -100;
+    if (b.space.isCompanySpace) return 100;
+
+    return a.space.name.localeCompare(b.space.name);
+  });
+
   return groups;
 }

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import * as People from "@/models/people";
 import * as Projects from "@/graphql/Projects";
 import * as Companies from "@/models/companies";
+import * as Groups from "@/models/groups";
 
 import { useLoadedData } from "./loader";
 
@@ -214,7 +215,9 @@ function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions
 
   const options = React.useMemo(() => {
     if (loaded.allowSpaceSelection) {
-      return loaded.spaces!.map((space) => ({ value: space.id, label: space.name }));
+      const spaces = Groups.sortGroups(loaded.spaces!);
+
+      return spaces.map((space) => ({ value: space.id, label: space.name }));
     } else {
       return [];
     }

@@ -24,6 +24,7 @@ const GET_GROUP = gql`
       mission
       icon
       color
+      isCompanySpace
     }
   }
 `;
@@ -45,6 +46,16 @@ const GET_GROUPS = gql`
       mission
       icon
       color
+      isCompanySpace
     }
   }
 `;
+
+export function sortGroups(groups: any[]) {
+  return [...groups].sort((a, b) => {
+    if (a.isCompanySpace) return -100;
+    if (b.isCompanySpace) return 100;
+
+    return a.name.localeCompare(b.name);
+  });
+}

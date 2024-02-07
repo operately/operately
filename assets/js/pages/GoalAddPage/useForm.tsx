@@ -3,6 +3,8 @@ import * as Companies from "@/models/companies";
 import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
+import * as TipTapEditor from "@/components/Editor";
+import * as Groups from "@/models/groups";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -36,6 +38,8 @@ interface Fields {
   targets: Target[];
   space: SpaceOption | null;
   spaceOptions: SpaceOption[];
+  hasDescription: boolean;
+  descriptionEditor: TipTapEditor.Editor;
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person | null) => void;
@@ -45,6 +49,7 @@ interface Fields {
   removeTarget: (id: string) => void;
   updateTarget: (id: string, field: any, value: any) => void;
   setSpace: (space: SpaceOption | null) => void;
+  setHasDescription: (hasDescription: boolean) => void;
 }
 
 interface TimeframeOption {
@@ -73,6 +78,14 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
   const [targets, addTarget, removeTarget, updateTarget] = useTargets();
   const [space, setSpace, spaceOptions] = useSpaces();
 
+  const [hasDescription, setHasDescription] = React.useState<boolean>(false);
+  const { editor: descriptionEditor } = TipTapEditor.useEditor({
+    autoFocus: false,
+    placeholder: "Write a description...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "min-h-[150px] p-2 py-1",
+  });
+
   const fields = {
     company,
     me,
@@ -85,6 +98,8 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
     targets,
     space,
     spaceOptions,
+    hasDescription,
+    descriptionEditor,
 
     setName,
     setChampion,
@@ -94,7 +109,8 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
     removeTarget,
     updateTarget,
     setSpace,
-  };
+    setHasDescription,
+  } as Fields;
 
   const cancelPath = initialSpaceId ? createPath("group", initialSpaceId) : "/goals";
 
@@ -137,7 +153,9 @@ function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions
 
   const options = React.useMemo(() => {
     if (loaded.allowSpaceSelection) {
-      return loaded.spaces!.map((space) => ({ value: space.id, label: space.name }));
+      const spaces = Groups.sortGroups(loaded.spaces!);
+
+      return spaces.map((space) => ({ value: space.id, label: space.name }));
     } else {
       return [];
     }
@@ -189,6 +207,7 @@ function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>,
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
+          description: prepareDescriptionForSave(fields),
           targets: fields.targets
             .filter((t) => t.name.trim() !== "")
             .map((t, index) => ({
@@ -236,4 +255,26 @@ function validateForm(fields: Fields): Error[] {
   });
 
   return errors;
+}
+
+function prepareDescriptionForSave(fields: Fields): string | null {
+  if (!fields.hasDescription) return null;
+
+  const content = fields.descriptionEditor.getJSON();
+  if (!content) return null;
+
+  const innerContent = content["content"];
+  if (!innerContent) return null;
+  if (innerContent.length === 0) return null;
+
+  if (innerContent.length === 1 && innerContent[0]!["type"] === "paragraph") {
+    const firstElement = innerContent[0];
+    if (!firstElement) return null;
+    if (!firstElement["content"]) return null;
+
+    if (firstElement["content"].length === 0) return null;
+    if (firstElement["content"][0]!.text?.trim() === "") return null;
+  }
+
+  return JSON.stringify(content);
 }

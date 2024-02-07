@@ -370,6 +370,7 @@ export type CreateCommentInput = {
 
 export type CreateGoalInput = {
   championId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
@@ -520,6 +521,7 @@ export type Goal = {
   __typename?: 'Goal';
   archivedAt?: Maybe<Scalars['Date']['output']>;
   champion?: Maybe<Person>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];

@@ -27,15 +27,7 @@ export function groupBySpace(goals: Goal[]): GoalGroup[] {
     if (a.space.isCompanySpace) return -100;
     if (b.space.isCompanySpace) return 100;
 
-    if (a.space.name < b.space.name) {
-      return -1;
-    }
-
-    if (a.space.name > b.space.name) {
-      return 1;
-    }
-
-    return 0;
+    return a.space.name.localeCompare(b.space.name);
   });
 
   return groups;

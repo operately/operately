@@ -5,19 +5,19 @@ defmodule Operately.Goals.Goal do
   import Operately.SoftDelete.Schema
 
   schema "goals" do
+    belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
+    belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
+
+    belongs_to :champion, Operately.People.Person, foreign_key: :champion_id
+    belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
+    belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
     has_many :targets, Operately.Goals.Target
 
     field :name, :string
-
-    field :company_id, :binary_id
-    field :group_id, :binary_id
-
-    field :champion_id, :binary_id
-    field :reviewer_id, :binary_id
-    field :creator_id, :binary_id
-
     field :timeframe, :string
     field :next_update_scheduled_at, :utc_datetime
+
+    field :description, :map
 
     timestamps()
     soft_delete()
@@ -37,8 +37,17 @@ defmodule Operately.Goals.Goal do
       :reviewer_id, 
       :creator_id, 
       :timeframe, 
+      :description,
       :next_update_scheduled_at
     ])
-    |> validate_required([:name, :company_id, :group_id, :champion_id, :reviewer_id, :creator_id, :timeframe])
+    |> validate_required([
+      :name, 
+      :company_id, 
+      :group_id, 
+      :champion_id, 
+      :reviewer_id, 
+      :creator_id,
+      :timeframe,
+    ])
   end
 end

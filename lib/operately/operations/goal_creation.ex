@@ -21,6 +21,7 @@ defmodule Operately.Operations.GoalCreation do
       champion_id: attrs[:champion_id],
       reviewer_id: attrs[:reviewer_id],
       timeframe: attrs[:timeframe],
+      description: attrs[:description] && Jason.decode!(attrs[:description]),
       creator_id: creator.id,
       next_update_scheduled_at: Operately.Time.first_friday_from_today(),
     }))

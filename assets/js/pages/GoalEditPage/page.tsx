@@ -7,8 +7,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 import * as People from "@/graphql/People";
+import * as TipTapEditor from "@/components/Editor";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
@@ -70,6 +71,9 @@ function Form({ form }: { form: FormState }) {
       <div className="font-medium">
         <div className="font-bold mt-6">Title</div>
         <GoalName form={form} />
+        <AddDescription form={form} />
+
+        <Description form={form} />
 
         <div className="font-bold mt-12">Measurments</div>
         <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
@@ -165,6 +169,36 @@ function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: an
           error={!!error}
         />
       </div>
+    </div>
+  );
+}
+
+function AddDescription({ form }: { form: FormState }) {
+  if (form.fields.hasDescription) return null;
+
+  return (
+    <div className="mt-2 flex items-center gap-2 text-xs">
+      <GhostButton size="xxs" type="secondary" onClick={form.fields.setHasDescription}>
+        Add Description
+      </GhostButton>
+    </div>
+  );
+}
+
+function Description({ form }: { form: FormState }) {
+  if (!form.fields.hasDescription) return null;
+
+  return (
+    <div className="mb-12 mt-12">
+      <div className="font-bold">Description</div>
+      <div className="text-sm text-content-dimmed mb-2">Add more context to your goal (optional)</div>
+
+      <TipTapEditor.Root editor={form.fields.descriptionEditor}>
+        <div className="border-x border-b border-stroke-base flex-1">
+          <TipTapEditor.Toolbar editor={form.fields.descriptionEditor} />
+          <TipTapEditor.EditorContent editor={form.fields.descriptionEditor} />
+        </div>
+      </TipTapEditor.Root>
     </div>
   );
 }

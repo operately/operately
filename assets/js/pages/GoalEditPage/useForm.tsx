@@ -3,6 +3,7 @@ import * as Companies from "@/models/companies";
 import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
+import * as TipTapEditor from "@/components/Editor";
 
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
@@ -35,6 +36,8 @@ interface Fields {
   timeframe: TimeframeOption;
   timeframeOptions: TimeframeOption[];
   targets: Target[];
+  hasDescription: boolean;
+  descriptionEditor: TipTapEditor.Editor;
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person | null) => void;
@@ -43,6 +46,7 @@ interface Fields {
   addTarget: () => void;
   removeTarget: (id: string) => void;
   updateTarget: (id: string, field: any, value: any) => void;
+  setHasDescription: (hasDescription: boolean) => void;
 }
 
 interface TimeframeOption {
@@ -68,6 +72,15 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
   const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(goal.timeframe);
   const [targets, addTarget, removeTarget, updateTarget] = useTargets(goal);
 
+  const [hasDescription, setHasDescription] = React.useState<boolean>(!!goal.description);
+  const { editor: descriptionEditor } = TipTapEditor.useEditor({
+    autoFocus: false,
+    placeholder: "Write a description...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "min-h-[150px] p-2 py-1",
+    content: goal.description && JSON.parse(goal.description),
+  });
+
   const fields = {
     company,
     goal,
@@ -79,6 +92,8 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
     timeframe,
     timeframeOptions,
     targets,
+    hasDescription,
+    descriptionEditor,
 
     setName,
     setChampion,
@@ -87,6 +102,7 @@ export function useForm(company: Companies.Company, me: People.Person): FormStat
     addTarget,
     removeTarget,
     updateTarget,
+    setHasDescription,
   };
 
   const [submit, cancel, submitting, errors] = useSubmit(fields);
@@ -175,6 +191,7 @@ function useSubmit(
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
+          description: prepareDescriptionForSave(fields),
           addedTargets: fields.targets
             .filter((t) => t.name.trim() !== "")
             .filter((t) => t.isNew)
@@ -233,4 +250,26 @@ function validateForm(fields: Fields): Error[] {
   });
 
   return errors;
+}
+
+function prepareDescriptionForSave(fields: Fields): string | null {
+  if (!fields.hasDescription) return null;
+
+  const content = fields.descriptionEditor.getJSON();
+  if (!content) return null;
+
+  const innerContent = content["content"];
+  if (!innerContent) return null;
+  if (innerContent.length === 0) return null;
+
+  if (innerContent.length === 1 && innerContent[0]!["type"] === "paragraph") {
+    const firstElement = innerContent[0];
+    if (!firstElement) return null;
+    if (!firstElement["content"]) return null;
+
+    if (firstElement["content"].length === 0) return null;
+    if (firstElement["content"][0]!.text?.trim() === "") return null;
+  }
+
+  return JSON.stringify(content);
 }

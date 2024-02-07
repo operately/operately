@@ -1,4 +1,4 @@
-import React, { Context } from "react";
+import React from "react";
 
 import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
@@ -12,8 +12,17 @@ function MenuBarToggle({ children, isActive, title, onClick }): JSX.Element {
     "hover:bg-surface-highlight cursor-pointer": !isActive,
   });
 
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    },
+    [onClick],
+  );
+
   return (
-    <button onClick={onClick} className={className} title={title}>
+    <button onClick={handleClick} className={className} title={title}>
       {children}
     </button>
   );
@@ -25,8 +34,17 @@ function MenuBarButton({ children, onClick, title, disabled = false }): JSX.Elem
     "text-content-subtle": disabled,
   });
 
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    },
+    [onClick],
+  );
+
   return (
-    <button onClick={onClick} className={className} disabled={disabled} title={title}>
+    <button onClick={handleClick} className={className} disabled={disabled} title={title}>
       {children}
     </button>
   );
