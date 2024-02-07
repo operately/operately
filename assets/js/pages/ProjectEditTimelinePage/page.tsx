@@ -18,7 +18,7 @@ export function Page() {
 
   unstable_usePrompt({
     message: "You have unsaved changes. Are you sure you want to leave?",
-    when: form.blockLeavingPage, // the type says that it can only be a boolean, but it can also be a function
+    when: form.blockLeavingPage as any, // the type says that it can only be a boolean, but it can also be a function
   });
 
   return (

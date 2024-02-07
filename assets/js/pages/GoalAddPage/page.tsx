@@ -7,8 +7,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 import * as People from "@/graphql/People";
+import * as TipTapEditor from "@/components/Editor";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { useLoadedData } from "./loader";
@@ -111,7 +112,10 @@ function FormMain({ form }: { form: FormState }) {
       <span className="font-bold text-lg">Goal</span>
       <div className="mt-3 mb-12 text-lg">
         <GoalName form={form} />
+        <AddDescription form={form} />
       </div>
+
+      <Description form={form} />
 
       <div className="font-bold text-lg">Success Conditions</div>
       <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
@@ -122,6 +126,24 @@ function FormMain({ form }: { form: FormState }) {
         ))}
         <AddTarget form={form} />
       </div>
+    </div>
+  );
+}
+
+function Description({ form }: { form: FormState }) {
+  if (!form.fields.hasDescription) return null;
+
+  return (
+    <div className="mb-12">
+      <div className="font-bold text-lg">Description</div>
+      <div className="text-sm text-content-dimmed mb-2">Add more context to your goal (optional)</div>
+
+      <TipTapEditor.Root editor={form.fields.descriptionEditor}>
+        <div className="border-x border-b border-stroke-base flex-1">
+          <TipTapEditor.Toolbar editor={form.fields.descriptionEditor} />
+          <TipTapEditor.EditorContent editor={form.fields.descriptionEditor} />
+        </div>
+      </TipTapEditor.Root>
     </div>
   );
 }
@@ -239,6 +261,18 @@ function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: an
           error={!!error}
         />
       </div>
+    </div>
+  );
+}
+
+function AddDescription({ form }: { form: FormState }) {
+  if (form.fields.hasDescription) return null;
+
+  return (
+    <div className="mt-2 flex items-center gap-2 text-xs">
+      <GhostButton size="xxs" type="secondary" onClick={form.fields.setHasDescription}>
+        Add Description
+      </GhostButton>
     </div>
   );
 }

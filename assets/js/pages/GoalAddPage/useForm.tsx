@@ -3,6 +3,7 @@ import * as Companies from "@/models/companies";
 import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
+import * as TipTapEditor from "@/components/Editor";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -36,6 +37,8 @@ interface Fields {
   targets: Target[];
   space: SpaceOption | null;
   spaceOptions: SpaceOption[];
+  hasDescription: boolean;
+  descriptionEditor: TipTapEditor.Editor;
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person | null) => void;
@@ -45,6 +48,7 @@ interface Fields {
   removeTarget: (id: string) => void;
   updateTarget: (id: string, field: any, value: any) => void;
   setSpace: (space: SpaceOption | null) => void;
+  setHasDescription: (hasDescription: boolean) => void;
 }
 
 interface TimeframeOption {
@@ -73,6 +77,14 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
   const [targets, addTarget, removeTarget, updateTarget] = useTargets();
   const [space, setSpace, spaceOptions] = useSpaces();
 
+  const [hasDescription, setHasDescription] = React.useState<boolean>(false);
+  const { editor: descriptionEditor } = TipTapEditor.useEditor({
+    autoFocus: false,
+    placeholder: "Write a description...",
+    peopleSearch: People.usePeopleSearch(),
+    className: "min-h-[150px] p-2 py-1",
+  });
+
   const fields = {
     company,
     me,
@@ -85,6 +97,8 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
     targets,
     space,
     spaceOptions,
+    hasDescription,
+    descriptionEditor,
 
     setName,
     setChampion,
@@ -94,7 +108,8 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
     removeTarget,
     updateTarget,
     setSpace,
-  };
+    setHasDescription,
+  } as Fields;
 
   const cancelPath = initialSpaceId ? createPath("group", initialSpaceId) : "/goals";
 
@@ -189,6 +204,7 @@ function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>,
           championID: fields.champion!.id,
           reviewerID: fields.reviewer!.id,
           timeframe: fields.timeframe.value,
+          description: fields.hasDescription ? fields.descriptionEditor.getJSON() : null,
           targets: fields.targets
             .filter((t) => t.name.trim() !== "")
             .map((t, index) => ({

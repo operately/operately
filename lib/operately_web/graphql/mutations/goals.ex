@@ -1,14 +1,6 @@
 defmodule OperatelyWeb.Graphql.Mutations.Goals do
   use Absinthe.Schema.Notation
 
-  input_object :create_target_input do
-    field :name, non_null(:string)
-    field :from, non_null(:float)
-    field :to, non_null(:float)
-    field :unit, non_null(:string)
-    field :index, non_null(:integer)
-  end
-
   input_object :create_goal_input do
     field :space_id, non_null(:id)
     field :name, non_null(:string)
@@ -16,6 +8,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :reviewer_id, non_null(:id)
     field :timeframe, non_null(:string)
     field :targets, non_null(list_of(:create_target_input))
+    field :description, :string
+  end
+
+  input_object :create_target_input do
+    field :name, non_null(:string)
+    field :from, non_null(:float)
+    field :to, non_null(:float)
+    field :unit, non_null(:string)
+    field :index, non_null(:integer)
   end
 
   input_object :update_target_input do
