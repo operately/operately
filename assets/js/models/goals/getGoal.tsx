@@ -96,6 +96,7 @@ const QUERY = gql`
       isArchived
       archivedAt
       description
+      nextUpdateScheduledAt
 
       space {
         id

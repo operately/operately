@@ -10,6 +10,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     field :timeframe, non_null(:string)
 
+    field :next_update_scheduled_at, :date do
+      resolve fn goal, _, _ ->
+        {:ok, goal.next_update_scheduled_at}
+      end
+    end
+
     field :description, :string do
       resolve fn goal, _, _ ->
         {:ok, goal.description && Jason.encode!(goal.description)}
