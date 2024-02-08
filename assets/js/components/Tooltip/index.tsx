@@ -15,14 +15,14 @@ export function TextTooltip({ text, delayDuration, children }: TextTooltipProps)
         <ReactTooltip.Trigger asChild>{children}</ReactTooltip.Trigger>
         <ReactTooltip.Content
           sideOffset={5}
-          className="bg-surface shadow-lg rounded-lg p-4 text-content-accent text-sm font-medium break-normal border border-surface-outline"
+          className="bg-surface shadow-lg rounded p-2 text-content-accent text-sm font-medium break-normal border border-surface-outline"
           style={{
             maxWidth: "250px",
           }}
         >
           {text}
 
-          <ReactTooltip.Arrow className="fill-surface-outline" />
+          <ReactTooltip.Arrow className="fill-dark-5" />
         </ReactTooltip.Content>
       </ReactTooltip.Root>
     </ReactTooltip.Provider>

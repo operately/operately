@@ -72,6 +72,12 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :status, :string
     field :closed_at, :date
 
+    field :is_outdated, non_null(:boolean) do
+      resolve fn project, _, _ ->
+        {:ok, Operately.Projects.outdated?(project)}
+      end
+    end
+
     field :goal, :goal do
       resolve fn project, _, _ ->
         goal = Operately.Repo.preload(project, :goal).goal

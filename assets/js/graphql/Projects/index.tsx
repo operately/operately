@@ -35,6 +35,7 @@ export const LIST_PROJECTS = gql`
       phase
       health
       isArchived
+      isOutdated
       status
       permissions ${Permissions.FRAGMENT}
       contributors ${fragments.CONTRIBUTOR}

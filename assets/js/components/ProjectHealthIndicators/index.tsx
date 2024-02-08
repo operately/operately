@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import { TextTooltip } from "../Tooltip";
 
 const indicators = {
   status: {
@@ -22,6 +23,11 @@ const indicators = {
       title: "Paused",
       color: "text-gray-500",
       explanation: "Temporarely paused. We will resume soon.",
+    },
+    outdated: {
+      title: "Outdated",
+      color: "text-gray-500",
+      explanation: "The project is marked as outdated due to lack of recent check-ins",
     },
   },
   schedule: {
@@ -93,10 +99,12 @@ export function Indicator({ value, type }): JSX.Element {
   const { title, color } = findOptions(type, value);
 
   return (
-    <span className="font-medium flex items-center gap-1 shrink-0">
-      <Icons.IconCircleFilled size={16} className={color} />
-      {title}
-    </span>
+    <TextTooltip text={explanation(type, value)} delayDuration={500}>
+      <span className="font-medium flex items-center gap-1 shrink-0 cursor-default hover:bg-surface-highlight">
+        <Icons.IconCircleFilled size={16} className={color} />
+        {title}
+      </span>
+    </TextTooltip>
   );
 }
 

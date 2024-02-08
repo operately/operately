@@ -72,6 +72,7 @@ const GET_PROJECT = gql`
       health
 
       isArchived
+      isOutdated
       archivedAt
 
       private
