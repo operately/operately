@@ -94,6 +94,7 @@ const QUERY = gql`
       phase
       health
       isArchived
+      isOutdated
       status
 
       ...Contributors @include(if: $includeContributors)

@@ -74,6 +74,24 @@ defmodule Operately.ProjectsTest do
     test "change_project/1 returns a project changeset", ctx do
       assert %Ecto.Changeset{} = Projects.change_project(ctx.project)
     end
+
+    test "outdated?/1 returns true if the project is outdated" do
+      four_days_from_now = DateTime.utc_now() |> DateTime.add(4, :day)
+      tomorrow =  DateTime.utc_now() |> DateTime.add(1, :day)
+      yesterday = DateTime.utc_now() |> DateTime.add(-1, :day)
+      four_days_ago = DateTime.utc_now() |> DateTime.add(-4, :day)
+      last_week = DateTime.utc_now() |> DateTime.add(-7, :day)
+
+      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: four_days_from_now})
+      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: tomorrow})
+      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: yesterday})
+      assert Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: four_days_ago})
+      assert Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: last_week})
+
+      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "closed", next_update_scheduled_at: last_week})
+      refute Projects.outdated?(%{health: :paused, deleted_at: nil, status: "active", next_update_scheduled_at: last_week})
+      refute Projects.outdated?(%{health: :on_track, deleted_at: yesterday, status: "active", next_update_scheduled_at: last_week})
+    end
   end
 
   describe "project_milestones" do

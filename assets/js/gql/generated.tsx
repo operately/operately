@@ -478,6 +478,7 @@ export type EditDiscussionInput = {
 export type EditGoalInput = {
   addedTargets: Array<InputMaybe<CreateTargetInput>>;
   championId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   goalId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
@@ -528,6 +529,7 @@ export type Goal = {
   lastCheckIn?: Maybe<Update>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
   permissions: GoalPermissions;
   projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
@@ -710,6 +712,7 @@ export type Project = {
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
+  isOutdated: Scalars['Boolean']['output'];
   isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
   lastCheckIn?: Maybe<Update>;

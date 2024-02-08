@@ -90,8 +90,12 @@ function MilestoneCompletion({ project }) {
 function Status({ project }) {
   return (
     <div className="flex flex-col shrink-0">
-      <Indicator value={project.health} type="status" />
-      <HealthIssues checkIn={project.lastCheckIn} />
+      {project.isOutdated ? (
+        <Indicator value="outdated" type="status" />
+      ) : (
+        <Indicator value={project.health} type="status" />
+      )}
+      {!project.isOutdated && <HealthIssues checkIn={project.lastCheckIn} />}
     </div>
   );
 }

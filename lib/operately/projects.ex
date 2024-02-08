@@ -425,4 +425,18 @@ defmodule Operately.Projects do
   def change_review_request(%ReviewRequest{} = review_request, attrs \\ %{}) do
     ReviewRequest.changeset(review_request, attrs)
   end
+
+  def outdated?(project) do
+    today = Date.utc_today()
+    check_in_day = DateTime.to_date(project.next_update_scheduled_at)
+    check_in_missed_by = Date.diff(today, check_in_day)
+
+    cond do
+      project.status == "closed" -> false
+      project.deleted_at != nil -> false
+      project.health == :paused -> false
+      check_in_missed_by > 3 -> true
+      true -> false
+    end
+  end
 end

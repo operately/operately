@@ -25,7 +25,11 @@ function Status({ project }: { project: Projects.Project }) {
   return (
     <div>
       <DimmedLabel>Status</DimmedLabel>
-      <Indicator value={project.health} type="status" />
+      {project.isOutdated ? (
+        <Indicator value="outdated" type="status" />
+      ) : (
+        <Indicator value={project.health} type="status" />
+      )}
     </div>
   );
 }
