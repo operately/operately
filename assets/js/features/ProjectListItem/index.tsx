@@ -15,6 +15,7 @@ import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";
+import ContributorAvatar from "@/components/ContributorAvatar";
 
 interface ProjectListItemProps {
   project: Projects.Project;
@@ -22,23 +23,33 @@ interface ProjectListItemProps {
 }
 
 export function ProjectListItem({ project, avatarPosition = "bottom" }: ProjectListItemProps) {
-  const className = classNames("flex", {
-    "items-center justify-between": avatarPosition === "right",
-    "flex-col gap-4": avatarPosition === "bottom",
-  });
-
-  const avatarSize = avatarPosition === "right" ? 24 : 20;
+  const avatarSize = 20;
+  const className = "flex items-center justify-between gap-4";
 
   return (
     <div className={className}>
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         <ProjectNameLine project={project} />
-        <ProjectStatusLine project={project} />
+        <NextMilestone project={project} />
       </div>
-      <ContribList project={project} size={avatarSize} />
+
+      <div className="flex items-start gap-2">
+        <Avatar person={project.contributors[0].person} size={20} />
+      </div>
+
+      <div className="flex items-start gap-2">
+        <Avatar person={project.contributors[0].person} size={20} />
+      </div>
+
+      <div className="flex items-start gap-2 w-24">
+        <AvatarList contributors={project.contributors} size={20} />
+      </div>
     </div>
   );
 }
+
+// <ProjectStatusLine project={project} />
+// <ContribList project={project} size={avatarSize} />
 
 function ProjectNameLine({ project }) {
   const path = createPath("projects", project.id);
@@ -67,7 +78,6 @@ function ProjectStatusLine({ project }) {
       <div className="flex items-start gap-5 mt-2 text-sm">
         <Status project={project} />
         <MilestoneCompletion project={project} />
-        <NextMilestone project={project} />
       </div>
     );
   }
@@ -104,9 +114,9 @@ function NextMilestone({ project }) {
   if (project.nextMilestone === null) return null;
 
   return (
-    <div className="flex items-center gap-2">
-      <MilestoneIcon milestone={project.nextMilestone} />
-      <div className="flex-1 truncate pr-2 w-96">
+    <div className="flex items-center gap-1 text-xs">
+      <MilestoneIcon milestone={project.nextMilestone} iconSize={14} />
+      <div className="flex-1 truncate pr-2">
         <FormattedTime time={project.nextMilestone.deadlineAt} format="short-date" />: {project.nextMilestone.title}
       </div>
     </div>
@@ -116,11 +126,31 @@ function NextMilestone({ project }) {
 function ContribList({ project, size }) {
   const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
 
+  return <AvatarList contributors={sortedContributors} size={size} />;
+}
+
+function AvatarList({ contributors, size }) {
+  const condensed = contributors.length > 0;
+  const condensedClass = condensed ? "-space-x-2 hover:space-x-0" : "";
+
   return (
     <div className="flex items-center gap-1">
-      {sortedContributors.map((contributor) => (
-        <Avatar key={contributor!.id} person={contributor!.person} size={size} />
-      ))}
+      <div className={classNames("flex items-center", condensedClass)}>
+        {contributors.map((contrib, index: number) => (
+          <div
+            className={classNames("border-2 rounded-full transition-all cursor-default", {
+              "border-white-1": true,
+            })}
+            key={contrib.id}
+            style={{ zIndex: contributors.length - index }}
+          >
+            <Avatar person={contrib.person} size={size} />
+          </div>
+        ))}
+      </div>
+      <div className="border-2 border-white-1 rounded-full transition-all cursor-default z-50">
+        <Avatar person={contributors[0].person} size={size} />
+      </div>
     </div>
   );
 }

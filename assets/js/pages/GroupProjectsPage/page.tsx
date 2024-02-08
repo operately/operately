@@ -41,8 +41,15 @@ function ProjectList({ projects }: { projects: Projects.Project[] }) {
 
   return (
     <div className="">
+      <div className="flex items-center justify-between bg-surface-dimmed text-[9px] font-medium">
+        <div className="flex-1 uppercase">Project</div>
+        <div className="flex-1 uppercase">Champion</div>
+        <div className="flex-1 uppercase">Reviewer</div>
+        <div className="flex-1 uppercase">Contributors</div>
+      </div>
+
       {sortedProjects.map((project) => (
-        <div key={project.id} className="py-4 bg-surface flex flex-col border-t last:border-b border-stroke-base">
+        <div key={project.id} className="py-3 bg-surface flex flex-col border-t last:border-b border-stroke-base">
           <ProjectListItem project={project} key={project.id} avatarPosition="right" />
         </div>
       ))}

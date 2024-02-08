@@ -6,25 +6,19 @@ import { ProjectContributor } from "@/gql/generated";
 
 interface ContributorAvatarProps {
   contributor: ProjectContributor;
+  size?: number;
 }
 
 export default function ContributorAvatar(props: ContributorAvatarProps) {
   return (
     <div className={`shrink-0 relative ${borderClass(props.contributor.role)}`}>
-      <Avatar person={props.contributor.person} />
+      <Avatar person={props.contributor.person} size={props.size} />
     </div>
   );
 }
 
 function borderClass(role: string) {
-  switch (role) {
-    case "champion":
-      return "border border-yellow-500 rounded-full p-0.5 text-content-subtle";
-    case "reviewer":
-      return "border border-sky-500 rounded-full p-0.5 text-content-subtle";
-    default:
-      return "border border-surface-outline rounded-full p-0.5 text-content-subtle";
-  }
+  return "";
 }
 
 export function ChampionPlaceholder() {
