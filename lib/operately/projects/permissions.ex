@@ -10,12 +10,12 @@ defmodule Operately.Projects.Permissions do
       can_create_milestone: is_contributor?(project, user),
       can_delete_milestone: is_contributor?(project, user),
       can_edit_milestone: is_contributor?(project, user),
-      can_edit_description: is_champion?(project, user),
-      can_edit_timeline: is_champion?(project, user),
+      can_edit_description: is_contributor?(project, user),
+      can_edit_timeline: is_contributor?(project, user),
       can_edit_resources: is_contributor?(project, user),
-      can_edit_goal: is_champion?(project, user) || is_reviewer?(project, user),
+      can_edit_goal: is_contributor?(project, user),
 
-      can_check_in: is_champion?(project, user),
+      can_check_in: is_contributor?(project, user),
       can_acknowledge_check_in: is_reviewer?(project, user)
     }
   end
@@ -26,9 +26,9 @@ defmodule Operately.Projects.Permissions do
     Enum.any?(project.contributors, fn c -> c.person_id == user.id end)
   end
 
-  defp is_champion?(project, user) do
-    Enum.any?(project.contributors, fn c -> c.person_id == user.id && c.role == :champion end)
-  end
+  # defp is_champion?(project, user) do
+  #   Enum.any?(project.contributors, fn c -> c.person_id == user.id && c.role == :champion end)
+  # end
 
   defp is_reviewer?(project, user) do
     Enum.any?(project.contributors, fn c -> c.person_id == user.id && c.role == :reviewer end)
