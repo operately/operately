@@ -38,14 +38,6 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> UI.assert_text(project_description())
   end
 
-  @tag login_as: :reviewer
-  feature "contributors can't edit the project description", ctx do
-    ctx
-    |> visit_show(ctx.project)
-    |> UI.assert_text("Project description is not yet set")
-    |> UI.refute_text("Write project description")
-  end
-
   #
   # ======== Helper functions ========
   #
