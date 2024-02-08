@@ -24,6 +24,7 @@ export async function loader({ request }): Promise<LoaderResult> {
       includeSpace: true,
       includeContributors: true,
       includeMilestones: true,
+      includeLastCheckIn: true,
       filter: filter,
     }),
     activeFilter: filter,

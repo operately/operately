@@ -43,6 +43,7 @@ export const LIST_PROJECTS = gql`
       reviewRequests ${ReviewRequests.FRAGMENT}
       champion ${People.FRAGMENT}
       reviewer ${People.FRAGMENT}
+      lastCheckIn ${Updates.UPDATE_FRAGMENT}
 
       milestones {
         id
