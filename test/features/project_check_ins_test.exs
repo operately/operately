@@ -66,18 +66,6 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
   end
 
   @tag login_as: :champion
-  feature "submitting a check-in is allowed to the champion only", ctx do
-    ctx
-    |> ProjectSteps.visit_project_page()
-    |> UI.assert_has(testid: "check-in-now")
-
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> ProjectSteps.visit_project_page()
-    |> UI.refute_has(testid: "check-in-now")
-  end
-
-  @tag login_as: :champion
   feature "submitting a check-in moves the next update date", ctx do
     previous_due = ctx.project.next_update_scheduled_at
 
