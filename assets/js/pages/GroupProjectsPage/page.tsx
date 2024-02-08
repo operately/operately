@@ -41,11 +41,11 @@ function ProjectList({ projects }: { projects: Projects.Project[] }) {
 
   return (
     <div className="">
-      <div className="flex items-center justify-between bg-surface-dimmed text-[9px] font-medium">
-        <div className="flex-1 uppercase">Project</div>
-        <div className="flex-1 uppercase">Champion</div>
-        <div className="flex-1 uppercase">Reviewer</div>
-        <div className="flex-1 uppercase">Contributors</div>
+      <div className="flex items-center justify-between gap-4 text-xs font-bold py-2">
+        <div className="flex-1">Project</div>
+        <div className="w-16">Champion</div>
+        <div className="w-16">Reviewer</div>
+        <div className="w-24">Contributors</div>
       </div>
 
       {sortedProjects.map((project) => (

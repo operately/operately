@@ -33,11 +33,11 @@ export function ProjectListItem({ project, avatarPosition = "bottom" }: ProjectL
         <NextMilestone project={project} />
       </div>
 
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-2 w-16">
         <Avatar person={project.contributors[0].person} size={20} />
       </div>
 
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-2 w-16">
         <Avatar person={project.contributors[0].person} size={20} />
       </div>
 
