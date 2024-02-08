@@ -55,16 +55,6 @@ function ProjectNameLine({ project }) {
 }
 
 function ProjectStatusLine({ project }) {
-  let { pending, done } = Milestones.splitByStatus(project.milestones);
-  const totalCount = pending.length + done.length;
-
-  const completion = (
-    <div className="flex items-center gap-2 shrink-0">
-      <MiniPieChart completed={done.length} total={totalCount} size={16} />
-      {done.length}/{totalCount} completed
-    </div>
-  );
-
   if (project.status === "closed") {
     return (
       <div className="mt-2 text-sm font-medium">
@@ -74,17 +64,36 @@ function ProjectStatusLine({ project }) {
     );
   } else {
     return (
-      <div className="flex items-center gap-5 mt-2 text-sm">
+      <div className="flex items-start gap-5 mt-2 text-sm">
         <Status project={project} />
-        {totalCount > 0 && completion}
+        <MilestoneCompletion project={project} />
         <NextMilestone project={project} />
       </div>
     );
   }
 }
 
+function MilestoneCompletion({ project }) {
+  let { pending, done } = Milestones.splitByStatus(project.milestones);
+  const totalCount = pending.length + done.length;
+
+  if (totalCount === 0) return null;
+
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <MiniPieChart completed={done.length} total={totalCount} size={16} />
+      {done.length}/{totalCount} completed
+    </div>
+  );
+}
+
 function Status({ project }) {
-  return <Indicator value={project.health} type="status" />;
+  return (
+    <div className="flex flex-col shrink-0">
+      <Indicator value={project.health} type="status" />
+      <HealthIssues checkIn={project.lastCheckIn} />
+    </div>
+  );
 }
 
 function NextMilestone({ project }) {
@@ -121,5 +130,45 @@ function PrivateIndicator({ project }) {
         <Icons.IconLock size={16} />
       </div>
     </TextTooltip>
+  );
+}
+
+function HealthIssues({ checkIn }) {
+  if (!checkIn) return null;
+
+  const issues = Object.keys(checkIn.content.health).filter((type) => {
+    if (type === "status") {
+      return false;
+    }
+
+    if (type === "schedule") {
+      return checkIn.content.health[type] !== "on_schedule";
+    }
+
+    if (type === "budget") {
+      return checkIn.content.health[type] !== "within_budget";
+    }
+
+    if (type === "team") {
+      return checkIn.content.health[type] !== "staffed";
+    }
+
+    if (type === "risks") {
+      return checkIn.content.health[type] !== "no_known_risks";
+    }
+
+    return false;
+  });
+
+  if (issues.length === 0) return null;
+
+  return (
+    <div className="flex flex-col shrink-0">
+      {issues.map((issue, index) => (
+        <div key={index}>
+          <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
+        </div>
+      ))}
+    </div>
   );
 }

@@ -1,10 +1,12 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
+import * as Updates from "@/graphql/Projects/updates";
 
 interface GetProjectsOptions {
   includeSpace?: boolean;
   includeContributors?: boolean;
   includeMilestones?: boolean;
+  includeLastCheckIn?: boolean;
   filter?: "my-projects" | "reviewed-by-me" | "all-projects";
 }
 
@@ -15,6 +17,7 @@ export async function getProjects(options: GetProjectsOptions = {}) {
       includeSpace: !!options.includeSpace,
       includeContributors: !!options.includeContributors,
       includeMilestones: !!options.includeMilestones,
+      includeLastCheckIn: !!options.includeLastCheckIn,
       filters: {
         filter: options.filter || "all-projects",
       },
@@ -66,11 +69,16 @@ const QUERY = gql`
     }
   }
 
+  fragment LastCheckIn on Project {
+    lastCheckIn ${Updates.UPDATE_FRAGMENT}
+  }
+
   query ListProjects(
     $filters: ProjectListFilters
     $includeSpace: Boolean!
     $includeMilestones: Boolean!
     $includeContributors: Boolean!
+    $includeLastCheckIn: Boolean!
   ) {
     projects(filters: $filters) {
       id
@@ -92,6 +100,7 @@ const QUERY = gql`
       ...Space @include(if: $includeSpace)
       ...Milestones @include(if: $includeMilestones)
       ...NextMilestone @include(if: $includeMilestones)
+      ...LastCheckIn @include(if: $includeLastCheckIn)
     }
   }
 `;
