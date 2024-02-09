@@ -20,7 +20,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation groupId={group.id} groupName={group.name} activeTab="goals" />
+          <GroupPageNavigation group={group} activeTab="goals" />
           <Content />
         </Paper.Body>
       </Paper.Root>

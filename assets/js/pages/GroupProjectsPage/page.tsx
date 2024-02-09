@@ -27,7 +27,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root size="large" fluid>
         <Paper.Body minHeight="500px" backgroundColor="bg-surface">
-          <GroupPageNavigation groupId={group.id} groupName={group.name} activeTab="projects" />
+          <GroupPageNavigation group={group} activeTab="projects" />
 
           <div className="flex items-center justify-between mb-8">
             <div className="font-extrabold text-3xl">Projects</div>

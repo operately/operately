@@ -256,14 +256,24 @@ defmodule Operately.People do
   end
 
   defp find_or_create_person_for_account(account, attrs) do
+    alias Operately.People.Person
+    alias Operately.Groups.Member
+    alias Ecto.Multi
+
     account = Repo.preload(account, [:person])
 
     if account.person do
       {:ok, account}
     else
+      company = Operately.Companies.get_company!(account.company_id)
+      company_space = Operately.Groups.get_group!(company.company_space_id)
       person_attrs = Map.merge(attrs.person, %{account_id: account.id})
 
-      case create_person(person_attrs) do
+      Multi.new()
+      |> Multi.insert(:person, Person.changeset(%Person{}, person_attrs))
+      |> Multi.insert(:membership, fn changes -> Member.changeset(%{group_id: company_space.id, person_id: changes.person.id}) end)
+      |> Repo.transaction()
+      |> case do
         {:ok, _} -> {:ok, Repo.preload(account, [:person])}
         e -> e
       end

@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Groups from "@/models/groups";
 
 import { DivLink } from "@/components/Link";
 import { createPath } from "@/utils/paths";
@@ -9,22 +10,21 @@ import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
 
 interface GroupPageNavigationProps {
-  groupId: string;
-  groupName: string;
+  group: Groups.Group;
   activeTab: "overview" | "discussions" | "goals" | "projects" | "kpis";
 }
 
-export function GroupPageNavigation({ groupId, groupName, activeTab }: GroupPageNavigationProps) {
-  const overviewPath = createPath("spaces", groupId);
-  const goalsPath = createPath("spaces", groupId, "goals");
-  const projectsPath = createPath("spaces", groupId, "projects");
-  const discussionsPath = createPath("spaces", groupId, "discussions");
-  const kpisPath = createPath("spaces", groupId, "kpis");
+export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationProps) {
+  const overviewPath = createPath("spaces", group.id);
+  const goalsPath = createPath("spaces", group.id, "goals");
+  const projectsPath = createPath("spaces", group.id, "projects");
+  const discussionsPath = createPath("spaces", group.id, "discussions");
+  const kpisPath = createPath("spaces", group.id, "kpis");
 
   return (
     <div className="-mx-16 -mt-12 mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t">
       <div className="flex items-center justify-between">
-        <div className="font-medium pl-4 text-sm w-3/12 truncate pt-1">{groupName}</div>
+        <div className="font-medium pl-4 text-sm w-3/12 truncate pt-1">{group.name}</div>
 
         <div className="flex items-center justify-center gap-2 flex-1 w-6/12">
           <Tab id="overview" activeTab={activeTab} link={overviewPath} title="Overview" />
@@ -35,7 +35,7 @@ export function GroupPageNavigation({ groupId, groupName, activeTab }: GroupPage
         </div>
 
         <div className="font-medium pr-3 flex justify-end items-center w-3/12">
-          <Settings groupId={groupId} />
+          <Settings group={group} />
         </div>
       </div>
     </div>
@@ -71,25 +71,27 @@ function Tab({ id, activeTab, link, title }: TabProps) {
   );
 }
 
-export function Settings({ groupId }) {
+export function Settings({ group }) {
   return (
     <PageOptions.Root noBorder testId="space-settings">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit name and purpose"
-        to={`/spaces/${groupId}/edit`}
+        to={`/spaces/${group.id}/edit`}
         dataTestId="edit-name-and-purpose"
       />
-      <PageOptions.Link
-        icon={Icons.IconUserPlus}
-        title="Add/Remove members"
-        to={`/spaces/${groupId}/members`}
-        dataTestId="add-remove-members"
-      />
+      {!group.isCompanySpace && (
+        <PageOptions.Link
+          icon={Icons.IconUserPlus}
+          title="Add/Remove members"
+          to={`/spaces/${group.id}/members`}
+          dataTestId="add-remove-members"
+        />
+      )}
       <PageOptions.Link
         icon={Icons.IconPaint}
         title="Change Appearance"
-        to={`/spaces/${groupId}/appearance`}
+        to={`/spaces/${group.id}/appearance`}
         dataTestId="change-appearance"
       />
     </PageOptions.Root>
