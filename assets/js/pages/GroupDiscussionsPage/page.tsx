@@ -18,7 +18,7 @@ export function Page() {
     <Pages.Page title={space.name}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation groupId={space.id} groupName={space.name} activeTab="discussions" />
+          <GroupPageNavigation group={space} activeTab="discussions" />
           <div className="mt-4 mb-8 flex items-center justify-between">
             <div className="text-2xl font-extrabold">Discussions</div>
             <FilledButton

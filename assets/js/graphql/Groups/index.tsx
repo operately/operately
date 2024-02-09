@@ -10,6 +10,7 @@ export const GET_GROUP = gql`
       mission
       icon
       color
+      isCompanySpace
 
       members {
         id

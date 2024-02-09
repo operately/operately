@@ -13,7 +13,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation groupId={group.id} groupName={group.name} activeTab="kpis" />
+          <GroupPageNavigation group={group} activeTab="kpis" />
           <ComingSoonBadge />
         </Paper.Body>
       </Paper.Root>

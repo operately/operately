@@ -17,7 +17,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation groupId={group.id} groupName={group.name} activeTab="overview" />
+          <GroupPageNavigation group={group} activeTab="overview" />
 
           <div className="mt-12">
             <div className="font-medium flex items-center gap-2 justify-center mb-2">
