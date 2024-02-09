@@ -24,7 +24,6 @@
 import React from "react";
 import { Link } from "@/components/Link";
 import { useLoaderData, useRevalidator } from "react-router-dom";
-import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 
 import { Context } from "./Context";
@@ -44,14 +43,19 @@ const sizes = {
 interface RootProps {
   size?: Size;
   children?: React.ReactNode;
+  fluid?: boolean;
 }
 
-export function Root({ size, children }: RootProps): JSX.Element {
+export function Root({ size, children, fluid = false }: RootProps): JSX.Element {
   size = size || "medium";
+
+  const className = fluid
+    ? "flex-1 mx-auto my-10 relative " + "w-[90%]"
+    : "flex-1 mx-auto my-10 relative " + sizes[size];
 
   return (
     <Context.Provider value={{ size }}>
-      <div className={classnames("flex-1 mx-auto my-10 relative", sizes[size])}>{children}</div>
+      <div className={className}>{children}</div>
     </Context.Provider>
   );
 }
