@@ -40,11 +40,9 @@ function ProjectList({ projects }: { projects: Projects.Project[] }) {
   const sortedProjects = Projects.sortByName(activeProjects);
 
   return (
-    <div className="">
+    <div className="grid grid-cols-3 gap-4">
       {sortedProjects.map((project) => (
-        <div key={project.id} className="py-4 bg-surface flex flex-col border-t last:border-b border-stroke-base">
-          <ProjectListItem project={project} key={project.id} avatarPosition="right" />
-        </div>
+        <ProjectListItem project={project} key={project.id} avatarPosition="right" />
       ))}
     </div>
   );

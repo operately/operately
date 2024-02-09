@@ -95,13 +95,13 @@ const indicators = {
   },
 };
 
-export function Indicator({ value, type }): JSX.Element {
+export function Indicator({ value, type, size = 16 }): JSX.Element {
   const { title, color } = findOptions(type, value);
 
   return (
     <TextTooltip text={explanation(type, value)} delayDuration={500}>
       <span className="font-medium flex items-center gap-1 shrink-0 cursor-default hover:bg-surface-highlight">
-        <Icons.IconCircleFilled size={16} className={color} />
+        <Icons.IconCircleFilled size={size} className={color} />
         {title}
       </span>
     </TextTooltip>
