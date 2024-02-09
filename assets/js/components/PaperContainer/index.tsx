@@ -44,14 +44,16 @@ const sizes = {
 interface RootProps {
   size?: Size;
   children?: React.ReactNode;
+  fluid?: boolean;
 }
 
-export function Root({ size, children }: RootProps): JSX.Element {
+export function Root({ size, children, fluid = false }: RootProps): JSX.Element {
   size = size || "medium";
+  const sizeClass = fluid ? "w-[90%]" : sizes[size];
 
   return (
     <Context.Provider value={{ size }}>
-      <div className={classnames("flex-1 mx-auto my-10 relative", sizes[size])}>{children}</div>
+      <div className={classnames("flex-1 mx-auto my-10 relative", sizeClass)}>{children}</div>
     </Context.Provider>
   );
 }
