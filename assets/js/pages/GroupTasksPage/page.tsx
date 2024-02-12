@@ -31,6 +31,7 @@ export function Page() {
             modalTitle={`Adding a new task to ${group.name}`}
             isOpen={newTaskModalOpen}
             hideModal={() => setNewTaskModalOpen(false)}
+            group={group}
           />
         </Paper.Body>
       </Paper.Root>

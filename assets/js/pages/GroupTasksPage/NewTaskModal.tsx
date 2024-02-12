@@ -10,8 +10,9 @@ import { DateSelector } from "@/pages/ProjectEditTimelinePage/DateSelector";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
 import * as Forms from "@/components/Form";
+import * as Tasks from "@/models/tasks";
 
-function useForm() {
+function useForm({ onSubmit, group }) {
   const [name, setName] = React.useState("");
   const [dueDate, setDueDate] = React.useState(null);
   const [assignee, setAssignee] = React.useState(null);
@@ -38,6 +39,26 @@ function useForm() {
     className: "min-h-[250px] p-2 py-1",
   });
 
+  const [create, { loading }] = Tasks.useCreateTaskMutation({
+    onCompleted: () => onSubmit(),
+  });
+
+  const submit = () => {
+    create({
+      variables: {
+        input: {
+          name,
+          dueDate,
+          description: JSON.stringify(editor.getJSON()),
+          priority: priority.value,
+          size: size.value,
+          assignee_id: assignee?.id,
+          spaceId: group.id,
+        },
+      },
+    });
+  };
+
   return {
     fields: {
       name,
@@ -55,12 +76,13 @@ function useForm() {
       setSize,
       setAssignee,
     },
+    submit: submit,
     errors: [],
   };
 }
 
-export function NewTaskModal({ isOpen, hideModal, modalTitle }) {
-  const form = useForm();
+export function NewTaskModal({ isOpen, hideModal, modalTitle, group }) {
+  const form = useForm({ onSubmit: hideModal, group });
 
   return (
     <Modal title={modalTitle} isOpen={isOpen} hideModal={hideModal}>
@@ -74,7 +96,7 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle }) {
             Cancel
           </FilledButton>
 
-          <FilledButton size="xs" type="primary" onClick={hideModal}>
+          <FilledButton size="xs" type="primary" onClick={form.submit}>
             Create
           </FilledButton>
         </div>

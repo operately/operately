@@ -11,16 +11,19 @@ defmodule Operately.Operations.TaskAdding do
       name: attrs.name,
       description: Jason.decode!(attrs.description),
       due_date: attrs.due_date,
+      size: attrs.size,
+      priority: attrs.priority,
     })
 
     Multi.new()
     |> Multi.insert(:task, changeset)
     |> Activities.insert(creator.id, :task_adding, fn changes ->
       %{
-        company_id: changes.goal.company_id,
-        space_id: changes.goal.space_id,
-        assignee_id: changes.goal.assignee_id,
-        name: changes.task.name
+        company_id: creator.company_id,
+        space_id: changes.task.space_id,
+        assignee_id: changes.task.assignee_id,
+        name: changes.task.name,
+        task_id: changes.task.id,
       }
     end)
     |> Repo.transaction()
