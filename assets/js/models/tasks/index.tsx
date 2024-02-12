@@ -41,3 +41,29 @@ export async function getTasks(spaceId: string) {
 
   return data.data.tasks;
 }
+
+export async function getTask(id: string) {
+  const query = gql`
+    query GetTask($id: ID!) {
+      task(id: $id) {
+        id
+        name
+        priority
+        size
+        dueDate
+        assignee {
+          id
+          fullName
+        }
+      }
+    }
+  `;
+
+  const data = await client.query({
+    query,
+    variables: { id },
+    fetchPolicy: "network-only",
+  });
+
+  return data.data.task;
+}

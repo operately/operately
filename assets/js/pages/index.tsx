@@ -67,6 +67,7 @@ import * as ProjectStatusUpdateListPage from "./ProjectStatusUpdateListPage";
 import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
 import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as TaskPage from "./TaskPage";
 
 //
 // We are explocily exporting the pages here to avoid false positives
@@ -328,5 +329,9 @@ export default {
   ProjectsPage: {
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page
+  },
+  TaskPage: {
+    loader: TaskPage.loader,
+    Page: TaskPage.Page
   }
 };

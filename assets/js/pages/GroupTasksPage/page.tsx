@@ -9,6 +9,7 @@ import { useLoadedData, useRefresh } from "./loader";
 import { NewTaskModal } from "./NewTaskModal";
 import { Table } from "./Table";
 import FormattedTime from "@/components/FormattedTime";
+import { Link } from "@/components/Link";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -17,7 +18,7 @@ export function Page() {
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
 
   return (
-    <Pages.Page title={group.name}>
+    <Pages.Page title={["Tasks", group.name]}>
       <Paper.Root size="large" fluid>
         <Paper.Body minHeight="500px" backgroundColor="bg-surface">
           <GroupPageNavigation group={group} activeTab="tasks" />
@@ -50,7 +51,9 @@ function TaskList() {
 
   const rows = tasks.map((task) => {
     return [
-      <div className="inline-flex justify-center font-medium">{task.name}</div>,
+      <div className="inline-flex font-medium">
+        <Link to={`/tasks/${task.id}`}>{task.name}</Link>
+      </div>,
       <div className="inline-flex justify-center">{task.priority}</div>,
       <div className="inline-flex justify-center">{task.size}</div>,
       <div className="inline-flex justify-center">{task.assignee!.fullName}</div>,

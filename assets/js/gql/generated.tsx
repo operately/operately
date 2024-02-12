@@ -1491,7 +1491,7 @@ export type Task = {
   assignee?: Maybe<Person>;
   creator: Person;
   description?: Maybe<Scalars['String']['output']>;
-  dueDate: Scalars['DateTime']['output'];
+  dueDate: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   name: Scalars['String']['output'];
