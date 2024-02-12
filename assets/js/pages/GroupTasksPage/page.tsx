@@ -2,12 +2,17 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { Table } from "./Table";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { FilledButton } from "@/components/Button";
+
 import { useLoadedData } from "./loader";
+import { NewTaskModal } from "./NewTaskModal";
+import { Table } from "./Table";
 
 export function Page() {
   const { group } = useLoadedData();
+
+  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(true);
 
   return (
     <Pages.Page title={group.name}>
@@ -15,7 +20,18 @@ export function Page() {
         <Paper.Body minHeight="500px" backgroundColor="bg-surface">
           <GroupPageNavigation group={group} activeTab="tasks" />
 
+          <div className="flex justify-end mb-6">
+            <FilledButton size="xs" type="primary" onClick={() => setNewTaskModalOpen(true)}>
+              New Task
+            </FilledButton>
+          </div>
+
           <TaskList />
+          <NewTaskModal
+            modalTitle={`Adding a new task to ${group.name}`}
+            isOpen={newTaskModalOpen}
+            hideModal={() => setNewTaskModalOpen(false)}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
