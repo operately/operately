@@ -81,8 +81,13 @@ function useForm({ onSubmit, group }) {
   };
 }
 
-export function NewTaskModal({ isOpen, hideModal, modalTitle, group }) {
-  const form = useForm({ onSubmit: hideModal, group });
+export function NewTaskModal({ isOpen, hideModal, modalTitle, group, onSubmit }) {
+  const handleSubmit = () => {
+    onSubmit();
+    hideModal();
+  };
+
+  const form = useForm({ onSubmit: handleSubmit, group });
 
   return (
     <Modal title={modalTitle} isOpen={isOpen} hideModal={hideModal}>

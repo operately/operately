@@ -36,6 +36,7 @@ export async function getTasks(spaceId: string) {
   const data = await client.query({
     query,
     variables: { spaceId },
+    fetchPolicy: "network-only",
   });
 
   return data.data.tasks;

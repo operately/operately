@@ -17,7 +17,7 @@ export function Table(props: TableProps) {
         <div className="flex min-w-full">
           {headers.map((header, index) => (
             <div
-              key={header}
+              key={index}
               className={classNames(
                 "text-sm font-bold uppercase",
                 props.cellPadding,
@@ -35,7 +35,7 @@ export function Table(props: TableProps) {
       </div>
 
       {props.rows.map((row, index) => (
-        <div className="inline-block min-w-full">
+        <div key={index} className="inline-block min-w-full">
           <div className="border-t border-stroke-base">
             <div key={index} className="flex">
               {row.map((cell, index) => (

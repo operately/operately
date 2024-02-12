@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Graphql.Types.Tasks do
 
     field :inserted_at, non_null(:date)
     field :updated_at, non_null(:date)
-    field :due_date, non_null(:datetime)
+    field :due_date, non_null(:date)
 
     field :size, non_null(:string)
     field :priority, non_null(:string)

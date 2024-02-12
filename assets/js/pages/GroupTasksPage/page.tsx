@@ -5,15 +5,16 @@ import * as Pages from "@/components/Pages";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { FilledButton } from "@/components/Button";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { NewTaskModal } from "./NewTaskModal";
 import { Table } from "./Table";
 import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { group } = useLoadedData();
+  const refresh = useRefresh();
 
-  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(true);
+  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
 
   return (
     <Pages.Page title={group.name}>
@@ -32,6 +33,7 @@ export function Page() {
             modalTitle={`Adding a new task to ${group.name}`}
             isOpen={newTaskModalOpen}
             hideModal={() => setNewTaskModalOpen(false)}
+            onSubmit={refresh}
             group={group}
           />
         </Paper.Body>
