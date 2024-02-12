@@ -46,7 +46,7 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Content className="outline-red-400 border border-surface-outline z-50" align="start">
+        <Popover.Content className="outline-red-400 border border-surface-outline z-[1000]" align="start">
           <DatePicker
             inline
             selected={date}

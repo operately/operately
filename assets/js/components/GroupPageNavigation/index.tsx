@@ -11,7 +11,7 @@ import { createTestId } from "@/utils/testid";
 
 interface GroupPageNavigationProps {
   group: Groups.Group;
-  activeTab: "overview" | "discussions" | "goals" | "projects" | "kpis";
+  activeTab: "overview" | "discussions" | "goals" | "projects" | "kpis" | "tasks";
 }
 
 export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationProps) {
@@ -20,6 +20,7 @@ export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationPro
   const projectsPath = createPath("spaces", group.id, "projects");
   const discussionsPath = createPath("spaces", group.id, "discussions");
   const kpisPath = createPath("spaces", group.id, "kpis");
+  const tasksPath = createPath("spaces", group.id, "tasks");
 
   return (
     <div className="-mx-16 -mt-12 mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t">
@@ -32,6 +33,7 @@ export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationPro
           <Tab id="projects" activeTab={activeTab} link={projectsPath} title="Projects" />
           <Tab id="discussions" activeTab={activeTab} link={discussionsPath} title="Discussions" />
           <Tab id="kpis" activeTab={activeTab} link={kpisPath} title="KPIs" />
+          <Tab id="tasks" activeTab={activeTab} link={tasksPath} title="Tasks" />
         </div>
 
         <div className="font-medium pr-3 flex justify-end items-center w-3/12">

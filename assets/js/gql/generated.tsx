@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -271,6 +271,14 @@ export type ActivityContentProjectTimelineEdited = {
   updatedMilestones?: Maybe<Array<Maybe<Milestone>>>;
 };
 
+export type ActivityContentTaskAdding = {
+  __typename?: 'ActivityContentTaskAdding';
+  companyId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  spaceId: Scalars['String']['output'];
+  taskId: Scalars['String']['output'];
+};
+
 export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;
 
 export type ActivityEventDataCommentPost = {
@@ -430,6 +438,16 @@ export type CreateTargetInput = {
   name: Scalars['String']['input'];
   to: Scalars['Float']['input'];
   unit: Scalars['String']['input'];
+};
+
+export type CreateTaskInput = {
+  assigneeId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  dueDate?: InputMaybe<Scalars['NaiveDateTime']['input']>;
+  name: Scalars['String']['input'];
+  priority?: InputMaybe<Scalars['String']['input']>;
+  size?: InputMaybe<Scalars['String']['input']>;
+  spaceId: Scalars['ID']['input'];
 };
 
 export type CreateUpdateInput = {
@@ -863,6 +881,7 @@ export type RootMutationType = {
   createProfile?: Maybe<Person>;
   createProject: Project;
   createProjectReviewRequest?: Maybe<ProjectReviewRequest>;
+  createTask?: Maybe<Task>;
   createTenet?: Maybe<Tenet>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
@@ -1038,6 +1057,11 @@ export type RootMutationTypeCreateProjectArgs = {
 
 export type RootMutationTypeCreateProjectReviewRequestArgs = {
   input: CreateProjectReviewRequestInput;
+};
+
+
+export type RootMutationTypeCreateTaskArgs = {
+  input: CreateTaskInput;
 };
 
 
@@ -1299,6 +1323,7 @@ export type RootQueryType = {
   projectReviewRequest: ProjectReviewRequest;
   projects?: Maybe<Array<Maybe<Project>>>;
   searchPeople?: Maybe<Array<Maybe<Person>>>;
+  tasks?: Maybe<Array<Maybe<Task>>>;
   tenet?: Maybe<Tenet>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
   unreadNotificationsCount?: Maybe<Scalars['Int']['output']>;
@@ -1426,6 +1451,11 @@ export type RootQueryTypeSearchPeopleArgs = {
 };
 
 
+export type RootQueryTypeTasksArgs = {
+  spaceId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type RootQueryTypeTenetArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1454,6 +1484,21 @@ export type Target = {
   to: Scalars['Float']['output'];
   unit: Scalars['String']['output'];
   value: Scalars['Float']['output'];
+};
+
+export type Task = {
+  __typename?: 'Task';
+  assignee?: Maybe<Person>;
+  creator: Person;
+  description?: Maybe<Scalars['String']['output']>;
+  dueDate: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  insertedAt: Scalars['Date']['output'];
+  name: Scalars['String']['output'];
+  priority: Scalars['String']['output'];
+  size: Scalars['String']['output'];
+  space: Group;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type Tenet = {
