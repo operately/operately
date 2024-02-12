@@ -42,26 +42,53 @@ export async function getTasks(spaceId: string) {
   return data.data.tasks;
 }
 
-export async function getTask(id: string) {
+interface GetTaskOptions {
+  includeSpace?: boolean;
+  includeAssignee?: boolean;
+}
+
+export async function getTask(id: string, opts: GetTaskOptions = {}) {
   const query = gql`
-    query GetTask($id: ID!) {
+    fragment SpaceOnTask on Task {
+      space {
+        id
+        name
+        icon
+        color
+      }
+    }
+
+    fragment AssigneeOnTask on Task {
+      assignee {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+
+    query GetTask($id: ID!, $includeSpace: Boolean!, $includeAssignee: Boolean!) {
       task(id: $id) {
         id
         name
         priority
         size
         dueDate
-        assignee {
-          id
-          fullName
-        }
+        description
+
+        ...AssigneeOnTask @include(if: $includeAssignee)
+        ...SpaceOnTask @include(if: $includeSpace)
       }
     }
   `;
 
   const data = await client.query({
     query,
-    variables: { id },
+    variables: {
+      id,
+      includeSpace: !!opts.includeSpace,
+      includeAssignee: !!opts.includeAssignee,
+    },
     fetchPolicy: "network-only",
   });
 
