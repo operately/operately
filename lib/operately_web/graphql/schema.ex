@@ -95,6 +95,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.People
   import_types OperatelyWeb.Graphql.Queries.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Queries.Projects
+  import_types OperatelyWeb.Graphql.Queries.Tasks
   import_types OperatelyWeb.Graphql.Queries.Tenets
   import_types OperatelyWeb.Graphql.Queries.Updates
 
@@ -136,6 +137,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :person_queries
     import_fields :project_review_request_queries
     import_fields :project_queries
+    import_fields :task_queries
     import_fields :tenet_queries
     import_fields :update_queries
   end

@@ -1323,6 +1323,7 @@ export type RootQueryType = {
   projectReviewRequest: ProjectReviewRequest;
   projects?: Maybe<Array<Maybe<Project>>>;
   searchPeople?: Maybe<Array<Maybe<Person>>>;
+  tasks?: Maybe<Array<Maybe<Task>>>;
   tenet?: Maybe<Tenet>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
   unreadNotificationsCount?: Maybe<Scalars['Int']['output']>;
@@ -1447,6 +1448,11 @@ export type RootQueryTypeProjectsArgs = {
 
 export type RootQueryTypeSearchPeopleArgs = {
   query: Scalars['String']['input'];
+};
+
+
+export type RootQueryTypeTasksArgs = {
+  spaceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

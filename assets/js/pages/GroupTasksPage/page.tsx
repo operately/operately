@@ -8,6 +8,7 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { NewTaskModal } from "./NewTaskModal";
 import { Table } from "./Table";
+import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -40,19 +41,23 @@ export function Page() {
 }
 
 function TaskList() {
+  const { tasks } = useLoadedData();
+
   const columnSizes = [400, 150, 150, 150, 150, 150];
   const headers = ["Task", "Priority", "Size", "Assignees", "Due Date", "Status"];
 
-  const rows = [
-    [
-      <div className="inline-flex justify-center font-medium">Renew SSL certificate for the staging environment</div>,
-      <div className="inline-flex justify-center">High</div>,
-      <div className="inline-flex justify-center">Small</div>,
-      <div className="inline-flex justify-center">John Doe</div>,
-      <div className="inline-flex justify-center">Feb 15th</div>,
+  const rows = tasks.map((task) => {
+    return [
+      <div className="inline-flex justify-center font-medium">{task.name}</div>,
+      <div className="inline-flex justify-center">{task.priority}</div>,
+      <div className="inline-flex justify-center">{task.size}</div>,
+      <div className="inline-flex justify-center">{task.assignee!.fullName}</div>,
+      <div className="inline-flex justify-center">
+        <FormattedTime time={task.dueDate} format="short-date" />
+      </div>,
       <div className="inline-flex justify-center">Open</div>,
-    ],
-  ];
+    ];
+  });
 
   return <Table headers={headers} rows={rows} columnSizes={columnSizes} cellPadding="px-2 py-1.5" />;
 }
