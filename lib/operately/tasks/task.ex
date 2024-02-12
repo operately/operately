@@ -1,25 +1,27 @@
 defmodule Operately.Tasks.Task do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "tasks" do
-    field :description, :map
-    field :due_date, :naive_datetime
+    belongs_to :creator, Operately.People.Person
+    belongs_to :assignee, Operately.People.Person
+    belongs_to :space, Operately.Groups.Group
+
     field :name, :string
     field :priority, :string
     field :size, :string
-    field :assignee_id, :binary_id
-    field :space_id, :binary_id
+    field :description, :map
+    field :due_date, :naive_datetime
 
     timestamps()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :due_date, :description, :size, :priority])
-    |> validate_required([:name, :due_date, :description, :size, :priority])
+    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id])
+    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id])
   end
 end
