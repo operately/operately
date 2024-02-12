@@ -112,6 +112,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.People
   import_types OperatelyWeb.Graphql.Mutations.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Mutations.Projects
+  import_types OperatelyWeb.Graphql.Mutations.Tasks
   import_types OperatelyWeb.Graphql.Mutations.Tenets
   import_types OperatelyWeb.Graphql.Mutations.Updates
 
@@ -153,6 +154,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :person_mutations
     import_fields :project_review_request_mutations
     import_fields :project_mutations
+    import_fields :task_mutations
     import_fields :tenet_mutations
     import_fields :update_mutations
   end
