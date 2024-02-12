@@ -1,7 +1,9 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Companies from "@/models/companies";
 
+import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { FilledButton } from "@/components/Button";
 
@@ -12,10 +14,12 @@ import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 
 export function Page() {
-  const { group } = useLoadedData();
+  const { company, group } = useLoadedData();
   const refresh = useRefresh();
 
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
+
+  if (Companies.hasFeature(company, "tasks") === false) return <CommingSoonPage />;
 
   return (
     <Pages.Page title={["Tasks", group.name]}>
@@ -65,4 +69,19 @@ function TaskList() {
   });
 
   return <Table headers={headers} rows={rows} columnSizes={columnSizes} cellPadding="px-2 py-1.5" />;
+}
+
+function CommingSoonPage() {
+  const { group } = useLoadedData();
+
+  return (
+    <Pages.Page title={group.name}>
+      <Paper.Root size="large">
+        <Paper.Body minHeight="500px">
+          <GroupPageNavigation group={group} activeTab="tasks" />
+          <ComingSoonBadge />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
+  );
 }
