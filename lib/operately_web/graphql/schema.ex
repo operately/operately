@@ -61,6 +61,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Types.Projects
   import_types OperatelyWeb.Graphql.Types.Reactions
+  import_types OperatelyWeb.Graphql.Types.Tasks
   import_types OperatelyWeb.Graphql.Types.Tenets
   import_types OperatelyWeb.Graphql.Types.UpdateContentGoalCheckIn
   import_types OperatelyWeb.Graphql.Types.UpdateContentMessage

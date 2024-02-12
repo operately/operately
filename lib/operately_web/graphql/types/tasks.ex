@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Graphql.Types.Tasks do
   use Absinthe.Schema.Notation
 
-  object :goal do
+  object :task do
     field :id, non_null(:id)
     field :name, non_null(:string)
 

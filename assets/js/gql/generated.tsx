@@ -440,6 +440,16 @@ export type CreateTargetInput = {
   unit: Scalars['String']['input'];
 };
 
+export type CreateTaskInput = {
+  assigneeId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  dueDate?: InputMaybe<Scalars['NaiveDateTime']['input']>;
+  name: Scalars['String']['input'];
+  priority?: InputMaybe<Scalars['String']['input']>;
+  size?: InputMaybe<Scalars['String']['input']>;
+  spaceId: Scalars['ID']['input'];
+};
+
 export type CreateUpdateInput = {
   content: Scalars['String']['input'];
   health?: InputMaybe<Scalars['String']['input']>;
@@ -871,6 +881,7 @@ export type RootMutationType = {
   createProfile?: Maybe<Person>;
   createProject: Project;
   createProjectReviewRequest?: Maybe<ProjectReviewRequest>;
+  createTask?: Maybe<Task>;
   createTenet?: Maybe<Tenet>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
@@ -1046,6 +1057,11 @@ export type RootMutationTypeCreateProjectArgs = {
 
 export type RootMutationTypeCreateProjectReviewRequestArgs = {
   input: CreateProjectReviewRequestInput;
+};
+
+
+export type RootMutationTypeCreateTaskArgs = {
+  input: CreateTaskInput;
 };
 
 
@@ -1462,6 +1478,21 @@ export type Target = {
   to: Scalars['Float']['output'];
   unit: Scalars['String']['output'];
   value: Scalars['Float']['output'];
+};
+
+export type Task = {
+  __typename?: 'Task';
+  assignee?: Maybe<Person>;
+  creator: Person;
+  description?: Maybe<Scalars['String']['output']>;
+  dueDate: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  insertedAt: Scalars['Date']['output'];
+  name: Scalars['String']['output'];
+  priority: Scalars['String']['output'];
+  size: Scalars['String']['output'];
+  space: Group;
+  updatedAt: Scalars['Date']['output'];
 };
 
 export type Tenet = {
