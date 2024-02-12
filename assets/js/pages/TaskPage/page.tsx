@@ -18,23 +18,23 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={task.space} />
 
-        <Paper.Body>
-          <div className="flex items-center justify-between border-b border-surface-outline pb-4">
+        <Paper.Body noPadding>
+          <div className="flex items-center justify-between border-b border-surface-outline px-10 py-6">
             <div className="font-bold text-2xl">{task.name}</div>
             <FilledButton size="xs" type="primary">
               Mark as Done
             </FilledButton>
           </div>
 
-          <div className="flex gap-8 justify-between items-start mt-8">
-            <div className="w-2/3">
+          <div className="flex gap-8 justify-between items-start">
+            <div className="w-2/3 pl-10 pt-4">
               <div className="font-medium">
                 <RichContent jsonContent={task.description!} />
               </div>
             </div>
 
-            <div className="w-1/3 flex flex-col border-l border-surface-outline pl-4 divide-y divide-stroke-base">
-              <div className="not-first:pt-4 pb-4">
+            <div className="w-1/3 flex flex-col border-l border-surface-outline divide-y divide-stroke-base">
+              <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Assignee</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Avatar person={task.assignee!} size={20} />
@@ -42,24 +42,24 @@ export function Page() {
                 </div>
               </div>
 
-              <div className="not-first:pt-4 pb-4">
+              <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
                 <div className="flex items-center gap-2 mt-1">Open</div>
               </div>
 
-              <div className="not-first:pt-4 pb-4">
+              <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Due Date</div>
                 <div className="forn-medium mt-1">
                   <FormattedTime time={task.dueDate} format="short-date" />
                 </div>
               </div>
 
-              <div className="not-first:pt-4 pb-4">
+              <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Priority</div>
                 <div className="forn-medium mt-1 capitalize">{task.priority}</div>
               </div>
 
-              <div className="not-first:pt-4 pb-4">
+              <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Size</div>
                 <div className="forn-medium mt-1 capitalize">{task.size}</div>
               </div>
