@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectMilestoneCommented do
       resolve fn activity, _, _ ->
         milestone_id = activity.content["milestone_id"]
 
-        milestone = Operately.Projects.get_milestone!(milestone_id)
+        milestone = Operately.Projects.get_milestone!(milestone_id, with_deleted: true)
 
         {:ok, milestone}
       end
