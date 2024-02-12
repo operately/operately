@@ -33,6 +33,7 @@ import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
 import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
+import TaskAdding from "./TaskAdding"
 
 export default function FeedItem({activity, page}) {
   const activityType = activity.content.__typename;
@@ -121,6 +122,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentProjectTimelineEdited":
       return <ProjectTimelineEdited activity={activity} page={page} />;
+    
+    case "ActivityContentTaskAdding":
+      return <TaskAdding activity={activity} page={page} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/components/Feed/FeedItem/index.tsx";
