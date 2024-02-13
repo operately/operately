@@ -1,18 +1,22 @@
 defmodule Mix.Tasks.Operately.Gen.Mutation do
   import Mix.Operately, only: [generate_file: 2, inject_into_file: 3]
 
+  @supported_types ~w(string integer float boolean)
+
   #
   # Usage example:
-  # mix operately.gen.mutation tasks edit_task_name TaskNameEditing
+  # mix operately.gen.mutation tasks edit_task_name TaskNameEditing id:string name:string
   #
-  def run([type, mutation_name, operation]) do
+  def run([type, mutation_name, operation | fields]) do
     validate_type(type)
     validate_mutation_name(type, mutation_name)
     validate_operation(operation)
 
+    fields = parse_fields(fields)
+
     insertion_point = find_file_insertion_point(type)
 
-    inject_input_object(type, mutation_name, insertion_point - 1)
+    inject_input_object(type, mutation_name, fields, insertion_point - 1)
     inject_mutation_field(type, mutation_name, operation, insertion_point + 1)
     generate_js_model_mutation(type, mutation_name)
     inject_js_model_index_export(type, mutation_name)
@@ -56,12 +60,13 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     inject_into_file(file_path, "export { #{function} } from './#{import_file_path}';", 1)
   end
 
-  def inject_input_object(type, mutation_name, insertion_point) do
+  def inject_input_object(type, mutation_name, fields, insertion_point) do
     file_name = "lib/operately_web/graphql/mutations/#{type}.ex"
 
     input_object = """
 
       input :#{mutation_name}_input do
+        #{Enum.join(Enum.map(fields, fn {name, fieldType} -> "field :#{name}, non_null(:#{fieldType})" end), "\n")}
       end
 
     """
@@ -152,5 +157,34 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
 
   defp singular_type_name(type) do
     String.replace(type, ~r/s\z/, "")
+  end
+
+  defp parse_fields(fields) do
+    if Enum.empty?(fields) do
+      raise """
+      A mutation should have at least one field. Example: mix operately.gen.mutation tasks edit_task_name TaskNameEditing id:string name:string
+      """
+    end
+
+    Enum.each(fields, fn field ->
+      unless String.contains?(field, ":") do
+        raise """
+        Every field should have a type. Example: mix operately.gen.mutation tasks edit_task_name TaskNameEditing id:string name:string
+        """
+      end
+      
+      [name, fieldType] = String.split(field, ":")
+
+      unless Enum.member?(@supported_types, fieldType) do
+        raise """
+        #{fieldType} is not a supported type in #{name}:#{fieldType}. Supported types are: #{@supported_types}
+        """
+      end
+    end)
+
+    fields |> Enum.map(fn field ->
+      [name, fieldType] = String.split(field, ":")
+      {name, fieldType}
+    end)
   end
 end
