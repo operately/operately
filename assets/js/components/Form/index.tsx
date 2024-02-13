@@ -90,7 +90,20 @@ export function TextInput({ label, value, onChange, placeholder = "", error, ...
   );
 }
 
-export function TextInputNoLabel({ id, value, onChange, placeholder = "", error = false, ...props }) {
+interface TextInnputNoLabelProps {
+  id: string;
+  value: string;
+  placeholder?: string;
+  error?: boolean;
+  autoFocus?: boolean;
+
+  onChange: (value: string) => void;
+  onEnter?: () => void;
+}
+
+export function TextInputNoLabel(props: TextInnputNoLabelProps) {
+  const { id, value, onChange, placeholder = "", error = false, autoFocus = false, ...rest } = props;
+
   const className = classname(
     "w-full bg-surface text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
     {
@@ -98,6 +111,12 @@ export function TextInputNoLabel({ id, value, onChange, placeholder = "", error 
       "border-red-500": error,
     },
   );
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && props.onEnter) {
+      props.onEnter();
+    }
+  };
 
   return (
     <input
@@ -107,7 +126,9 @@ export function TextInputNoLabel({ id, value, onChange, placeholder = "", error 
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
-      {...props}
+      onKeyPress={handleKeyPress}
+      autoFocus={autoFocus}
+      {...rest}
     />
   );
 }
