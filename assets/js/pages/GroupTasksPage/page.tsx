@@ -14,6 +14,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 
 import { OpenBadge, ClosedBadge, PriorityBadge, SizeBadge } from "@/features/Tasks/Badges";
+import Avatar from "@/components/Avatar";
 
 export function Page() {
   const { company, group } = useLoadedData();
@@ -71,7 +72,16 @@ function TaskList() {
       <div className="inline-flex justify-center">
         <SizeBadge size={task.size} />
       </div>,
-      <div className="inline-flex justify-center">{task.assignee!.fullName}</div>,
+      <div className="inline-flex justify-center -space-x-1 items-center">
+        {task.assignees!.slice(0, 3).map((assignee) => (
+          <div className="border border-surface rounded-full">
+            <Avatar key={assignee.id} person={assignee} size={20} />
+          </div>
+        ))}
+        {task.assignees!.length > 3 && (
+          <div className="text-sm font-medium text-content-base pl-1">+{task.assignees!.length - 3}</div>
+        )}
+      </div>,
       <div className="inline-flex justify-center">
         <FormattedTime time={task.dueDate} format="short-date" />
       </div>,
