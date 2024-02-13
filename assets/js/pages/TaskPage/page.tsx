@@ -5,6 +5,7 @@ import * as Groups from "@/models/groups";
 import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
@@ -32,22 +33,22 @@ export function Page() {
             <TopActions form={form} />
           </div>
 
-          <div className="flex gap-8 justify-between items-start">
-            <div className="w-2/3 pl-10 pt-4">
+          <div className="flex gap-4 justify-between">
+            <div className="w-2/3 pl-10 py-4">
               <div className="font-medium">
-                <RichContent jsonContent={task.description!} />
+                <Description form={form} />
               </div>
             </div>
 
-            <div className="w-1/3 flex flex-col border-l border-surface-outline divide-y divide-stroke-base">
-              <div className="p-3">
+            <div className="w-1/3 flex flex-col border-l border-surface-outline">
+              <div className="p-3 border-b border-stroke-base">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
                 <div className="flex items-center gap-2 mt-1">
                   {form.status.status === "open" ? <OpenBadge /> : <ClosedBadge />}
                 </div>
               </div>
 
-              <div className="p-3">
+              <div className="p-3 border-b border-stroke-base">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Assignee</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Avatar person={task.assignee!} size={20} />
@@ -55,19 +56,19 @@ export function Page() {
                 </div>
               </div>
 
-              <div className="p-3">
+              <div className="p-3 border-b border-stroke-base">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Due Date</div>
                 <div className="forn-medium mt-1">
                   <FormattedTime time={task.dueDate} format="short-date" />
                 </div>
               </div>
 
-              <div className="p-3">
+              <div className="p-3 border-b border-stroke-base">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Priority</div>
                 <Priority form={form} />
               </div>
 
-              <div className="p-3">
+              <div className="p-3 border-b border-stroke-base">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Size</div>
                 <Size form={form} />
               </div>
@@ -240,5 +241,52 @@ function Size({ form }: { form: FormState }) {
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+  );
+}
+
+function Description({ form }: { form: FormState }) {
+  if (form.description.editing) {
+    return <DescriptionEditor form={form} />;
+  } else {
+    return <DescriptionDisplay form={form} />;
+  }
+}
+
+function DescriptionEditor({ form }: { form: FormState }) {
+  return (
+    <div>
+      <div className="uppercase font-medium text-xs text-content-dimmed mb-2">Description</div>
+
+      <TipTapEditor.Root editor={form.description.editor}>
+        <div className="border-x border-b border-stroke-base flex-1">
+          <TipTapEditor.Toolbar editor={form.description.editor} />
+          <TipTapEditor.EditorContent editor={form.description.editor} />
+        </div>
+
+        <div className="flex gap-2 mt-2 justify-end">
+          <FilledButton size="xxs" type="secondary" onClick={form.description.cancel}>
+            Cancel
+          </FilledButton>
+
+          <FilledButton size="xxs" type="primary" onClick={form.description.submit}>
+            Save
+          </FilledButton>
+        </div>
+      </TipTapEditor.Root>
+    </div>
+  );
+}
+
+function DescriptionDisplay({ form }: { form: FormState }) {
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <div className="uppercase font-medium text-xs text-content-dimmed">Description</div>
+        <FilledButton size="xxs" type="secondary" onClick={() => form.description.setEditing(true)}>
+          Edit
+        </FilledButton>
+      </div>
+      <RichContent jsonContent={form.description.description!} />
+    </div>
   );
 }
