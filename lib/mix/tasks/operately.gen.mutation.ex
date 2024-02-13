@@ -28,9 +28,11 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     camelized_input_name = Macro.camelize(mutation_name) <> "Input"
     camelized_operation_name = String.downcase(String.at(camelized_mutation_name, 0)) <> String.slice(camelized_mutation_name, 1..-1)
 
+    function = "use" <> Macro.camelize(mutation_name)
+
     generate_file(file_path, fn _ ->
       """
-      export { #{Macro.camelize(singular_type_name(type)) } from "@/gql";
+      export { #{Macro.camelize(singular_type_name(type))} } from "@/gql";
       import { gql, useMutation } from "@apollo/client";
 
       const MUTATION = gql`
@@ -41,7 +43,7 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
         }
       `;
 
-      export function #{file_name}(options: any) {
+      export function #{function}(options: any) {
         return useMutation(MUTATION, options);
       }
       """
@@ -55,7 +57,7 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     function = "use" <> Macro.camelize(mutation_name)
     import_file_path = "./" <> function
 
-    inject_into_file(file_path, "export { #{function} } from './#{import_file_path}';", 1)
+    inject_into_file(file_path, "export { #{function} } from '#{import_file_path}';", 1)
   end
 
   def inject_input_object(type, mutation_name, fields) do
@@ -68,7 +70,6 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
       input :#{mutation_name}_input do
         #{Enum.join(Enum.map(fields, fn {name, fieldType} -> "field :#{name}, non_null(:#{fieldType})" end), "\n")}
       end
-
     """
 
     inject_into_file(file_name, input_object, insertion_point)
