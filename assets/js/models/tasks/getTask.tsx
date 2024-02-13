@@ -47,6 +47,7 @@ const QUERY = gql`
       size
       dueDate
       description
+      status
 
       ...AssigneeOnTask @include(if: $includeAssignee)
       ...SpaceOnTask @include(if: $includeSpace)

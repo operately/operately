@@ -13,6 +13,8 @@ import { Table } from "./Table";
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 
+import { OpenBadge, ClosedBadge } from "@/features/Tasks/Badges";
+
 export function Page() {
   const { company, group } = useLoadedData();
   const refresh = useRefresh();
@@ -27,7 +29,12 @@ export function Page() {
         <Paper.Body minHeight="500px" backgroundColor="bg-surface">
           <GroupPageNavigation group={group} activeTab="tasks" />
 
-          <div className="flex justify-end mb-6">
+          <div className="flex justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <Link to={`/spaces/${group.id}/tasks?status=open`}>Open</Link>
+              <Link to={`/spaces/${group.id}/tasks?status=closed`}>Closed</Link>
+            </div>
+
             <FilledButton size="xs" type="primary" onClick={() => setNewTaskModalOpen(true)}>
               New Task
             </FilledButton>
@@ -64,7 +71,7 @@ function TaskList() {
       <div className="inline-flex justify-center">
         <FormattedTime time={task.dueDate} format="short-date" />
       </div>,
-      <div className="inline-flex justify-center">Open</div>,
+      <div className="inline-flex justify-center">{task.status === "open" ? <OpenBadge /> : <ClosedBadge />}</div>,
     ];
   });
 

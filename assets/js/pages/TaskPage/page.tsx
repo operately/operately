@@ -13,6 +13,8 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 
+import { OpenBadge, ClosedBadge } from "@/features/Tasks/Badges";
+
 export function Page() {
   const { task } = useLoadedData();
 
@@ -38,16 +40,18 @@ export function Page() {
 
             <div className="w-1/3 flex flex-col border-l border-surface-outline divide-y divide-stroke-base">
               <div className="p-3">
+                <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
+                <div className="flex items-center gap-2 mt-1">
+                  {form.status.status === "open" ? <OpenBadge /> : <ClosedBadge />}
+                </div>
+              </div>
+
+              <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Assignee</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Avatar person={task.assignee!} size={20} />
                   <div className="forn-medium">{task.assignee ? task.assignee.fullName : "Unassigned"}</div>
                 </div>
-              </div>
-
-              <div className="p-3">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
-                <div className="flex items-center gap-2 mt-1">Open</div>
               </div>
 
               <div className="p-3">
@@ -130,9 +134,23 @@ function TopActions({ form }: { form: FormState }) {
         Edit
       </FilledButton>
 
-      <FilledButton size="xs" type="primary">
-        Mark as Done
-      </FilledButton>
+      {form.status.status === "open" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
     </div>
+  );
+}
+
+function MarkAsDoneButton({ form }: { form: FormState }) {
+  return (
+    <FilledButton size="xs" type="primary" onClick={form.status.close}>
+      Mark as Done
+    </FilledButton>
+  );
+}
+
+function ReopenButton({ form }: { form: FormState }) {
+  return (
+    <FilledButton size="xs" type="primary" onClick={form.status.reopen}>
+      Reopen
+    </FilledButton>
   );
 }
