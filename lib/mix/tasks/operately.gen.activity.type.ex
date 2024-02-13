@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     name = parse_name(name)
     fields = parse_fields(fields)
 
-    gen_operation(name)
+    gen_operation(name, fields)
     gen_graphql_type(name, fields)
     gen_activity_content_schema(name, fields)
     gen_notificaiton_dispatcher(name)
@@ -20,9 +20,11 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     gen_email_template(name)
   end
 
-  def gen_operation(name) do
+  def gen_operation(name, fields) do
     module_name = name
+    action_name = Macro.underscore(name)
     file_name = Macro.underscore(module_name)
+    activity_fields = Enum.map(fields, fn {field_name, _field_type} -> "    \#   #{field_name}: \"TODO\"" end)
 
     generate_file("lib/operately/operations/#{file_name}.ex", fn _ ->
       """
@@ -36,8 +38,13 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
 
           # Multi.new()
           # |> Multi.insert(:something, ...)
+          # |> Activities.insert(creator.id, :#{action_name}, fn changes ->
+          #   %{
+      #{activity_fields}
+          #   }
+          # end)
           # |> Repo.transaction()
-          # |> Repo.extract_result(:goal)
+          # |> Repo.extract_result(:something)
         end
       end
       """
