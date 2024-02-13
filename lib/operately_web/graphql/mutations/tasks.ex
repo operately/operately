@@ -34,7 +34,26 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
     field :size, non_null(:string)
   end
 
+  input_object :change_task_description_input do
+    field :task_id, non_null(:string)
+field :description, non_null(:string)
+  end
+
+
   object :task_mutations do
+    field :change_task_description, non_null(:task) do
+      arg :input, non_null(:change_task_description_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+
+        case Operately.Operations.TaskDescriptionChange.run(author, input) do
+          {:ok, result} -> {:ok, result}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end
+    end
+
     field :change_task_size, non_null(:task) do
       arg :input, non_null(:change_task_size_input)
 
