@@ -24,7 +24,7 @@ defmodule Operately.Tasks.Task do
 
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id, :status])
-    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id, :status])
+    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id, :status, :closed_at])
+    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id])
   end
 end
