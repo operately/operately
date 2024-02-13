@@ -34,6 +34,7 @@ import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
+import TaskClosing from "./TaskClosing"
 import TaskNameEditing from "./TaskNameEditing"
 
 export default function FeedItem({activity, page}) {
@@ -126,6 +127,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentTaskAdding":
       return <TaskAdding activity={activity} page={page} />;
+    
+    case "ActivityContentTaskClosing":
+      return <TaskClosing activity={activity} page={page} />;
     
     case "ActivityContentTaskNameEditing":
       return <TaskNameEditing activity={activity} page={page} />;

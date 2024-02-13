@@ -34,6 +34,7 @@ import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
+import TaskClosing from "./TaskClosing"
 import TaskNameEditing from "./TaskNameEditing"
 
 export default function NotificationItem({notification}) {
@@ -126,6 +127,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentTaskAdding":
       return <TaskAdding notification={notification} />;
+    
+    case "ActivityContentTaskClosing":
+      return <TaskClosing notification={notification} />;
     
     case "ActivityContentTaskNameEditing":
       return <TaskNameEditing notification={notification} />;
