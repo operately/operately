@@ -24,7 +24,28 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
     field :task_id, non_null(:string)
   end
 
+  input_object :change_task_priority_input do
+    field :task_id, non_null(:string)
+field :priority, non_null(:string)
+  end
+
+
   object :task_mutations do
+    field :change_task_priority, non_null(:task) do
+      arg :input, non_null(:change_task_priority_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        task_id = input.task_id
+        priority = input.priority
+
+        case Operately.Operations.TaskPriorityChange.run(author, task_id, priority) do
+          {:ok, result} -> {:ok, result}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end
+    end
+
     field :reopen_task, non_null(:task) do
       arg :input, non_null(:reopen_task_input)
 

@@ -13,7 +13,7 @@ import { Table } from "./Table";
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 
-import { OpenBadge, ClosedBadge } from "@/features/Tasks/Badges";
+import { OpenBadge, ClosedBadge, PriorityBadge } from "@/features/Tasks/Badges";
 
 export function Page() {
   const { company, group } = useLoadedData();
@@ -65,7 +65,9 @@ function TaskList() {
       <div className="inline-flex font-medium">
         <Link to={`/tasks/${task.id}`}>{task.name}</Link>
       </div>,
-      <div className="inline-flex justify-center">{task.priority}</div>,
+      <div className="inline-flex justify-center">
+        <PriorityBadge priority={task.priority} />
+      </div>,
       <div className="inline-flex justify-center">{task.size}</div>,
       <div className="inline-flex justify-center">{task.assignee!.fullName}</div>,
       <div className="inline-flex justify-center">

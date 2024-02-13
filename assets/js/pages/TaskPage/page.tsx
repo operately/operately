@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Groups from "@/models/groups";
 import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
@@ -13,7 +14,7 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 
-import { OpenBadge, ClosedBadge } from "@/features/Tasks/Badges";
+import { OpenBadge, ClosedBadge, PriorityBadge } from "@/features/Tasks/Badges";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -63,7 +64,7 @@ export function Page() {
 
               <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Priority</div>
-                <div className="forn-medium mt-1 capitalize">{task.priority}</div>
+                <Priority form={form} />
               </div>
 
               <div className="p-3">
@@ -152,5 +153,52 @@ function ReopenButton({ form }: { form: FormState }) {
     <FilledButton size="xs" type="primary" onClick={form.status.reopen}>
       Reopen
     </FilledButton>
+  );
+}
+
+function Priority({ form }: { form: FormState }) {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <PriorityBadge priority={form.priority.priority} />
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          className="bg-surface border border-surface-outline shadow rounded-lg flex flex-col justify-start items-start"
+          sideOffset={5}
+        >
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.priority.change("low")}
+          >
+            <PriorityBadge priority="low" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.priority.change("medium")}
+          >
+            <PriorityBadge priority="medium" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.priority.change("high")}
+          >
+            <PriorityBadge priority="high" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.priority.change("urgent")}
+          >
+            <PriorityBadge priority="urgent" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Arrow className="fill-white" />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
