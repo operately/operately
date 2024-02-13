@@ -36,8 +36,10 @@ field :priority, non_null(:string)
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        task_id = input.task_id
+        priority = input.priority
 
-        case Operately.Operations.TaskPriorityChange.run(author, input) do
+        case Operately.Operations.TaskPriorityChange.run(author, task_id, priority) do
           {:ok, result} -> {:ok, result}
           {:error, changeset} -> {:error, changeset}
         end

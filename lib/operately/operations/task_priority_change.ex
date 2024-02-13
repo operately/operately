@@ -3,17 +3,22 @@ defmodule Operately.Operations.TaskPriorityChange do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, attrs) do
-    raise "Operation for TaskPriorityChange not implemented"
+  def run(author, task_id, new_priority) do
+    task = Operately.Tasks.get_task!(task_id)
+    changeset = Operately.Tasks.Task.changeset(task, %{priority: new_priority})
 
-    # Multi.new()
-    # |> Multi.insert(:something, ...)
-    # |> Activities.insert(creator.id, :task_priority_change, fn changes ->
-    #   %{
-    #   company_id: "TODO"    #   space_id: "TODO"    #   task_id: "TODO"    #   old_priority: "TODO"    #   new_priority: "TODO"
-    #   }
-    # end)
-    # |> Repo.transaction()
-    # |> Repo.extract_result(:something)
+    Multi.new()
+    |> Multi.update(:task, changeset)
+    |> Activities.insert(author.id, :task_priority_change, fn _changes ->
+      %{
+        company_id: author.company_id,
+        space_id: task.space_id,
+        task_id: task_id,
+        old_priority: task.priority,
+        new_priority: new_priority
+      }
+    end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:task)
   end
 end
