@@ -14,16 +14,14 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
 
     fields = parse_fields(fields)
 
-    insertion_point = find_file_insertion_point(type)
-
-    inject_input_object(type, mutation_name, fields, insertion_point - 1)
-    inject_mutation_field(type, mutation_name, operation, insertion_point + 1)
+    inject_input_object(type, mutation_name, fields)
+    inject_mutation_field(type, mutation_name, operation)
     generate_js_model_mutation(type, mutation_name)
     inject_js_model_index_export(type, mutation_name)
   end
 
   def generate_js_model_mutation(type, mutation_name) do
-    file_name = "use" + Macro.camelize(type)
+    file_name = "use" <> Macro.camelize(type)
     file_path = "assets/js/models/#{type}/#{file_name}.tsx"
 
     camelized_mutation_name = Macro.camelize(mutation_name)
@@ -60,7 +58,9 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     inject_into_file(file_path, "export { #{function} } from './#{import_file_path}';", 1)
   end
 
-  def inject_input_object(type, mutation_name, fields, insertion_point) do
+  def inject_input_object(type, mutation_name, fields) do
+    insertion_point = find_file_insertion_point(type) - 1
+
     file_name = "lib/operately_web/graphql/mutations/#{type}.ex"
 
     input_object = """
@@ -74,7 +74,9 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     inject_into_file(file_name, input_object, insertion_point)
   end
 
-  def inject_mutation_field(type, mutation_name, operation, insertion_point) do
+  def inject_mutation_field(type, mutation_name, operation) do
+    insertion_point = find_file_insertion_point(type) + 1
+
     file_name = "lib/operately_web/graphql/mutations/#{type}.ex"
 
     mutation_field = """
