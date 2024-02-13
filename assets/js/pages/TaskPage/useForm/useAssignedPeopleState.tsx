@@ -8,7 +8,9 @@ export interface AssignedPeopleState {
 }
 
 export function useAssignedPeopleState(task: Tasks.Task): AssignedPeopleState {
-  const [people, setPeople] = React.useState(task.assignees!);
+  const [people, setPeople] = React.useState(
+    task.assignees!.slice().sort((a, b) => a.fullName.localeCompare(b.fullName)),
+  );
 
   const [addPerson] = Tasks.useAssignPersonToTaskMutation({});
 
@@ -23,7 +25,7 @@ export function useAssignedPeopleState(task: Tasks.Task): AssignedPeopleState {
         },
       });
 
-      setPeople((people) => [...people, person]);
+      setPeople((people) => [...people, person].sort((a, b) => a.fullName.localeCompare(b.fullName)));
     },
     [addPerson, task.id],
   );

@@ -14,7 +14,7 @@ defmodule Operately.Tasks.Assignee do
 
   def changeset(assignee, attrs) do
     assignee
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:task_id, :person_id])
+    |> validate_required([:task_id, :person_id])
   end
 end

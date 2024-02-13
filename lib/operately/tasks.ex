@@ -39,6 +39,12 @@ defmodule Operately.Tasks do
 
   alias Operately.Tasks.Assignee
 
+  def assigned?(task, person) do
+    query = from(a in Assignee, where: a.task_id == ^task.id and a.person_id == ^person.id)
+
+    Repo.one(query) != nil
+  end
+
   def list_task_assignees do
     Repo.all(Assignee)
   end

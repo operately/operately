@@ -3,17 +3,32 @@ defmodule Operately.Operations.TaskAssigneeAssignment do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, attrs) do
-    raise "Operation for TaskAssigneeAssignment not implemented"
+  def run(author, task_id, person_id) do
+    task = Operately.Tasks.get_task!(task_id)
+    person = Operately.People.get_person!(person_id)
+    
+    if Operately.Tasks.assigned?(task, person) do
+      {:ok, task}
+    else
+      case assign_person(author, task, person) do
+        {:ok, _result} -> {:ok, task}
+        {:error, changeset} -> {:error, changeset}
+      end
+    end
+  end
 
-    # Multi.new()
-    # |> Multi.insert(:something, ...)
-    # |> Activities.insert(creator.id, :task_assignee_assignment, fn changes ->
-    #   %{
-    #   company_id: "TODO"    #   space_id: "TODO"    #   task_id: "TODO"    #   person_id: "TODO"
-    #   }
-    # end)
-    # |> Repo.transaction()
-    # |> Repo.extract_result(:something)
+  defp assign_person(author, task, person) do
+    Multi.new()
+    |> Multi.insert(:assignment, Operately.Tasks.Assignee.changeset(%{task_id: task.id, person_id: person.id}))
+    |> Activities.insert(author.id, :task_assignee_assignment, fn _changes ->
+      %{
+        company_id: author.company_id,
+        space_id: task.space_id,
+        task_id: task.id,
+        person_id: person.id
+      }
+    end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:assignment)
   end
 end

@@ -9,16 +9,7 @@ export const FRAGMENT = `
   }
 `;
 
-export interface Person {
-  id: string;
-  fullName: string;
-  title: string;
-  avatarUrl: string;
-
-  sendDailySummary: boolean;
-  notifyOnMention: boolean;
-  notifyAboutAssignments: boolean;
-}
+export { Person } from "@/gql";
 
 const SEARCH_PEOPLE = gql`
   query SearchPeople($query: String!) {
