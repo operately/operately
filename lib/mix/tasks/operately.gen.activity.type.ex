@@ -124,11 +124,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
   def gen_notification_item(name) do
     generate_file("assets/js/pages/NotificationsPage/NotificationItem/#{name}.tsx", fn _ ->
       """
-      import * as React from "react";
-
-      import { Card } from "../NotificationCard";
-
-      import * as People from "@/models/people";
+      // import * as React from "react";
 
       export default function({ notification }) {
         throw "Not implemented";
@@ -140,14 +136,18 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
   def gen_feed_item(name) do
     generate_file("assets/js/components/Feed/FeedItem/#{name}.tsx", fn _ ->
       """
-      import * as React from "react";
+      // import * as React from "react";
+      // import * as People from "@/models/people";
+      // import { Container } from "../FeedItemElements";
 
-      import { Card } from "../NotificationCard";
-
-      import * as People from "@/models/people";
-
-      export default function({ notification, page }) {
-        throw "Not implemented";
+      export default function ({ activity }) {
+        return (
+          <Container
+            title={People.shortName(activity.author) + " TODO"}
+            author={activity.author}
+            time={activity.insertedAt}
+          />
+        );
       }
       """
     end)
