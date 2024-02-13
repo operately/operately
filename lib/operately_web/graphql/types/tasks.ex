@@ -25,9 +25,11 @@ defmodule OperatelyWeb.Graphql.Types.Tasks do
       end
     end
 
-    field :assignee, :person do
+    field :assignees, list_of(non_null(:person)) do
       resolve fn task, _, _ ->
-        {:ok, Operately.People.get_person!(task.assignee_id)}
+        people = Operately.Repo.preload(task, [assignees: :person]).assignees |> Enum.map(& &1.person)
+
+        {:ok, people}
       end
     end
     
