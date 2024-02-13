@@ -38,6 +38,7 @@ import TaskClosing from "./TaskClosing"
 import TaskNameEditing from "./TaskNameEditing"
 import TaskPriorityChange from "./TaskPriorityChange"
 import TaskReopening from "./TaskReopening"
+import TaskSizeChange from "./TaskSizeChange"
 
 export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
@@ -141,6 +142,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentTaskReopening":
       return <TaskReopening notification={notification} />;
+    
+    case "ActivityContentTaskSizeChange":
+      return <TaskSizeChange notification={notification} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";

@@ -45,6 +45,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskNameEditing
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskPriorityChange
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskReopening
+  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskSizeChange
   import_types OperatelyWeb.Graphql.Types.Assignments
   import_types OperatelyWeb.Graphql.Types.Blobs
   import_types OperatelyWeb.Graphql.Types.Comments
