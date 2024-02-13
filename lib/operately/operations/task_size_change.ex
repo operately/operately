@@ -3,17 +3,22 @@ defmodule Operately.Operations.TaskSizeChange do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, attrs) do
-    raise "Operation for TaskSizeChange not implemented"
+  def run(author, task_id, new_size) do
+    task = Operately.Tasks.get_task!(task_id)
+    changeset = Operately.Tasks.Task.changeset(task, %{size: new_size})
 
-    # Multi.new()
-    # |> Multi.insert(:something, ...)
-    # |> Activities.insert(creator.id, :task_size_change, fn changes ->
-    #   %{
-    #   company_id: "TODO"    #   space_id: "TODO"    #   task_id: "TODO"    #   old_size: "TODO"    #   new_size: "TODO"
-    #   }
-    # end)
-    # |> Repo.transaction()
-    # |> Repo.extract_result(:something)
+    Multi.new()
+    |> Multi.update(:task, changeset)
+    |> Activities.insert(author.id, :task_size_change, fn _changes ->
+      %{
+        company_id: author.company_id,
+        space_id: task.space_id,
+        task_id: task_id,
+        old_size: task.size,
+        new_size: new_size
+      }
+    end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:task)
   end
 end

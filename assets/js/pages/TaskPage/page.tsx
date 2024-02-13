@@ -14,7 +14,7 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 
-import { OpenBadge, ClosedBadge, PriorityBadge } from "@/features/Tasks/Badges";
+import { OpenBadge, ClosedBadge, PriorityBadge, SizeBadge } from "@/features/Tasks/Badges";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -69,7 +69,7 @@ export function Page() {
 
               <div className="p-3">
                 <div className="uppercase font-medium text-xs text-content-dimmed">Size</div>
-                <div className="forn-medium mt-1 capitalize">{task.size}</div>
+                <Size form={form} />
               </div>
             </div>
           </div>
@@ -194,6 +194,46 @@ function Priority({ form }: { form: FormState }) {
             onClick={() => form.priority.change("urgent")}
           >
             <PriorityBadge priority="urgent" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Arrow className="fill-white" />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
+
+function Size({ form }: { form: FormState }) {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <SizeBadge size={form.size.size} />
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          className="bg-surface border border-surface-outline shadow rounded-lg flex flex-col justify-start items-start"
+          sideOffset={5}
+        >
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.size.change("small")}
+          >
+            <SizeBadge size="small" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.size.change("medium")}
+          >
+            <SizeBadge size="medium" />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+            onClick={() => form.size.change("large")}
+          >
+            <SizeBadge size="large" />
           </DropdownMenu.Item>
 
           <DropdownMenu.Arrow className="fill-white" />
