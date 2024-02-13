@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskNameEditing;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -275,6 +275,15 @@ export type ActivityContentTaskAdding = {
   __typename?: 'ActivityContentTaskAdding';
   companyId: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  spaceId: Scalars['String']['output'];
+  taskId: Scalars['String']['output'];
+};
+
+export type ActivityContentTaskNameEditing = {
+  __typename?: 'ActivityContentTaskNameEditing';
+  companyId: Scalars['String']['output'];
+  newName: Scalars['String']['output'];
+  oldName: Scalars['String']['output'];
   spaceId: Scalars['String']['output'];
   taskId: Scalars['String']['output'];
 };
@@ -1323,6 +1332,7 @@ export type RootQueryType = {
   projectReviewRequest: ProjectReviewRequest;
   projects?: Maybe<Array<Maybe<Project>>>;
   searchPeople?: Maybe<Array<Maybe<Person>>>;
+  task: Task;
   tasks?: Maybe<Array<Maybe<Task>>>;
   tenet?: Maybe<Tenet>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
@@ -1448,6 +1458,11 @@ export type RootQueryTypeProjectsArgs = {
 
 export type RootQueryTypeSearchPeopleArgs = {
   query: Scalars['String']['input'];
+};
+
+
+export type RootQueryTypeTaskArgs = {
+  id: Scalars['ID']['input'];
 };
 
 

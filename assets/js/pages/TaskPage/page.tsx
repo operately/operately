@@ -3,15 +3,20 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Groups from "@/models/groups";
 import * as Icons from "@tabler/icons-react";
+import * as Forms from "@/components/Form";
 
-import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Button";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+import { FilledButton } from "@/components/Button";
+
+import { useLoadedData } from "./loader";
+import { useForm, FormState } from "./useForm";
 
 export function Page() {
   const { task } = useLoadedData();
+
+  const form = useForm(task);
 
   return (
     <Pages.Page title={[task.name]}>
@@ -19,11 +24,9 @@ export function Page() {
         <Navigation space={task.space} />
 
         <Paper.Body noPadding>
-          <div className="flex items-center justify-between border-b border-surface-outline px-10 py-6">
-            <div className="font-bold text-2xl">{task.name}</div>
-            <FilledButton size="xs" type="primary">
-              Mark as Done
-            </FilledButton>
+          <div className="flex items-start justify-between border-b border-surface-outline px-10 pt-6 pb-4">
+            <Name form={form} />
+            <TopActions form={form} />
           </div>
 
           <div className="flex gap-8 justify-between items-start">
@@ -79,5 +82,57 @@ export function Navigation({ space }: { space: Groups.Group }) {
         {space.name}
       </Paper.NavItem>
     </Paper.Navigation>
+  );
+}
+
+function Name({ form }: { form: FormState }) {
+  if (form.name.editing) {
+    return <NameEditor form={form} />;
+  } else {
+    return <NameDisplay form={form} />;
+  }
+}
+
+function NameEditor({ form }: { form: FormState }) {
+  return (
+    <div className="flex-1 flex items-center gap-2">
+      <Forms.TextInputNoLabel
+        id="task-name"
+        value={form.name.name}
+        onChange={form.name.setName}
+        onEnter={form.name.submit}
+        autoFocus
+        placeholder="Task Name"
+        error={form.name.error}
+      />
+
+      <FilledButton size="sm" type="secondary" onClick={form.name.cancel}>
+        Cancel
+      </FilledButton>
+
+      <FilledButton size="sm" type="primary" onClick={form.name.submit} bzzzOnClickFailure>
+        Save
+      </FilledButton>
+    </div>
+  );
+}
+
+function NameDisplay({ form }: { form: FormState }) {
+  return <div className="font-bold text-2xl break-all pr-2">{form.name.name}</div>;
+}
+
+function TopActions({ form }: { form: FormState }) {
+  if (form.name.editing) return null;
+
+  return (
+    <div className="flex gap-2 items-center shrink-0">
+      <FilledButton size="xs" type="secondary" onClick={() => form.name.setEditing(true)}>
+        Edit
+      </FilledButton>
+
+      <FilledButton size="xs" type="primary">
+        Mark as Done
+      </FilledButton>
+    </div>
   );
 }

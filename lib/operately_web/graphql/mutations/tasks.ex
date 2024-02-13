@@ -11,6 +11,11 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
     field :size, :string
   end
 
+  input_object :edit_task_name_input do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+  end
+
   object :task_mutations do
     field :create_task, :task do
       arg :input, non_null(:create_task_input)
@@ -18,6 +23,21 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
         creator = context.current_account.person
 
         case Operately.Operations.TaskAdding.run(creator, input) do
+          {:ok, task} -> {:ok, task}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end
+    end
+
+    field :edit_task_name, non_null(:task) do
+      arg :input, non_null(:edit_task_name_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        task_id = input.id
+        name = input.name
+
+        case Operately.Operations.TaskNameEditing.run(author, task_id, name) do
           {:ok, task} -> {:ok, task}
           {:error, changeset} -> {:error, changeset}
         end
