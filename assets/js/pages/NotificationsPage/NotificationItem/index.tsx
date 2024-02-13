@@ -35,6 +35,7 @@ import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
 import TaskClosing from "./TaskClosing"
+import TaskDescriptionChange from "./TaskDescriptionChange"
 import TaskNameEditing from "./TaskNameEditing"
 import TaskPriorityChange from "./TaskPriorityChange"
 import TaskReopening from "./TaskReopening"
@@ -133,6 +134,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentTaskClosing":
       return <TaskClosing notification={notification} />;
+    
+    case "ActivityContentTaskDescriptionChange":
+      return <TaskDescriptionChange notification={notification} />;
     
     case "ActivityContentTaskNameEditing":
       return <TaskNameEditing notification={notification} />;
