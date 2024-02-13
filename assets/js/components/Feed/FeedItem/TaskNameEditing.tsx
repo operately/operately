@@ -1,9 +1,14 @@
 import * as React from "react";
-
-import { Card } from "../NotificationCard";
-
 import * as People from "@/models/people";
 
-export default function({ notification, page }) {
-  throw "Not implemented";
+import { Container } from "../FeedItemElements";
+
+export default function ({ activity }) {
+  return (
+    <Container
+      title={People.shortName(activity.author) + " changed the name of task"}
+      author={activity.author}
+      time={activity.insertedAt}
+    />
+  );
 }
