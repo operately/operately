@@ -12,6 +12,8 @@ defmodule Operately.Tasks.Task do
     field :description, :map
     field :due_date, :naive_datetime
 
+    field :status, Ecto.Enum, values: [:open, :closed], default: :open
+
     timestamps()
   end
 
@@ -21,7 +23,7 @@ defmodule Operately.Tasks.Task do
 
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id])
-    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id])
+    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id, :status])
+    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id, :status])
   end
 end
