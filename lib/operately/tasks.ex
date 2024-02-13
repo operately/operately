@@ -5,7 +5,7 @@ defmodule Operately.Tasks do
   alias Operately.Tasks.Task
 
   def list_tasks(params \\ %{}) do
-    query = from t in Task, where: t.space_id == ^params.space_id
+    query = from t in Task, where: t.space_id == ^params.space_id and t.status == ^params.status
 
     Repo.all(query)
   end

@@ -9,11 +9,14 @@ interface LoaderResult {
   tasks: Tasks.Task[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+export async function loader({ request, params }): Promise<LoaderResult> {
+  const searchParams = new URL(request.url).searchParams;
+  const status = searchParams.get("status") || "open";
+
   return {
     company: await Companies.getCompany(),
     group: await Groups.getGroup(params.id),
-    tasks: await Tasks.getTasks(params.id),
+    tasks: await Tasks.getTasks(params.id, status),
   };
 }
 

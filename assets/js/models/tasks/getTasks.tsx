@@ -3,8 +3,8 @@ import client from "@/graphql/client";
 import { gql } from "@apollo/client";
 
 const QUERY = gql`
-  query GetTasks($spaceId: ID!) {
-    tasks(spaceId: $spaceId) {
+  query GetTasks($spaceId: ID!, $status: String) {
+    tasks(spaceId: $spaceId, status: $status) {
       id
       name
       priority
@@ -19,10 +19,10 @@ const QUERY = gql`
   }
 `;
 
-export async function getTasks(spaceId: string) {
+export async function getTasks(spaceId: string, status: string) {
   const data = await client.query({
     query: QUERY,
-    variables: { spaceId },
+    variables: { spaceId, status },
     fetchPolicy: "network-only",
   });
 
