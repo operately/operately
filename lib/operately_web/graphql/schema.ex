@@ -41,6 +41,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectTimelineEdited
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAdding
+  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAssigneeAssignment
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskClosing
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskDescriptionChange
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskNameEditing

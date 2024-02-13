@@ -34,6 +34,7 @@ import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
+import TaskAssigneeAssignment from "./TaskAssigneeAssignment"
 import TaskClosing from "./TaskClosing"
 import TaskDescriptionChange from "./TaskDescriptionChange"
 import TaskNameEditing from "./TaskNameEditing"
@@ -131,6 +132,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentTaskAdding":
       return <TaskAdding notification={notification} />;
+    
+    case "ActivityContentTaskAssigneeAssignment":
+      return <TaskAssigneeAssignment notification={notification} />;
     
     case "ActivityContentTaskClosing":
       return <TaskClosing notification={notification} />;
