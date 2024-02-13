@@ -45,4 +45,56 @@ defmodule Operately.TasksTest do
   defp get_ids(tasks) do
     Enum.map(tasks, & &1.id)
   end
+
+  describe "task_assignees" do
+    alias Operately.Tasks.Assignee
+
+    import Operately.TasksFixtures
+
+    @invalid_attrs %{}
+
+    test "list_task_assignees/0 returns all task_assignees" do
+      assignee = assignee_fixture()
+      assert Tasks.list_task_assignees() == [assignee]
+    end
+
+    test "get_assignee!/1 returns the assignee with given id" do
+      assignee = assignee_fixture()
+      assert Tasks.get_assignee!(assignee.id) == assignee
+    end
+
+    test "create_assignee/1 with valid data creates a assignee" do
+      valid_attrs = %{}
+
+      assert {:ok, %Assignee{} = assignee} = Tasks.create_assignee(valid_attrs)
+    end
+
+    test "create_assignee/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Tasks.create_assignee(@invalid_attrs)
+    end
+
+    test "update_assignee/2 with valid data updates the assignee" do
+      assignee = assignee_fixture()
+      update_attrs = %{}
+
+      assert {:ok, %Assignee{} = assignee} = Tasks.update_assignee(assignee, update_attrs)
+    end
+
+    test "update_assignee/2 with invalid data returns error changeset" do
+      assignee = assignee_fixture()
+      assert {:error, %Ecto.Changeset{}} = Tasks.update_assignee(assignee, @invalid_attrs)
+      assert assignee == Tasks.get_assignee!(assignee.id)
+    end
+
+    test "delete_assignee/1 deletes the assignee" do
+      assignee = assignee_fixture()
+      assert {:ok, %Assignee{}} = Tasks.delete_assignee(assignee)
+      assert_raise Ecto.NoResultsError, fn -> Tasks.get_assignee!(assignee.id) end
+    end
+
+    test "change_assignee/1 returns a assignee changeset" do
+      assignee = assignee_fixture()
+      assert %Ecto.Changeset{} = Tasks.change_assignee(assignee)
+    end
+  end
 end

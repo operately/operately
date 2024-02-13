@@ -11,8 +11,10 @@ const QUERY = gql`
       size
       dueDate
       status
-      assignee {
+      assignees {
         id
+        avatarUrl
+        title
         fullName
       }
     }

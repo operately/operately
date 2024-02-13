@@ -36,4 +36,32 @@ defmodule Operately.Tasks do
   defp apply_if(query, condition, fun) do
     if condition, do: fun.(query), else: query
   end
+
+  alias Operately.Tasks.Assignee
+
+  def list_task_assignees do
+    Repo.all(Assignee)
+  end
+
+  def get_assignee!(id), do: Repo.get!(Assignee, id)
+
+  def create_assignee(attrs \\ %{}) do
+    %Assignee{}
+    |> Assignee.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_assignee(%Assignee{} = assignee, attrs) do
+    assignee
+    |> Assignee.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_assignee(%Assignee{} = assignee) do
+    Repo.delete(assignee)
+  end
+
+  def change_assignee(%Assignee{} = assignee, attrs \\ %{}) do
+    Assignee.changeset(assignee, attrs)
+  end
 end

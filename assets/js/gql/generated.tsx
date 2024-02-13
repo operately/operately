@@ -367,6 +367,11 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
+export type AssignPersonToTaskInput = {
+  personId: Scalars['String']['input'];
+  taskId: Scalars['String']['input'];
+};
+
 export type Assignment = {
   __typename?: 'Assignment';
   due: Scalars['Date']['output'];
@@ -953,6 +958,7 @@ export type RootMutationType = {
   addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
+  assignPersonToTask: Task;
   changeTaskDescription: Task;
   changeTaskPriority: Task;
   changeTaskSize: Task;
@@ -1085,6 +1091,11 @@ export type RootMutationTypeArchiveGoalArgs = {
 
 export type RootMutationTypeArchiveProjectArgs = {
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeAssignPersonToTaskArgs = {
+  input: AssignPersonToTaskInput;
 };
 
 
@@ -1615,7 +1626,7 @@ export type Target = {
 
 export type Task = {
   __typename?: 'Task';
-  assignee?: Maybe<Person>;
+  assignees?: Maybe<Array<Person>>;
   creator: Person;
   description?: Maybe<Scalars['String']['output']>;
   dueDate: Scalars['Date']['output'];

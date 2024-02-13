@@ -6,6 +6,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as TipTapEditor from "@/components/Editor";
+import * as People from "@/graphql/People";
 
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
@@ -291,18 +292,60 @@ function DescriptionDisplay({ form }: { form: FormState }) {
 function AssignedPeople({ form }: { form: FormState }) {
   return (
     <div>
-      {form.assignedPeople.people.map((person) => (
-        <div className="flex items-center gap-2 mt-1" key={person.id}>
-          <Avatar person={person} size={20} />
-          <div className="forn-medium">{person.fullName}</div>
-        </div>
-      ))}
+      {form.assignedPeople.people.length === 0 ? (
+        <div className="text-content-dimmed text-sm mt-0.5">No one</div>
+      ) : (
+        form.assignedPeople.people.map((person) => (
+          <div className="flex items-center gap-2 mt-1" key={person.id}>
+            <Avatar person={person} size={20} />
+            <div className="forn-medium">{person.fullName}</div>
+          </div>
+        ))
+      )}
 
-      <div className="flex items-center gap-2 mt-4">
+      <div className="flex items-center gap-2 mt-2">
+        <AddPersonDropdown form={form} />
+      </div>
+    </div>
+  );
+}
+
+function AddPersonDropdown({ form }: { form: FormState }) {
+  const search = People.usePeopleSearch();
+  const [candidates, setCandidates] = React.useState<People.Person[]>([]);
+
+  React.useEffect(() => {
+    search("").then((people) => {
+      setCandidates(people);
+    });
+  }, []);
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
         <FilledButton size="xxs" type="secondary">
           Add
         </FilledButton>
-      </div>
-    </div>
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          className="bg-surface border border-surface-outline shadow rounded-lg flex flex-col justify-start items-start"
+          sideOffset={5}
+        >
+          {candidates.map((person) => (
+            <DropdownMenu.Item
+              key={person.id}
+              className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
+              onClick={() => form.assignedPeople.add(person)}
+            >
+              {person.fullName}
+            </DropdownMenu.Item>
+          ))}
+
+          <DropdownMenu.Arrow className="fill-white" />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

@@ -41,9 +41,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
 
   input_object :assign_person_to_task_input do
     field :task_id, non_null(:string)
-field :person_id, non_null(:string)
+    field :person_id, non_null(:string)
   end
-
 
   object :task_mutations do
     field :assign_person_to_task, non_null(:task) do

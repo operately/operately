@@ -5,7 +5,7 @@ defmodule Operately.Tasks.Task do
     belongs_to :creator, Operately.People.Person
     belongs_to :space, Operately.Groups.Group
 
-    # has_many :assigness, Operately.Tasks.Assignee
+    has_many :assignees, Operately.Tasks.Assignee
 
     field :name, :string
     field :priority, :string
