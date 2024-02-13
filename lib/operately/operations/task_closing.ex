@@ -3,17 +3,24 @@ defmodule Operately.Operations.TaskClosing do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, attrs) do
-    raise "Operation for TaskClosing not implemented"
+  def run(creator, task_id) do
+    task = Operately.Tasks.get_task!(task_id)
 
-    # Multi.new()
-    # |> Multi.insert(:something, ...)
-    # |> Activities.insert(creator.id, :task_closing, fn changes ->
-    #   %{
-    #   company_id: "TODO"    #   space_id: "TODO"    #   task_id: "TODO"
-    #   }
-    # end)
-    # |> Repo.transaction()
-    # |> Repo.extract_result(:something)
+    changeset = Operately.Tasks.Task.changeset(task, %{
+      closed_at: DateTime.utc_now(),
+      status: :closed
+    })
+
+    Multi.new()
+    |> Multi.update(:task, changeset)
+    |> Activities.insert(creator.id, :task_closing, fn _changes ->
+      %{
+        company_id: creator.company_id,
+        space_id: task.space_id,
+        task_id: task.id,
+      }
+    end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:task)
   end
 end

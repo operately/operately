@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Graphql.Types.Tasks do
 
     field :size, non_null(:string)
     field :priority, non_null(:string)
+    field :status, non_null(:string)
 
     field :description, :string do
       resolve fn task, _, _ ->

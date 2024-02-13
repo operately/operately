@@ -10,6 +10,7 @@ const QUERY = gql`
       priority
       size
       dueDate
+      status
       assignee {
         id
         fullName

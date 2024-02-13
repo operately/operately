@@ -359,6 +359,10 @@ export type CloseProjectInput = {
   retrospective: Scalars['String']['input'];
 };
 
+export type CloseTaskInput = {
+  taskId: Scalars['String']['input'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   author?: Maybe<Person>;
@@ -891,6 +895,7 @@ export type RootMutationType = {
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
   closeProject: Project;
+  closeTask: Task;
   connectGoalToProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
@@ -1022,6 +1027,11 @@ export type RootMutationTypeArchiveProjectArgs = {
 
 export type RootMutationTypeCloseProjectArgs = {
   input: CloseProjectInput;
+};
+
+
+export type RootMutationTypeCloseTaskArgs = {
+  input: CloseTaskInput;
 };
 
 
@@ -1531,6 +1541,7 @@ export type Task = {
   priority: Scalars['String']['output'];
   size: Scalars['String']['output'];
   space: Group;
+  status: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
 };
 

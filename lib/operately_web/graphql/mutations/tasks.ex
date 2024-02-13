@@ -26,8 +26,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        task_id = input.task_id
 
-        case Operately.Operations.TaskClosing.run(author, input) do
+        case Operately.Operations.TaskClosing.run(author, task_id) do
           {:ok, result} -> {:ok, result}
           {:error, changeset} -> {:error, changeset}
         end

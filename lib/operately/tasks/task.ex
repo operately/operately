@@ -13,6 +13,7 @@ defmodule Operately.Tasks.Task do
     field :due_date, :naive_datetime
 
     field :status, Ecto.Enum, values: [:open, :closed], default: :open
+    field :closed_at, :naive_datetime
 
     timestamps()
   end
