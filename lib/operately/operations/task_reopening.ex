@@ -3,17 +3,24 @@ defmodule Operately.Operations.TaskReopening do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, attrs) do
-    raise "Operation for TaskReopening not implemented"
+  def run(creator, task_id) do
+    task = Operately.Tasks.get_task!(task_id)
 
-    # Multi.new()
-    # |> Multi.insert(:something, ...)
-    # |> Activities.insert(creator.id, :task_reopening, fn changes ->
-    #   %{
-    #   company_id: "TODO"    #   space_id: "TODO"    #   task_id: "TODO"
-    #   }
-    # end)
-    # |> Repo.transaction()
-    # |> Repo.extract_result(:something)
+    changeset = Operately.Tasks.Task.changeset(task, %{
+      reopened_at: DateTime.utc_now(),
+      status: :open
+    })
+
+    Multi.new()
+    |> Multi.update(:task, changeset)
+    |> Activities.insert(creator.id, :task_reopening, fn _changes ->
+      %{
+        company_id: creator.company_id,
+        space_id: task.space_id,
+        task_id: task.id,
+      }
+    end)
+    |> Repo.transaction()
+    |> Repo.extract_result(:task)
   end
 end

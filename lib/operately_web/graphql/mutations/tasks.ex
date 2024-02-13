@@ -24,15 +24,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
     field :task_id, non_null(:string)
   end
 
-
   object :task_mutations do
     field :reopen_task, non_null(:task) do
       arg :input, non_null(:reopen_task_input)
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        task_id = input.task_id
 
-        case Operately.Operations.TaskReopening.run(author, input) do
+        case Operately.Operations.TaskReopening.run(author, task_id) do
           {:ok, result} -> {:ok, result}
           {:error, changeset} -> {:error, changeset}
         end
