@@ -42,17 +42,14 @@ export function Page() {
 
             <div className="w-1/3 flex flex-col border-l border-surface-outline">
               <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
-                <div className="flex items-center gap-2 mt-1">
-                  {form.status.status === "open" ? <OpenBadge /> : <ClosedBadge />}
-                </div>
+                <div className="uppercase font-medium text-xs text-content-dimmed">Assignees</div>
+                <AssignedPeople form={form} />
               </div>
 
               <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Assignee</div>
+                <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
                 <div className="flex items-center gap-2 mt-1">
-                  <Avatar person={task.assignee!} size={20} />
-                  <div className="forn-medium">{task.assignee ? task.assignee.fullName : "Unassigned"}</div>
+                  {form.status.status === "open" ? <OpenBadge /> : <ClosedBadge />}
                 </div>
               </div>
 
@@ -287,6 +284,25 @@ function DescriptionDisplay({ form }: { form: FormState }) {
         </FilledButton>
       </div>
       <RichContent jsonContent={form.description.description!} />
+    </div>
+  );
+}
+
+function AssignedPeople({ form }: { form: FormState }) {
+  return (
+    <div>
+      {form.assignedPeople.people.map((person) => (
+        <div className="flex items-center gap-2 mt-1" key={person.id}>
+          <Avatar person={person} size={20} />
+          <div className="forn-medium">{person.fullName}</div>
+        </div>
+      ))}
+
+      <div className="flex items-center gap-2 mt-4">
+        <FilledButton size="xxs" type="secondary">
+          Add
+        </FilledButton>
+      </div>
     </div>
   );
 }

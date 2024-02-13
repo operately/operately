@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 
 interface GetTaskOptions {
   includeSpace?: boolean;
-  includeAssignee?: boolean;
+  includeAssignedPeople?: boolean;
 }
 
 export async function getTask(id: string, opts: GetTaskOptions = {}) {
@@ -12,7 +12,7 @@ export async function getTask(id: string, opts: GetTaskOptions = {}) {
     variables: {
       id,
       includeSpace: !!opts.includeSpace,
-      includeAssignee: !!opts.includeAssignee,
+      includeAssignedPeople: !!opts.includeAssignedPeople,
     },
     fetchPolicy: "network-only",
   });
@@ -30,8 +30,8 @@ const QUERY = gql`
     }
   }
 
-  fragment AssigneeOnTask on Task {
-    assignee {
+  fragment AssignedPeopleOnTask on Task {
+    assignedPeople {
       id
       fullName
       avatarUrl
@@ -49,7 +49,7 @@ const QUERY = gql`
       description
       status
 
-      ...AssigneeOnTask @include(if: $includeAssignee)
+      ...AssignedPeopleOnTask @include(if: $includeAssignedPeople)
       ...SpaceOnTask @include(if: $includeSpace)
     }
   }
