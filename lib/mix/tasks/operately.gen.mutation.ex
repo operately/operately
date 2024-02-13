@@ -81,20 +81,18 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     file_name = "lib/operately_web/graphql/mutations/#{type}.ex"
 
     mutation_field = """
+        field :#{mutation_name}, non_null(:#{singular_type_name(type)}) do
+          arg :input, non_null(:#{mutation_name}_input)
 
-      field :#{mutation_name}, non_null(:#{singular_type_name(type)}) do
-        arg :input, non_null(:#{mutation_name}_input)
+          resolve fn %{input: input}, %{context: context} ->
+            author = context.current_account.person
 
-        resolve fn %{input: input}, %{context: context} ->
-          author = context.current_account.person
-
-          case Operately.Operations.#{operation}.run(author, input) do
-            {:ok, result} -> {:ok, result}
-            {:error, changeset} -> {:error, changeset}
+            case Operately.Operations.#{operation}.run(author, input) do
+              {:ok, result} -> {:ok, result}
+              {:error, changeset} -> {:error, changeset}
+            end
           end
         end
-      end
-
     """
 
     inject_into_file(file_name, mutation_field, insertion_point)
