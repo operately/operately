@@ -39,7 +39,26 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
     field :description, non_null(:string)
   end
 
+  input_object :assign_person_to_task_input do
+    field :task_id, non_null(:string)
+field :person_id, non_null(:string)
+  end
+
+
   object :task_mutations do
+    field :assign_person_to_task, non_null(:task) do
+      arg :input, non_null(:assign_person_to_task_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+
+        case Operately.Operations.TaskAssigneeAssignment.run(author, input) do
+          {:ok, result} -> {:ok, result}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end
+    end
+
     field :change_task_description, non_null(:task) do
       arg :input, non_null(:change_task_description_input)
 

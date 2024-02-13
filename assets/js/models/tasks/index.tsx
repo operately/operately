@@ -1,4 +1,5 @@
 export { Task } from "@/gql";
+export { useAssignPersonToTaskMutation } from './useAssignPersonToTaskMutation';
 export { useChangeTaskDescriptionMutation } from './useChangeTaskDescriptionMutation';
 export { useChangeTaskSizeMutation } from './useChangeTaskSizeMutation';
 export { useChangeTaskPriorityMutation } from './useChangeTaskPriorityMutation';
