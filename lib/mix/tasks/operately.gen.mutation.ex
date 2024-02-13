@@ -62,7 +62,7 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
 
     input_object = """
 
-      input :#{mutation_name}_input do
+      input_object :#{mutation_name}_input do
         #{Enum.join(Enum.map(fields, fn {name, fieldType} -> "field :#{name}, non_null(:#{fieldType})" end), "\n")}
       end
     """
