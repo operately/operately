@@ -36,6 +36,7 @@ import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
 import TaskClosing from "./TaskClosing"
 import TaskNameEditing from "./TaskNameEditing"
+import TaskPriorityChange from "./TaskPriorityChange"
 import TaskReopening from "./TaskReopening"
 
 export default function FeedItem({activity, page}) {
@@ -134,6 +135,9 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentTaskNameEditing":
       return <TaskNameEditing activity={activity} page={page} />;
+    
+    case "ActivityContentTaskPriorityChange":
+      return <TaskPriorityChange activity={activity} page={page} />;
     
     case "ActivityContentTaskReopening":
       return <TaskReopening activity={activity} page={page} />;
