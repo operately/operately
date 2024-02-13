@@ -21,14 +21,12 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
   end
 
   def generate_js_model_mutation(type, mutation_name) do
-    file_name = "use" <> Macro.camelize(mutation_name) <> "Mutation"
-    file_path = "assets/js/models/#{type}/#{file_name}.tsx"
+    function = "use" <> Macro.camelize(mutation_name) <> "Mutation"
+    file_path = "assets/js/models/#{type}/#{function}.tsx"
 
     camelized_mutation_name = Macro.camelize(mutation_name)
     camelized_input_name = Macro.camelize(mutation_name) <> "Input"
     camelized_operation_name = String.downcase(String.at(camelized_mutation_name, 0)) <> String.slice(camelized_mutation_name, 1..-1)
-
-    function = "use" <> Macro.camelize(mutation_name)
 
     generate_file(file_path, fn _ ->
       """
@@ -51,13 +49,10 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
   end
 
   def inject_js_model_index_export(type, mutation_name) do
-    file_name = "index"
-    file_path = "assets/js/models/#{type}/#{file_name}.tsx"
-
+    file_path = "assets/js/models/#{type}/index.tsx"
     function = "use" <> Macro.camelize(mutation_name) <> "Mutation"
-    import_file_path = "./" <> function
 
-    inject_into_file(file_path, "export { #{function} } from '#{import_file_path}';", 1)
+    inject_into_file(file_path, "export { #{function} } from './#{function}';", 1)
   end
 
   def inject_input_object(type, mutation_name, fields) do
