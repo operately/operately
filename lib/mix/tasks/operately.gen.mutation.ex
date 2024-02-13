@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
   end
 
   def generate_js_model_mutation(type, mutation_name) do
-    file_name = "use" <> Macro.camelize(type)
+    file_name = "use" <> Macro.camelize(mutation_name) <> "Mutation"
     file_path = "assets/js/models/#{type}/#{file_name}.tsx"
 
     camelized_mutation_name = Macro.camelize(mutation_name)
@@ -54,7 +54,7 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
     file_name = "index"
     file_path = "assets/js/models/#{type}/#{file_name}.tsx"
 
-    function = "use" <> Macro.camelize(mutation_name)
+    function = "use" <> Macro.camelize(mutation_name) <> "Mutation"
     import_file_path = "./" <> function
 
     inject_into_file(file_path, "export { #{function} } from '#{import_file_path}';", 1)
