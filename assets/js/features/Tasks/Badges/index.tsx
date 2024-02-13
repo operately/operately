@@ -51,3 +51,33 @@ export function PriorityBadge({ priority }: { priority: string }) {
     </div>
   );
 }
+
+export function SizeBadge({ size }: { size: string }) {
+  const colors = {
+    small: "border-gray-500 text-gray-700 bg-gray-100",
+    medium: "border-yellow-500 text-yellow-700 bg-yellow-100",
+    large: "border-red-700 text-red-700 bg-red-100",
+  };
+
+  const color = colors[size] || "border-gray-500 text-gray-700 bg-gray-100";
+
+  const className = classNames(
+    "text-xs border rounded-xl px-2 py-0.5 font-medium flex items-center shirnk-0 gap-1.5",
+    color,
+  );
+
+  const title = size === "" ? "Unset" : size;
+
+  const icon = {
+    small: <div className="h-2 w-2 bg-gray-700 rounded-full" />,
+    medium: <div className="h-2 w-2 bg-yellow-700 rounded-full" />,
+    large: <div className="h-2 w-2 bg-red-700 rounded-full" />,
+  };
+
+  return (
+    <div className={className}>
+      {icon[size] && icon[size]}
+      <span className="capitalize">{title}</span>
+    </div>
+  );
+}
