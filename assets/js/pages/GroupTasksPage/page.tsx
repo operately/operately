@@ -13,6 +13,8 @@ import { Table } from "./Table";
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 
+import { OpenBadge, ClosedBadge } from "@/features/Tasks/Badges";
+
 export function Page() {
   const { company, group } = useLoadedData();
   const refresh = useRefresh();
@@ -64,7 +66,7 @@ function TaskList() {
       <div className="inline-flex justify-center">
         <FormattedTime time={task.dueDate} format="short-date" />
       </div>,
-      <div className="inline-flex justify-center">Open</div>,
+      <div className="inline-flex justify-center">{task.status === "open" ? <OpenBadge /> : <ClosedBadge />}</div>,
     ];
   });
 

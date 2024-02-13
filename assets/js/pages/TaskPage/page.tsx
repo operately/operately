@@ -13,6 +13,8 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 
+import { OpenBadge, ClosedBadge } from "@/features/Tasks/Badges";
+
 export function Page() {
   const { task } = useLoadedData();
 
@@ -135,24 +137,6 @@ function TopActions({ form }: { form: FormState }) {
       <FilledButton size="xs" type="primary" onClick={form.status.close}>
         Mark as Done
       </FilledButton>
-    </div>
-  );
-}
-
-function OpenBadge() {
-  return (
-    <div className="text-sm border border-green-500 text-green-700 rounded-xl px-2 py-0.5 bg-green-100 font-medium flex items-center shirnk-0 gap-1.5">
-      <div className="h-2 w-2 bg-green-700 rounded-full" />
-      Open
-    </div>
-  );
-}
-
-function ClosedBadge() {
-  return (
-    <div className="text-sm border border-purple-500 text-purple-700 rounded-xl px-2 py-0.5 bg-purple-100 font-medium flex items-center shirnk-0 gap-1.5">
-      <div className="h-2 w-2 bg-purple-700 rounded-full" />
-      Closed
     </div>
   );
 }
