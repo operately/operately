@@ -134,9 +134,23 @@ function TopActions({ form }: { form: FormState }) {
         Edit
       </FilledButton>
 
-      <FilledButton size="xs" type="primary" onClick={form.status.close}>
-        Mark as Done
-      </FilledButton>
+      {form.status.status === "open" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
     </div>
+  );
+}
+
+function MarkAsDoneButton({ form }: { form: FormState }) {
+  return (
+    <FilledButton size="xs" type="primary" onClick={form.status.close}>
+      Mark as Done
+    </FilledButton>
+  );
+}
+
+function ReopenButton({ form }: { form: FormState }) {
+  return (
+    <FilledButton size="xs" type="primary" onClick={form.status.reopen}>
+      Reopen
+    </FilledButton>
   );
 }

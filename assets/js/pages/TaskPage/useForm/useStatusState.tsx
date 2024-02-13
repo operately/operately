@@ -15,9 +15,13 @@ export function useStatusState(task: Tasks.Task): StatusState {
     onCompleted: () => setStatus("closed"),
   });
 
+  const [reopenTask] = Tasks.useReopenTaskMutation({
+    onCompleted: () => setStatus("open"),
+  });
+
   return {
     status,
     close: () => closeTask({ variables: { input: { taskId: task.id } } }),
-    reopen: () => setStatus("open"),
+    reopen: () => reopenTask({ variables: { input: { taskId: task.id } } }),
   };
 }
