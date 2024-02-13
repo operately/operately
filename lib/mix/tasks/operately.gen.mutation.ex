@@ -1,5 +1,5 @@
-defmodule Mix.Tasks.Operately.Gen.Activity.Type do
-  import Mix.Operately, only: [generate_file: 2, indent: 2]
+defmodule Mix.Tasks.Operately.Gen.Mutation do
+  import Mix.Operately, only: [generate_file: 2, inject_into_file: 3]
 
   #
   # Usage example:
@@ -13,7 +13,83 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     insertion_point = find_file_insertion_point(type)
 
     inject_input_object(type, mutation_name, insertion_point - 1)
-    inject_mutation_field(type, mutation_name, insertion_point + 1)
+    inject_mutation_field(type, mutation_name, operation, insertion_point + 1)
+    generate_js_model_mutation(type, mutation_name)
+    inject_js_model_index_export(type, mutation_name)
+  end
+
+  def generate_js_model_mutation(type, mutation_name) do
+    file_name = "use" + Macro.camelize(type)
+    file_path = "assets/js/models/#{type}/#{file_name}.tsx"
+
+    camelized_mutation_name = Macro.camelize(mutation_name)
+    camelized_input_name = Macro.camelize(mutation_name) <> "Input"
+    camelized_operation_name = String.downcase(String.at(camelized_mutation_name, 0)) <> String.slice(camelized_mutation_name, 1..-1)
+
+    generate_file(file_path, fn _ ->
+      """
+      export { #{Macro.camelize(singular_type_name(type)) } from "@/gql";
+      import { gql, useMutation } from "@apollo/client";
+
+      const MUTATION = gql`
+        mutation #{camelized_mutation_name}($input: #{camelized_input_name}!) {
+          #{camelized_operation_name}(input: $input) {
+            id
+          }
+        }
+      `;
+
+      export function #{file_name}(options: any) {
+        return useMutation(MUTATION, options);
+      }
+      """
+    end)
+  end
+
+  def inject_js_model_index_export(type, mutation_name) do
+    file_name = "index"
+    file_path = "assets/js/models/#{type}/#{file_name}.tsx"
+
+    function = "use" <> Macro.camelize(mutation_name)
+    import_file_path = "./" <> function
+
+    inject_into_file(file_path, "export { #{function} } from './#{import_file_path}';", 1)
+  end
+
+  def inject_input_object(type, mutation_name, insertion_point) do
+    file_name = "lib/operately_web/graphql/mutations/#{type}.ex"
+
+    input_object = """
+
+      input :#{mutation_name}_input do
+      end
+
+    """
+
+    inject_into_file(file_name, input_object, insertion_point)
+  end
+
+  def inject_mutation_field(type, mutation_name, operation, insertion_point) do
+    file_name = "lib/operately_web/graphql/mutations/#{type}.ex"
+
+    mutation_field = """
+
+      field :#{mutation_name}, non_null(:#{singular_type_name(type)}) do
+        arg :input, non_null(:#{mutation_name}_input)
+
+        resolve fn %{input: input}, %{context: context} ->
+          author = context.current_account.person
+
+          case Operately.Operations.#{operation}.run(author, input) do
+            {:ok, result} -> {:ok, result}
+            {:error, changeset} -> {:error, changeset}
+          end
+        end
+      end
+
+    """
+
+    inject_into_file(file_name, mutation_field, insertion_point)
   end
 
   defp validate_type(name) do

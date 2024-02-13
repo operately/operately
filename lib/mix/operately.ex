@@ -15,6 +15,16 @@ defmodule Mix.Operately do
     File.write!(path, generator.(path))
   end
 
+  def inject_into_file(path, content, line) do
+    IO.puts "#{IO.ANSI.green()}Injecting#{IO.ANSI.reset()} into #{path}"
+
+    file = File.read!(path)
+    lines = String.split(file, "\n")
+    new_lines = List.insert_at(lines, line, content)
+    new_file = Enum.join(new_lines, "\n")
+    File.write!(path, new_file)
+  end
+
   def indent(lines, spaces) do
     first_line = Enum.at(String.split(lines, "\n"), 0)
     rest_lines = Enum.drop(String.split(lines, "\n"), 1) |> Enum.map(fn line -> String.duplicate(" ", spaces) <> line end)
