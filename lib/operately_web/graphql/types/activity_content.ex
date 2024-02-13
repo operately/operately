@@ -39,6 +39,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_project_timeline_edited,
     :activity_content_task_adding,
     :activity_content_task_closing,
+    :activity_content_task_description_change,
     :activity_content_task_name_editing,
     :activity_content_task_priority_change,
     :activity_content_task_reopening,
