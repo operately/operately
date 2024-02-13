@@ -5,9 +5,10 @@ defmodule Operately.Tasks do
   alias Operately.Tasks.Task
 
   def list_tasks(params \\ %{}) do
-    query = from t in Task, where: t.space_id == ^params.space_id and t.status == ^params.status
-
-    Repo.all(query)
+    from(t in Task)
+    |> where(space_id: ^params.space_id)
+    |> apply_if(params[:status], fn q -> where(q, status: ^params.status) end)
+    |> Repo.all()
   end
 
   def get_task!(id), do: Repo.get!(Task, id)
@@ -30,5 +31,9 @@ defmodule Operately.Tasks do
 
   def change_task(%Task{} = task, attrs \\ %{}) do
     Task.changeset(task, attrs)
+  end
+
+  defp apply_if(query, condition, fun) do
+    if condition, do: fun.(query), else: query
   end
 end
