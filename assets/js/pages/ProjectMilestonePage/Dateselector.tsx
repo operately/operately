@@ -27,10 +27,6 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
           <div className="font-medium text-content-accent leading-none">
             <FormattedTime time={date} format="short-date-with-weekday" />
           </div>
-          &middot;
-          <ButtonLink onClick={onLabelClick} data-test-id="edit-milestone">
-            Edit
-          </ButtonLink>
         </div>
       </Popover.Trigger>
 

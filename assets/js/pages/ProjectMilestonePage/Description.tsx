@@ -4,22 +4,16 @@ import * as TipTapEditor from "@/components/Editor";
 import RichContent from "@/components/RichContent";
 import Button from "@/components/Button";
 
-import { ButtonLink } from "@/components/Link";
+import { FilledButton } from "@/components/Button";
 
 export function Description({ milestone, form }) {
   return (
-    <div className="border-t border-stroke-base mb-8 pt-4">
+    <div className="">
+      <div className="flex items-center justify-left">
+        <div className="font-bold -mt-[66px] bg-yellow-300 rounded px-2 tracking-wide text-sm">Description</div>
+      </div>
+
       <div className="flex items-start gap-4 mb-4">
-        <div className="w-1/5 text-sm">
-          <div className="font-semibold text-content-accent">Description</div>
-
-          {milestone.description && (
-            <ButtonLink onClick={form.description.startEditing} data-test-id="write-milestone-description">
-              Edit
-            </ButtonLink>
-          )}
-        </div>
-
         <div className="flex-1">
           <DescriptionContent milestone={milestone} form={form} />
         </div>

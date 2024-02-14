@@ -8,7 +8,7 @@ import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { FilledButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { NewTaskModal } from "./NewTaskModal";
+import { NewTaskModal } from "@/features/Tasks/NewTaskModal";
 import { Table } from "./Table";
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
@@ -20,7 +20,7 @@ export function Page() {
   const { company, group } = useLoadedData();
   const refresh = useRefresh();
 
-  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
+  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(true);
 
   if (Companies.hasFeature(company, "tasks") === false) return <CommingSoonPage />;
 
