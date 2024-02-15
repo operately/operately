@@ -6,8 +6,8 @@ import * as Tasks from "@/models/tasks";
 import classnames from "classnames";
 
 import { FilledButton } from "@/components/Button";
+import { MultiPeopleSearch } from "./MultiPeopleSearch";
 
-import PeopleSearch from "@/components/PeopleSearch";
 import ReactModal from "react-modal";
 
 import { useColorMode } from "@/theme";
@@ -15,7 +15,9 @@ import { useColorMode } from "@/theme";
 function useForm({ onSubmit, milestone }) {
   const [name, setName] = React.useState("");
   const [dueDate, setDueDate] = React.useState(null);
-  const [assignee, setAssignee] = React.useState(null);
+  const [assignees, setAssignees] = React.useState<People.Person[]>([]);
+
+  const [errors, setErrors] = React.useState<string[]>([]);
 
   const [priority, setPriority] = React.useState({ value: "low", label: "Low" });
   const priorityOptions = [
@@ -34,17 +36,22 @@ function useForm({ onSubmit, milestone }) {
 
   const { editor } = TipTapEditor.useEditor({
     autoFocus: false,
-    placeholder: "Write here...",
+    placeholder: "Add a description here...",
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] p-2 py-1",
   });
 
-  const [create, { loading }] = Tasks.useCreateTaskMutation({
+  const [create] = Tasks.useCreateTaskMutation({
     onCompleted: () => onSubmit(),
   });
 
-  const submit = () => {
-    create({
+  const submit = async (): Promise<boolean> => {
+    if (!name) {
+      setErrors((errors) => [...errors, "name"]);
+      return false;
+    }
+
+    await create({
       variables: {
         input: {
           name,
@@ -52,11 +59,13 @@ function useForm({ onSubmit, milestone }) {
           description: JSON.stringify(editor.getJSON()),
           priority: priority.value,
           size: size.value,
-          assignee_id: assignee?.id,
+          assignee_ids: assignees.map((a) => a.id),
           milestone_id: milestone.id,
         },
       },
     });
+
+    return true;
   };
 
   return {
@@ -68,16 +77,17 @@ function useForm({ onSubmit, milestone }) {
       priorityOptions,
       size,
       sizeOptions,
-      assignee,
+      assignees,
 
       setName,
       setDueDate,
       setPriority,
       setSize,
-      setAssignee,
+      setAssignees,
     },
-    submit: submit,
-    errors: [],
+
+    submit,
+    errors,
   };
 }
 
@@ -108,7 +118,7 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
   );
 }
 
-function Form({ form }) {
+function Form({ form }: { form: ReturnType<typeof useForm> }) {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-lg font-bold">Adding a new task</h1>
@@ -116,17 +126,16 @@ function Form({ form }) {
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <div className="font-bold w-24 shrink-0">Title</div>
-          <div className="">
+          <div className="flex-1">
             <input
               autoFocus
               type="text"
-              className={classnames(
-                "w-full bg-surface px-2 py-1 outline-none border border-stroke-base ring-0 placeholder-content-dimmed",
-                {
-                  "border-red-500": form.errors.includes("name"),
-                },
-              )}
-              placeholder="Name"
+              className={classnames({
+                "w-full px-2 py-1 placeholder-content-dimmed bg-surface-highlight font-medium": true,
+                "outline-none ring-0 border-none focus:outline-none focus:ring-0": true,
+                "bg-red-100": form.errors.includes("name"),
+              })}
+              placeholder="Title of the task"
               value={form.fields.name}
               data-test-id="new-milestone-title"
               onChange={(e) => form.fields.setName(e.target.value)}
@@ -136,20 +145,7 @@ function Form({ form }) {
 
         <div className="flex items-center gap-4">
           <div className="font-bold w-24 shrink-0">Assignees</div>
-
-          <input
-            type="text"
-            className={classnames(
-              "w-full bg-surface px-2 py-1 outline-none border border-stroke-base ring-0 placeholder-content-dimmed",
-              {
-                "border-red-500": form.errors.includes("name"),
-              },
-            )}
-            placeholder="Name"
-            value={form.fields.name}
-            data-test-id="new-milestone-title"
-            onChange={(e) => form.fields.setName(e.target.value)}
-          />
+          <MultiPeopleSearch addedPeople={form.fields.assignees} setAddedPeople={form.fields.setAssignees} />
         </div>
       </div>
 
@@ -163,24 +159,7 @@ function Form({ form }) {
   );
 }
 
-function AssigneeSearch({ title, onSelect, defaultValue, inputId, error }: any) {
-  const loader = People.usePeopleSearch();
-
-  return (
-    <div className="flex-1">
-      <PeopleSearch
-        onChange={(option) => onSelect(option?.person)}
-        defaultValue={defaultValue}
-        placeholder="Search for person..."
-        inputId={inputId}
-        loader={loader}
-        error={!!error}
-      />
-    </div>
-  );
-}
-
-export function Modal({ isOpen, hideModal, title, children, minHeight = "600px" }) {
+export function Modal({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) {
   const mode = useColorMode();
   const width = 800;
 

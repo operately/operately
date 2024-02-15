@@ -78,7 +78,7 @@ function EditDescription({ form, color }) {
 }
 
 function Tasks({ milestone, form, refresh }) {
-  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
+  const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(true);
 
   return (
     <div>

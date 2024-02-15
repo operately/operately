@@ -280,10 +280,17 @@ defmodule Operately.People do
     end
   end
 
-  def search_people(query, limit \\ 5) do
+  def search_people(query), do: search_people(query, [])
+  def search_people(query, ignored_ids), do: search_people(query, ignored_ids, 5)
+  def search_people(query, ignored_ids, limit) do
     Repo.all(
       from p in Person,
       where: ilike(p.full_name, ^"%#{query}%") or ilike(p.title, ^"%#{query}%"),
+      where: p.id not in ^ignored_ids,
+      order_by: [
+        asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^query, p.full_name), 
+        asc: p.full_name
+      ],
       limit: ^limit
     )
   end

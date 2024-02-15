@@ -10,6 +10,7 @@ export const FRAGMENT = `
 `;
 
 export { Person } from "@/gql";
+import { Person } from "@/gql";
 
 const SEARCH_PEOPLE = gql`
   query SearchPeople($query: String!) {
@@ -33,20 +34,21 @@ export function usePeopleSearch() {
   //
   // This is a bit of a hack to make it work with both.
   //
-  return async (arg: string | { query: string }): Promise<Person[]> => {
+  return async (arg: string | { query: string; ignoredPeopleIds?: string[] }): Promise<Person[]> => {
     let query = "";
+    let ignoredIds: string[] = [];
 
     if (typeof arg === "string") {
       query = arg;
+      ignoredIds = [];
     } else {
       query = arg.query;
+      ignoredIds = arg.ignoredPeopleIds || [];
     }
 
     const res = await client.query({
       query: SEARCH_PEOPLE,
-      variables: {
-        query: query,
-      },
+      variables: { query, ignoredIds },
     });
 
     if (!res.data) return [];
