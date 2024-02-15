@@ -3,13 +3,13 @@ defmodule OperatelyWeb.Graphql.Queries.Tasks do
 
   object :task_queries do
     field :tasks, list_of(:task) do
-      arg :space_id, :id
+      arg :milestone_id, non_null(:string)
       arg :status, :string
 
       resolve fn _, args, _ ->
         tasks = Operately.Tasks.list_tasks(%{
-          space_id: args[:space_id],
-          status: String.to_existing_atom(args[:status])
+          milestone_id: args.milestone_id,
+          status: args[:status] && String.to_existing_atom(args[:status])
         })
 
         {:ok, tasks}

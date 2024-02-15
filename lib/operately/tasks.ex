@@ -6,7 +6,7 @@ defmodule Operately.Tasks do
 
   def list_tasks(params \\ %{}) do
     from(t in Task)
-    |> where(space_id: ^params.space_id)
+    |> where(milestone_id: ^params.milestone_id)
     |> apply_if(params[:status], fn q -> where(q, status: ^params.status) end)
     |> Repo.all()
   end
