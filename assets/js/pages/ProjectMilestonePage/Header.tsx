@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Forms from "@/components/Form";
+import * as Milestones from "@/graphql/Projects/milestones";
 
 import { FilledButton } from "@/components/Button";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
@@ -18,6 +19,8 @@ export function Header({ milestone, form }: { milestone: any; form: FormState })
 function Display({ milestone, form }) {
   return (
     <div className="flex flex-col items-center justify-center mb-4">
+      <OverdueWarning form={form} />
+
       <div className="border border-stroke-base rounded-full p-4">
         <MilestoneIcon milestone={{ status: milestone.status, deadlineAt: form.titleAndDeadline.date }} size={40} />
       </div>
@@ -33,13 +36,41 @@ function Display({ milestone, form }) {
   );
 }
 
+function OverdueWarning({ form }: { form: FormState }) {
+  const isOverdue = Milestones.isOverdue(form.milestone);
+
+  if (isOverdue) {
+    const days = Milestones.daysOverdue(form.milestone);
+    return (
+      <div className="text-sm text-red-600 font-semibold bg-red-100 p-1 px-4 mb-4">
+        Overdue by {days} {days === 1 ? "day" : "days"}
+      </div>
+    );
+  }
+
+  return null;
+}
+
 function Actions({ milestone, form }) {
   if (milestone.status === "pending") {
+    const isOverdue = Milestones.isOverdue(form.milestone);
+
     return (
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-2">
         <FilledButton size="sm" onClick={form.completeMilestone} data-test-id="complete-milestone" type="primary">
           Mark as Completed
         </FilledButton>
+
+        {isOverdue && (
+          <FilledButton
+            size="sm"
+            onClick={form.titleAndDeadline.startEditing}
+            data-test-id="edit-milestone"
+            type="secondary"
+          >
+            Reschedule
+          </FilledButton>
+        )}
       </div>
     );
   }

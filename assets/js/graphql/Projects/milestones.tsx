@@ -87,6 +87,13 @@ export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) 
   });
 }
 
+export function daysOverdue(milestone: Milestone) {
+  let deadline = +new Date(milestone.deadlineAt);
+  let now = +Time.today();
+
+  return Math.ceil((now - deadline) / (1000 * 60 * 60 * 24));
+}
+
 export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
   let now = +Time.today();

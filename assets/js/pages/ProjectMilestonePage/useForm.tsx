@@ -10,6 +10,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createPath } from "@/utils/paths";
 
 export interface FormState {
+  milestone: Milestones.Milestone;
   titleAndDeadline: TitleAndDeadlineState;
   description: DescriptionState;
 
@@ -26,6 +27,7 @@ export function useFormState(project: Projects.Project, milestone: Milestones.Mi
   const archive = useArchiveMilestone(project, milestone);
 
   return {
+    milestone,
     description,
     titleAndDeadline,
     archive,
@@ -162,7 +164,7 @@ interface TitleAndDeadlineState {
   startEditing: () => void;
 
   title: string;
-  date: Date | null;
+  date: Date;
 
   setTitle: (value: string) => void;
   setDate: (value: Date | null) => void;
