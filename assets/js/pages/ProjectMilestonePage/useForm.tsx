@@ -112,7 +112,7 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
     placeholder: "Write here...",
     content: JSON.parse(milestone.description || "{}"),
     editable: true,
-    className: "pb-2 min-h-[200px]",
+    className: "p-2 min-h-[200px]",
     peopleSearch: People.usePeopleSearch(),
   });
 

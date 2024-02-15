@@ -9,10 +9,6 @@ import { FilledButton } from "@/components/Button";
 export function Description({ milestone, form }) {
   return (
     <div className="">
-      <div className="flex items-center justify-left">
-        <div className="font-bold -mt-[66px] bg-yellow-300 rounded px-2 tracking-wide text-sm">Description</div>
-      </div>
-
       <div className="flex items-start gap-4 mb-4">
         <div className="flex-1">
           <DescriptionContent milestone={milestone} form={form} />
@@ -58,33 +54,33 @@ function DescriptionFilled({ milestone }) {
 
 function DescriptionEdit({ form }) {
   return (
-    <div className="border-x border-b border-stroke-base rounded" data-test-id="milestone-description-editor">
-      <TipTapEditor.Root editor={form.description.editor}>
-        <TipTapEditor.Toolbar editor={form.description.editor} />
-
-        <div className="p-2">
+    <>
+      <div className="border-x border-b border-stroke-base rounded" data-test-id="milestone-description-editor">
+        <TipTapEditor.Root editor={form.description.editor}>
+          <TipTapEditor.Toolbar editor={form.description.editor} />
           <TipTapEditor.EditorContent editor={form.description.editor} className="min-h-[200px]" />
+        </TipTapEditor.Root>
+      </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={form.description.submit}
-                loading={form.description.submitting}
-                disabled={!form.description.submittable}
-                variant="success"
-                data-test-id="save-milestone-description"
-                size="small"
-              >
-                {form.description.submittable ? "Save" : "Uploading..."}
-              </Button>
+      <div className="flex items-center gap-2 justify-end mt-4">
+        <FilledButton
+          onClick={form.description.stopEditing}
+          data-test-id="cancel-milestone-description"
+          type="secondary"
+          size="xs"
+        >
+          Cancel
+        </FilledButton>
 
-              <Button variant="secondary" size="small" onClick={form.description.cancelEditing}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      </TipTapEditor.Root>
-    </div>
+        <FilledButton
+          onClick={form.description.submit}
+          loading={form.description.submitting}
+          data-test-id="save-milestone-description"
+          size="xs"
+        >
+          Save
+        </FilledButton>
+      </div>
+    </>
   );
 }
