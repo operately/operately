@@ -99,7 +99,7 @@ function AddTask({ onClick, color }) {
   );
 }
 
-function TaskSection({ milestone, form, refresh }) {
+function TaskSection({ milestone, refresh }) {
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
 
   const { data, loading, error } = Tasks.useTasks(milestone.id);
@@ -126,49 +126,92 @@ function TaskSection({ milestone, form, refresh }) {
         milestone={milestone}
       />
 
-      {!loading && !error && <TaskList tasks={data.tasks} form={form} refresh={refresh} />}
+      {!loading && !error && <TaskBoard tasks={data.tasks} />}
     </div>
   );
 }
 
-function TaskList({ tasks, form, refresh }) {
+function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
 
-  const openTasks = tasks.filter((t) => t.status === "open");
-  const inProgressTasks = tasks.filter((t) => t.status === "in-progress");
-  const doneTasks = tasks.filter((t) => t.status === "done");
+  const [openTasks, setOpenTasks] = React.useState<Tasks.Task[]>(tasks.filter((t) => t.status === "open"));
+  const [inProgressTasks, setInProgressTasks] = React.useState<Tasks.Task[]>(
+    tasks.filter((t) => t.status === "in-progress"),
+  );
+  const [doneTasks, setDoneTasks] = React.useState<Tasks.Task[]>(tasks.filter((t) => t.status === "done"));
+
+  const onTaskDrop = (taskId: string, newStatus: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    if (task.status === "open") {
+      setOpenTasks((tasks) => tasks.filter((t) => t.id !== taskId));
+    } else if (task.status === "in-progress") {
+      setInProgressTasks((tasks) => tasks.filter((t) => t.id !== taskId));
+    } else if (task.status === "done") {
+      setDoneTasks((tasks) => tasks.filter((t) => t.id !== taskId));
+    }
+
+    task.status = newStatus;
+
+    if (newStatus === "open") {
+      setOpenTasks((tasks) => [...tasks, task]);
+    } else if (newStatus === "in-progress") {
+      setInProgressTasks((tasks) => [...tasks, task]);
+    } else if (newStatus === "done") {
+      setDoneTasks((tasks) => [...tasks, task]);
+    }
+  };
 
   return (
     <div className="grid grid-cols-3 gap-2 items-start">
-      <div className="bg-gray-100 p-2 min-h-[100px] rounded">
-        <div className="text-xs uppercase font-semibold">ToDo ({tasks.length})</div>
-        <div className="flex flex-col gap-2 mt-2">
-          {openTasks.map((task) => (
-            <TaskItem key={task.id} task={task} form={form} refresh={refresh} />
-          ))}
-        </div>
+      <TaskColumn title="To Do" tasks={openTasks} color="bg-gray-100" onTaskDrop={onTaskDrop} status="open" />
+      <TaskColumn
+        title="In Progress"
+        tasks={inProgressTasks}
+        color="bg-gray-100"
+        onTaskDrop={onTaskDrop}
+        status="in-progress"
+      />
+      <TaskColumn title="Done" tasks={doneTasks} color="bg-sky-100" onTaskDrop={onTaskDrop} status="done" />
+    </div>
+  );
+}
+
+interface TaskColumnProps {
+  title: string;
+  tasks: Tasks.Task[];
+  color: string;
+  status: string;
+  onTaskDrop: (taskId: string, newStatus: string) => void;
+}
+
+function TaskColumn(props: TaskColumnProps) {
+  const handleOnDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleOnDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const taskId = e.dataTransfer.getData("text/plain");
+    props.onTaskDrop(taskId, props.status);
+  };
+
+  const columnClassName = "p-2 rounded" + " " + props.color;
+
+  return (
+    <div className={columnClassName} onDragOver={handleOnDragOver} onDrop={handleOnDrop}>
+      <div className="text-xs uppercase font-semibold">
+        {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div className="bg-gray-100 p-2 rounded">
-        <div className="text-xs uppercase font-semibold">In Progress</div>
+      <div className="flex flex-col gap-2 mt-2">
+        {props.tasks.map((task) => (
+          <TaskItem key={task.id} task={task} />
+        ))}
 
-        <div className="flex flex-col gap-2 mt-2">
-          {inProgressTasks.map((task) => (
-            <TaskItem key={task.id} task={task} form={form} refresh={refresh} />
-          ))}
-
-          {inProgressTasks.length === 0 && <PlaceholderTask />}
-        </div>
-      </div>
-
-      <div className="bg-sky-100 p-2 rounded">
-        <div className="text-xs uppercase font-semibold">DONE</div>
-        <div className="flex flex-col gap-2 mt-2">
-          {doneTasks.map((task) => (
-            <TaskItem key={task.id} task={task} form={form} refresh={refresh} />
-          ))}
-          {doneTasks.length === 0 && <PlaceholderTask />}
-        </div>
+        {props.tasks.length === 0 && <PlaceholderTask />}
       </div>
     </div>
   );
@@ -180,19 +223,14 @@ function PlaceholderTask() {
   );
 }
 
-function TaskItem({
-  task,
-  form,
-  refresh,
-}: {
-  task: Tasks.Task;
-  form: ReturnType<typeof useFormState>;
-  refresh: () => void;
-}) {
+function TaskItem({ task }: { task: Tasks.Task }) {
   return (
     <DivLink
       className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
       to={`/tasks/${task.id}`}
+      onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+        e.dataTransfer.setData("text/plain", task.id);
+      }}
     >
       <div className="font-medium">{task.name}</div>
 
