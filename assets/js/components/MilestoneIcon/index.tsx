@@ -4,16 +4,16 @@ import classNames from "classnames";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
-export function MilestoneIcon({
-  milestone,
-  className,
-  size = 16,
-}: {
-  milestone: Projects.Milestone;
+interface MilestoneIconProps {
+  milestone: Pick<Projects.Milestone, "status" | "deadlineAt">;
   className?: string;
   size?: number;
-}) {
+}
+
+export function MilestoneIcon({ milestone, className, size = 16 }: MilestoneIconProps) {
+  console.log(milestone);
   const isOverdue = Projects.isMilestoneOverdue(milestone);
+  console.log(isOverdue);
   let color = "text-content-base";
 
   if (milestone.status === "done") {

@@ -10,6 +10,10 @@ interface RootProps {
   testId?: string;
 }
 
+export const Context = React.createContext({
+  close: () => {},
+});
+
 export function Root(props: RootProps) {
   const [showOptions, setShowOptions] = React.useState(false);
 
@@ -25,11 +29,13 @@ export function Root(props: RootProps) {
   }, [props.position]);
 
   return (
-    <div className={className}>
-      <Open onClick={openOptions} noBorder={props.noBorder} testId={props.testId} position={props.position} />
+    <Context.Provider value={{ close: closeOptions }}>
+      <div className={className}>
+        <Open onClick={openOptions} noBorder={props.noBorder} testId={props.testId} position={props.position} />
 
-      {showOptions && <Dropdown closeOptions={closeOptions} children={props.children} />}
-    </div>
+        {showOptions && <Dropdown closeOptions={closeOptions} children={props.children} />}
+      </div>
+    </Context.Provider>
   );
 }
 
@@ -47,9 +53,16 @@ export function Link({ icon, title, to, dataTestId }) {
 }
 
 export function Action({ icon, title, onClick, dataTestId }) {
+  const { close } = React.useContext(Context);
+
+  const handleClick = () => {
+    close();
+    onClick();
+  };
+
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
       className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
       data-test-id={dataTestId}
     >

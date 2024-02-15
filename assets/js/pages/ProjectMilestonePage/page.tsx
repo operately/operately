@@ -7,8 +7,8 @@ import { useLoadedData, useRefresh } from "./loader";
 import { useFormState } from "./useForm";
 
 import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
-import { Title } from "./Title";
-import { Overview } from "./Overview";
+import { Options } from "./Options";
+import { Header } from "./Header";
 import { Description } from "./Description";
 import { CommentSection, useForMilestone } from "@/features/CommentSection";
 import { FilledButton } from "@/components/Button";
@@ -27,8 +27,8 @@ export function Page() {
         <ProjectMilestonesNavigation project={project} />
 
         <Paper.Body minHeight="none">
-          <Title milestone={milestone} form={form} />
-          <Overview milestone={milestone} form={form} />
+          <Options form={form} />
+          <Header milestone={milestone} form={form} />
 
           <PageSection title="Description" color="bg-yellow-300">
             <EditDescription form={form} color="bg-yellow-300" />

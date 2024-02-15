@@ -39,12 +39,11 @@ export function parse(date: string | Date | null | undefined) {
   throw new Error("Invalid date");
 }
 
-export function parseDate(date: string | null | undefined) {
-  if (date === null || date === undefined) {
-    return null;
-  } else {
-    return datefsn.parse(date, "yyyy-MM-dd", new Date());
-  }
+export function parseDate(date: Date | string | null | undefined): Date | null {
+  if (date === null || date === undefined) return null;
+  if (date.constructor.name === "Date") return date as Date;
+
+  return datefsn.parse(date as string, "yyyy-MM-dd", new Date());
 }
 
 export function parseISO(date: string) {

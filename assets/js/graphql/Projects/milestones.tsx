@@ -156,14 +156,14 @@ export function usePostComment(options = {}) {
   return useMutation(POST_MILESTONE_COMMENT, options);
 }
 
-const UPDATE_MILESTONE_TITLE = gql`
-  mutation UpdateMilestoneTitle($input: UpdateMilestoneTitleInput!) {
-    updateMilestoneTitle(input: $input) {
+const UPDATE_MILESTONE = gql`
+  mutation UpdateMilestone($input: UpdateMilestoneInput!) {
+    updateMilestone(input: $input) {
       id
     }
   }
 `;
 
-export function useUpdateTitle(options = {}) {
-  return useMutation(UPDATE_MILESTONE_TITLE, options);
+export function useUpdateMilestone(options = {}) {
+  return useMutation(UPDATE_MILESTONE, options);
 }

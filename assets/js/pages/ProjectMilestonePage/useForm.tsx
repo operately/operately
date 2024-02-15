@@ -9,10 +9,9 @@ import { useRefresh } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createPath } from "@/utils/paths";
 
-interface FormState {
+export interface FormState {
+  titleAndDeadline: TitleAndDeadlineState;
   description: DescriptionState;
-  title: TitleState;
-  deadline: DeadlineState;
 
   archive: () => void;
   completeMilestone: () => void;
@@ -21,16 +20,14 @@ interface FormState {
 
 export function useFormState(project: Projects.Project, milestone: Milestones.Milestone): FormState {
   const description = useDescriptionState(milestone);
-  const title = useTitleState(milestone);
-  const deadline = useDeadlineState(milestone);
+  const titleAndDeadline = useTitleAndDeadlineState(milestone);
   const completeMilestone = useCompleteMilestone(milestone);
   const reopenMilestone = useReopenMilestone(milestone);
   const archive = useArchiveMilestone(project, milestone);
 
   return {
     description,
-    title,
-    deadline,
+    titleAndDeadline,
     archive,
     completeMilestone,
     reopenMilestone,
@@ -160,101 +157,89 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
   };
 }
 
-interface TitleState {
+interface TitleAndDeadlineState {
   state: "show" | "edit";
+  startEditing: () => void;
+
   title: string;
-  submitting: boolean;
-  submittable: boolean;
+  date: Date | null;
 
   setTitle: (value: string) => void;
-  startEditing: () => void;
-  submit: (value: string) => void;
-  stopEditing: () => void;
-  cancelEditing: () => void;
-  error: boolean;
+  setDate: (value: Date | null) => void;
+  submit: () => Promise<boolean>;
+  cancel: () => void;
+
+  errors: {
+    title: boolean;
+    date: boolean;
+  };
 }
 
-function useTitleState(milestone: Milestones.Milestone): TitleState {
+function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDeadlineState {
   const refresh = useRefresh();
 
-  const [state, setState] = React.useState<"show" | "edit">("edit");
+  const [state, setState] = React.useState<"show" | "edit">("show");
   const [title, setTitle] = React.useState(milestone.title);
-  const [error, setError] = React.useState(false);
+  const [date, setDate] = React.useState(Time.parseDate(milestone.deadlineAt));
 
-  const startEditing = React.useCallback(() => {
-    setState("edit");
-  }, []);
+  const [titleError, setTitleError] = React.useState(false);
+  const [dateError, setDateError] = React.useState(false);
 
-  const stopEditing = React.useCallback(() => {
-    setState("show");
-  }, []);
+  const startEditing = React.useCallback(() => setState("edit"), []);
 
-  const [post, { loading }] = Milestones.useUpdateTitle();
+  const [post, { loading }] = Milestones.useUpdateMilestone({
+    onCompleted: refresh,
+  });
 
   const submit = React.useCallback(async () => {
     if (loading) return false;
 
     if (title.trim().length === 0) {
-      setError(true);
+      setTitleError(true);
+      return false;
+    }
+
+    if (!date) {
+      setDateError(true);
       return false;
     }
 
     await post({
       variables: {
         input: {
-          id: milestone.id,
+          milestoneID: milestone.id,
           title,
+          deadlineAt: Time.toDateWithoutTime(date),
         },
       },
     });
 
-    stopEditing();
+    setState("show");
     return true;
-  }, [title, loading, milestone, stopEditing, refresh, post]);
+  }, [title, date, post, loading, milestone]);
+
+  const cancel = React.useCallback(() => {
+    setTitle(milestone.title);
+    setDate(Time.parseDate(milestone.deadlineAt));
+    setState("show");
+  }, [milestone]);
 
   return {
     state,
-    title,
-    setTitle,
-    submit,
-    submitting: loading,
-    submittable: title.length > 0,
     startEditing,
-    stopEditing,
-    cancelEditing: stopEditing,
-    error,
-  };
-}
 
-interface DeadlineState {
-  date: Date | null;
-  setDate: (value: Date | null) => void;
-}
+    title,
+    date,
 
-function useDeadlineState(milestone: Milestones.Milestone): DeadlineState {
-  const refresh = useRefresh();
+    setTitle,
+    setDate,
 
-  const [post, { loading }] = Milestones.useSetDeadline();
+    submit,
+    cancel,
 
-  const setDeadline = React.useCallback(
-    async (value: Date | null) => {
-      if (loading) return;
-      if (!value) return;
-
-      await post({
-        variables: {
-          milestoneId: milestone.id,
-          deadlineAt: Time.toDateWithoutTime(value),
-        },
-      });
-
-      refresh();
+    errors: {
+      title: titleError,
+      date: dateError,
     },
-    [milestone, refresh, post, loading],
-  );
-
-  return {
-    date: Time.parseDate(milestone.deadlineAt),
-    setDate: setDeadline,
   };
 }
