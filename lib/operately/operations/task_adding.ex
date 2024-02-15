@@ -5,19 +5,22 @@ defmodule Operately.Operations.TaskAdding do
 
   def run(creator, attrs) do
     changeset = Operately.Tasks.Task.changeset(%{
-      creator_id: creator.id,
-      assignee_id: attrs.assignee_id,
       name: attrs.name,
       description: Jason.decode!(attrs.description),
-      due_date: attrs.due_date,
-      size: attrs.size,
-      priority: attrs.priority,
       milestone_id: attrs.milestone_id,
+      creator_id: creator.id,
     })
 
     Multi.new()
     |> Multi.insert(:task, changeset)
-    |> Enum.reduce(attrs.assignee_ids, fn assignee_id, multi ->
+    |> insert_assignees(attrs.assignee_ids)
+    |> insert_activity(creator)
+    |> Repo.transaction()
+    |> Repo.extract_result(:task)
+  end
+
+  def insert_assignees(multi, assignee_ids) do
+    Enum.reduce(assignee_ids, multi, fn assignee_id, multi ->
       multi_id = "assignee_#{assignee_id}"
 
       Multi.insert(multi, multi_id, fn changes -> 
@@ -27,7 +30,10 @@ defmodule Operately.Operations.TaskAdding do
         })
       end)
     end)
-    |> Activities.insert(creator.id, :task_adding, fn changes ->
+  end
+
+  def insert_activity(multi, creator) do
+    Activities.insert(multi, creator.id, :task_adding, fn changes ->
       %{
         company_id: creator.company_id,
         name: changes.task.name,
@@ -35,7 +41,5 @@ defmodule Operately.Operations.TaskAdding do
         milestone_id: changes.task.milestone_id,
       }
     end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:task)
   end
 end
