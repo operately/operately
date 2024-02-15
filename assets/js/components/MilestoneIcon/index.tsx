@@ -11,22 +11,22 @@ interface MilestoneIconProps {
 }
 
 export function MilestoneIcon({ milestone, className, size = 16 }: MilestoneIconProps) {
-  console.log(milestone);
-  const isOverdue = Projects.isMilestoneOverdue(milestone);
-  console.log(isOverdue);
-  let color = "text-content-base";
+  const classNameFinal = React.useMemo(() => {
+    const isOverdue = Projects.isMilestoneOverdue(milestone);
+    let color = "text-content-base";
 
-  if (milestone.status === "done") {
-    color = "text-green-700";
-  } else {
-    if (isOverdue) {
-      color = "text-red-500";
+    if (milestone.status === "done") {
+      color = "text-green-700";
     } else {
-      color = "text-content-base";
+      if (isOverdue) {
+        color = "text-red-500";
+      } else {
+        color = "text-content-base";
+      }
     }
-  }
 
-  const classNameFinal = classNames(color, className);
+    return classNames(color, className);
+  }, [milestone.status, milestone.deadlineAt, className]);
 
   return <Icons.IconFlag3Filled size={size} className={classNameFinal} />;
 }

@@ -2,9 +2,9 @@ import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
-import Button from "@/components/Button";
 
 import { FilledButton } from "@/components/Button";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Description({ milestone, form }) {
   return (
@@ -22,24 +22,25 @@ function DescriptionContent({ milestone, form }) {
   if (form.description.state === "edit") {
     return <DescriptionEdit form={form} />;
   } else {
-    if (milestone.description) {
-      return <DescriptionFilled milestone={milestone} />;
-    } else {
+    if (isContentEmpty(milestone.description)) {
       return <DescriptionZeroState form={form} />;
+    } else {
+      return <DescriptionFilled milestone={milestone} />;
     }
   }
 }
 
 function DescriptionZeroState({ form }) {
   return (
-    <div>
-      <div className="text-content-dimmed text-sm">No description yet</div>
-
-      <div className="font-semibold mt-1 text-sm">
-        <ButtonLink onClick={form.description.startEditing} data-test-id="write-milestone-description">
-          Add description
-        </ButtonLink>
-      </div>
+    <div className="flex items-center gap-2">
+      <FilledButton
+        onClick={form.description.startEditing}
+        testId="add-milestone-description"
+        size="xs"
+        type="secondary"
+      >
+        Add Description
+      </FilledButton>
     </div>
   );
 }
