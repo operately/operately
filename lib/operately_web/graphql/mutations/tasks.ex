@@ -2,13 +2,13 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
   use Absinthe.Schema.Notation
 
   input_object :create_task_input do
-    field :space_id, non_null(:id)
     field :name, non_null(:string)
-    field :assignee_id, non_null(:id)
+    field :assignee_ids, list_of(:string)
     field :due_date, :naive_datetime
     field :description, :string
     field :priority, :string
     field :size, :string
+    field :milestone_id, :id
   end
 
   input_object :edit_task_name_input do

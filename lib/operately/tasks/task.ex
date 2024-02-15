@@ -3,7 +3,7 @@ defmodule Operately.Tasks.Task do
 
   schema "tasks" do
     belongs_to :creator, Operately.People.Person
-    belongs_to :space, Operately.Groups.Group
+    belongs_to :milestone, Operately.Projects.Milestone
 
     has_many :assignees, Operately.Tasks.Assignee
 
@@ -27,6 +27,6 @@ defmodule Operately.Tasks.Task do
   def changeset(task, attrs) do
     task
     |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :space_id, :status, :closed_at, :reopened_at])
-    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :space_id])
+    |> validate_required([:name, :description, :creator_id, :milestone_id])
   end
 end

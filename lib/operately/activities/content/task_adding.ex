@@ -2,10 +2,10 @@ defmodule Operately.Activities.Content.TaskAdding do
   use Operately.Activities.Content
 
   embedded_schema do
+    field :company_id, :string
+    field :milestone_id, :string
+    field :task_id, :string
     field :name, :string
-  field :task_id, :string
-  field :company_id, :string
-  field :space_id, :string
   end
 
   def changeset(attrs) do
