@@ -37,16 +37,6 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
     setPeople(response);
   };
 
-  const searchPopupStyle = React.useMemo(() => {
-    if (!inputRef.current) return {};
-
-    const inputRect = inputRef.current.getBoundingClientRect();
-    return {
-      top: `${inputRect.bottom}px`,
-      left: `${inputRect.left}px`,
-    };
-  }, [inputRef.current]);
-
   return (
     <div
       className={classNames({
@@ -70,62 +60,79 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
         </div>
       ))}
 
-      <input
-        ref={inputRef}
-        type="text"
-        className="border-none ring-0 p-0 bg-transparent flex-1 outline-none hover:ring-0 focus:ring-0"
-        placeholder={props.addedPeople.length === 0 ? "Type names to assign" : ""}
-        onChange={(e) => handleSearch(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowDown") {
-            e.stopPropagation();
-            e.preventDefault();
-            setSelectedPersonIndex((index) => Math.min(index + 1, people.length - 1));
-          }
+      <div className="flex-1 relative">
+        <input
+          ref={inputRef}
+          type="text"
+          className="border-none ring-0 p-0 bg-transparent outline-none hover:ring-0 focus:ring-0"
+          placeholder={props.addedPeople.length === 0 ? "Type names to assign" : ""}
+          onChange={(e) => handleSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") {
+              e.stopPropagation();
+              e.preventDefault();
+              setSelectedPersonIndex((index) => Math.min(index + 1, people.length - 1));
+            }
 
-          if (e.key === "ArrowUp") {
-            e.stopPropagation();
-            e.preventDefault();
-            setSelectedPersonIndex((index) => Math.max(index - 1, 0));
-          }
+            if (e.key === "ArrowUp") {
+              e.stopPropagation();
+              e.preventDefault();
+              setSelectedPersonIndex((index) => Math.max(index - 1, 0));
+            }
 
-          if (e.key === "Enter") {
-            e.stopPropagation();
-            e.preventDefault();
+            if (e.key === "Enter") {
+              e.stopPropagation();
+              e.preventDefault();
 
-            const person = people[selectedPersonIndex];
-            if (person) {
+              const person = people[selectedPersonIndex];
+              if (person) {
+                setSearchTerm("");
+                setPeople([]);
+                setSelectedPersonIndex(0);
+                props.setAddedPeople((people) => [...people, person]);
+              }
+            }
+
+            if (e.key === "Backspace" && searchTerm === "" && props.addedPeople.length > 0) {
+              props.setAddedPeople((people) => people.slice(0, people.length - 1));
+            }
+          }}
+          onBlur={() => {
+            setTimeout(() => {
               setSearchTerm("");
               setPeople([]);
               setSelectedPersonIndex(0);
-              props.setAddedPeople((people) => [...people, person]);
-            }
-          }
+            }, 100);
+          }}
+          value={searchTerm}
+        />
 
-          if (e.key === "Backspace" && searchTerm === "" && props.addedPeople.length > 0) {
-            props.setAddedPeople((people) => people.slice(0, people.length - 1));
-          }
-        }}
-        value={searchTerm}
-      />
-
-      <div className="absolute flex items-center justify-center z-[1000]" style={searchPopupStyle}>
-        <div className="flex flex-col rounded-lg border border-stroke-base overflow-hidden shadow-lg bg-surface">
-          {searchTerm.length >= 2 && people.length === 0 && <div className="p-1 px-2">No results</div>}
-          {people.length > 0 &&
-            people.slice(0, 5).map((person, index) => (
-              <div
-                key={person.id}
-                className={classNames({
-                  "flex items-center gap-2": true,
-                  "p-1 px-2": true,
-                  "bg-sky-300": selectedPersonIndex === index,
-                })}
-              >
-                <Avatar person={person} size={20} />
-                <div>{person.fullName}</div>
-              </div>
-            ))}
+        <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>
+          <div className="flex flex-col rounded-lg border border-stroke-base overflow-hidden shadow-lg bg-surface">
+            {searchTerm.length >= 2 && people.length === 0 && <div className="p-1 px-2">No results</div>}
+            {people.length > 0 &&
+              people.slice(0, 5).map((person, index) => (
+                <div
+                  key={person.id}
+                  className={classNames({
+                    "flex items-center gap-2": true,
+                    "p-1 px-2": true,
+                    "cursor-pointer": true,
+                    "bg-sky-300": selectedPersonIndex === index,
+                  })}
+                  onClick={() => {
+                    props.setAddedPeople((people) => [...people, person]);
+                    setSearchTerm("");
+                    setPeople([]);
+                    setSelectedPersonIndex(0);
+                    inputRef.current?.focus();
+                  }}
+                >
+                  <Avatar person={person} size={20} />
+                  <div>{person.fullName}</div>
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </div>
