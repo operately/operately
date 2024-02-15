@@ -171,13 +171,15 @@ interface TitleState {
   submit: (value: string) => void;
   stopEditing: () => void;
   cancelEditing: () => void;
+  error: boolean;
 }
 
 function useTitleState(milestone: Milestones.Milestone): TitleState {
   const refresh = useRefresh();
 
-  const [state, setState] = React.useState<"show" | "edit">("show");
+  const [state, setState] = React.useState<"show" | "edit">("edit");
   const [title, setTitle] = React.useState(milestone.title);
+  const [error, setError] = React.useState(false);
 
   const startEditing = React.useCallback(() => {
     setState("edit");
@@ -190,8 +192,12 @@ function useTitleState(milestone: Milestones.Milestone): TitleState {
   const [post, { loading }] = Milestones.useUpdateTitle();
 
   const submit = React.useCallback(async () => {
-    if (!title) return;
-    if (loading) return;
+    if (loading) return false;
+
+    if (title.trim().length === 0) {
+      setError(true);
+      return false;
+    }
 
     await post({
       variables: {
@@ -202,8 +208,8 @@ function useTitleState(milestone: Milestones.Milestone): TitleState {
       },
     });
 
-    refresh();
     stopEditing();
+    return true;
   }, [title, loading, milestone, stopEditing, refresh, post]);
 
   return {
@@ -216,6 +222,7 @@ function useTitleState(milestone: Milestones.Milestone): TitleState {
     startEditing,
     stopEditing,
     cancelEditing: stopEditing,
+    error,
   };
 }
 
