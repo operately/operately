@@ -3,7 +3,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Tasks from "@/models/tasks";
-import * as People from "@/models/people";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useFormState } from "./useForm";
@@ -15,9 +14,12 @@ import { Description } from "./Description";
 import { CommentSection, useForMilestone } from "@/features/CommentSection";
 import { FilledButton } from "@/components/Button";
 import { NewTaskModal } from "@/features/Tasks/NewTaskModal";
-import { DivLink, Link } from "@/components/Link";
+import { DivLink } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
+
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 
 export function Page() {
   const refresh = useRefresh();
@@ -164,17 +166,19 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-2 items-start">
-      <TaskColumn title="To Do" tasks={openTasks} color="bg-gray-100" onTaskDrop={onTaskDrop} status="open" />
-      <TaskColumn
-        title="In Progress"
-        tasks={inProgressTasks}
-        color="bg-gray-100"
-        onTaskDrop={onTaskDrop}
-        status="in-progress"
-      />
-      <TaskColumn title="Done" tasks={doneTasks} color="bg-sky-100" onTaskDrop={onTaskDrop} status="done" />
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      <div className="grid grid-cols-3 gap-2 items-start">
+        <TaskColumn title="To Do" tasks={openTasks} color="bg-gray-100" onTaskDrop={onTaskDrop} status="open" />
+        <TaskColumn
+          title="In Progress"
+          tasks={inProgressTasks}
+          color="bg-gray-100"
+          onTaskDrop={onTaskDrop}
+          status="in-progress"
+        />
+        <TaskColumn title="Done" tasks={doneTasks} color="bg-sky-100" onTaskDrop={onTaskDrop} status="done" />
+      </div>
+    </DndProvider>
   );
 }
 
@@ -187,21 +191,19 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
-  const handleOnDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const handleOnDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
-    const taskId = e.dataTransfer.getData("text/plain");
-    props.onTaskDrop(taskId, props.status);
-  };
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: "task-item",
+    drop: () => ({ name: props.title, status: props.status }),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }));
 
   const columnClassName = "p-2 rounded" + " " + props.color;
 
   return (
-    <div className={columnClassName} onDragOver={handleOnDragOver} onDrop={handleOnDrop}>
+    <div className={columnClassName} ref={drop}>
       <div className="text-xs uppercase font-semibold">
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
@@ -224,23 +226,44 @@ function PlaceholderTask() {
 }
 
 function TaskItem({ task }: { task: Tasks.Task }) {
-  return (
-    <DivLink
-      className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
-      to={`/tasks/${task.id}`}
-      onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-        e.dataTransfer.setData("text/plain", task.id);
-      }}
-    >
-      <div className="font-medium">{task.name}</div>
+  const [collected, drag, dragPreview] = useDrag(() => ({
+    type: "task-item",
+    item: { id: task.id },
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult() as { name: string; status: string } | undefined;
 
-      <div className="text-sm text-content-dimmed flex items-center -space-x-2">
-        {task.assignees!.map((a) => (
-          <div className="border border-surface rounded-full flex items-center" key={a.id}>
-            <Avatar key={a.id} person={a} size={20} />
-          </div>
-        ))}
-      </div>
-    </DivLink>
+      if (dropResult) {
+        console.log(`You dropped ${item.id} into ${dropResult.name}!`);
+      }
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  if (collected.isDragging) {
+    return null;
+  }
+
+  return (
+    <div ref={drag}>
+      <DivLink
+        className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
+        to={`/tasks/${task.id}`}
+        onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+          e.dataTransfer.setData("text/plain", task.id);
+        }}
+      >
+        <div className="font-medium">{task.name}</div>
+
+        <div className="text-sm text-content-dimmed flex items-center -space-x-2">
+          {task.assignees!.map((a) => (
+            <div className="border border-surface rounded-full flex items-center" key={a.id}>
+              <Avatar key={a.id} person={a} size={20} />
+            </div>
+          ))}
+        </div>
+      </DivLink>
+    </div>
   );
 }
