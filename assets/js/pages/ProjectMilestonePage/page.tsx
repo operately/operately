@@ -193,7 +193,9 @@ interface TaskColumnProps {
 function TaskColumn(props: TaskColumnProps) {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: "task-item",
-    drop: () => ({ name: props.title, status: props.status }),
+    drop: (item: { id: string }) => {
+      props.onTaskDrop(item.id, props.status);
+    },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
@@ -229,13 +231,6 @@ function TaskItem({ task }: { task: Tasks.Task }) {
   const [collected, drag, dragPreview] = useDrag(() => ({
     type: "task-item",
     item: { id: task.id },
-    end: (item, monitor) => {
-      const dropResult = monitor.getDropResult() as { name: string; status: string } | undefined;
-
-      if (dropResult) {
-        console.log(`You dropped ${item.id} into ${dropResult.name}!`);
-      }
-    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
