@@ -157,11 +157,15 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   }, [tasks]);
 
   const onTaskDrop = (taskId: string, newStatus: string, index: number) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
     setTaskBoardState((prev) => {
       const { openTasks, inProgressTasks, doneTasks } = prev;
+
+      const task =
+        openTasks.find((t) => t.id === taskId) ||
+        inProgressTasks.find((t) => t.id === taskId) ||
+        doneTasks.find((t) => t.id === taskId);
+
+      if (!task) return prev;
 
       let newOpenTasks = openTasks.filter((t) => t.id !== taskId);
       let newInProgressTasks = inProgressTasks.filter((t) => t.id !== taskId);
