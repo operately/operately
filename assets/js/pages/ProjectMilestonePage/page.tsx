@@ -18,8 +18,8 @@ import { DivLink } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
 
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
+import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
 
 export function Page() {
   const refresh = useRefresh();
@@ -191,8 +191,13 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
+  const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
+
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: "task-item",
+    hover: (item: { id: string; width: number; height: number }) => {
+      setDropZoneSize({ width: item.width, height: item.height });
+    },
     drop: (item: { id: string }) => {
       props.onTaskDrop(item.id, props.status);
     },
@@ -210,9 +215,19 @@ function TaskColumn(props: TaskColumnProps) {
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div className="flex flex-col gap-2 mt-2">
+      <div
+        className="flex flex-col gap-2 mt-2"
+        style={{ paddingBottom: isOver && canDrop ? dropZoneSize.height : "", transition: "padding-bottom 0.2s" }}
+      >
         {props.tasks.map((task) => (
-          <TaskItem key={task.id} task={task} />
+          <TaskItem
+            key={task.id}
+            task={task}
+            styles={{
+              transform: isOver && canDrop ? `translate(0, ${dropZoneSize.height}px)` : "",
+              transition: "transform 0.2s",
+            }}
+          />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -227,37 +242,32 @@ function PlaceholderTask() {
   );
 }
 
-function TaskItem({ task }: { task: Tasks.Task }) {
-  const [collected, drag, dragPreview] = useDrag(() => ({
+function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProperties }) {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+
+  const [collected, drag] = useDrag(() => ({
     type: "task-item",
-    item: { id: task.id },
+    item: () => {
+      const rect = ref.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const width = rect.width;
+      const height = rect.height;
+
+      return { id: task.id, width, height };
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
-      x: monitor.getClientOffset()?.x,
-      y: monitor.getClientOffset()?.y,
     }),
   }));
 
-  if (collected.isDragging) {
-    return (
-      <div ref={dragPreview}>
-        <div className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between opacity-50">
-          <div className="font-medium">{task.name}</div>
-
-          <div className="text-sm text-content-dimmed flex items-center -space-x-2">
-            {task.assignees!.map((a) => (
-              <div className="border border-surface rounded-full flex items-center" key={a.id}>
-                <Avatar key={a.id} person={a} size={20} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const setDragRef = (node: HTMLDivElement) => {
+    drag(node);
+    ref.current = node;
+  };
 
   return (
-    <div ref={drag}>
+    <div ref={setDragRef} style={{ opacity: collected.isDragging ? 0 : 1, ...styles }}>
       <DivLink
         className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
         to={`/tasks/${task.id}`}
