@@ -194,6 +194,7 @@ function TaskColumn(props: TaskColumnProps) {
   const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
 
   const dropIndex = React.useRef<number | null>(null);
+  const dragAndDropTheSame = React.useRef(false);
   const listRef = React.useRef<HTMLDivElement | null>(null);
 
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
@@ -204,8 +205,10 @@ function TaskColumn(props: TaskColumnProps) {
       const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
 
       dropIndex.current = taskPositions.findIndex((pos) => {
-        return monitor.getClientOffset()!.y < pos.top + pos.height / 2;
+        return monitor.getClientOffset()!.y < pos.top + pos.height;
       });
+
+      dragAndDropTheSame.current = item.id === props.tasks[dropIndex.current!]?.id;
 
       setDropZoneSize({ width: item.width, height: item.height });
     },
@@ -218,6 +221,33 @@ function TaskColumn(props: TaskColumnProps) {
     }),
   }));
 
+  const listStyles = () => {
+    if (!isOver) return { transition: "padding-bottom 0.2s" };
+    if (!canDrop) return { transition: "padding-bottom 0.2s" };
+    if (dragAndDropTheSame.current) return { transition: "padding-bottom 0.2s" };
+
+    const paddingBottom = dropZoneSize.height;
+
+    return { paddingBottom, transition: "padding-bottom 0.2s" };
+  };
+
+  const itemStyles = (index: number) => {
+    let transform = "";
+
+    if (isOver && canDrop) {
+      if (dragAndDropTheSame.current) {
+        transform = "";
+      } else {
+        transform = `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height}px)`;
+      }
+    }
+
+    return {
+      transform: transform,
+      transition: "transform 0.2s",
+    };
+  };
+
   const columnClassName = "p-2 rounded" + " " + props.color;
 
   return (
@@ -226,21 +256,9 @@ function TaskColumn(props: TaskColumnProps) {
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div
-        className="flex flex-col mt-2"
-        style={{ paddingBottom: isOver && canDrop ? dropZoneSize.height : "", transition: "padding-bottom 0.2s" }}
-        ref={listRef}
-      >
+      <div className="flex flex-col mt-2" style={listStyles()} ref={listRef}>
         {props.tasks.map((task, index) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            styles={{
-              transform:
-                isOver && canDrop ? `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height}px)` : "",
-              transition: "transform 0.2s",
-            }}
-          />
+          <TaskItem key={task.id} task={task} styles={itemStyles(index)} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -258,7 +276,7 @@ function PlaceholderTask() {
 function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProperties }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
 
-  const [collected, drag, dragImage] = useDrag(() => ({
+  const [collected, drag] = useDrag(() => ({
     type: "task-item",
     item: () => {
       const rect = ref.current?.getBoundingClientRect();
@@ -279,13 +297,9 @@ function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProper
     ref.current = node;
   };
 
-  if (collected.isDragging) {
-    return <div ref={dragImage} />;
-  }
-
   return (
     <div className="not-first:mt-2">
-      <div ref={setDragRef} style={{ opacity: collected.isDragging ? 0 : 1, ...styles }}>
+      <div ref={setDragRef} style={{ opacity: collected.isDragging ? 0.2 : 1, ...styles }}>
         <DivLink
           className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
           to={`/tasks/${task.id}`}
