@@ -233,11 +233,27 @@ function TaskItem({ task }: { task: Tasks.Task }) {
     item: { id: task.id },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
+      x: monitor.getClientOffset()?.x,
+      y: monitor.getClientOffset()?.y,
     }),
   }));
 
   if (collected.isDragging) {
-    return null;
+    return (
+      <div ref={dragPreview}>
+        <div className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between opacity-50">
+          <div className="font-medium">{task.name}</div>
+
+          <div className="text-sm text-content-dimmed flex items-center -space-x-2">
+            {task.assignees!.map((a) => (
+              <div className="border border-surface rounded-full flex items-center" key={a.id}>
+                <Avatar key={a.id} person={a} size={20} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -245,9 +261,6 @@ function TaskItem({ task }: { task: Tasks.Task }) {
       <DivLink
         className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
         to={`/tasks/${task.id}`}
-        onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-          e.dataTransfer.setData("text/plain", task.id);
-        }}
       >
         <div className="font-medium">{task.name}</div>
 
