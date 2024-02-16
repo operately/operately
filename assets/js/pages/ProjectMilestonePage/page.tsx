@@ -227,7 +227,7 @@ function TaskColumn(props: TaskColumnProps) {
       </div>
 
       <div
-        className="flex flex-col gap-2 mt-2"
+        className="flex flex-col mt-2"
         style={{ paddingBottom: isOver && canDrop ? dropZoneSize.height : "", transition: "padding-bottom 0.2s" }}
         ref={listRef}
       >
@@ -237,7 +237,7 @@ function TaskColumn(props: TaskColumnProps) {
             task={task}
             styles={{
               transform:
-                isOver && canDrop ? `translate(0, ${index < dropIndex.current! ? -dropZoneSize.height : 0}px)` : "",
+                isOver && canDrop ? `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height}px)` : "",
               transition: "transform 0.2s",
             }}
           />
@@ -284,21 +284,23 @@ function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProper
   }
 
   return (
-    <div ref={setDragRef} style={{ opacity: collected.isDragging ? 0 : 1, ...styles }}>
-      <DivLink
-        className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
-        to={`/tasks/${task.id}`}
-      >
-        <div className="font-medium">{task.name}</div>
+    <div className="not-first:mt-2">
+      <div ref={setDragRef} style={{ opacity: collected.isDragging ? 0 : 1, ...styles }}>
+        <DivLink
+          className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
+          to={`/tasks/${task.id}`}
+        >
+          <div className="font-medium">{task.name}</div>
 
-        <div className="text-sm text-content-dimmed flex items-center -space-x-2">
-          {task.assignees!.map((a) => (
-            <div className="border border-surface rounded-full flex items-center" key={a.id}>
-              <Avatar key={a.id} person={a} size={20} />
-            </div>
-          ))}
-        </div>
-      </DivLink>
+          <div className="text-sm text-content-dimmed flex items-center -space-x-2">
+            {task.assignees!.map((a) => (
+              <div className="border border-surface rounded-full flex items-center" key={a.id}>
+                <Avatar key={a.id} person={a} size={20} />
+              </div>
+            ))}
+          </div>
+        </DivLink>
+      </div>
     </div>
   );
 }

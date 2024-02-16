@@ -133,9 +133,13 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
 
   const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
 
+  const image = React.useMemo(() => {
+    return <img src={person.avatarUrl!} alt={person.fullName} referrerPolicy="no-referrer" />;
+  }, [person.avatarUrl, person.fullName]);
+
   return (
     <div title={person.fullName} className={className} style={style}>
-      <img src={person.avatarUrl} alt={person.fullName} referrerPolicy="no-referrer" />
+      {image}
     </div>
   );
 }
