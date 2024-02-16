@@ -142,7 +142,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   );
   const [doneTasks, setDoneTasks] = React.useState<Tasks.Task[]>(tasks.filter((t) => t.status === "done"));
 
-  const onTaskDrop = (taskId: string, newStatus: string) => {
+  const onTaskDrop = (taskId: string, newStatus: string, index: number) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
@@ -157,11 +157,11 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
     task.status = newStatus;
 
     if (newStatus === "open") {
-      setOpenTasks((tasks) => [...tasks, task]);
+      setOpenTasks((tasks) => [...tasks.slice(0, index), task, ...tasks.slice(index)]);
     } else if (newStatus === "in-progress") {
-      setInProgressTasks((tasks) => [...tasks, task]);
+      setInProgressTasks((tasks) => [...tasks.slice(0, index), task, ...tasks.slice(index)]);
     } else if (newStatus === "done") {
-      setDoneTasks((tasks) => [...tasks, task]);
+      setDoneTasks((tasks) => [...tasks.slice(0, index), task, ...tasks.slice(index)]);
     }
   };
 
@@ -187,19 +187,30 @@ interface TaskColumnProps {
   tasks: Tasks.Task[];
   color: string;
   status: string;
-  onTaskDrop: (taskId: string, newStatus: string) => void;
+  onTaskDrop: (taskId: string, newStatus: string, index: number) => void;
 }
 
 function TaskColumn(props: TaskColumnProps) {
   const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
 
+  const dropIndex = React.useRef<number | null>(null);
+  const listRef = React.useRef<HTMLDivElement | null>(null);
+
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: "task-item",
-    hover: (item: { id: string; width: number; height: number }) => {
+    hover: (item: { id: string; width: number; height: number }, monitor) => {
+      if (!listRef.current) return;
+
+      const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
+
+      dropIndex.current = taskPositions.findIndex((pos) => {
+        return monitor.getClientOffset()!.y < pos.top + pos.height / 2;
+      });
+
       setDropZoneSize({ width: item.width, height: item.height });
     },
     drop: (item: { id: string }) => {
-      props.onTaskDrop(item.id, props.status);
+      props.onTaskDrop(item.id, props.status, dropIndex.current!);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -218,13 +229,15 @@ function TaskColumn(props: TaskColumnProps) {
       <div
         className="flex flex-col gap-2 mt-2"
         style={{ paddingBottom: isOver && canDrop ? dropZoneSize.height : "", transition: "padding-bottom 0.2s" }}
+        ref={listRef}
       >
-        {props.tasks.map((task) => (
+        {props.tasks.map((task, index) => (
           <TaskItem
             key={task.id}
             task={task}
             styles={{
-              transform: isOver && canDrop ? `translate(0, ${dropZoneSize.height}px)` : "",
+              transform:
+                isOver && canDrop ? `translate(0, ${index < dropIndex.current! ? -dropZoneSize.height : 0}px)` : "",
               transition: "transform 0.2s",
             }}
           />
@@ -245,7 +258,7 @@ function PlaceholderTask() {
 function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProperties }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
 
-  const [collected, drag] = useDrag(() => ({
+  const [collected, drag, dragImage] = useDrag(() => ({
     type: "task-item",
     item: () => {
       const rect = ref.current?.getBoundingClientRect();
@@ -265,6 +278,10 @@ function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProper
     drag(node);
     ref.current = node;
   };
+
+  if (collected.isDragging) {
+    return <div ref={dragImage} />;
+  }
 
   return (
     <div ref={setDragRef} style={{ opacity: collected.isDragging ? 0 : 1, ...styles }}>
