@@ -101,10 +101,10 @@ function AddTask({ onClick, color }) {
   );
 }
 
-function TaskSection({ milestone, refresh }) {
+function TaskSection({ milestone }) {
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
 
-  const { data, loading, error } = Tasks.useTasks(milestone.id);
+  const { data, loading, error, refetch } = Tasks.useTasks(milestone.id);
 
   return (
     <div>
@@ -124,7 +124,7 @@ function TaskSection({ milestone, refresh }) {
         modalTitle={`Adding a new task to ${milestone.title}`}
         isOpen={newTaskModalOpen}
         hideModal={() => setNewTaskModalOpen(false)}
-        onSubmit={refresh}
+        onSubmit={refetch}
         milestone={milestone}
       />
 
@@ -133,50 +133,78 @@ function TaskSection({ milestone, refresh }) {
   );
 }
 
+interface TaskBoardState {
+  openTasks: Tasks.Task[];
+  inProgressTasks: Tasks.Task[];
+  doneTasks: Tasks.Task[];
+}
+
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
 
-  const [openTasks, setOpenTasks] = React.useState<Tasks.Task[]>(tasks.filter((t) => t.status === "open"));
-  const [inProgressTasks, setInProgressTasks] = React.useState<Tasks.Task[]>(
-    tasks.filter((t) => t.status === "in-progress"),
-  );
-  const [doneTasks, setDoneTasks] = React.useState<Tasks.Task[]>(tasks.filter((t) => t.status === "done"));
+  const [taskBoardState, setTaskBoardState] = React.useState<TaskBoardState>({
+    openTasks: tasks.filter((t) => t.status === "open"),
+    inProgressTasks: tasks.filter((t) => t.status === "in-progress"),
+    doneTasks: tasks.filter((t) => t.status === "done"),
+  });
+
+  React.useEffect(() => {
+    setTaskBoardState({
+      openTasks: tasks.filter((t) => t.status === "open"),
+      inProgressTasks: tasks.filter((t) => t.status === "in-progress"),
+      doneTasks: tasks.filter((t) => t.status === "done"),
+    });
+  }, [tasks]);
 
   const onTaskDrop = (taskId: string, newStatus: string, index: number) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
-    if (task.status === "open") {
-      setOpenTasks((tasks) => tasks.filter((t) => t.id !== taskId));
-    } else if (task.status === "in-progress") {
-      setInProgressTasks((tasks) => tasks.filter((t) => t.id !== taskId));
-    } else if (task.status === "done") {
-      setDoneTasks((tasks) => tasks.filter((t) => t.id !== taskId));
-    }
+    setTaskBoardState((prev) => {
+      const { openTasks, inProgressTasks, doneTasks } = prev;
 
-    task.status = newStatus;
+      let newOpenTasks = openTasks.filter((t) => t.id !== taskId);
+      let newInProgressTasks = inProgressTasks.filter((t) => t.id !== taskId);
+      let newDoneTasks = doneTasks.filter((t) => t.id !== taskId);
 
-    if (newStatus === "open") {
-      setOpenTasks((tasks) => [...tasks.slice(0, index), task, ...tasks.slice(index)]);
-    } else if (newStatus === "in-progress") {
-      setInProgressTasks((tasks) => [...tasks.slice(0, index), task, ...tasks.slice(index)]);
-    } else if (newStatus === "done") {
-      setDoneTasks((tasks) => [...tasks.slice(0, index), task, ...tasks.slice(index)]);
-    }
+      task.status = newStatus;
+
+      if (newStatus === "open") {
+        newOpenTasks = [...newOpenTasks.slice(0, index), task, ...newOpenTasks.slice(index)];
+      } else if (newStatus === "in-progress") {
+        newInProgressTasks = [...newInProgressTasks.slice(0, index), task, ...newInProgressTasks.slice(index)];
+      } else if (newStatus === "done") {
+        newDoneTasks = [...newDoneTasks.slice(0, index), task, ...newDoneTasks.slice(index)];
+      }
+
+      return { openTasks: newOpenTasks, inProgressTasks: newInProgressTasks, doneTasks: newDoneTasks };
+    });
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="grid grid-cols-3 gap-2 items-start">
-        <TaskColumn title="To Do" tasks={openTasks} color="bg-gray-100" onTaskDrop={onTaskDrop} status="open" />
+        <TaskColumn
+          title="To Do"
+          tasks={taskBoardState.openTasks}
+          color="bg-gray-100"
+          onTaskDrop={onTaskDrop}
+          status="open"
+        />
         <TaskColumn
           title="In Progress"
-          tasks={inProgressTasks}
+          tasks={taskBoardState.inProgressTasks}
           color="bg-gray-100"
           onTaskDrop={onTaskDrop}
           status="in-progress"
         />
-        <TaskColumn title="Done" tasks={doneTasks} color="bg-sky-100" onTaskDrop={onTaskDrop} status="done" />
+        <TaskColumn
+          title="Done"
+          tasks={taskBoardState.doneTasks}
+          color="bg-sky-100"
+          onTaskDrop={onTaskDrop}
+          status="done"
+        />
       </div>
     </DndProvider>
   );
@@ -233,6 +261,8 @@ function TaskColumn(props: TaskColumnProps) {
 
   const itemStyles = (index: number) => {
     let transform = "";
+
+    console.log(isOver, canDrop, dragAndDropTheSame.current);
 
     if (isOver && canDrop) {
       if (dragAndDropTheSame.current) {

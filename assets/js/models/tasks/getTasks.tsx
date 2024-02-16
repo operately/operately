@@ -32,8 +32,6 @@ export async function getTasks(minestoneId: string, status?: string) {
 }
 
 export function useTasks(milestoneId: string, status?: string) {
-  console.log("milestoneId", milestoneId);
-
   return useQuery(QUERY, {
     variables: { milestoneId, status },
     fetchPolicy: "network-only",
