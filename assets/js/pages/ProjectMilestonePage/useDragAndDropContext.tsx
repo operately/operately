@@ -9,7 +9,9 @@ interface DragAndDropContextValue {
 
 const DragAndDropContext = React.createContext<DragAndDropContextValue>({
   isDragging: false,
-  setIsDragging: () => {},
+  setIsDragging: () => {
+    throw new Error("setIsDragging must be used within a DragAndDropProvider");
+  },
 });
 
 export function useDragAndDropContext() {
@@ -45,12 +47,6 @@ export function useDraggable({ id }: { id: string }) {
   const elementRect = React.useRef({ width: 0, height: 0, top: 0, left: 0 });
 
   React.useEffect(() => {
-    if (isDragging.current) {
-      context.setIsDragging(true);
-    }
-  }, [isDragging, context]);
-
-  React.useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
@@ -66,7 +62,7 @@ export function useDraggable({ id }: { id: string }) {
       isMouseDown.current = false;
       if (!isDragging.current) return;
 
-      isDragging.current = false;
+      stopDrag();
       ref.current?.removeAttribute("style");
     };
 
@@ -102,9 +98,19 @@ export function useDraggable({ id }: { id: string }) {
       const dy = Math.abs(mouseDownPosition.current.y - e.clientY);
 
       if (dx > DRAG_DISTANCE_INERTIA || dy > DRAG_DISTANCE_INERTIA) {
-        isDragging.current = true;
+        startDrag();
       }
     };
+
+    function startDrag() {
+      isDragging.current = true;
+      context.setIsDragging(true);
+    }
+
+    function stopDrag() {
+      isDragging.current = false;
+      context.setIsDragging(false);
+    }
 
     element.addEventListener("dragstart", (e) => e.preventDefault());
 
@@ -135,14 +141,12 @@ export function useDropZone({ id: id }) {
     if (!element) return;
 
     const mouseEnter = () => {
-      console.log(isDragging);
       if (!isDragging) return;
 
       setIsOver(true);
     };
 
     const mouseLeave = () => {
-      console.log(isDragging);
       setIsOver(false);
     };
 
@@ -153,7 +157,7 @@ export function useDropZone({ id: id }) {
       element.removeEventListener("mouseenter", mouseEnter);
       element.removeEventListener("mouseleave", mouseLeave);
     };
-  }, [ref, isOver]);
+  }, [ref, isOver, isDragging]);
 
   return {
     ref,
