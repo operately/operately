@@ -7,8 +7,12 @@ type OnDropFunction = (dropZoneId: string, draggedId: string, indexInDropZone: n
 interface DragAndDropContextValue {
   isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
+
   draggedId: string;
   setDraggedId: (id: string) => void;
+
+  draggedElementSize: { width: number; height: number };
+  setDraggedElementSize: (size: { width: number; height: number }) => void;
 
   onDrop: OnDropFunction;
 }
@@ -25,13 +29,16 @@ export function useDragAndDropContext(): DragAndDropContextValue {
 export function DragAndDropProvider({ children, onDrop }: { children: React.ReactNode; onDrop: OnDropFunction }) {
   const [isDragging, setIsDragging] = React.useState(false);
   const [draggedId, setDraggedId] = React.useState("");
+  const [draggedElementSize, setDraggedElementSize] = React.useState({ width: 0, height: 0 });
 
   const value = {
     isDragging,
     draggedId,
+    draggedElementSize,
 
     setIsDragging,
     setDraggedId,
+    setDraggedElementSize,
 
     onDrop,
   };
@@ -54,8 +61,8 @@ export function useDraggable({ id }: { id: string }) {
     const element = ref.current;
     if (!element) return;
 
-    const rect = element.getBoundingClientRect();
-    elementRect.current = { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
+    element.setAttribute("draggable", "true");
+    element.setAttribute("draggableId", id);
 
     const mouseDown = (e: MouseEvent) => {
       isMouseDown.current = true;
@@ -107,6 +114,13 @@ export function useDraggable({ id }: { id: string }) {
     };
 
     function startDrag() {
+      if (!ref.current) return;
+
+      const rect = ref.current.getBoundingClientRect();
+      elementRect.current = { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
+
+      context.setDraggedElementSize({ width: rect.width, height: rect.height });
+
       isDragging.current = true;
       context.setIsDragging(true);
       context.setDraggedId(id);
