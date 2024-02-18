@@ -335,17 +335,51 @@ function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProper
     }),
   }));
 
+  const [size, setSize] = React.useState({ width: 0, height: 0 });
+  const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const { width, height } = ref.current.getBoundingClientRect();
+      setSize({ width, height });
+    }
+
+    const onMouseMove = (e: MouseEvent) => {
+      console.log(e.clientX, e.clientY);
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, [ref.current]);
+
   const setDragRef = (node: HTMLDivElement) => {
     drag(node);
     ref.current = node;
   };
 
-  if (collected.isDragging) {
-    return null;
-  }
+  const calcStyle = (): React.CSSProperties => {
+    if (collected.isDragging) {
+      return {
+        position: "fixed",
+        width: size.width,
+        height: size.height,
+        zIndex: 10000,
+        pointerEvents: "none",
+        transform: "translate(-50%, -50%)",
+        top: mousePos.y,
+        left: mousePos.x,
+      };
+    } else {
+      return {};
+    }
+  };
 
   return (
-    <div className="not-first:mt-2">
+    <div className={"not-first:mt-2"} style={calcStyle()} onDragStart={(e) => e.preventDefault()}>
       <div ref={setDragRef} style={styles}>
         <DivLink
           className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
