@@ -230,7 +230,7 @@ function TaskColumn(props: TaskColumnProps) {
   const liftOfFinished = React.useRef<boolean | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [{ isOver, canDrop }, drop] = useDrop(
+  const [{ isOver, canDrop, itemId }, drop] = useDrop(
     () => ({
       accept: "task-item",
       hover: (item: { id: string; width: number; height: number; startedAt: number }, monitor) => {
@@ -257,6 +257,7 @@ function TaskColumn(props: TaskColumnProps) {
       collect: (monitor) => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
+        itemId: monitor.getItem()?.id,
       }),
     }),
     [props.tasks, props.status],
@@ -274,7 +275,7 @@ function TaskColumn(props: TaskColumnProps) {
 
     return {
       paddingBottom: dropZoneSize.height,
-      transition: liftOfFinished.current ? "padding-bottom 0.1s" : "",
+      transition: "padding-bottom 0.2s",
     };
   };
 
@@ -295,11 +296,12 @@ function TaskColumn(props: TaskColumnProps) {
 
     return {
       transform: `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height}px)`,
-      transition: liftOfFinished.current ? "transform 0.1s" : "",
+      transition: "transform 0.2s",
     };
   };
 
   const columnClassName = "p-2 rounded" + " " + props.color;
+  const itemIndex = React.useMemo(() => props.tasks.findIndex((t) => t.id === itemId), [props.tasks, itemId]);
 
   return (
     <div className={columnClassName} ref={drop}>
@@ -309,7 +311,11 @@ function TaskColumn(props: TaskColumnProps) {
 
       <div className="flex flex-col mt-2" style={listStyles()} ref={listRef}>
         {props.tasks.map((task, index) => (
-          <TaskItem key={task.id} task={task} styles={itemStyles(index)} />
+          <TaskItem
+            key={task.id}
+            task={task}
+            styles={itemStyles(index < itemIndex || itemIndex === -1 ? index : index - 1)}
+          />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
