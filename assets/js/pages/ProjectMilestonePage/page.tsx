@@ -18,9 +18,6 @@ import { DivLink } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
 
-import { HTML5Backend, getEmptyImage } from "react-dnd-html5-backend";
-import { DndProvider, useDrag, useDrop, useDragLayer } from "react-dnd";
-
 export function Page() {
   const refresh = useRefresh();
   const { project, milestone, me } = useLoadedData();
@@ -139,6 +136,8 @@ interface TaskBoardState {
   doneTasks: Tasks.Task[];
 }
 
+import { DragAndDropProvider, useDraggable } from "./useDragAndDropContext";
+
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
 
@@ -186,7 +185,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DragAndDropProvider>
       <div className="grid grid-cols-3 gap-2 items-start">
         <TaskColumn
           title="To Do"
@@ -210,7 +209,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
           status="done"
         />
       </div>
-    </DndProvider>
+    </DragAndDropProvider>
   );
 }
 
@@ -223,85 +222,80 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
-  const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
+  // const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
 
-  const dropIndex = React.useRef<number | null>(null);
-  const listRef = React.useRef<HTMLDivElement | null>(null);
+  // const dropIndex = React.useRef<number | null>(null);
+  // const listRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [{ isOver, canDrop, itemId }, drop] = useDrop(
-    () => ({
-      accept: "task-item",
-      hover: (item: { id: string; width: number; height: number; startedAt: number }, monitor) => {
-        if (!listRef.current) return;
+  // const [{ isOver, canDrop, itemId }, drop] = useDrop(
+  //   () => ({
+  //     accept: "task-item",
+  //     hover: (item: { id: string; width: number; height: number; startedAt: number }, monitor) => {
+  //       if (!listRef.current) return;
 
-        const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
+  //       const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
 
-        dropIndex.current = taskPositions.findIndex((pos) => {
-          return monitor.getClientOffset()!.y < pos.top + pos.height;
-        });
+  //       dropIndex.current = taskPositions.findIndex((pos) => {
+  //         return monitor.getClientOffset()!.y < pos.top + pos.height;
+  //       });
 
-        if (dropIndex.current === -1) {
-          dropIndex.current = props.tasks.length;
-        }
+  //       if (dropIndex.current === -1) {
+  //         dropIndex.current = props.tasks.length;
+  //       }
 
-        setDropZoneSize({ width: item.width, height: item.height });
-      },
-      drop: (item: { id: string }) => {
-        props.onTaskDrop(item.id, props.status, dropIndex.current!);
-      },
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-        itemId: monitor.getItem()?.id,
-      }),
-    }),
-    [props.tasks, props.status],
-  );
+  //       setDropZoneSize({ width: item.width, height: item.height });
+  //     },
+  //     drop: (item: { id: string }) => {
+  //       props.onTaskDrop(item.id, props.status, dropIndex.current!);
+  //     },
+  //     collect: (monitor) => ({
+  //       isOver: monitor.isOver(),
+  //       canDrop: monitor.canDrop(),
+  //       itemId: monitor.getItem()?.id,
+  //     }),
+  //   }),
+  //   [props.tasks, props.status],
+  // );
 
-  const listStyles = () => {
-    if (!isOver)
-      return {
-        // transition: "padding-bottom 0.2s",
-      };
-    if (!canDrop)
-      return {
-        // transition: "padding-bottom 0.2s",
-      };
+  // const listStyles = () => {
+  //   if (!isOver)
+  //     return {
+  //       // transition: "padding-bottom 0.2s",
+  //     };
+  //   if (!canDrop)
+  //     return {
+  //       // transition: "padding-bottom 0.2s",
+  //     };
 
-    return {
-      paddingBottom: dropZoneSize.height + 5,
-      // transition: "padding-bottom 0.2s",
-    };
-  };
+  //   return {
+  //     paddingBottom: dropZoneSize.height + 5,
+  //     // transition: "padding-bottom 0.2s",
+  //   };
+  // };
 
-  const itemStyles = (index: number) => {
-    if (!isOver || !canDrop)
-      return {
-        // transition: "transform 0.2s",
-      };
+  // const itemStyles = (index: number) => {
+  //   if (!isOver || !canDrop)
+  //     return {
+  //       // transition: "transform 0.2s",
+  //     };
 
-    return {
-      transform: `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height + 5}px)`,
-      // transition: "transform 0.2s",
-    };
-  };
+  //   return {
+  //     transform: `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height + 5}px)`,
+  //     // transition: "transform 0.2s",
+  //   };
+  // };
 
   const columnClassName = "p-2 rounded" + " " + props.color;
-  const itemIndex = React.useMemo(() => props.tasks.findIndex((t) => t.id === itemId), [props.tasks, itemId]);
 
   return (
-    <div className={columnClassName} ref={drop}>
+    <div className={columnClassName}>
       <div className="text-xs uppercase font-semibold">
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div className="flex flex-col mt-2" style={listStyles()} ref={listRef}>
-        {props.tasks.map((task, index) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            styles={itemStyles(index < itemIndex || itemIndex === -1 ? index : index - 1)}
-          />
+      <div className="flex flex-col mt-2">
+        {props.tasks.map((task) => (
+          <TaskItem key={task.id} task={task} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -316,86 +310,155 @@ function PlaceholderTask() {
   );
 }
 
-function TaskItem({ task, styles }: { task: Tasks.Task; styles?: React.CSSProperties }) {
-  const ref = React.useRef<HTMLDivElement | null>(null);
+function TaskItem({ task }: { task: Tasks.Task }) {
+  // const ref = React.useRef<HTMLDivElement | null>(null);
 
-  const [collected, drag] = useDrag(() => ({
-    type: "task-item",
-    item: () => {
-      const rect = ref.current?.getBoundingClientRect();
-      if (!rect) return;
+  // // const [collected, drag] = useDrag(() => ({
+  // //   type: "task-item",
+  // //   item: () => {
+  // //     const rect = ref.current?.getBoundingClientRect();
+  // //     if (!rect) return;
 
-      const width = rect.width;
-      const height = rect.height;
+  // //     const width = rect.width;
+  // //     const height = rect.height;
 
-      return { id: task.id, width, height, startedAt: +new Date() };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
+  // //     return { id: task.id, width, height, startedAt: +new Date() };
+  // //   },
+  // //   collect: (monitor) => ({
+  // //     isDragging: monitor.isDragging(),
+  // //   }),
+  // // }));
 
-  const [size, setSize] = React.useState({ width: 0, height: 0 });
-  const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
+  // // const [size, setSize] = React.useState({ width: 0, height: 0 });
+  // const { isDragging, setIsDragging } = useDragAndDropContext();
 
-  React.useEffect(() => {
-    if (ref.current) {
-      const { width, height } = ref.current.getBoundingClientRect();
-      setSize({ width, height });
-    }
+  // const [isMouseDown, setIsMouseDown] = React.useState(false);
+  // const [mouseDownPos, setMouseDownPos] = React.useState({ x: 0, y: 0 });
+  // const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
 
-    const onMouseMove = (e: MouseEvent) => {
-      console.log(e.clientX, e.clientY);
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
+  // React.useEffect(() => {
+  //   const onMouseMove = (e: MouseEvent) => {
+  //     setMousePos({ x: e.clientX, y: e.clientY });
 
-    window.addEventListener("mousemove", onMouseMove);
+  //     if (!isMouseDown) return;
+  //     if (isDragging) return;
 
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-    };
-  }, [ref.current]);
+  //     const dx = e.clientX - mouseDownPos.x;
+  //     const dy = e.clientY - mouseDownPos.y;
 
-  const setDragRef = (node: HTMLDivElement) => {
-    drag(node);
-    ref.current = node;
-  };
+  //     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+  //       setIsDragging(true);
+  //     }
+  //   };
 
-  const calcStyle = (): React.CSSProperties => {
-    if (collected.isDragging) {
-      return {
-        position: "fixed",
-        width: size.width,
-        height: size.height,
-        zIndex: 10000,
-        pointerEvents: "none",
-        transform: "translate(-50%, -50%)",
-        top: mousePos.y,
-        left: mousePos.x,
-      };
-    } else {
-      return {};
-    }
-  };
+  //   window.addEventListener("mousemove", onMouseMove);
+
+  //   return () => {
+  //     window.removeEventListener("mousemove", onMouseMove);
+  //   };
+  // }, [ref.current, isMouseDown, isDragging]);
+
+  // // const setDragRef = (node: HTMLDivElement) => {
+  // //   drag(node);
+  // //   ref.current = node;
+  // // };
+
+  // const calcStyle = (): React.CSSProperties => {
+  //   // if (collected.isDragging) {
+  //   //   return {
+  //   //     position: "fixed",
+  //   //     width: size.width,
+  //   //     height: size.height,
+  //   //     zIndex: 10000,
+  //   //     pointerEvents: "none",
+  //   //     transform: "translate(-50%, -50%)",
+  //   //     top: mousePos.y,
+  //   //     left: mousePos.x,
+  //   //   };
+  //   // } else {
+  //   return {};
+  //   // }
+  // };
+
+  // const drop = React.useRef<HTMLDivElement | null>(null);
+
+  // const [size, setSize] = React.useState({ width: 0, height: 0 });
+
+  // React.useEffect(() => {
+  //   if (!drop.current) return;
+
+  //   const { width, height } = drop.current.getBoundingClientRect();
+  //   setSize({ width, height });
+  // }, [drop.current]);
+
+  // const listRef = React.useRef<HTMLDivElement | null>(null);
+
+  // const listStyles = () => {
+  //   return {};
+  // };
+
+  // const itemStyles = (index: number) => {
+  //   return {};
+  // };
+
+  // // const itemIndex = React.useMemo(() => props.tasks.findIndex((t) => t.id === itemId), [props.tasks, itemId]);
+
+  // const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+  //   e.preventDefault();
+  // };
+
+  // const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   e.preventDefault();
+
+  //   setIsMouseDown(true);
+  //   setMouseDownPos({ x: e.clientX, y: e.clientY });
+
+  //   const onMouseUp = () => {
+  //     setIsMouseDown(false);
+  //     setIsDragging(false);
+  //   };
+
+  //   window.addEventListener("mouseup", onMouseUp, { once: true });
+
+  //   return () => {
+  //     window.removeEventListener("mouseup", onMouseUp);
+  //   };
+  // };
+
+  // const styles = (): React.CSSProperties => {
+  //   if (!isDragging) return {};
+
+  //   return {
+  //     position: "fixed",
+  //     width: size.width,
+  //     height: size.height,
+  //     zIndex: 10000,
+  //     pointerEvents: "none",
+  //     transform: "translate(-50%, -50%)",
+  //     top: mousePos.y,
+  //     left: mousePos.x,
+  //     boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)",
+  //   };
+  // };
+
+  const { ref } = useDraggable({ id: task.id });
 
   return (
-    <div className={"not-first:mt-2"} style={calcStyle()} onDragStart={(e) => e.preventDefault()}>
-      <div ref={setDragRef} style={styles}>
-        <DivLink
-          className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
-          to={`/tasks/${task.id}`}
-        >
-          <div className="font-medium">{task.name}</div>
+    <div className={"not-first:mt-2 w-full"} ref={ref}>
+      <DivLink
+        className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
+        to={`/tasks/${task.id}`}
+      >
+        <div className="font-medium">{task.name}</div>
 
-          <div className="text-sm text-content-dimmed flex items-center -space-x-2">
-            {task.assignees!.map((a) => (
-              <div className="border border-surface rounded-full flex items-center" key={a.id}>
-                <Avatar key={a.id} person={a} size={20} />
-              </div>
-            ))}
-          </div>
-        </DivLink>
-      </div>
+        <div className="text-sm text-content-dimmed flex items-center -space-x-2">
+          {task.assignees!.map((a) => (
+            <div className="border border-surface rounded-full flex items-center" key={a.id}>
+              <Avatar key={a.id} person={a} size={20} />
+            </div>
+          ))}
+        </div>
+      </DivLink>
     </div>
   );
 }
