@@ -136,6 +136,7 @@ interface TaskBoardState {
   doneTasks: Tasks.Task[];
 }
 
+import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone } from "./useDragAndDropContext";
 
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
@@ -155,7 +156,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
     });
   }, [tasks]);
 
-  const onTaskDrop = (taskId: string, newStatus: string, index: number) => {
+  const onTaskDrop = (dropZoneId: string, taskId: string, indexInDropZone: number) => {
     setTaskBoardState((prev) => {
       const { openTasks, inProgressTasks, doneTasks } = prev;
 
@@ -170,14 +171,14 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
       let newInProgressTasks = inProgressTasks.filter((t) => t.id !== taskId);
       let newDoneTasks = doneTasks.filter((t) => t.id !== taskId);
 
-      task.status = newStatus;
+      task.status = dropZoneId;
 
-      if (newStatus === "open") {
-        newOpenTasks = [...newOpenTasks.slice(0, index), task, ...newOpenTasks.slice(index)];
-      } else if (newStatus === "in-progress") {
-        newInProgressTasks = [...newInProgressTasks.slice(0, index), task, ...newInProgressTasks.slice(index)];
-      } else if (newStatus === "done") {
-        newDoneTasks = [...newDoneTasks.slice(0, index), task, ...newDoneTasks.slice(index)];
+      if (dropZoneId === "open") {
+        newOpenTasks = insertAt(newOpenTasks, indexInDropZone, task);
+      } else if (dropZoneId === "in-progress") {
+        newInProgressTasks = insertAt(newInProgressTasks, indexInDropZone, task);
+      } else if (dropZoneId === "done") {
+        newDoneTasks = insertAt(newDoneTasks, indexInDropZone, task);
       }
 
       return { openTasks: newOpenTasks, inProgressTasks: newInProgressTasks, doneTasks: newDoneTasks };
@@ -185,7 +186,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   };
 
   return (
-    <DragAndDropProvider>
+    <DragAndDropProvider onDrop={onTaskDrop}>
       <div className="grid grid-cols-3 gap-2 items-start">
         <TaskColumn
           title="To Do"

@@ -2,34 +2,38 @@ import * as React from "react";
 
 const DRAG_DISTANCE_INERTIA = 5; // pixels
 
+type OnDropFunction = (dropZoneId: string, draggedId: string, indexInDropZone: number) => void;
+
 interface DragAndDropContextValue {
   isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
+  draggedId: string;
+  setDraggedId: (id: string) => void;
+
+  onDrop: OnDropFunction;
 }
 
-const DragAndDropContext = React.createContext<DragAndDropContextValue>({
-  isDragging: false,
-  setIsDragging: () => {
-    throw new Error("setIsDragging must be used within a DragAndDropProvider");
-  },
-});
+const DragAndDropContext = React.createContext<DragAndDropContextValue | null>(null);
 
-export function useDragAndDropContext() {
+export function useDragAndDropContext(): DragAndDropContextValue {
   const context = React.useContext(DragAndDropContext);
-
-  if (!context) {
-    throw new Error("useDragAndDropContext must be used within a DragAndDropProvider");
-  }
+  if (!context) throw new Error("useDragAndDropContext must be used within a DragAndDropProvider");
 
   return context;
 }
 
-export function DragAndDropProvider({ children }: { children: React.ReactNode }) {
+export function DragAndDropProvider({ children, onDrop }: { children: React.ReactNode; onDrop: OnDropFunction }) {
   const [isDragging, setIsDragging] = React.useState(false);
+  const [draggedId, setDraggedId] = React.useState("");
 
   const value = {
     isDragging,
+    draggedId,
+
     setIsDragging,
+    setDraggedId,
+
+    onDrop,
   };
 
   return <DragAndDropContext.Provider value={value}>{children}</DragAndDropContext.Provider>;
@@ -105,11 +109,13 @@ export function useDraggable({ id }: { id: string }) {
     function startDrag() {
       isDragging.current = true;
       context.setIsDragging(true);
+      context.setDraggedId(id);
     }
 
     function stopDrag() {
       isDragging.current = false;
       context.setIsDragging(false);
+      context.setDraggedId("");
     }
 
     element.addEventListener("dragstart", (e) => e.preventDefault());
@@ -130,10 +136,10 @@ export function useDraggable({ id }: { id: string }) {
   };
 }
 
-export function useDropZone({ id: id }) {
+export function useDropZone({ id }: { id: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
 
-  const { isDragging } = useDragAndDropContext();
+  const { isDragging, draggedId, onDrop } = useDragAndDropContext();
   const [isOver, setIsOver] = React.useState(false);
 
   React.useEffect(() => {
@@ -150,12 +156,20 @@ export function useDropZone({ id: id }) {
       setIsOver(false);
     };
 
+    const mouseUp = () => {
+      if (!isDragging) return;
+
+      onDrop(id, draggedId, 0);
+    };
+
     element.addEventListener("mouseenter", mouseEnter);
     element.addEventListener("mouseleave", mouseLeave);
+    element.addEventListener("mouseup", mouseUp);
 
     return () => {
       element.removeEventListener("mouseenter", mouseEnter);
       element.removeEventListener("mouseleave", mouseLeave);
+      element.removeEventListener("mouseup", mouseUp);
     };
   }, [ref, isOver, isDragging]);
 
