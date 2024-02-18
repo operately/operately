@@ -226,8 +226,6 @@ function TaskColumn(props: TaskColumnProps) {
   const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
 
   const dropIndex = React.useRef<number | null>(null);
-  const indexInList = React.useRef<number | null>(null);
-  const liftOfFinished = React.useRef<boolean | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
 
   const [{ isOver, canDrop, itemId }, drop] = useDrop(
@@ -246,9 +244,6 @@ function TaskColumn(props: TaskColumnProps) {
           dropIndex.current = props.tasks.length;
         }
 
-        indexInList.current = props.tasks.findIndex((t) => t.id === item.id);
-        liftOfFinished.current = item.startedAt < +new Date() - 200;
-
         setDropZoneSize({ width: item.width, height: item.height });
       },
       drop: (item: { id: string }) => {
@@ -264,39 +259,30 @@ function TaskColumn(props: TaskColumnProps) {
   );
 
   const listStyles = () => {
-    if (!isOver) return {};
-    if (!canDrop) return {};
-
-    // if (indexInList.current === null) return {};
-    // if (dropIndex.current === null) return {};
-
-    // if (indexInList.current === dropIndex.current) return {};
-    // if (indexInList.current + 1 === dropIndex.current) return {};
+    if (!isOver)
+      return {
+        // transition: "padding-bottom 0.2s",
+      };
+    if (!canDrop)
+      return {
+        // transition: "padding-bottom 0.2s",
+      };
 
     return {
-      paddingBottom: dropZoneSize.height,
-      transition: "padding-bottom 0.2s",
+      paddingBottom: dropZoneSize.height + 5,
+      // transition: "padding-bottom 0.2s",
     };
   };
 
   const itemStyles = (index: number) => {
-    // is not over and can't be dropped, don't move the items
-    if (!isOver || !canDrop) return {};
-
-    console.log(indexInList.current, dropIndex.current);
-
-    // // the currently dragged item is not in the list
-    // if (indexInList.current === null || dropIndex.current === null) return {};
-
-    // // the currently dragged item is the same as the item in the list
-    // if (indexInList.current === dropIndex.current) return {};
-
-    // the currently dragged item is the same as the item in the list
-    // if (indexInList.current + 1 === dropIndex.current) return {};
+    if (!isOver || !canDrop)
+      return {
+        // transition: "transform 0.2s",
+      };
 
     return {
-      transform: `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height}px)`,
-      transition: "transform 0.2s",
+      transform: `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height + 5}px)`,
+      // transition: "transform 0.2s",
     };
   };
 
