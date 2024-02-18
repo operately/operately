@@ -286,9 +286,12 @@ function TaskColumn(props: TaskColumnProps) {
   //   };
   // };
 
-  const { ref, isOver } = useDropZone({ id: props.status });
+  const { ref, isOver, draggedElementSize } = useDropZone({ id: props.status });
 
   const columnClassName = "p-2 rounded" + " " + props.color;
+  const style = {
+    paddingBottom: isOver ? draggedElementSize.height : 0,
+  };
 
   return (
     <div className={columnClassName}>
@@ -296,14 +299,13 @@ function TaskColumn(props: TaskColumnProps) {
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div className="flex flex-col mt-2" ref={ref}>
+      <div className="flex flex-col mt-2" ref={ref} style={style}>
         {props.tasks.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
-
-        {isOver && <span>Over</span>}
+        {isOver && <span>Is Over</span>}
       </div>
     </div>
   );
@@ -448,8 +450,10 @@ function TaskItem({ task }: { task: Tasks.Task }) {
 
   const { ref } = useDraggable({ id: task.id });
 
+  const className = "not-first:mt-2 w-full";
+
   return (
-    <div className={"not-first:mt-2 w-full"} ref={ref}>
+    <div className={className} ref={ref}>
       <DivLink
         className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
         to={`/tasks/${task.id}`}

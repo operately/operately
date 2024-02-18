@@ -37,7 +37,10 @@ export function DragAndDropProvider({ children, onDrop }: { children: React.Reac
     draggedElementSize,
 
     setIsDragging,
-    setDraggedId,
+    setDraggedId: (id: string) => {
+      console.log("setDraggedId", id);
+      setDraggedId(id);
+    },
     setDraggedElementSize,
 
     onDrop,
@@ -46,149 +49,217 @@ export function DragAndDropProvider({ children, onDrop }: { children: React.Reac
   return <DragAndDropContext.Provider value={value}>{children}</DragAndDropContext.Provider>;
 }
 
+class DraggableMouseEvents {
+  private id: string;
+  private el: HTMLElement;
+
+  private isDragging = false;
+  private isMouseDown = false;
+  private mouseDownPosition: { x: number; y: number } | null = null;
+
+  private contextHooks: {
+    setDragging: (isDragging: boolean) => void;
+    setDraggedId: (id: string) => void;
+  };
+
+  constructor(
+    id: string,
+    el: HTMLElement,
+    contextHooks: {
+      setDragging: DragAndDropContextValue["setIsDragging"];
+      setDraggedId: DragAndDropContextValue["setDraggedId"];
+    },
+  ) {
+    this.id = id;
+    this.el = el;
+    this.mouseDownPosition = null;
+
+    this.contextHooks = contextHooks;
+  }
+
+  bindEvents() {
+    this.el.addEventListener("dragstart", (e) => e.preventDefault());
+    this.el.addEventListener("mousedown", this.onMouseDown.bind(this));
+    document.addEventListener("mouseup", this.onMouseUp.bind(this));
+    document.addEventListener("mousemove", this.onMouseMove.bind(this));
+  }
+
+  unbindEvents() {
+    this.el.removeEventListener("mousedown", this.onMouseDown.bind(this));
+    document.removeEventListener("mouseup", this.onMouseUp.bind(this));
+    document.removeEventListener("mousemove", this.onMouseMove.bind(this));
+  }
+
+  onMouseDown(e: MouseEvent) {
+    this.isMouseDown = true;
+    this.mouseDownPosition = { x: e.clientX, y: e.clientY };
+  }
+
+  onMouseUp() {
+    this.isMouseDown = false;
+    this.stopDragging();
+  }
+
+  onMouseMove(e: MouseEvent) {
+    if (!this.isMouseDown) return;
+
+    const dx = Math.abs(this.mouseDownPosition!.x - e.clientX);
+    const dy = Math.abs(this.mouseDownPosition!.y - e.clientY);
+
+    if (dx > DRAG_DISTANCE_INERTIA || dy > DRAG_DISTANCE_INERTIA) {
+      this.startDragging();
+    }
+  }
+
+  startDragging() {
+    if (this.isDragging) return;
+
+    this.isDragging = true;
+    this.contextHooks.setDragging(this.isDragging);
+    this.contextHooks.setDraggedId(this.id);
+  }
+
+  stopDragging() {
+    if (!this.isDragging) return;
+
+    this.isDragging = false;
+    this.contextHooks.setDragging(this.isDragging);
+    this.contextHooks.setDraggedId("");
+  }
+}
+
 export function useDraggable({ id }: { id: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
+  const { setIsDragging, setDraggedId } = useDragAndDropContext();
 
-  const context = useDragAndDropContext();
+  React.useLayoutEffect(() => {
+    const handler = new DraggableMouseEvents(id, ref.current!, {
+      setDragging: setIsDragging,
+      setDraggedId: setDraggedId,
+    });
 
-  const isMouseDown = React.useRef(false);
-  const isDragging = React.useRef(false);
-  const mouseDownPosition = React.useRef({ x: 0, y: 0 });
+    handler.bindEvents();
+    return () => handler.unbindEvents();
+  }, [ref]);
 
-  const elementRect = React.useRef({ width: 0, height: 0, top: 0, left: 0 });
-
-  React.useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-
-    element.setAttribute("draggable", "true");
-    element.setAttribute("draggableId", id);
-
-    const mouseDown = (e: MouseEvent) => {
-      isMouseDown.current = true;
-      mouseDownPosition.current = { x: e.clientX, y: e.clientY };
-    };
-
-    const mouseUp = () => {
-      isMouseDown.current = false;
-      if (!isDragging.current) return;
-
-      stopDrag();
-      ref.current?.removeAttribute("style");
-    };
-
-    const mouseMove = (e: MouseEvent) => {
-      if (!isMouseDown.current) return;
-
-      if (isDragging.current) {
-        followCursor(e);
-      } else {
-        initializeDragIfConditionsMet(e);
-      }
-    };
-
-    const followCursor = (e: MouseEvent) => {
-      const left = e.clientX - mouseDownPosition.current.x + elementRect.current.width / 2 + elementRect.current.left;
-      const top = e.clientY - mouseDownPosition.current.y + elementRect.current.height / 2 + elementRect.current.top;
-
-      Object.assign(element.style, {
-        position: "fixed",
-        left: left + "px",
-        top: top + "px",
-        zIndex: "10000",
-        pointerEvents: "none",
-        userSelect: "none",
-        transform: "translate(-50%, -50%)",
-        width: elementRect.current.width + "px",
-        height: elementRect.current.height + "px",
-      });
-    };
-
-    const initializeDragIfConditionsMet = (e: MouseEvent) => {
-      const dx = Math.abs(mouseDownPosition.current.x - e.clientX);
-      const dy = Math.abs(mouseDownPosition.current.y - e.clientY);
-
-      if (dx > DRAG_DISTANCE_INERTIA || dy > DRAG_DISTANCE_INERTIA) {
-        startDrag();
-      }
-    };
-
-    function startDrag() {
-      if (!ref.current) return;
-
-      const rect = ref.current.getBoundingClientRect();
-      elementRect.current = { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
-
-      context.setDraggedElementSize({ width: rect.width, height: rect.height });
-
-      isDragging.current = true;
-      context.setIsDragging(true);
-      context.setDraggedId(id);
-    }
-
-    function stopDrag() {
-      isDragging.current = false;
-      context.setIsDragging(false);
-      context.setDraggedId("");
-    }
-
-    element.addEventListener("dragstart", (e) => e.preventDefault());
-
-    element.addEventListener("mousedown", mouseDown);
-    document.addEventListener("mouseup", mouseUp);
-    document.addEventListener("mousemove", mouseMove);
-
-    return () => {
-      element.removeEventListener("mousedown", mouseDown);
-      document.removeEventListener("mouseup", mouseUp);
-      document.removeEventListener("mousemove", mouseMove);
-    };
-  }, [ref, isDragging, isMouseDown]);
-
-  return {
-    ref,
-  };
+  return { ref };
 }
 
 export function useDropZone({ id }: { id: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
 
-  const { isDragging, draggedId, onDrop } = useDragAndDropContext();
+  const { isDragging, draggedId, onDrop, draggedElementSize } = useDragAndDropContext();
   const [isOver, setIsOver] = React.useState(false);
+
+  const draggedIdRef = React.useRef(draggedId);
+  React.useEffect(() => {
+    draggedIdRef.current = draggedId;
+  }, [draggedId]);
 
   React.useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
-    const mouseEnter = () => {
+    const onMouseEnter = () => {
       if (!isDragging) return;
-
       setIsOver(true);
     };
 
-    const mouseLeave = () => {
+    const onMouseLeave = () => {
       setIsOver(false);
     };
 
-    const mouseUp = () => {
+    const onMouseUp = () => {
       if (!isDragging) return;
-
-      onDrop(id, draggedId, 0);
+      onDrop(id, draggedIdRef.current, 0);
     };
 
-    element.addEventListener("mouseenter", mouseEnter);
-    element.addEventListener("mouseleave", mouseLeave);
-    element.addEventListener("mouseup", mouseUp);
+    element.addEventListener("mouseenter", onMouseEnter);
+    element.addEventListener("mouseleave", onMouseLeave);
+    element.addEventListener("mouseup", onMouseUp);
 
     return () => {
-      element.removeEventListener("mouseenter", mouseEnter);
-      element.removeEventListener("mouseleave", mouseLeave);
-      element.removeEventListener("mouseup", mouseUp);
+      element.removeEventListener("mouseenter", onMouseEnter);
+      element.removeEventListener("mouseleave", onMouseLeave);
+      element.removeEventListener("mouseup", onMouseUp);
     };
-  }, [ref, isOver, isDragging]);
+  }, [ref, isDragging, draggedId, isOver, onDrop]);
 
   return {
     ref,
     isOver,
+    draggedElementSize,
   };
 }
+
+// const [isDragging, setIsDragging] = React.useState(false);
+// const [isMouseDown, setIsMouseDown] = React.useState(false);
+// const [elementRect, setElementRect] = React.useState({ width: 0, height: 0, top: 0, left: 0 });
+// const [mouseDownPosition, setMouseDownPosition] = React.useState({ x: 0, y: 0 });
+// const element = ref.current;
+// if (!element) return;
+
+// element.setAttribute("draggable", "true");
+// element.setAttribute("draggableId", id);
+
+// const mouseDown = (e: MouseEvent) => {
+//   setIsMouseDown(true);
+//   setMouseDownPosition({ x: e.clientX, y: e.clientY });
+// };
+
+// const mouseUp = () => {
+//   if (isDragging) {
+//     context.setDraggedId("");
+//     context.setIsDragging(false);
+
+//     ref.current?.removeAttribute("style");
+//     setIsDragging(false);
+//   }
+//   setIsMouseDown(false);
+// };
+
+// const mouseMove = (e: MouseEvent) => {
+//   if (!isMouseDown) return;
+
+//   if (isDragging) {
+//     const left = e.clientX - mouseDownPosition.x + elementRect.width / 2 + elementRect.left;
+//     const top = e.clientY - mouseDownPosition.y + elementRect.height / 2 + elementRect.top;
+
+//     Object.assign(element.style, {
+//       position: "fixed",
+//       left: left + "px",
+//       top: top + "px",
+//       zIndex: "10000",
+//       pointerEvents: "none",
+//       userSelect: "none",
+//       transform: "translate(-50%, -50%)",
+//       width: elementRect.width + "px",
+//       height: elementRect.height + "px",
+//     });
+//   } else {
+//     const dx = Math.abs(mouseDownPosition.x - e.clientX);
+//     const dy = Math.abs(mouseDownPosition.y - e.clientY);
+
+//     if (dx > DRAG_DISTANCE_INERTIA || dy > DRAG_DISTANCE_INERTIA) {
+//       const rect = ref.current!.getBoundingClientRect();
+
+//       setIsDragging(true);
+//       setElementRect({ width: rect.width, height: rect.height, top: rect.top, left: rect.left });
+
+//       context.setIsDragging(true);
+//       context.setDraggedId(id);
+//       context.setDraggedElementSize({ width: rect.width, height: rect.height });
+//     }
+//   }
+// };
+
+// element.addEventListener("dragstart", (e) => e.preventDefault());
+// element.addEventListener("mousedown", mouseDown);
+// document.addEventListener("mouseup", mouseUp);
+// document.addEventListener("mousemove", mouseMove);
+
+// return () => {
+//   element.removeEventListener("mousedown", mouseDown);
+//   document.removeEventListener("mouseup", mouseUp);
+//   document.removeEventListener("mousemove", mouseMove);
+// };
