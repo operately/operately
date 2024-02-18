@@ -229,33 +229,36 @@ function TaskColumn(props: TaskColumnProps) {
   const indexInList = React.useRef<number | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    accept: "task-item",
-    hover: (item: { id: string; width: number; height: number }, monitor) => {
-      if (!listRef.current) return;
+  const [{ isOver, canDrop }, drop] = useDrop(
+    () => ({
+      accept: "task-item",
+      hover: (item: { id: string; width: number; height: number }, monitor) => {
+        if (!listRef.current) return;
 
-      const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
+        const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
 
-      dropIndex.current = taskPositions.findIndex((pos) => {
-        return monitor.getClientOffset()!.y < pos.top + pos.height;
-      });
+        dropIndex.current = taskPositions.findIndex((pos) => {
+          return monitor.getClientOffset()!.y < pos.top + pos.height;
+        });
 
-      if (dropIndex.current === -1) {
-        dropIndex.current = props.tasks.length;
-      }
+        if (dropIndex.current === -1) {
+          dropIndex.current = props.tasks.length;
+        }
 
-      indexInList.current = props.tasks.findIndex((t) => t.id === item.id);
+        indexInList.current = props.tasks.findIndex((t) => t.id === item.id);
 
-      setDropZoneSize({ width: item.width, height: item.height });
-    },
-    drop: (item: { id: string }) => {
-      props.onTaskDrop(item.id, props.status, dropIndex.current!);
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
+        setDropZoneSize({ width: item.width, height: item.height });
+      },
+      drop: (item: { id: string }) => {
+        props.onTaskDrop(item.id, props.status, dropIndex.current!);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
     }),
-  }));
+    [props.tasks, props.status],
+  );
 
   const listStyles = () => {
     if (!isOver) return {};
@@ -273,6 +276,8 @@ function TaskColumn(props: TaskColumnProps) {
   const itemStyles = (index: number) => {
     // is not over and can't be dropped, don't move the items
     if (!isOver || !canDrop) return {};
+
+    console.log(indexInList.current, dropIndex.current);
 
     // the currently dragged item is not in the list
     if (indexInList.current === null || dropIndex.current === null) return {};
