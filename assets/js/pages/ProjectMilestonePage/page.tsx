@@ -446,7 +446,7 @@ function TaskItem({ task }: { task: Tasks.Task }) {
   return (
     <div className={"not-first:mt-2 w-full"} ref={ref}>
       <DivLink
-        className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between"
+        className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
         to={`/tasks/${task.id}`}
       >
         <div className="font-medium">{task.name}</div>

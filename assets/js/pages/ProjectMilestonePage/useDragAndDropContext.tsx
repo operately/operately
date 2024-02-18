@@ -40,14 +40,14 @@ export function useDraggable({ id }: { id: string }) {
   const isDragging = React.useRef(false);
   const mouseDownPosition = React.useRef({ x: 0, y: 0 });
 
-  const elementSize = React.useRef({ width: 0, height: 0 });
+  const elementRect = React.useRef({ width: 0, height: 0, top: 0, left: 0 });
 
   React.useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
     const rect = element.getBoundingClientRect();
-    elementSize.current = { width: rect.width, height: rect.height };
+    elementRect.current = { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
 
     const mouseDown = (e: MouseEvent) => {
       isMouseDown.current = true;
@@ -73,8 +73,8 @@ export function useDraggable({ id }: { id: string }) {
     };
 
     const followCursor = (e: MouseEvent) => {
-      const left = e.clientX + elementSize.current.width / 2;
-      const top = e.clientY + elementSize.current.height / 2;
+      const left = e.clientX - mouseDownPosition.current.x + elementRect.current.width / 2 + elementRect.current.left;
+      const top = e.clientY - mouseDownPosition.current.y + elementRect.current.height / 2 + elementRect.current.top;
 
       Object.assign(element.style, {
         position: "fixed",
@@ -84,8 +84,8 @@ export function useDraggable({ id }: { id: string }) {
         pointerEvents: "none",
         userSelect: "none",
         transform: "translate(-50%, -50%)",
-        width: elementSize.current.width + "px",
-        height: elementSize.current.height + "px",
+        width: elementRect.current.width + "px",
+        height: elementRect.current.height + "px",
       });
     };
 
