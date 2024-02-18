@@ -36,11 +36,19 @@ export function DragAndDropProvider({ children }: { children: React.ReactNode })
 export function useDraggable({ id }: { id: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
 
+  const context = useDragAndDropContext();
+
   const isMouseDown = React.useRef(false);
   const isDragging = React.useRef(false);
   const mouseDownPosition = React.useRef({ x: 0, y: 0 });
 
   const elementRect = React.useRef({ width: 0, height: 0, top: 0, left: 0 });
+
+  React.useEffect(() => {
+    if (isDragging.current) {
+      context.setIsDragging(true);
+    }
+  }, [isDragging, context]);
 
   React.useEffect(() => {
     const element = ref.current;
@@ -113,5 +121,42 @@ export function useDraggable({ id }: { id: string }) {
 
   return {
     ref,
+  };
+}
+
+export function useDropZone({ id: id }) {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+
+  const { isDragging } = useDragAndDropContext();
+  const [isOver, setIsOver] = React.useState(false);
+
+  React.useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const mouseEnter = () => {
+      console.log(isDragging);
+      if (!isDragging) return;
+
+      setIsOver(true);
+    };
+
+    const mouseLeave = () => {
+      console.log(isDragging);
+      setIsOver(false);
+    };
+
+    element.addEventListener("mouseenter", mouseEnter);
+    element.addEventListener("mouseleave", mouseLeave);
+
+    return () => {
+      element.removeEventListener("mouseenter", mouseEnter);
+      element.removeEventListener("mouseleave", mouseLeave);
+    };
+  }, [ref, isOver]);
+
+  return {
+    ref,
+    isOver,
   };
 }

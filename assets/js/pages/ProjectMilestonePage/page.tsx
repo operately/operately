@@ -136,7 +136,7 @@ interface TaskBoardState {
   doneTasks: Tasks.Task[];
 }
 
-import { DragAndDropProvider, useDraggable } from "./useDragAndDropContext";
+import { DragAndDropProvider, useDraggable, useDropZone } from "./useDragAndDropContext";
 
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
@@ -285,6 +285,8 @@ function TaskColumn(props: TaskColumnProps) {
   //   };
   // };
 
+  const { ref, isOver } = useDropZone({ id: props.status });
+
   const columnClassName = "p-2 rounded" + " " + props.color;
 
   return (
@@ -293,12 +295,14 @@ function TaskColumn(props: TaskColumnProps) {
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div className="flex flex-col mt-2">
+      <div className="flex flex-col mt-2" ref={ref}>
         {props.tasks.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
+
+        {isOver && <span>Over</span>}
       </div>
     </div>
   );
