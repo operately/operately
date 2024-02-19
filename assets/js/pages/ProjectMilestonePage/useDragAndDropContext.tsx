@@ -57,37 +57,41 @@ class DraggableMouseEvents {
   private isMouseDown = false;
   private mouseDownPosition: { x: number; y: number } | null = null;
 
-  private contextHooks: {
-    setDragging: (isDragging: boolean) => void;
-    setDraggedId: (id: string) => void;
-  };
+  private context: DragAndDropContextValue;
 
-  constructor(
-    id: string,
-    el: HTMLElement,
-    contextHooks: {
-      setDragging: DragAndDropContextValue["setIsDragging"];
-      setDraggedId: DragAndDropContextValue["setDraggedId"];
-    },
-  ) {
+  private mouseDown: (e: MouseEvent) => void;
+  private mouseUp: () => void;
+  private mouseMove: (e: MouseEvent) => void;
+  private dragStart: (e: DragEvent) => void;
+
+  constructor(id: string, el: HTMLElement, context: DragAndDropContextValue) {
+    this.context = context;
+
     this.id = id;
     this.el = el;
     this.mouseDownPosition = null;
 
-    this.contextHooks = contextHooks;
+    this.mouseDown = this.onMouseDown.bind(this);
+    this.mouseUp = this.onMouseUp.bind(this);
+    this.mouseMove = this.onMouseMove.bind(this);
+    this.dragStart = this.onDragStart.bind(this);
   }
 
   bindEvents() {
-    this.el.addEventListener("dragstart", (e) => e.preventDefault());
-    this.el.addEventListener("mousedown", this.onMouseDown.bind(this));
-    document.addEventListener("mouseup", this.onMouseUp.bind(this));
-    document.addEventListener("mousemove", this.onMouseMove.bind(this));
+    this.el.addEventListener("dragstart", this.dragStart);
+    this.el.addEventListener("mousedown", this.mouseDown);
+    document.addEventListener("mouseup", this.mouseUp);
+    document.addEventListener("mousemove", this.mouseMove);
   }
 
   unbindEvents() {
-    this.el.removeEventListener("mousedown", this.onMouseDown.bind(this));
-    document.removeEventListener("mouseup", this.onMouseUp.bind(this));
-    document.removeEventListener("mousemove", this.onMouseMove.bind(this));
+    this.el.removeEventListener("mousedown", this.mouseDown);
+    document.removeEventListener("mouseup", this.mouseUp);
+    document.removeEventListener("mousemove", this.mouseMove);
+  }
+
+  onDragStart(e: DragEvent) {
+    e.preventDefault();
   }
 
   onMouseDown(e: MouseEvent) {
@@ -115,29 +119,25 @@ class DraggableMouseEvents {
     if (this.isDragging) return;
 
     this.isDragging = true;
-    this.contextHooks.setDragging(this.isDragging);
-    this.contextHooks.setDraggedId(this.id);
+    this.context.setIsDragging(this.isDragging);
+    this.context.setDraggedId(this.id);
   }
 
   stopDragging() {
     if (!this.isDragging) return;
 
     this.isDragging = false;
-    this.contextHooks.setDragging(this.isDragging);
-    this.contextHooks.setDraggedId("");
+    this.context.setIsDragging(this.isDragging);
+    this.context.setDraggedId("");
   }
 }
 
 export function useDraggable({ id }: { id: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
-  const { setIsDragging, setDraggedId } = useDragAndDropContext();
+  const context = useDragAndDropContext();
 
   React.useLayoutEffect(() => {
-    const handler = new DraggableMouseEvents(id, ref.current!, {
-      setDragging: setIsDragging,
-      setDraggedId: setDraggedId,
-    });
-
+    const handler = new DraggableMouseEvents(id, ref.current!, context);
     handler.bindEvents();
     return () => handler.unbindEvents();
   }, [ref]);
