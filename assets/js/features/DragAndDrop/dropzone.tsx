@@ -22,6 +22,7 @@ export function useDropZone({ id }: { id: string }) {
     dropIndex: context.overDropZoneId === id ? context.dropIndex : null,
     draggedElementHeight: context.overDropZoneId === id ? context.draggedElementSize.height : null,
     draggedId: context.overDropZoneId === id ? context.draggedId : null,
+    isSourceZone: context.sourceZoneId === id,
   };
 }
 
@@ -44,6 +45,8 @@ class DropZoneElement {
 
     this.mouseUp = this.onMouseUp.bind(this);
     this.mouseMove = this.onMouseMove.bind(this);
+
+    this.el.setAttribute("drop-zone", "true");
   }
 
   bindEvents() {
@@ -88,7 +91,7 @@ class DropZoneElement {
 
     let index = draggableChildren.findIndex((el) => {
       const r = el.getBoundingClientRect();
-      return clientY < r.top + r.height / 2;
+      return clientY < r.top + r.height * 0.9;
     });
 
     return index === -1 ? draggableChildren.length : index;

@@ -5,17 +5,17 @@ import type { DragAndDropContextValue } from "./context";
 import { useDragAndDropContext } from "./context";
 import { DRAG_DISTANCE_INERTIA } from "./constants";
 
-export function useDraggable({ id }: { id: string }) {
+export function useDraggable({ id, zoneId }: { id: string; zoneId: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const context = useDragAndDropContext();
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!ref.current) return;
 
-    const handler = new DraggableElement(id, ref.current!, context);
+    const handler = new DraggableElement(id, ref.current!, context, zoneId);
     handler.bindEvents();
     return () => handler.unbindEvents();
-  }, [ref]);
+  }, [ref, id, zoneId]);
 
   return { ref, isDragging: context.draggedId === id };
 }
@@ -54,6 +54,9 @@ class DraggableElement {
   // ID of the draggable element, usually the UUID of the Task
   private id: string;
 
+  // ID of the drop zone where the element is being dragged from
+  private zoneId: string;
+
   // The DOM element (ref) that is being dragged
   private el: HTMLElement;
 
@@ -78,11 +81,12 @@ class DraggableElement {
   private mouseMove: (e: MouseEvent) => void;
   private dragStart: (e: DragEvent) => void;
 
-  constructor(id: string, el: HTMLElement, context: DragAndDropContextValue) {
+  constructor(id: string, el: HTMLElement, context: DragAndDropContextValue, zoneId: string) {
     this.context = context;
 
     this.id = id;
     this.el = el;
+    this.zoneId = zoneId;
     this.mouseDownPosition = null;
 
     this.mouseDown = this.onMouseDown.bind(this);
@@ -139,16 +143,20 @@ class DraggableElement {
   startDragging() {
     if (this.isDragging) return;
 
+    this.setMinHeightForDropZones();
+
     this.isDragging = true;
     this.elementRect = this.el.getBoundingClientRect();
 
     this.context.setIsDragging(this.isDragging);
     this.context.setDraggedId(this.id);
     this.context.setDraggedElementSize({ width: this.elementRect.width, height: this.elementRect.height });
+    this.context.setSourceZoneId(this.el.parentElement!.id);
   }
 
   stopDragging() {
     this.resetElementStyle();
+    this.resetMinHeightForDropZones();
 
     this.isDragging = false;
     this.context.setIsDragging(false);
@@ -175,5 +183,17 @@ class DraggableElement {
 
   resetElementStyle() {
     this.el.removeAttribute("style");
+  }
+
+  setMinHeightForDropZones() {
+    document.querySelectorAll("[drop-zone]").forEach((el: HTMLElement) => {
+      el.style.minHeight = el.getBoundingClientRect().height + "px";
+    });
+  }
+
+  resetMinHeightForDropZones() {
+    document.querySelectorAll("[drop-zone]").forEach((el: HTMLElement) => {
+      el.style.minHeight = "";
+    });
   }
 }

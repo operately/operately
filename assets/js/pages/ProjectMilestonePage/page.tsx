@@ -137,7 +137,7 @@ interface TaskBoardState {
 }
 
 import { insertAt } from "@/utils/array";
-import { DragAndDropProvider, useDraggable, useDropZone } from "@/features/DragAndDrop";
+import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
 
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
@@ -223,12 +223,23 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
-  const { ref, isOver, dropIndex, draggedElementHeight, draggedId } = useDropZone({ id: props.status });
+  const { draggedId } = useDragAndDropContext();
+  const { ref, isOver, isSourceZone, dropIndex, draggedElementHeight } = useDropZone({ id: props.status });
+
+  const [animate, setAnimate] = React.useState(false);
+
+  React.useLayoutEffect(() => {
+    if (draggedId !== null) {
+      setTimeout(() => setAnimate(true), 200);
+    } else {
+      setAnimate(false);
+    }
+  }, [draggedId]);
 
   const columnClassName = "p-2 rounded" + " " + props.color;
   const style = {
-    paddingBottom: isOver ? draggedElementHeight! : 0,
-    transition: draggedId !== null ? "padding 0.2s ease-in-out" : "",
+    paddingBottom: isOver && !isSourceZone ? draggedElementHeight! : 0,
+    transition: animate && !isSourceZone ? "padding 0.2s ease-in-out" : "",
   };
 
   const taskStyle = (index: number) => {
@@ -236,7 +247,7 @@ function TaskColumn(props: TaskColumnProps) {
 
     return {
       transform: `translateY(${index < dropIndex! ? 0 : draggedElementHeight!}px)`,
-      transition: draggedId !== null ? "transform 0.2s ease-in-out" : "",
+      transition: animate ? "transform 0.2s ease-in-out" : "",
     };
   };
 
@@ -269,8 +280,8 @@ function TaskColumn(props: TaskColumnProps) {
   );
 }
 
-function TaskItem({ task, style }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties }) {
-  const { ref, isDragging } = useDraggable({ id: task.id });
+function TaskItem({ task, zoneId, style }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties }) {
+  const { ref, isDragging } = useDraggable({ id: task.id, zoneId });
 
   return (
     <div className="w-full" ref={ref}>

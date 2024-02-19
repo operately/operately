@@ -21,6 +21,9 @@ export interface DragAndDropContextValue {
   setDraggedId: (id: string | null) => void;
 
   draggedIdRef: React.MutableRefObject<string | null>;
+
+  sourceZoneId: string | null;
+  setSourceZoneId: (id: string | null) => void;
 }
 
 const DragAndDropContext = React.createContext<DragAndDropContextValue | null>(null);
@@ -42,6 +45,7 @@ export function DragAndDropProvider({ children, onDrop }: { children: React.Reac
   const [dropIndex, setDropIndex] = React.useState<number>(0);
   const [draggedElementSize, setDraggedElementSize] = React.useState({ width: 0, height: 0 });
   const [draggedId, setDraggedId] = React.useState<string | null>(null);
+  const [sourceZoneId, setSourceZoneId] = React.useState<string | null>(null);
 
   const draggedIdRef = React.useRef<string | null>(null);
 
@@ -75,6 +79,9 @@ export function DragAndDropProvider({ children, onDrop }: { children: React.Reac
     draggedId,
     draggedIdRef,
     setDraggedId,
+
+    sourceZoneId,
+    setSourceZoneId,
   };
 
   return <DragAndDropContext.Provider value={value}>{children}</DragAndDropContext.Provider>;
