@@ -137,7 +137,7 @@ interface TaskBoardState {
 }
 
 import { insertAt } from "@/utils/array";
-import { DragAndDropProvider, useDraggable, useDropZone } from "./useDragAndDropContext";
+import { DragAndDropProvider, useDraggable, useDropZone } from "@/features/DragAndDrop";
 
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
@@ -223,69 +223,6 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
-  // const [dropZoneSize, setDropZoneSize] = React.useState({ width: 0, height: 0 });
-
-  // const dropIndex = React.useRef<number | null>(null);
-  // const listRef = React.useRef<HTMLDivElement | null>(null);
-
-  // const [{ isOver, canDrop, itemId }, drop] = useDrop(
-  //   () => ({
-  //     accept: "task-item",
-  //     hover: (item: { id: string; width: number; height: number; startedAt: number }, monitor) => {
-  //       if (!listRef.current) return;
-
-  //       const taskPositions = Array.from(listRef.current.children).map((c) => c.getBoundingClientRect());
-
-  //       dropIndex.current = taskPositions.findIndex((pos) => {
-  //         return monitor.getClientOffset()!.y < pos.top + pos.height;
-  //       });
-
-  //       if (dropIndex.current === -1) {
-  //         dropIndex.current = props.tasks.length;
-  //       }
-
-  //       setDropZoneSize({ width: item.width, height: item.height });
-  //     },
-  //     drop: (item: { id: string }) => {
-  //       props.onTaskDrop(item.id, props.status, dropIndex.current!);
-  //     },
-  //     collect: (monitor) => ({
-  //       isOver: monitor.isOver(),
-  //       canDrop: monitor.canDrop(),
-  //       itemId: monitor.getItem()?.id,
-  //     }),
-  //   }),
-  //   [props.tasks, props.status],
-  // );
-
-  // const listStyles = () => {
-  //   if (!isOver)
-  //     return {
-  //       // transition: "padding-bottom 0.2s",
-  //     };
-  //   if (!canDrop)
-  //     return {
-  //       // transition: "padding-bottom 0.2s",
-  //     };
-
-  //   return {
-  //     paddingBottom: dropZoneSize.height + 5,
-  //     // transition: "padding-bottom 0.2s",
-  //   };
-  // };
-
-  // const itemStyles = (index: number) => {
-  //   if (!isOver || !canDrop)
-  //     return {
-  //       // transition: "transform 0.2s",
-  //     };
-
-  //   return {
-  //     transform: `translate(0, ${index < dropIndex.current! ? 0 : dropZoneSize.height + 5}px)`,
-  //     // transition: "transform 0.2s",
-  //   };
-  // };
-
   const { ref, isOver, draggedElementSize } = useDropZone({ id: props.status });
 
   const columnClassName = "p-2 rounded" + " " + props.color;
@@ -305,149 +242,12 @@ function TaskColumn(props: TaskColumnProps) {
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
-        {isOver && <span>Is Over</span>}
       </div>
     </div>
   );
 }
 
-function PlaceholderTask() {
-  return (
-    <div className="text-sm rounded p-2 border-2 border-stroke-base flex items-start justify-between border-dashed h-8"></div>
-  );
-}
-
 function TaskItem({ task }: { task: Tasks.Task }) {
-  // const ref = React.useRef<HTMLDivElement | null>(null);
-
-  // // const [collected, drag] = useDrag(() => ({
-  // //   type: "task-item",
-  // //   item: () => {
-  // //     const rect = ref.current?.getBoundingClientRect();
-  // //     if (!rect) return;
-
-  // //     const width = rect.width;
-  // //     const height = rect.height;
-
-  // //     return { id: task.id, width, height, startedAt: +new Date() };
-  // //   },
-  // //   collect: (monitor) => ({
-  // //     isDragging: monitor.isDragging(),
-  // //   }),
-  // // }));
-
-  // // const [size, setSize] = React.useState({ width: 0, height: 0 });
-  // const { isDragging, setIsDragging } = useDragAndDropContext();
-
-  // const [isMouseDown, setIsMouseDown] = React.useState(false);
-  // const [mouseDownPos, setMouseDownPos] = React.useState({ x: 0, y: 0 });
-  // const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
-
-  // React.useEffect(() => {
-  //   const onMouseMove = (e: MouseEvent) => {
-  //     setMousePos({ x: e.clientX, y: e.clientY });
-
-  //     if (!isMouseDown) return;
-  //     if (isDragging) return;
-
-  //     const dx = e.clientX - mouseDownPos.x;
-  //     const dy = e.clientY - mouseDownPos.y;
-
-  //     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-  //       setIsDragging(true);
-  //     }
-  //   };
-
-  //   window.addEventListener("mousemove", onMouseMove);
-
-  //   return () => {
-  //     window.removeEventListener("mousemove", onMouseMove);
-  //   };
-  // }, [ref.current, isMouseDown, isDragging]);
-
-  // // const setDragRef = (node: HTMLDivElement) => {
-  // //   drag(node);
-  // //   ref.current = node;
-  // // };
-
-  // const calcStyle = (): React.CSSProperties => {
-  //   // if (collected.isDragging) {
-  //   //   return {
-  //   //     position: "fixed",
-  //   //     width: size.width,
-  //   //     height: size.height,
-  //   //     zIndex: 10000,
-  //   //     pointerEvents: "none",
-  //   //     transform: "translate(-50%, -50%)",
-  //   //     top: mousePos.y,
-  //   //     left: mousePos.x,
-  //   //   };
-  //   // } else {
-  //   return {};
-  //   // }
-  // };
-
-  // const drop = React.useRef<HTMLDivElement | null>(null);
-
-  // const [size, setSize] = React.useState({ width: 0, height: 0 });
-
-  // React.useEffect(() => {
-  //   if (!drop.current) return;
-
-  //   const { width, height } = drop.current.getBoundingClientRect();
-  //   setSize({ width, height });
-  // }, [drop.current]);
-
-  // const listRef = React.useRef<HTMLDivElement | null>(null);
-
-  // const listStyles = () => {
-  //   return {};
-  // };
-
-  // const itemStyles = (index: number) => {
-  //   return {};
-  // };
-
-  // // const itemIndex = React.useMemo(() => props.tasks.findIndex((t) => t.id === itemId), [props.tasks, itemId]);
-
-  // const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-  //   e.preventDefault();
-  // };
-
-  // const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-  //   e.preventDefault();
-
-  //   setIsMouseDown(true);
-  //   setMouseDownPos({ x: e.clientX, y: e.clientY });
-
-  //   const onMouseUp = () => {
-  //     setIsMouseDown(false);
-  //     setIsDragging(false);
-  //   };
-
-  //   window.addEventListener("mouseup", onMouseUp, { once: true });
-
-  //   return () => {
-  //     window.removeEventListener("mouseup", onMouseUp);
-  //   };
-  // };
-
-  // const styles = (): React.CSSProperties => {
-  //   if (!isDragging) return {};
-
-  //   return {
-  //     position: "fixed",
-  //     width: size.width,
-  //     height: size.height,
-  //     zIndex: 10000,
-  //     pointerEvents: "none",
-  //     transform: "translate(-50%, -50%)",
-  //     top: mousePos.y,
-  //     left: mousePos.x,
-  //     boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)",
-  //   };
-  // };
-
   const { ref } = useDraggable({ id: task.id });
 
   const className = "not-first:mt-2 w-full";
@@ -469,5 +269,11 @@ function TaskItem({ task }: { task: Tasks.Task }) {
         </div>
       </DivLink>
     </div>
+  );
+}
+
+function PlaceholderTask() {
+  return (
+    <div className="text-sm rounded p-2 border-2 border-stroke-base flex items-start justify-between border-dashed h-8"></div>
   );
 }
