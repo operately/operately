@@ -56,6 +56,7 @@ class DraggableMouseEvents {
   private isDragging = false;
   private isMouseDown = false;
   private mouseDownPosition: { x: number; y: number } | null = null;
+  private elementRect: DOMRect | null = null;
 
   private context: DragAndDropContextValue;
 
@@ -107,11 +108,15 @@ class DraggableMouseEvents {
   onMouseMove(e: MouseEvent) {
     if (!this.isMouseDown) return;
 
-    const dx = Math.abs(this.mouseDownPosition!.x - e.clientX);
-    const dy = Math.abs(this.mouseDownPosition!.y - e.clientY);
+    if (this.isDragging) {
+      this.followMouse(e);
+    } else {
+      const dx = Math.abs(this.mouseDownPosition!.x - e.clientX);
+      const dy = Math.abs(this.mouseDownPosition!.y - e.clientY);
 
-    if (dx > DRAG_DISTANCE_INERTIA || dy > DRAG_DISTANCE_INERTIA) {
-      this.startDragging();
+      if (dx > DRAG_DISTANCE_INERTIA || dy > DRAG_DISTANCE_INERTIA) {
+        this.startDragging();
+      }
     }
   }
 
@@ -119,6 +124,8 @@ class DraggableMouseEvents {
     if (this.isDragging) return;
 
     this.isDragging = true;
+    this.elementRect = this.el.getBoundingClientRect();
+
     this.context.setIsDragging(this.isDragging);
     this.context.setDraggedId(this.id);
   }
@@ -126,9 +133,32 @@ class DraggableMouseEvents {
   stopDragging() {
     if (!this.isDragging) return;
 
+    this.resetElementStyle();
+
     this.isDragging = false;
     this.context.setIsDragging(this.isDragging);
     this.context.setDraggedId("");
+  }
+
+  followMouse(e: MouseEvent) {
+    const left = e.clientX - this.mouseDownPosition!.x + this.elementRect!.width / 2 + this.elementRect!.left;
+    const top = e.clientY - this.mouseDownPosition!.y + this.elementRect!.height / 2 + this.elementRect!.top;
+
+    Object.assign(this.el.style, {
+      position: "fixed",
+      left: left + "px",
+      top: top + "px",
+      zIndex: "10000",
+      pointerEvents: "none",
+      userSelect: "none",
+      transform: "translate(-50%, -50%)",
+      width: this.el.getBoundingClientRect().width + "px",
+      height: this.el.getBoundingClientRect().height + "px",
+    });
+  }
+
+  resetElementStyle() {
+    this.el.removeAttribute("style");
   }
 }
 
