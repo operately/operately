@@ -3,14 +3,20 @@ import React from "react";
 type OnDropFunction = (dropZoneId: string, draggedId: string, indexInDropZone: number) => void;
 
 export interface DragAndDropContextValue {
-  isDragging: boolean;
+  getIsDragging: () => boolean;
   setIsDragging: (isDragging: boolean) => void;
 
-  draggedId: string;
-  setDraggedId: (id: string) => void;
+  getDraggedId: () => string | null;
+  setDraggedId: (id: string | null) => void;
 
-  draggedElementSize: { width: number; height: number };
+  getDraggedElementSize: () => { width: number; height: number };
   setDraggedElementSize: (size: { width: number; height: number }) => void;
+
+  overDropZoneId: string | null;
+  setOverDropZoneId: (id: string | null) => void;
+
+  registerDraggable: (id: string, zoneId: string, rect: DOMRect) => void;
+  getDropZoneItems: (id: string) => any[];
 
   onDrop: OnDropFunction;
 }
@@ -25,20 +31,53 @@ export function useDragAndDropContext(): DragAndDropContextValue {
 }
 
 export function DragAndDropProvider({ children, onDrop }: { children: React.ReactNode; onDrop: OnDropFunction }) {
-  const [isDragging, setIsDragging] = React.useState(false);
-  const [draggedId, setDraggedId] = React.useState("");
-  const [draggedElementSize, setDraggedElementSize] = React.useState({ width: 0, height: 0 });
+  const internalMutableState = React.useRef({
+    isDragging: false,
+    draggedId: "",
+    draggedElementSize: { width: 0, height: 0 },
+    dropZones: {},
+  });
+
+  const [overDropZoneId, setOverDropZoneId] = React.useState<string | null>(null);
 
   const value = {
-    isDragging,
-    draggedId,
-    draggedElementSize,
+    getIsDragging: () => internalMutableState.current.isDragging,
+    setIsDragging: (isDragging: boolean) => {
+      internalMutableState.current.isDragging = isDragging;
+    },
 
-    setIsDragging,
-    setDraggedId,
-    setDraggedElementSize,
+    getDraggedId: () => internalMutableState.current.draggedId,
+    setDraggedId: (id: string) => {
+      internalMutableState.current.draggedId = id;
+    },
+
+    getDraggedElementSize: () => internalMutableState.current.draggedElementSize,
+    setDraggedElementSize: (size: { width: number; height: number }) => {
+      internalMutableState.current.draggedElementSize = size;
+    },
+
+    getDropZoneItems: (id: string) => {
+      return internalMutableState.current.dropZones[id]?.items || [];
+    },
+
+    registerDraggable: (id: string, zoneId: string, rect: DOMRect) => {
+      let zone = internalMutableState.current.dropZones[zoneId];
+
+      if (!zone) {
+        zone = { items: [] };
+        internalMutableState.current.dropZones[zoneId] = zone;
+      }
+
+      zone.items.push({
+        id,
+        rect,
+      });
+    },
 
     onDrop,
+
+    overDropZoneId,
+    setOverDropZoneId,
   };
 
   return <DragAndDropContext.Provider value={value}>{children}</DragAndDropContext.Provider>;

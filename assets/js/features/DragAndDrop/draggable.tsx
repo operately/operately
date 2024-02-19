@@ -1,52 +1,63 @@
 import * as React from "react";
 
-import { useDragAndDropContext } from "./context";
 import type { DragAndDropContextValue } from "./context";
+
+import { useDragAndDropContext } from "./context";
 import { DRAG_DISTANCE_INERTIA } from "./constants";
 
-export function useDraggable({ id }: { id: string }) {
+export function useDraggable({ id, zoneId }: { id: string; zoneId: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const context = useDragAndDropContext();
 
   React.useLayoutEffect(() => {
-    const handler = new DraggableElement(id, ref.current!, context);
+    if (!ref.current) return;
+
+    const handler = new DraggableElement(id, zoneId, ref.current!, context);
     handler.bindEvents();
     return () => handler.unbindEvents();
-  }, [ref]);
+  }, [ref, zoneId]);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+
+    context.registerDraggable(id, zoneId, ref.current!.getBoundingClientRect());
+    // return () => context.unregisterDraggable(id, zoneId);
+  }, [ref, zoneId]);
 
   return { ref };
 }
 
-//
-// This class is used to handle the dragging of an element.
-// It is attached to a DOM element and listens to mouse events
-// to start and stop dragging, and to follow the mouse when
-// the element is being dragged.
-//
-// The class is used in the useDraggable hook.
-//
-// The class is responsible for:
-//
-// - Starting and stopping dragging
-// - Following the mouse when the element is being dragged
-// - Resetting the element style when dragging stops
-// - Binding and unbinding event listeners
-// - Propagating the dragging state to the DragAndDropContext
-//
-// Usage:
-//
-// const context = useDragAndDropContext();
-// const ref = React.useRef<HTMLDivElement | null>(null);
-//
-// React.useLayoutEffect(() => {
-//   const handler = new DraggableElement(id, ref.current!, context);
-//   handler.bindEvents();
-//   return () => handler.unbindEvents();
-// }, [ref]);
-//
-// return { ref };
-//
 class DraggableElement {
+  //
+  // This class is used to handle the dragging of an element.
+  // It is attached to a DOM element and listens to mouse events
+  // to start and stop dragging, and to follow the mouse when
+  // the element is being dragged.
+  //
+  // The class is used in the useDraggable hook.
+  //
+  // The class is responsible for:
+  //
+  // - Starting and stopping dragging
+  // - Following the mouse when the element is being dragged
+  // - Resetting the element style when dragging stops
+  // - Binding and unbinding event listeners
+  // - Propagating the dragging state to the DragAndDropContext
+  //
+  // Usage:
+  //
+  // const context = useDragAndDropContext();
+  // const ref = React.useRef<HTMLDivElement | null>(null);
+  //
+  // React.useLayoutEffect(() => {
+  //   const handler = new DraggableElement(id, ref.current!, context);
+  //   handler.bindEvents();
+  //   return () => handler.unbindEvents();
+  // }, [ref]);
+  //
+  // return { ref };
+  //
+
   // ID of the draggable element, usually the UUID of the Task
   private id: string;
 
@@ -74,7 +85,7 @@ class DraggableElement {
   private mouseMove: (e: MouseEvent) => void;
   private dragStart: (e: DragEvent) => void;
 
-  constructor(id: string, el: HTMLElement, context: DragAndDropContextValue) {
+  constructor(id: string, zoneId: string, el: HTMLElement, context: DragAndDropContextValue) {
     this.context = context;
 
     this.id = id;
@@ -140,13 +151,11 @@ class DraggableElement {
   }
 
   stopDragging() {
-    if (!this.isDragging) return;
-
     this.resetElementStyle();
 
     this.isDragging = false;
-    this.context.setIsDragging(this.isDragging);
-    this.context.setDraggedId("");
+    this.context.setIsDragging(false);
+    this.context.setDraggedId(null);
   }
 
   followMouse(e: MouseEvent) {

@@ -223,11 +223,11 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
-  const { ref, isOver, draggedElementSize } = useDropZone({ id: props.status });
+  const { ref, isOver } = useDropZone({ id: props.status });
 
   const columnClassName = "p-2 rounded" + " " + props.color;
   const style = {
-    paddingBottom: isOver ? draggedElementSize.height : 0,
+    paddingBottom: isOver ? "3rem" : "0",
   };
 
   return (
@@ -238,7 +238,7 @@ function TaskColumn(props: TaskColumnProps) {
 
       <div className="flex flex-col mt-2" ref={ref} style={style}>
         {props.tasks.map((task) => (
-          <TaskItem key={task.id} task={task} />
+          <TaskItem key={task.id} task={task} zoneId={props.status} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -247,8 +247,8 @@ function TaskColumn(props: TaskColumnProps) {
   );
 }
 
-function TaskItem({ task }: { task: Tasks.Task }) {
-  const { ref } = useDraggable({ id: task.id });
+function TaskItem({ task, zoneId }: { task: Tasks.Task; zoneId: string }) {
+  const { ref } = useDraggable({ id: task.id, zoneId: zoneId });
 
   const className = "not-first:mt-2 w-full";
 
