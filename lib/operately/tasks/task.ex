@@ -12,6 +12,7 @@ defmodule Operately.Tasks.Task do
     field :size, :string
     field :description, :map
     field :due_date, :naive_datetime
+    field :index, :string
 
     field :status, Ecto.Enum, values: [:open, :closed], default: :open
     field :closed_at, :naive_datetime
