@@ -5,26 +5,19 @@ import type { DragAndDropContextValue } from "./context";
 import { useDragAndDropContext } from "./context";
 import { DRAG_DISTANCE_INERTIA } from "./constants";
 
-export function useDraggable({ id, zoneId }: { id: string; zoneId: string }) {
+export function useDraggable({ id }: { id: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const context = useDragAndDropContext();
 
   React.useLayoutEffect(() => {
     if (!ref.current) return;
 
-    const handler = new DraggableElement(id, zoneId, ref.current!, context);
+    const handler = new DraggableElement(id, ref.current!, context);
     handler.bindEvents();
     return () => handler.unbindEvents();
-  }, [ref, zoneId]);
+  }, [ref]);
 
-  React.useEffect(() => {
-    if (!ref.current) return;
-
-    context.registerDraggable(id, zoneId, ref.current!.getBoundingClientRect());
-    // return () => context.unregisterDraggable(id, zoneId);
-  }, [ref, zoneId]);
-
-  return { ref };
+  return { ref, isDragging: context.draggedId === id };
 }
 
 class DraggableElement {
@@ -85,7 +78,7 @@ class DraggableElement {
   private mouseMove: (e: MouseEvent) => void;
   private dragStart: (e: DragEvent) => void;
 
-  constructor(id: string, zoneId: string, el: HTMLElement, context: DragAndDropContextValue) {
+  constructor(id: string, el: HTMLElement, context: DragAndDropContextValue) {
     this.context = context;
 
     this.id = id;
@@ -96,6 +89,9 @@ class DraggableElement {
     this.mouseUp = this.onMouseUp.bind(this);
     this.mouseMove = this.onMouseMove.bind(this);
     this.dragStart = this.onDragStart.bind(this);
+
+    this.el.setAttribute("draggable", "true");
+    this.el.setAttribute("draggable-id", this.id);
   }
 
   bindEvents() {
@@ -148,6 +144,7 @@ class DraggableElement {
 
     this.context.setIsDragging(this.isDragging);
     this.context.setDraggedId(this.id);
+    this.context.setDraggedElementSize({ width: this.elementRect.width, height: this.elementRect.height });
   }
 
   stopDragging() {
@@ -156,6 +153,7 @@ class DraggableElement {
     this.isDragging = false;
     this.context.setIsDragging(false);
     this.context.setDraggedId(null);
+    this.context.setDraggedElementSize({ width: 0, height: 0 });
   }
 
   followMouse(e: MouseEvent) {

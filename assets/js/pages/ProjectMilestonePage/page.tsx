@@ -137,7 +137,7 @@ interface TaskBoardState {
 }
 
 import { insertAt } from "@/utils/array";
-import { DragAndDropProvider, useDraggable, useDropZone, DndDebug } from "@/features/DragAndDrop";
+import { DragAndDropProvider, useDraggable, useDropZone } from "@/features/DragAndDrop";
 
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
@@ -210,7 +210,6 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
           status="done"
         />
       </div>
-      <DndDebug />
     </DragAndDropProvider>
   );
 }
@@ -224,12 +223,34 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
-  const { ref, isOver } = useDropZone({ id: props.status });
+  const { ref, isOver, dropIndex, draggedElementHeight, draggedId } = useDropZone({ id: props.status });
 
   const columnClassName = "p-2 rounded" + " " + props.color;
   const style = {
-    paddingBottom: isOver ? "3rem" : "0",
+    paddingBottom: isOver ? draggedElementHeight! : 0,
+    transition: draggedId !== null ? "padding 0.2s ease-in-out" : "",
   };
+
+  const taskStyle = (index: number) => {
+    if (!isOver) return {};
+
+    return {
+      transform: `translateY(${index < dropIndex! ? 0 : draggedElementHeight!}px)`,
+      transition: draggedId !== null ? "transform 0.2s ease-in-out" : "",
+    };
+  };
+
+  const visibleIndexes = React.useMemo(() => {
+    let res = {};
+
+    if (!isOver) {
+      props.tasks.forEach((t, i) => (res[t.id] = i));
+    } else {
+      props.tasks.filter((t) => t.id !== draggedId).forEach((t, i) => (res[t.id] = i));
+    }
+
+    return res;
+  }, [isOver, draggedId, props.tasks.length]);
 
   return (
     <div className={columnClassName}>
@@ -239,7 +260,7 @@ function TaskColumn(props: TaskColumnProps) {
 
       <div className="flex flex-col mt-2" ref={ref} style={style}>
         {props.tasks.map((task) => (
-          <TaskItem key={task.id} task={task} zoneId={props.status} />
+          <TaskItem key={task.id} task={task} zoneId={props.status} style={taskStyle(visibleIndexes[task.id])} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -248,27 +269,27 @@ function TaskColumn(props: TaskColumnProps) {
   );
 }
 
-function TaskItem({ task, zoneId }: { task: Tasks.Task; zoneId: string }) {
-  const { ref } = useDraggable({ id: task.id, zoneId: zoneId });
-
-  const className = "not-first:mt-2 w-full";
+function TaskItem({ task, style }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties }) {
+  const { ref, isDragging } = useDraggable({ id: task.id });
 
   return (
-    <div className={className} ref={ref}>
-      <DivLink
-        className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
-        to={`/tasks/${task.id}`}
-      >
-        <div className="font-medium">{task.name}</div>
+    <div className="w-full" ref={ref}>
+      <div className="my-1" style={isDragging ? {} : style}>
+        <DivLink
+          className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
+          to={`/tasks/${task.id}`}
+        >
+          <div className="font-medium">{task.name}</div>
 
-        <div className="text-sm text-content-dimmed flex items-center -space-x-2">
-          {task.assignees!.map((a) => (
-            <div className="border border-surface rounded-full flex items-center" key={a.id}>
-              <Avatar key={a.id} person={a} size={20} />
-            </div>
-          ))}
-        </div>
-      </DivLink>
+          <div className="text-sm text-content-dimmed flex items-center -space-x-2">
+            {task.assignees!.map((a) => (
+              <div className="border border-surface rounded-full flex items-center" key={a.id}>
+                <Avatar key={a.id} person={a} size={20} />
+              </div>
+            ))}
+          </div>
+        </DivLink>
+      </div>
     </div>
   );
 }

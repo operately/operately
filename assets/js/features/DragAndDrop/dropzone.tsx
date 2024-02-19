@@ -19,6 +19,9 @@ export function useDropZone({ id }: { id: string }) {
   return {
     ref,
     isOver: context.overDropZoneId === id,
+    dropIndex: context.overDropZoneId === id ? context.dropIndex : null,
+    draggedElementHeight: context.overDropZoneId === id ? context.draggedElementSize.height : null,
+    draggedId: context.overDropZoneId === id ? context.draggedId : null,
   };
 }
 
@@ -55,7 +58,7 @@ class DropZoneElement {
 
   onMouseUp() {
     if (this.context.getIsDragging()) {
-      this.context.onDrop(this.id, this.context.getDraggedId()!, this.indexInDropZone);
+      this.context.onDrop(this.id, this.context.draggedIdRef.current!, this.indexInDropZone);
     }
   }
 
@@ -65,23 +68,29 @@ class DropZoneElement {
       const isOver = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
 
       if (isOver) {
-        this.context.setOverDropZoneId(this.id);
         this.indexInDropZone = this.calculateIndexInDropZone(e.clientY);
+
+        this.context.setOverDropZoneId(this.id);
+        this.context.setDropIndex(this.indexInDropZone);
       }
     } else {
+      this.indexInDropZone = 0;
       this.context.setOverDropZoneId(null);
     }
   }
 
   private calculateIndexInDropZone(clientY: number): number {
-    const items = this.context.getDropZoneItems(this.id);
+    let draggableChildren = Array.from(this.el.querySelectorAll("[draggable=true]")).filter(
+      (e) => e.getAttribute("draggable-id") !== this.context.draggedIdRef.current,
+    ) as HTMLElement[];
 
-    const index = items.findIndex((item) => {
-      const rect = item.rect;
+    if (draggableChildren.length === 0) return 0;
 
-      return rect.top < clientY && rect.bottom > clientY;
+    let index = draggableChildren.findIndex((el) => {
+      const r = el.getBoundingClientRect();
+      return clientY < r.top + r.height / 2;
     });
 
-    return index === -1 ? items.length : index;
+    return index === -1 ? draggableChildren.length : index;
   }
 }

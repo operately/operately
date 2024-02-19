@@ -6,19 +6,21 @@ export interface DragAndDropContextValue {
   getIsDragging: () => boolean;
   setIsDragging: (isDragging: boolean) => void;
 
-  getDraggedId: () => string | null;
-  setDraggedId: (id: string | null) => void;
-
-  getDraggedElementSize: () => { width: number; height: number };
-  setDraggedElementSize: (size: { width: number; height: number }) => void;
+  onDrop: OnDropFunction;
 
   overDropZoneId: string | null;
   setOverDropZoneId: (id: string | null) => void;
 
-  registerDraggable: (id: string, zoneId: string, rect: DOMRect) => void;
-  getDropZoneItems: (id: string) => any[];
+  dropIndex: number;
+  setDropIndex: (index: number) => void;
 
-  onDrop: OnDropFunction;
+  draggedElementSize: { width: number; height: number };
+  setDraggedElementSize: (size: { width: number; height: number }) => void;
+
+  draggedId: string | null;
+  setDraggedId: (id: string | null) => void;
+
+  draggedIdRef: React.MutableRefObject<string | null>;
 }
 
 const DragAndDropContext = React.createContext<DragAndDropContextValue | null>(null);
@@ -33,12 +35,19 @@ export function useDragAndDropContext(): DragAndDropContextValue {
 export function DragAndDropProvider({ children, onDrop }: { children: React.ReactNode; onDrop: OnDropFunction }) {
   const internalMutableState = React.useRef({
     isDragging: false,
-    draggedId: "",
-    draggedElementSize: { width: 0, height: 0 },
     dropZones: {},
   });
 
   const [overDropZoneId, setOverDropZoneId] = React.useState<string | null>(null);
+  const [dropIndex, setDropIndex] = React.useState<number>(0);
+  const [draggedElementSize, setDraggedElementSize] = React.useState({ width: 0, height: 0 });
+  const [draggedId, setDraggedId] = React.useState<string | null>(null);
+
+  const draggedIdRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    draggedIdRef.current = draggedId;
+  }, [draggedId]);
 
   const value = {
     internalMutableState: internalMutableState.current,
@@ -48,38 +57,24 @@ export function DragAndDropProvider({ children, onDrop }: { children: React.Reac
       internalMutableState.current.isDragging = isDragging;
     },
 
-    getDraggedId: () => internalMutableState.current.draggedId,
-    setDraggedId: (id: string) => {
-      internalMutableState.current.draggedId = id;
-    },
-
-    getDraggedElementSize: () => internalMutableState.current.draggedElementSize,
-    setDraggedElementSize: (size: { width: number; height: number }) => {
-      internalMutableState.current.draggedElementSize = size;
-    },
-
     getDropZoneItems: (id: string) => {
       return internalMutableState.current.dropZones[id]?.items || [];
-    },
-
-    registerDraggable: (id: string, zoneId: string, rect: DOMRect) => {
-      let zone = internalMutableState.current.dropZones[zoneId];
-
-      if (!zone) {
-        zone = { items: [] };
-        internalMutableState.current.dropZones[zoneId] = zone;
-      }
-
-      zone.items.push({
-        id,
-        rect,
-      });
     },
 
     onDrop,
 
     overDropZoneId,
     setOverDropZoneId,
+
+    dropIndex,
+    setDropIndex,
+
+    draggedElementSize,
+    setDraggedElementSize,
+
+    draggedId,
+    draggedIdRef,
+    setDraggedId,
   };
 
   return <DragAndDropContext.Provider value={value}>{children}</DragAndDropContext.Provider>;
