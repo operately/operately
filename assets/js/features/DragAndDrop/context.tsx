@@ -41,6 +41,8 @@ export function DragAndDropProvider({ children, onDrop }: { children: React.Reac
   const [overDropZoneId, setOverDropZoneId] = React.useState<string | null>(null);
 
   const value = {
+    internalMutableState: internalMutableState.current,
+
     getIsDragging: () => internalMutableState.current.isDragging,
     setIsDragging: (isDragging: boolean) => {
       internalMutableState.current.isDragging = isDragging;

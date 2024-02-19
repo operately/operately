@@ -64,9 +64,8 @@ class DropZoneElement {
       const r = this.el.getBoundingClientRect();
       const isOver = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
 
-      this.context.setOverDropZoneId(isOver ? this.id : null);
-
       if (isOver) {
+        this.context.setOverDropZoneId(this.id);
         this.indexInDropZone = this.calculateIndexInDropZone(e.clientY);
       }
     } else {

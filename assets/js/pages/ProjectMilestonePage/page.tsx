@@ -137,7 +137,7 @@ interface TaskBoardState {
 }
 
 import { insertAt } from "@/utils/array";
-import { DragAndDropProvider, useDraggable, useDropZone } from "@/features/DragAndDrop";
+import { DragAndDropProvider, useDraggable, useDropZone, DndDebug } from "@/features/DragAndDrop";
 
 function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
@@ -210,6 +210,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
           status="done"
         />
       </div>
+      <DndDebug />
     </DragAndDropProvider>
   );
 }
