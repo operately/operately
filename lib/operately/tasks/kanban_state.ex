@@ -13,12 +13,12 @@ defmodule Operately.Tasks.KanbanState do
   end
 
   def add_todo(kanban_state, task_id) do
-    add(kanban_state, task_id, "todo")
+    add(kanban_state, task_id, "todo", 0)
   end
 
-  def add(kanban_state, task_id, status) do
+  def add(kanban_state, task_id, status, column_index) do
     column = String.to_atom(status)
-    kanban_state |> Map.update!(column, &[task_id | &1])
+    kanban_state |> Map.update!(column, &List.insert_at(&1, column_index, task_id))
   end
 
   def remove(kanban_state, task_id, status) do

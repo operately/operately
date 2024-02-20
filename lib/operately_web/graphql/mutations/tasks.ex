@@ -55,8 +55,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
         author = context.current_account.person
         task_id = input.task_id
         status = input.status
+        column_index = input.column_index
 
-        Operately.Operations.TaskStatusChange.run(author, task_id, status)
+        Operately.Operations.TaskStatusChange.run(author, task_id, status, column_index)
       end
     end
 

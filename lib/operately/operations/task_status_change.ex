@@ -6,14 +6,14 @@ defmodule Operately.Operations.TaskStatusChange do
   alias Operately.Tasks.KanbanState
   alias Operately.Tasks.Task
 
-  def run(creator, task_id, new_status) do
+  def run(creator, task_id, new_status, column_index) do
     task = Operately.Tasks.get_task!(task_id)
     old_status = task.status
 
     Multi.new()
     |> find_and_lock_milestone(task.milestone_id)
     |> update_task_status(task, new_status)
-    |> update_kanban_state(old_status, new_status)
+    |> update_kanban_state(old_status, new_status, column_index)
     |> Activities.insert(creator.id, :task_status_change, fn changes ->
       %{
         company_id: creator.company_id,
@@ -64,11 +64,11 @@ defmodule Operately.Operations.TaskStatusChange do
     end)
   end
 
-  def update_kanban_state(multi, old_status, new_status) do
+  def update_kanban_state(multi, old_status, new_status, column_index) do
     Multi.update(multi, :updated_milestone, fn changes ->
       kanban_state = KanbanState.load(changes.milestone.tasks_kanban_state)
       kanban_state = KanbanState.remove(kanban_state, changes.task.id, old_status)
-      kanban_state = KanbanState.add(kanban_state, changes.task.id, new_status)
+      kanban_state = KanbanState.add(kanban_state, changes.task.id, new_status, column_index)
 
       Operately.Projects.Milestone.changeset(changes.milestone, %{tasks_kanban_state: kanban_state})
     end)
