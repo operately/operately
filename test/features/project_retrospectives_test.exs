@@ -62,7 +62,8 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
     changeset = Operately.Projects.Milestone.changeset(%{
       title: name,
       deadline_at: NaiveDateTime.utc_now(),
-      status: status
+      status: status,
+      project_id: ctx.project.id
     })
 
     {:ok, _} = Operately.Repo.insert(changeset)
