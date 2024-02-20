@@ -4,8 +4,6 @@ defmodule Operately.NotificationsTest do
   alias Operately.Notifications
 
   describe "notifications" do
-    alias Operately.Notifications.Notification
-
     import Operately.NotificationsFixtures
     import Operately.CompaniesFixtures
     import Operately.PeopleFixtures
