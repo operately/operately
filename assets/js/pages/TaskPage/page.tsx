@@ -104,7 +104,7 @@ function TopActions({ form }: { form: FormState }) {
 
   return (
     <div className="flex gap-2 items-center shrink-0">
-      {form.status.status === "open" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
+      {form.status.status !== "done" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
 
       <FilledButton size="sm" type="secondary" onClick={() => form.name.setEditing(true)}>
         Edit
