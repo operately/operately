@@ -1,30 +1,39 @@
 import client from "@/graphql/client";
 
-import { gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 const QUERY = gql`
-  query GetTasks($spaceId: ID!, $status: String) {
-    tasks(spaceId: $spaceId, status: $status) {
+  query GetTasks($milestoneId: String!, $status: String) {
+    tasks(milestoneId: $milestoneId, status: $status) {
       id
       name
       priority
       size
       dueDate
       status
-      assignee {
+      assignees {
         id
+        avatarUrl
+        title
         fullName
       }
     }
   }
 `;
 
-export async function getTasks(spaceId: string, status: string) {
+export async function getTasks(minestoneId: string, status?: string) {
   const data = await client.query({
     query: QUERY,
-    variables: { spaceId, status },
+    variables: { minestoneId, status },
     fetchPolicy: "network-only",
   });
 
   return data.data.tasks;
+}
+
+export function useTasks(milestoneId: string, status?: string) {
+  return useQuery(QUERY, {
+    variables: { milestoneId, status },
+    fetchPolicy: "network-only",
+  });
 }

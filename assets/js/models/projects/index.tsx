@@ -20,7 +20,7 @@ export function sortContributorsByRole(contributors: ProjectContributor[]): Proj
   });
 }
 
-export function isMilestoneOverdue(milestone: Milestone) {
+export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadlineAt">) {
   if (milestone.status !== "pending") return false;
 
   const day = Time.parseDate(milestone.deadlineAt);

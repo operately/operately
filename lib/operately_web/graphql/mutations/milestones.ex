@@ -17,6 +17,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Milestones do
     field :title, non_null(:string)
   end
 
+  input_object :update_milestone_input do
+    field :milestone_id, non_null(:id)
+    field :title, non_null(:string)
+    field :deadline_at, :date
+  end
+
   object :milestone_mutations do
     field :add_project_milestone, non_null(:milestone) do
       arg :project_id, non_null(:id)
@@ -31,6 +37,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Milestones do
           project_id: args.project_id,
           title: args.title,
           deadline_at: deadline,
+          tasks_kanban_state: Operately.Tasks.KanbanState.initialize()
         })
       end
     end
@@ -64,17 +71,19 @@ defmodule OperatelyWeb.Graphql.Mutations.Milestones do
       end
     end
 
-    field :update_project_milestone, non_null(:milestone) do
-      arg :milestone_id, non_null(:id)
-      arg :title, non_null(:string)
-      arg :deadline_at, :date
+    field :update_milestone, non_null(:milestone) do
+      arg :input, non_null(:update_milestone_input)
 
       resolve fn args, _ ->
-        milestone = Operately.Projects.get_milestone!(args.milestone_id)
-        deadline = args.deadline_at && NaiveDateTime.new!(args.deadline_at, ~T[00:00:00])
+        milestone_id = args.input.milestone_id
+        title = args.input.title
+        deadline_at = args.input.deadline_at
+
+        milestone = Operately.Projects.get_milestone!(milestone_id)
+        deadline = deadline_at && NaiveDateTime.new!(deadline_at, ~T[00:00:00])
 
         Operately.Projects.update_milestone(milestone, %{
-          title: args.title,
+          title: title,
           deadline_at: deadline
         })
       end

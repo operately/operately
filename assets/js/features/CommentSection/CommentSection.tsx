@@ -25,7 +25,6 @@ interface CommentSectionProps {
 export function CommentSection(props: CommentSectionProps) {
   return (
     <>
-      <div className="text-content-accent font-extrabold border-b border-stroke-base pb-4">Comments</div>
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {

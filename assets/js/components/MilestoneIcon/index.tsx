@@ -4,10 +4,29 @@ import classNames from "classnames";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
-export function MilestoneIcon({ milestone, className }: { milestone: Projects.Milestone; className?: string }) {
-  const isOverdue = Projects.isMilestoneOverdue(milestone);
-  const milestoneColor = isOverdue ? "text-red-500" : "text-content-base";
-  const classNameFinal = classNames(milestoneColor, className);
+interface MilestoneIconProps {
+  milestone: Pick<Projects.Milestone, "status" | "deadlineAt">;
+  className?: string;
+  size?: number;
+}
 
-  return <Icons.IconFlag3Filled size={16} className={classNameFinal} />;
+export function MilestoneIcon({ milestone, className, size = 16 }: MilestoneIconProps) {
+  const classNameFinal = React.useMemo(() => {
+    const isOverdue = Projects.isMilestoneOverdue(milestone);
+    let color = "text-content-base";
+
+    if (milestone.status === "done") {
+      color = "text-green-700";
+    } else {
+      if (isOverdue) {
+        color = "text-red-500";
+      } else {
+        color = "text-content-base";
+      }
+    }
+
+    return classNames(color, className);
+  }, [milestone.status, milestone.deadlineAt, className]);
+
+  return <Icons.IconFlag3Filled size={size} className={classNameFinal} />;
 }

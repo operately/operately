@@ -3,34 +3,23 @@ defmodule Operately.Tasks do
   alias Operately.Repo
 
   alias Operately.Tasks.Task
+  alias Operately.Tasks.Assignee
+
+  def get_task!(id), do: Repo.get!(Task, id)
+
+  def create_task(attrs \\ %{}), do: Task.changeset(attrs) |> Repo.insert()
+  def create_assignee(attrs \\ %{}), do: Assignee.changeset(attrs) |> Repo.insert()
 
   def list_tasks(params \\ %{}) do
     from(t in Task)
-    |> where(space_id: ^params.space_id)
+    |> where(milestone_id: ^params.milestone_id)
     |> apply_if(params[:status], fn q -> where(q, status: ^params.status) end)
     |> Repo.all()
   end
 
-  def get_task!(id), do: Repo.get!(Task, id)
-
-  def create_task(attrs \\ %{}) do
-    %Task{}
-    |> Task.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_task(%Task{} = task, attrs) do
-    task
-    |> Task.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_task(%Task{} = task) do
-    Repo.delete(task)
-  end
-
-  def change_task(%Task{} = task, attrs \\ %{}) do
-    Task.changeset(task, attrs)
+  def list_task_assignees(task) do
+    query = from(a in Assignee, where: a.task_id == ^task.id)
+    Repo.all(query)
   end
 
   defp apply_if(query, condition, fun) do

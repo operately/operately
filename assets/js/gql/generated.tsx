@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -279,6 +279,14 @@ export type ActivityContentTaskAdding = {
   taskId: Scalars['String']['output'];
 };
 
+export type ActivityContentTaskAssigneeAssignment = {
+  __typename?: 'ActivityContentTaskAssigneeAssignment';
+  companyId: Scalars['String']['output'];
+  personId: Scalars['String']['output'];
+  spaceId: Scalars['String']['output'];
+  taskId: Scalars['String']['output'];
+};
+
 export type ActivityContentTaskClosing = {
   __typename?: 'ActivityContentTaskClosing';
   companyId: Scalars['String']['output'];
@@ -327,6 +335,20 @@ export type ActivityContentTaskSizeChange = {
   taskId: Scalars['String']['output'];
 };
 
+export type ActivityContentTaskStatusChange = {
+  __typename?: 'ActivityContentTaskStatusChange';
+  companyId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  taskId: Scalars['String']['output'];
+};
+
+export type ActivityContentTaskUpdate = {
+  __typename?: 'ActivityContentTaskUpdate';
+  companyId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  taskId: Scalars['String']['output'];
+};
+
 export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;
 
 export type ActivityEventDataCommentPost = {
@@ -359,6 +381,11 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
+export type AssignPersonToTaskInput = {
+  personId: Scalars['String']['input'];
+  taskId: Scalars['String']['input'];
+};
+
 export type Assignment = {
   __typename?: 'Assignment';
   due: Scalars['Date']['output'];
@@ -384,6 +411,11 @@ export type Blob = {
 
 export type BlobInput = {
   filename: Scalars['String']['input'];
+};
+
+export type ChangeTaskDescriptionInput = {
+  description: Scalars['String']['input'];
+  taskId: Scalars['String']['input'];
 };
 
 export type ChangeTaskPriorityInput = {
@@ -503,13 +535,10 @@ export type CreateTargetInput = {
 };
 
 export type CreateTaskInput = {
-  assigneeId: Scalars['ID']['input'];
+  assigneeIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description?: InputMaybe<Scalars['String']['input']>;
-  dueDate?: InputMaybe<Scalars['NaiveDateTime']['input']>;
+  milestoneId?: InputMaybe<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
-  priority?: InputMaybe<Scalars['String']['input']>;
-  size?: InputMaybe<Scalars['String']['input']>;
-  spaceId: Scalars['ID']['input'];
 };
 
 export type CreateUpdateInput = {
@@ -696,6 +725,7 @@ export type Milestone = {
   id: Scalars['ID']['output'];
   insertedAt?: Maybe<Scalars['Date']['output']>;
   status: Scalars['String']['output'];
+  tasksKanbanState: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
 
@@ -940,6 +970,8 @@ export type RootMutationType = {
   addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
+  assignPersonToTask: Task;
+  changeTaskDescription: Task;
   changeTaskPriority: Task;
   changeTaskSize: Task;
   closeProject: Project;
@@ -994,13 +1026,15 @@ export type RootMutationType = {
   updateAppearance?: Maybe<Person>;
   updateDashboard: Dashboard;
   updateGroupAppearance: Group;
+  updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
   updateNotificationSettings?: Maybe<Person>;
   updateProfile?: Maybe<Person>;
   updateProjectContributor: ProjectContributor;
   updateProjectDescription: Project;
-  updateProjectMilestone: Milestone;
+  updateTask: Task;
+  updateTaskStatus: Task;
 };
 
 
@@ -1071,6 +1105,16 @@ export type RootMutationTypeArchiveGoalArgs = {
 
 export type RootMutationTypeArchiveProjectArgs = {
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeAssignPersonToTaskArgs = {
+  input: AssignPersonToTaskInput;
+};
+
+
+export type RootMutationTypeChangeTaskDescriptionArgs = {
+  input: ChangeTaskDescriptionInput;
 };
 
 
@@ -1356,6 +1400,11 @@ export type RootMutationTypeUpdateGroupAppearanceArgs = {
 };
 
 
+export type RootMutationTypeUpdateMilestoneArgs = {
+  input: UpdateMilestoneInput;
+};
+
+
 export type RootMutationTypeUpdateMilestoneDescriptionArgs = {
   input: UpdateMilestoneDescriptionInput;
 };
@@ -1389,10 +1438,13 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 };
 
 
-export type RootMutationTypeUpdateProjectMilestoneArgs = {
-  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
-  milestoneId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
+export type RootMutationTypeUpdateTaskArgs = {
+  input: UpdateTaskInput;
+};
+
+
+export type RootMutationTypeUpdateTaskStatusArgs = {
+  input: UpdateTaskStatusInput;
 };
 
 export type RootQueryType = {
@@ -1549,6 +1601,7 @@ export type RootQueryTypeProjectsArgs = {
 
 
 export type RootQueryTypeSearchPeopleArgs = {
+  ignoredIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   query: Scalars['String']['input'];
 };
 
@@ -1559,7 +1612,7 @@ export type RootQueryTypeTaskArgs = {
 
 
 export type RootQueryTypeTasksArgs = {
-  spaceId?: InputMaybe<Scalars['ID']['input']>;
+  milestoneId: Scalars['String']['input'];
   status?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1596,16 +1649,17 @@ export type Target = {
 
 export type Task = {
   __typename?: 'Task';
-  assignee?: Maybe<Person>;
+  assignees?: Maybe<Array<Person>>;
   creator: Person;
   description?: Maybe<Scalars['String']['output']>;
-  dueDate: Scalars['Date']['output'];
+  dueDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
+  milestone: Milestone;
   name: Scalars['String']['output'];
-  priority: Scalars['String']['output'];
-  size: Scalars['String']['output'];
-  space: Group;
+  priority?: Maybe<Scalars['String']['output']>;
+  project: Project;
+  size?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
 };
@@ -1757,6 +1811,12 @@ export type UpdateMilestoneDescriptionInput = {
   id: Scalars['ID']['input'];
 };
 
+export type UpdateMilestoneInput = {
+  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
+  milestoneId: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type UpdateMilestoneTitleInput = {
   id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
@@ -1781,6 +1841,18 @@ export type UpdateTargetInput = {
   name: Scalars['String']['input'];
   to: Scalars['Float']['input'];
   unit: Scalars['String']['input'];
+};
+
+export type UpdateTaskInput = {
+  assignedIds: Array<InputMaybe<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
+  taskId: Scalars['String']['input'];
+};
+
+export type UpdateTaskStatusInput = {
+  columnIndex: Scalars['Int']['input'];
+  status: Scalars['String']['input'];
+  taskId: Scalars['String']['input'];
 };
 
 export type UpdatesFilter = {

@@ -34,12 +34,15 @@ import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
 import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
+import TaskAssigneeAssignment from "./TaskAssigneeAssignment"
 import TaskClosing from "./TaskClosing"
 import TaskDescriptionChange from "./TaskDescriptionChange"
 import TaskNameEditing from "./TaskNameEditing"
 import TaskPriorityChange from "./TaskPriorityChange"
 import TaskReopening from "./TaskReopening"
 import TaskSizeChange from "./TaskSizeChange"
+import TaskStatusChange from "./TaskStatusChange"
+import TaskUpdate from "./TaskUpdate"
 
 export default function NotificationItem({notification}) {
   const activityType = notification.activity.content.__typename;
@@ -132,6 +135,9 @@ export default function NotificationItem({notification}) {
     case "ActivityContentTaskAdding":
       return <TaskAdding notification={notification} />;
     
+    case "ActivityContentTaskAssigneeAssignment":
+      return <TaskAssigneeAssignment notification={notification} />;
+    
     case "ActivityContentTaskClosing":
       return <TaskClosing notification={notification} />;
     
@@ -149,6 +155,12 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentTaskSizeChange":
       return <TaskSizeChange notification={notification} />;
+    
+    case "ActivityContentTaskStatusChange":
+      return <TaskStatusChange notification={notification} />;
+    
+    case "ActivityContentTaskUpdate":
+      return <TaskUpdate notification={notification} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";

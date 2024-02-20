@@ -79,8 +79,8 @@ setup:
 	$(MAKE) dev.setup
 
 migrate:
-	$(MAKE) dev.db.migrate
-	$(MAKE) test.db.migrate
+	@$(MAKE) dev.db.migrate
+	@$(MAKE) test.db.migrate
 
 dev.setup:
 	$(DEV_CONTAINER) mix deps.get
@@ -138,7 +138,7 @@ dev.db.create:
 	$(DEV_CONTAINER) mix ecto.create
 
 dev.db.migrate:
-	$(DEV_CONTAINER) mix ecto.migrate
+	@./devenv bash -c "MIX_ENV=dev mix ecto.migrate"
 
 dev.db.rollback:
 	$(DEV_CONTAINER) mix ecto.rollback
@@ -192,7 +192,7 @@ test.npm: test.init
 	./devenv bash -c "cd assets && npm test"
 
 test.db.migrate:
-	./devenv mix ecto.migrate
+	./devenv bash -c "MIX_ENV=test mix ecto.migrate"
 
 test.watch: test.init
 	./devenv mix test.watch $(FILE)

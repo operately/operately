@@ -1,25 +1,28 @@
 import * as Tasks from "@/models/tasks";
 
-import { SizeState, useSizeState } from "./useSizeState";
-import { PriorityState, usePriorityState } from "./usePriorityState";
-import { StatusState, useStatusState } from "./useStatusState";
-import { DescriptionState, useDescriptionState } from "./useDescriptionState";
-import { NameState, useNameState } from "./useNameState";
+import { Fields, useFields } from "./fields";
+import { StatusActions, useStatusActions } from "./useStatusActions";
+import { HeaderFormState, useHeaderForm } from "./useHeaderForm";
+import { DescriptionFormState, useDescriptionState } from "./useDescriptionForm";
 
 export interface FormState {
-  name: NameState;
-  status: StatusState;
-  priority: PriorityState;
-  size: SizeState;
-  description: DescriptionState;
+  fields: Fields;
+
+  headerForm: HeaderFormState;
+  descriptionForm: DescriptionFormState;
+  statusActions: StatusActions;
 }
 
 export function useForm(task: Tasks.Task): FormState {
+  const fields = useFields(task);
+  const headerForm = useHeaderForm(fields);
+  const statusActions = useStatusActions(fields);
+  const descriptionForm = useDescriptionState(fields);
+
   return {
-    name: useNameState(task),
-    status: useStatusState(task),
-    priority: usePriorityState(task),
-    size: useSizeState(task),
-    description: useDescriptionState(task),
+    fields,
+    headerForm,
+    statusActions,
+    descriptionForm,
   };
 }

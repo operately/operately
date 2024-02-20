@@ -12,7 +12,6 @@ defmodule Operately.Operations.TaskDescriptionChange do
     |> Activities.insert(author.id, :task_description_change, fn _changes ->
       %{
         company_id: author.company_id,
-        space_id: task.space_id,
         task_id: task.id,
       }
     end)

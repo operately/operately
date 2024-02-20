@@ -12,6 +12,7 @@ defmodule Operately.Projects.Milestone do
     field :completed_at, :naive_datetime
 
     field :description, :map
+    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
     timestamps()
     soft_delete()
@@ -23,7 +24,7 @@ defmodule Operately.Projects.Milestone do
 
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description])
-    |> validate_required([:title])
+    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state])
+    |> validate_required([:title, :tasks_kanban_state, :project_id])
   end
 end

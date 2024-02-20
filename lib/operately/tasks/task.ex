@@ -3,8 +3,9 @@ defmodule Operately.Tasks.Task do
 
   schema "tasks" do
     belongs_to :creator, Operately.People.Person
-    belongs_to :assignee, Operately.People.Person
-    belongs_to :space, Operately.Groups.Group
+    belongs_to :milestone, Operately.Projects.Milestone
+
+    has_many :assignees, Operately.Tasks.Assignee
 
     field :name, :string
     field :priority, :string
@@ -12,7 +13,7 @@ defmodule Operately.Tasks.Task do
     field :description, :map
     field :due_date, :naive_datetime
 
-    field :status, Ecto.Enum, values: [:open, :closed], default: :open
+    field :status, :string, default: "todo" 
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
 
@@ -25,7 +26,7 @@ defmodule Operately.Tasks.Task do
 
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id, :status, :closed_at, :reopened_at])
-    |> validate_required([:name, :due_date, :description, :size, :priority, :creator_id, :assignee_id, :space_id])
+    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :status, :closed_at, :reopened_at, :milestone_id])
+    |> validate_required([:name, :description, :creator_id, :milestone_id])
   end
 end

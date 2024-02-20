@@ -21,4 +21,18 @@ defmodule Operately.TasksFixtures do
 
     task
   end
+
+  @doc """
+  Generate a assignee.
+  """
+  def assignee_fixture(attrs \\ %{}) do
+    {:ok, assignee} =
+      attrs
+      |> Enum.into(%{
+
+      })
+      |> Operately.Tasks.create_assignee()
+
+    assignee
+  end
 end

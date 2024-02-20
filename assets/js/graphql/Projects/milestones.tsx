@@ -15,6 +15,8 @@ export const FRAGMENT = `
     description
     insertedAt  
 
+    tasksKanbanState
+
     comments {
       id
       action
@@ -87,6 +89,13 @@ export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) 
   });
 }
 
+export function daysOverdue(milestone: Milestone) {
+  let deadline = +new Date(milestone.deadlineAt);
+  let now = +Time.today();
+
+  return Math.ceil((now - deadline) / (1000 * 60 * 60 * 24));
+}
+
 export function isOverdue(milestone: Milestone) {
   let deadline = +new Date(milestone.deadlineAt);
   let now = +Time.today();
@@ -156,14 +165,14 @@ export function usePostComment(options = {}) {
   return useMutation(POST_MILESTONE_COMMENT, options);
 }
 
-const UPDATE_MILESTONE_TITLE = gql`
-  mutation UpdateMilestoneTitle($input: UpdateMilestoneTitleInput!) {
-    updateMilestoneTitle(input: $input) {
+const UPDATE_MILESTONE = gql`
+  mutation UpdateMilestone($input: UpdateMilestoneInput!) {
+    updateMilestone(input: $input) {
       id
     }
   }
 `;
 
-export function useUpdateTitle(options = {}) {
-  return useMutation(UPDATE_MILESTONE_TITLE, options);
+export function useUpdateMilestone(options = {}) {
+  return useMutation(UPDATE_MILESTONE, options);
 }
