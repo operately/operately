@@ -161,9 +161,9 @@ function TaskBoard({ tasks, kanbanState }: { tasks: Tasks.Task[]; kanbanState: a
 
   React.useEffect(() => {
     setTaskBoardState({
-      todoTasks: tasks.filter((t) => t.status === "todo"),
-      inProgressTasks: tasks.filter((t) => t.status === "in_progress"),
-      doneTasks: tasks.filter((t) => t.status === "done"),
+      todoTasks: orderTasksByKanbanState(tasks, kanbanState, "todo"),
+      inProgressTasks: orderTasksByKanbanState(tasks, kanbanState, "in_progress"),
+      doneTasks: orderTasksByKanbanState(tasks, kanbanState, "done"),
     });
   }, [tasks]);
 
@@ -313,7 +313,9 @@ function TaskItem({ task, zoneId, style }: { task: Tasks.Task; zoneId: string; s
           className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
           to={`/tasks/${task.id}`}
         >
-          <div className="font-medium">{task.name}</div>
+          <div className="font-medium">
+            {task.id[0]} - {task.name}
+          </div>
 
           <div className="text-sm text-content-dimmed flex items-center -space-x-2">
             {task.assignees!.map((a) => (

@@ -66,15 +66,9 @@ defmodule Operately.Operations.TaskStatusChange do
 
   def update_kanban_state(multi, old_status, new_status, column_index) do
     Multi.update(multi, :updated_milestone, fn changes ->
-      IO.inspect(changes.milestone.tasks_kanban_state)
-
       kanban_state = KanbanState.load(changes.milestone.tasks_kanban_state)
-      IO.inspect(kanban_state)
       kanban_state = KanbanState.remove(kanban_state, changes.task.id, old_status)
-      IO.inspect(kanban_state)
       kanban_state = KanbanState.add(kanban_state, changes.task.id, new_status, column_index)
-
-      IO.inspect(kanban_state)
 
       Operately.Projects.Milestone.changeset(changes.milestone, %{tasks_kanban_state: kanban_state})
     end)
