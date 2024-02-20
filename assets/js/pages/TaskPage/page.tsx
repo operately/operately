@@ -3,19 +3,15 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Tasks from "@/models/tasks";
 import * as Forms from "@/components/Form";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as Icons from "@tabler/icons-react";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/graphql/People";
 
 import RichContent from "@/components/RichContent";
-import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import { FilledButton } from "@/components/Button";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
-
-import { OpenBadge, ClosedBadge, PriorityBadge, SizeBadge } from "@/features/Tasks/Badges";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -24,53 +20,20 @@ export function Page() {
 
   return (
     <Pages.Page title={[task.name]}>
-      <Paper.Root size="large">
+      <Paper.Root size="medium">
         <Navigation task={task} />
 
         <Paper.Body noPadding>
-          <div className="flex items-start justify-between border-b border-surface-outline px-10 pt-6 pb-4">
-            <Name form={form} />
+          <Header form={form} />
+
+          <div className="flex justify-center">
             <TopActions form={form} />
           </div>
 
-          <div className="flex gap-4 justify-between">
-            <div className="w-2/3 pl-10 py-4">
-              <div className="font-medium">
-                <Description form={form} />
-              </div>
-            </div>
-
-            <div className="w-1/3 flex flex-col border-l border-surface-outline">
-              <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Assignees</div>
-                <AssignedPeople form={form} />
-              </div>
-
-              <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Status</div>
-                <div className="flex items-center gap-2 mt-1">
-                  {form.status.status === "open" ? <OpenBadge /> : <ClosedBadge />}
-                </div>
-              </div>
-
-              <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Due Date</div>
-                <div className="forn-medium mt-1">
-                  <FormattedTime time={task.dueDate} format="short-date" />
-                </div>
-              </div>
-
-              <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Priority</div>
-                <Priority form={form} />
-              </div>
-
-              <div className="p-3 border-b border-stroke-base">
-                <div className="uppercase font-medium text-xs text-content-dimmed">Size</div>
-                <Size form={form} />
-              </div>
-            </div>
-          </div>
+          <PageSection title="Description" color="bg-yellow-300">
+            <EditDescription form={form} color="bg-yellow-300" />
+          </PageSection>
+          <Description form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -78,24 +41,27 @@ export function Page() {
 }
 
 export function Navigation({ task }: { task: Tasks.Task }) {
+  const projectPath = `/projects/${task.project.id}`;
+  const milestonePath = `/projects/${task.project.id}/milestones/${task.milestone.id}`;
+
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${task.project.id}/milestones/${task.milestone.id}`}>
-        {task.milestone.title}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={projectPath}>{task.project.name}</Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={milestonePath}>{task.milestone.title}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
 
-function Name({ form }: { form: FormState }) {
+function Header({ form }: { form: FormState }) {
   if (form.name.editing) {
-    return <NameEditor form={form} />;
+    return <HeaderEditor form={form} />;
   } else {
-    return <NameDisplay form={form} />;
+    return <HeaderDisplay form={form} />;
   }
 }
 
-function NameEditor({ form }: { form: FormState }) {
+function HeaderEditor({ form }: { form: FormState }) {
   return (
     <div className="flex-1 flex items-center gap-2">
       <Forms.TextInputNoLabel
@@ -119,8 +85,13 @@ function NameEditor({ form }: { form: FormState }) {
   );
 }
 
-function NameDisplay({ form }: { form: FormState }) {
-  return <div className="font-bold text-2xl break-all pr-2">{form.name.name}</div>;
+function HeaderDisplay({ form }: { form: FormState }) {
+  return (
+    <div className="flex flex-col items-center justify-center mb-4 my-8">
+      <div className="text-3xl font-extrabold text-content-accent text-center mt-4 mb-2">{form.name.name}</div>
+      <AssignedPeopleList form={form} />
+    </div>
+  );
 }
 
 function TopActions({ form }: { form: FormState }) {
@@ -128,18 +99,18 @@ function TopActions({ form }: { form: FormState }) {
 
   return (
     <div className="flex gap-2 items-center shrink-0">
-      <FilledButton size="xs" type="secondary" onClick={() => form.name.setEditing(true)}>
+      {form.status.status === "open" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
+
+      <FilledButton size="sm" type="secondary" onClick={() => form.name.setEditing(true)}>
         Edit
       </FilledButton>
-
-      {form.status.status === "open" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
     </div>
   );
 }
 
 function MarkAsDoneButton({ form }: { form: FormState }) {
   return (
-    <FilledButton size="xs" type="primary" onClick={form.status.close}>
+    <FilledButton size="sm" type="primary" onClick={form.status.close}>
       Mark as Done
     </FilledButton>
   );
@@ -147,96 +118,9 @@ function MarkAsDoneButton({ form }: { form: FormState }) {
 
 function ReopenButton({ form }: { form: FormState }) {
   return (
-    <FilledButton size="xs" type="primary" onClick={form.status.reopen}>
+    <FilledButton size="sm" type="primary" onClick={form.status.reopen}>
       Reopen
     </FilledButton>
-  );
-}
-
-function Priority({ form }: { form: FormState }) {
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <PriorityBadge priority={form.priority.priority} />
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="bg-surface border border-surface-outline shadow rounded-lg flex flex-col justify-start items-start"
-          sideOffset={5}
-        >
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.priority.change("low")}
-          >
-            <PriorityBadge priority="low" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.priority.change("medium")}
-          >
-            <PriorityBadge priority="medium" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.priority.change("high")}
-          >
-            <PriorityBadge priority="high" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.priority.change("urgent")}
-          >
-            <PriorityBadge priority="urgent" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Arrow className="fill-white" />
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-  );
-}
-
-function Size({ form }: { form: FormState }) {
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <SizeBadge size={form.size.size} />
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="bg-surface border border-surface-outline shadow rounded-lg flex flex-col justify-start items-start"
-          sideOffset={5}
-        >
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.size.change("small")}
-          >
-            <SizeBadge size="small" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.size.change("medium")}
-          >
-            <SizeBadge size="medium" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-            onClick={() => form.size.change("large")}
-          >
-            <SizeBadge size="large" />
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Arrow className="fill-white" />
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
   );
 }
 
@@ -250,9 +134,7 @@ function Description({ form }: { form: FormState }) {
 
 function DescriptionEditor({ form }: { form: FormState }) {
   return (
-    <div>
-      <div className="uppercase font-medium text-xs text-content-dimmed mb-2">Description</div>
-
+    <div className="mx-10 mb-8">
       <TipTapEditor.Root editor={form.description.editor}>
         <div className="border-x border-b border-stroke-base flex-1">
           <TipTapEditor.Toolbar editor={form.description.editor} />
@@ -260,11 +142,11 @@ function DescriptionEditor({ form }: { form: FormState }) {
         </div>
 
         <div className="flex gap-2 mt-2 justify-end">
-          <FilledButton size="xxs" type="secondary" onClick={form.description.cancel}>
+          <FilledButton size="xs" type="secondary" onClick={form.description.cancel}>
             Cancel
           </FilledButton>
 
-          <FilledButton size="xxs" type="primary" onClick={form.description.submit}>
+          <FilledButton size="xs" type="primary" onClick={form.description.submit}>
             Save
           </FilledButton>
         </div>
@@ -275,75 +157,55 @@ function DescriptionEditor({ form }: { form: FormState }) {
 
 function DescriptionDisplay({ form }: { form: FormState }) {
   return (
-    <div>
-      <div className="flex items-center gap-2">
-        <div className="uppercase font-medium text-xs text-content-dimmed">Description</div>
-        <FilledButton size="xxs" type="secondary" onClick={() => form.description.setEditing(true)}>
-          Edit
-        </FilledButton>
-      </div>
+    <div className="mx-10">
       <RichContent jsonContent={form.description.description!} />
     </div>
   );
 }
 
-function AssignedPeople({ form }: { form: FormState }) {
+function AssignedPeopleList({ form }: { form: FormState }) {
   return (
     <div>
       {form.assignedPeople.people.length === 0 ? (
         <div className="text-content-dimmed text-sm mt-0.5">No one</div>
       ) : (
         form.assignedPeople.people.map((person) => (
-          <div className="flex items-center gap-2 mt-1" key={person.id}>
-            <Avatar person={person} size={20} />
-            <div className="forn-medium">{person.fullName}</div>
+          <div className="flex items-center gap-1" key={person.id}>
+            <Avatar person={person} size={32} />
           </div>
         ))
       )}
-
-      <div className="flex items-center gap-2 mt-2">
-        <AddPersonDropdown form={form} />
-      </div>
     </div>
   );
 }
 
-function AddPersonDropdown({ form }: { form: FormState }) {
-  const search = People.usePeopleSearch();
-  const [candidates, setCandidates] = React.useState<People.Person[]>([]);
-
-  React.useEffect(() => {
-    search("").then((people) => {
-      setCandidates(people);
-    });
-  }, []);
+function PageSection({ title, color, children = null }: { title: string; color: string; children?: React.ReactNode }) {
+  const textColor = "text-dark-1";
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <FilledButton size="xxs" type="secondary">
-          Add
-        </FilledButton>
-      </DropdownMenu.Trigger>
+    <div className="mt-8 mb-4 flex items-center">
+      <div className="border-t border-surface-outline w-10" />
+      <div className={"text-sm font-bold rounded px-1.5 tracking-wide" + " " + color + " " + textColor}>{title}</div>
+      {children}
+      <div className="border-t border-surface-outline flex-1" />
+    </div>
+  );
+}
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="bg-surface border border-surface-outline shadow rounded-lg flex flex-col justify-start items-start"
-          sideOffset={5}
-        >
-          {candidates.map((person) => (
-            <DropdownMenu.Item
-              key={person.id}
-              className="px-2 py-1 border-b border-stroke-base w-full cursor-pointer hover:bg-surface-highlight"
-              onClick={() => form.assignedPeople.add(person)}
-            >
-              {person.fullName}
-            </DropdownMenu.Item>
-          ))}
+function EditDescription({ form, color }) {
+  const textColor = "text-dark-1";
 
-          <DropdownMenu.Arrow className="fill-white" />
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+  return (
+    <>
+      <div className="border-t border-surface-outline w-2" />
+      <div
+        className={
+          "text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer" + " " + color + " " + textColor
+        }
+        onClick={() => form.description.setEditing(true)}
+      >
+        <Icons.IconPencil size={12} />
+      </div>
+    </>
   );
 }
