@@ -3,19 +3,19 @@ import * as Tasks from "@/models/tasks";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
 
-export interface DescriptionState {
-  description: string | null;
+import { Fields } from "./fields";
+
+export interface DescriptionFormState {
   editing: boolean;
 
   editor: TipTapEditor.Editor | null;
-  setEditing: (editing: boolean) => void;
+  startEditing: () => void;
 
   cancel: () => void;
   submit: () => Promise<boolean>;
 }
 
-export function useDescriptionState(task: Tasks.Task): DescriptionState {
-  const [description, setDescription] = React.useState(task.description!);
+export function useDescriptionState(fields: Fields): DescriptionFormState {
   const [editing, setEditing] = React.useState(false);
 
   const { editor } = TipTapEditor.useEditor({
@@ -23,7 +23,7 @@ export function useDescriptionState(task: Tasks.Task): DescriptionState {
     placeholder: "Write here...",
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] p-2 py-1",
-    content: task.description && JSON.parse(task.description),
+    content: fields.description && JSON.parse(fields.description),
   });
 
   const [editName] = Tasks.useChangeTaskDescriptionMutation({
@@ -35,16 +35,18 @@ export function useDescriptionState(task: Tasks.Task): DescriptionState {
   const submit = React.useCallback(async () => {
     if (!editor) return false;
 
+    const content = JSON.stringify(editor.getJSON());
+
     await editName({
       variables: {
         input: {
-          taskId: task.id,
-          description: JSON.stringify(editor.getJSON()),
+          taskId: fields.taskID,
+          description: content,
         },
       },
     });
 
-    setDescription(JSON.stringify(editor.getJSON()));
+    fields.setDescription(content);
 
     return true;
   }, [editor]);
@@ -53,11 +55,15 @@ export function useDescriptionState(task: Tasks.Task): DescriptionState {
     setEditing(false);
   }, []);
 
+  const startEditing = React.useCallback(() => {
+    setEditing(true);
+  }, []);
+
   return {
-    description,
     editing,
+    startEditing,
+
     editor,
-    setEditing,
 
     submit,
     cancel,

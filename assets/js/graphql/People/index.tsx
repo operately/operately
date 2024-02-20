@@ -13,8 +13,8 @@ export { Person } from "@/gql";
 import { Person } from "@/gql";
 
 const SEARCH_PEOPLE = gql`
-  query SearchPeople($query: String!) {
-    searchPeople(query: $query) {
+  query SearchPeople($query: String!, $ignoredIds: [ID!]) {
+    searchPeople(query: $query, ignoredIds: $ignoredIds) {
       id
       fullName
       title
@@ -34,7 +34,7 @@ export function usePeopleSearch() {
   //
   // This is a bit of a hack to make it work with both.
   //
-  return async (arg: string | { query: string; ignoredPeopleIds?: string[] }): Promise<Person[]> => {
+  return async (arg: string | { query: string; ignoredIds?: string[] }): Promise<Person[]> => {
     let query = "";
     let ignoredIds: string[] = [];
 
@@ -43,7 +43,7 @@ export function usePeopleSearch() {
       ignoredIds = [];
     } else {
       query = arg.query;
-      ignoredIds = arg.ignoredPeopleIds || [];
+      ignoredIds = arg.ignoredIds || [];
     }
 
     const res = await client.query({

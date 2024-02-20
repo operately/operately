@@ -28,10 +28,10 @@ defmodule OperatelyWeb.Graphql.Queries.People do
 
     field :search_people, list_of(:person) do
       arg :query, non_null(:string)
-      arg :ignore_ids, list_of(:string)
+      arg :ignored_ids, list_of(non_null(:id))
 
       resolve fn args, _ ->
-        people = Operately.People.search_people(args.query, args[:ignore_ids] || [])
+        people = Operately.People.search_people(args.query, args[:ignored_ids] || [])
 
         {:ok, people}
       end

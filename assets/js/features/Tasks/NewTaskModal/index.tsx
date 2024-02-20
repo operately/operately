@@ -131,7 +131,11 @@ function Form({ form }: { form: ReturnType<typeof useForm> }) {
 
         <div className="flex items-center gap-4">
           <div className="font-bold w-24 shrink-0">Assignees</div>
-          <MultiPeopleSearch addedPeople={form.fields.assignees} setAddedPeople={form.fields.setAssignees} />
+          <MultiPeopleSearch
+            visuals="minimal"
+            addedPeople={form.fields.assignees}
+            setAddedPeople={form.fields.setAssignees}
+          />
         </div>
       </div>
 

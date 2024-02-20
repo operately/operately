@@ -45,8 +45,9 @@ defmodule Operately.Tasks do
     Repo.one(query) != nil
   end
 
-  def list_task_assignees do
-    Repo.all(Assignee)
+  def list_task_assignees(task) do
+    query = from(a in Assignee, where: a.task_id == ^task.id)
+    Repo.all(query)
   end
 
   def get_assignee!(id), do: Repo.get!(Assignee, id)
