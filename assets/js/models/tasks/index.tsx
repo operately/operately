@@ -1,4 +1,5 @@
 export { Task } from "@/gql";
+export { useUpdateTaskStatusMutation } from './useUpdateTaskStatusMutation';
 
 export { getTask } from "./getTask";
 export { getTasks, useTasks } from "./getTasks";
