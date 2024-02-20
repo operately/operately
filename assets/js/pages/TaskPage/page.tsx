@@ -93,10 +93,23 @@ function HeaderEditor({ form }: { form: FormState }) {
 function HeaderDisplay({ form }: { form: FormState }) {
   return (
     <div className="flex flex-col items-center justify-center mb-4 my-8 mx-10">
+      <HeaderIcon form={form} />
       <div className="text-3xl font-extrabold text-content-accent text-center mt-4 mb-2">{form.name.name}</div>
       <AssignedPeopleList form={form} />
     </div>
   );
+}
+
+function HeaderIcon({ form }: { form: FormState }) {
+  if (form.status.status === "done") {
+    return (
+      <div className="">
+        <Icons.IconChecks size={48} className="text-accent-1" />
+      </div>
+    );
+  } else {
+    return null;
+  }
 }
 
 function TopActions({ form }: { form: FormState }) {

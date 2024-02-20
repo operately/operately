@@ -12,11 +12,11 @@ export function useStatusState(task: Tasks.Task): StatusState {
   const [status, setStatus] = React.useState(task.status);
 
   const [closeTask] = Tasks.useCloseTaskMutation({
-    onCompleted: () => setStatus("closed"),
+    onCompleted: () => setStatus("done"),
   });
 
   const [reopenTask] = Tasks.useReopenTaskMutation({
-    onCompleted: () => setStatus("open"),
+    onCompleted: () => setStatus("todo"),
   });
 
   return {
