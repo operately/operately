@@ -20,6 +20,12 @@ defmodule OperatelyWeb.Graphql.Types.Milestones do
         {:ok, Operately.Comments.list_milestone_comments(milestone.id)}
       end
     end
+
+    field :tasks_kanban_state, non_null(:string) do
+      resolve fn milestone, _, _ ->
+        {:ok, Jason.encode!(milestone.tasks_kanban_state)}
+      end
+    end
   end
 
   object :milestone_comment do

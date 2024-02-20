@@ -43,7 +43,7 @@ defmodule Operately.Operations.TaskClosing do
     Multi.update(multi, :updated_milestone, fn changes ->
       kanban_state = KanbanState.load(changes.milestone.tasks_kanban_state)
       kanban_state = KanbanState.remove(kanban_state, changes.task.id, original_status)
-      kanban_state = KanbanState.add(kanban_state, changes.task.id, changes.task.status)
+      kanban_state = KanbanState.add(kanban_state, changes.task.id, changes.task.status, 0)
 
       Operately.Projects.Milestone.changeset(changes.milestone, %{tasks_kanban_state: kanban_state})
     end)

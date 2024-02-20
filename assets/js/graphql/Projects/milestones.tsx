@@ -15,6 +15,8 @@ export const FRAGMENT = `
     description
     insertedAt  
 
+    tasksKanbanState
+
     comments {
       id
       action

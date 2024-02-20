@@ -1,14 +1,13 @@
 defmodule Operately.Tasks.KanbanState do
 
   def load(nil), do: initialize()
-  def load(%{}), do: initialize()
   def load(map), do: map
 
   def initialize do
     %{
-      todo: [],
-      in_progress: [],
-      done: [],
+      "todo" => [],
+      "in_progress" => [],
+      "done" => []
     }
   end
 
@@ -17,13 +16,11 @@ defmodule Operately.Tasks.KanbanState do
   end
 
   def add(kanban_state, task_id, status, column_index) do
-    column = String.to_atom(status)
-    kanban_state |> Map.update!(column, &List.insert_at(&1, column_index, task_id))
+    kanban_state |> Map.update!(status, &List.insert_at(&1, column_index, task_id))
   end
 
   def remove(kanban_state, task_id, status) do
-    column = String.to_atom(status)
-    kanban_state |> Map.update!(column, &List.delete(&1, task_id))
+    kanban_state |> Map.update!(status, &List.delete(&1, task_id))
   end
 
 end

@@ -125,7 +125,7 @@ function TaskSection({ milestone }) {
         milestone={milestone}
       />
 
-      {!loading && !error && <TaskBoard tasks={data.tasks} />}
+      {!loading && !error && <TaskBoard tasks={data.tasks} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
     </div>
   );
 }
@@ -139,13 +139,24 @@ interface TaskBoardState {
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
 
-function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
+function orderTasksByKanbanState(tasks: Tasks.Task[], kanbanState: any, status: string): Tasks.Task[] {
+  return tasks
+    .filter((t) => t.status === status)
+    .sort((a, b) => {
+      const aIndex = kanbanState[status].findIndex((id: string) => id === a.id) || 0;
+      const bIndex = kanbanState[status].findIndex((id: string) => id === b.id) || 0;
+
+      return aIndex - bIndex;
+    });
+}
+
+function TaskBoard({ tasks, kanbanState }: { tasks: Tasks.Task[]; kanbanState: any }) {
   if (tasks.length === 0) return null;
 
   const [taskBoardState, setTaskBoardState] = React.useState<TaskBoardState>({
-    todoTasks: tasks.filter((t) => t.status === "todo"),
-    inProgressTasks: tasks.filter((t) => t.status === "in_progress"),
-    doneTasks: tasks.filter((t) => t.status === "done"),
+    todoTasks: orderTasksByKanbanState(tasks, kanbanState, "todo"),
+    inProgressTasks: orderTasksByKanbanState(tasks, kanbanState, "in_progress"),
+    doneTasks: orderTasksByKanbanState(tasks, kanbanState, "done"),
   });
 
   React.useEffect(() => {

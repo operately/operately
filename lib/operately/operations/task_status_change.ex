@@ -38,25 +38,25 @@ defmodule Operately.Operations.TaskStatusChange do
   end
 
   def update_task_status(multi, task, new_status) do
-    Multi.update(multi, :task, fn _changes ->
+    Multi.run(multi, :task, fn repo, _changes ->
       cond do
         new_status == task.status ->
           {:ok, task}
 
         new_status == "done" ->
-          Task.changeset(task, %{status: new_status, closed_at: DateTime.utc_now()})
+          Task.changeset(task, %{status: new_status, closed_at: DateTime.utc_now()}) |> repo.update()
 
         new_status == "in_progress" && task.status == "done" ->
-          Task.changeset(task, %{status: new_status, reopened_at: DateTime.utc_now()})
+          Task.changeset(task, %{status: new_status, reopened_at: DateTime.utc_now()}) |> repo.update()
 
         new_status == "in_progress" && task.status == "todo" ->
-          Task.changeset(task, %{status: new_status})
+          Task.changeset(task, %{status: new_status}) |> repo.update()
 
         new_status == "todo" && task.status == "in_progress" ->
-          Task.changeset(task, %{status: new_status})
+          Task.changeset(task, %{status: new_status}) |> repo.update()
 
         new_status == "todo" && task.status == "done" ->
-          Task.changeset(task, %{status: new_status, reopened_at: DateTime.utc_now()})
+          Task.changeset(task, %{status: new_status, reopened_at: DateTime.utc_now()}) |> repo.update()
 
         true ->
           {:error, :invalid_status_transition, "Invalid status transition from #{task.status} to #{new_status}"}
@@ -66,9 +66,15 @@ defmodule Operately.Operations.TaskStatusChange do
 
   def update_kanban_state(multi, old_status, new_status, column_index) do
     Multi.update(multi, :updated_milestone, fn changes ->
+      IO.inspect(changes.milestone.tasks_kanban_state)
+
       kanban_state = KanbanState.load(changes.milestone.tasks_kanban_state)
+      IO.inspect(kanban_state)
       kanban_state = KanbanState.remove(kanban_state, changes.task.id, old_status)
+      IO.inspect(kanban_state)
       kanban_state = KanbanState.add(kanban_state, changes.task.id, new_status, column_index)
+
+      IO.inspect(kanban_state)
 
       Operately.Projects.Milestone.changeset(changes.milestone, %{tasks_kanban_state: kanban_state})
     end)
