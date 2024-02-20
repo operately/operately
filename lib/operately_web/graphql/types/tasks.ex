@@ -13,15 +13,25 @@ defmodule OperatelyWeb.Graphql.Types.Tasks do
     field :priority, :string
     field :status, non_null(:string)
 
-    field :description, :string do
+    field :milestone, non_null(:milestone) do
       resolve fn task, _, _ ->
-        {:ok, task.description && Jason.encode!(task.description)}
+        milestone = Operately.Repo.preload(task, :milestone).milestone
+
+        {:ok, milestone}
       end
     end
 
-    field :space, non_null(:group) do
+    field :project, non_null(:project) do
       resolve fn task, _, _ ->
-        {:ok, Operately.Groups.get_group!(task.space_id)}
+        project = Operately.Repo.preload(task, [milestone: :project]).milestone.project
+
+        {:ok, project}
+      end
+    end
+
+    field :description, :string do
+      resolve fn task, _, _ ->
+        {:ok, task.description && Jason.encode!(task.description)}
       end
     end
 

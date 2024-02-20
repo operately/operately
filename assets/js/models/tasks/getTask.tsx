@@ -2,8 +2,9 @@ import client from "@/graphql/client";
 import { gql } from "@apollo/client";
 
 interface GetTaskOptions {
-  includeSpace?: boolean;
   includeAssignees?: boolean;
+  includeMilestone?: boolean;
+  includeProject?: boolean;
 }
 
 export async function getTask(id: string, opts: GetTaskOptions = {}) {
@@ -11,8 +12,9 @@ export async function getTask(id: string, opts: GetTaskOptions = {}) {
     query: QUERY,
     variables: {
       id,
-      includeSpace: !!opts.includeSpace,
       includeAssignees: !!opts.includeAssignees,
+      includeMilestone: !!opts.includeMilestone,
+      includeProject: !!opts.includeProject,
     },
     fetchPolicy: "network-only",
   });
@@ -21,15 +23,6 @@ export async function getTask(id: string, opts: GetTaskOptions = {}) {
 }
 
 const QUERY = gql`
-  fragment SpaceOnTask on Task {
-    space {
-      id
-      name
-      icon
-      color
-    }
-  }
-
   fragment AssigneesOnTask on Task {
     assignees {
       id
@@ -39,7 +32,21 @@ const QUERY = gql`
     }
   }
 
-  query GetTask($id: ID!, $includeSpace: Boolean!, $includeAssignees: Boolean!) {
+  fragment MilestoneOnTask on Task {
+    milestone {
+      id
+      title
+    }
+  }
+
+  fragment ProjectOnTask on Task {
+    project {
+      id
+      name
+    }
+  }
+
+  query GetTask($id: ID!, $includeAssignees: Boolean!, $includeMilestone: Boolean!, $includeProject: Boolean!) {
     task(id: $id) {
       id
       name
@@ -50,7 +57,8 @@ const QUERY = gql`
       status
 
       ...AssigneesOnTask @include(if: $includeAssignees)
-      ...SpaceOnTask @include(if: $includeSpace)
+      ...MilestoneOnTask @include(if: $includeMilestone)
+      ...ProjectOnTask @include(if: $includeProject)
     }
   }
 `;

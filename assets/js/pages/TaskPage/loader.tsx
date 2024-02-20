@@ -7,7 +7,11 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    task: await Tasks.getTask(params.id, { includeSpace: true, includeAssignees: true }),
+    task: await Tasks.getTask(params.id, {
+      includeProject: true,
+      includeMilestone: true,
+      includeAssignees: true,
+    }),
   };
 }
 

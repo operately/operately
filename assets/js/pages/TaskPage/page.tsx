@@ -1,8 +1,7 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/models/groups";
-import * as Icons from "@tabler/icons-react";
+import * as Tasks from "@/models/tasks";
 import * as Forms from "@/components/Form";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as TipTapEditor from "@/components/Editor";
@@ -26,7 +25,7 @@ export function Page() {
   return (
     <Pages.Page title={[task.name]}>
       <Paper.Root size="large">
-        <Navigation space={task.space} />
+        <Navigation task={task} />
 
         <Paper.Body noPadding>
           <div className="flex items-start justify-between border-b border-surface-outline px-10 pt-6 pb-4">
@@ -78,12 +77,11 @@ export function Page() {
   );
 }
 
-export function Navigation({ space }: { space: Groups.Group }) {
+export function Navigation({ task }: { task: Tasks.Task }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/spaces/${space.id}/tasks`}>
-        {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
-        {space.name}
+      <Paper.NavItem linkTo={`/projects/${task.project.id}/milestones/${task.milestone.id}`}>
+        {task.milestone.title}
       </Paper.NavItem>
     </Paper.Navigation>
   );

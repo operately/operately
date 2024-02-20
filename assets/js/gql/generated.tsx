@@ -521,13 +521,13 @@ export type CreateTargetInput = {
 };
 
 export type CreateTaskInput = {
-  assigneeId: Scalars['ID']['input'];
+  assigneeIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['NaiveDateTime']['input']>;
+  milestoneId?: InputMaybe<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
   priority?: InputMaybe<Scalars['String']['input']>;
   size?: InputMaybe<Scalars['String']['input']>;
-  spaceId: Scalars['ID']['input'];
 };
 
 export type CreateUpdateInput = {
@@ -1014,13 +1014,13 @@ export type RootMutationType = {
   updateAppearance?: Maybe<Person>;
   updateDashboard: Dashboard;
   updateGroupAppearance: Group;
+  updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
   updateNotificationSettings?: Maybe<Person>;
   updateProfile?: Maybe<Person>;
   updateProjectContributor: ProjectContributor;
   updateProjectDescription: Project;
-  updateProjectMilestone: Milestone;
 };
 
 
@@ -1386,6 +1386,11 @@ export type RootMutationTypeUpdateGroupAppearanceArgs = {
 };
 
 
+export type RootMutationTypeUpdateMilestoneArgs = {
+  input: UpdateMilestoneInput;
+};
+
+
 export type RootMutationTypeUpdateMilestoneDescriptionArgs = {
   input: UpdateMilestoneDescriptionInput;
 };
@@ -1416,13 +1421,6 @@ export type RootMutationTypeUpdateProjectContributorArgs = {
 export type RootMutationTypeUpdateProjectDescriptionArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   projectId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeUpdateProjectMilestoneArgs = {
-  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
-  milestoneId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
 };
 
 export type RootQueryType = {
@@ -1579,6 +1577,7 @@ export type RootQueryTypeProjectsArgs = {
 
 
 export type RootQueryTypeSearchPeopleArgs = {
+  ignoreIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   query: Scalars['String']['input'];
 };
 
@@ -1589,7 +1588,7 @@ export type RootQueryTypeTaskArgs = {
 
 
 export type RootQueryTypeTasksArgs = {
-  spaceId?: InputMaybe<Scalars['ID']['input']>;
+  milestoneId: Scalars['String']['input'];
   status?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1629,13 +1628,14 @@ export type Task = {
   assignees?: Maybe<Array<Person>>;
   creator: Person;
   description?: Maybe<Scalars['String']['output']>;
-  dueDate: Scalars['Date']['output'];
+  dueDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
+  milestone: Milestone;
   name: Scalars['String']['output'];
-  priority: Scalars['String']['output'];
-  size: Scalars['String']['output'];
-  space: Group;
+  priority?: Maybe<Scalars['String']['output']>;
+  project: Project;
+  size?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
 };
@@ -1785,6 +1785,12 @@ export type UpdateGroupAppearanceInput = {
 export type UpdateMilestoneDescriptionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+};
+
+export type UpdateMilestoneInput = {
+  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
+  milestoneId: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type UpdateMilestoneTitleInput = {
