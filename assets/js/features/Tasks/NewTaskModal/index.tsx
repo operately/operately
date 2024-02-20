@@ -14,25 +14,14 @@ import { useColorMode } from "@/theme";
 
 function useForm({ onSubmit, milestone }) {
   const [name, setName] = React.useState("");
-  const [dueDate, setDueDate] = React.useState(null);
   const [assignees, setAssignees] = React.useState<People.Person[]>([]);
-
   const [errors, setErrors] = React.useState<string[]>([]);
 
-  const [priority, setPriority] = React.useState({ value: "low", label: "Low" });
-  const priorityOptions = [
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-    { value: "urgent", label: "Urgent" },
-  ];
-
-  const [size, setSize] = React.useState({ value: "small", label: "Small" });
-  const sizeOptions = [
-    { value: "small", label: "Small" },
-    { value: "medium", label: "Medium" },
-    { value: "large", label: "Large" },
-  ];
+  const reset = React.useCallback(() => {
+    setName("");
+    setAssignees([]);
+    setErrors([]);
+  }, []);
 
   const { editor } = TipTapEditor.useEditor({
     autoFocus: false,
@@ -62,28 +51,23 @@ function useForm({ onSubmit, milestone }) {
       },
     });
 
+    reset();
+
     return true;
   };
 
   return {
     fields: {
       name,
-      dueDate,
       descriptionEditor: editor,
-      priority,
-      priorityOptions,
-      size,
-      sizeOptions,
       assignees,
 
       setName,
-      setDueDate,
-      setPriority,
-      setSize,
       setAssignees,
     },
 
     submit,
+    cancel: reset,
     errors,
   };
 }
@@ -94,15 +78,20 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
     hideModal();
   };
 
+  const handleCancel = () => {
+    form.cancel();
+    hideModal();
+  };
+
   const form = useForm({ onSubmit: handleSubmit, milestone });
 
   return (
-    <Modal title={modalTitle} isOpen={isOpen} hideModal={hideModal}>
+    <Modal title={modalTitle} isOpen={isOpen}>
       <Form form={form} />
 
       <div className="flex justify-end mt-8">
         <div className="flex items-center gap-2">
-          <FilledButton size="base" type="secondary" onClick={hideModal}>
+          <FilledButton size="base" type="secondary" onClick={handleCancel}>
             Cancel
           </FilledButton>
 
