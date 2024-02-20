@@ -42,7 +42,8 @@ defmodule Operately.Projects.EditTimelineOperation do
         project_id: project.id,
         title: milestone.title,
         description: milestone.description,
-        deadline_at: milestone.due_time
+        deadline_at: milestone.due_time,
+        tasks_kanban_state: Operately.Tasks.KanbanState.initialize()
       })
 
       multi |> Multi.insert("new_milestone_#{index}", changeset)

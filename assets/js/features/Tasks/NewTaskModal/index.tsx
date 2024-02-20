@@ -55,10 +55,7 @@ function useForm({ onSubmit, milestone }) {
       variables: {
         input: {
           name,
-          dueDate,
           description: JSON.stringify(editor.getJSON()),
-          priority: priority.value,
-          size: size.value,
           assignee_ids: assignees.map((a) => a.id),
           milestone_id: milestone.id,
         },

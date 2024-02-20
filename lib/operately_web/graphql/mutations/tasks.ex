@@ -4,10 +4,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Tasks do
   input_object :create_task_input do
     field :name, non_null(:string)
     field :assignee_ids, list_of(:string)
-    field :due_date, :naive_datetime
     field :description, :string
-    field :priority, :string
-    field :size, :string
     field :milestone_id, :id
   end
 

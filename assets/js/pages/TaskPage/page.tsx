@@ -12,6 +12,7 @@ import { FilledButton } from "@/components/Button";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -63,31 +64,35 @@ function Header({ form }: { form: FormState }) {
 
 function HeaderEditor({ form }: { form: FormState }) {
   return (
-    <div className="flex-1 flex items-center gap-2">
-      <Forms.TextInputNoLabel
-        id="task-name"
-        value={form.name.name}
-        onChange={form.name.setName}
-        onEnter={form.name.submit}
-        autoFocus
-        placeholder="Task Name"
-        error={form.name.error}
-      />
+    <div className="mx-10 mt-8">
+      <div className="w-full">
+        <Forms.TextInput
+          id="task-name"
+          label="Task Name"
+          value={form.name.name}
+          onChange={form.name.setName}
+          onEnter={form.name.submit}
+          autoFocus
+          placeholder="Task Name"
+          error={form.name.error}
+        />
+      </div>
+      <div className="flex gap-2 mt-4 justify-end">
+        <FilledButton size="sm" type="secondary" onClick={form.name.cancel}>
+          Cancel
+        </FilledButton>
 
-      <FilledButton size="sm" type="secondary" onClick={form.name.cancel}>
-        Cancel
-      </FilledButton>
-
-      <FilledButton size="sm" type="primary" onClick={form.name.submit} bzzzOnClickFailure>
-        Save
-      </FilledButton>
+        <FilledButton size="sm" type="primary" onClick={form.name.submit} bzzzOnClickFailure>
+          Save
+        </FilledButton>
+      </div>
     </div>
   );
 }
 
 function HeaderDisplay({ form }: { form: FormState }) {
   return (
-    <div className="flex flex-col items-center justify-center mb-4 my-8">
+    <div className="flex flex-col items-center justify-center mb-4 my-8 mx-10">
       <div className="text-3xl font-extrabold text-content-accent text-center mt-4 mb-2">{form.name.name}</div>
       <AssignedPeopleList form={form} />
     </div>
@@ -156,25 +161,40 @@ function DescriptionEditor({ form }: { form: FormState }) {
 }
 
 function DescriptionDisplay({ form }: { form: FormState }) {
-  return (
-    <div className="mx-10">
-      <RichContent jsonContent={form.description.description!} />
-    </div>
-  );
+  if (isContentEmpty(form.description.description)) {
+    return (
+      <div className="flex items-center gap-2 mx-10 mb-8">
+        <FilledButton
+          onClick={() => form.description.setEditing(true)}
+          testId="add-milestone-description"
+          size="xs"
+          type="secondary"
+        >
+          Add Description
+        </FilledButton>
+      </div>
+    );
+  } else {
+    return (
+      <div className="mx-10 mb-8">
+        <RichContent jsonContent={form.description.description!} />
+      </div>
+    );
+  }
 }
 
 function AssignedPeopleList({ form }: { form: FormState }) {
+  if (form.assignedPeople.people.length === 0) {
+    return <div className="text-content-dimmed mt-0.5">No one is assigned to this task</div>;
+  }
+
   return (
-    <div>
-      {form.assignedPeople.people.length === 0 ? (
-        <div className="text-content-dimmed text-sm mt-0.5">No one</div>
-      ) : (
-        form.assignedPeople.people.map((person) => (
-          <div className="flex items-center gap-1" key={person.id}>
-            <Avatar person={person} size={32} />
-          </div>
-        ))
-      )}
+    <div className="flex items-center gap-2 flex-wrap mx-10">
+      {form.assignedPeople.people.map((person) => (
+        <div className="flex items-center gap-1" key={person.id}>
+          <Avatar person={person} size={32} />
+        </div>
+      ))}
     </div>
   );
 }

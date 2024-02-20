@@ -12,7 +12,6 @@ defmodule Operately.Operations.TaskNameEditing do
     |> Activities.insert(creator.id, :task_name_editing, fn changes ->
       %{
         company_id: creator.company_id,
-        space_id: task.space_id,
         task_id: task.id,
         old_name: task.name,
         new_name: changes.task.name,

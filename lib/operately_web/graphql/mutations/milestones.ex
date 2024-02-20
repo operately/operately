@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Milestones do
           project_id: args.project_id,
           title: args.title,
           deadline_at: deadline,
+          tasks_kanban_state: Operately.Tasks.KanbanState.initialize()
         })
       end
     end

@@ -39,7 +39,7 @@ export function Page() {
           </PageSection>
           <Description milestone={milestone} form={form} />
 
-          <TaskSection milestone={milestone} form={form} refresh={refresh} />
+          <TaskSection milestone={milestone} />
 
           <PageSection title="Comments &amp; Activity Feed" color="bg-purple-200" />
           <CommentSection form={commentsForm} me={me} refresh={refresh} />
@@ -131,7 +131,7 @@ function TaskSection({ milestone }) {
 }
 
 interface TaskBoardState {
-  openTasks: Tasks.Task[];
+  todoTasks: Tasks.Task[];
   inProgressTasks: Tasks.Task[];
   doneTasks: Tasks.Task[];
 }
@@ -143,14 +143,14 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
   if (tasks.length === 0) return null;
 
   const [taskBoardState, setTaskBoardState] = React.useState<TaskBoardState>({
-    openTasks: tasks.filter((t) => t.status === "open"),
+    todoTasks: tasks.filter((t) => t.status === "todo"),
     inProgressTasks: tasks.filter((t) => t.status === "in-progress"),
     doneTasks: tasks.filter((t) => t.status === "done"),
   });
 
   React.useEffect(() => {
     setTaskBoardState({
-      openTasks: tasks.filter((t) => t.status === "open"),
+      todoTasks: tasks.filter((t) => t.status === "todo"),
       inProgressTasks: tasks.filter((t) => t.status === "in-progress"),
       doneTasks: tasks.filter((t) => t.status === "done"),
     });
@@ -158,30 +158,30 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
 
   const onTaskDrop = (dropZoneId: string, taskId: string, indexInDropZone: number) => {
     setTaskBoardState((prev) => {
-      const { openTasks, inProgressTasks, doneTasks } = prev;
+      const { todoTasks, inProgressTasks, doneTasks } = prev;
 
       const task =
-        openTasks.find((t) => t.id === taskId) ||
+        todoTasks.find((t) => t.id === taskId) ||
         inProgressTasks.find((t) => t.id === taskId) ||
         doneTasks.find((t) => t.id === taskId);
 
       if (!task) return prev;
 
-      let newOpenTasks = openTasks.filter((t) => t.id !== taskId);
+      let newTodoTasks = todoTasks.filter((t) => t.id !== taskId);
       let newInProgressTasks = inProgressTasks.filter((t) => t.id !== taskId);
       let newDoneTasks = doneTasks.filter((t) => t.id !== taskId);
 
       task.status = dropZoneId;
 
-      if (dropZoneId === "open") {
-        newOpenTasks = insertAt(newOpenTasks, indexInDropZone, task);
+      if (dropZoneId === "todo") {
+        newTodoTasks = insertAt(newTodoTasks, indexInDropZone, task);
       } else if (dropZoneId === "in-progress") {
         newInProgressTasks = insertAt(newInProgressTasks, indexInDropZone, task);
       } else if (dropZoneId === "done") {
         newDoneTasks = insertAt(newDoneTasks, indexInDropZone, task);
       }
 
-      return { openTasks: newOpenTasks, inProgressTasks: newInProgressTasks, doneTasks: newDoneTasks };
+      return { todoTasks: newTodoTasks, inProgressTasks: newInProgressTasks, doneTasks: newDoneTasks };
     });
   };
 
@@ -190,10 +190,10 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
       <div className="grid grid-cols-3 gap-2 items-start">
         <TaskColumn
           title="To Do"
-          tasks={taskBoardState.openTasks}
+          tasks={taskBoardState.todoTasks}
           color="bg-gray-100"
           onTaskDrop={onTaskDrop}
-          status="open"
+          status="todo"
         />
         <TaskColumn
           title="In Progress"
