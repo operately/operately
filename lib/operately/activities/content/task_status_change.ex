@@ -3,8 +3,9 @@ defmodule Operately.Activities.Content.TaskStatusChange do
 
   embedded_schema do
     field :company_id, :string
-  field :task_id, :string
-  field :status, :string
+    field :task_id, :string
+    field :old_status, :string
+    field :new_status, :string
   end
 
   def changeset(attrs) do

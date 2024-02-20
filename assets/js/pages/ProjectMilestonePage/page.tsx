@@ -144,17 +144,19 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
 
   const [taskBoardState, setTaskBoardState] = React.useState<TaskBoardState>({
     todoTasks: tasks.filter((t) => t.status === "todo"),
-    inProgressTasks: tasks.filter((t) => t.status === "in-progress"),
+    inProgressTasks: tasks.filter((t) => t.status === "in_progress"),
     doneTasks: tasks.filter((t) => t.status === "done"),
   });
 
   React.useEffect(() => {
     setTaskBoardState({
       todoTasks: tasks.filter((t) => t.status === "todo"),
-      inProgressTasks: tasks.filter((t) => t.status === "in-progress"),
+      inProgressTasks: tasks.filter((t) => t.status === "in_progress"),
       doneTasks: tasks.filter((t) => t.status === "done"),
     });
   }, [tasks]);
+
+  const [changeStatus] = Tasks.useUpdateTaskStatusMutation({});
 
   const onTaskDrop = (dropZoneId: string, taskId: string, indexInDropZone: number) => {
     setTaskBoardState((prev) => {
@@ -175,11 +177,21 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
 
       if (dropZoneId === "todo") {
         newTodoTasks = insertAt(newTodoTasks, indexInDropZone, task);
-      } else if (dropZoneId === "in-progress") {
+      } else if (dropZoneId === "in_progress") {
         newInProgressTasks = insertAt(newInProgressTasks, indexInDropZone, task);
       } else if (dropZoneId === "done") {
         newDoneTasks = insertAt(newDoneTasks, indexInDropZone, task);
       }
+
+      changeStatus({
+        variables: {
+          input: {
+            taskId,
+            status: dropZoneId,
+            columnIndex: indexInDropZone,
+          },
+        },
+      });
 
       return { todoTasks: newTodoTasks, inProgressTasks: newInProgressTasks, doneTasks: newDoneTasks };
     });
@@ -200,7 +212,7 @@ function TaskBoard({ tasks }: { tasks: Tasks.Task[] }) {
           tasks={taskBoardState.inProgressTasks}
           color="bg-gray-100"
           onTaskDrop={onTaskDrop}
-          status="in-progress"
+          status="in_progress"
         />
         <TaskColumn
           title="Done"

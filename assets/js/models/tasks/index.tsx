@@ -1,5 +1,4 @@
 export { Task } from "@/gql";
-export { useUpdateTaskStatusMutation } from './useUpdateTaskStatusMutation';
 
 export { getTask } from "./getTask";
 export { getTasks, useTasks } from "./getTasks";
@@ -12,3 +11,4 @@ export { useReopenTaskMutation } from "./useReopenTaskMutation";
 export { useCloseTaskMutation } from "./useCloseTaskMutation";
 export { useCreateTaskMutation } from "./useCreateTaskMutation";
 export { useEditTaskNameMutation } from "./useEditTaskNameMutation";
+export { useUpdateTaskStatusMutation } from "./useUpdateTaskStatusMutation";
