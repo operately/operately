@@ -13,6 +13,7 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -77,6 +78,12 @@ function HeaderEditor({ form }: { form: FormState }) {
           error={form.name.error}
         />
       </div>
+
+      <MultiPeopleSearch
+        selectedPeople={form.name.assignedPeople}
+        onSelectedPeopleChange={form.name.setAssignedPeople}
+      />
+
       <div className="flex gap-2 mt-4 justify-end">
         <FilledButton size="sm" type="secondary" onClick={form.name.cancel}>
           Cancel
@@ -197,13 +204,13 @@ function DescriptionDisplay({ form }: { form: FormState }) {
 }
 
 function AssignedPeopleList({ form }: { form: FormState }) {
-  if (form.assignedPeople.people.length === 0) {
+  if (form.name.assignedPeople!.length === 0) {
     return <div className="text-content-dimmed mt-0.5">No one is assigned to this task</div>;
   }
 
   return (
     <div className="flex items-center gap-2 flex-wrap mx-10">
-      {form.assignedPeople.people.map((person) => (
+      {form.name.assignedPeople!.map((person) => (
         <div className="flex items-center gap-1" key={person.id}>
           <Avatar person={person} size={32} />
         </div>

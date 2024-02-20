@@ -8,17 +8,22 @@ export interface NameState {
   setName: (name: string) => void;
   setEditing: (editing: boolean) => void;
 
+  assignedPeople: Tasks.Task["assignees"];
+  setAssignedPeople: React.Dispatch<React.SetStateAction<Tasks.Task["assignees"]>>;
+
   cancel: () => void;
   submit: () => Promise<boolean>;
 
   error: boolean;
 }
 
-export function useNameState(task: Tasks.Task) {
+export function useNameState(task: Tasks.Task): NameState {
   const [initialValue, setInitialValue] = React.useState(task.name);
   const [name, setName] = React.useState(initialValue);
   const [editing, setEditing] = React.useState(false);
   const [error, setError] = React.useState(false);
+
+  const [assignedPeople, setAssignedPeople] = React.useState(task.assignees!);
 
   const [editName] = Tasks.useEditTaskNameMutation({
     onCompleted: () => {
@@ -61,6 +66,8 @@ export function useNameState(task: Tasks.Task) {
     editing,
     setName,
     setEditing,
+    assignedPeople,
+    setAssignedPeople,
 
     submit,
     cancel,

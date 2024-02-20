@@ -4,7 +4,6 @@ import { SizeState, useSizeState } from "./useSizeState";
 import { PriorityState, usePriorityState } from "./usePriorityState";
 import { StatusState, useStatusState } from "./useStatusState";
 import { DescriptionState, useDescriptionState } from "./useDescriptionState";
-import { AssignedPeopleState, useAssignedPeopleState } from "./useAssignedPeopleState";
 import { NameState, useNameState } from "./useNameState";
 
 export interface FormState {
@@ -13,7 +12,6 @@ export interface FormState {
   priority: PriorityState;
   size: SizeState;
   description: DescriptionState;
-  assignedPeople: AssignedPeopleState;
 }
 
 export function useForm(task: Tasks.Task): FormState {
@@ -23,6 +21,5 @@ export function useForm(task: Tasks.Task): FormState {
     priority: usePriorityState(task),
     size: useSizeState(task),
     description: useDescriptionState(task),
-    assignedPeople: useAssignedPeopleState(task),
   };
 }
