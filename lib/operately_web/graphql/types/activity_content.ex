@@ -44,7 +44,9 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_task_name_editing,
     :activity_content_task_priority_change,
     :activity_content_task_reopening,
-    :activity_content_task_size_change
+    :activity_content_task_size_change,
+    :activity_content_task_status_change,
+    :activity_content_task_update
     ]
 
     resolve_type fn %{action: action}, _ ->

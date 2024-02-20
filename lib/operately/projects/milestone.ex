@@ -12,7 +12,7 @@ defmodule Operately.Projects.Milestone do
     field :completed_at, :naive_datetime
 
     field :description, :map
-    field :tasks_kanban_state, :map
+    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
     timestamps()
     soft_delete()

@@ -41,6 +41,8 @@ import TaskNameEditing from "./TaskNameEditing"
 import TaskPriorityChange from "./TaskPriorityChange"
 import TaskReopening from "./TaskReopening"
 import TaskSizeChange from "./TaskSizeChange"
+import TaskStatusChange from "./TaskStatusChange"
+import TaskUpdate from "./TaskUpdate"
 
 export default function FeedItem({activity, page}) {
   const activityType = activity.content.__typename;
@@ -153,6 +155,12 @@ export default function FeedItem({activity, page}) {
     
     case "ActivityContentTaskSizeChange":
       return <TaskSizeChange activity={activity} page={page} />;
+    
+    case "ActivityContentTaskStatusChange":
+      return <TaskStatusChange activity={activity} page={page} />;
+    
+    case "ActivityContentTaskUpdate":
+      return <TaskUpdate activity={activity} page={page} />;
     
     default:
       throw "unhandled activity type " + activityType + " in assets/js/components/Feed/FeedItem/index.tsx";
