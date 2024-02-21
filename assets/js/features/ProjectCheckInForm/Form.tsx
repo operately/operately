@@ -6,6 +6,7 @@ import Avatar from "@/components/Avatar";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
+import * as Icons from "@tabler/icons-react";
 
 import { FormState } from "./useForm";
 import { FilledButton } from "@/components/Button";
@@ -20,8 +21,8 @@ export function Form({ form, noSubmitActions }: FormProps) {
   return (
     <>
       <Header />
-      <TextForm form={form} />
       <StatusForm form={form} />
+      <TextForm form={form} />
 
       {noSubmitActions && <SubmitActions form={form} />}
     </>
@@ -34,8 +35,8 @@ function SubmitActions({ form }: { form: FormState }) {
   );
 
   return (
-    <div className="border-t border-stroke-base mt-10 pt-8">
-      <p className="font-bold text-lg">Who will be notified?</p>
+    <div className="mt-10">
+      <p className="font-bold text-lg">When you submit this check-in:</p>
 
       <ul className="">
         {regularContributors.length > 0 && (
@@ -73,7 +74,7 @@ function SubmitActions({ form }: { form: FormState }) {
         )}
       </ul>
 
-      <div className="flex items-center gap-2 mt-8">
+      <div className="flex items-center gap-2 mt-4">
         <FilledButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
           {form.submitButtonLabel}
         </FilledButton>
@@ -89,17 +90,20 @@ function SubmitActions({ form }: { form: FormState }) {
 function Header() {
   return (
     <div>
-      <div className="uppercase text-content-accent tracking-wide w-full mb-1 text-sm font-semibold">CHECK-IN</div>
-      <div className="text-4xl font-bold mx-auto">What's new since the last check-in?</div>
+      <div className="text-2xl font-bold mx-auto">Weekly Check-in</div>
+      <div>Asking the champion to provide a weekly update on the project's progress.</div>
     </div>
   );
 }
 
 function TextForm({ form }: { form: FormState }) {
   return (
-    <div className="mt-4">
-      <TipTapEditor.StandardEditorForm editor={form.editor.editor} minHeight={350} />
-    </div>
+    <>
+      <div className="text-lg font-bold mx-auto">2. What's new since the last check-in?</div>
+      <div className="mt-2 border-x border-stroke-base">
+        <TipTapEditor.StandardEditorForm editor={form.editor.editor} minHeight={100} />
+      </div>
+    </>
   );
 }
 function StatusForm({ form }: { form: FormState }) {
@@ -108,30 +112,29 @@ function StatusForm({ form }: { form: FormState }) {
 
   return (
     <div className="my-8">
-      <p className="font-bold text-lg">How's the project going?</p>
+      <div className="text-lg font-bold mx-auto">1. How's the project going?</div>
 
-      <div className="flex flex-col gap-6 mt-6">
+      <div className="flex flex-col gap-2 mt-2">
         <StatusOption form={form} status="on_track" title="On Track">
           Work is progressing as planned.
           <br />
           No involvement by {reviewer ? People.firstName(reviewer!) : "the reviewer"} is needed at this time.
         </StatusOption>
-
-        <StatusOption form={form} status="caution" title="Caution">
-          A potential problem may exist, perhaps in the future, if not monitored.
-          <br />
-          {reviewer ? People.firstName(reviewer!) : "the reviewer"} should be aware, but no action is needed.
-        </StatusOption>
-
-        <StatusOption form={form} status="issue" title="Issue">
-          There’s a problem that may significantly affect time, cost, quality, or scope.
-          <br />
-          {reviewer ? People.firstName(reviewer!) + "'s" : "The reviewer's"} involvement is necessary.
-        </StatusOption>
       </div>
     </div>
   );
 }
+// <StatusOption form={form} status="caution" title="Caution">
+//   A potential problem may exist, perhaps in the future, if not monitored.
+//   <br />
+//   {reviewer ? People.firstName(reviewer!) : "the reviewer"} should be aware, but no action is needed.
+// </StatusOption>
+
+// <StatusOption form={form} status="issue" title="Issue">
+//   There’s a problem that may significantly affect time, cost, quality, or scope.
+//   <br />
+//   {reviewer ? People.firstName(reviewer!) + "'s" : "The reviewer's"} involvement is necessary.
+// </StatusOption>
 
 function StatusOption({
   form,
@@ -145,16 +148,20 @@ function StatusOption({
   children: React.ReactNode;
 }) {
   const color = status === "on_track" ? "green" : status === "caution" ? "yellow" : "red";
+  const active = form.status === status;
 
   return (
-    <div className="flex items-start gap-3">
-      <div className="mt-1">
-        <Circle color={color} active={form.status === status} onClick={() => form.setStatus(status)} />
-      </div>
+    <div className={"flex justify-between items-center border border-stroke-base p-4"}>
+      <div className="flex items-center gap-4">
+        <Circle color={color} active={active} onClick={() => form.setStatus(status)} />
 
+        <div>
+          <p className="font-bold">{title}</p>
+          <div className="text-sm">{children}</div>
+        </div>
+      </div>
       <div>
-        <p className="font-bold">{title}</p>
-        <div className="text-sm">{children}</div>
+        <Icons.IconChevronDown size={24} />
       </div>
     </div>
   );

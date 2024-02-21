@@ -155,10 +155,7 @@ export function StandardEditorForm({ editor, minHeight = 200 }: { editor: Editor
     <Root editor={editor}>
       <Toolbar editor={editor} />
 
-      <div
-        className="mb-8 text-content-accent text-lg relative border-b border-stroke-base"
-        style={{ minHeight: minHeight + "px" }}
-      >
+      <div className="mb-8 text-content-accent text-lg relative border-b border-stroke-base px-4">
         <EditorContent editor={editor} />
       </div>
     </Root>

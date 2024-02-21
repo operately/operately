@@ -54,7 +54,7 @@ export function useForm(options: UseFormOptions): FormState {
     autoFocus: true,
     placeholder: `Write your updates here...`,
     peopleSearch: People.usePeopleSearch(),
-    className: "min-h-[350px] py-2 font-medium",
+    className: "min-h-[250px] py-2 font-medium",
     content: options.checkIn && JSON.parse(options.checkIn.message),
   });
 
