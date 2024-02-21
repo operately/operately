@@ -43,6 +43,10 @@ import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
 import * as ProjectArchivationPage from "./ProjectArchivationPage";
+import * as ProjectCheckInEditPage from "./ProjectCheckInEditPage";
+import * as ProjectCheckInNewPage from "./ProjectCheckInNewPage";
+import * as ProjectCheckInPage from "./ProjectCheckInPage";
+import * as ProjectCheckInsPage from "./ProjectCheckInsPage";
 import * as ProjectClosePage from "./ProjectClosePage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
 import * as ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
@@ -61,10 +65,6 @@ import * as ProjectReviewPage from "./ProjectReviewPage";
 import * as ProjectReviewRequestNewPage from "./ProjectReviewRequestNewPage";
 import * as ProjectReviewRequestPage from "./ProjectReviewRequestPage";
 import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPage";
-import * as ProjectStatusUpdateEditPage from "./ProjectStatusUpdateEditPage";
-import * as ProjectStatusUpdateListPage from "./ProjectStatusUpdateListPage";
-import * as ProjectStatusUpdateNewPage from "./ProjectStatusUpdateNewPage";
-import * as ProjectStatusUpdatePage from "./ProjectStatusUpdatePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as TaskPage from "./TaskPage";
 
@@ -233,6 +233,22 @@ export default {
     loader: ProjectArchivationPage.loader,
     Page: ProjectArchivationPage.Page
   },
+  ProjectCheckInEditPage: {
+    loader: ProjectCheckInEditPage.loader,
+    Page: ProjectCheckInEditPage.Page
+  },
+  ProjectCheckInNewPage: {
+    loader: ProjectCheckInNewPage.loader,
+    Page: ProjectCheckInNewPage.Page
+  },
+  ProjectCheckInPage: {
+    loader: ProjectCheckInPage.loader,
+    Page: ProjectCheckInPage.Page
+  },
+  ProjectCheckInsPage: {
+    loader: ProjectCheckInsPage.loader,
+    Page: ProjectCheckInsPage.Page
+  },
   ProjectClosePage: {
     loader: ProjectClosePage.loader,
     Page: ProjectClosePage.Page
@@ -304,22 +320,6 @@ export default {
   ProjectReviewRequestSubmitPage: {
     loader: ProjectReviewRequestSubmitPage.loader,
     Page: ProjectReviewRequestSubmitPage.Page
-  },
-  ProjectStatusUpdateEditPage: {
-    loader: ProjectStatusUpdateEditPage.loader,
-    Page: ProjectStatusUpdateEditPage.Page
-  },
-  ProjectStatusUpdateListPage: {
-    loader: ProjectStatusUpdateListPage.loader,
-    Page: ProjectStatusUpdateListPage.Page
-  },
-  ProjectStatusUpdateNewPage: {
-    loader: ProjectStatusUpdateNewPage.loader,
-    Page: ProjectStatusUpdateNewPage.Page
-  },
-  ProjectStatusUpdatePage: {
-    loader: ProjectStatusUpdatePage.loader,
-    Page: ProjectStatusUpdatePage.Page
   },
   ProjectsPage: {
     loader: ProjectsPage.loader,
