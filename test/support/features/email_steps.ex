@@ -29,7 +29,7 @@ defmodule Operately.Support.Features.EmailSteps do
   end
 
   def assert_project_update_acknowledged_sent(ctx, author: author, to: to) do
-    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} acknowledged your status update for #{ctx.project.name}")
+    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} acknowledged your check-in for #{ctx.project.name}")
   end
 
   def assert_project_review_acknowledged_sent(ctx, author: author, to: to) do
@@ -41,7 +41,7 @@ defmodule Operately.Support.Features.EmailSteps do
   end
 
   def assert_project_update_commented_sent(ctx, author: author, to: to) do
-    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} commented on a status update for #{ctx.project.name}")
+    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} commented on a check-in for #{ctx.project.name}")
   end
 
   def assert_milestone_comment_sent(ctx, author: author, to: to, title: title) do
@@ -56,8 +56,8 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} re-opened the #{title} milestone")
   end
 
-  def assert_project_status_update_submitted_sent(ctx, author: author) do
-    ctx |> assert_sent_to_all_project_contributors(subject: "#{Person.short_name(author)} posted an update for #{ctx.project.name}", except: [author])
+  def assert_project_check_in_submitted_sent(ctx, author: author) do
+    ctx |> assert_sent_to_all_project_contributors(subject: "#{Person.short_name(author)} posted an check-in for #{ctx.project.name}", except: [author])
   end
 
   #

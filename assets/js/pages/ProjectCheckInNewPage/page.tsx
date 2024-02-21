@@ -16,21 +16,25 @@ export function Page() {
   return (
     <Pages.Page title={["Check-In", project.name]}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-
-          <Paper.NavSeparator />
-
-          <Paper.NavItem linkTo={`/projects/${project.id}/status_updates`}>Check-Ins</Paper.NavItem>
-        </Paper.Navigation>
+        <Navigation project={project} />
 
         <Paper.Body>
           <Form form={form} noSubmitActions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Navigation({ project }) {
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+        <Icons.IconClipboardList size={16} />
+        {project.name}
+      </Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={`/projects/${project.id}/check-ins`}>Check-Ins</Paper.NavItem>
+    </Paper.Navigation>
   );
 }

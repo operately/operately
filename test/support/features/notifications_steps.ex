@@ -70,8 +70,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your check-in")
   end
 
-  def assert_project_status_update_submitted_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a status update")
+  def assert_project_check_in_submitted_sent(ctx, author: author) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a check-in")
   end
 
   def assert_project_paused_sent(ctx, author: author) do
@@ -95,7 +95,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_project_update_acknowledged_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your status update")
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your check-in")
   end
 
   def assert_project_update_submitted_sent(ctx, author: author, title: title) do
@@ -103,7 +103,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_project_update_commented_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on the project status update")
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on the project check-in")
   end
 
   def assert_discussion_commented_sent(ctx, author: author, title: title) do

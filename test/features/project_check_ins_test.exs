@@ -1,4 +1,4 @@
-defmodule Operately.Features.ProjectStatusUpdatesTest do
+defmodule Operately.Features.ProjectCheckInsTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
@@ -48,7 +48,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
 
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_project_status_update_submitted_sent(author: ctx.champion)
+    |> NotificationsSteps.assert_project_check_in_submitted_sent(author: ctx.champion)
   end
 
   @tag login_as: :champion
@@ -85,7 +85,7 @@ defmodule Operately.Features.ProjectStatusUpdatesTest do
     |> UI.login_as(ctx.reviewer)
     |> ProjectSteps.visit_project_page()
     |> ProjectSteps.follow_last_check_in()
-    |> ProjectSteps.acknowledge_status_update()
+    |> ProjectSteps.acknowledge_check_in()
 
     ctx
     |> UI.login_as(ctx.champion)

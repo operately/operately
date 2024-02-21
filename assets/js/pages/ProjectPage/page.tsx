@@ -27,6 +27,7 @@ import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { company, project } = useLoadedData();
@@ -110,22 +111,7 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Check-Ins</div>
-                  {project.lastCheckIn && (
-                    <div className="text-sm">
-                      <Link to={`/projects/${project.id}/status_updates`}>View all</Link>
-                    </div>
-                  )}
-                </div>
-
-                <div className="w-4/5">
-                  <LastCheckIn project={project} />
-                </div>
-              </div>
-            </div>
+            <CheckInSection project={project} />
 
             <div className="border-t border-stroke-base py-6">
               <div className="flex items-start gap-4">
@@ -159,7 +145,7 @@ export function Page() {
 }
 
 function LastCheckIn({ project }) {
-  const newCheckInPath = createPath("projects", project.id, "status_updates", "new");
+  const newCheckInPath = Paths.projectCheckInNewPath(project.id);
 
   const checkInNowLink = (
     <div className="flex">
@@ -181,7 +167,7 @@ function LastCheckIn({ project }) {
   const author = project.lastCheckIn.author;
   const time = project.lastCheckIn.insertedAt;
   const message = project.lastCheckIn.content.message;
-  const path = `/projects/${project.id}/status_updates/${project.lastCheckIn.id}`;
+  const path = Paths.projectCheckInPath(project.id, project.lastCheckIn.id);
   const status = project.lastCheckIn.content.health.status;
 
   return (
@@ -374,4 +360,25 @@ function showEditGoal(project: Projects.Project) {
   if (!project.permissions.canEditGoal) return false;
 
   return project.goal !== null;
+}
+
+function CheckInSection({ project }) {
+  return (
+    <div className="border-t border-stroke-base py-6">
+      <div className="flex items-start gap-4">
+        <div className="w-1/5">
+          <div className="font-bold text-sm">Check-Ins</div>
+          {project.lastCheckIn && (
+            <div className="text-sm">
+              <Link to={`/projects/${project.id}/check-ins`}>View all</Link>
+            </div>
+          )}
+        </div>
+
+        <div className="w-4/5">
+          <LastCheckIn project={project} />
+        </div>
+      </div>
+    </div>
+  );
 }

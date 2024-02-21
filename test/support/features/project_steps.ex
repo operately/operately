@@ -67,15 +67,15 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.click(title: title)
   end
 
-  def submit_status_update(ctx, content: content) do
+  def submit_check_in(ctx, content: content) do
     ctx
     |> visit_project_page()
-    |> UI.click(testid: "add-status-update")
+    |> UI.click(testid: "add-check-in")
     |> UI.fill_rich_text(content)
-    |> UI.click(testid: "post-status-update")
+    |> UI.click(testid: "post-check-in")
   end
 
-  def acknowledge_status_update(ctx) do
+  def acknowledge_check_in(ctx) do
     ctx
     |> UI.click(testid: "acknowledge-update")
   end

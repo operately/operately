@@ -1,13 +1,13 @@
-import React from "react";
+import * as React from "react";
+import * as Projects from "@/models/projects";
 
-import * as Projects from "@/graphql/Projects";
-
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
+import { Paths } from "@/routes/paths";
 
 export function CheckInButton({ project }: { project: Projects.Project }) {
   if (!project.permissions.canCheckIn) return null;
 
-  const path = `/projects/${project.id}/status_updates/new`;
+  const path = Paths.projectCheckInNewPath(project.id);
 
-  return <GhostButton linkTo={path}>Check-In Now</GhostButton>;
+  return <FilledButton linkTo={path}>Check-In Now</FilledButton>;
 }

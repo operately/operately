@@ -8,19 +8,20 @@ import Avatar from "@/components/Avatar";
 import { Summary } from "@/components/RichContent";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { Paths } from "@/routes/paths";
+import { DivLink } from "../Link";
 
 export function CheckInCard({ update }) {
   const content = update.content as UpdateContent.StatusUpdate;
   const author = update.author;
 
-  const gotoUpdate = useNavigateTo(`/projects/${update.updatableId}/status_updates/${update.id}`);
+  const path = Paths.projectCheckInPath(update.updateableId, update.id);
   const health = content.health || defaultHealth;
 
   return (
-    <div
+    <DivLink
       className="flex items-start gap-2 p-4 rounded-lg cursor-pointer border border-surface-outline bg-surface-accent"
-      onClick={gotoUpdate}
+      to={path}
     >
       <div className="flex flex-col gap-1 relative flex-1">
         <div className="flex items-center justify-between flex-1">
@@ -60,7 +61,7 @@ export function CheckInCard({ update }) {
           <Indicator value={health.risks} type="risks" />
         </div>
       </div>
-    </div>
+    </DivLink>
   );
 }
 
