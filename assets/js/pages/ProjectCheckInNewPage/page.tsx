@@ -9,9 +9,9 @@ import { Form, useForm } from "@/features/ProjectCheckInForm";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { project } = useLoadedData();
+  const { project, me } = useLoadedData();
 
-  const form = useForm({ project, mode: "create" });
+  const form = useForm({ project, mode: "create", author: me });
 
   return (
     <Pages.Page title={["Check-In", project.name]}>
@@ -19,7 +19,7 @@ export function Page() {
         <Navigation project={project} />
 
         <Paper.Body>
-          <Form form={form} noSubmitActions />
+          <Form form={form} noSubmitActions project={project} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

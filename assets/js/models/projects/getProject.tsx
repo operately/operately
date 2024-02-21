@@ -3,6 +3,8 @@ import client from "@/graphql/client";
 
 interface GetProjectOptions {
   includeGoal?: boolean;
+  includeReviewer?: boolean;
+  includeContributors?: boolean;
 }
 
 export async function getProject(id: string, options: GetProjectOptions = {}) {
@@ -11,6 +13,8 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
     variables: {
       id: id,
       includeGoal: !!options.includeGoal,
+      includeReviewer: !!options.includeReviewer,
+      includeContributors: !!options.includeContributors,
     },
     fetchPolicy: "network-only",
   });
@@ -48,7 +52,30 @@ const QUERY = gql`
     }
   }
 
-  query GetProject($id: ID!, $includeGoal: Boolean!) {
+  fragment ProjectReviewer on Project {
+    reviewer {
+      id
+      fullName
+      avatarUrl
+      title
+    }
+  }
+
+  fragment ProjectContributors on Project {
+    contributors {
+      id
+      role
+
+      person {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+  }
+
+  query GetProject($id: ID!, $includeGoal: Boolean!, $includeReviewer: Boolean!, $includeContributors: Boolean!) {
     project(id: $id) {
       id
       name
@@ -67,6 +94,8 @@ const QUERY = gql`
       closedAt
 
       ...ProjectGoal @include(if: $includeGoal)
+      ...ProjectReviewer @include(if: $includeReviewer)
+      ...ProjectContributors @include(if: $includeContributors)
     }
   }
 `;

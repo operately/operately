@@ -149,3 +149,18 @@ function useEditor(props: UseEditorProps): EditorState {
 const EditorContent = TipTap.EditorContent;
 
 export { useEditor, EditorContent, Toolbar };
+
+export function StandardEditorForm({ editor, minHeight = 200 }: { editor: Editor; minHeight?: number }): JSX.Element {
+  return (
+    <Root editor={editor}>
+      <Toolbar editor={editor} />
+
+      <div
+        className="mb-8 text-content-accent text-lg relative border-b border-stroke-base"
+        style={{ minHeight: minHeight + "px" }}
+      >
+        <EditorContent editor={editor} />
+      </div>
+    </Root>
+  );
+}

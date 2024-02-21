@@ -6,17 +6,23 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Updates from "@/graphql/Projects/updates";
 
 import { useNavigate } from "react-router-dom";
-import { useHealthState, HealthState } from "./useHealthState";
+import { Paths } from "@/routes/paths";
 
 interface UseFormOptions {
   mode: "create" | "edit";
+  author: People.Person;
   project: Projects.Project;
   checkIn?: Updates.Update;
 }
 
 export interface FormState {
+  author: People.Person;
+  project: Projects.Project;
+
   editor: TipTapEditor.EditorState;
-  healthState: HealthState;
+
+  status: string;
+  setStatus: (status: string) => void;
 
   submit: () => void;
   submitDisabled?: boolean;
@@ -36,7 +42,13 @@ export function useForm(options: UseFormOptions): FormState {
     lastCheckIn = (options.project.lastCheckIn || null) as Updates.Update | null;
   }
 
-  const healthState = useHealthState(lastCheckIn);
+  const [status, setStatus] = React.useState(() => {
+    if (options.mode === "edit") {
+      return options.checkIn!.content.health.status;
+    } else {
+      return "on_track";
+    }
+  });
 
   const editor = TipTapEditor.useEditor({
     autoFocus: true,
@@ -47,39 +59,16 @@ export function useForm(options: UseFormOptions): FormState {
   });
 
   const [post] = Projects.usePostUpdate({
-    onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.postUpdate.id)),
   });
 
   const [edit] = Projects.useEditUpdate({
-    onCompleted: (data: any) => navigate(`/projects/${options.project.id}/status_updates/${data.editUpdate.id}`),
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.editUpdate.id)),
   });
 
   const submit = () => {
     if (!editor.editor) return;
     if (editor.uploading) return;
-
-    const health = {
-      status: {
-        value: healthState.status,
-        comments: healthState.statusEditor.editor.getJSON(),
-      },
-      schedule: {
-        value: healthState.schedule,
-        comments: healthState.scheduleEditor.editor.getJSON(),
-      },
-      budget: {
-        value: healthState.budget,
-        comments: healthState.budgetEditor.editor.getJSON(),
-      },
-      team: {
-        value: healthState.team,
-        comments: healthState.teamEditor.editor.getJSON(),
-      },
-      risks: {
-        value: healthState.risks,
-        comments: healthState.risksEditor.editor.getJSON(),
-      },
-    };
 
     if (options.mode === "create") {
       post({
@@ -88,7 +77,7 @@ export function useForm(options: UseFormOptions): FormState {
             updatableId: options.project.id,
             updatableType: "Project",
             content: JSON.stringify(editor.editor.getJSON()),
-            health: JSON.stringify(health),
+            status,
             messageType: "status_update",
           },
         },
@@ -103,7 +92,7 @@ export function useForm(options: UseFormOptions): FormState {
           input: {
             updateId: options.checkIn!.id,
             content: JSON.stringify(editor.editor.getJSON()),
-            health: JSON.stringify(health),
+            status,
           },
         },
       });
@@ -123,12 +112,17 @@ export function useForm(options: UseFormOptions): FormState {
 
   const cancelPath =
     options.mode === "create"
-      ? `/projects/${options.project.id}/status_updates`
-      : `/projects/${options.project.id}/status_updates/${options.checkIn!.id}`;
+      ? Paths.projectCheckInsPath(options.project.id)
+      : Paths.projectCheckInPath(options.project.id, options.checkIn!.id);
 
   return {
+    author: options.author,
+    project: options.project,
+
     editor,
-    healthState,
+
+    status,
+    setStatus,
 
     submit,
     submitDisabled,
