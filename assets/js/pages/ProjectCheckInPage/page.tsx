@@ -20,6 +20,8 @@ import { useLoadedData } from "./loader";
 // import { useAddReaction } from "./useAddReaction";
 import { Paths } from "@/routes/paths";
 
+import { Status } from "@/features/projectCheckIns/Status";
+
 export function Page() {
   const { checkIn, me } = useLoadedData();
 
@@ -35,6 +37,7 @@ export function Page() {
         <Paper.Body>
           <Options />
           <Title />
+          <StatusSection />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -86,14 +89,14 @@ function Navigation({ project }) {
   );
 }
 
-function Acknowledgement({ update }: { update: Updates.Update }) {
+function Acknowledgement() {
   const { checkIn } = useLoadedData();
 
-  if (update.acknowledgedAt) {
+  if (checkIn.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
         <Icons.IconSquareCheckFilled size={16} className="text-accent-1" />
-        Acknowledged by {checkIn.acknowledgedBy.fullName}
+        Acknowledged by {checkIn.acknowledgedBy!.fullName}
       </span>
     );
   } else {
@@ -101,93 +104,18 @@ function Acknowledgement({ update }: { update: Updates.Update }) {
   }
 }
 
-function Health({ health }: { health: UpdateContent.ProjectHealth }) {
+function StatusSection() {
+  const { checkIn } = useLoadedData();
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <Accordion
-        title={<AccordionTitle indicatorType="schedule" indicatorValue={health.schedule} title="Schedule" />}
-        testId="schedule-accordion"
-        initialOpen={!empty(health.scheduleComments)}
-        openable={!empty(health.scheduleComments)}
-        nonOpenableMessage="No comments"
-      >
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.scheduleComments} />
-        </div>
-      </Accordion>
+    <div className="my-8">
+      <div className="text-lg font-bold mx-auto">1. How's the project going?</div>
 
-      <Accordion
-        title={<AccordionTitle indicatorType="budget" indicatorValue={health.budget} title="Budget" />}
-        testId="budget-accordion"
-        initialOpen={!empty(health.budgetComments)}
-        openable={!empty(health.budgetComments)}
-        nonOpenableMessage="No comments"
-      >
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.budgetComments} />
-        </div>
-      </Accordion>
-
-      <Accordion
-        title={<AccordionTitle indicatorType="team" indicatorValue={health.team} title="Team" />}
-        testId="team-accordion"
-        initialOpen={!empty(health.teamComments)}
-        openable={!empty(health.teamComments)}
-        nonOpenableMessage="No comments"
-      >
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.teamComments} />
-        </div>
-      </Accordion>
-
-      <Accordion
-        title={<AccordionTitle indicatorType="risks" indicatorValue={health.risks} title="Risks" />}
-        testId="risks-accordion"
-        initialOpen={!empty(health.risksComments)}
-        openable={!empty(health.risksComments)}
-        nonOpenableMessage="No comments"
-      >
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.risksComments} />
-        </div>
-      </Accordion>
-
-      <Accordion
-        title={<AccordionTitle indicatorType="status" indicatorValue={health.status} title="Overall Project Status" />}
-        testId="status"
-        initialOpen={!empty(health.statusComments)}
-        openable={!empty(health.statusComments)}
-        nonOpenableMessage="No comments"
-      >
-        <div className="p-4 bg-surface-dimmed">
-          <RichContent jsonContent={health.statusComments} />
-        </div>
-      </Accordion>
+      <div className="flex flex-col gap-2 mt-2 border border-stroke-base rounded-lg p-2">
+        <Status status={checkIn.status} reviewer={checkIn.project.reviewer!} />
+      </div>
     </div>
   );
-}
-
-function AccordionTitle({
-  indicatorType,
-  indicatorValue,
-  title,
-}: {
-  indicatorType: string;
-  indicatorValue: string;
-  title: string;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="text-content-accent font-semibold">{title}</div>
-      <Icons.IconArrowRight size={16} />
-      <Indicator type={indicatorType} value={indicatorValue} />
-    </div>
-  );
-}
-
-function empty(json: any) {
-  const cannonicalJSON = JSON.stringify(JSON.parse(json));
-  return cannonicalJSON === `{"content":[{"type":"paragraph"}],"type":"doc"}`;
 }
 
 function Options() {

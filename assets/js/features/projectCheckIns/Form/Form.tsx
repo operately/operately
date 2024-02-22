@@ -5,8 +5,8 @@ import * as Projects from "@/models/projects";
 
 import { FilledButton } from "@/components/Button";
 import { FormState } from "./useForm";
-import { StatusSection } from "./StatusSection";
 import { NotificationSection } from "./NotificationSection";
+import { StatusDropdown } from "../StatusDropdown";
 
 interface FormProps {
   form: FormState;
@@ -31,6 +31,18 @@ function Header() {
   return (
     <div>
       <div className="text-2xl font-bold mx-auto">Let's Check In</div>
+    </div>
+  );
+}
+
+export function StatusSection({ form }: { form: FormState }) {
+  return (
+    <div className="my-8">
+      <div className="text-lg font-bold mx-auto">1. How's the project going?</div>
+
+      <div className="flex flex-col gap-2 mt-2">
+        <StatusDropdown onStatusSelected={form.setStatus} status={form.status} reviewer={form.project.reviewer!} />
+      </div>
     </div>
   );
 }

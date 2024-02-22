@@ -25,6 +25,13 @@ const QUERY = gql`
     project {
       id
       name
+
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
     }
   }
 

@@ -381,11 +381,6 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
-export type AssignPersonToTaskInput = {
-  personId: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
-};
-
 export type Assignment = {
   __typename?: 'Assignment';
   due: Scalars['Date']['output'];
@@ -418,23 +413,9 @@ export type ChangeTaskDescriptionInput = {
   taskId: Scalars['String']['input'];
 };
 
-export type ChangeTaskPriorityInput = {
-  priority: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
-};
-
-export type ChangeTaskSizeInput = {
-  size: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
-};
-
 export type CloseProjectInput = {
   projectId: Scalars['ID']['input'];
   retrospective: Scalars['String']['input'];
-};
-
-export type CloseTaskInput = {
-  taskId: Scalars['String']['input'];
 };
 
 export type Comment = {
@@ -624,11 +605,6 @@ export type EditProjectTimelineInput = {
   projectDueDate?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
   projectStartDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-export type EditTaskNameInput = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
 };
 
 export type EditUpdateInput = {
@@ -866,6 +842,8 @@ export type Project = {
 
 export type ProjectCheckIn = {
   __typename?: 'ProjectCheckIn';
+  acknowledgedAt?: Maybe<Scalars['Date']['output']>;
+  acknowledgedBy?: Maybe<Person>;
   author: Person;
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -974,10 +952,6 @@ export type Reaction = {
   reactionType: Scalars['String']['output'];
 };
 
-export type ReopenTaskInput = {
-  taskId: Scalars['String']['input'];
-};
-
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
@@ -992,12 +966,8 @@ export type RootMutationType = {
   addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
-  assignPersonToTask: Task;
   changeTaskDescription: Task;
-  changeTaskPriority: Task;
-  changeTaskSize: Task;
   closeProject: Project;
-  closeTask: Task;
   connectGoalToProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
@@ -1021,7 +991,6 @@ export type RootMutationType = {
   editProjectCheckIn: ProjectCheckIn;
   editProjectName: Project;
   editProjectTimeline: Project;
-  editTaskName: Task;
   editUpdate: Update;
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
@@ -1037,7 +1006,6 @@ export type RootMutationType = {
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
-  reopenTask: Task;
   setGoalGroup?: Maybe<Objective>;
   setGroupMission?: Maybe<Group>;
   setKeyResultOwner?: Maybe<KeyResult>;
@@ -1132,33 +1100,13 @@ export type RootMutationTypeArchiveProjectArgs = {
 };
 
 
-export type RootMutationTypeAssignPersonToTaskArgs = {
-  input: AssignPersonToTaskInput;
-};
-
-
 export type RootMutationTypeChangeTaskDescriptionArgs = {
   input: ChangeTaskDescriptionInput;
 };
 
 
-export type RootMutationTypeChangeTaskPriorityArgs = {
-  input: ChangeTaskPriorityInput;
-};
-
-
-export type RootMutationTypeChangeTaskSizeArgs = {
-  input: ChangeTaskSizeInput;
-};
-
-
 export type RootMutationTypeCloseProjectArgs = {
   input: CloseProjectInput;
-};
-
-
-export type RootMutationTypeCloseTaskArgs = {
-  input: CloseTaskInput;
 };
 
 
@@ -1281,11 +1229,6 @@ export type RootMutationTypeEditProjectTimelineArgs = {
 };
 
 
-export type RootMutationTypeEditTaskNameArgs = {
-  input: EditTaskNameInput;
-};
-
-
 export type RootMutationTypeEditUpdateArgs = {
   input: EditUpdateInput;
 };
@@ -1357,11 +1300,6 @@ export type RootMutationTypeRemoveProjectContributorArgs = {
 
 export type RootMutationTypeRemoveProjectMilestoneArgs = {
   milestoneId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeReopenTaskArgs = {
-  input: ReopenTaskInput;
 };
 
 

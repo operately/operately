@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { Form, useForm } from "@/features/ProjectCheckInForm";
+import { Form, useForm } from "@/features/projectCheckIns/Form";
 import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 

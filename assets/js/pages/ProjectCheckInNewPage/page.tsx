@@ -4,8 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { Form, useForm } from "@/features/ProjectCheckInForm";
-
+import { Form, useForm } from "@/features/projectCheckIns/Form";
 import { useLoadedData } from "./loader";
 
 export function Page() {
