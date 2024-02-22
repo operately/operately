@@ -51,7 +51,7 @@ function TextForm({ form }: { form: FormState }) {
 
 function SubmitActions({ form }: { form: FormState }) {
   return (
-    <div className="mt-10">
+    <div className="mt-6">
       <div className="flex items-center gap-2 mt-4">
         <FilledButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
           {form.submitButtonLabel}
