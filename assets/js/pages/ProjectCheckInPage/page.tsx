@@ -32,14 +32,14 @@ export function Page() {
       <Paper.Root>
         <Navigation project={checkIn.project} />
 
-        <Paper.Body>Hello</Paper.Body>
+        <Paper.Body>
+          <Options />
+          <Title />
+        </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
-
-// {me.id === update.author.id && <Options />}
-// <Title update={update} />
 
 // <Spacer size={4} />
 // <RichContent jsonContent={update.message} className="text-lg" />
@@ -52,18 +52,20 @@ export function Page() {
 // <Spacer size={4} />
 // <CommentSection form={commentsForm} me={me} refresh={refetch} />
 
-function Title({ update }: { update: Updates.Update }) {
+function Title() {
+  const { checkIn } = useLoadedData();
+
   return (
     <div className="flex flex-col items-center">
       <div className="text-content-accent text-2xl font-extrabold">
-        Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
+        Check-In from <FormattedTime time={checkIn.insertedAt} format="long-date" />
       </div>
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
-          <Avatar person={update.author} size="tiny" /> {update.author.fullName}
+          <Avatar person={checkIn.author} size="tiny" /> {checkIn.author.fullName}
         </div>
         <TextSeparator />
-        <Acknowledgement update={update} />
+        <Acknowledgement />
       </div>
     </div>
   );
@@ -85,11 +87,13 @@ function Navigation({ project }) {
 }
 
 function Acknowledgement({ update }: { update: Updates.Update }) {
+  const { checkIn } = useLoadedData();
+
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
         <Icons.IconSquareCheckFilled size={16} className="text-accent-1" />
-        Acknowledged by {update.acknowledgingPerson.fullName}
+        Acknowledged by {checkIn.acknowledgedBy.fullName}
       </span>
     );
   } else {
@@ -187,14 +191,16 @@ function empty(json: any) {
 }
 
 function Options() {
-  const { project, update } = useLoadedData();
+  const { checkIn, me } = useLoadedData();
+
+  if (me.id !== checkIn.author.id) return null;
 
   return (
     <PageOptions.Root position="top-right" testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"
-        to={`/projects/${project.id}/status_updates/${update.id}/edit`}
+        to={Paths.projectCheckInEditPath(checkIn.project.id, checkIn.id)}
         dataTestId="edit-check-in"
       />
     </PageOptions.Root>

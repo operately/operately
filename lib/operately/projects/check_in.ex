@@ -8,6 +8,9 @@ defmodule Operately.Projects.CheckIn do
     field :status, :string
     field :description, :map
 
+    belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
+    field :acknowledged_at, :date
+
     timestamps()
   end
 

@@ -11,6 +11,10 @@ export class Paths {
     return `/projects/${projectId}/check-ins/new`;
   }
 
+  static projectCheckInEditPath(projectId: string, checkInId: string) {
+    return `/projects/${projectId}/check-ins/${checkInId}/edit`;
+  }
+
   static projectCheckInsPath(projectId: string) {
     return `/projects/${projectId}/check-ins`;
   }
