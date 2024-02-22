@@ -1,33 +1,34 @@
 import * as React from "react";
 import * as Updates from "@/graphql/Projects/updates";
 
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
-import { useLoadedData, usePageRefetch } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function AckCTA() {
-  const { project, update } = useLoadedData();
-  const refetch = usePageRefetch();
+  const { checkIn } = useLoadedData();
+  const refresh = useRefresh();
+
   const [ack] = Updates.useAckUpdate();
 
-  if (update.acknowledged) return null;
-  if (!project.permissions.canAcknowledgeCheckIn) return null;
+  if (checkIn.acknowledgedAt) return null;
+  if (!checkIn.project.permissions.canAcknowledgeCheckIn) return null;
 
   const handleAck = async () => {
     await ack({
       variables: {
-        id: update.id,
+        id: checkIn.id,
       },
     });
 
-    refetch();
+    refresh();
   };
 
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
-      <GhostButton size="lg" testId="acknowledge-update" onClick={handleAck}>
+      <FilledButton size="lg" testId="acknowledge-update" onClick={handleAck}>
         Acknowledge this Check-In
-      </GhostButton>
+      </FilledButton>
     </div>
   );
 }

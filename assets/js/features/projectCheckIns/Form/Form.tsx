@@ -19,7 +19,7 @@ export function Form({ form, noSubmitActions }: FormProps) {
     <>
       <Header />
       <StatusSection form={form} />
-      <TextForm form={form} />
+      <DescriptionSection form={form} />
       <NotificationSection form={form} />
 
       {noSubmitActions && <SubmitActions form={form} />}
@@ -47,7 +47,7 @@ export function StatusSection({ form }: { form: FormState }) {
   );
 }
 
-function TextForm({ form }: { form: FormState }) {
+function DescriptionSection({ form }: { form: FormState }) {
   return (
     <>
       <div className="text-lg font-bold mx-auto">2. What's new since the last check-in?</div>

@@ -32,6 +32,10 @@ const QUERY = gql`
         avatarUrl
         title
       }
+
+      permissions {
+        canAcknowledgeCheckIn
+      }
     }
   }
 

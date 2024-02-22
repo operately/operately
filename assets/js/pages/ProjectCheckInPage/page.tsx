@@ -1,26 +1,24 @@
-import React from "react";
-
-import { Accordion } from "@/components/Accordion";
-import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
+import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import { Indicator } from "@/components/ProjectHealthIndicators";
-import RichContent from "@/components/RichContent";
-// import { Spacer } from "@/components/Spacer";
-import { TextSeparator } from "@/components/TextSeparator";
-// import * as Feed from "@/features/feed";
-import * as UpdateContent from "@/graphql/Projects/update_content";
-import * as Updates from "@/graphql/Projects/updates";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-// import { AckCTA } from "./AckCTA";
-// import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
+
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
+import RichContent from "@/components/RichContent";
+
+import { TextSeparator } from "@/components/TextSeparator";
 import { useLoadedData } from "./loader";
-// import { useAddReaction } from "./useAddReaction";
 import { Paths } from "@/routes/paths";
+import { AckCTA } from "./AckCTA";
 
 import { Status } from "@/features/projectCheckIns/Status";
+
+// import { Spacer } from "@/components/Spacer";
+// import * as Feed from "@/features/feed";
+// import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
+// import { useAddReaction } from "./useAddReaction";
 
 export function Page() {
   const { checkIn, me } = useLoadedData();
@@ -38,6 +36,8 @@ export function Page() {
           <Options />
           <Title />
           <StatusSection />
+          <DescriptionSection />
+          <AckCTA />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -45,13 +45,8 @@ export function Page() {
 }
 
 // <Spacer size={4} />
-// <RichContent jsonContent={update.message} className="text-lg" />
-// <Spacer size={4} />
-// <Health health={content.health} />
-// <Spacer size={4} />
 // <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
 
-// <AckCTA />
 // <Spacer size={4} />
 // <CommentSection form={commentsForm} me={me} refresh={refetch} />
 
@@ -113,6 +108,20 @@ function StatusSection() {
 
       <div className="flex flex-col gap-2 mt-2 border border-stroke-base rounded-lg p-2">
         <Status status={checkIn.status} reviewer={checkIn.project.reviewer!} />
+      </div>
+    </div>
+  );
+}
+
+function DescriptionSection() {
+  const { checkIn } = useLoadedData();
+
+  return (
+    <div className="my-8">
+      <div className="text-lg font-bold mx-auto">2. What's new since the last check-in?</div>
+
+      <div className="mt-2 border border-stroke-base rounded p-4">
+        <RichContent jsonContent={checkIn.description} className="text-lg" />
       </div>
     </div>
   );
