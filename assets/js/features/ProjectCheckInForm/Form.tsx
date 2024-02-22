@@ -1,15 +1,15 @@
 import React from "react";
 
 import classNames from "classnames";
-import Avatar from "@/components/Avatar";
 
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 
-import { FormState } from "./useForm";
 import { FilledButton } from "@/components/Button";
+import { FormState } from "./useForm";
+import { NotificationSection } from "./NotificationSection";
 
 interface FormProps {
   form: FormState;
@@ -23,75 +23,17 @@ export function Form({ form, noSubmitActions }: FormProps) {
       <Header />
       <StatusForm form={form} />
       <TextForm form={form} />
+      <NotificationSection form={form} />
 
       {noSubmitActions && <SubmitActions form={form} />}
     </>
   );
 }
 
-function SubmitActions({ form }: { form: FormState }) {
-  const regularContributors = form.project.contributors!.filter(
-    (contrib) => contrib!.role !== "reviewer" && contrib!.person.id !== form.author.id,
-  );
-
-  return (
-    <div className="mt-10">
-      <p className="font-bold text-lg">When you submit this check-in:</p>
-
-      <ul className="">
-        {regularContributors.length > 0 && (
-          <li>
-            <div className="flex items-center gap-1.5 mt-2 font-medium">
-              <div className="flex items-center gap-1.5 font-medium">
-                {regularContributors.map((contrib, i) => (
-                  <div className="flex items-center" key={contrib!.id}>
-                    <div className="flex items-center gap-1 font-medium flex-wrap">
-                      <Avatar person={contrib!.person!} size={18} />
-                      {People.firstName(contrib!.person!)}
-                    </div>
-                    {i < regularContributors.length - 1 &&
-                      (i === regularContributors.length - 2 ? <span className="ml-1"> and </span> : <span>, </span>)}
-                  </div>
-                ))}
-              </div>
-
-              <div>will be notified.</div>
-            </div>
-          </li>
-        )}
-
-        {form.project.reviewer && (
-          <li>
-            <div className="flex items-center gap-1.5 mt-2">
-              <p className="font-medium">The project reviewer</p>
-
-              <div className="flex items-center gap-1.5 font-medium">
-                <Avatar person={form.project.reviewer!} size={18} /> {form.project.reviewer?.fullName} will be asked to
-                acknowledge the check-in.
-              </div>
-            </div>
-          </li>
-        )}
-      </ul>
-
-      <div className="flex items-center gap-2 mt-4">
-        <FilledButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
-          {form.submitButtonLabel}
-        </FilledButton>
-
-        <FilledButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel">
-          Cancel
-        </FilledButton>
-      </div>
-    </div>
-  );
-}
-
 function Header() {
   return (
     <div>
-      <div className="text-2xl font-bold mx-auto">Weekly Check-in</div>
-      <div>Asking the champion to provide a weekly update on the project's progress.</div>
+      <div className="text-2xl font-bold mx-auto">Let's Check In</div>
     </div>
   );
 }
@@ -106,6 +48,23 @@ function TextForm({ form }: { form: FormState }) {
     </>
   );
 }
+
+function SubmitActions({ form }: { form: FormState }) {
+  return (
+    <div className="mt-10">
+      <div className="flex items-center gap-2 mt-4">
+        <FilledButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
+          {form.submitButtonLabel}
+        </FilledButton>
+
+        <FilledButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel">
+          Cancel
+        </FilledButton>
+      </div>
+    </div>
+  );
+}
+
 function StatusForm({ form }: { form: FormState }) {
   const project = form.project;
   const reviewer = project.reviewer;
