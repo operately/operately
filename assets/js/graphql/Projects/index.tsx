@@ -3,7 +3,6 @@ import { gql, useMutation, useApolloClient } from "@apollo/client";
 import * as fragments from "@/graphql/Fragments";
 import * as KeyResources from "./key_resources";
 import * as Milestones from "./milestones";
-import * as PhaseHistory from "./phase_history";
 import * as Permissions from "./permissions";
 import * as Updates from "./updates";
 import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
@@ -32,7 +31,6 @@ export const LIST_PROJECTS = gql`
       closedAt
 
       deadline
-      phase
       health
       isArchived
       isOutdated
@@ -64,7 +62,6 @@ export const GET_PROJECT = gql`
       startedAt
       deadline
       nextUpdateScheduledAt
-      phase
       health
       isPinned
       isArchived
@@ -78,7 +75,6 @@ export const GET_PROJECT = gql`
       lastCheckIn ${Updates.UPDATE_FRAGMENT}
       permissions ${Permissions.FRAGMENT}
 
-      phaseHistory ${PhaseHistory.GQL_FRAGMENT}
       keyResources ${KeyResources.GQL_FRAGMENT}
       milestones ${Milestones.FRAGMENT}
 

@@ -24,6 +24,9 @@ defmodule Operately.Projects.Project do
     field :last_check_in_status, :string
     field :next_check_in_scheduled_at, :utc_datetime
 
+    field :health, :string # Deprecated, use last_check_in_status instead
+    field :next_update_scheduled_at, :utc_datetime # Deprecated, use next_check_in_scheduled_at instead
+
     field :status, :string, default: "active"
     field :retrospective, :map
     field :closed_at, :utc_datetime
