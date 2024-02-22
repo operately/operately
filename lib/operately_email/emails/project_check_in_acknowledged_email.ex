@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.Emails.ProjectStatusUpdateAcknowledgedEmail do
+defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects, Updates}
 
@@ -16,6 +16,6 @@ defmodule OperatelyEmail.Emails.ProjectStatusUpdateAcknowledgedEmail do
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:update, update)
-    |> render("project_status_update_acknowledged")
+    |> render("project_check_in_acknowledged")
   end
 end

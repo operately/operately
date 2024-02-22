@@ -1,3 +1,0 @@
-<%= short_name(@author) %> commented on a check-in for <%= @project.name %>.
-
-Link: <%= OperatelyEmail.project_status_update_url(@project.id, @update.id) %>

@@ -50,10 +50,10 @@ defmodule OperatelyEmail.Assignments.Loader do
     if due?(project.next_update_scheduled_at) do
       [
         %{
-          type: :status_update,
+          type: :project_check_in,
           due: relative_due(project.next_update_scheduled_at),
-          url: OperatelyEmail.project_new_status_update_url(project.id),
-          name: "Status Update"
+          url: OperatelyEmail.project_check_in_new_url(project.id),
+          name: "Check-in"
         }
       ]
     else
