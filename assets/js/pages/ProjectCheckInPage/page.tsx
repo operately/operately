@@ -18,6 +18,7 @@ import { AckCTA } from "./AckCTA";
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 import { useLoadedData, usePageRefetch } from "./loader";
 import { useAddReaction } from "./useAddReaction";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project, update, me } = useLoadedData();
@@ -72,14 +73,14 @@ function Title({ update }: { update: Updates.Update }) {
 function Navigation({ project }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>
 
       <Paper.NavSeparator />
 
-      <Paper.NavItem linkTo={`/projects/${project.id}/status_updates`}>Check-Ins</Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.projectCheckInsPath(project.id)}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>
   );
 }

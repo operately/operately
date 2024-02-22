@@ -1,4 +1,8 @@
 export class Paths {
+  static projectPath(projectId: string) {
+    return `/projects/${projectId}`;
+  }
+
   static projectCheckInPath(projectId: string, checkInId: string) {
     return `/projects/${projectId}/check-ins/${checkInId}`;
   }

@@ -7,6 +7,7 @@ import * as Updates from "@/graphql/Projects/updates";
 import { useLoadedData } from "./loader";
 import { CheckInButton } from "./CheckInButton";
 import { CheckInCard } from "@/components/CheckInCard";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project, updates } = useLoadedData();
@@ -28,7 +29,7 @@ export function Page() {
 function Navigation({ project }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>
