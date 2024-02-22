@@ -13,9 +13,11 @@ import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
+import { Spacer } from "@/components/Spacer";
 import { Status } from "@/features/projectCheckIns/Status";
 
-// import { Spacer } from "@/components/Spacer";
+import { Reactions } from "@/features/reactions";
+
 // import * as Feed from "@/features/feed";
 // import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 // import { useAddReaction } from "./useAddReaction";
@@ -38,14 +40,14 @@ export function Page() {
           <StatusSection />
           <DescriptionSection />
           <AckCTA />
+
+          <Spacer size={4} />
+          <Reactions reactions={update.reactions} size={20} form={addReactionForm} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
-
-// <Spacer size={4} />
-// <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
 
 // <Spacer size={4} />
 // <CommentSection form={commentsForm} me={me} refresh={refetch} />
