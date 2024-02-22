@@ -7,6 +7,7 @@ defmodule Operately.Projects do
   alias Operately.People.Person
   alias Operately.Updates
   alias Operately.Activities
+  alias Operately.Projects.CheckIn
 
   alias Operately.Projects.{
     Project,
@@ -22,6 +23,10 @@ defmodule Operately.Projects do
     query = from p in Project, where: p.id == ^id
 
     Repo.one(query, with_deleted: true)
+  end
+
+  def get_check_in!(id) do
+    Repo.get!(CheckIn, id)
   end
 
   defdelegate create_project(params), to: Operately.Projects.ProjectCreation, as: :run

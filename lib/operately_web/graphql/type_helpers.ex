@@ -20,7 +20,8 @@ defmodule OperatelyWeb.Graphql.TypeHelpers do
     quote do
       field unquote(assoc_name), unquote(field_type) do
         resolve fn db_record, _, _ ->
-          assoc = Operately.Repo.preload(db_record, unquote(assoc_name))
+          db_record = Operately.Repo.preload(db_record, unquote(assoc_name))
+          assoc = Map.get(db_record, unquote(assoc_name))
 
           {:ok, assoc}
         end

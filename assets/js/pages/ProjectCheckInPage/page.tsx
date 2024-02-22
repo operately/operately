@@ -7,51 +7,50 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import RichContent from "@/components/RichContent";
-import { Spacer } from "@/components/Spacer";
+// import { Spacer } from "@/components/Spacer";
 import { TextSeparator } from "@/components/TextSeparator";
-import * as Feed from "@/features/feed";
+// import * as Feed from "@/features/feed";
 import * as UpdateContent from "@/graphql/Projects/update_content";
 import * as Updates from "@/graphql/Projects/updates";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import { AckCTA } from "./AckCTA";
-import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
-import { useLoadedData, usePageRefetch } from "./loader";
-import { useAddReaction } from "./useAddReaction";
+// import { AckCTA } from "./AckCTA";
+// import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
+import { useLoadedData } from "./loader";
+// import { useAddReaction } from "./useAddReaction";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
-  const { project, update, me } = useLoadedData();
-  const refetch = usePageRefetch();
+  const { checkIn, me } = useLoadedData();
 
-  const commentsForm = useForProjectCheckIn(update);
-  const addReactionForm = useAddReaction(update.id, "update", refetch);
-  const content = update.content as UpdateContent.StatusUpdate;
+  // const commentsForm = useForProjectCheckIn(update);
+  // const addReactionForm = useAddReaction(update.id, "update", refetch);
+  // const content = update.content as UpdateContent.StatusUpdate;
 
   return (
-    <Pages.Page title={["Check-In", project.name]}>
+    <Pages.Page title={["Check-In", checkIn.project.name]}>
       <Paper.Root>
-        <Navigation project={project} />
+        <Navigation project={checkIn.project} />
 
-        <Paper.Body>
-          {me.id === update.author.id && <Options />}
-          <Title update={update} />
-
-          <Spacer size={4} />
-          <RichContent jsonContent={update.message} className="text-lg" />
-          <Spacer size={4} />
-          <Health health={content.health} />
-          <Spacer size={4} />
-          <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
-
-          <AckCTA />
-          <Spacer size={4} />
-          <CommentSection form={commentsForm} me={me} refresh={refetch} />
-        </Paper.Body>
+        <Paper.Body>Hello</Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
+
+// {me.id === update.author.id && <Options />}
+// <Title update={update} />
+
+// <Spacer size={4} />
+// <RichContent jsonContent={update.message} className="text-lg" />
+// <Spacer size={4} />
+// <Health health={content.health} />
+// <Spacer size={4} />
+// <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+
+// <AckCTA />
+// <Spacer size={4} />
+// <CommentSection form={commentsForm} me={me} refresh={refetch} />
 
 function Title({ update }: { update: Updates.Update }) {
   return (

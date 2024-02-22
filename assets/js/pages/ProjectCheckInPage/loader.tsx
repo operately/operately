@@ -1,45 +1,26 @@
-import client from "@/graphql/client";
-
-import * as Paper from "@/components/PaperContainer";
-
-import * as Projects from "@/graphql/Projects";
+import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
-import * as Updates from "@/graphql/Projects/updates";
+import * as ProjectCheckIns from "@/models/projectCheckIns";
 
 interface LoaderResult {
-  project: Projects.Project;
-  update: Updates.Update;
+  checkIn: ProjectCheckIns.ProjectCheckIn;
   me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  let projectDate = await client.query({
-    query: Projects.GET_PROJECT,
-    variables: { id: params.projectID },
-    fetchPolicy: "network-only",
-  });
-
-  let updateData = await client.query({
-    query: Updates.GET_STATUS_UPDATE,
-    variables: { id: params.id },
-    fetchPolicy: "network-only",
-  });
-
   return {
-    project: projectDate.data.project,
-    update: updateData.data.update,
+    checkIn: await ProjectCheckIns.getCheckIn(params.id, {
+      includeProject: true,
+      includeAuthor: true,
+    }),
     me: await People.getMe(),
   };
 }
 
 export function useLoadedData(): LoaderResult {
-  const [data, _] = Paper.useLoadedData() as [LoaderResult, () => void];
-
-  return data;
+  return Pages.useLoadedData() as LoaderResult;
 }
 
-export function usePageRefetch(): () => void {
-  const [_data, refetch] = Paper.useLoadedData() as [LoaderResult, () => void];
-
-  return refetch;
+export function useRefresh() {
+  return Pages.useRefresh();
 }
