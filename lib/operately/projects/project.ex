@@ -1,10 +1,7 @@
 defmodule Operately.Projects.Project do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
   import Operately.SoftDelete.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "projects" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
@@ -13,8 +10,8 @@ defmodule Operately.Projects.Project do
 
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
-    has_many :phase_history, Operately.Projects.PhaseHistory, foreign_key: :project_id
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
+    has_many :check_ins, Operately.Projects.CheckIn, foreign_key: :project_id
 
     field :description, :map
     field :name, :string
@@ -22,9 +19,8 @@ defmodule Operately.Projects.Project do
 
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
-    field :next_update_scheduled_at, :utc_datetime
-    field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control, :completed, :canceled, :paused], default: :planning
-    field :health, Ecto.Enum, values: [:unknown, :on_track, :at_risk, :off_track, :paused], default: :unknown
+
+    field :next_check_in_scheduled_at, :utc_datetime
 
     field :status, :string, default: "active"
     field :retrospective, :map
@@ -47,8 +43,7 @@ defmodule Operately.Projects.Project do
       :started_at,
       :deadline,
       :goal_id,
-      :next_update_scheduled_at,
-      :phase,
+      :next_check_in_scheduled_at,
       :health,
       :company_id,
       :creator_id,
