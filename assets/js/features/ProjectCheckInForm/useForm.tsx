@@ -31,36 +31,35 @@ export interface FormState {
   cancelPath: string;
 }
 
-export function useForm(options: UseFormOptions): FormState {
+export function useForm({ mode, project, checkIn, author }: UseFormOptions): FormState {
   const navigate = useNavigate();
 
-  const [status, setStatus] = React.useState(options.mode === "edit" ? options.checkIn : "on_track");
+  const [status, setStatus] = React.useState(mode === "edit" ? checkIn!.status : "on_track");
 
   const editor = TipTapEditor.useEditor({
-    autoFocus: true,
     placeholder: `Write your updates here...`,
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
-    content: options.checkIn && JSON.parse(options.checkIn.description),
+    content: checkIn && JSON.parse(checkIn.description),
   });
 
   const [post] = ProjectCheckIns.usePostMutation({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.postProjectCheckIn.id)),
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id, data.postProjectCheckIn.id)),
   });
 
   const [edit] = ProjectCheckIns.useEditMutation({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.editProjectCheckIn.id)),
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id, data.editProjectCheckIn.id)),
   });
 
   const submit = () => {
     if (!editor.editor) return;
     if (editor.uploading) return;
 
-    if (options.mode === "create") {
+    if (mode === "create") {
       post({
         variables: {
           input: {
-            projectId: options.project.id,
+            projectId: project.id,
             status,
             description: JSON.stringify(editor.editor.getJSON()),
           },
@@ -70,11 +69,11 @@ export function useForm(options: UseFormOptions): FormState {
       return;
     }
 
-    if (options.mode === "edit") {
+    if (mode === "edit") {
       edit({
         variables: {
           input: {
-            checkInId: options.checkIn!.id,
+            checkInId: checkIn!.id,
             status,
             description: JSON.stringify(editor.editor.getJSON()),
           },
@@ -87,22 +86,19 @@ export function useForm(options: UseFormOptions): FormState {
 
   const submitButtonLabel = React.useMemo(() => {
     if (editor.uploading) return "Uploading...";
-    if (options.mode === "create") return "Submit";
+    if (mode === "create") return "Submit";
 
     return "Save Changes";
-  }, [editor.uploading, options.mode]);
+  }, [editor.uploading, mode]);
 
   const submitDisabled = !editor.editor || editor.uploading;
 
   const cancelPath =
-    options.mode === "create"
-      ? Paths.projectCheckInsPath(options.project.id)
-      : Paths.projectCheckInPath(options.project.id, options.checkIn!.id);
+    mode === "create" ? Paths.projectCheckInsPath(project.id) : Paths.projectCheckInPath(project.id, checkIn!.id);
 
   return {
-    author: options.author,
-    project: options.project,
-
+    author,
+    project,
     editor,
 
     status,
