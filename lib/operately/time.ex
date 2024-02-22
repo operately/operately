@@ -31,13 +31,17 @@ defmodule Operately.Time do
   end
 
   def calculate_next_check_in(previous_due, check_in_date) do
-    previous_due = as_date(previous_due)
-    check_in_date = as_date(check_in_date)
-
-    if Date.compare(previous_due, check_in_date) == :lt do
+    if previous_due == nil do
       next_week_friday(check_in_date)
     else
-      next_week_friday(previous_due)
+      previous_due = as_date(previous_due)
+      check_in_date = as_date(check_in_date)
+
+      if Date.compare(previous_due, check_in_date) == :lt do
+        next_week_friday(check_in_date)
+      else
+        next_week_friday(previous_due)
+      end
     end
   end
 

@@ -52,10 +52,10 @@ function PeopleList({ people }: { people: People.Person[] }): JSX.Element {
   return (
     <>
       {people.map((p, index) => (
-        <>
+        <React.Fragment key={p.id}>
           <PersonWithAvatarAndName key={p.id} person={p} />
           <PeopleListSeparator index={index} total={people.length} />
-        </>
+        </React.Fragment>
       ))}
     </>
   );
