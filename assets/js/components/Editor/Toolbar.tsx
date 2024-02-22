@@ -227,7 +227,7 @@ export default function ({ editor, noTopBorder }: MenuBarProps): JSX.Element {
   const border = noTopBorder ? "border-b" : "border-y";
 
   return (
-    <div className="sticky top-11 bg-surface z-10">
+    <div className="sticky bg-surface z-10 rounded-t top-0">
       <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center">

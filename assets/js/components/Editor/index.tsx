@@ -150,12 +150,12 @@ const EditorContent = TipTap.EditorContent;
 
 export { useEditor, EditorContent, Toolbar };
 
-export function StandardEditorForm({ editor, minHeight = 200 }: { editor: Editor; minHeight?: number }): JSX.Element {
+export function StandardEditorForm({ editor }: { editor: Editor; minHeight?: number }): JSX.Element {
   return (
     <Root editor={editor}>
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} noTopBorder />
 
-      <div className="mb-8 text-content-accent text-lg relative border-b border-stroke-base px-4">
+      <div className="text-content-accent text-lg relative px-4 rounded-t">
         <EditorContent editor={editor} />
       </div>
     </Root>
