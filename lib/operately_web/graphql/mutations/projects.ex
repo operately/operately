@@ -398,12 +398,13 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       end
     end
 
-    defp parse_date(date) do
-      if date do
-        NaiveDateTime.new!(date, ~T[00:00:00])
-      else
-        nil
-      end
+  end
+
+  defp parse_date(date) do
+    if date do
+      NaiveDateTime.new!(date, ~T[00:00:00])
+    else
+      nil
     end
   end
 end

@@ -65,6 +65,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Notifications
   import_types OperatelyWeb.Graphql.Types.Objectives
   import_types OperatelyWeb.Graphql.Types.Person
+  import_types OperatelyWeb.Graphql.Types.ProjectCheckIn
   import_types OperatelyWeb.Graphql.Types.ProjectHealths
   import_types OperatelyWeb.Graphql.Types.ProjectPermissions
   import_types OperatelyWeb.Graphql.Types.ProjectReviewRequests
@@ -121,6 +122,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Notifications
   import_types OperatelyWeb.Graphql.Mutations.Objectives
   import_types OperatelyWeb.Graphql.Mutations.People
+  import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Mutations.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Mutations.Projects
   import_types OperatelyWeb.Graphql.Mutations.Tasks
@@ -164,6 +166,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :notification_mutations
     import_fields :objective_mutations
     import_fields :person_mutations
+    import_fields :project_check_in_mutations
     import_fields :project_review_request_mutations
     import_fields :project_mutations
     import_fields :task_mutations

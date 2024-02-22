@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import * as People from "@/graphql/People";
-import * as Projects from "@/graphql/Projects";
+import * as People from "@/models/people";
+import * as Projects from "@/models/projects";
+import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as TipTapEditor from "@/components/Editor";
-import * as Updates from "@/graphql/Projects/updates";
 
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
@@ -12,7 +12,7 @@ interface UseFormOptions {
   mode: "create" | "edit";
   author: People.Person;
   project: Projects.Project;
-  checkIn?: Updates.Update;
+  checkIn?: ProjectCheckIns.ProjectCheckIn;
 }
 
 export interface FormState {
@@ -34,36 +34,22 @@ export interface FormState {
 export function useForm(options: UseFormOptions): FormState {
   const navigate = useNavigate();
 
-  let lastCheckIn: Updates.Update | null = null;
-
-  if (options.mode === "edit") {
-    lastCheckIn = options.checkIn!;
-  } else {
-    lastCheckIn = (options.project.lastCheckIn || null) as Updates.Update | null;
-  }
-
-  const [status, setStatus] = React.useState(() => {
-    if (options.mode === "edit") {
-      return options.checkIn!.content.health.status;
-    } else {
-      return "on_track";
-    }
-  });
+  const [status, setStatus] = React.useState(options.mode === "edit" ? options.checkIn : "on_track");
 
   const editor = TipTapEditor.useEditor({
     autoFocus: true,
     placeholder: `Write your updates here...`,
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
-    content: options.checkIn && JSON.parse(options.checkIn.message),
+    content: options.checkIn && JSON.parse(options.checkIn.description),
   });
 
-  const [post] = Projects.usePostUpdate({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.postUpdate.id)),
+  const [post] = ProjectCheckIns.usePostMutation({
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.postProjectCheckIn.id)),
   });
 
-  const [edit] = Projects.useEditUpdate({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.editUpdate.id)),
+  const [edit] = ProjectCheckIns.useEditMutation({
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(options.project.id, data.editProjectCheckIn.id)),
   });
 
   const submit = () => {
@@ -74,11 +60,9 @@ export function useForm(options: UseFormOptions): FormState {
       post({
         variables: {
           input: {
-            updatableId: options.project.id,
-            updatableType: "Project",
-            content: JSON.stringify(editor.editor.getJSON()),
+            projectId: options.project.id,
             status,
-            messageType: "status_update",
+            description: JSON.stringify(editor.editor.getJSON()),
           },
         },
       });
@@ -90,9 +74,9 @@ export function useForm(options: UseFormOptions): FormState {
       edit({
         variables: {
           input: {
-            updateId: options.checkIn!.id,
-            content: JSON.stringify(editor.editor.getJSON()),
+            checkInId: options.checkIn!.id,
             status,
+            description: JSON.stringify(editor.editor.getJSON()),
           },
         },
       });

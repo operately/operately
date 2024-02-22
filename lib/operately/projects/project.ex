@@ -20,6 +20,8 @@ defmodule Operately.Projects.Project do
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
 
+    belongs_to :last_check_in, Operately.Projects.CheckIn, foreign_key: :last_check_in_id
+    field :last_check_in_status, :string
     field :next_check_in_scheduled_at, :utc_datetime
 
     field :status, :string, default: "active"
