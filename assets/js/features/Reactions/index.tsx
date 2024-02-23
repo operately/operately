@@ -6,7 +6,7 @@ import * as People from "@/models/people";
 
 import classNames from "classnames";
 
-import Avatar, { AvatarSize } from "@/components/Avatar";
+import Avatar from "@/components/Avatar";
 
 interface ReactionsFormState {
   reactions: ReactionListItem[];

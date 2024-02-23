@@ -14,20 +14,23 @@ import React from "react";
 interface RichContentProps {
   jsonContent: string;
   className?: string;
+  skipParse?: boolean;
 }
 
 import * as TipTapEditor from "@/components/Editor";
 
-export default function RichContent({ jsonContent, className }: RichContentProps): JSX.Element {
+export default function RichContent({ jsonContent, className, skipParse }: RichContentProps): JSX.Element {
+  const content = skipParse ? jsonContent : JSON.parse(jsonContent);
+
   const { editor } = TipTapEditor.useEditor({
-    content: JSON.parse(jsonContent),
+    content: content,
     editable: false,
   });
 
   React.useEffect(() => {
     if (!editor) return;
 
-    editor.commands.setContent(JSON.parse(jsonContent));
+    editor.commands.setContent(skipParse ? jsonContent : JSON.parse(jsonContent));
   }, [jsonContent]);
 
   return <TipTapEditor.EditorContent editor={editor} className={"ProseMirror " + className} />;
