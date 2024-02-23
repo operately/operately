@@ -26,7 +26,7 @@ const QUERY = gql`
   fragment ReactionsOnProjectCheckIn on ProjectCheckIn {
     reactions {
       id
-      reactionType
+      emoji
 
       person {
         id

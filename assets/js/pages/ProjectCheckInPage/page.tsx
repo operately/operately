@@ -50,10 +50,10 @@ export function Page() {
 }
 
 function Reactions() {
-  const { checkIn } = useLoadedData();
+  const { checkIn, me } = useLoadedData();
   const reactions = checkIn.reactions.map((r) => r!);
   const entity = { id: checkIn.id, type: "project_check_in" };
-  const form = useReactionsForm(entity, reactions);
+  const form = useReactionsForm(entity, reactions, me);
 
   return <ReactionList form={form} size={24} />;
 }

@@ -381,6 +381,12 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
+export type AddReactionInput = {
+  emoji: Scalars['String']['input'];
+  entityId: Scalars['ID']['input'];
+  entityType: Scalars['String']['input'];
+};
+
 export type Assignment = {
   __typename?: 'Assignment';
   due: Scalars['Date']['output'];
@@ -948,6 +954,7 @@ export type ProjectReviewRequest = {
 
 export type Reaction = {
   __typename?: 'Reaction';
+  emoji: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   person: Person;
   reactionType: Scalars['String']['output'];
@@ -1085,9 +1092,7 @@ export type RootMutationTypeAddProjectMilestoneArgs = {
 
 
 export type RootMutationTypeAddReactionArgs = {
-  entityId: Scalars['ID']['input'];
-  entityType: Scalars['String']['input'];
-  type: Scalars['String']['input'];
+  input: AddReactionInput;
 };
 
 

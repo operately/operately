@@ -4,13 +4,12 @@ import * as Reactions from "@/models/reactions";
 import * as Popover from "@radix-ui/react-popover";
 import * as People from "@/models/people";
 
-import { useBoolState } from "@/utils/useBoolState";
 import classNames from "classnames";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";
 
 interface ReactionsFormState {
-  reactions: Reactions.Reaction[];
+  reactions: ReactionListItem[];
   submit: (type: string) => void;
 }
 
@@ -20,34 +19,53 @@ interface Entity {
 }
 
 interface ReactionListItem {
+  id: string;
   person: People.Person;
   emoji: string;
 }
 
-export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[]): ReactionsFormState {
-  const [add] = [(a: any) => a]; //Reactions.useAddReaction();
+export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[], me: People.Person): ReactionsFormState {
+  const [add] = Reactions.useAddReaction();
 
-  const [reactionList, setReactionList] = React.useState<ReactionListItem[]>(() => {
+  const [reactions, setReactions] = React.useState<ReactionListItem[]>(() => {
     return initial.map((reaction) => {
-      return { person: reaction.person, emoji: reaction.emoji };
+      return { id: reaction.id, person: reaction.person, emoji: reaction.emoji };
     });
   });
 
-  const submit = (type: string) => {
-    add({
+  const submit = async (emoji: string) => {
+    const tempId = `temp-${emoji}-${Date.now()}`;
+
+    setReactions((prev) => {
+      const reaction = { id: tempId, emoji: emoji, person: me };
+      return [...prev, reaction];
+    });
+
+    const res = await add({
       variables: {
         input: {
           entityId: entity.id,
-          entityIdType: entity.type,
-          emoji: type,
+          entityType: entity.type,
+          emoji: emoji,
         },
       },
-    });
+    }).catch((e: any) => ({ error: e }));
 
-    setReactionList((prev) => {
-      const reaction = { emoji: type, person: { id: "1", name: "John Doe" }, emoji: type };
-      return [...prev, reaction];
-    });
+    if (res.error) {
+      setReactions((prev) => {
+        return prev.filter((r) => r.id !== tempId);
+      });
+    } else {
+      setReactions((prev) => {
+        return prev.map((r) => {
+          if (r.id === tempId) {
+            return { ...r, id: res.data!.addReaction.id };
+          } else {
+            return r;
+          }
+        });
+      });
+    }
   };
 
   return {
@@ -70,12 +88,14 @@ export function ReactionList({ form, size }: { form: ReactionsFormState; size: n
 
 function ReactionItem({ reaction, size }) {
   const testId = `reaction-${reaction.reactionType}`;
-  const className = classNames("flex items-center gap-1.5 transition-all bg-surface-accent rounded-full p-1 pr-1.5");
+  const className = classNames("flex items-center transition-all bg-surface-dimmed rounded-full");
 
   return (
     <div className={className} data-test-id={testId}>
-      <Avatar person={reaction.person} size={AvatarSize.Tiny} />
-      <div style={{ fontSize: size }}>{reaction.emoji}</div>
+      <Avatar person={reaction.person} size={size} />
+      <div style={{ fontSize: size - 4 }} className="pl-1.5 pr-2">
+        {reaction.emoji}
+      </div>
     </div>
   );
 }
@@ -94,8 +114,8 @@ function AddReaction({ form, size }) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <div className="text-content-accent cursor-pointer">
-          <Icons.IconMoodPlus size={size} />
+        <div className="text-content-accent cursor-pointer bg-surface-dimmed rounded-full p-1">
+          <Icons.IconMoodPlus size={size - 2} />
         </div>
       </Popover.Trigger>
 
