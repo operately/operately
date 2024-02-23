@@ -17,7 +17,7 @@ const QUERY = gql`
   query Comments($entityId: ID!, $entityType: String!) {
     comments(entityId: $entityId, entityType: $entityType) {
       id
-      message
+      content
       insertedAt
 
       author {

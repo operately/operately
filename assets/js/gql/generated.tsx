@@ -454,7 +454,8 @@ export type ContactInput = {
 
 export type CreateCommentInput = {
   content: Scalars['String']['input'];
-  updateId: Scalars['ID']['input'];
+  entityId: Scalars['String']['input'];
+  entityType: Scalars['String']['input'];
 };
 
 export type CreateGoalInput = {

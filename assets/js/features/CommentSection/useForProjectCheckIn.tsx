@@ -5,13 +5,17 @@ import { Item, ItemType, FormState } from "./form";
 
 export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): FormState {
   const entity = { id: checkIn.id, type: "project_check_in" };
+
   const { data, loading, error } = Comments.useComments({ entity });
+
+  const [post, { loading: submittingPost }] = Comments.usePostComment();
+  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   if (loading)
     return {
       items: [],
-      postComment: async (content: string) => {},
-      editComment: async (commentID: string, content: string) => {},
+      postComment: async (_content: string) => {},
+      editComment: async (_commentID: string, _content: string) => {},
       submitting: false,
     };
 
@@ -22,7 +26,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
   let items: Item[] = [];
 
   before.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
+    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c.message });
   });
 
   if (checkIn.acknowledgedAt) {
@@ -34,11 +38,8 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
   }
 
   after.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
+    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c.message });
   });
-
-  const [post, { loading: submittingPost }] = Comments.usePostComment();
-  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const postComment = async (content: string) => {
     await post({

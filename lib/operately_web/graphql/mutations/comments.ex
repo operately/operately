@@ -2,8 +2,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Comments do
   use Absinthe.Schema.Notation
 
   input_object :create_comment_input do
+    field :entity_id, non_null(:string)
+    field :entity_type, non_null(:string)
     field :content, non_null(:string)
-    field :update_id, non_null(:id)
   end
 
   input_object :edit_comment_input do
@@ -16,22 +17,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Comments do
       arg :input, non_null(:create_comment_input)
 
       resolve fn args, %{context: context} ->
-        update = Operately.Updates.get_update!(args.input.update_id)
+        author = context.current_account.person
+        entity_id = args.input.entity_id
+        entity_type = args.input.entity_type
+        content = Jason.decode!(args.input.content)
 
-        cond do
-          update.type in [:project_discussion, :status_update, :review] ->
-            author = context.current_account.person
-            content = Jason.decode!(args.input.content)
-
-            Operately.Updates.create_comment(author, update, content)
-
-          true ->
-            Operately.Updates.create_comment(update, %{
-              author_id: context.current_account.person.id,
-              update_id: args.input.update_id,
-              content: %{"message" => Jason.decode!(args.input.content)}
-            })
-        end
+        Operately.Operations.CommentAdding.run(author, entity_id, entity_type, content)
       end
     end
 
@@ -39,11 +30,10 @@ defmodule OperatelyWeb.Graphql.Mutations.Comments do
       arg :input, non_null(:edit_comment_input)
 
       resolve fn args, _ ->
-        comment = Operately.Updates.get_comment!(args.input.comment_id)
+        comment_id = args.input.comment_id
+        content = Jason.decode!(args.input.content)
 
-        Operately.Updates.update_comment(comment, %{
-          content: %{"message" => Jason.decode!(args.input.content)}
-        })
+        Operately.Operations.CommentEditing.run(comment_id, content)
       end
     end
   end
