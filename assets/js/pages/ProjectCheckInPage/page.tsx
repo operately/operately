@@ -9,7 +9,6 @@ import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 
 import { TextSeparator } from "@/components/TextSeparator";
-import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
@@ -17,17 +16,15 @@ import { Spacer } from "@/components/Spacer";
 import { Status } from "@/features/projectCheckIns/Status";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 
-// import * as Feed from "@/features/feed";
-// import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
-// import { useAddReaction } from "./useAddReaction";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
-  const { checkIn } = useLoadedData();
+  const { checkIn, me } = useLoadedData();
+  const refresh = useRefresh();
 
-  // const commentsForm = useForProjectCheckIn(update);
-  // const addReactionForm = useAddReaction(update.id, "update", refetch);
-  // const content = update.content as UpdateContent.StatusUpdate;
+  const commentsForm = useForProjectCheckIn(checkIn);
 
   return (
     <Pages.Page title={["Check-In", checkIn.project.name]}>
@@ -43,6 +40,9 @@ export function Page() {
 
           <Spacer size={4} />
           <Reactions />
+
+          <div className="border-t border-stroke-base mt-8" />
+          <CommentSection form={commentsForm} me={me} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -57,9 +57,6 @@ function Reactions() {
 
   return <ReactionList form={form} size={24} />;
 }
-
-// <Spacer size={4} />
-// <CommentSection form={commentsForm} me={me} refresh={refetch} />
 
 function Title() {
   const { checkIn } = useLoadedData();

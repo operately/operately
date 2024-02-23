@@ -1,32 +1,51 @@
-import * as Updates from "@/graphql/Projects/updates";
+import * as ProjectCheckIns from "@/models/projectCheckIns";
+import * as Comments from "@/models/comments";
 
 import { Item, ItemType, FormState } from "./form";
 
-export function useForProjectCheckIn(update: Updates.Update): FormState {
-  const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
+export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): FormState {
+  const entity = { id: checkIn.id, type: "project_check_in" };
+  const { data, loading, error } = Comments.useComments({ entity });
+
+  if (loading)
+    return {
+      items: [],
+      postComment: async (content: string) => {},
+      editComment: async (commentID: string, content: string) => {},
+      submitting: false,
+    };
+
+  if (error) throw error;
+
+  const { before, after } = Comments.splitComments(data.comments, checkIn.acknowledgedAt);
 
   let items: Item[] = [];
 
-  beforeAck.forEach((c) => {
+  before.forEach((c) => {
     items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
   });
 
-  if (update.acknowledged) {
-    items.push({ type: "acknowledgement" as ItemType, insertedAt: update.acknowledgedAt, value: update });
+  if (checkIn.acknowledgedAt) {
+    items.push({
+      type: "acknowledgement" as ItemType,
+      insertedAt: checkIn.acknowledgedAt,
+      value: checkIn,
+    });
   }
 
-  afterAck.forEach((c) => {
+  after.forEach((c) => {
     items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
   });
 
-  const [post, { loading: submittingPost }] = Updates.usePostComment();
-  const [edit, { loading: submittingEdit }] = Updates.useEditComment();
+  const [post, { loading: submittingPost }] = Comments.usePostComment();
+  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const postComment = async (content: string) => {
     await post({
       variables: {
         input: {
-          updateId: update.id,
+          entityId: entity.id,
+          entityType: entity.type,
           content: JSON.stringify(content),
         },
       },
@@ -44,10 +63,12 @@ export function useForProjectCheckIn(update: Updates.Update): FormState {
     });
   };
 
+  const submitting = submittingPost || submittingEdit;
+
   return {
     items,
     postComment,
     editComment,
-    submitting: submittingPost || submittingEdit,
+    submitting,
   };
 }

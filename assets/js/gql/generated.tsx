@@ -426,11 +426,11 @@ export type CloseProjectInput = {
 
 export type Comment = {
   __typename?: 'Comment';
-  author?: Maybe<Person>;
+  author: Person;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['NaiveDateTime']['output'];
   message: Scalars['String']['output'];
-  reactions?: Maybe<Array<Maybe<Reaction>>>;
+  reactions: Array<Maybe<Reaction>>;
 };
 
 export type Company = {
@@ -1429,6 +1429,7 @@ export type RootQueryType = {
   __typename?: 'RootQueryType';
   activities?: Maybe<Array<Maybe<Activity>>>;
   assignments: Assignments;
+  comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
   discussion: Discussion;
   discussions?: Maybe<Array<Maybe<Discussion>>>;
@@ -1474,6 +1475,12 @@ export type RootQueryTypeActivitiesArgs = {
 export type RootQueryTypeAssignmentsArgs = {
   rangeEnd: Scalars['DateTime']['input'];
   rangeStart: Scalars['DateTime']['input'];
+};
+
+
+export type RootQueryTypeCommentsArgs = {
+  entityId?: InputMaybe<Scalars['ID']['input']>;
+  entityType?: InputMaybe<Scalars['String']['input']>;
 };
 
 

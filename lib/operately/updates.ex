@@ -317,6 +317,14 @@ defmodule Operately.Updates do
     Repo.all(query)
   end
 
+  def list_comments(entity_id, entity_type) do
+    query = from c in Comment,
+      where: c.entity_id == ^entity_id and c.entity_type == ^entity_type,
+      order_by: [asc: c.inserted_at]
+
+    Repo.all(query)
+  end
+
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   # old version. TODO: remove

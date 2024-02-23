@@ -12,6 +12,7 @@ defmodule Operately.Projects.CheckIn do
     field :acknowledged_at, :date
 
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :project_check_in]
+    has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :project_check_in]
 
     timestamps()
   end

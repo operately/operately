@@ -1,14 +1,17 @@
 defmodule Operately.Updates.Comment do
-  use Ecto.Schema
+  use Operately.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "comments" do
     belongs_to :update, Operately.Updates.Update
     belongs_to :author, Operately.People.Person
 
+    field :entity_id, Ecto.UUID
+    field :entity_type, Ecto.Enum, values: [:project_check_in]
+
     field :content, :map
+
+    has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment]
 
     timestamps()
   end
