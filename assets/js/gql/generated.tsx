@@ -849,6 +849,7 @@ export type ProjectCheckIn = {
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   project: Project;
+  reactions: Array<Maybe<Reaction>>;
   status: Scalars['String']['output'];
 };
 

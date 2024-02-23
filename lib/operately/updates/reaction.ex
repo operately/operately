@@ -8,7 +8,7 @@ defmodule Operately.Updates.Reaction do
     belongs_to :person, Operately.People.Person
 
     field :entity_id, Ecto.UUID
-    field :entity_type, Ecto.Enum, values: [:update, :comment]
+    field :entity_type, Ecto.Enum, values: [:update, :comment, :project_check_in]
     field :reaction_type, Ecto.Enum, values: [:thumbs_up, :thumbs_down, :heart, :rocket]
 
     timestamps()

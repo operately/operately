@@ -1,101 +1,146 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
-import * as Updates from "@/graphql/Projects/updates";
+import * as Reactions from "@/models/reactions";
+import * as Popover from "@radix-ui/react-popover";
+import * as People from "@/models/people";
 
 import { useBoolState } from "@/utils/useBoolState";
+import classNames from "classnames";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";
 
-const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
-
-interface ReactionsProps {
-  reactions: Updates.Reaction[];
-  size: number;
-  form: any;
+interface ReactionsFormState {
+  reactions: Reactions.Reaction[];
+  submit: (type: string) => void;
 }
 
-export function Reactions({ reactions, form, size }: ReactionsProps): JSX.Element {
+interface Entity {
+  id: string;
+  type: string;
+}
+
+interface ReactionListItem {
+  person: People.Person;
+  emoji: string;
+}
+
+export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[]): ReactionsFormState {
+  const [add] = [(a: any) => a]; //Reactions.useAddReaction();
+
+  const [reactionList, setReactionList] = React.useState<ReactionListItem[]>(() => {
+    return initial.map((reaction) => {
+      return { person: reaction.person, emoji: reaction.emoji };
+    });
+  });
+
+  const submit = (type: string) => {
+    add({
+      variables: {
+        input: {
+          entityId: entity.id,
+          entityIdType: entity.type,
+          emoji: type,
+        },
+      },
+    });
+
+    setReactionList((prev) => {
+      const reaction = { emoji: type, person: { id: "1", name: "John Doe" }, emoji: type };
+      return [...prev, reaction];
+    });
+  };
+
+  return {
+    reactions,
+    submit,
+  };
+}
+
+export function ReactionList({ form, size }: { form: ReactionsFormState; size: number }) {
   return (
     <div className="flex items-start gap-2 flex-wrap">
-      {reactions.map((reaction, index) => (
-        <Reaction key={index} reaction={reaction} size={size} />
+      {form.reactions.map((reaction, index) => (
+        <ReactionItem key={index} reaction={reaction} size={size} />
       ))}
 
-      <AddReaction size={size} form={form} />
+      <AddReaction form={form} size={size} />
     </div>
   );
 }
 
-function Reaction({ reaction, size }) {
+function ReactionItem({ reaction, size }) {
   const testId = `reaction-${reaction.reactionType}`;
+  const className = classNames("flex items-center gap-1.5 transition-all bg-surface-accent rounded-full p-1 pr-1.5");
+
   return (
-    <div
-      className="flex items-center gap-1.5 transition-all bg-surface-accent rounded-full p-1 pr-1.5"
-      data-test-id={testId}
-    >
+    <div className={className} data-test-id={testId}>
       <Avatar person={reaction.person} size={AvatarSize.Tiny} />
-      <ReactionIcon size={size} type={reaction.reactionType} />
+      <div style={{ fontSize: size }}>{reaction.emoji}</div>
     </div>
   );
 }
 
-function AddReaction({ size, form }) {
-  const [active, _, activate, deactivate] = useBoolState(false);
+function AddReaction({ form, size }) {
+  const dropdownClassName = classNames("rounded-lg border border-surface-outline z-[100] shadow-xl overflow-hidden");
 
-  const handleAddReaction = (type: string) => {
-    deactivate();
-    form.submit(type);
+  const [open, setOpen] = React.useState(false);
+
+  const close = () => setOpen(false);
+  const onSelected = (emoji: string) => {
+    form.submit(emoji.trim());
+    close();
   };
 
   return (
-    <div className="rounded-full bg-surface-dimmed p-1 hover:scale-105" data-test-id="reactions-button">
-      <div className="flex items-center gap-3 transition-all">
-        {active ? (
-          <ReactionPallete size={size} handleAddReaction={handleAddReaction} />
-        ) : (
-          <AddReactionZeroState size={size} onClick={activate} />
-        )}
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger asChild>
+        <div className="text-content-accent cursor-pointer">
+          <Icons.IconMoodPlus size={size} />
+        </div>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className={dropdownClassName} align="center" sideOffset={5}>
+          <ReactionPallete size={size} close={close} onSelected={onSelected} />
+          <Popover.Arrow className="fill-surface-outline scale-150" style={{}} />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+const PALLETE = [
+  ["🚀", "❤️ ", "👍", "👎", "😂", "😮", "😢", "😡"],
+  ["🤢", "🤔", "🤯", "🥳", "🤩", "🥺", "🤬", "🤗"],
+  ["🤭", "🤫", "📈", "📉", "👏", "🙌", "👊", "🤝"],
+  ["🙏", "👌", "🤟", "✌️ ", "👔", "👗", "💯", "🔥"],
+  ["🌈", "🍻", "🎉", "🎊", "🎁", "💰", "💸", "💵"],
+];
+
+function ReactionPallete({ size, close, onSelected }) {
+  return (
+    <div className="bg-surface p-4 py-3 pb-2 flex flex-col gap-0.5">
+      <div className="flex items-start justify-between text-content-dimmed w-full">
+        <div className="text-sm mb-2 font-medium">Add Reaction</div>
+        <div className="">
+          <Icons.IconX size={16} onClick={close} className="cursor-pointer" />
+        </div>
       </div>
-    </div>
-  );
-}
 
-function AddReactionZeroState({ size, onClick }) {
-  return (
-    <div className="text-content-accent cursor-pointer" onClick={onClick}>
-      <Icons.IconMoodPlus size={size} />
-    </div>
-  );
-}
-
-function ReactionPallete({ size, handleAddReaction }) {
-  return (
-    <div className="flex gap-2 items-center px-1">
-      {PossibleReactionTypes.map((type) => (
-        <div
-          key={type}
-          className="hover:text-pink-400 cursor-pointer"
-          onClick={() => handleAddReaction(type)}
-          data-test-id={`reaction-${type}-button`}
-        >
-          <ReactionIcon size={size} type={type} />
+      {PALLETE.map((row, index) => (
+        <div key={index} className="flex gap-2 items-center">
+          {row.map((emoji) => (
+            <div
+              key={emoji}
+              className="hover:scale-125 cursor-pointer"
+              onClick={() => onSelected(emoji)}
+              data-test-id={`reaction-${emoji}-button`}
+            >
+              <span style={{ fontSize: size - 2 }}>{emoji}</span>
+            </div>
+          ))}
         </div>
       ))}
     </div>
   );
-}
-
-function ReactionIcon({ size, type }) {
-  switch (type) {
-    case "thumbs_up":
-      return <Icons.IconThumbUpFilled size={size} className="text-yellow-500" />;
-    case "heart":
-      return <Icons.IconHeartFilled size={size} className="text-red-500" />;
-    case "thumbs_down":
-      return <Icons.IconThumbDownFilled size={size} className="text-yellow-500" />;
-    case "rocket":
-      return <Icons.IconRocket size={size} className="text-green-500" />;
-    default:
-      return null;
-  }
 }

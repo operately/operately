@@ -16,14 +16,14 @@ import { AckCTA } from "./AckCTA";
 import { Spacer } from "@/components/Spacer";
 import { Status } from "@/features/projectCheckIns/Status";
 
-import { Reactions } from "@/features/reactions";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 // import * as Feed from "@/features/feed";
 // import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 // import { useAddReaction } from "./useAddReaction";
 
 export function Page() {
-  const { checkIn, me } = useLoadedData();
+  const { checkIn } = useLoadedData();
 
   // const commentsForm = useForProjectCheckIn(update);
   // const addReactionForm = useAddReaction(update.id, "update", refetch);
@@ -42,11 +42,20 @@ export function Page() {
           <AckCTA />
 
           <Spacer size={4} />
-          <Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+          <Reactions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Reactions() {
+  const { checkIn } = useLoadedData();
+  const reactions = checkIn.reactions.map((r) => r!);
+  const entity = { id: checkIn.id, type: "project_check_in" };
+  const form = useReactionsForm(entity, reactions);
+
+  return <ReactionList form={form} size={24} />;
 }
 
 // <Spacer size={4} />

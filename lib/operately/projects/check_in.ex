@@ -11,6 +11,8 @@ defmodule Operately.Projects.CheckIn do
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     field :acknowledged_at, :date
 
+    has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :project_check_in]
+
     timestamps()
   end
 

@@ -12,6 +12,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     checkIn: await ProjectCheckIns.getCheckIn(params.id, {
       includeProject: true,
       includeAuthor: true,
+      includeReactions: true,
     }),
     me: await People.getMe(),
   };

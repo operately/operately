@@ -4,6 +4,7 @@ import client from "@/graphql/client";
 interface GetCheckInOptions {
   includeAuthor?: boolean;
   includeProject?: boolean;
+  includeReactions?: boolean;
 }
 
 export async function getCheckIn(id: string, options: GetCheckInOptions = {}) {
@@ -13,6 +14,7 @@ export async function getCheckIn(id: string, options: GetCheckInOptions = {}) {
       id: id,
       includeAuthor: !!options.includeAuthor,
       includeProject: !!options.includeProject,
+      includeReactions: !!options.includeReactions,
     },
     fetchPolicy: "network-only",
   });
@@ -21,6 +23,19 @@ export async function getCheckIn(id: string, options: GetCheckInOptions = {}) {
 }
 
 const QUERY = gql`
+  fragment ReactionsOnProjectCheckIn on ProjectCheckIn {
+    reactions {
+      id
+      reactionType
+
+      person {
+        id
+        fullName
+        avatarUrl
+      }
+    }
+  }
+
   fragment ProjectOnProjectCheckIn on ProjectCheckIn {
     project {
       id
@@ -48,7 +63,7 @@ const QUERY = gql`
     }
   }
 
-  query GetProjectCheckIn($id: ID!, $includeAuthor: Boolean!, $includeProject: Boolean!) {
+  query GetProjectCheckIn($id: ID!, $includeAuthor: Boolean!, $includeProject: Boolean!, $includeReactions: Boolean!) {
     projectCheckIn(id: $id) {
       id
       status
@@ -57,6 +72,7 @@ const QUERY = gql`
 
       ...ProjectOnProjectCheckIn @include(if: $includeProject)
       ...AuthorOnProjectCheckIn @include(if: $includeAuthor)
+      ...ReactionsOnProjectCheckIn @include(if: $includeReactions)
     }
   }
 `;
