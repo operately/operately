@@ -155,7 +155,7 @@ function LastCheckIn({ project }) {
     </div>
   );
 
-  if (project.lastCheckIn === null) {
+  if (!project.lastCheckIn) {
     return (
       <div className="text-sm">
         Asking the champion to check-in every Friday.

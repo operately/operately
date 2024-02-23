@@ -5,6 +5,10 @@ interface GetProjectOptions {
   includeGoal?: boolean;
   includeReviewer?: boolean;
   includeContributors?: boolean;
+  includePermissions?: boolean;
+  includeSpace?: boolean;
+  includeKeyResources?: boolean;
+  includeMilestones?: boolean;
 }
 
 export async function getProject(id: string, options: GetProjectOptions = {}) {
@@ -15,6 +19,10 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
       includeGoal: !!options.includeGoal,
       includeReviewer: !!options.includeReviewer,
       includeContributors: !!options.includeContributors,
+      includePermissions: !!options.includePermissions,
+      includeSpace: !!options.includeSpace,
+      includeKeyResources: !!options.includeKeyResources,
+      includeMilestones: !!options.includeMilestones,
     },
     fetchPolicy: "network-only",
   });
@@ -75,7 +83,66 @@ const QUERY = gql`
     }
   }
 
-  query GetProject($id: ID!, $includeGoal: Boolean!, $includeReviewer: Boolean!, $includeContributors: Boolean!) {
+  fragment ProjectPermissions on Project {
+    permissions {
+      canView
+
+      canCreateMilestone
+      canDeleteMilestone
+
+      canEditMilestone
+      canEditDescription
+      canEditContributors
+      canEditTimeline
+      canEditResources
+      canEditGoal
+
+      canCheckIn
+      canAcknowledgeCheckIn
+    }
+  }
+
+  fragment ProjectSpace on Project {
+    space {
+      id
+      name
+      icon
+      color
+    }
+  }
+
+  fragment ProjectKeyResources on Project {
+    keyResources {
+      id
+      title
+      link
+      resourceType
+    }
+  }
+
+  fragment ProjectMilestones on Project {
+    milestones {
+      id
+      title
+      status
+
+      deadlineAt
+      completedAt
+      description
+      insertedAt
+    }
+  }
+
+  query GetProject(
+    $id: ID!
+    $includeGoal: Boolean!
+    $includeReviewer: Boolean!
+    $includeContributors: Boolean!
+    $includePermissions: Boolean!
+    $includeSpace: Boolean!
+    $includeKeyResources: Boolean!
+    $includeMilestones: Boolean!
+  ) {
     project(id: $id) {
       id
       name
@@ -96,6 +163,10 @@ const QUERY = gql`
       ...ProjectGoal @include(if: $includeGoal)
       ...ProjectReviewer @include(if: $includeReviewer)
       ...ProjectContributors @include(if: $includeContributors)
+      ...ProjectPermissions @include(if: $includePermissions)
+      ...ProjectSpace @include(if: $includeSpace)
+      ...ProjectKeyResources @include(if: $includeKeyResources)
+      ...ProjectMilestones @include(if: $includeMilestones)
     }
   }
 `;
