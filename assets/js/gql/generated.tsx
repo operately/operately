@@ -427,9 +427,9 @@ export type CloseProjectInput = {
 export type Comment = {
   __typename?: 'Comment';
   author: Person;
+  content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['NaiveDateTime']['output'];
-  message: Scalars['String']['output'];
   reactions: Array<Maybe<Reaction>>;
 };
 
@@ -1453,6 +1453,7 @@ export type RootQueryType = {
   potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
   project?: Maybe<Project>;
   projectCheckIn: ProjectCheckIn;
+  projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
   projectReviewRequest: ProjectReviewRequest;
   projects?: Maybe<Array<Maybe<Project>>>;
@@ -1572,6 +1573,11 @@ export type RootQueryTypeProjectArgs = {
 
 
 export type RootQueryTypeProjectCheckInArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type RootQueryTypeProjectCheckInsArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
 };
 

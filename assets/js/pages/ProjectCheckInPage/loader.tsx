@@ -13,7 +13,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeProject: true,
       includeAuthor: true,
       includeReactions: true,
-      includeComments: true,
     }),
     me: await People.getMe(),
   };

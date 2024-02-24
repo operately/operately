@@ -1,40 +1,23 @@
-import client from "@/graphql/client";
-
-import * as Paper from "@/components/PaperContainer";
-import * as Projects from "@/graphql/Projects";
-import * as Updates from "@/graphql/Projects/updates";
+import * as Page from "@/components/Pages";
+import * as Projects from "@/models/projects";
+import * as ProjectCheckIns from "@/models/projectCheckIns";
 
 interface LoaderResult {
   project: Projects.Project;
-  updates: Updates.Update[];
+  checkIns: ProjectCheckIns.ProjectCheckIn[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  let projectData = await client.query({
-    query: Projects.GET_PROJECT,
-    variables: { id: params.projectID },
-    fetchPolicy: "network-only",
-  });
-
-  let updatesData = await client.query({
-    query: Updates.LIST_UPDATES,
-    variables: {
-      filter: {
-        projectID: params.projectID,
-        type: "status_update",
-      },
-    },
-    fetchPolicy: "network-only",
-  });
-
   return {
-    project: projectData.data.project,
-    updates: updatesData.data.updates,
+    project: await Projects.getProject(params.projectID, {
+      includePermissions: true,
+    }),
+    checkIns: await ProjectCheckIns.getCheckIns(params.projectID, {
+      includeAuthor: true,
+    }),
   };
 }
 
 export function useLoadedData(): LoaderResult {
-  const [data, _] = Paper.useLoadedData() as [LoaderResult, () => void];
-
-  return data;
+  return Page.useLoadedData() as LoaderResult;
 }
