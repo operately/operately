@@ -3,6 +3,7 @@ import client from "@/graphql/client";
 import * as Updates from "@/graphql/Projects/updates";
 
 interface GetProjectsOptions {
+  spaceId?: string;
   includeSpace?: boolean;
   includeContributors?: boolean;
   includeMilestones?: boolean;
@@ -20,6 +21,7 @@ export async function getProjects(options: GetProjectsOptions = {}) {
       includeLastCheckIn: !!options.includeLastCheckIn,
       filters: {
         filter: options.filter || "all-projects",
+        spaceId: options.spaceId,
       },
     },
     fetchPolicy: "network-only",
