@@ -2,30 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import classNames from "classnames";
-
-const COLORS = {
-  on_track: "green",
-  caution: "yellow",
-  issue: "red",
-};
-
-const TITLES = {
-  on_track: "On Track",
-  caution: "Caution",
-  issue: "Issue",
-};
-
-const CIRCLE_BORDER_COLORS = {
-  green: "border-green-600",
-  yellow: "border-yellow-400",
-  red: "border-red-500",
-};
-
-const CIRCLE_BACKGROUND_COLORS = {
-  green: "bg-green-600",
-  yellow: "bg-yellow-400",
-  red: "bg-red-500",
-};
+import { COLORS, TITLES, CIRCLE_BORDER_COLORS, CIRCLE_BACKGROUND_COLORS } from "./constants";
 
 interface StatusProps {
   status: string;

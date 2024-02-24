@@ -12,6 +12,7 @@ import { DivLink } from "@/components/Link";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -121,8 +122,8 @@ export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheck
           </div>
         </div>
 
-        <div className="font-medium flex items-center gap-2 p-3 bg-surface-accent border-t border-stroke-base">
-          <div className="bg-green-600 text-sm px-2 py-1 rounded-full h-4 w-4" /> On Track
+        <div className="font-medium p-3 bg-surface-accent border-t border-stroke-base">
+          <SmallStatusIndicator status={checkIn.status} />
         </div>
       </div>
     </DivLink>

@@ -9,6 +9,7 @@ interface GetProjectOptions {
   includeSpace?: boolean;
   includeKeyResources?: boolean;
   includeMilestones?: boolean;
+  includeLastCheckIn?: boolean;
 }
 
 export async function getProject(id: string, options: GetProjectOptions = {}) {
@@ -23,6 +24,7 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
       includeSpace: !!options.includeSpace,
       includeKeyResources: !!options.includeKeyResources,
       includeMilestones: !!options.includeMilestones,
+      includeLastCheckIn: !!options.includeLastCheckIn,
     },
     fetchPolicy: "network-only",
   });
@@ -133,6 +135,22 @@ const QUERY = gql`
     }
   }
 
+  fragment ProjectLastCheckIn on Project {
+    lastCheckIn {
+      id
+      description
+      status
+      insertedAt
+
+      author {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+  }
+
   query GetProject(
     $id: ID!
     $includeGoal: Boolean!
@@ -142,6 +160,7 @@ const QUERY = gql`
     $includeSpace: Boolean!
     $includeKeyResources: Boolean!
     $includeMilestones: Boolean!
+    $includeLastCheckIn: Boolean!
   ) {
     project(id: $id) {
       id
@@ -167,6 +186,7 @@ const QUERY = gql`
       ...ProjectSpace @include(if: $includeSpace)
       ...ProjectKeyResources @include(if: $includeKeyResources)
       ...ProjectMilestones @include(if: $includeMilestones)
+      ...ProjectLastCheckIn @include(if: $includeLastCheckIn)
     }
   }
 `;

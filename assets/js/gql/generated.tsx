@@ -825,26 +825,22 @@ export type Project = {
   isOutdated: Scalars['Boolean']['output'];
   isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
-  lastCheckIn?: Maybe<Update>;
+  lastCheckIn?: Maybe<ProjectCheckIn>;
   milestones?: Maybe<Array<Maybe<Milestone>>>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nextMilestone?: Maybe<Milestone>;
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
-  parents?: Maybe<Array<Maybe<ProjectParent>>>;
   permissions: ProjectPermissions;
   phase: Scalars['String']['output'];
-  phaseHistory?: Maybe<Array<Maybe<ProjectPhaseHistory>>>;
   private: Scalars['Boolean']['output'];
   retrospective?: Maybe<Scalars['String']['output']>;
-  reviewRequests?: Maybe<Array<Maybe<ProjectReviewRequest>>>;
   reviewer?: Maybe<Person>;
   space: Group;
   spaceId: Scalars['ID']['output'];
   startedAt?: Maybe<Scalars['Date']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
-  updates?: Maybe<Array<Maybe<Update>>>;
 };
 
 export type ProjectCheckIn = {
@@ -866,15 +862,6 @@ export type ProjectContributor = {
   person: Person;
   responsibility?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
-};
-
-export type ProjectDocument = {
-  __typename?: 'ProjectDocument';
-  author: Person;
-  content: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  insertedAt: Scalars['Date']['output'];
-  title: Scalars['String']['output'];
 };
 
 export type ProjectHealth = {
@@ -911,13 +898,6 @@ export type ProjectMoveInput = {
   spaceId: Scalars['ID']['input'];
 };
 
-export type ProjectParent = {
-  __typename?: 'ProjectParent';
-  id?: Maybe<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-};
-
 export type ProjectPermissions = {
   __typename?: 'ProjectPermissions';
   canAcknowledgeCheckIn: Scalars['Boolean']['output'];
@@ -931,15 +911,6 @@ export type ProjectPermissions = {
   canEditResources: Scalars['Boolean']['output'];
   canEditTimeline: Scalars['Boolean']['output'];
   canView: Scalars['Boolean']['output'];
-};
-
-export type ProjectPhaseHistory = {
-  __typename?: 'ProjectPhaseHistory';
-  dueTime?: Maybe<Scalars['Date']['output']>;
-  endTime?: Maybe<Scalars['Date']['output']>;
-  id: Scalars['ID']['output'];
-  phase: Scalars['String']['output'];
-  startTime?: Maybe<Scalars['Date']['output']>;
 };
 
 export type ProjectReviewRequest = {
@@ -1008,7 +979,6 @@ export type RootMutationType = {
   postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
   postProjectCheckIn: ProjectCheckIn;
-  postProjectDocument: ProjectDocument;
   removeCompanyAdmin?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
   removeGroupMember?: Maybe<Group>;
@@ -1268,13 +1238,6 @@ export type RootMutationTypePostMilestoneCommentArgs = {
 
 export type RootMutationTypePostProjectCheckInArgs = {
   input: PostProjectCheckInInput;
-};
-
-
-export type RootMutationTypePostProjectDocumentArgs = {
-  content: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
-  type: Scalars['String']['input'];
 };
 
 
@@ -1578,7 +1541,7 @@ export type RootQueryTypeProjectCheckInArgs = {
 
 
 export type RootQueryTypeProjectCheckInsArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
+  projectId: Scalars['ID']['input'];
 };
 
 

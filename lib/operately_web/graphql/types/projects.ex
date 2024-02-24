@@ -1,43 +1,15 @@
 defmodule OperatelyWeb.Graphql.Types.Projects do
   use Absinthe.Schema.Notation
+  import OperatelyWeb.Graphql.TypeHelpers
   
   alias Operately.Projects
-
-  object :project_parent do
-    field :id, :string
-    field :title, non_null(:string)
-    field :type, non_null(:string)
-  end
 
   object :project_contributor do
     field :id, non_null(:id)
     field :responsibility, :string
     field :role, non_null(:string)
 
-    field :person, non_null(:person) do
-      resolve fn contributor, _, _ ->
-        {:ok, contributor.person}
-      end
-    end
-  end
-
-  object :project_document do
-    field :id, non_null(:id)
-    field :title, non_null(:string)
-    field :inserted_at, non_null(:date)
-
-    field :content, non_null(:string) do
-      resolve fn document, _, _ ->
-        {:ok, Jason.encode!(document.content)}
-      end
-    end
-
-    field :author, non_null(:person) do
-      resolve fn document, _, _ ->
-        person = Operately.People.get_person!(document.author_id)
-        {:ok, person}
-      end
-    end
+    assoc_field :person, non_null(:person)
   end
 
   object :project_key_resource do
@@ -45,14 +17,6 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :title, non_null(:string)
     field :link, non_null(:string)
     field :resource_type, non_null(:string)
-  end
-
-  object :project_phase_history do
-    field :id, non_null(:id)
-    field :phase, non_null(:string)
-    field :start_time, :date
-    field :end_time, :date
-    field :due_time, :date
   end
 
   object :project do
@@ -72,23 +36,18 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :status, :string
     field :closed_at, :date
 
+    json_field :retrospective, :string
+    json_field :description, :string
+
+    assoc_field :goal, :goal
+    assoc_field :last_check_in, :project_check_in
+    assoc_field :milestones, list_of(:milestone)
+    assoc_field :contributors, list_of(:project_contributor)
+    assoc_field :key_resources, list_of(:project_key_resource)
+
     field :is_outdated, non_null(:boolean) do
       resolve fn project, _, _ ->
         {:ok, Operately.Projects.outdated?(project)}
-      end
-    end
-
-    field :goal, :goal do
-      resolve fn project, _, _ ->
-        goal = Operately.Repo.preload(project, :goal).goal
-
-        {:ok, goal}
-      end
-    end
-
-    field :retrospective, :string do
-      resolve fn project, _, _ ->
-        {:ok, project.retrospective && Jason.encode!(project.retrospective)}
       end
     end
 
@@ -112,29 +71,11 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
       end
     end
 
-    field :review_requests, list_of(:project_review_request) do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.list_pending_project_review_requests(project)}
-      end
-    end
-
     field :permissions, non_null(:project_permissions) do
       resolve fn project, _, %{context: context} ->
         person = context.current_account.person
 
         {:ok, Operately.Projects.get_permissions(project, person)}
-      end
-    end
-
-    field :phase_history, list_of(:project_phase_history) do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.list_project_phase_history(project)}
-      end
-    end
-
-    field :key_resources, list_of(:project_key_resource) do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Projects.list_key_resources(project)}
       end
     end
 
@@ -169,25 +110,6 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
       end
     end
 
-    field :description, :string do
-      resolve fn project, _, _ ->
-        {:ok, project.description && Jason.encode!(project.description)}
-      end
-    end
-
-    field :last_check_in, :update do
-      resolve fn project, _, _ ->
-        {:ok, Operately.Updates.get_last_check_in(project.id)}
-      end
-    end
-
-    field :updates, list_of(:update) do
-      resolve fn project, _, _ ->
-        updates = Operately.Updates.list_updates(project.id, :project)
-        {:ok, updates}
-      end
-    end
-
     field :champion, :person do
       resolve fn project, _, _ ->
         {:ok, Projects.get_person_by_role(project, :champion)}
@@ -197,34 +119,6 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :reviewer, :person do
       resolve fn project, _, _ ->
         {:ok, Projects.get_person_by_role(project, :reviewer)}
-      end
-    end
-
-    field :milestones, list_of(:milestone) do
-      resolve fn project, _, _ ->
-        milestones = Operately.Projects.list_project_milestones(project)
-
-        {:ok, milestones}
-      end
-    end
-
-    field :parents, list_of(:project_parent) do
-      resolve fn project, _, _ ->
-        parents = Operately.Alignments.list_parents(project)
-
-        {:ok, parents}
-      end
-    end
-
-    field :contributors, list_of(:project_contributor) do
-      resolve fn project, _, _info ->
-        if Ecto.assoc_loaded?(project.contributors) do
-          {:ok, project.contributors}
-        else
-          project = Operately.Repo.preload(project, contributors: :person)
-
-          {:ok, project.contributors}
-        end
       end
     end
   end

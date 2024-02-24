@@ -16,6 +16,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeContributors: true,
       includeKeyResources: true,
       includeMilestones: true,
+      includeLastCheckIn: true,
     }),
   };
 }
