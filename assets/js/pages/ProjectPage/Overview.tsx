@@ -1,12 +1,12 @@
 import React from "react";
 
 import { DimmedLabel } from "./Label";
-import { Indicator } from "@/components/ProjectHealthIndicators";
 
 import * as Projects from "@/graphql/Projects";
 import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
 import { MiniPieChart } from "@/components/MiniPieChart";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export default function Overview({ project }) {
   return (
@@ -25,11 +25,7 @@ function Status({ project }: { project: Projects.Project }) {
   return (
     <div>
       <DimmedLabel>Status</DimmedLabel>
-      {project.isOutdated ? (
-        <Indicator value="outdated" type="status" />
-      ) : (
-        <Indicator value={project.health} type="status" />
-      )}
+      <SmallStatusIndicator status={project.lastCheckIn?.status || "on_track"} />
     </div>
   );
 }
@@ -66,7 +62,7 @@ function AllCompleted() {
 function CompletionPieChart({ done, total }) {
   return (
     <div className="flex items-center gap-2">
-      <MiniPieChart completed={done} total={total} />
+      <MiniPieChart completed={done} total={total} size={16} />
       <span className="font-medium">
         {done}/{total} milestones completed
       </span>

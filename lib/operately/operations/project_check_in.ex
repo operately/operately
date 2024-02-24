@@ -21,7 +21,7 @@ defmodule Operately.Operations.ProjectCheckIn do
     end)
     |> Multi.update(:project, fn changes ->
       Project.changeset(project, %{
-        last_check_in: changes.check_in,
+        last_check_in_id: changes.check_in.id,
         last_check_in_status: changes.check_in.status,
         next_check_in_scheduled_at: next_check_in,
       })

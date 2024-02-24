@@ -21,13 +21,13 @@ import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { FeedForProject } from "@/components/Feed";
 import { DimmedLabel } from "./Label";
 
-import { Indicator } from "@/components/ProjectHealthIndicators";
 import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export function Page() {
   const { company, project } = useLoadedData();
@@ -166,9 +166,9 @@ function LastCheckIn({ project }) {
 
   const author = project.lastCheckIn.author;
   const time = project.lastCheckIn.insertedAt;
-  const message = project.lastCheckIn.content.message;
+  const description = project.lastCheckIn.description;
+  const status = project.lastCheckIn.status;
   const path = Paths.projectCheckInPath(project.id, project.lastCheckIn.id);
-  const status = project.lastCheckIn.content.health.status;
 
   return (
     <div>
@@ -182,7 +182,7 @@ function LastCheckIn({ project }) {
               Check-in <FormattedTime time={time} format="long-date" />
             </Link>
           </div>
-          <Summary jsonContent={message} characterCount={200} />
+          <Summary jsonContent={description} characterCount={200} />
         </div>
       </div>
 
@@ -190,15 +190,8 @@ function LastCheckIn({ project }) {
         <div>
           <DimmedLabel>Status</DimmedLabel>
           <div className="flex flex-col gap-1 text-sm">
-            <div>
-              <Indicator value={status} type="status" />
-            </div>
+            <SmallStatusIndicator status={status} />
           </div>
-        </div>
-
-        <div>
-          <DimmedLabel>Health Issues</DimmedLabel>
-          <HealthIssues checkIn={project.lastCheckIn} />
         </div>
 
         <div className="flex items-center gap-6">
@@ -210,46 +203,6 @@ function LastCheckIn({ project }) {
       </div>
 
       <div className="mt-6">{project.permissions.canCheckIn && checkInNowLink}</div>
-    </div>
-  );
-}
-
-function HealthIssues({ checkIn }) {
-  const issues = Object.keys(checkIn.content.health).filter((type) => {
-    if (type === "status") {
-      return false;
-    }
-
-    if (type === "schedule") {
-      return checkIn.content.health[type] !== "on_schedule";
-    }
-
-    if (type === "budget") {
-      return checkIn.content.health[type] !== "within_budget";
-    }
-
-    if (type === "team") {
-      return checkIn.content.health[type] !== "staffed";
-    }
-
-    if (type === "risks") {
-      return checkIn.content.health[type] !== "no_known_risks";
-    }
-
-    return false;
-  });
-
-  if (issues.length === 0) {
-    return <div className="text-sm text-content-dimmed">No issues</div>;
-  }
-
-  return (
-    <div className="flex flex-col text-sm">
-      {issues.map((issue, index) => (
-        <div key={index}>
-          <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
-        </div>
-      ))}
     </div>
   );
 }

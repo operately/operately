@@ -57,6 +57,9 @@ defmodule Operately.Projects.Project do
       :status,
       :retrospective,
       :closed_at,
+      :last_check_in_id,
+      :last_check_in_status,
+      :next_update_scheduled_at,
     ])
     |> validate_required([
       :name,
