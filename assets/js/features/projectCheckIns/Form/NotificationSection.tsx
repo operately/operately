@@ -29,7 +29,7 @@ function WhoWillNeedToAcknowledge({ reviewer }: { reviewer: People.Person }) {
 
   return (
     <div className="inline-flex gap-1 flex-wrap">
-      The project reviewer <PersonWithAvatarAndName person={reviewer} /> will be asked to acknowledge the check-in.
+      <PersonWithAvatarAndName person={reviewer} /> will be asked to acknowledge the check-in.
     </div>
   );
 }
