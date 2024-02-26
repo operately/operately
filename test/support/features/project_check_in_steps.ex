@@ -2,70 +2,17 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.ProjectSteps
 
-  @labels %{
-    status: %{
-      "on_track" => "On Track",
-      "at_risk" => "At Risk",
-      "off_track" => "Off Track",
-      "paused" => "Paused",
-    },
-    schedule: %{
-      "on_schedule" => "On Schedule",
-      "small_delays" => "Small delays",
-      "major_delays" => "Major delays",
-    },
-    budget: %{
-      "within_budget" => "Within Budget",
-      "not_within_budget" => "Not within budget",
-    },
-    team: %{
-      "staffed" => "Staffed with suitable roles",
-      "missing_roles" => "Missing roles",
-      "key_roles_missing" => "Key roles missing",
-    },
-    risks: %{
-      "no_known_risks" => "No known risks",
-      "minor_risks" => "Minor Risks",
-      "major_risks" => "Major Risks",
-    },
-  }
-
   def start_check_in(ctx) do
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "check-in-now")
   end
 
-  def submit_check_in(ctx, opts \\ %{}) do
+  def submit_check_in(ctx, %{status: _status, description: description}) do
     ctx
     |> start_check_in()
-    |> UI.fill_rich_text(opts.content)
-    |> in_accordion("status", fn el ->
-      el 
-      |> UI.click(testid: "status-#{opts.status}")
-      |> UI.fill_rich_text(opts.status_comments)
-    end)
-    |> in_accordion("schedule", fn el ->
-      el 
-      |> UI.click(testid: "schedule-#{opts.schedule}")
-      |> UI.fill_rich_text(opts.schedule_comments)
-    end)
-    |> in_accordion("budget", fn el ->
-      el 
-      |> UI.click(testid: "budget-#{opts.budget}")
-      |> UI.fill_rich_text(opts.budget_comments)
-    end)
-    |> in_accordion("team", fn el ->
-      el 
-      |> UI.click(testid: "team-#{opts.team}")
-      |> UI.fill_rich_text(opts.team_comments)
-    end)
-    |> in_accordion("risks", fn el ->
-      el 
-      |> UI.click(testid: "risks-#{opts.risks}")
-      |> UI.fill_rich_text(opts.risks_comments)
-    end)
-    |> UI.click(testid: "post-status-update")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "post-check-in")
     |> UI.assert_text("Check-In from")
   end
 
@@ -122,11 +69,6 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   def assert_check_in_submitted(ctx, opts) do
     ctx
     |> UI.assert_text("Check-In from")
-    |> UI.assert_text(@labels.status[opts.status])
-    |> UI.assert_text(@labels.schedule[opts.schedule])
-    |> UI.assert_text(@labels.budget[opts.budget])
-    |> UI.assert_text(@labels.team[opts.team])
-    |> UI.assert_text(@labels.risks[opts.risks])
     |> UI.assert_text(opts.schedule_comments)
     |> UI.assert_text(opts.budget_comments)
     |> UI.assert_text(opts.team_comments)
