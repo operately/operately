@@ -1,11 +1,13 @@
 import React from "react";
 
+import * as Paper from "@/components/PaperContainer";
+import * as Projects from "@/models/projects";
+
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 import { createPath } from "@/utils/paths";
-import * as Paper from "@/components/PaperContainer";
 
-export default function Banner({ project }) {
+export default function Banner({ project }: { project: Projects.Project }) {
   const retroPath = createPath("projects", project.id, "retrospective");
   const archivePath = createPath("projects", project.id, "archive");
 

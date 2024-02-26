@@ -6,6 +6,9 @@ import * as Time from "@/utils/time";
 export { groupBySpace } from "./groupBySpace";
 export { getProjects } from "./getProjects";
 export { getProject } from "./getProject";
+export { useMoveProjectToSpaceMutation } from "./useMoveProjectToSpaceMutation";
+export { useCloseProjectMutation } from "./useCloseProjectMutation";
+export { useProjectContributorCandidatesQuery } from "./useProjectContributorCandidatesQuery";
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name.localeCompare(b.name));
@@ -27,4 +30,8 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadli
   if (!day) return false;
 
   return !Time.isToday(day) && Time.isPast(day);
+}
+
+export function allMilestonesCompleted(project: Project) {
+  return project.milestones!.every((m) => m!.status === "done");
 }

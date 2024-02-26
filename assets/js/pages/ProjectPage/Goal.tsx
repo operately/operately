@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import { GhostButton } from "@/components/Button";
 import { createPath } from "@/utils/paths";
 import Avatar from "@/components/Avatar";

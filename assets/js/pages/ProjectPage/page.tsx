@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Companies from "@/models/companies";
 
 import Banner from "./Banner";

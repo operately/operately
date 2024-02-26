@@ -1,4 +1,4 @@
-import { gql, useMutation, useApolloClient } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 
 import * as fragments from "@/graphql/Fragments";
 import * as KeyResources from "./key_resources";
@@ -9,14 +9,11 @@ import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
 import * as People from "@/graphql/People";
 
 export { Project } from "@/gql";
-import { Project } from "@/gql";
 
 export { useCreateProject } from "./mutations/create";
 export { useEditProjectTimeline } from "./mutations/edit_timeline";
 export { useEditProjectName } from "./mutations/edit_name";
 export { useArchiveForm } from "./mutations/archive";
-export { useMoveProjectToSpaceMutation } from "./mutations/move_project_to_space";
-export { useCloseProjectMutation } from "./mutations/close_project";
 
 export const LIST_PROJECTS = gql`
   query ListProjects($filters: ProjectListFilters) {
@@ -190,31 +187,6 @@ export function useRemoveProjectContributorMutation(contribId: string) {
   });
 }
 
-const LIST_PROJECT_CONTRIBUTOR_CANDIDATES = gql`
-  query projectContributorCandidates($projectId: ID!, $query: String!) {
-    projectContributorCandidates(projectId: $projectId, query: $query) ${fragments.PERSON}
-  }
-`;
-
-export function useProjectContributorCandidatesQuery(id: string) {
-  const client = useApolloClient();
-
-  return async (query: string) => {
-    const res = await client.query({
-      query: LIST_PROJECT_CONTRIBUTOR_CANDIDATES,
-      variables: {
-        projectId: id,
-        query: query,
-      },
-    });
-
-    if (!res.data) return [];
-    if (!res.data.projectContributorCandidates) return [];
-
-    return res.data.projectContributorCandidates;
-  };
-}
-
 export function useUpdateDescriptionMutation(options = {}) {
   return useMutation(
     gql`
@@ -226,8 +198,4 @@ export function useUpdateDescriptionMutation(options = {}) {
     `,
     options,
   );
-}
-
-export function allMilestonesCompleted(project: Project) {
-  return project.milestones!.every((m) => m!.status === "done");
 }

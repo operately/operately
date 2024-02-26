@@ -2,7 +2,7 @@ import React from "react";
 
 import { DimmedLabel } from "./Label";
 
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
 import { MiniPieChart } from "@/components/MiniPieChart";

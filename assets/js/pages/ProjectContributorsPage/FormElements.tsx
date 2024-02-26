@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 
 import Button from "@/components/Button";
@@ -14,7 +14,7 @@ export function ContributorSearch({ projectID, title, onSelect, defaultValue = u
       <label className="font-bold mb-1 block capitalize">{title}</label>
       <div className="flex-1">
         <PeopleSearch
-          onChange={(option) => onSelect(option.value)}
+          onChange={(option) => onSelect(option?.value)}
           placeholder="Search by name or title..."
           loader={loader}
           defaultValue={defaultValue}
