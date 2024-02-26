@@ -85,31 +85,31 @@ export { useArchiveForm } from "./mutations/archive";
 //   }
 // `;
 
-export function useEditUpdate(options: any) {
-  return useMutation(
-    gql`
-      mutation EditUpdate($input: EditUpdateInput!) {
-        editUpdate(input: $input) {
-          id
-        }
-      }
-    `,
-    options,
-  );
-}
+// export function useEditUpdate(options: any) {
+//   return useMutation(
+//     gql`
+//       mutation EditUpdate($input: EditUpdateInput!) {
+//         editUpdate(input: $input) {
+//           id
+//         }
+//       }
+//     `,
+//     options,
+//   );
+// }
 
-export function usePostUpdate(options: any) {
-  return useMutation(
-    gql`
-      mutation CreateUpdate($input: CreateUpdateInput!) {
-        createUpdate(input: $input) {
-          id
-        }
-      }
-    `,
-    options,
-  );
-}
+// export function usePostUpdate(options: any) {
+//   return useMutation(
+//     gql`
+//       mutation CreateUpdate($input: CreateUpdateInput!) {
+//         createUpdate(input: $input) {
+//           id
+//         }
+//       }
+//     `,
+//     options,
+//   );
+// }
 
 export function useAddProjectContributorMutation(projectId: string) {
   const [fun, status] = useMutation(

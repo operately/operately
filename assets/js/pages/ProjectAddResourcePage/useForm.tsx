@@ -3,7 +3,7 @@ import * as Projects from "@/graphql/Projects";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createPath } from "@/utils/paths";
-import { useAddResource } from "@/models/key_resources";
+import { useAddResource } from "@/models/keyResources";
 
 interface FormState {
   projectId: string;

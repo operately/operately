@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as KeyResources from "@/models/key_resources";
+import * as KeyResources from "@/models/keyResources";
 
 import { useRefresh } from "./loader";
 

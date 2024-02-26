@@ -1,6 +1,6 @@
 import { useMutation, gql } from "@apollo/client";
 
-import { Project } from "@/graphql/Projects";
+import { Project } from "@/models/projects";
 import { GET_ME_QUERY } from "@/models/people/getMe";
 
 export { useMe } from "@/models/people/getMe";

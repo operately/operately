@@ -1,5 +1,6 @@
 import * as Updates from "@/graphql/Projects/updates";
 import * as Discussions from "@/models/discussions";
+import * as Comments from "@/models/comments";
 
 import { ItemType, FormState } from "./form";
 
@@ -13,7 +14,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
   });
 
   const [post, { loading: submittingPost }] = Updates.usePostComment();
-  const [edit, { loading: submittingEdit }] = Updates.useEditComment();
+  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const postComment = async (content: string) => {
     await post({

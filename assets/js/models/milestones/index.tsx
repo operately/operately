@@ -1,5 +1,4 @@
 import { gql, useMutation } from "@apollo/client";
-import * as Comments from "@/graphql/Projects/comments";
 import * as Time from "@/utils/time";
 
 type MilestoneStatus = "pending" | "done";
@@ -20,7 +19,17 @@ export const FRAGMENT = `
     comments {
       id
       action
-      comment ${Comments.FRAGMENT}
+      comment {
+        id
+        insertedAt
+        content
+        author {
+          id
+          name
+          avatarUrl
+          title
+        }
+      }
     }
   }
 `;

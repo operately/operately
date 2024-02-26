@@ -2,8 +2,8 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import * as Projects from "@/graphql/Projects";
-import * as KeyResources from "@/models/key_resources";
+import * as Projects from "@/models/projects";
+import * as KeyResources from "@/models/keyResources";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
