@@ -39,5 +39,14 @@ defmodule OperatelyWeb.Graphql.Mutations.ProjectCheckIns do
         Operately.Operations.ProjectCheckInEdit.run(author, check_in_id, status, description)
       end
     end
+
+    field :acknowledge_project_check_in, non_null(:project_check_in) do
+      arg :id, non_null(:id)
+
+      resolve fn args, %{context: context} ->
+        author = context.current_account.person
+        Operately.Operations.ProjectCheckInAcknowledgement.run(author, args.id)
+      end
+    end
   end
 end

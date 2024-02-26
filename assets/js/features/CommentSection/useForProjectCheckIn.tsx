@@ -33,7 +33,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
     items.push({
       type: "acknowledgement" as ItemType,
       insertedAt: checkIn.acknowledgedAt,
-      value: checkIn,
+      value: checkIn.acknowledgedBy,
     });
   }
 

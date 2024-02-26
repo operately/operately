@@ -9,7 +9,7 @@ import * as TipTapEditor from "@/components/Editor";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import Button, { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
@@ -33,7 +33,7 @@ export function CommentSection(props: CommentSectionProps) {
           } else if (item.type === "milestone-reopened") {
             return <MilestoneReopened key={index} comment={item.value} />;
           } else {
-            return <AckComment key={index} update={item.value} />;
+            return <AckComment key={index} person={item.value} ackAt={item.insertedAt} />;
           }
         })}
 
@@ -195,11 +195,7 @@ function ViewComment({ comment, onEdit, me }) {
   );
 }
 
-function AckComment({ update }) {
-  if (!update.acknowledged) return null;
-
-  const person = update.acknowledgingPerson;
-
+function AckComment({ person, ackAt }) {
   return (
     <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
       <div className="shrink-0">
@@ -214,7 +210,7 @@ function AckComment({ update }) {
 
         <div className="flex items-center justify-between">
           <span className="text-content-dimmed text-sm">
-            <FormattedTime time={update.acknowledgedAt} format="relative" />
+            <FormattedTime time={ackAt} format="relative" />
           </span>
         </div>
       </div>

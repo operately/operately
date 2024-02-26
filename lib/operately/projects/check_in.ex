@@ -9,7 +9,7 @@ defmodule Operately.Projects.CheckIn do
     field :description, :map
 
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
-    field :acknowledged_at, :date
+    field :acknowledged_at, :utc_datetime
 
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :project_check_in]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :project_check_in]
@@ -23,7 +23,7 @@ defmodule Operately.Projects.CheckIn do
 
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:author_id, :project_id, :description, :status])
+    |> cast(attrs, [:author_id, :project_id, :description, :status, :acknowledged_by_id, :acknowledged_at])
     |> validate_required([:author_id, :project_id, :description, :status])
   end
 end

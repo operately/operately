@@ -1,13 +1,13 @@
 import { useMutation, gql } from "@apollo/client";
 
-const ACKNOWLEDGE_UPDATE = gql`
+const MUTATION = gql`
   mutation Acknowledge($id: ID!) {
-    acknowledge(id: $id) {
+    acknowledgeProjectCheckIn(id: $id) {
       id
     }
   }
 `;
 
-export function useAckUpdate(options = {}) {
-  return useMutation(ACKNOWLEDGE_UPDATE, options);
+export function useAckMutation(options?: any) {
+  return useMutation(MUTATION, options);
 }

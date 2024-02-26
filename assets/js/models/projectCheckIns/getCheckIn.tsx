@@ -70,6 +70,14 @@ const QUERY = gql`
       description
       insertedAt
 
+      acknowledgedAt
+      acknowledgedBy {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
       ...ProjectOnProjectCheckIn @include(if: $includeProject)
       ...AuthorOnProjectCheckIn @include(if: $includeAuthor)
       ...ReactionsOnProjectCheckIn @include(if: $includeReactions)

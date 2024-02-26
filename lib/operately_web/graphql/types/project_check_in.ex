@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Graphql.Types.ProjectCheckIn do
     assoc_field :author, non_null(:person)
     assoc_field :project, non_null(:project)
 
-    field :acknowledged_at, :date
+    field :acknowledged_at, :naive_datetime
     assoc_field :acknowledged_by, :person
     assoc_field :reactions, non_null(list_of(:reaction))
   end

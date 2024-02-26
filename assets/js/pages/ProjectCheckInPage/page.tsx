@@ -21,10 +21,7 @@ import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection"
 import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
-  const { checkIn, me } = useLoadedData();
-  const refresh = useRefresh();
-
-  const commentsForm = useForProjectCheckIn(checkIn);
+  const { checkIn } = useLoadedData();
 
   return (
     <Pages.Page title={["Check-In", checkIn.project.name]}>
@@ -42,11 +39,19 @@ export function Page() {
           <Reactions />
 
           <div className="border-t border-stroke-base mt-8" />
-          <CommentSection form={commentsForm} me={me} refresh={refresh} />
+          <Comments />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Comments() {
+  const { checkIn, me } = useLoadedData();
+  const refresh = useRefresh();
+  const commentsForm = useForProjectCheckIn(checkIn);
+
+  return <CommentSection form={commentsForm} me={me} refresh={refresh} />;
 }
 
 function Reactions() {
