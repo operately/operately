@@ -8,6 +8,6 @@ const CREATE_PROJECT = gql`
   }
 `;
 
-export function useCreateProject(options = {}) {
+export function useCreateMutation(options = {}) {
   return useMutation(CREATE_PROJECT, options);
 }

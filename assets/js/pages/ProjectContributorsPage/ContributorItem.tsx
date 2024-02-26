@@ -5,7 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import ContributorAvatar, { ChampionPlaceholder, ReviewerPlaceholder } from "@/components/ContributorAvatar";
 
 import * as Contributors from "@/graphql/Projects/contributors";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
 

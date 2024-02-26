@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import { useRefresh } from "./loader";
 

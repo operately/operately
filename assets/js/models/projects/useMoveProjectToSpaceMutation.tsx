@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 
-const MOVE_PROJECT_TO_SPACE = gql`
+const MUTATION = gql`
   mutation MoveProjectToSpace($input: ProjectMoveInput!) {
     moveProjectToSpace(input: $input) {
       id
@@ -9,5 +9,5 @@ const MOVE_PROJECT_TO_SPACE = gql`
 `;
 
 export function useMoveProjectToSpaceMutation(options = {}) {
-  return useMutation(MOVE_PROJECT_TO_SPACE, options);
+  return useMutation(MUTATION, options);
 }

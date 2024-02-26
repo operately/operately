@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 
 import { useNavigate } from "react-router-dom";
@@ -55,7 +55,7 @@ export function useForm(project: Projects.Project): FormState {
     return false;
   }, [startTime, dueDate, milestoneList]);
 
-  const [edit, { loading }] = Projects.useEditProjectTimeline({
+  const [edit, { loading }] = Projects.useEditTimelineMutation({
     onCompleted: () => {
       submitted.current = true;
       navigate(milestonesPath);

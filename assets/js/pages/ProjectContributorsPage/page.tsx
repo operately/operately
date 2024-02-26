@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Contributors from "@/graphql/Projects/contributors";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";

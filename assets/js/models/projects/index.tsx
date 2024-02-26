@@ -8,7 +8,16 @@ export { getProjects } from "./getProjects";
 export { getProject } from "./getProject";
 export { useMoveProjectToSpaceMutation } from "./useMoveProjectToSpaceMutation";
 export { useCloseProjectMutation } from "./useCloseProjectMutation";
+export { useEditNameMutation } from "./useEditNameMutation";
+export { useUpdateDescriptionMutation } from "./useUpdateDescriptionMutation";
+export { useEditTimelineMutation } from "./useEditTimelineMutation";
+export { useArchiveMutation } from "./useArchiveMutation";
+export { useCreateMutation } from "./useCreateMutation";
+
 export { useProjectContributorCandidatesQuery } from "./useProjectContributorCandidatesQuery";
+export { useAddProjectContributorMutation } from "./useAddProjectContributorMutation";
+export { useUpdateProjectContributorMutation } from "./useUpdateProjectContributorMutation";
+export { useRemoveProjectContributorMutation } from "./useRemoveProjectContributorMutation";
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name.localeCompare(b.name));

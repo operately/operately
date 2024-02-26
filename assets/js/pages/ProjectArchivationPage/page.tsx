@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
@@ -42,7 +42,7 @@ export function Page() {
 function ArchiveButton({ project }) {
   const navigateToProjectArchive = useNavigateTo(`/projects/${project.id}`);
 
-  const archiveForm = Projects.useArchiveForm({
+  const archiveForm = Projects.useArchiveMutation({
     variables: {
       projectId: project.id,
     },

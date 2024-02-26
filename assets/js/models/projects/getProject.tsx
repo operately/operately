@@ -10,6 +10,7 @@ interface GetProjectOptions {
   includeKeyResources?: boolean;
   includeMilestones?: boolean;
   includeLastCheckIn?: boolean;
+  includeRetrospective?: boolean;
 }
 
 export async function getProject(id: string, options: GetProjectOptions = {}) {
@@ -25,6 +26,7 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
       includeKeyResources: !!options.includeKeyResources,
       includeMilestones: !!options.includeMilestones,
       includeLastCheckIn: !!options.includeLastCheckIn,
+      includeRetrospective: !!options.includeRetrospective,
     },
     fetchPolicy: "network-only",
   });
@@ -43,6 +45,7 @@ const QUERY = gql`
     $includeKeyResources: Boolean!
     $includeMilestones: Boolean!
     $includeLastCheckIn: Boolean!
+    $includeRetrospective: Boolean!
   ) {
     project(id: $id) {
       id
@@ -59,6 +62,7 @@ const QUERY = gql`
       private
       status
       closedAt
+      retrospective @include(if: $includeRetrospective)
 
       space @include(if: $includeSpace) {
         id

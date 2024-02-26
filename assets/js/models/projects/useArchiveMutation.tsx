@@ -12,7 +12,7 @@ function useArchiveProject(options = {}) {
   return useMutation(ARCHIVE_PROJECT, options);
 }
 
-export function useArchiveForm({ variables, onSuccess }) {
+export function useArchiveMutation({ variables, onSuccess }) {
   const [archiveProject, { loading }] = useArchiveProject({
     variables,
     onCompleted: onSuccess,
