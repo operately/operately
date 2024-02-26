@@ -12,7 +12,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal(params.goalId, {
       includeTargets: true,
     }),
-    updates: await GoalCheckIns.getCheckIns(params.id, {}),
+    updates: await GoalCheckIns.getCheckIns(params.goalId),
   };
 }
 

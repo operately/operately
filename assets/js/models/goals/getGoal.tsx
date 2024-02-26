@@ -118,7 +118,10 @@ const QUERY = gql`
         }
 
         content {
-          message
+          __typename
+          ... on UpdateContentGoalCheckIn {
+            message
+          }
         }
       }
     }

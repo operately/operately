@@ -25,9 +25,20 @@ export const FRAGMENT = `
         content
         author {
           id
-          name
+          fullName
           avatarUrl
           title
+        }
+
+        reactions {
+          id
+          emoji
+          person {
+            id
+            fullName
+            avatarUrl
+            title 
+          }
         }
       }
     }

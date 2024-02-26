@@ -43,14 +43,14 @@ export function Page() {
           </div>
 
           <Spacer size={4} />
-          <RichContent jsonContent={update.message} className="text-lg" />
+          <RichContent jsonContent={update.content.message} className="text-lg" />
           <Spacer size={4} />
 
           <Spacer size={4} />
           <Reactions />
 
           <AckCTA />
-          <Spacer size={4} />
+          <div className="border-t border-stroke-base mt-8" />
           <CommentSection form={commentsForm} me={me} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
@@ -61,7 +61,7 @@ export function Page() {
 function Reactions() {
   const { update, me } = useLoadedData();
   const reactions = update.reactions!.map((r) => r!);
-  const entity = { id: update.id, type: "goal_check_in" };
+  const entity = { id: update.id, type: "update" };
   const addReactionForm = useReactionsForm(entity, reactions, me);
 
   return <ReactionList size={24} form={addReactionForm} />;

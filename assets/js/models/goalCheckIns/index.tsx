@@ -34,8 +34,8 @@ export function useEditUpdate(options: any) {
   );
 }
 
-export function getCheckIn(id: string, options: any) {
-  return client.query({
+export async function getCheckIn(id: string, options: any) {
+  const res = await client.query({
     query: gql`
       query GetCheckIn($id: ID!) {
         update(id: $id) {
@@ -46,32 +46,18 @@ export function getCheckIn(id: string, options: any) {
           updatableId
 
           insertedAt
-          updatedAt
 
           author {
             id
-            name
             fullName
+            avatarUrl
             title
-          }
-
-          comments {
-            id
-            content
-            insertedAt
-            updatedAt
-            author {
-              id
-              name
-              fullName
-              title
-            }
           }
 
           acknowledgingPerson {
             id
-            name
             fullName
+            avatarUrl
             title
           }
 
@@ -80,19 +66,20 @@ export function getCheckIn(id: string, options: any) {
 
           reactions {
             id
-            type
-            insertedAt
-            updatedAt
-            author {
+            emoji
+
+            person {
               id
-              name
               fullName
+              avatarUrl
               title
             }
           }
 
           content {
-            ... on GoalCheckIn {
+            __typename
+
+            ... on UpdateContentGoalCheckIn {
               message
             }
           }
@@ -102,13 +89,15 @@ export function getCheckIn(id: string, options: any) {
     variables: { id },
     ...options,
   });
+
+  return res.data.update;
 }
 
-export function getCheckIns(goalId: string, options?: any) {
-  return client.query({
+export async function getCheckIns(goalId: string) {
+  const res = await client.query({
     query: gql`
-      query GetCheckIn($id: ID!) {
-        update(id: $id) {
+      query GetCheckIns($filter: UpdatesFilter!) {
+        updates(filter: $filter) {
           id
           title
           message
@@ -116,32 +105,18 @@ export function getCheckIns(goalId: string, options?: any) {
           updatableId
 
           insertedAt
-          updatedAt
 
           author {
             id
-            name
             fullName
+            avatarUrl
             title
-          }
-
-          comments {
-            id
-            content
-            insertedAt
-            updatedAt
-            author {
-              id
-              name
-              fullName
-              title
-            }
           }
 
           acknowledgingPerson {
             id
-            name
             fullName
+            avatarUrl
             title
           }
 
@@ -150,19 +125,20 @@ export function getCheckIns(goalId: string, options?: any) {
 
           reactions {
             id
-            type
-            insertedAt
-            updatedAt
-            author {
+            emoji
+
+            person {
               id
-              name
               fullName
+              avatarUrl
               title
             }
           }
 
           content {
-            ... on GoalCheckIn {
+            __typename
+
+            ... on UpdateContentGoalCheckIn {
               message
             }
           }
@@ -177,6 +153,8 @@ export function getCheckIns(goalId: string, options?: any) {
     },
     fetchPolicy: "network-only",
   });
+
+  return res.data.updates;
 }
 
 function sortByDate(updates: Update[]): Update[] {

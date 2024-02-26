@@ -7,8 +7,8 @@ defmodule OperatelyWeb.Graphql.Queries.Comments do
       arg :entity_type, :string
 
       resolve fn _, args, _ ->
-        type = String.to_existing_atom(args.entity_type)
-        comments = Operately.Updates.list_comments(args.entity_id, type)
+        entity_type = String.to_existing_atom(args.entity_type)
+        comments = Operately.Updates.list_comments(args.entity_id, entity_type)
 
         {:ok, comments}
       end

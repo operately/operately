@@ -7,8 +7,7 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
-import { GhostButton } from "@/components/Button";
-
+import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { DivLink } from "@/components/Link";
@@ -52,7 +51,11 @@ function CheckInButton({ goal }: { goal: Goals.Goal }) {
 
   const path = `/goals/${goal.id}/check-ins/new`;
 
-  return <GhostButton linkTo={path}>Check-In Now</GhostButton>;
+  return (
+    <FilledButton linkTo={path} size="sm">
+      Check-In Now
+    </FilledButton>
+  );
 }
 
 function UpdateList({ updates }: { updates: GoalCheckIns.GoalCheckIn[] }) {
