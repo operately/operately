@@ -4,13 +4,12 @@ import { useBoolState } from "@/utils/useBoolState";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import * as Icons from "@tabler/icons-react";
-
-import * as Updates from "@/graphql/Projects/updates";
+import * as ReactionsModels from "@/models/reactions";
 
 const PossibleReactionTypes = ["thumbs_up", "thumbs_down", "heart", "rocket"];
 
 interface ReactionsProps {
-  reactions: Updates.Reaction[];
+  reactions: ReactionsModels.Reaction[];
   size: number;
   form: any;
 }

@@ -4,7 +4,7 @@ import * as Icons from "@tabler/icons-react";
 
 import ContributorAvatar, { ChampionPlaceholder, ReviewerPlaceholder } from "@/components/ContributorAvatar";
 
-import * as Contributors from "@/graphql/Projects/contributors";
+import * as ProjectContributors from "@/models/projectContributors";
 import * as Projects from "@/models/projects";
 
 import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
@@ -13,8 +13,8 @@ import { createTestId } from "@/utils/testid";
 
 interface Props {
   project: Projects.Project;
-  contributor?: Contributors.Contributor;
-  role: Contributors.ContributorRole;
+  contributor?: ProjectContributors.ProjectContributor;
+  role: ProjectContributors.ContributorRole;
   refetch: any;
 }
 
@@ -32,8 +32,8 @@ function ContributorItemContent({
   project,
   refetch,
 }: {
-  contributor: Contributors.Contributor | undefined;
-  role: Contributors.ContributorRole;
+  contributor?: ProjectContributors.ProjectContributor;
+  role: ProjectContributors.ContributorRole;
   project: Projects.Project;
   refetch: any;
 }) {
@@ -79,7 +79,7 @@ function Assignment({ project, contributor, onEdit }) {
       project={project}
       avatar={<ContributorAvatar contributor={contributor} />}
       name={contributor.person.fullName}
-      responsibility={Contributors.responsibility(contributor, contributor.role)}
+      responsibility={ProjectContributors.responsibility(contributor, contributor.role)}
       onEdit={onEdit}
     />
   );
@@ -96,12 +96,12 @@ function Placeholder({ project, role, onEdit }) {
 
   if (role === "champion") {
     avatar = <ChampionPlaceholder />;
-    responsibility = Contributors.CHAMPION_RESPONSIBILITY;
+    responsibility = ProjectContributors.CHAMPION_RESPONSIBILITY;
   }
 
   if (role === "reviewer") {
     avatar = <ReviewerPlaceholder />;
-    responsibility = Contributors.REVIEWER_RESPONSIBILITY;
+    responsibility = ProjectContributors.REVIEWER_RESPONSIBILITY;
   }
 
   return <ViewState project={project} avatar={avatar} name={name} responsibility={responsibility} onEdit={onEdit} />;
@@ -143,7 +143,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
   const [update, _s1] = Projects.useUpdateProjectContributorMutation(contributor.id);
   const [remove, _s2] = Projects.useRemoveProjectContributorMutation(contributor.id);
 
-  const responsibility = Contributors.responsibility(contributor, contributor.role);
+  const responsibility = ProjectContributors.responsibility(contributor, contributor.role);
 
   const [personID, setPersonID] = React.useState<any>(contributor.person.id);
   const [newResp, setNewResp] = React.useState(responsibility);
@@ -169,7 +169,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
         onSelect={setPersonID}
       />
 
-      {Contributors.isResponsibilityEditable(contributor.role) && (
+      {ProjectContributors.isResponsibilityEditable(contributor.role) && (
         <ResponsibilityInput value={newResp} onChange={setNewResp} />
       )}
 
@@ -179,7 +179,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
           <CancelButton onClick={onClose} />
         </div>
 
-        {Contributors.isResponsibilityRemovable(contributor.role) && <RemoveButton onClick={handleRemove} />}
+        {ProjectContributors.isResponsibilityRemovable(contributor.role) && <RemoveButton onClick={handleRemove} />}
       </div>
     </div>
   );

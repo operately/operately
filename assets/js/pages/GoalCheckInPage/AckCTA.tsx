@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Updates from "@/graphql/Projects/updates";
+import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { GhostButton } from "@/components/Button";
 
@@ -9,7 +9,7 @@ export function AckCTA() {
   const { goal, update } = useLoadedData();
   const refresh = useRefresh();
 
-  const [ack] = Updates.useAckUpdate({
+  const [ack] = GoalCheckIns.useAckUpdate({
     onCompleted: refresh,
   });
 

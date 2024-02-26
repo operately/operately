@@ -5,5 +5,6 @@ export { getCheckIns } from "./getCheckIns";
 
 export { useEditMutation } from "./useEditMutation";
 export { usePostMutation } from "./usePostMutation";
+export { useAckMutation } from "./useAckMutation";
 
 export { groupCheckInsByMonth, CheckInGroupByMonth } from "./groupCheckInsByMonth";

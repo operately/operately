@@ -1,27 +1,12 @@
+import { ProjectContributor } from "@/gql";
+
+export type { ProjectContributor };
 export type ContributorRole = "champion" | "reviewer" | "contributor";
 
-export interface Contributor {
-  id: string;
-  role: ContributorRole;
-  responsibility: string;
-  person: {
-    id: string;
-    fullName: string;
-    title: string;
-    avatarUrl: string;
-  };
-}
+export const CHAMPION_RESPONSIBILITY = "Champion - Responsible for the success of the project";
+export const REVIEWER_RESPONSIBILITY = "Reviewer - Responsible for reviewing and acknowledging progress";
 
-export const CHAMPION_RESPONSIBILITY =
-  "Champion - Responsible for the success of the project";
-
-export const REVIEWER_RESPONSIBILITY =
-  "Reviewer - Responsible for reviewing and acknowledging progress";
-
-export function responsibility(
-  contributor: Contributor | undefined,
-  role: ContributorRole
-) {
+export function responsibility(contributor: ProjectContributor | undefined, role: ContributorRole) {
   switch (role) {
     case "champion":
       return CHAMPION_RESPONSIBILITY;
@@ -40,7 +25,7 @@ export function isResponsibilityRemovable(role: ContributorRole) {
   return role !== "champion" && role !== "reviewer";
 }
 
-export function splitByRole(contributors: Contributor[]) {
+export function splitByRole(contributors: ProjectContributor[]) {
   const champion = contributors.find((c) => c.role === "champion");
   const reviewer = contributors.find((c) => c.role === "reviewer");
   const rest = contributors.filter((c) => c.role === "contributor");

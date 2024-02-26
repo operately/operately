@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Updates from "@/graphql/Projects/updates";
+import * as ProjectCheckIns from "@/models/projectCheckIns";
 
 import { FilledButton } from "@/components/Button";
 
@@ -9,7 +9,7 @@ export function AckCTA() {
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
 
-  const [ack] = Updates.useAckUpdate();
+  const [ack] = ProjectCheckIns.useAckMutation();
 
   if (checkIn.acknowledgedAt) return null;
   if (!checkIn.project.permissions.canAcknowledgeCheckIn) return null;

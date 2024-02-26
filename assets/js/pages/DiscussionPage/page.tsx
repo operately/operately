@@ -12,8 +12,7 @@ import RichContent from "@/components/RichContent";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
-import { useAddReaction } from "./useAddReaction";
-import * as Feed from "@/features/feed";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";
@@ -22,7 +21,6 @@ export function Page() {
   const { discussion, me } = useLoadedData();
 
   const refresh = useRefresh();
-  const addReactionForm = useAddReaction(discussion.id, "update", refresh);
   const commentsForm = useForDiscussion(discussion);
 
   return (
@@ -39,7 +37,7 @@ export function Page() {
             <RichContent jsonContent={discussion.body} className="text-lg" />
 
             <Spacer size={2} />
-            <Feed.Reactions reactions={discussion.reactions} size={20} form={addReactionForm} />
+            <Reactions />
 
             <Spacer size={4} />
             <CommentSection form={commentsForm} me={me} refresh={refresh} />
@@ -48,6 +46,15 @@ export function Page() {
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Reactions() {
+  const { discussion, me } = useLoadedData();
+  const reactions = discussion.reactions!.map((r) => r!);
+  const entity = { id: discussion.id, type: "discussion" };
+  const addReactionForm = useReactionsForm(entity, reactions, me);
+
+  return <ReactionList size={24} form={addReactionForm} />;
 }
 
 function Title({ discussion }) {

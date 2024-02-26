@@ -1,13 +1,15 @@
-import * as Updates from "@/graphql/Projects/updates";
+import * as GoalCheckIns from "@/models/goalCheckIns";
+import * as Comments from "@/models/comments";
 
-import { Item, ItemType, FormState } from "./form";
+import { Item, ItemType } from "./form";
 
-export function useForGoalCheckIn(update: Updates.Update): FormState {
-  const { beforeAck, afterAck } = Updates.splitCommentsBeforeAndAfterAck(update);
+export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
+  const comments = (update.comments || []).map((c) => c! as Comments.Comment);
+  const { before, after } = Comments.splitComments(comments, update.acknowledgedAt);
 
   let items: Item[] = [];
 
-  beforeAck.forEach((c) => {
+  before.forEach((c) => {
     items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
   });
 
@@ -15,12 +17,12 @@ export function useForGoalCheckIn(update: Updates.Update): FormState {
     items.push({ type: "acknowledgement" as ItemType, insertedAt: update.acknowledgedAt, value: update });
   }
 
-  afterAck.forEach((c) => {
+  after.forEach((c) => {
     items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
   });
 
-  const [post, { loading: submittingPost }] = Updates.usePostComment();
-  const [edit, { loading: submittingEdit }] = Updates.useEditComment();
+  const [post, { loading: submittingPost }] = Comments.usePostComment();
+  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const postComment = async (content: string) => {
     await post({

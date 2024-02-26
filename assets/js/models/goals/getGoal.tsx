@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
-import * as UpdateContent from "@/graphql/Projects/update_content";
 
 interface GetGoalOptions {
   includeTargets?: boolean;
@@ -118,7 +117,9 @@ const QUERY = gql`
           title
         }
 
-        content ${UpdateContent.FRAGMENT}
+        content {
+          message
+        }
       }
     }
   }

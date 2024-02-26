@@ -1,6 +1,5 @@
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
-import * as Updates from "@/graphql/Projects/updates";
 import * as People from "@/models/people";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
@@ -10,7 +9,7 @@ import { useListState } from "@/utils/useListState";
 interface UseFormOptions {
   mode: "create" | "edit";
   goal: Goals.Goal;
-  checkIn?: Updates.Update;
+  checkIn?: GoalCheckIns.GoalCheckIn;
 }
 
 export interface FormState {
