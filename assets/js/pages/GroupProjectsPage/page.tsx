@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 
 import { createPath } from "@/utils/paths";
@@ -23,9 +23,9 @@ export function Page() {
 
           <div className="flex items-center justify-between mb-8">
             <div className="font-extrabold text-3xl">Projects</div>
-            <GhostButton type="primary" testId="add-project" size="sm" linkTo={newProjectPath}>
+            <FilledButton type="primary" testId="add-project" size="sm" linkTo={newProjectPath}>
               Add Project
-            </GhostButton>
+            </FilledButton>
           </div>
 
           <ProjectList projects={projects} />
