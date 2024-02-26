@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Forms from "@/components/Form";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 
 import { FilledButton } from "@/components/Button";
 import { MilestoneIcon } from "@/components/MilestoneIcon";

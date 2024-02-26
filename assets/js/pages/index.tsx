@@ -34,7 +34,6 @@ import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
 import * as GroupProjectsPage from "./GroupProjectsPage";
-import * as MyAssignmentsPage from "./MyAssignmentsPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
 import * as PeopleOrgChartPage from "./PeopleOrgChartPage";
@@ -191,10 +190,6 @@ export default {
   GroupProjectsPage: {
     loader: GroupProjectsPage.loader,
     Page: GroupProjectsPage.Page
-  },
-  MyAssignmentsPage: {
-    loader: MyAssignmentsPage.loader,
-    Page: MyAssignmentsPage.Page
   },
   NotFoundPage: {
     loader: NotFoundPage.loader,

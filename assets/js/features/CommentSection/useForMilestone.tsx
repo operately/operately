@@ -1,4 +1,4 @@
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 import * as Comments from "@/models/comments";
 
 import { Item, ItemType, FormState } from "./form";

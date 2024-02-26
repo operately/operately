@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";

@@ -1,7 +1,7 @@
 import client from "@/graphql/client";
 
 import * as Projects from "@/models/projects";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 

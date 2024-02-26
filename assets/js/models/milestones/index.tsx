@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import * as Comments from "./comments";
+import * as Comments from "@/graphql/Projects/comments";
 import * as Time from "@/utils/time";
 
 type MilestoneStatus = "pending" | "done";

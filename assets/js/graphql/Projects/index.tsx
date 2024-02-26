@@ -1,89 +1,89 @@
 import { gql, useMutation } from "@apollo/client";
 
-import * as fragments from "@/graphql/Fragments";
-import * as KeyResources from "./key_resources";
-import * as Milestones from "./milestones";
-import * as Permissions from "./permissions";
-import * as Updates from "./updates";
-import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
-import * as People from "@/graphql/People";
+// import * as fragments from "@/graphql/Fragments";
+// import * as KeyResources from "./key_resources";
+// import * as Milestones from "./milestones";
+// import * as Permissions from "./permissions";
+// import * as Updates from "./updates";
+// import * as ReviewRequests from "@/graphql/ProjectReviewRequests";
+// import * as People from "@/graphql/People";
 
-export { Project } from "@/gql";
+// export { Project } from "@/gql";
 
 export { useCreateProject } from "./mutations/create";
 export { useEditProjectTimeline } from "./mutations/edit_timeline";
 export { useEditProjectName } from "./mutations/edit_name";
 export { useArchiveForm } from "./mutations/archive";
 
-export const LIST_PROJECTS = gql`
-  query ListProjects($filters: ProjectListFilters) {
-    projects(filters: $filters) {
-      id
-      name
-      private
+// export const LIST_PROJECTS = gql`
+//   query ListProjects($filters: ProjectListFilters) {
+//     projects(filters: $filters) {
+//       id
+//       name
+//       private
 
-      insertedAt
-      updatedAt
-      startedAt
-      closedAt
+//       insertedAt
+//       updatedAt
+//       startedAt
+//       closedAt
 
-      deadline
-      health
-      isArchived
-      isOutdated
-      status
-      permissions ${Permissions.FRAGMENT}
-      contributors ${fragments.CONTRIBUTOR}
-      keyResources ${KeyResources.GQL_FRAGMENT}
-      nextMilestone ${Milestones.FRAGMENT}
-      reviewRequests ${ReviewRequests.FRAGMENT}
-      champion ${People.FRAGMENT}
-      reviewer ${People.FRAGMENT}
-      lastCheckIn ${Updates.UPDATE_FRAGMENT}
+//       deadline
+//       health
+//       isArchived
+//       isOutdated
+//       status
+//       permissions ${Permissions.FRAGMENT}
+//       contributors ${fragments.CONTRIBUTOR}
+//       keyResources ${KeyResources.GQL_FRAGMENT}
+//       nextMilestone ${Milestones.FRAGMENT}
+//       reviewRequests ${ReviewRequests.FRAGMENT}
+//       champion ${People.FRAGMENT}
+//       reviewer ${People.FRAGMENT}
+//       lastCheckIn ${Updates.UPDATE_FRAGMENT}
 
-      milestones {
-        id
-        status
-      }
-    }
-  }
-`;
+//       milestones {
+//         id
+//         status
+//       }
+//     }
+//   }
+// `;
 
-export const GET_PROJECT = gql`
-  query GetProject($id: ID!) {
-    project(id: $id) {
-      id
-      name
-      description
-      insertedAt
-      startedAt
-      deadline
-      nextUpdateScheduledAt
-      health
-      isPinned
-      isArchived
-      archivedAt
-      private
-      spaceId
-      status
-      closedAt
-      retrospective
+// export const GET_PROJECT = gql`
+//   query GetProject($id: ID!) {
+//     project(id: $id) {
+//       id
+//       name
+//       description
+//       insertedAt
+//       startedAt
+//       deadline
+//       nextUpdateScheduledAt
+//       health
+//       isPinned
+//       isArchived
+//       archivedAt
+//       private
+//       spaceId
+//       status
+//       closedAt
+//       retrospective
 
-      lastCheckIn ${Updates.UPDATE_FRAGMENT}
-      permissions ${Permissions.FRAGMENT}
+//       lastCheckIn ${Updates.UPDATE_FRAGMENT}
+//       permissions ${Permissions.FRAGMENT}
 
-      keyResources ${KeyResources.GQL_FRAGMENT}
-      milestones ${Milestones.FRAGMENT}
+//       keyResources ${KeyResources.GQL_FRAGMENT}
+//       milestones ${Milestones.FRAGMENT}
 
-      contributors ${fragments.CONTRIBUTOR}
-      champion ${People.FRAGMENT}
-      reviewer ${People.FRAGMENT}
+//       contributors ${fragments.CONTRIBUTOR}
+//       champion ${People.FRAGMENT}
+//       reviewer ${People.FRAGMENT}
 
-      nextMilestone ${Milestones.FRAGMENT}
-      reviewRequests ${ReviewRequests.FRAGMENT}
-    }
-  }
-`;
+//       nextMilestone ${Milestones.FRAGMENT}
+//       reviewRequests ${ReviewRequests.FRAGMENT}
+//     }
+//   }
+// `;
 
 export function useEditUpdate(options: any) {
   return useMutation(

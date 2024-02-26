@@ -1,5 +1,5 @@
 import * as fragments from "@/graphql/Fragments";
-import * as Milestones from "@/graphql/Projects/milestones";
+import type { Milestone } from "@/models/milestones";
 import * as People from "@/graphql/People";
 
 export type UpdateMessageType =
@@ -95,24 +95,6 @@ export const FRAGMENT = `
     ... on UpdateContentProjectContributorRemoved {
       contributor ${fragments.PERSON}
     }
-
-    ... on UpdateContentProjectMilestoneCreated {
-      milestone ${Milestones.FRAGMENT}
-    }
-
-    ... on UpdateContentProjectMilestoneDeleted {
-      milestone ${Milestones.FRAGMENT}
-    }
-
-    ... on UpdateContentProjectMilestoneCompleted {
-      milestone ${Milestones.FRAGMENT}
-    }
-
-    ... on UpdateContentProjectMilestoneDeadlineChanged {
-      milestone ${Milestones.FRAGMENT}
-      oldDeadline
-      newDeadline
-    }
   }
 `;
 
@@ -177,19 +159,19 @@ interface Message {
 }
 
 interface ProjectMilestoneCreated {
-  milestone: Milestones.Milestone;
+  milestone: Milestone[];
 }
 
 interface ProjectMilestoneDeleted {
-  milestone: Milestones.Milestone;
+  milestone: Milestone[];
 }
 
 interface ProjectMilestoneCompleted {
-  milestone: Milestones.Milestone;
+  milestone: Milestone[];
 }
 
 interface ProjectMilestoneDeadlineChanged {
-  milestone: Milestones.Milestone;
+  milestone: Milestone;
   oldDeadline: Date;
   newDeadline: Date;
 }

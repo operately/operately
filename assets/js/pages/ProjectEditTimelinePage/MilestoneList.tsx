@@ -1,10 +1,10 @@
 import * as React from "react";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 
 import { FilledButton } from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";

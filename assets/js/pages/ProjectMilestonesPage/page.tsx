@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 import * as Pages from "@/components/Pages";
 import * as Time from "@/utils/time";
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
