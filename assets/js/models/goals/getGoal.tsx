@@ -24,70 +24,6 @@ export async function getGoal(id: string, options: GetGoalOptions = {}) {
 }
 
 const QUERY = gql`
-  fragment PersonFields on Person {
-    id
-    fullName
-    avatarUrl
-    title
-  }
-
-  fragment Targets on Goal {
-    targets {
-      id
-      name
-      from
-      to
-      unit
-      value
-    }
-  }
-
-  fragment Projects on Goal {
-    projects {
-      id
-      name
-      health
-      status
-      closedAt
-      archivedAt
-
-      contributors {
-        id
-        responsibility
-        role
-        person {
-          ...PersonFields
-        }
-      }
-
-      nextMilestone {
-        id
-        title
-        deadlineAt
-        status
-      }
-
-      milestones {
-        id
-        title
-        deadlineAt
-        status
-      }
-    }
-  }
-
-  fragment LastCheckIn on Goal {
-    lastCheckIn {
-      id
-      insertedAt
-      author {
-        ...PersonFields
-      }
-
-      content ${UpdateContent.FRAGMENT}
-    }
-  }
-
   query GetGoal($id: ID!, $includeTargets: Boolean!, $includeProjects: Boolean!, $includeLastCheckIn: Boolean!) {
     goal(id: $id) {
       id
@@ -111,16 +47,79 @@ const QUERY = gql`
       }
 
       champion {
-        ...PersonFields
+        id
+        fullName
+        avatarUrl
+        title
       }
 
       reviewer {
-        ...PersonFields
+        id
+        fullName
+        avatarUrl
+        title
       }
 
-      ...Targets @include(if: $includeTargets)
-      ...Projects @include(if: $includeProjects)
-      ...LastCheckIn @include(if: $includeLastCheckIn)
+      targets @include(if: $includeTargets) {
+        id
+        name
+        from
+        to
+        unit
+        value
+      }
+
+      projects @include(if: $includeProjects) {
+        id
+        name
+        status
+        closedAt
+        archivedAt
+
+        lastCheckIn {
+          id
+          status
+        }
+
+        contributors {
+          id
+          responsibility
+          role
+          person {
+            id
+            fullName
+            avatarUrl
+            title
+          }
+        }
+
+        nextMilestone {
+          id
+          title
+          deadlineAt
+          status
+        }
+
+        milestones {
+          id
+          title
+          deadlineAt
+          status
+        }
+      }
+
+      lastCheckIn @include(if: $includeLastCheckIn) {
+        id
+        insertedAt
+        author {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+
+        content ${UpdateContent.FRAGMENT}
+      }
     }
   }
 `;

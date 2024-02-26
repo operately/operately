@@ -93,9 +93,8 @@ function Status({ project }) {
       {project.isOutdated ? (
         <Indicator value="outdated" type="status" />
       ) : (
-        <Indicator value={project.health} type="status" />
+        <Indicator value={project.lastCheckIn?.status || "on_track"} type="status" />
       )}
-      {!project.isOutdated && <HealthIssues checkIn={project.lastCheckIn} />}
     </div>
   );
 }
@@ -134,45 +133,5 @@ function PrivateIndicator({ project }) {
         <Icons.IconLock size={16} />
       </div>
     </TextTooltip>
-  );
-}
-
-function HealthIssues({ checkIn }) {
-  if (!checkIn) return null;
-
-  const issues = Object.keys(checkIn.content.health).filter((type) => {
-    if (type === "status") {
-      return false;
-    }
-
-    if (type === "schedule") {
-      return checkIn.content.health[type] !== "on_schedule";
-    }
-
-    if (type === "budget") {
-      return checkIn.content.health[type] !== "within_budget";
-    }
-
-    if (type === "team") {
-      return checkIn.content.health[type] !== "staffed";
-    }
-
-    if (type === "risks") {
-      return checkIn.content.health[type] !== "no_known_risks";
-    }
-
-    return false;
-  });
-
-  if (issues.length === 0) return null;
-
-  return (
-    <div className="flex flex-col shrink-0">
-      {issues.map((issue, index) => (
-        <div key={index}>
-          <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
-        </div>
-      ))}
-    </div>
   );
 }

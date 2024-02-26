@@ -59,12 +59,7 @@ import * as ProjectMilestonePage from "./ProjectMilestonePage";
 import * as ProjectMilestonesPage from "./ProjectMilestonesPage";
 import * as ProjectMovePage from "./ProjectMovePage";
 import * as ProjectPage from "./ProjectPage";
-import * as ProjectPhaseChangeSurveyPage from "./ProjectPhaseChangeSurveyPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
-import * as ProjectReviewPage from "./ProjectReviewPage";
-import * as ProjectReviewRequestNewPage from "./ProjectReviewRequestNewPage";
-import * as ProjectReviewRequestPage from "./ProjectReviewRequestPage";
-import * as ProjectReviewRequestSubmitPage from "./ProjectReviewRequestSubmitPage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as TaskPage from "./TaskPage";
 
@@ -297,29 +292,9 @@ export default {
     loader: ProjectPage.loader,
     Page: ProjectPage.Page
   },
-  ProjectPhaseChangeSurveyPage: {
-    loader: ProjectPhaseChangeSurveyPage.loader,
-    Page: ProjectPhaseChangeSurveyPage.Page
-  },
   ProjectRetrospectivePage: {
     loader: ProjectRetrospectivePage.loader,
     Page: ProjectRetrospectivePage.Page
-  },
-  ProjectReviewPage: {
-    loader: ProjectReviewPage.loader,
-    Page: ProjectReviewPage.Page
-  },
-  ProjectReviewRequestNewPage: {
-    loader: ProjectReviewRequestNewPage.loader,
-    Page: ProjectReviewRequestNewPage.Page
-  },
-  ProjectReviewRequestPage: {
-    loader: ProjectReviewRequestPage.loader,
-    Page: ProjectReviewRequestPage.Page
-  },
-  ProjectReviewRequestSubmitPage: {
-    loader: ProjectReviewRequestSubmitPage.loader,
-    Page: ProjectReviewRequestSubmitPage.Page
   },
   ProjectsPage: {
     loader: ProjectsPage.loader,

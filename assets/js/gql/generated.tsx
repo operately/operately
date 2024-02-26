@@ -818,7 +818,6 @@ export type Project = {
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   goal?: Maybe<Goal>;
-  health: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
@@ -832,7 +831,6 @@ export type Project = {
   nextMilestone?: Maybe<Milestone>;
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
   permissions: ProjectPermissions;
-  phase: Scalars['String']['output'];
   private: Scalars['Boolean']['output'];
   retrospective?: Maybe<Scalars['String']['output']>;
   reviewer?: Maybe<Person>;
@@ -888,9 +886,8 @@ export type ProjectKeyResource = {
 
 export type ProjectListFilters = {
   filter?: InputMaybe<Scalars['String']['input']>;
-  groupId?: InputMaybe<Scalars['ID']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  objectiveId?: InputMaybe<Scalars['ID']['input']>;
+  spaceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type ProjectMoveInput = {

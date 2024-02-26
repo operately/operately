@@ -33,124 +33,6 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
 }
 
 const QUERY = gql`
-  fragment ProjectGoal on Project {
-    goal {
-      id
-      name
-
-      targets {
-        id
-        name
-        from
-        to
-        value
-      }
-
-      champion {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-
-      reviewer {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-    }
-  }
-
-  fragment ProjectReviewer on Project {
-    reviewer {
-      id
-      fullName
-      avatarUrl
-      title
-    }
-  }
-
-  fragment ProjectContributors on Project {
-    contributors {
-      id
-      role
-
-      person {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-    }
-  }
-
-  fragment ProjectPermissions on Project {
-    permissions {
-      canView
-
-      canCreateMilestone
-      canDeleteMilestone
-
-      canEditMilestone
-      canEditDescription
-      canEditContributors
-      canEditTimeline
-      canEditResources
-      canEditGoal
-
-      canCheckIn
-      canAcknowledgeCheckIn
-    }
-  }
-
-  fragment ProjectSpace on Project {
-    space {
-      id
-      name
-      icon
-      color
-    }
-  }
-
-  fragment ProjectKeyResources on Project {
-    keyResources {
-      id
-      title
-      link
-      resourceType
-    }
-  }
-
-  fragment ProjectMilestones on Project {
-    milestones {
-      id
-      title
-      status
-
-      deadlineAt
-      completedAt
-      description
-      insertedAt
-    }
-  }
-
-  fragment ProjectLastCheckIn on Project {
-    lastCheckIn {
-      id
-      description
-      status
-      insertedAt
-
-      author {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-    }
-  }
-
   query GetProject(
     $id: ID!
     $includeGoal: Boolean!
@@ -170,7 +52,6 @@ const QUERY = gql`
       startedAt
       deadline
       nextUpdateScheduledAt
-      health
 
       isArchived
       archivedAt
@@ -179,14 +60,107 @@ const QUERY = gql`
       status
       closedAt
 
-      ...ProjectGoal @include(if: $includeGoal)
-      ...ProjectReviewer @include(if: $includeReviewer)
-      ...ProjectContributors @include(if: $includeContributors)
-      ...ProjectPermissions @include(if: $includePermissions)
-      ...ProjectSpace @include(if: $includeSpace)
-      ...ProjectKeyResources @include(if: $includeKeyResources)
-      ...ProjectMilestones @include(if: $includeMilestones)
-      ...ProjectLastCheckIn @include(if: $includeLastCheckIn)
+      space @include(if: $includeSpace) {
+        id
+        name
+        color
+        icon
+      }
+
+      lastCheckIn @include(if: $includeLastCheckIn) {
+        id
+        description
+        status
+        insertedAt
+
+        author {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+
+      milestones @include(if: $includeMilestones) {
+        id
+        title
+        status
+
+        deadlineAt
+        completedAt
+        description
+        insertedAt
+      }
+
+      keyResources @include(if: $includeKeyResources) {
+        id
+        title
+        link
+        resourceType
+      }
+
+      permissions @include(if: $includePermissions) {
+        canView
+
+        canCreateMilestone
+        canDeleteMilestone
+
+        canEditMilestone
+        canEditDescription
+        canEditContributors
+        canEditTimeline
+        canEditResources
+        canEditGoal
+
+        canCheckIn
+        canAcknowledgeCheckIn
+      }
+
+      goal @include(if: $includeGoal) {
+        id
+        name
+
+        targets {
+          id
+          name
+          from
+          to
+          value
+        }
+
+        champion {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+
+        reviewer {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+
+      reviewer @include(if: $includeReviewer) {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
+      contributors @include(if: $includeContributors) {
+        id
+        role
+
+        person {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
     }
   }
 `;

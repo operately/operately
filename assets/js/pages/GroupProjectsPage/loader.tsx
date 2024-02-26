@@ -12,9 +12,9 @@ interface LoadedData {
 export async function loader({ params }): Promise<LoadedData> {
   return {
     company: await Companies.getCompany(),
-    group: await Groups.getGroup(params.groupId),
+    group: await Groups.getGroup(params.id),
     projects: await Projects.getProjects({
-      spaceId: params.groupId,
+      spaceId: params.id,
       includeContributors: true,
       includeMilestones: true,
       includeLastCheckIn: true,

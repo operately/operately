@@ -2,8 +2,7 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
   use Absinthe.Schema.Notation
 
   input_object :project_list_filters do
-    field :group_id, :id
-    field :objective_id, :id
+    field :space_id, :id
     field :include_archived, :boolean
     field :filter, :string
   end
@@ -16,10 +15,9 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
         person = context.current_account.person
         filters = Map.get(args, :filters, %{})
 
-        projects = Operately.Projects.list_projects(person, %{
+        projects = Operately.Projects.ListOperation.run(person, %{
           company_id: person.company_id,
-          group_id: filters[:group_id],
-          objective_id: filters[:objective_id],
+          space_id: filters[:space_id],
           include_archived: filters[:include_archived],
           filter: filters[:filter],
         })

@@ -4,7 +4,7 @@ import * as Reactions from "./reactions";
 export const FRAGMENT = `
   {
     id
-    message
+    content
     insertedAt
     author ${fragments.PERSON}
     reactions ${Reactions.FRAGMENT}

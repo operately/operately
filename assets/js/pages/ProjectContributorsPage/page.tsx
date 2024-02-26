@@ -8,7 +8,7 @@ import * as Pages from "@/components/Pages";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton } from "./FormElements";
 import ContributorItem from "./ContributorItem";
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useForm } from "./useForm";
@@ -67,9 +67,9 @@ function AddContribForm({ form }) {
 
 function AddButton({ onClick }) {
   return (
-    <GhostButton onClick={onClick} testId="add-contributor-button">
+    <FilledButton onClick={onClick} testId="add-contributor-button" size="sm">
       Add Contributor
-    </GhostButton>
+    </FilledButton>
   );
 }
 

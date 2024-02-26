@@ -12,6 +12,7 @@ defmodule Operately.Goals.Goal do
     belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
     has_many :targets, Operately.Goals.Target
+    has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
     field :name, :string
     field :timeframe, :string

@@ -40,6 +40,8 @@ export function Page() {
 function ResourceList({ project }: { project: Projects.Project }) {
   if (project.keyResources!.length > 0) {
     return <ResourcesListWithData project={project} />;
+  } else {
+    return null;
   }
 }
 

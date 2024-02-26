@@ -1,7 +1,5 @@
-import client from "@/graphql/client";
-
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import { useSearchParams } from "react-router-dom";
 
@@ -10,14 +8,11 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  let projectData = await client.query({
-    query: Projects.GET_PROJECT,
-    variables: { id: params.projectID },
-    fetchPolicy: "network-only",
-  });
-
   return {
-    project: projectData.data.project,
+    project: await Projects.getProject(params.projectID, {
+      includeSpace: true,
+      includePermissions: true,
+    }),
   };
 }
 

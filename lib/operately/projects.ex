@@ -34,7 +34,6 @@ defmodule Operately.Projects do
   end
 
   defdelegate create_project(params), to: Operately.Projects.ProjectCreation, as: :run
-  defdelegate list_projects(person, filters), to: Operately.Projects.ListOperation, as: :run
 
   def update_project(%Project{} = project, attrs) do
     project

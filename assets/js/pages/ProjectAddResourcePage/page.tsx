@@ -50,8 +50,17 @@ function Form({ project, form }) {
         value={form.name}
         onChange={form.setName}
         autoFocus
+        error={false}
       />
-      <Forms.TextInput name="url" label="URL" placeholder="https://..." value={form.url} onChange={form.setUrl} />
+
+      <Forms.TextInput
+        name="url"
+        label="URL"
+        placeholder="https://..."
+        value={form.url}
+        onChange={form.setUrl}
+        error={false}
+      />
 
       <Forms.SubmitArea>
         <Forms.SubmitButton data-test-id="save">Save</Forms.SubmitButton>

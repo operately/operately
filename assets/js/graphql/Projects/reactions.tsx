@@ -3,7 +3,8 @@ import * as fragments from "@/graphql/Fragments";
 export const FRAGMENT = `
   {
     id
-    reactionType
+    emoji
+
     person ${fragments.PERSON}
   }
 `;

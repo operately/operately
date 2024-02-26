@@ -12,6 +12,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     company: await Companies.getCompany(),
     project: await Projects.getProject(params.id, {
       includeSpace: true,
+      includeGoal: true,
       includePermissions: true,
       includeContributors: true,
       includeKeyResources: true,
