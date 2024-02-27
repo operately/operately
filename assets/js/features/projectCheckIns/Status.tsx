@@ -9,9 +9,10 @@ interface StatusProps {
   reviewer?: People.Person;
   selectable?: boolean;
   onSelected?: () => void;
+  testId?: string;
 }
 
-export function Status({ status, reviewer, selectable, onSelected }: StatusProps) {
+export function Status({ status, reviewer, selectable, onSelected, testId }: StatusProps) {
   const color = COLORS[status];
   const title = TITLES[status];
   const description = <StatusDescription status={status} reviewer={reviewer} />;
@@ -21,7 +22,7 @@ export function Status({ status, reviewer, selectable, onSelected }: StatusProps
   });
 
   return (
-    <div className={className} onClick={onSelected}>
+    <div className={className} onClick={onSelected} data-test-id={testId}>
       <Circle color={color} />
 
       <div>

@@ -22,6 +22,8 @@ export function StatusDropdown({ status, onStatusSelected, reviewer, error }: St
   const [open, setOpen] = React.useState(false);
   const [width, setWidth] = React.useState(0);
 
+  const testId = "status-dropdown";
+
   React.useEffect(() => {
     if (ref.current) setWidth(ref.current.clientWidth);
   }, [ref.current]);
@@ -44,7 +46,7 @@ export function StatusDropdown({ status, onStatusSelected, reviewer, error }: St
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <div className={triggerClassName} ref={ref}>
+        <div className={triggerClassName} ref={ref} data-test-id={testId}>
           <StatusOrPlaceholder status={status} reviewer={reviewer} />
 
           <div className="p-4">
@@ -56,7 +58,13 @@ export function StatusDropdown({ status, onStatusSelected, reviewer, error }: St
       <Popover.Portal>
         <Popover.Content className={dropdownClassName} align="start" style={{ width }}>
           {POSSIBLE_STATUSES.map((status) => (
-            <Status key={status} status={status} selectable onSelected={handleSelected(status)} />
+            <Status
+              key={status}
+              status={status}
+              selectable
+              onSelected={handleSelected(status)}
+              testId={`status-dropdown-${status}`}
+            />
           ))}
         </Popover.Content>
       </Popover.Portal>

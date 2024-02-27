@@ -1,19 +1,44 @@
 defmodule Operately.Support.Features.ProjectCheckInSteps do
   alias Operately.Support.Features.UI
-  alias Operately.Support.Features.ProjectSteps
 
-  def start_check_in(ctx) do
+  @status_to_on_screen %{
+    "on_track" => "On Track",
+    "at_risk" => "At Risk",
+    "off_track" => "Off Track"
+  }
+
+  def submit_check_in(ctx, %{status: status, description: description}) do
     ctx
-    |> ProjectSteps.visit_project_page()
+    |> UI.visit("/projects/#{ctx.project.id}")
     |> UI.click(testid: "check-in-now")
-  end
-
-  def submit_check_in(ctx, %{status: _status, description: description}) do
-    ctx
-    |> start_check_in()
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "post-check-in")
     |> UI.assert_text("Check-In from")
+  end
+
+  def assert_check_in_submitted(ctx, %{status: status, description: description}) do
+    ctx
+    |> UI.assert_text("Check-In from")
+    |> UI.assert_text(description)
+    |> UI.assert_text(@status_to_on_screen[status])
+  end
+
+  def assert_check_in_visible_on_project_page(ctx, %{status: status, description: description}) do
+    ctx
+    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.assert_text(description)
+    |> UI.assert_text(@status_to_on_screen[status])
+  end
+
+  def assert_check_in_visible_on_feed(ctx, %{status: status, description: description}) do
+    ctx
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> UI.assert_text(description)
+      |> UI.assert_text(@status_to_on_screen[status])
+    end)
   end
 
   def edit_check_in(ctx, updates) do

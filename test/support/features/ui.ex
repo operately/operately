@@ -318,4 +318,10 @@ defmodule Operately.Support.Features.UI do
       _ -> raise "Unknown pattern #{inspect(p)}"
     end
   end
+
+  def take_screenshot(state) do
+    execute(state, fn session ->
+      session |> Browser.take_screenshot()
+    end)
+  end
 end
