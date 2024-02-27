@@ -83,8 +83,16 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   end
 
   def assert_check_in_acknowledged(ctx, %{status: status, description: description}) do
-    ctx
-    |> UI.assert_text("#{ctx.reviewer.full_name} acknowledged this Check-In")
+    ctx |> UI.assert_text("#{ctx.reviewer.full_name} acknowledged this Check-In")
+  end
+
+  def assert_acknowledgement_email_sent_to_champion(ctx, %{status: _status, description: _description}) do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "acknowledged a check-in",
+      author: ctx.reviewer,
+    })
   end
 
   #def edit_check_in(ctx, updates) do
