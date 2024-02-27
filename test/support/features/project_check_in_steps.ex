@@ -72,6 +72,21 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     ctx
   end
 
+  def open_check_in_from_notifications(ctx, %{status: status, description: description}) do
+    ctx
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "project-check-in-submitted")
+  end
+
+  def acknowledge_check_in(ctx) do
+    ctx |> UI.click(testid: "acknowledge-check-in")
+  end
+
+  def assert_check_in_acknowledged(ctx, %{status: status, description: description}) do
+    ctx
+    |> UI.assert_text("#{ctx.reviewer.full_name} acknowledged this Check-In")
+  end
+
   #def edit_check_in(ctx, updates) do
   #  ctx
   #  |> UI.click(testid: "options-button")

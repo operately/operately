@@ -26,7 +26,7 @@ export function AckCTA() {
 
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
-      <FilledButton size="lg" testId="acknowledge-update" onClick={handleAck}>
+      <FilledButton size="lg" testId="acknowledge-check-in" onClick={handleAck}>
         Acknowledge this Check-In
       </FilledButton>
     </div>

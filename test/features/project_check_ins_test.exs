@@ -26,18 +26,18 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_next_check_in_scheduled(values)
   end
 
-  # @tag login_as: :champion
-  # feature "acknowledge a check-in in the web app", ctx do
-  #   values = %{status: "on_track", description: "This is a check-in."}
+  @tag login_as: :champion
+  feature "acknowledge a check-in in the web app", ctx do
+    values = %{status: "on_track", description: "This is a check-in."}
 
-  #   ctx 
-  #   |> Steps.submit_check_in(values)
-  #   |> UI.login_as(ctx.reviewer)
-  #   |> Steps.assert_check_in_notification_received(values)
-  #   |> Steps.open_check_in_from_notification(values)
-  #   |> Steps.acknowledge_check_in()
-  #   |> Steps.assert_check_in_acknowledged(values)
-  # end
+    ctx 
+    |> Steps.submit_check_in(values)
+    |> UI.login_as(ctx.reviewer)
+    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.acknowledge_check_in()
+    |> Steps.assert_check_in_acknowledged(values)
+    |> Steps.assert_acknowledgement_email_sent_to_champion(values)
+  end
 
   # @tag login_as: :champion
   # feature "acknowledge a check-in from the email", ctx do

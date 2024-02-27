@@ -18,6 +18,7 @@ export default function ProjectCheckInSubmitted({ notification }) {
       author={author}
       link={link}
       where={projectName}
+      testId="project-check-in-submitted"
       who={notification.activity.author.fullName}
       when={notification.activity.insertedAt}
     />
