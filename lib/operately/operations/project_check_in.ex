@@ -26,7 +26,7 @@ defmodule Operately.Operations.ProjectCheckIn do
         next_check_in_scheduled_at: next_check_in,
       })
     end)
-    |> Activities.insert(author.id, :project_check_in_submitted, fn changes -> 
+    |> Activities.insert_sync(author.id, :project_check_in_submitted, fn changes -> 
       %{
         company_id: project.company_id,
         project_id: project.id,

@@ -1,9 +1,19 @@
 import * as React from "react";
-
-import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
-
+import * as Activities from "@/models/activities";
 import * as People from "@/models/people";
+
+import FormattedTime from "@/components/FormattedTime";
+import Avatar from "@/components/Avatar";
+
+//
+// Every feed item defined in the in the items folder should implement this interface
+// and be added to the FeedItems array in index.tsx
+//
+export interface FeedItem {
+  typename: string;
+  contentQuery: string;
+  component: React.FC<{ activity: Activities.Activity; content: any; page: string }>;
+}
 
 interface ContainerProps {
   author: People.Person;

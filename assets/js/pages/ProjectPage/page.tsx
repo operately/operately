@@ -18,7 +18,7 @@ import Avatar from "@/components/Avatar";
 import RichContent, { Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
-import { FeedForProject } from "@/components/Feed";
+import { Feed, useItemsQuery } from "@/features/Feed";
 import { DimmedLabel } from "./Label";
 
 import * as People from "@/models/people";
@@ -136,12 +136,21 @@ export function Page() {
 
           <Paper.DimmedSection>
             <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
-            <FeedForProject project={project} />
+            <ProjectFeed project={project} />
           </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function ProjectFeed({ project }) {
+  const { data, loading, error } = useItemsQuery("project", project.id);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+
+  return <Feed items={data.activities} />;
 }
 
 function LastCheckIn({ project }) {

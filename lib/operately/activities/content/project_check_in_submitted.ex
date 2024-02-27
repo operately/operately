@@ -1,10 +1,10 @@
-defmodule Operately.Activities.Content.ProjectStatusUpdateSubmitted do
+defmodule Operately.Activities.Content.ProjectCheckInSubmitted do
   use Operately.Activities.Content
 
   embedded_schema do
     field :company_id, :string
     field :project_id, :string
-    field :status_update_id, :string
+    field :check_in_id, :string
   end
 
   def changeset(attrs) do
@@ -14,12 +14,6 @@ defmodule Operately.Activities.Content.ProjectStatusUpdateSubmitted do
   end
 
   def build(params) do
-    project = Operately.Projects.get_project!(params["project_id"])
-
-    changeset(%{
-      company_id: project.company_id,
-      project_id: project.id,
-      status_update_id: params["update_id"]
-    })
+    changeset(params)
   end
 end

@@ -2,7 +2,7 @@ import { Activity } from "@/gql/generated";
 
 import * as Time from "@/utils/time";
 
-interface ActivityGroup {
+export interface ActivityGroup {
   date: Date;
   activities: Activity[];
 }

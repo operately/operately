@@ -1,36 +1,18 @@
 import * as React from "react";
 
-import FeedItem from "./FeedItem";
+export { useItemsQuery } from "./useItemsQuery";
+
 import FormattedTime from "@/components/FormattedTime";
+import FeedItems from "./FeedItems";
 
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 
-export function FeedForProject({ project }) {
-  const { activities, loading, error } = Activities.useFeed(project.id, "project");
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div></div>;
-
+export function Feed({ items }: { items: Activities.Activity[] }) {
   return (
     <div className="w-full">
-      {Activities.groupByDate(activities).map((group, index) => (
+      {Activities.groupByDate(items).map((group, index) => (
         <ActivityGroup key={index} group={group} page="project" />
-      ))}
-    </div>
-  );
-}
-
-export function FeedForGoal({ goal }) {
-  const { activities, loading, error } = Activities.useFeed(goal.id, "goal");
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div></div>;
-
-  return (
-    <div className="w-full">
-      {Activities.groupByDate(activities).map((group, index) => (
-        <ActivityGroup key={index} group={group} page="goal" />
       ))}
     </div>
   );
@@ -49,10 +31,26 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
 
         <div className="flex-1">
           {group.activities.map((activity) => (
-            <FeedItem key={activity.id} activity={activity} page={page} />
+            <ActivityItem key={activity.id} activity={activity} page={page} />
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
+  const item = FeedItems.find((item) => item.typename === activity.content.__typename);
+  if (!item) {
+    console.error(`No component found for feed item type: ${activity.content.__typename}`);
+    return null;
+  }
+
+  const content = activity.content;
+
+  return (
+    <div className="flex items-start gap-2 py-2">
+      {React.createElement(item.component, { activity, content, page })}
     </div>
   );
 }

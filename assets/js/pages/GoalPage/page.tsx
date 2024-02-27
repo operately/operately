@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import classnames from "classnames";
 import Avatar from "@/components/Avatar";
 
-import { FeedForGoal } from "@/components/Feed";
+import { Feed, useItemsQuery } from "@/features/Feed";
 import { TargetList } from "./TargetList";
 import { Options } from "./Options";
 import { CheckIns } from "./CheckIns";
@@ -87,6 +87,16 @@ export function Page() {
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function FeedForGoal({ goal }) {
+  const { data, loading, error } = useItemsQuery("goal", goal.id);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data) return null;
+
+  return <Feed items={data.items} />;
 }
 
 const DimmedLabel = ({ children }) => (
