@@ -28,15 +28,33 @@ defmodule Operately.Support.Features.UI do
     login_as(state, person)
   end
 
+  def sleep(passthrough_result, msg) do
+    IO.puts(msg)
+    :timer.sleep(1000)
+    passthrough_result
+  end
+
+  def log_time(passthrough_result, msg) do
+    IO.puts("#{:os.system_time(:millisecond)} - #{msg}")
+    passthrough_result
+  end
+
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
-    execute(state, fn session ->
+    if Map.has_key?(state, :session) do
+      :ok = Wallaby.end_session(state.session)
+    end
+
+    {:ok, session} = Wallaby.start_session()
+
+    session = 
       session
-      |> Browser.visit("/")
-      |> Browser.set_cookie("_operately_key", "")
+      |> Browser.resize_window(1920, 2000)
       |> Browser.visit(path)
-    end)
+
+    state
+    |> Map.put(:session, session)
     |> Map.put(:last_login, person)
   end
 
@@ -292,6 +310,8 @@ defmodule Operately.Support.Features.UI do
     Sent emails:
     #{emails |> Enum.map(fn {title, to} -> "  - Title: #{inspect(title)}\n    To: #{inspect(to)}" end) |> Enum.join("\n")}
     """
+
+    state
   end
 
   def refute_email_sent(state, title, to: to) do

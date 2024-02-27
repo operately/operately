@@ -23,7 +23,7 @@ const QUERY = gql`
   query projectContributorCandidates($projectId: ID!, $query: String!) {
     projectContributorCandidates(projectId: $projectId, query: $query) {
       id
-      name
+      fullName
       title
       avatarUrl
     }

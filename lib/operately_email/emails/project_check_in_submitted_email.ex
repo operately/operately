@@ -4,7 +4,6 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
-    IO.inspect(activity.content)
     project = Projects.get_project!(activity.content["project_id"])
     check_in = Projects.get_check_in!(activity.content["check_in_id"])
     company = Operately.Repo.preload(project, :company).company

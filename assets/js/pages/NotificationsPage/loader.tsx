@@ -151,25 +151,17 @@ const query = gql`
             }
           }
 
-          ... on ActivityContentProjectStatusUpdateSubmitted {
-            projectId
-            statusUpdateId
-
+          ... on ActivityContentProjectCheckInSubmitted {
             project {
+              id
               name
-              health
             }
 
-            update {
-              content {
-                __typename
-
-                ... on UpdateContentStatusUpdate {
-                  health {
-                    status
-                  }
-                }
-              }
+            checkIn {
+              id
+              insertedAt
+              status
+              description
             }
           }
 

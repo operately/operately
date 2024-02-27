@@ -48,9 +48,9 @@ defmodule OperatelyWeb.Router do
   scope "/", OperatelyWeb do
     pipe_through [:browser, :require_authenticated_account]
 
-    get "/accounts/settings", AccountSettingsController, :edit
-    put "/accounts/settings", AccountSettingsController, :update
-    get "/accounts/settings/confirm_email/:token", AccountSettingsController, :confirm_email
+    # get "/accounts/settings", AccountSettingsController, :edit
+    # put "/accounts/settings", AccountSettingsController, :update
+    # get "/accounts/settings/confirm_email/:token", AccountSettingsController, :confirm_email
 
     get "/blobs/:id", BlobController, :get
   end
@@ -59,10 +59,10 @@ defmodule OperatelyWeb.Router do
     pipe_through [:browser]
 
     delete "/accounts/log_out", AccountSessionController, :delete
-    get "/accounts/confirm", AccountConfirmationController, :new
-    post "/accounts/confirm", AccountConfirmationController, :create
-    get "/accounts/confirm/:token", AccountConfirmationController, :edit
-    post "/accounts/confirm/:token", AccountConfirmationController, :update
+    # get "/accounts/confirm", AccountConfirmationController, :new
+    # post "/accounts/confirm", AccountConfirmationController, :create
+    # get "/accounts/confirm/:token", AccountConfirmationController, :edit
+    # post "/accounts/confirm/:token", AccountConfirmationController, :update
 
     get "/accounts/auth/:provider", AccountOauthController, :request
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback

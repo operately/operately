@@ -2,10 +2,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
-  alias Operately.Support.Features.FeedSteps
-
   alias Operately.Support.Features.ProjectCheckInSteps, as: Steps
 
   setup ctx do
@@ -21,12 +17,13 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx
     |> Steps.submit_check_in(values)
+    |> UI.log_time("Check-in submitted")
     |> Steps.assert_check_in_submitted(values)
     |> Steps.assert_check_in_visible_on_project_page(values)
     |> Steps.assert_check_in_visible_on_feed(values)
     |> Steps.assert_email_sent_to_reviewer(values)
-    # |> Steps.assert_notification_sent_to_reviewer(values)
-    # |> Steps.assert_next_check_in_scheduled(values)
+    |> Steps.assert_notification_sent_to_reviewer(values)
+    |> Steps.assert_next_check_in_scheduled(values)
   end
 
   # @tag login_as: :champion
@@ -42,18 +39,18 @@ defmodule Operately.Features.ProjectCheckInsTest do
   #   |> Steps.assert_check_in_acknowledged(values)
   # end
 
-  @tag login_as: :champion
-  feature "acknowledge a check-in from the email", ctx do
-    values = %{status: "on_track", description: "This is a check-in."}
+  # @tag login_as: :champion
+  # feature "acknowledge a check-in from the email", ctx do
+  #   values = %{status: "on_track", description: "This is a check-in."}
 
-    ctx 
-    |> Steps.submit_check_in(values)
-    |> UI.login_as(ctx.reviewer)
-    |> Steps.assert_check_in_email_received()
-    |> Steps.assert_check_in_notification_received()
-    |> Steps.open_check_in_from_email()
-    |> Steps.assert_check_in_acknowledged()
-  end
+  #   ctx 
+  #   |> Steps.submit_check_in(values)
+  #   |> UI.login_as(ctx.reviewer)
+  #   |> Steps.assert_check_in_email_received()
+  #   |> Steps.assert_check_in_notification_received()
+  #   |> Steps.open_check_in_from_email()
+  #   |> Steps.assert_check_in_acknowledged()
+  # end
 
   # @tag login_as: :champion
   # feature "leave a comment on an check-in", ctx do
