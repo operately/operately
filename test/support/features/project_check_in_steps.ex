@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.ProjectCheckInSteps do
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.EmailSteps
 
   @status_to_on_screen %{
     "on_track" => "On Track",
@@ -39,6 +40,15 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
       |> UI.assert_text(description)
       |> UI.assert_text(@status_to_on_screen[status])
     end)
+  end
+
+  def assert_email_sent_to_reviewer(ctx, %{status: _status, description: _description}) do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "submitted a check-in",
+      author: ctx.champion,
+    })
   end
 
   #def edit_check_in(ctx, updates) do

@@ -4,7 +4,8 @@ defmodule Operately.Activities.NotificationDispatcher do
   alias Operately.Activities.Activity
 
   def perform(job) do
-    activity = Operately.Repo.get!(Activity, job.params["activity_id"])
+    acitivity_id = job.args["activity_id"]
+    activity = Operately.Repo.get!(Activity, acitivity_id)
     handler = find_module("Operately.Activities.Notifications", activity.action)
 
     apply(handler, :dispatch, [activity])
