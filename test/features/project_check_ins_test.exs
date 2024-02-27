@@ -24,7 +24,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_check_in_submitted(values)
     |> Steps.assert_check_in_visible_on_project_page(values)
     |> Steps.assert_check_in_visible_on_feed(values)
-    # |> Steps.assert_email_sent_to_reviewer(values)
+    |> Steps.assert_email_sent_to_reviewer(values)
     # |> Steps.assert_notification_sent_to_reviewer(values)
     # |> Steps.assert_next_check_in_scheduled(values)
   end

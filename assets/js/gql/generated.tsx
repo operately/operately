@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -135,6 +135,14 @@ export type ActivityContentProjectArchived = {
   __typename?: 'ActivityContentProjectArchived';
   project: Project;
   projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectCheckInSubmitted = {
+  __typename?: 'ActivityContentProjectCheckInSubmitted';
+  project: Project;
+  projectId: Scalars['String']['output'];
+  statusUpdateId: Scalars['String']['output'];
+  update: Update;
 };
 
 export type ActivityContentProjectClosed = {
@@ -250,14 +258,6 @@ export type ActivityContentProjectStatusUpdateEdit = {
   checkInId: Scalars['String']['output'];
   companyId: Scalars['String']['output'];
   projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectStatusUpdateSubmitted = {
-  __typename?: 'ActivityContentProjectStatusUpdateSubmitted';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  statusUpdateId: Scalars['String']['output'];
-  update: Update;
 };
 
 export type ActivityContentProjectTimelineEdited = {
@@ -843,7 +843,7 @@ export type Project = {
 
 export type ProjectCheckIn = {
   __typename?: 'ProjectCheckIn';
-  acknowledgedAt?: Maybe<Scalars['Date']['output']>;
+  acknowledgedAt?: Maybe<Scalars['NaiveDateTime']['output']>;
   acknowledgedBy?: Maybe<Person>;
   author: Person;
   description: Scalars['String']['output'];
@@ -932,6 +932,7 @@ export type Reaction = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
+  acknowledgeProjectCheckIn: ProjectCheckIn;
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addCompanyMember: Person;
   addCompanyTrustedEmailDomain: Company;
@@ -1007,6 +1008,11 @@ export type RootMutationType = {
 
 
 export type RootMutationTypeAcknowledgeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeAcknowledgeProjectCheckInArgs = {
   id: Scalars['ID']['input'];
 };
 

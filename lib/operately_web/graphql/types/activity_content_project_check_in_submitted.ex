@@ -1,16 +1,16 @@
-defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateSubmitted do
+defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInSubmitted do
   use Absinthe.Schema.Notation
 
-  object :activity_content_project_status_update_submitted do
+  object :activity_content_project_check_in_submitted do
     field :project_id, non_null(:string) do
       resolve fn activity, _, _ ->
         {:ok, activity.content["project_id"]}
       end
     end
 
-    field :status_update_id, non_null(:string) do
+    field :check_in_id, non_null(:string) do
       resolve fn activity, _, _ ->
-        {:ok, activity.content["status_update_id"]}
+        {:ok, activity.content["check_in_id"]}
       end
     end
 
@@ -24,12 +24,12 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateSubmitted
       end
     end
 
-    field :update, non_null(:update) do
+    field :check_in, non_null(:project_check_in) do
       resolve fn activity, _, _ ->
-        id = activity.content["status_update_id"]
-        update = Operately.Updates.get_update!(id)
+        id = activity.content["check_in_id"]
+        check_in = Operately.Projects.get_check_in!(id)
 
-        {:ok, update}
+        {:ok, check_in}
       end
     end
   end

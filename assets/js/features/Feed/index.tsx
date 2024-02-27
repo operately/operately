@@ -8,9 +8,9 @@ import FeedItems from "./FeedItems";
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 
-export function Feed({ items }: { items: Activities.Activity[] }) {
+export function Feed({ items, testId }: { items: Activities.Activity[]; testId?: string }) {
   return (
-    <div className="w-full">
+    <div className="w-full" data-test-id={testId}>
       {Activities.groupByDate(items).map((group, index) => (
         <ActivityGroup key={index} group={group} page="project" />
       ))}
@@ -42,7 +42,7 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
 function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
   const item = FeedItems.find((item) => item.typename === activity.content.__typename);
   if (!item) {
-    console.error(`No component found for feed item type: ${activity.content.__typename}`);
+    console.log(`No component found for feed item type: ${activity.content.__typename}`);
     return null;
   }
 
