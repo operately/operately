@@ -16,7 +16,7 @@ export function Status({ status, reviewer, selectable, onSelected }: StatusProps
   const title = TITLES[status];
   const description = <StatusDescription status={status} reviewer={reviewer} />;
 
-  const className = classNames("flex items-center gap-4 p-2", {
+  const className = classNames("flex items-center gap-2 p-2", {
     "hover:bg-surface-highlight cursor-pointer": selectable,
   });
 
@@ -27,6 +27,19 @@ export function Status({ status, reviewer, selectable, onSelected }: StatusProps
       <div>
         <p className="font-bold">{title}</p>
         <div className="text-sm">{description}</div>
+      </div>
+    </div>
+  );
+}
+
+export function Placeholder() {
+  return (
+    <div className="flex items-center gap-2 p-2 text-content-dimmed">
+      <div className="w-10 h-10 rounded-full border-2 border-surface-base border-dashed" />
+
+      <div>
+        <p className="font-semibold">Select a status</p>
+        <div className="text-sm">Choose from the available options</div>
       </div>
     </div>
   );

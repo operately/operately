@@ -7,6 +7,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -15,18 +16,25 @@ interface UseFormOptions {
   checkIn?: ProjectCheckIns.ProjectCheckIn;
 }
 
+export interface Error {
+  field: string;
+  message: string;
+}
+
 export interface FormState {
   author: People.Person;
   project: Projects.Project;
 
   editor: TipTapEditor.EditorState;
 
-  status: string;
+  status: string | null;
   setStatus: (status: string) => void;
 
-  submit: () => void;
+  submit: () => Promise<boolean>;
   submitDisabled?: boolean;
   submitButtonLabel?: string;
+
+  errors: Error[];
 
   cancelPath: string;
 }
@@ -34,7 +42,8 @@ export interface FormState {
 export function useForm({ mode, project, checkIn, author }: UseFormOptions): FormState {
   const navigate = useNavigate();
 
-  const [status, setStatus] = React.useState(mode === "edit" ? checkIn!.status : "on_track");
+  const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status : null);
+  const [errors, setErrors] = React.useState<Error[]>([]);
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
@@ -51,12 +60,19 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
     onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id, data.editProjectCheckIn.id)),
   });
 
-  const submit = () => {
-    if (!editor.editor) return;
-    if (editor.uploading) return;
+  const submit = async (): Promise<boolean> => {
+    if (!editor.editor) return false;
+    if (editor.uploading) return false;
+
+    const errors = validate(status, editor.editor.getJSON());
+
+    if (errors.length > 0) {
+      setErrors(errors);
+      return false;
+    }
 
     if (mode === "create") {
-      post({
+      await post({
         variables: {
           input: {
             projectId: project.id,
@@ -66,11 +82,11 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
         },
       });
 
-      return;
+      return true;
     }
 
     if (mode === "edit") {
-      edit({
+      await edit({
         variables: {
           input: {
             checkInId: checkIn!.id,
@@ -80,8 +96,10 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
         },
       });
 
-      return;
+      return true;
     }
+
+    return false;
   };
 
   const submitButtonLabel = React.useMemo(() => {
@@ -108,6 +126,21 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
     submitDisabled,
     submitButtonLabel,
 
-    cancelPath: cancelPath,
+    errors,
+    cancelPath,
   };
+}
+
+function validate(status: string | null, description: string): Error[] {
+  let errors: Error[] = [];
+
+  if (!status) {
+    errors = [...errors, { field: "status", message: "Status is required" }];
+  }
+
+  if (isContentEmpty(description)) {
+    errors = [...errors, { field: "description", message: "Description is required" }];
+  }
+
+  return errors;
 }
