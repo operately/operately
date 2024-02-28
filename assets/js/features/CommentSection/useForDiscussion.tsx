@@ -19,7 +19,8 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
     await post({
       variables: {
         input: {
-          updateId: discussion.id,
+          entityId: discussion.id,
+          entityType: "update",
           content: JSON.stringify(content),
         },
       },

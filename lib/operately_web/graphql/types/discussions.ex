@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Graphql.Types.Discussions do
 
     field :comments, list_of(:comment) do
       resolve fn update, _, _ ->
-        comments = Operately.Updates.list_comments(update.id)
+        comments = Operately.Updates.list_comments(update.id, :update)
 
         {:ok, comments}
       end

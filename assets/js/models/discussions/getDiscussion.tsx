@@ -37,7 +37,7 @@ const QUERY = gql`
 
       reactions {
         id
-        reactionType
+        emoji
         person {
           id
           fullName
@@ -47,7 +47,7 @@ const QUERY = gql`
 
       comments {
         id
-        message
+        content
         insertedAt
 
         author {
@@ -58,7 +58,7 @@ const QUERY = gql`
 
         reactions {
           id
-          reactionType
+          emoji
           person {
             id
             fullName

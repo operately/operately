@@ -70,10 +70,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
             goal = Operately.Goals.get_goal!(update.updatable_id)
             Operately.Operations.GoalCheckInEdit.run(author, goal, update, content, target_values)
 
-          :status_update ->
-            health = args.input.health
-            Operately.Operations.ProjectStatusUpdateEdit.run(author, update, health, content)
-
           _ ->
             raise "Unknown message type"
         end

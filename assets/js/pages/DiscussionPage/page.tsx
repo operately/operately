@@ -40,6 +40,7 @@ export function Page() {
             <Reactions />
 
             <Spacer size={4} />
+            <div className="border-t border-stroke-base mt-8" />
             <CommentSection form={commentsForm} me={me} refresh={refresh} />
           </div>
         </Paper.Body>
@@ -51,7 +52,7 @@ export function Page() {
 function Reactions() {
   const { discussion, me } = useLoadedData();
   const reactions = discussion.reactions!.map((r) => r!);
-  const entity = { id: discussion.id, type: "discussion" };
+  const entity = { id: discussion.id, type: "update" };
   const addReactionForm = useReactionsForm(entity, reactions, me);
 
   return <ReactionList size={24} form={addReactionForm} />;
