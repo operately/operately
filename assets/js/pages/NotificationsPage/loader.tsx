@@ -198,7 +198,7 @@ const query = gql`
 
           ... on ActivityContentProjectCheckInCommented {
             projectId
-            statusUpdateId
+            checkInId
 
             project {
               name
