@@ -52,7 +52,7 @@ defmodule OperatelyEmail.Templates do
 
   def assignment_to_text(assignment) do
     case assignment.type do
-    :status_update ->
+    :project_check_in ->
       "- Check-In #{assignment.url}"
     :goal_check_in ->
       "- Check-In #{assignment.url}"
