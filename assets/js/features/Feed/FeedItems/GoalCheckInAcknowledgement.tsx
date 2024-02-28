@@ -15,7 +15,6 @@ export const GoalCheckInAcknowledgement: FeedItem = {
   contentQuery: `
     update {
       id
-      message
       insertedAt
     }
 

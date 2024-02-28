@@ -9,7 +9,7 @@ export const ProjectMilestoneCommented: FeedItem = {
   typename: "ActivityContentProjectMilestoneCommented",
   contentQuery: `
     comment {
-      message
+      content
     }
     commentAction
     milestone {
@@ -24,7 +24,7 @@ export const ProjectMilestoneCommented: FeedItem = {
 
     const title = <Title activity={activity} />;
 
-    const commentMessage = comment.message;
+    const commentMessage = comment.content;
 
     const summary = <Summary jsonContent={commentMessage} characterCount={200} />;
 
