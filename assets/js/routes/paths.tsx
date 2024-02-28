@@ -18,4 +18,8 @@ export class Paths {
   static projectCheckInsPath(projectId: string) {
     return `/projects/${projectId}/check-ins`;
   }
+
+  static spacePath(spaceId: string) {
+    return `/spaces/${spaceId}`;
+  }
 }

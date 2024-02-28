@@ -1,26 +1,45 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { Container } from "../FeedItemElements";
+import { FeedItem, Container } from "../FeedItem";
 import { Link } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
-export default function ({ activity }) {
-  const oldSpace = activity.content.oldSpace;
-  const newName = activity.content.newSpace;
+export const ProjectMoved: FeedItem = {
+  typename: "ActivityContentProjectMoved",
 
-  const content = (
-    <>
-      From <Link to={`/spaces/${oldSpace.id}`}>{oldSpace.name}</Link> to{" "}
-      <Link to={`/spaces/${newName.id}`}>{newName.name}</Link>
-    </>
-  );
+  contentQuery: `
+    oldSpace {
+      id
+      name
+    }
 
-  return (
-    <Container
-      title={People.shortName(activity.author) + " moved the project"}
-      author={activity.author}
-      time={activity.insertedAt}
-      content={content}
-    />
-  );
-}
+    newSpace {
+      id
+      name
+    }
+  `,
+
+  component: ({ activity, content }) => {
+    const oldSpace = content.oldSpace;
+    const newName = content.newSpace;
+
+    const oldSpacePath = Paths.spacePath(oldSpace.id);
+    const newSpacePath = Paths.spacePath(newName.id);
+
+    const itemContent = (
+      <>
+        From <Link to={oldSpacePath}>{oldSpace.name}</Link> to <Link to={newSpacePath}>{newName.name}</Link>
+      </>
+    );
+
+    return (
+      <Container
+        title={People.shortName(activity.author) + " moved the project"}
+        author={activity.author}
+        time={activity.insertedAt}
+        content={itemContent}
+      />
+    );
+  },
+};

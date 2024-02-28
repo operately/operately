@@ -287,13 +287,6 @@ const query = gql`
           }
         }
 
-        ... on ActivityContentProjectArchived {
-          project {
-            id
-            name
-          }
-        }
-
         ... on ActivityContentProjectReviewSubmitted {
           reviewId
 

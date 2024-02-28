@@ -8,7 +8,15 @@ import { FeedItem } from "../FeedItem";
 import { ProjectCreated } from "./ProjectCreated";
 import { ProjectCheckInSubmitted } from "./ProjectCheckInSubmitted";
 import { ProjectCheckInAcknowledged } from "./ProjectCheckInAcknowledged";
+import { ProjectArchived } from "./ProjectArchived";
+import { ProjectMoved } from "./ProjectMoved";
 
-const FeedItems: FeedItem[] = [ProjectCreated, ProjectCheckInSubmitted, ProjectCheckInAcknowledged];
+const FeedItems: FeedItem[] = [
+  ProjectCreated,
+  ProjectCheckInSubmitted,
+  ProjectCheckInAcknowledged,
+  ProjectArchived,
+  ProjectMoved,
+];
 
 export default FeedItems;
