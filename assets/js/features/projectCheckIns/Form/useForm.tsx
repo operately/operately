@@ -22,6 +22,7 @@ export interface Error {
 }
 
 export interface FormState {
+  mode: "create" | "edit";
   author: People.Person;
   project: Projects.Project;
 
@@ -115,6 +116,7 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
     mode === "create" ? Paths.projectCheckInsPath(project.id) : Paths.projectCheckInPath(project.id, checkIn!.id);
 
   return {
+    mode,
     author,
     project,
     editor,

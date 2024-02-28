@@ -69,25 +69,16 @@ defmodule Operately.Features.ProjectCheckInsTest do
   #   |> Steps.assert_comment_visible_on_check_in()
   # end
 
-  # @tag login_as: :champion
-  # feature "edit a submitted check-in", ctx do
-  #   values = %{status: "on_track", description: "This is a check-in."}
+  @tag login_as: :champion
+  feature "edit a submitted check-in", ctx do
+    original_values = %{status: "on_track", description: "This is a check-in."}
+    new_values = %{status: "caution", description: "This is an edited check-in."}
 
-  #   ctx
-  #   |> Steps.submit_check_in(values)
-  #   |> Steps.assert_check_in_submitted(values)
-  #   |> Steps.edit_check_in(%{
-  #     content: "This is an edited check-in.",
-  #     risks_comments: "This is an edited risk comment."
-  #   })
-
-  #   expected_values = 
-  #     @check_in_values 
-  #     |> Map.put(:content, "This is an edited check-in.")
-  #     |> Map.put(:risks_comments, "This is an edited risk comment.")
-
-  #   ctx
-  #   |> ProjectCheckInSteps.assert_check_in_submitted(expected_values)
-  # end
+    ctx
+    |> Steps.submit_check_in(original_values)
+    |> Steps.assert_check_in_submitted(original_values)
+    |> Steps.edit_check_in(new_values)
+    |> Steps.assert_check_in_submitted(new_values)
+  end
 
 end

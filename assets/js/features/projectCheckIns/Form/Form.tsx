@@ -1,7 +1,6 @@
 import React from "react";
 
 import * as TipTapEditor from "@/components/Editor";
-import * as Projects from "@/models/projects";
 
 import { FilledButton } from "@/components/Button";
 import { FormState } from "./useForm";
@@ -11,19 +10,17 @@ import classNames from "classnames";
 
 interface FormProps {
   form: FormState;
-  noSubmitActions?: boolean;
-  project: Projects.Project;
 }
 
-export function Form({ form, noSubmitActions }: FormProps) {
+export function Form({ form }: FormProps) {
   return (
     <>
-      <Header />
+      {form.mode === "create" && <Header />}
       <StatusSection form={form} />
       <DescriptionSection form={form} />
-      <NotificationSection form={form} />
 
-      {noSubmitActions && <SubmitActions form={form} />}
+      {form.mode === "create" && <NotificationSection form={form} />}
+      {form.mode === "create" && <SubmitActions form={form} />}
     </>
   );
 }

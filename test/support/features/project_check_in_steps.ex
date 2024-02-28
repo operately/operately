@@ -7,8 +7,8 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
 
   @status_to_on_screen %{
     "on_track" => "On Track",
-    "at_risk" => "At Risk",
-    "off_track" => "Off Track"
+    "caution" => "Caution",
+    "issue" => "Issue",
   }
 
   def submit_check_in(ctx, %{status: status, description: description}) do
@@ -19,6 +19,17 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "post-check-in")
+    |> UI.assert_text("Check-In from")
+  end
+
+  def edit_check_in(ctx, %{status: status, description: description}) do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{status}")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "save-changes")
     |> UI.assert_text("Check-In from")
   end
 

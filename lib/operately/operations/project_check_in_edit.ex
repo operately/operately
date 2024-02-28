@@ -22,7 +22,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
         last_check_in_status: status,
       })
     end)
-    |> Activities.insert(author.id, :project_check_in_edit, fn changes -> %{
+    |> Activities.insert_sync(author.id, :project_check_in_edit, fn changes -> %{
       company_id: project.company_id,
       project_id: changes.project.id,
       check_in_id: check_in.id

@@ -6,6 +6,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { Form, useForm } from "@/features/projectCheckIns/Form";
 import { useLoadedData } from "./loader";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project, me } = useLoadedData();
@@ -18,7 +19,7 @@ export function Page() {
         <Navigation project={project} />
 
         <Paper.Body>
-          <Form form={form} noSubmitActions project={project} />
+          <Form form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -26,14 +27,17 @@ export function Page() {
 }
 
 function Navigation({ project }) {
+  const projectPath = Paths.projectPath(project.id);
+  const checkInsPath = Paths.projectCheckInsPath(project.id);
+
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+      <Paper.NavItem linkTo={projectPath}>
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={`/projects/${project.id}/check-ins`}>Check-Ins</Paper.NavItem>
+      <Paper.NavItem linkTo={checkInsPath}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>
   );
 }

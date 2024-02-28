@@ -9,9 +9,9 @@ import { useLoadedData } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
-  const { checkIn, project } = useLoadedData();
+  const { checkIn, project, me } = useLoadedData();
 
-  const form = useForm({ project, checkIn, mode: "edit" });
+  const form = useForm({ project, checkIn, mode: "edit", author: me });
 
   return (
     <Pages.Page title={["Edit Project Check-In", project.name]}>

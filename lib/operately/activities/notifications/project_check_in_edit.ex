@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Notifications.ProjectStatusUpdateEdit do
+defmodule Operately.Activities.Notifications.ProjectCheckInEdit do
   def dispatch(_activity) do
     # no notification for check-in edits
     {:ok, []}

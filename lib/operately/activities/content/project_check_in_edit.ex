@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Content.ProjectStatusUpdateEdit do
+defmodule Operately.Activities.Content.ProjectCheckInEdit do
   use Operately.Activities.Content
 
   embedded_schema do
