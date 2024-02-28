@@ -436,16 +436,19 @@ defmodule Operately.Projects do
   end
 
   def outdated?(project) do
-    today = Date.utc_today()
-    check_in_day = DateTime.to_date(project.next_update_scheduled_at)
-    check_in_missed_by = Date.diff(today, check_in_day)
+    if project.next_check_in_scheduled_at do
+      today = Date.utc_today()
+      check_in_day = DateTime.to_date(project.next_check_in_scheduled_at)
+      check_in_missed_by = Date.diff(today, check_in_day)
 
-    cond do
-      project.status == "closed" -> false
-      project.deleted_at != nil -> false
-      project.health == :paused -> false
-      check_in_missed_by > 3 -> true
-      true -> false
+      cond do
+        project.status == "closed" -> false
+        project.deleted_at != nil -> false
+        check_in_missed_by > 3 -> true
+        true -> false
+      end
+    else
+      true
     end
   end
 end

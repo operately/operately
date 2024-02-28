@@ -12,6 +12,7 @@ import { MiniPieChart } from "@/components/MiniPieChart";
 import { Indicator } from "@/components/ProjectHealthIndicators";
 import { TextTooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";
@@ -93,7 +94,7 @@ function Status({ project }) {
       {project.isOutdated ? (
         <Indicator value="outdated" type="status" />
       ) : (
-        <Indicator value={project.lastCheckIn?.status || "on_track"} type="status" />
+        <SmallStatusIndicator status={project.lastCheckIn?.status || "on_track"} />
       )}
     </div>
   );
