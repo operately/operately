@@ -28,4 +28,5 @@ defmodule OperatelyWeb.Graphql.TypeHelpers do
       end
     end
   end
+
 end

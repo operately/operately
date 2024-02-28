@@ -187,16 +187,16 @@ const query = gql`
             }
           }
 
-          ... on ActivityContentProjectStatusUpdateAcknowledged {
+          ... on ActivityContentProjectCheckInAcknowledged {
             projectId
-            statusUpdateId
+            checkInId
 
             project {
               name
             }
           }
 
-          ... on ActivityContentProjectStatusUpdateCommented {
+          ... on ActivityContentProjectCheckInCommented {
             projectId
             statusUpdateId
 

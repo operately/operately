@@ -36,7 +36,10 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.open_check_in_from_notifications(values)
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
+    |> UI.login_as(ctx.champion)
     |> Steps.assert_acknowledgement_email_sent_to_champion(values)
+    |> Steps.assert_acknowledgement_notification_sent_to_champion(values)
+    |> Steps.assert_acknowledgement_visible_on_project_feed(values)
   end
 
   # @tag login_as: :champion

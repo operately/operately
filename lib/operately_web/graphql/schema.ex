@@ -22,6 +22,9 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalEditing
   import_types OperatelyWeb.Graphql.Types.ActivityContentGroupEdited
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectArchived
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInAcknowledged
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInEdit
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectClosed
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectContributorAddition
@@ -36,9 +39,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewCommented
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewRequestSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateAcknowledged
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateCommented
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateEdit
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectTimelineEdited
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAdding
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAssigneeAssignment

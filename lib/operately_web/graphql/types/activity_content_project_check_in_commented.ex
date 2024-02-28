@@ -1,7 +1,7 @@
-defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateAcknowledged do
+defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented do
   use Absinthe.Schema.Notation
 
-  object :activity_content_project_status_update_acknowledged do
+  object :activity_content_project_check_in_commented do
     field :project_id, non_null(:string) do
       resolve fn activity, _, _ ->
         {:ok, activity.content["project_id"]}
@@ -30,6 +30,14 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateAcknowled
         update = Operately.Updates.get_update!(id)
 
         {:ok, update}
+      end
+    end
+
+    field :comment, non_null(:comment) do
+      resolve fn activity, _, _ ->
+        id = activity.content["comment_id"]
+
+        {:ok, Operately.Updates.get_comment!(id)}
       end
     end
   end
