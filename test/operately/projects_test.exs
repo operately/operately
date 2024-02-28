@@ -82,15 +82,15 @@ defmodule Operately.ProjectsTest do
       four_days_ago = DateTime.utc_now() |> DateTime.add(-4, :day)
       last_week = DateTime.utc_now() |> DateTime.add(-7, :day)
 
-      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: four_days_from_now})
-      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: tomorrow})
-      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: yesterday})
-      assert Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: four_days_ago})
-      assert Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "active", next_update_scheduled_at: last_week})
+      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: four_days_from_now})
+      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: tomorrow})
+      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: yesterday})
+      assert Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: four_days_ago})
+      assert Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: last_week})
 
-      refute Projects.outdated?(%{health: :on_track, deleted_at: nil, status: "closed", next_update_scheduled_at: last_week})
-      refute Projects.outdated?(%{health: :paused, deleted_at: nil, status: "active", next_update_scheduled_at: last_week})
-      refute Projects.outdated?(%{health: :on_track, deleted_at: yesterday, status: "active", next_update_scheduled_at: last_week})
+      refute Projects.outdated?(%{deleted_at: nil, status: "closed", next_check_in_scheduled_at: last_week})
+      refute Projects.outdated?(%{deleted_at: nil, status: "paused", next_check_in_scheduled_at: last_week})
+      refute Projects.outdated?(%{deleted_at: yesterday, status: "active", next_check_in_scheduled_at: last_week})
     end
   end
 

@@ -443,6 +443,7 @@ defmodule Operately.Projects do
 
       cond do
         project.status == "closed" -> false
+        project.status == "paused" -> false
         project.deleted_at != nil -> false
         check_in_missed_by > 3 -> true
         true -> false
