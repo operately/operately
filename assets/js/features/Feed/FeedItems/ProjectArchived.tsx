@@ -5,10 +5,7 @@ import { FeedItem, Container } from "../FeedItem";
 
 export const ProjectArchived: FeedItem = {
   typename: "ActivityContentProjectArchived",
-
-  contentQuery: `
-    projectId
-  `,
+  contentQuery: ``,
 
   component: ({ activity }) => {
     return (

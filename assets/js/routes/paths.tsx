@@ -22,4 +22,8 @@ export class Paths {
   static spacePath(spaceId: string) {
     return `/spaces/${spaceId}`;
   }
+
+  static goalPath(goalId: string) {
+    return `/goals/${goalId}`;
+  }
 }

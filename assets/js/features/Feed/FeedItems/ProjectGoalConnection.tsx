@@ -1,27 +1,44 @@
 import * as React from "react";
 import * as People from "@/models/people";
+
+import { FeedItem, Container } from "../FeedItem";
+import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
-import { Container } from "../FeedItemElements";
-import { createPath } from "@/utils/paths";
+export const ProjectGoalConnection: FeedItem = {
+  typename: "ActivityContentProjectGoalConnection",
+  contentQuery: `
+    goal {
+      id
+      name
+    }
 
-export default function ({ activity, page }) {
-  return (
-    <Container title={<Title activity={activity} page={page} />} author={activity.author} time={activity.insertedAt} />
-  );
-}
+    project {
+      id
+      name
+    }
+  `,
 
-function Title({ activity, page }) {
-  const goal = activity.content.goal;
-  const project = activity.content.project;
+  component: ({ activity, content, page }) => {
+    return (
+      <Container
+        title={<Title activity={activity} content={content} page={page} />}
+        author={activity.author}
+        time={activity.insertedAt}
+      />
+    );
+  },
+};
 
-  const goalPath = createPath("goals", goal.id);
-  const projectPage = createPath("projects", project.id);
+function Title({ activity, content, page }) {
+  const goalPath = Paths.goalPath(content.goal.id);
+  const projectPage = Paths.projectPath(content.project.id);
 
   if (page === "project") {
     return (
       <>
-        {People.shortName(activity.author)} connected the project to a goal: <Link to={goalPath}>{goal.name}</Link>
+        {People.shortName(activity.author)} connected the project to a goal:{" "}
+        <Link to={goalPath}>{content.goal.name}</Link>
       </>
     );
   }
@@ -30,7 +47,7 @@ function Title({ activity, page }) {
     return (
       <>
         {People.shortName(activity.author)} connected the goal to a project:{" "}
-        <Link to={projectPage}>{project.name}</Link>
+        <Link to={projectPage}>{content.project.name}</Link>
       </>
     );
   }

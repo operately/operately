@@ -17,7 +17,7 @@ export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
 }
 
 function constructQuery() {
-  const contentQueries = FeedItems.map((item) => {
+  const contentQueries = FeedItems.filter((item) => item.contentQuery.trim() !== "").map((item) => {
     return `
       ... on ${item.typename} {
         ${item.contentQuery}
