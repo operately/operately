@@ -50,7 +50,19 @@ function setupClient() {
     }
   });
 
-  const retryLink = new RetryLink();
+  const retryLink = new RetryLink({
+    delay: {
+      initial: 300,
+      max: 2000,
+      jitter: true,
+    },
+    attempts: {
+      max: 3,
+      retryIf: (error, _operation) => {
+        return error.message === "Failed to fetch";
+      },
+    },
+  });
 
   const client = new ApolloClient({
     cache: cache,
