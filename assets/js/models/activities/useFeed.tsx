@@ -34,15 +34,6 @@ const query = gql`
       content {
         __typename
 
-        ... on ActivityContentProjectContributorAddition {
-          person {
-            id
-            fullName
-            avatarUrl
-            title
-          }
-        }
-
         ... on ActivityContentProjectClosed {
           project {
             id
@@ -127,33 +118,6 @@ const query = gql`
             name
             myRole
           }
-        }
-
-        ... on ActivityContentProjectMoved {
-          project {
-            id
-            name
-          }
-
-          oldSpace {
-            id
-            name
-          }
-
-          newSpace {
-            id
-            name
-          }
-        }
-
-        ... on ActivityContentProjectRenamed {
-          project {
-            id
-            name
-          }
-
-          oldName
-          newName
         }
 
         ... on ActivityContentProjectTimelineEdited {
