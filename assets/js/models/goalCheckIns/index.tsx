@@ -87,6 +87,7 @@ export async function getCheckIn(id: string, options: any) {
       }
     `,
     variables: { id },
+    fetchPolicy: "network-only",
     ...options,
   });
 

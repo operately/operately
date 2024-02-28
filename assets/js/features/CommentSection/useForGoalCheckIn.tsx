@@ -29,7 +29,11 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
   });
 
   if (update.acknowledged) {
-    items.push({ type: "acknowledgement" as ItemType, insertedAt: update.acknowledgedAt, value: update });
+    items.push({
+      type: "acknowledgement" as ItemType,
+      insertedAt: update.acknowledgedAt,
+      value: update.acknowledgingPerson,
+    });
   }
 
   after.forEach((c) => {

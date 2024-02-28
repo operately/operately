@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -22,13 +22,15 @@ export function AckCTA() {
         id: update.id,
       },
     });
+
+    refresh();
   };
 
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
-      <GhostButton size="lg" testId="acknowledge-check-in" onClick={handleAck}>
+      <FilledButton testId="acknowledge-check-in" onClick={handleAck}>
         Acknowledge this Check-In
-      </GhostButton>
+      </FilledButton>
     </div>
   );
 }
