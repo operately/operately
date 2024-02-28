@@ -42,18 +42,16 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_acknowledgement_visible_on_project_feed(values)
   end
 
-  # @tag login_as: :champion
-  # feature "acknowledge a check-in from the email", ctx do
-  #   values = %{status: "on_track", description: "This is a check-in."}
+  @tag login_as: :champion
+  feature "acknowledge a check-in from the email", ctx do
+    values = %{status: "on_track", description: "This is a check-in."}
 
-  #   ctx 
-  #   |> Steps.submit_check_in(values)
-  #   |> UI.login_as(ctx.reviewer)
-  #   |> Steps.assert_check_in_email_received()
-  #   |> Steps.assert_check_in_notification_received()
-  #   |> Steps.open_check_in_from_email()
-  #   |> Steps.assert_check_in_acknowledged()
-  # end
+    ctx 
+    |> Steps.submit_check_in(values)
+    |> UI.login_as(ctx.reviewer)
+    |> Steps.acknowledge_check_in_from_email(values)
+    |> Steps.assert_check_in_acknowledged(values)
+  end
 
   # @tag login_as: :champion
   # feature "leave a comment on an check-in", ctx do
