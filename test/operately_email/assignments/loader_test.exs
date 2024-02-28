@@ -60,11 +60,11 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
         next_update_scheduled_at: days_from_now(0)
       }))
 
-      assert Enum.member?(load_names(ctx), "Status Update")
+      assert Enum.member?(load_names(ctx), "Check-in")
     end
 
     test "it doesn't send if project is paused", ctx do
-      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{health: :paused}))
+      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{status: "paused"}))
 
       assert load_names(ctx) == []
     end
@@ -103,7 +103,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
     end
 
     test "it doesn't send reminder for paused projects", ctx do
-      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{health: :paused}))
+      {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{status: "paused"}))
 
       assert load_names(ctx) == []
     end
