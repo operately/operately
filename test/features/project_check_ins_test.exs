@@ -53,21 +53,19 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_check_in_acknowledged(values)
   end
 
-  # @tag login_as: :champion
-  # feature "leave a comment on an check-in", ctx do
-  #   values = %{status: "on_track", description: "This is a check-in."}
+  @tag login_as: :champion
+  feature "leave a comment on an check-in", ctx do
+    values = %{status: "on_track", description: "This is a check-in."}
 
-  #   ctx
-  #   |> Steps.submit_check_in(values)
-  #   |> UI.login_as(ctx.reviewer)
-  #   |> Steps.open_check_in_from_notification(values)
-  #   |> Steps.leave_comment_on_check_in()
-  #   |> UI.login_as(ctx.champion)
-  #   |> Steps.assert_comment_on_check_in_received_in_notifications()
-  #   |> Steps.assert_comment_on_check_in_received_in_email()
-  #   |> Steps.open_check_in_from_email()
-  #   |> Steps.assert_comment_visible_on_check_in()
-  # end
+    ctx
+    |> Steps.submit_check_in(values)
+    |> UI.login_as(ctx.reviewer)
+    |> Steps.open_check_in_from_notification(values)
+    |> Steps.leave_comment_on_check_in()
+    |> UI.login_as(ctx.champion)
+    |> Steps.assert_comment_on_check_in_received_in_notifications()
+    |> Steps.assert_comment_on_check_in_received_in_email()
+  end
 
   @tag login_as: :champion
   feature "edit a submitted check-in", ctx do
