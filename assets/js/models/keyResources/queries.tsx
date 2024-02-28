@@ -13,9 +13,11 @@ const GET_KEY_RESOURCE = gql`
 `;
 
 export async function getKeyResource(id: string): Promise<any> {
-  return client.query({
+  const data = await client.query({
     query: GET_KEY_RESOURCE,
     variables: { id: id },
     fetchPolicy: "network-only",
   });
+
+  return data.data.keyResource;
 }

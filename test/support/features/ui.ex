@@ -42,19 +42,12 @@ defmodule Operately.Support.Features.UI do
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
-    if Map.has_key?(state, :session) do
-      :ok = Wallaby.end_session(state.session)
-    end
-
-    {:ok, session} = Wallaby.start_session()
-
-    session = 
+    execute(state, fn session ->
       session
-      |> Browser.resize_window(1920, 2000)
+      |> Browser.visit("/")
+      |> Browser.set_cookie("_operately_key", "")
       |> Browser.visit(path)
-
-    state
-    |> Map.put(:session, session)
+    end)
     |> Map.put(:last_login, person)
   end
 
