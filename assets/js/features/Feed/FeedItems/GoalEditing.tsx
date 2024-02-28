@@ -1,17 +1,51 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import { Container } from "../FeedItemElements";
 
-export default function ({ activity }) {
-  return (
-    <Container
-      title={People.shortName(activity.author) + " edited the goal"}
-      author={activity.author}
-      time={activity.insertedAt}
-      content={<Content activity={activity} />}
-    />
-  );
-}
+import { FeedItem, Container } from "../FeedItem";
+
+export const GoalEditing: FeedItem = {
+  typename: "ActivityContentGoalEditing",
+  contentQuery: `
+    newName
+    oldName
+    newTimeframe
+    oldTimeframe
+    newChampionId
+    oldChampionId
+    newChampion {
+      fullName
+    }
+    newReviewerId
+    oldReviewerId
+    newReviewer {
+      fullName
+    }
+    addedTargets {
+      id
+      name
+    }
+    updatedTargets {
+      id
+      oldName
+      newName
+    }
+    deletedTargets {
+      id
+      name
+    }
+  `,
+
+  component: ({ activity }) => {
+    return (
+      <Container
+        title={People.shortName(activity.author) + " edited the goal"}
+        author={activity.author}
+        time={activity.insertedAt}
+        content={<Content activity={activity} />}
+      />
+    );
+  },
+};
 
 function Content({ activity }) {
   const content = activity.content;

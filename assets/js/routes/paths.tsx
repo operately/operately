@@ -26,4 +26,8 @@ export class Paths {
   static goalPath(goalId: string) {
     return `/goals/${goalId}`;
   }
+
+  static goalCheckInPath(goalId: string, checkInId: string) {
+    return `/goals/${goalId}/check-ins/${checkInId}`;
+  }
 }

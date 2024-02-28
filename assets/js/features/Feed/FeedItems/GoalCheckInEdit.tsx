@@ -1,3 +1,7 @@
-export default function () {
-  return null;
-}
+import { FeedItem } from "../FeedItem";
+
+export const GoalCheckInEdit: FeedItem = {
+  typename: "ActivityContentGoalCheckInEdit",
+  contentQuery: ``,
+  component: () => null,
+};
