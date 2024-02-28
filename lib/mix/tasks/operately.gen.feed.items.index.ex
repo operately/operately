@@ -23,17 +23,17 @@ defmodule Mix.Tasks.Operately.Gen.Feed.Items.Index do
       #{import_types(types)}
 
       const FeedItems : FeedItem[] = [
-        #{types |> Enum.map(fn type -> "  #{type}" end) |> Enum.join(",\n")}
+      #{types |> Enum.map(fn type -> "  #{type}" end) |> Enum.join(",\n")}
       ];
 
-      export deafult FeedItems;
+      export default FeedItems;
       """
     end)
   end
 
   def import_types(types) do
     types
-    |> Enum.map(fn type -> "import #{type} from \"./#{type}\"" end)
+    |> Enum.map(fn type -> "import { #{type} } from \"./#{type}\"" end)
     |> Enum.join("\n")
   end
 

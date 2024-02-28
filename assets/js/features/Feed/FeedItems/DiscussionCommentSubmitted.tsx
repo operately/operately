@@ -1,14 +1,7 @@
-import * as React from "react";
-import * as People from "@/models/people";
+import { FeedItem } from "../FeedItem";
 
-import { Container } from "../FeedItemElements";
-
-export default function ({ activity }) {
-  return (
-    <Container
-      title={People.shortName(activity.author) + " commented on discussion"}
-      author={activity.author}
-      time={activity.insertedAt}
-    />
-  );
-}
+export const DiscussionCommentSubmitted: FeedItem = {
+  typename: "ActivityContentDiscussionCommentSubmitted",
+  contentQuery: ``,
+  component: () => null,
+};

@@ -147,11 +147,11 @@ export type ActivityContentProjectCheckInAcknowledged = {
 
 export type ActivityContentProjectCheckInCommented = {
   __typename?: 'ActivityContentProjectCheckInCommented';
+  checkIn: ProjectCheckIn;
+  checkInId: Scalars['String']['output'];
   comment: Comment;
   project: Project;
   projectId: Scalars['String']['output'];
-  statusUpdateId: Scalars['String']['output'];
-  update: Update;
 };
 
 export type ActivityContentProjectCheckInEdit = {

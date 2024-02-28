@@ -8,9 +8,9 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented do
       end
     end
 
-    field :status_update_id, non_null(:string) do
+    field :check_in_id, non_null(:string) do
       resolve fn activity, _, _ ->
-        {:ok, activity.content["status_update_id"]}
+        {:ok, activity.content["check_in_id"]}
       end
     end
 
@@ -24,12 +24,12 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented do
       end
     end
 
-    field :update, non_null(:update) do
+    field :check_in, non_null(:project_check_in) do
       resolve fn activity, _, _ ->
-        id = activity.content["status_update_id"]
-        update = Operately.Updates.get_update!(id)
+        id = activity.content["check_in_id"]
+        check_in = Operately.Projects.get_check_in!(id)
 
-        {:ok, update}
+        {:ok, check_in}
       end
     end
 

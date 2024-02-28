@@ -1,22 +1,36 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { Container } from "../FeedItemElements";
+import { FeedItem, Container } from "../FeedItem";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 
-export default function ({ activity }) {
-  const content = activity.content;
-  const comment = content.comment;
+export const ProjectMilestoneCommented: FeedItem = {
+  typename: "ActivityContentProjectMilestoneCommented",
+  contentQuery: `
+    comment {
+      message
+    }
+    commentAction
+    milestone {
+      id
+      title
+    }
+    projectId
+  `,
 
-  const title = <Title activity={activity} />;
+  component: ({ activity, content }) => {
+    const comment = content.comment;
 
-  const commentMessage = comment.message;
+    const title = <Title activity={activity} />;
 
-  const summary = <Summary jsonContent={commentMessage} characterCount={200} />;
+    const commentMessage = comment.message;
 
-  return <Container title={title} author={activity.author} time={activity.insertedAt} content={summary} />;
-}
+    const summary = <Summary jsonContent={commentMessage} characterCount={200} />;
+
+    return <Container title={title} author={activity.author} time={activity.insertedAt} content={summary} />;
+  },
+};
 
 function Title({ activity }) {
   const author = activity.author;

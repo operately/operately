@@ -8,18 +8,41 @@ import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
-import { Container } from "../FeedItemElements";
 
-export default function ({ activity }) {
-  return (
-    <Container
-      title={People.shortName(activity.author) + " edited the timeline"}
-      author={activity.author}
-      time={activity.insertedAt}
-      content={<Content activity={activity} />}
-    />
-  );
-}
+import { FeedItem, Container } from "../FeedItem";
+
+export const ProjectTimelineEdited: FeedItem = {
+  typename: "ActivityContentProjectTimelineEdited",
+  contentQuery: `
+    project {
+      id
+    }
+    oldStartDate
+    newStartDate
+    oldEndDate
+    newEndDate
+    newMilestones {
+      id
+      title
+      deadlineAt
+    }
+    updatedMilestones {
+      id
+      title
+      deadlineAt
+    }
+  `,
+  component: ({ activity }) => {
+    return (
+      <Container
+        title={People.shortName(activity.author) + " edited the timeline"}
+        author={activity.author}
+        time={activity.insertedAt}
+        content={<Content activity={activity} />}
+      />
+    );
+  },
+};
 
 function Content({ activity }) {
   const content = prepareContent(activity.content);
