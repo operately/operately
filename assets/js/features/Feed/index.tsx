@@ -29,7 +29,7 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
           <div className="text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col gap-4">
           {group.activities.map((activity) => (
             <ActivityItem key={activity.id} activity={activity} page={page} />
           ))}
@@ -41,16 +41,12 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
 
 function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
   const item = FeedItems.find((item) => item.typename === activity.content.__typename);
+
   if (!item) {
     console.log(`No component found for feed item type: ${activity.content.__typename}`);
     return null;
   }
 
   const content = activity.content;
-
-  return (
-    <div className="flex items-start gap-2 py-2">
-      {React.createElement(item.component, { activity, content, page })}
-    </div>
-  );
+  return React.createElement(item.component, { activity, content, page });
 }

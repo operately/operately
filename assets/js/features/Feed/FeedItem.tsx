@@ -26,17 +26,13 @@ export function Container({ author, time, title, content }: ContainerProps) {
   const alignement = content ? "items-start" : "items-center";
 
   return (
-    <div className="flex w-full">
-      <div className="w-full pr-2 pb-6">
-        <div className={"flex gap-3" + " " + alignement}>
-          <Avatar person={author} size="small" />
-          <div className="flex-1">
-            <Title>{title}</Title>
-            {content && <Content>{content}</Content>}
-          </div>
-          <Time time={time} />
-        </div>
+    <div className={"flex flex-1 gap-3" + " " + alignement}>
+      <Avatar person={author} size="small" />
+      <div className="flex-1">
+        <Title>{title}</Title>
+        {content && <Content>{content}</Content>}
       </div>
+      <Time time={time} />
     </div>
   );
 }
