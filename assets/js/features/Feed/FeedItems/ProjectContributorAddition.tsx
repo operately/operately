@@ -1,16 +1,27 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { Container } from "../FeedItemElements";
+import { FeedItem, Container } from "../FeedItem";
 
-export default function ({ activity }) {
-  const person = People.shortName(activity.content.person);
+export const ProjectContributorAddition: FeedItem = {
+  typename: "ActivityContentProjectContributorAddition",
 
-  return (
-    <Container
-      title={People.shortName(activity.author) + " added " + person + " to the project"}
-      author={activity.author}
-      time={activity.insertedAt}
-    />
-  );
-}
+  contentQuery: `
+    person {
+      id
+      fullName
+    }
+  `,
+
+  component: ({ activity, content }) => {
+    const person = People.shortName(content.person);
+
+    return (
+      <Container
+        title={People.shortName(activity.author) + " added " + person + " to the project"}
+        author={activity.author}
+        time={activity.insertedAt}
+      />
+    );
+  },
+};

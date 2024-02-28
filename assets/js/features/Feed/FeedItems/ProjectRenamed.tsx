@@ -1,23 +1,32 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { Container } from "../FeedItemElements";
+import { FeedItem, Container } from "../FeedItem";
 
-export default function ({ activity }) {
-  const oldName = activity.content.oldName;
-  const newName = activity.content.newName;
-  const content = (
-    <>
-      <span className="line-through">{oldName}</span> → {newName}
-    </>
-  );
+export const ProjectRenamed: FeedItem = {
+  typename: "ActivityContentProjectRenamed",
 
-  return (
-    <Container
-      title={People.shortName(activity.author) + " renamed the project"}
-      author={activity.author}
-      time={activity.insertedAt}
-      content={content}
-    />
-  );
-}
+  contentQuery: `
+    oldName
+    newName
+  `,
+
+  component: ({ activity, content }) => {
+    const oldName = content.oldName;
+    const newName = content.newName;
+    const itemContent = (
+      <>
+        <span className="line-through">{oldName}</span> → {newName}
+      </>
+    );
+
+    return (
+      <Container
+        title={People.shortName(activity.author) + " renamed the project"}
+        author={activity.author}
+        time={activity.insertedAt}
+        content={itemContent}
+      />
+    );
+  },
+};

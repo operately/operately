@@ -10,6 +10,8 @@ import { ProjectCheckInSubmitted } from "./ProjectCheckInSubmitted";
 import { ProjectCheckInAcknowledged } from "./ProjectCheckInAcknowledged";
 import { ProjectArchived } from "./ProjectArchived";
 import { ProjectMoved } from "./ProjectMoved";
+import { ProjectContributorAddition } from "./ProjectContributorAddition";
+import { ProjectRenamed } from "./ProjectRenamed";
 
 const FeedItems: FeedItem[] = [
   ProjectCreated,
@@ -17,6 +19,8 @@ const FeedItems: FeedItem[] = [
   ProjectCheckInAcknowledged,
   ProjectArchived,
   ProjectMoved,
+  ProjectContributorAddition,
+  ProjectRenamed,
 ];
 
 export default FeedItems;
