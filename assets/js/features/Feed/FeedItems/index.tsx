@@ -28,6 +28,7 @@ import { ProjectMilestoneCommented } from "./ProjectMilestoneCommented"
 import { ProjectMoved } from "./ProjectMoved"
 import { ProjectPausing } from "./ProjectPausing"
 import { ProjectRenamed } from "./ProjectRenamed"
+import { ProjectResuming } from "./ProjectResuming"
 import { ProjectTimelineEdited } from "./ProjectTimelineEdited"
 import { TaskAdding } from "./TaskAdding"
 import { TaskDescriptionChange } from "./TaskDescriptionChange"
@@ -58,6 +59,7 @@ const FeedItems : FeedItem[] = [
   ProjectMoved,
   ProjectPausing,
   ProjectRenamed,
+  ProjectResuming,
   ProjectTimelineEdited,
   TaskAdding,
   TaskDescriptionChange,

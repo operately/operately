@@ -59,6 +59,7 @@ import * as ProjectMilestonesPage from "./ProjectMilestonesPage";
 import * as ProjectMovePage from "./ProjectMovePage";
 import * as ProjectPage from "./ProjectPage";
 import * as ProjectPausePage from "./ProjectPausePage";
+import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as TaskPage from "./TaskPage";
@@ -291,6 +292,10 @@ export default {
   ProjectPausePage: {
     loader: ProjectPausePage.loader,
     Page: ProjectPausePage.Page
+  },
+  ProjectResumePage: {
+    loader: ProjectResumePage.loader,
+    Page: ProjectResumePage.Page
   },
   ProjectRetrospectivePage: {
     loader: ProjectRetrospectivePage.loader,
