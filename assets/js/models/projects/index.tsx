@@ -1,4 +1,5 @@
 import type { Project, ProjectContributor, Milestone } from "@/gql";
+export { usePauseProjectMutation } from './usePauseProjectMutation';
 export type { Project, ProjectContributor, Milestone } from "@/gql";
 
 import * as Time from "@/utils/time";

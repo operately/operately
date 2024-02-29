@@ -62,7 +62,25 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :retrospective, non_null(:string)
   end
 
+  input_object :pause_project_input do
+    field :project_id, non_null(:string)
+  end
+
+
   object :project_mutations do
+    field :pause_project, non_null(:project) do
+      arg :input, non_null(:pause_project_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+
+        case Operately.Operations.ProjectPausing.run(author, input) do
+          {:ok, result} -> {:ok, result}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end
+    end
+
     field :move_project_to_space, non_null(:project) do
       arg :input, non_null(:project_move_input)
 
