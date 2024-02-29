@@ -114,7 +114,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
       """
       defmodule Operately.Activities.Notifications.#{module_name} do
         def dispatch(activity) do
-          raise "Notification dispatcher for #{module_name} not implemented"
+          {:ok, []}
         end
       end
       """
@@ -134,21 +134,15 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
   end
 
   def gen_feed_item(name) do
-    generate_file("assets/js/components/Feed/FeedItem/#{name}.tsx", fn _ ->
+    generate_file("assets/js/features/Feed/FeedItems/#{name}.tsx", fn _ ->
       """
-      // import * as React from "react";
-      // import * as People from "@/models/people";
-      // import { Container } from "../FeedItemElements";
+      import { FeedItem } from "../FeedItem";
 
-      export default function ({ activity }) {
-        return (
-          <Container
-            title={People.shortName(activity.author) + " TODO"}
-            author={activity.author}
-            time={activity.insertedAt}
-          />
-        );
-      }
+      export const #{name}: FeedItem = {
+        typename: "ActivityContent#{name}",
+        contentQuery: ``,
+        component: () => null,
+      };
       """
     end)
   end
