@@ -1,8 +1,8 @@
 defmodule Operately.Activities.Notifications.DiscussionCommentSubmitted do
   def dispatch(activity) do
     author_id = activity.author_id
-    space_id = activity.content.space_id
-    discussion_id = activity.content.discussion_id
+    space_id = activity.content["space_id"]
+    discussion_id = activity.content["discussion_id"]
 
     space = Operately.Groups.get_group!(space_id)
     members = Operately.Groups.list_members(space)

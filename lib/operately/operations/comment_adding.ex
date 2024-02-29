@@ -26,7 +26,7 @@ defmodule Operately.Operations.CommentAdding do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
         company_id: creator.company_id,
-        space_id: entity.space_id,
+        space_id: entity.updatable_id,
         discussion_id: entity.id,
         comment_id: changes.comment.id
       }
@@ -38,7 +38,7 @@ defmodule Operately.Operations.CommentAdding do
       %{
         company_id: creator.company_id,
         goal_id: entity.updatable_id,
-        update_id: entity.id,
+        goal_check_in_id: entity.id,
         comment_id: changes.comment.id
       }
     end)
@@ -63,8 +63,8 @@ defmodule Operately.Operations.CommentAdding do
     end
   end
 
-  def find_action(%Operately.Updates.Update{updatable_type: "project_discussion"}), do: :discussion_comment_submitted
-  def find_action(%Operately.Updates.Update{updatable_type: "goal_check_in"}), do: :goal_check_in_commented
+  def find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
+  def find_action(%Operately.Updates.Update{type: :goal_check_in}), do: :goal_check_in_commented
   def find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
   def find_action(e), do: raise "Unknown entity type #{inspect(e)}"
 end
