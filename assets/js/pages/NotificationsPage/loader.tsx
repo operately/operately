@@ -256,6 +256,20 @@ const query = gql`
             }
           }
 
+          ... on ActivityContentProjectPausing {
+            project {
+              id
+              name
+            }
+          }
+
+          ... on ActivityContentProjectResuming {
+            project {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentProjectMilestoneCommented {
             commentAction
 

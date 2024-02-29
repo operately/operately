@@ -8,10 +8,10 @@ export default function Options({ project }) {
     <PageOptions.Root testId="project-options-button">
       {Projects.isResumable(project) && (
         <PageOptions.Link
-          icon={Icons.IconPlayerPauseFilled}
+          icon={Icons.IconPlayerPlayFilled}
           title="Resume the project"
           to={`/projects/${project.id}/resume`}
-          dataTestId="pause-project-link"
+          dataTestId="resume-project-link"
         />
       )}
       <PageOptions.Link
