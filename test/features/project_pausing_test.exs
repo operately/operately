@@ -20,8 +20,8 @@ defmodule Operately.Features.ProjectPausingTest do
     |> Steps.assert_project_paused()
     |> UI.login_as(ctx.reviewer)
     |> Steps.assert_pause_notification_sent_to_reviewer()
-    # |> Steps.assert_pause_email_sent_to_reviewer()
-    # |> Steps.assert_pause_visible_on_project_feed()
+    |> Steps.assert_pause_visible_on_project_feed()
+    |> Steps.assert_pause_email_sent_to_reviewer()
   end
 
   @tag login_as: :champion
@@ -34,8 +34,8 @@ defmodule Operately.Features.ProjectPausingTest do
     |> Steps.assert_project_active()
     |> UI.login_as(ctx.reviewer)
     |> Steps.assert_resume_notification_sent_to_reviewer()
-    # |> Steps.assert_resume_email_sent_to_reviewer()
-    # |> Steps.assert_resume_visible_on_project_feed()
+    |> Steps.assert_resume_visible_on_project_feed()
+    |> Steps.assert_resume_email_sent_to_reviewer()
   end
 
 end

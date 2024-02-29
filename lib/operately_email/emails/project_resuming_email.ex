@@ -2,15 +2,17 @@ defmodule OperatelyEmail.Emails.ProjectResumingEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
   def send(person, activity) do
-    raise "Email for ProjectResuming not implemented"
+    author = Operately.Repo.preload(activity, :author).author
+    project = Operately.Projects.get_project!(activity.content["project_id"])
+    company = Operately.Repo.preload(project, :company).company
 
-    # author = Repo.preload(activity, :author).author
-
-    # company
-    # |> new()
-    # |> to(person)
-    # |> subject(who: author, action: "did something")
-    # |> assign(:author, author)
-    # |> render("project_resuming")
+    company
+    |> new()
+    |> from(author)
+    |> to(person)
+    |> subject(where: project.name, who: author, action: "resumed the project")
+    |> assign(:author, author)
+    |> assign(:project, project)
+    |> render("project_resuming")
   end
 end

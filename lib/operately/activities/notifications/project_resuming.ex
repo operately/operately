@@ -10,7 +10,7 @@ defmodule Operately.Activities.Notifications.ProjectResuming do
       %{
         person_id: person.id,
         activity_id: activity.id,
-        should_send_email: false,
+        should_send_email: true,
       }
     end)
 

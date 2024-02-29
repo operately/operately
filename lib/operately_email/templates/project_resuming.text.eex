@@ -1,1 +1,3 @@
-<%= raise "Text Email for ProjectResuming not implemented" %>
+<%= short_name(@author) %> resumed the <%= @project.name %> project.
+
+Link: <%= OperatelyEmail.project_url(@project.id) %>

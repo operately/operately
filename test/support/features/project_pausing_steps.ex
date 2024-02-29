@@ -27,10 +27,10 @@ defmodule Operately.Support.Features.ProjectPausingSteps do
 
   def assert_pause_email_sent_to_reviewer(ctx) do
     ctx
-    |> EmailSteps.assert_activity_email(%{
-      where: ctx.project,
-      to: ctx.reviewer.email,
-      subject: "paused the project",
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "paused the project",
       author: ctx.champion,
     })
   end
@@ -65,10 +65,10 @@ defmodule Operately.Support.Features.ProjectPausingSteps do
 
   def assert_resume_email_sent_to_reviewer(ctx) do
     ctx
-    |> EmailSteps.assert_activity_email(%{
-      where: ctx.project,
-      to: ctx.reviewer.email,
-      subject: "resumed the project",
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "resumed the project",
       author: ctx.champion,
     })
   end
@@ -77,7 +77,7 @@ defmodule Operately.Support.Features.ProjectPausingSteps do
     ctx
     |> UI.visit("/projects/#{ctx.project.id}")
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el |> UI.assert_text("resume the project")
+      el |> UI.assert_text("resumed the project")
     end)
   end
 
