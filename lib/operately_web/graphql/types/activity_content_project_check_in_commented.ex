@@ -24,12 +24,14 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented do
       end
     end
 
-    field :check_in, non_null(:project_check_in) do
+    field :check_in, :project_check_in do
       resolve fn activity, _, _ ->
         id = activity.content["check_in_id"]
-        check_in = Operately.Projects.get_check_in!(id)
 
-        {:ok, check_in}
+        case id do
+          nil -> {:ok, nil}
+          _ -> {:ok, Operately.Projects.get_check_in!(id)}
+        end
       end
     end
 

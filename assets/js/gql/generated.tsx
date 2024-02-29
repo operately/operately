@@ -147,7 +147,7 @@ export type ActivityContentProjectCheckInAcknowledged = {
 
 export type ActivityContentProjectCheckInCommented = {
   __typename?: 'ActivityContentProjectCheckInCommented';
-  checkIn: ProjectCheckIn;
+  checkIn?: Maybe<ProjectCheckIn>;
   checkInId: Scalars['String']['output'];
   comment: Comment;
   project: Project;

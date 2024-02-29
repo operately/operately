@@ -1,10 +1,10 @@
-defmodule Operately.Activities.Content.ProjectStatusUpdateCommented do
+defmodule Operately.Activities.Content.ProjectCheckInCommented do
   use Operately.Activities.Content
 
   embedded_schema do
     field :company_id, :string
     field :project_id, :string
-    field :status_update_id, :string
+    field :check_in_id, :string
     field :comment_id, :string
   end
 
@@ -15,14 +15,6 @@ defmodule Operately.Activities.Content.ProjectStatusUpdateCommented do
   end
 
   def build(params) do
-    project_id = params["project_id"]
-    project = Operately.Projects.get_project!(project_id)
-
-    changeset(%{
-      company_id: project.company_id,
-      project_id: project.id,
-      status_update_id: params["update_id"],
-      comment_id: params["comment_id"]
-    })
+    changeset(params)
   end
 end

@@ -60,7 +60,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     ctx
     |> Steps.submit_check_in(values)
     |> UI.login_as(ctx.reviewer)
-    |> Steps.open_check_in_from_notification(values)
+    |> Steps.open_check_in_from_notifications(values)
     |> Steps.leave_comment_on_check_in()
     |> UI.login_as(ctx.champion)
     |> Steps.assert_comment_on_check_in_received_in_notifications()

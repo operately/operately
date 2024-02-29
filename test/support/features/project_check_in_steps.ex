@@ -132,6 +132,32 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     UI.visit(ctx, link)
   end
 
+  def leave_comment_on_check_in(ctx) do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+  end
+
+  def assert_comment_on_check_in_received_in_notifications(ctx) do
+    ctx
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      where: ctx.project.name,
+      action: "commented on the project check-in",
+      author: ctx.reviewer,
+    })
+  end
+
+  def assert_comment_on_check_in_received_in_email(ctx) do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "commented on a check-in",
+      author: ctx.reviewer,
+    })
+  end
+
   defp find_acknowledgement_url(email) do
     email.html_body
     |> Floki.find("a[href]") 

@@ -17,7 +17,7 @@ defmodule Operately.Operations.CommentAdding do
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
-    |> insert_activity(creator, action, entity_id)
+    |> insert_activity(creator, action, entity)
     |> Repo.transaction()
     |> Repo.extract_result(:comment)
   end
@@ -49,7 +49,7 @@ defmodule Operately.Operations.CommentAdding do
       %{
         company_id: creator.company_id,
         project_id: entity.project_id,
-        project_check_in_id: entity.id,
+        check_in_id: entity.id,
         comment_id: changes.comment.id
       }
     end)

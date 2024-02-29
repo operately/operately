@@ -27,6 +27,7 @@ export const ProjectCheckInCommented: FeedItem = {
 
   component: ({ activity, content }) => {
     const comment = content.comment;
+    const commentContent = JSON.parse(comment.content)["message"];
     const project = content.project;
 
     const insertedAt = Time.parseISO(activity.insertedAt);
@@ -40,7 +41,7 @@ export const ProjectCheckInCommented: FeedItem = {
       </>
     );
 
-    const summary = <Summary jsonContent={comment.content} characterCount={200} />;
+    const summary = <Summary jsonContent={commentContent} characterCount={200} />;
 
     return <Container title={title} author={activity.author} time={activity.insertedAt} content={summary} />;
   },

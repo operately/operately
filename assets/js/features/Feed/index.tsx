@@ -7,14 +7,17 @@ import FeedItems from "./FeedItems";
 
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function Feed({ items, testId }: { items: Activities.Activity[]; testId?: string }) {
   return (
-    <div className="w-full" data-test-id={testId}>
-      {Activities.groupByDate(items).map((group, index) => (
-        <ActivityGroup key={index} group={group} page="project" />
-      ))}
-    </div>
+    <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
+      <div className="w-full" data-test-id={testId}>
+        {Activities.groupByDate(items).map((group, index) => (
+          <ActivityGroup key={index} group={group} page="project" />
+        ))}
+      </div>
+    </ErrorBoundary>
   );
 }
 
@@ -31,7 +34,9 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
 
         <div className="flex-1 flex flex-col gap-4">
           {group.activities.map((activity) => (
-            <ActivityItem key={activity.id} activity={activity} page={page} />
+            <ErrorBoundary key={activity.id} fallback={null}>
+              <ActivityItem key={activity.id} activity={activity} page={page} />
+            </ErrorBoundary>
           ))}
         </div>
       </div>
