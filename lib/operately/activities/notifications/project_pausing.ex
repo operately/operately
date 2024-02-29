@@ -1,5 +1,5 @@
 defmodule Operately.Activities.Notifications.ProjectPausing do
-  def dispatch(activity) do
+  def dispatch(_activity) do
     {:ok, []}
   end
 end

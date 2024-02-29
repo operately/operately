@@ -9,10 +9,9 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
-import { Indicator } from "@/components/ProjectHealthIndicators";
 import { TextTooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";
@@ -91,11 +90,7 @@ function MilestoneCompletion({ project }) {
 function Status({ project }) {
   return (
     <div className="flex flex-col shrink-0">
-      {project.isOutdated ? (
-        <Indicator value="outdated" type="status" />
-      ) : (
-        <SmallStatusIndicator status={project.lastCheckIn?.status || "on_track"} />
-      )}
+      <StatusIndicator project={project} />
     </div>
   );
 }

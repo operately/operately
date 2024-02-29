@@ -70,15 +70,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :project_id, non_null(:string)
   end
 
-
   object :project_mutations do
     field :resume_project, non_null(:project) do
       arg :input, non_null(:resume_project_input)
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        project_id = input.project_id
 
-        Operately.Operations.ProjectResuming.run(author, input)
+        Operately.Operations.ProjectResuming.run(author, project_id)
       end
     end
 

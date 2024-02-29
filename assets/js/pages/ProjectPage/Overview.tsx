@@ -5,8 +5,8 @@ import { DimmedLabel } from "./Label";
 import * as Projects from "@/models/projects";
 import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
+import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export default function Overview({ project }) {
   return (
@@ -25,7 +25,7 @@ function Status({ project }: { project: Projects.Project }) {
   return (
     <div>
       <DimmedLabel>Status</DimmedLabel>
-      <SmallStatusIndicator status={project.lastCheckIn?.status || "on_track"} />
+      <StatusIndicator project={project} />
     </div>
   );
 }

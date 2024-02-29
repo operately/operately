@@ -31,7 +31,7 @@ export function Page() {
           </div>
 
           <div className="flex items-center gap-6 mt-8">
-            <ArchiveButton project={project} />
+            <PauseProject project={project} />
             <DimmedLink to={`/projects/${project.id}`}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
@@ -40,21 +40,18 @@ export function Page() {
   );
 }
 
-function ArchiveButton({ project }) {
+function PauseProject({ project }) {
   const path = Paths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 
-  const [pause] = Projects.usePauseProjectMutation({
-    variables: {
-      input: {
-        projectId: project.id,
-      },
-    },
-    onSuccess,
-  });
+  const [pause] = Projects.usePauseProjectMutation({ onCompleted: onSuccess });
+
+  const handleClick = async () => {
+    await pause({ variables: { input: { projectId: project.id } } });
+  };
 
   return (
-    <FilledButton onClick={pause} testId="pause-project-button">
+    <FilledButton onClick={handleClick} testId="pause-project-button">
       Pause the Project
     </FilledButton>
   );
