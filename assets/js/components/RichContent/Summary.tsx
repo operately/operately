@@ -28,8 +28,8 @@ export function Summary({ jsonContent, characterCount }): JSX.Element {
   return <div>{summary}</div>;
 }
 
-function parseContent(content: string | any): any {
-  if (content.constructor.name === "String") {
+function parseContent(content?: string | any): any {
+  if (content?.constructor?.name === "String") {
     return JSON.parse(content);
   } else {
     return content;
