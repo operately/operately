@@ -66,18 +66,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :project_id, non_null(:string)
   end
 
-
   object :project_mutations do
     field :pause_project, non_null(:project) do
       arg :input, non_null(:pause_project_input)
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        project_id = input.project_id
 
-        case Operately.Operations.ProjectPausing.run(author, input) do
-          {:ok, result} -> {:ok, result}
-          {:error, changeset} -> {:error, changeset}
-        end
+        Operately.Operations.ProjectPausing.run(author, project_id)
       end
     end
 
