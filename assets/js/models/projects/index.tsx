@@ -1,5 +1,5 @@
 import type { Project, ProjectContributor, Milestone } from "@/gql";
-export { usePauseProjectMutation } from './usePauseProjectMutation';
+export { usePauseProjectMutation } from "./usePauseProjectMutation";
 export type { Project, ProjectContributor, Milestone } from "@/gql";
 
 import * as Time from "@/utils/time";
@@ -44,4 +44,12 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadli
 
 export function allMilestonesCompleted(project: Project) {
   return project.milestones!.every((m) => m!.status === "done");
+}
+
+export function isPausable(project: Project) {
+  return project.status === "active";
+}
+
+export function isResumable(project: Project) {
+  return project.status === "paused";
 }
