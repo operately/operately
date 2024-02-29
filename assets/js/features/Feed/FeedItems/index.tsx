@@ -26,6 +26,7 @@ import { ProjectGoalConnection } from "./ProjectGoalConnection"
 import { ProjectGoalDisconnection } from "./ProjectGoalDisconnection"
 import { ProjectMilestoneCommented } from "./ProjectMilestoneCommented"
 import { ProjectMoved } from "./ProjectMoved"
+import { ProjectPausing } from "./ProjectPausing"
 import { ProjectRenamed } from "./ProjectRenamed"
 import { ProjectTimelineEdited } from "./ProjectTimelineEdited"
 import { TaskAdding } from "./TaskAdding"
@@ -55,6 +56,7 @@ const FeedItems : FeedItem[] = [
   ProjectGoalDisconnection,
   ProjectMilestoneCommented,
   ProjectMoved,
+  ProjectPausing,
   ProjectRenamed,
   ProjectTimelineEdited,
   TaskAdding,

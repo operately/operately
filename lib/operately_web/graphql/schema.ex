@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectGoalDisconnection
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectMilestoneCommented
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectMoved
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectPausing
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectRenamed
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewAcknowledged
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewCommented

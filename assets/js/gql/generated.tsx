@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -223,6 +223,12 @@ export type ActivityContentProjectMoved = {
   newSpace: Group;
   oldSpace: Group;
   project: Project;
+};
+
+export type ActivityContentProjectPausing = {
+  __typename?: 'ActivityContentProjectPausing';
+  companyId: Scalars['String']['output'];
+  projectId: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectRenamed = {
@@ -773,6 +779,10 @@ export type PanelInput = {
 
 export type PanelLinkedResource = Project;
 
+export type PauseProjectInput = {
+  projectId: Scalars['String']['input'];
+};
+
 export type Person = {
   __typename?: 'Person';
   avatarUrl?: Maybe<Scalars['String']['output']>;
@@ -973,6 +983,7 @@ export type RootMutationType = {
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
+  pauseProject: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
@@ -1221,6 +1232,11 @@ export type RootMutationTypeMarkNotificationAsReadArgs = {
 
 export type RootMutationTypeMoveProjectToSpaceArgs = {
   input: ProjectMoveInput;
+};
+
+
+export type RootMutationTypePauseProjectArgs = {
+  input: PauseProjectInput;
 };
 
 
