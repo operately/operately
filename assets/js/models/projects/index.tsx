@@ -1,4 +1,5 @@
 import type { Project, ProjectContributor, Milestone } from "@/gql";
+export { useResumeProjectMutation } from './useResumeProjectMutation';
 export { usePauseProjectMutation } from "./usePauseProjectMutation";
 export type { Project, ProjectContributor, Milestone } from "@/gql";
 
