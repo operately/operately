@@ -1,4 +1,6 @@
 import type { Project, ProjectContributor, Milestone } from "@/gql";
+export { useResumeProjectMutation } from './useResumeProjectMutation';
+export { usePauseProjectMutation } from "./usePauseProjectMutation";
 export type { Project, ProjectContributor, Milestone } from "@/gql";
 
 import * as Time from "@/utils/time";
@@ -6,6 +8,18 @@ import * as Time from "@/utils/time";
 export { groupBySpace } from "./groupBySpace";
 export { getProjects } from "./getProjects";
 export { getProject } from "./getProject";
+export { useMoveProjectToSpaceMutation } from "./useMoveProjectToSpaceMutation";
+export { useCloseProjectMutation } from "./useCloseProjectMutation";
+export { useEditNameMutation } from "./useEditNameMutation";
+export { useUpdateDescriptionMutation } from "./useUpdateDescriptionMutation";
+export { useEditTimelineMutation } from "./useEditTimelineMutation";
+export { useArchiveMutation } from "./useArchiveMutation";
+export { useCreateMutation } from "./useCreateMutation";
+
+export { useProjectContributorCandidatesQuery } from "./useProjectContributorCandidatesQuery";
+export { useAddProjectContributorMutation } from "./useAddProjectContributorMutation";
+export { useUpdateProjectContributorMutation } from "./useUpdateProjectContributorMutation";
+export { useRemoveProjectContributorMutation } from "./useRemoveProjectContributorMutation";
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name.localeCompare(b.name));
@@ -27,4 +41,16 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadli
   if (!day) return false;
 
   return !Time.isToday(day) && Time.isPast(day);
+}
+
+export function allMilestonesCompleted(project: Project) {
+  return project.milestones!.every((m) => m!.status === "done");
+}
+
+export function isPausable(project: Project) {
+  return project.status === "active";
+}
+
+export function isResumable(project: Project) {
+  return project.status === "paused";
 }

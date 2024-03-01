@@ -133,8 +133,6 @@ defmodule Operately.Features.ProjectsTest do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_moved_sent(author: ctx.champion, old_space: ctx.group, new_space: new_space)
-    
-    ctx
     |> visit_show(ctx.project)
     |> FeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: new_space)
   end

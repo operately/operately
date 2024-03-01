@@ -20,15 +20,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
     field :new_target_values, :string
   end
 
-  input_object :create_comment_input do
-    field :content, non_null(:string)
-    field :update_id, non_null(:id)
-  end
-
-  input_object :edit_comment_input do
-    field :content, non_null(:string)
-    field :comment_id, non_null(:id)
-  end
 
   object :update_mutations do
     field :create_update, non_null(:update) do
@@ -43,11 +34,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
             target_values = Jason.decode!(args.input.new_target_values)
             goal = Operately.Goals.get_goal!(args.input.updatable_id)
             Operately.Operations.GoalCheckIn.run(author, goal, content, target_values)
-
-          "status_update" ->
-            health = args.input.health
-            project = Operately.Projects.get_project!(args.input.updatable_id)
-            Operately.Operations.ProjectCheckIn.run(author, project, health, content)
 
           "review" ->
             review_request_id = args.input[:review_request_id]
@@ -84,28 +70,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
             goal = Operately.Goals.get_goal!(update.updatable_id)
             Operately.Operations.GoalCheckInEdit.run(author, goal, update, content, target_values)
 
-          :status_update ->
-            health = args.input.health
-            Operately.Operations.ProjectStatusUpdateEdit.run(author, update, health, content)
-
           _ ->
             raise "Unknown message type"
         end
-      end
-    end
-
-    field :add_reaction, :reaction do
-      arg :type, non_null(:string)
-      arg :entity_id, non_null(:id)
-      arg :entity_type, non_null(:string)
-
-      resolve fn args, %{context: context} ->
-        Operately.Updates.create_reaction(%{
-          reaction_type: args.type,
-          entity_type: args.entity_type,
-          entity_id: args.entity_id,
-          person_id: context.current_account.person.id
-        })
       end
     end
 
@@ -117,41 +84,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Updates do
         update = Operately.Updates.get_update!(args.id)
 
         Operately.Updates.acknowledge_update(person, update)
-      end
-    end
-
-    field :create_comment, :comment do
-      arg :input, non_null(:create_comment_input)
-
-      resolve fn args, %{context: context} ->
-        update = Operately.Updates.get_update!(args.input.update_id)
-
-        cond do
-          update.type in [:project_discussion, :status_update, :review] ->
-            author = context.current_account.person
-            content = Jason.decode!(args.input.content)
-
-            Operately.Updates.create_comment(author, update, content)
-
-          true ->
-            Operately.Updates.create_comment(update, %{
-              author_id: context.current_account.person.id,
-              update_id: args.input.update_id,
-              content: %{"message" => Jason.decode!(args.input.content)}
-            })
-        end
-      end
-    end
-
-    field :edit_comment, :comment do
-      arg :input, non_null(:edit_comment_input)
-
-      resolve fn args, _ ->
-        comment = Operately.Updates.get_comment!(args.input.comment_id)
-
-        Operately.Updates.update_comment(comment, %{
-          content: %{"message" => Jason.decode!(args.input.content)}
-        })
       end
     end
   end

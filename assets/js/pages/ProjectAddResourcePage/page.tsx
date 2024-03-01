@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
-import * as KeyResources from "@/models/key_resources";
+import * as KeyResources from "@/models/keyResources";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
@@ -50,8 +50,17 @@ function Form({ project, form }) {
         value={form.name}
         onChange={form.setName}
         autoFocus
+        error={false}
       />
-      <Forms.TextInput name="url" label="URL" placeholder="https://..." value={form.url} onChange={form.setUrl} />
+
+      <Forms.TextInput
+        name="url"
+        label="URL"
+        placeholder="https://..."
+        value={form.url}
+        onChange={form.setUrl}
+        error={false}
+      />
 
       <Forms.SubmitArea>
         <Forms.SubmitButton data-test-id="save">Save</Forms.SubmitButton>

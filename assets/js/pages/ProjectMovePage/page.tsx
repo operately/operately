@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Groups from "@/graphql/Groups";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";

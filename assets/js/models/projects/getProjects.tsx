@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
-import * as Updates from "@/graphql/Projects/updates";
 
 interface GetProjectsOptions {
+  spaceId?: string;
   includeSpace?: boolean;
   includeContributors?: boolean;
   includeMilestones?: boolean;
@@ -20,6 +20,7 @@ export async function getProjects(options: GetProjectsOptions = {}) {
       includeLastCheckIn: !!options.includeLastCheckIn,
       filters: {
         filter: options.filter || "all-projects",
+        spaceId: options.spaceId,
       },
     },
     fetchPolicy: "network-only",
@@ -29,50 +30,6 @@ export async function getProjects(options: GetProjectsOptions = {}) {
 }
 
 const QUERY = gql`
-  fragment NextMilestone on Project {
-    nextMilestone {
-      id
-      title
-      status
-      insertedAt
-      deadlineAt
-    }
-  }
-
-  fragment Milestones on Project {
-    milestones {
-      id
-      title
-      status
-      insertedAt
-      deadlineAt
-    }
-  }
-
-  fragment Contributors on Project {
-    contributors {
-      id
-      role
-      person {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-    }
-  }
-
-  fragment Space on Project {
-    space {
-      id
-      name
-    }
-  }
-
-  fragment LastCheckIn on Project {
-    lastCheckIn ${Updates.UPDATE_FRAGMENT}
-  }
-
   query ListProjects(
     $filters: ProjectListFilters
     $includeSpace: Boolean!
@@ -91,17 +48,54 @@ const QUERY = gql`
       closedAt
 
       deadline
-      phase
-      health
       isArchived
       isOutdated
       status
 
-      ...Contributors @include(if: $includeContributors)
-      ...Space @include(if: $includeSpace)
-      ...Milestones @include(if: $includeMilestones)
-      ...NextMilestone @include(if: $includeMilestones)
-      ...LastCheckIn @include(if: $includeLastCheckIn)
+      contributors @include(if: $includeContributors) {
+        id
+        role
+        person {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+
+      space @include(if: $includeSpace) {
+        id
+        name
+      }
+
+      nextMilestone @include(if: $includeMilestones) {
+        id
+        title
+        status
+        insertedAt
+        deadlineAt
+      }
+
+      milestones @include(if: $includeMilestones) {
+        id
+        title
+        status
+        insertedAt
+        deadlineAt
+      }
+
+      lastCheckIn @include(if: $includeLastCheckIn) {
+        id
+        status
+        description
+        insertedAt
+
+        author {
+          id
+          fullName
+          avatarUrl
+        }
+      }
     }
   }
 `;

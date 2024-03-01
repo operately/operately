@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectRenamed | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectStatusUpdateAcknowledged | ActivityContentProjectStatusUpdateCommented | ActivityContentProjectStatusUpdateEdit | ActivityContentProjectStatusUpdateSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -137,6 +137,38 @@ export type ActivityContentProjectArchived = {
   projectId: Scalars['String']['output'];
 };
 
+export type ActivityContentProjectCheckInAcknowledged = {
+  __typename?: 'ActivityContentProjectCheckInAcknowledged';
+  checkIn: ProjectCheckIn;
+  checkInId: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectCheckInCommented = {
+  __typename?: 'ActivityContentProjectCheckInCommented';
+  checkIn?: Maybe<ProjectCheckIn>;
+  checkInId: Scalars['String']['output'];
+  comment: Comment;
+  project: Project;
+  projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectCheckInEdit = {
+  __typename?: 'ActivityContentProjectCheckInEdit';
+  checkInId: Scalars['String']['output'];
+  companyId: Scalars['String']['output'];
+  projectId: Scalars['String']['output'];
+};
+
+export type ActivityContentProjectCheckInSubmitted = {
+  __typename?: 'ActivityContentProjectCheckInSubmitted';
+  checkIn: ProjectCheckIn;
+  checkInId: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['String']['output'];
+};
+
 export type ActivityContentProjectClosed = {
   __typename?: 'ActivityContentProjectClosed';
   project: Project;
@@ -193,11 +225,23 @@ export type ActivityContentProjectMoved = {
   project: Project;
 };
 
+export type ActivityContentProjectPausing = {
+  __typename?: 'ActivityContentProjectPausing';
+  companyId: Scalars['String']['output'];
+  projectId: Scalars['String']['output'];
+};
+
 export type ActivityContentProjectRenamed = {
   __typename?: 'ActivityContentProjectRenamed';
   newName: Scalars['String']['output'];
   oldName: Scalars['String']['output'];
   project: Project;
+};
+
+export type ActivityContentProjectResuming = {
+  __typename?: 'ActivityContentProjectResuming';
+  companyId: Scalars['String']['output'];
+  projectId: Scalars['String']['output'];
 };
 
 export type ActivityContentProjectReviewAcknowledged = {
@@ -226,38 +270,6 @@ export type ActivityContentProjectReviewSubmitted = {
   project: Project;
   projectId: Scalars['String']['output'];
   reviewId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectStatusUpdateAcknowledged = {
-  __typename?: 'ActivityContentProjectStatusUpdateAcknowledged';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  statusUpdateId: Scalars['String']['output'];
-  update: Update;
-};
-
-export type ActivityContentProjectStatusUpdateCommented = {
-  __typename?: 'ActivityContentProjectStatusUpdateCommented';
-  comment: Comment;
-  project: Project;
-  projectId: Scalars['String']['output'];
-  statusUpdateId: Scalars['String']['output'];
-  update: Update;
-};
-
-export type ActivityContentProjectStatusUpdateEdit = {
-  __typename?: 'ActivityContentProjectStatusUpdateEdit';
-  checkInId: Scalars['String']['output'];
-  companyId: Scalars['String']['output'];
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectStatusUpdateSubmitted = {
-  __typename?: 'ActivityContentProjectStatusUpdateSubmitted';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  statusUpdateId: Scalars['String']['output'];
-  update: Update;
 };
 
 export type ActivityContentProjectTimelineEdited = {
@@ -381,9 +393,10 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
-export type AssignPersonToTaskInput = {
-  personId: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
+export type AddReactionInput = {
+  emoji: Scalars['String']['input'];
+  entityId: Scalars['ID']['input'];
+  entityType: Scalars['String']['input'];
 };
 
 export type Assignment = {
@@ -418,32 +431,18 @@ export type ChangeTaskDescriptionInput = {
   taskId: Scalars['String']['input'];
 };
 
-export type ChangeTaskPriorityInput = {
-  priority: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
-};
-
-export type ChangeTaskSizeInput = {
-  size: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
-};
-
 export type CloseProjectInput = {
   projectId: Scalars['ID']['input'];
   retrospective: Scalars['String']['input'];
 };
 
-export type CloseTaskInput = {
-  taskId: Scalars['String']['input'];
-};
-
 export type Comment = {
   __typename?: 'Comment';
-  author?: Maybe<Person>;
+  author: Person;
+  content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['NaiveDateTime']['output'];
-  message: Scalars['String']['output'];
-  reactions?: Maybe<Array<Maybe<Reaction>>>;
+  reactions: Array<Maybe<Reaction>>;
 };
 
 export type Company = {
@@ -467,7 +466,8 @@ export type ContactInput = {
 
 export type CreateCommentInput = {
   content: Scalars['String']['input'];
-  updateId: Scalars['ID']['input'];
+  entityId: Scalars['String']['input'];
+  entityType: Scalars['String']['input'];
 };
 
 export type CreateGoalInput = {
@@ -607,6 +607,12 @@ export type EditKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
+export type EditProjectCheckInInput = {
+  checkInId: Scalars['ID']['input'];
+  description: Scalars['String']['input'];
+  status: Scalars['String']['input'];
+};
+
 export type EditProjectNameInput = {
   name: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
@@ -618,11 +624,6 @@ export type EditProjectTimelineInput = {
   projectDueDate?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
   projectStartDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-export type EditTaskNameInput = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
 };
 
 export type EditUpdateInput = {
@@ -784,6 +785,10 @@ export type PanelInput = {
 
 export type PanelLinkedResource = Project;
 
+export type PauseProjectInput = {
+  projectId: Scalars['String']['input'];
+};
+
 export type Person = {
   __typename?: 'Person';
   avatarUrl?: Maybe<Scalars['String']['output']>;
@@ -814,6 +819,12 @@ export type PostMilestoneCommentInput = {
   milestoneId: Scalars['ID']['input'];
 };
 
+export type PostProjectCheckInInput = {
+  description: Scalars['String']['input'];
+  projectId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
+};
+
 export type Project = {
   __typename?: 'Project';
   archivedAt?: Maybe<Scalars['Date']['output']>;
@@ -823,33 +834,40 @@ export type Project = {
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   goal?: Maybe<Goal>;
-  health: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
   isOutdated: Scalars['Boolean']['output'];
   isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
-  lastCheckIn?: Maybe<Update>;
+  lastCheckIn?: Maybe<ProjectCheckIn>;
   milestones?: Maybe<Array<Maybe<Milestone>>>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nextMilestone?: Maybe<Milestone>;
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
-  parents?: Maybe<Array<Maybe<ProjectParent>>>;
   permissions: ProjectPermissions;
-  phase: Scalars['String']['output'];
-  phaseHistory?: Maybe<Array<Maybe<ProjectPhaseHistory>>>;
   private: Scalars['Boolean']['output'];
   retrospective?: Maybe<Scalars['String']['output']>;
-  reviewRequests?: Maybe<Array<Maybe<ProjectReviewRequest>>>;
   reviewer?: Maybe<Person>;
   space: Group;
   spaceId: Scalars['ID']['output'];
   startedAt?: Maybe<Scalars['Date']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
-  updates?: Maybe<Array<Maybe<Update>>>;
+};
+
+export type ProjectCheckIn = {
+  __typename?: 'ProjectCheckIn';
+  acknowledgedAt?: Maybe<Scalars['NaiveDateTime']['output']>;
+  acknowledgedBy?: Maybe<Person>;
+  author: Person;
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  insertedAt: Scalars['Date']['output'];
+  project: Project;
+  reactions: Array<Maybe<Reaction>>;
+  status: Scalars['String']['output'];
 };
 
 export type ProjectContributor = {
@@ -858,15 +876,6 @@ export type ProjectContributor = {
   person: Person;
   responsibility?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
-};
-
-export type ProjectDocument = {
-  __typename?: 'ProjectDocument';
-  author: Person;
-  content: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  insertedAt: Scalars['Date']['output'];
-  title: Scalars['String']['output'];
 };
 
 export type ProjectHealth = {
@@ -893,21 +902,13 @@ export type ProjectKeyResource = {
 
 export type ProjectListFilters = {
   filter?: InputMaybe<Scalars['String']['input']>;
-  groupId?: InputMaybe<Scalars['ID']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  objectiveId?: InputMaybe<Scalars['ID']['input']>;
+  spaceId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type ProjectMoveInput = {
   projectId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
-};
-
-export type ProjectParent = {
-  __typename?: 'ProjectParent';
-  id?: Maybe<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
-  type: Scalars['String']['output'];
 };
 
 export type ProjectPermissions = {
@@ -925,15 +926,6 @@ export type ProjectPermissions = {
   canView: Scalars['Boolean']['output'];
 };
 
-export type ProjectPhaseHistory = {
-  __typename?: 'ProjectPhaseHistory';
-  dueTime?: Maybe<Scalars['Date']['output']>;
-  endTime?: Maybe<Scalars['Date']['output']>;
-  id: Scalars['ID']['output'];
-  phase: Scalars['String']['output'];
-  startTime?: Maybe<Scalars['Date']['output']>;
-};
-
 export type ProjectReviewRequest = {
   __typename?: 'ProjectReviewRequest';
   author?: Maybe<Person>;
@@ -947,18 +939,20 @@ export type ProjectReviewRequest = {
 
 export type Reaction = {
   __typename?: 'Reaction';
+  emoji: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   person: Person;
   reactionType: Scalars['String']['output'];
 };
 
-export type ReopenTaskInput = {
-  taskId: Scalars['String']['input'];
+export type ResumeProjectInput = {
+  projectId: Scalars['String']['input'];
 };
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
+  acknowledgeProjectCheckIn: ProjectCheckIn;
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addCompanyMember: Person;
   addCompanyTrustedEmailDomain: Company;
@@ -970,12 +964,8 @@ export type RootMutationType = {
   addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
-  assignPersonToTask: Task;
   changeTaskDescription: Task;
-  changeTaskPriority: Task;
-  changeTaskSize: Task;
   closeProject: Project;
-  closeTask: Task;
   connectGoalToProject: Project;
   createBlob: Blob;
   createComment?: Maybe<Comment>;
@@ -996,24 +986,25 @@ export type RootMutationType = {
   editGoal?: Maybe<Goal>;
   editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
+  editProjectCheckIn: ProjectCheckIn;
   editProjectName: Project;
   editProjectTimeline: Project;
-  editTaskName: Task;
   editUpdate: Update;
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
+  pauseProject: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
-  postProjectDocument: ProjectDocument;
+  postProjectCheckIn: ProjectCheckIn;
   removeCompanyAdmin?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
-  reopenTask: Task;
+  resumeProject: Project;
   setGoalGroup?: Maybe<Objective>;
   setGroupMission?: Maybe<Group>;
   setKeyResultOwner?: Maybe<KeyResult>;
@@ -1039,6 +1030,11 @@ export type RootMutationType = {
 
 
 export type RootMutationTypeAcknowledgeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeAcknowledgeProjectCheckInArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1092,9 +1088,7 @@ export type RootMutationTypeAddProjectMilestoneArgs = {
 
 
 export type RootMutationTypeAddReactionArgs = {
-  entityId: Scalars['ID']['input'];
-  entityType: Scalars['String']['input'];
-  type: Scalars['String']['input'];
+  input: AddReactionInput;
 };
 
 
@@ -1108,33 +1102,13 @@ export type RootMutationTypeArchiveProjectArgs = {
 };
 
 
-export type RootMutationTypeAssignPersonToTaskArgs = {
-  input: AssignPersonToTaskInput;
-};
-
-
 export type RootMutationTypeChangeTaskDescriptionArgs = {
   input: ChangeTaskDescriptionInput;
 };
 
 
-export type RootMutationTypeChangeTaskPriorityArgs = {
-  input: ChangeTaskPriorityInput;
-};
-
-
-export type RootMutationTypeChangeTaskSizeArgs = {
-  input: ChangeTaskSizeInput;
-};
-
-
 export type RootMutationTypeCloseProjectArgs = {
   input: CloseProjectInput;
-};
-
-
-export type RootMutationTypeCloseTaskArgs = {
-  input: CloseTaskInput;
 };
 
 
@@ -1242,6 +1216,11 @@ export type RootMutationTypeEditKeyResourceArgs = {
 };
 
 
+export type RootMutationTypeEditProjectCheckInArgs = {
+  input: EditProjectCheckInInput;
+};
+
+
 export type RootMutationTypeEditProjectNameArgs = {
   input: EditProjectNameInput;
 };
@@ -1249,11 +1228,6 @@ export type RootMutationTypeEditProjectNameArgs = {
 
 export type RootMutationTypeEditProjectTimelineArgs = {
   input: EditProjectTimelineInput;
-};
-
-
-export type RootMutationTypeEditTaskNameArgs = {
-  input: EditTaskNameInput;
 };
 
 
@@ -1272,6 +1246,11 @@ export type RootMutationTypeMoveProjectToSpaceArgs = {
 };
 
 
+export type RootMutationTypePauseProjectArgs = {
+  input: PauseProjectInput;
+};
+
+
 export type RootMutationTypePinProjectToHomePageArgs = {
   projectId: Scalars['ID']['input'];
 };
@@ -1287,10 +1266,8 @@ export type RootMutationTypePostMilestoneCommentArgs = {
 };
 
 
-export type RootMutationTypePostProjectDocumentArgs = {
-  content: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
-  type: Scalars['String']['input'];
+export type RootMutationTypePostProjectCheckInArgs = {
+  input: PostProjectCheckInInput;
 };
 
 
@@ -1326,8 +1303,8 @@ export type RootMutationTypeRemoveProjectMilestoneArgs = {
 };
 
 
-export type RootMutationTypeReopenTaskArgs = {
-  input: ReopenTaskInput;
+export type RootMutationTypeResumeProjectArgs = {
+  input: ResumeProjectInput;
 };
 
 
@@ -1451,6 +1428,7 @@ export type RootQueryType = {
   __typename?: 'RootQueryType';
   activities?: Maybe<Array<Maybe<Activity>>>;
   assignments: Assignments;
+  comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
   discussion: Discussion;
   discussions?: Maybe<Array<Maybe<Discussion>>>;
@@ -1472,6 +1450,8 @@ export type RootQueryType = {
   person?: Maybe<Person>;
   potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
   project?: Maybe<Project>;
+  projectCheckIn: ProjectCheckIn;
+  projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
   projectReviewRequest: ProjectReviewRequest;
   projects?: Maybe<Array<Maybe<Project>>>;
@@ -1495,6 +1475,12 @@ export type RootQueryTypeActivitiesArgs = {
 export type RootQueryTypeAssignmentsArgs = {
   rangeEnd: Scalars['DateTime']['input'];
   rangeStart: Scalars['DateTime']['input'];
+};
+
+
+export type RootQueryTypeCommentsArgs = {
+  entityId?: InputMaybe<Scalars['ID']['input']>;
+  entityType?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1581,6 +1567,16 @@ export type RootQueryTypePotentialGroupMembersArgs = {
 
 export type RootQueryTypeProjectArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeProjectCheckInArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type RootQueryTypeProjectCheckInsArgs = {
+  projectId: Scalars['ID']['input'];
 };
 
 

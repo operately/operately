@@ -28,9 +28,8 @@ defmodule Operately.Projects.ProjectCreation do
         :private => is_private(params.visibility),
         :creator_id => params.creator_id,
         :started_at => DateTime.utc_now(),
-        :next_update_scheduled_at => Operately.Time.first_friday_from_today(),
+        :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
         :health => :on_track,
-        :phase => :planning
       })
     end)
     |> Multi.insert(:champion, fn changes ->

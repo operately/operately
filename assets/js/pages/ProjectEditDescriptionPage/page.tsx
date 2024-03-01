@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
 import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";

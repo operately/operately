@@ -1,0 +1,7 @@
+<%= title("#{short_name(@author)} acknowledged your check-in for #{@project.name} project") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, @cta_text) %>
+<% end %>

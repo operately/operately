@@ -5,14 +5,14 @@ import { extract, truncate } from "./contentOps";
 
 export function Summary({ jsonContent, characterCount }): JSX.Element {
   const { editor } = TipTapEditor.useEditor({
-    content: JSON.parse(jsonContent),
+    content: parseContent(jsonContent),
     editable: false,
   });
 
   React.useEffect(() => {
     if (!editor) return;
 
-    editor.commands.setContent(JSON.parse(jsonContent));
+    editor.commands.setContent(parseContent(jsonContent));
   }, [jsonContent]);
 
   let summary: JSX.Element[] = React.useMemo(() => {
@@ -26,4 +26,12 @@ export function Summary({ jsonContent, characterCount }): JSX.Element {
 
   if (!editor) return <></>;
   return <div>{summary}</div>;
+}
+
+function parseContent(content?: string | any): any {
+  if (content?.constructor?.name === "String") {
+    return JSON.parse(content);
+  } else {
+    return content;
+  }
 }

@@ -4,6 +4,8 @@ import { onError } from "@apollo/client/link/error";
 import { incrementNetworkRequests } from "@/features/PerfBar/usePerfBarData";
 import createGraphQLWsLink from "./wsLink";
 
+import { RetryLink } from "@apollo/client/link/retry";
+
 function setupClient() {
   const domain = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "");
 
@@ -42,11 +44,29 @@ function setupClient() {
         );
       });
     }
+
+    if (params.networkError) {
+      console.log(`[Network error]: ${params.networkError}`);
+    }
+  });
+
+  const retryLink = new RetryLink({
+    delay: {
+      initial: 300,
+      max: 2000,
+      jitter: true,
+    },
+    attempts: {
+      max: 3,
+      retryIf: (error, _operation) => {
+        return error.message === "Failed to fetch";
+      },
+    },
   });
 
   const client = new ApolloClient({
     cache: cache,
-    link: from([errorLink, splitLink]),
+    link: from([errorLink, retryLink, splitLink]),
     connectToDevTools: false,
   });
 

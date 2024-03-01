@@ -1,161 +1,169 @@
 defmodule Operately.Support.Features.ProjectCheckInSteps do
-  alias Operately.Support.Features.UI
-  alias Operately.Support.Features.ProjectSteps
+  use Operately.FeatureCase
 
-  @labels %{
-    status: %{
-      "on_track" => "On Track",
-      "at_risk" => "At Risk",
-      "off_track" => "Off Track",
-      "paused" => "Paused",
-    },
-    schedule: %{
-      "on_schedule" => "On Schedule",
-      "small_delays" => "Small delays",
-      "major_delays" => "Major delays",
-    },
-    budget: %{
-      "within_budget" => "Within Budget",
-      "not_within_budget" => "Not within budget",
-    },
-    team: %{
-      "staffed" => "Staffed with suitable roles",
-      "missing_roles" => "Missing roles",
-      "key_roles_missing" => "Key roles missing",
-    },
-    risks: %{
-      "no_known_risks" => "No known risks",
-      "minor_risks" => "Minor Risks",
-      "major_risks" => "Major Risks",
-    },
+  alias Operately.Support.Features.UI
+  alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.NotificationsSteps
+
+  @status_to_on_screen %{
+    "on_track" => "On Track",
+    "caution" => "Caution",
+    "issue" => "Issue",
   }
 
-  def start_check_in(ctx) do
+  def submit_check_in(ctx, %{status: status, description: description}) do
     ctx
-    |> ProjectSteps.visit_project_page()
+    |> UI.visit("/projects/#{ctx.project.id}")
     |> UI.click(testid: "check-in-now")
-  end
-
-  def submit_check_in(ctx, opts \\ %{}) do
-    ctx
-    |> start_check_in()
-    |> UI.fill_rich_text(opts.content)
-    |> in_accordion("status", fn el ->
-      el 
-      |> UI.click(testid: "status-#{opts.status}")
-      |> UI.fill_rich_text(opts.status_comments)
-    end)
-    |> in_accordion("schedule", fn el ->
-      el 
-      |> UI.click(testid: "schedule-#{opts.schedule}")
-      |> UI.fill_rich_text(opts.schedule_comments)
-    end)
-    |> in_accordion("budget", fn el ->
-      el 
-      |> UI.click(testid: "budget-#{opts.budget}")
-      |> UI.fill_rich_text(opts.budget_comments)
-    end)
-    |> in_accordion("team", fn el ->
-      el 
-      |> UI.click(testid: "team-#{opts.team}")
-      |> UI.fill_rich_text(opts.team_comments)
-    end)
-    |> in_accordion("risks", fn el ->
-      el 
-      |> UI.click(testid: "risks-#{opts.risks}")
-      |> UI.fill_rich_text(opts.risks_comments)
-    end)
-    |> UI.click(testid: "post-status-update")
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{status}")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "post-check-in")
     |> UI.assert_text("Check-In from")
   end
 
-  def edit_check_in(ctx, updates) do
+  def edit_check_in(ctx, %{status: status, description: description}) do
     ctx
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-check-in")
-    |> in_accordion("status", fn el ->
-      el = if Map.has_key?(updates, :status), do: UI.click(el, testid: "status-#{updates.status}"), else: el
-      el = if Map.has_key?(updates, :status_comments), do: UI.fill_rich_text(el, updates.status_comments), else: el
-      el
-    end)
-    |> in_accordion("schedule", fn el ->
-      el = if Map.has_key?(updates, :schedule), do: UI.click(el, testid: "schedule-#{updates.schedule}"), else: el
-      el = if Map.has_key?(updates, :schedule_comments), do: UI.fill_rich_text(el, updates.schedule_comments), else: el
-
-      el 
-    end)
-    |> in_accordion("budget", fn el ->
-      el = if Map.has_key?(updates, :budget), do: UI.click(el, testid: "budget-#{updates.budget}"), else: el
-      el = if Map.has_key?(updates, :budget_comments), do: UI.fill_rich_text(el, updates.budget_comments), else: el
-
-      el
-    end)
-    |> in_accordion("team", fn el ->
-      el = if Map.has_key?(updates, :team), do: UI.click(el, testid: "team-#{updates.team}"), else: el
-      el = if Map.has_key?(updates, :team_comments), do: UI.fill_rich_text(el, updates.team_comments), else: el
-
-      el 
-    end)
-    |> in_accordion("risks", fn el ->
-      el = if Map.has_key?(updates, :risks), do: UI.click(el, testid: "risks-#{updates.risks}"), else: el
-      el = if Map.has_key?(updates, :risks_comments), do: UI.fill_rich_text(el, updates.risks_comments), else: el
-
-      el 
-    end)
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{status}")
+    |> UI.fill_rich_text(description)
     |> UI.click(testid: "save-changes")
+    |> UI.assert_text("Check-In from")
   end
 
-  defp in_accordion(ctx, accordion_test_id, cb) do
-    ctx
-    |> UI.find(UI.query(testid: "#{accordion_test_id}-accordion"), fn el ->
-      el
-      |> UI.click(testid: "open-close-toggle")
-      |> cb.()
-      |> UI.click(testid: "open-close-toggle")
-    end)
-  end
-
-  #
-  # Assertions
-  #
-
-  def assert_check_in_submitted(ctx, opts) do
+  def assert_check_in_submitted(ctx, %{status: status, description: description}) do
     ctx
     |> UI.assert_text("Check-In from")
-    |> UI.assert_text(@labels.status[opts.status])
-    |> UI.assert_text(@labels.schedule[opts.schedule])
-    |> UI.assert_text(@labels.budget[opts.budget])
-    |> UI.assert_text(@labels.team[opts.team])
-    |> UI.assert_text(@labels.risks[opts.risks])
-    |> UI.assert_text(opts.schedule_comments)
-    |> UI.assert_text(opts.budget_comments)
-    |> UI.assert_text(opts.team_comments)
-    |> UI.assert_text(opts.risks_comments)
-    |> UI.assert_text(opts.status_comments)
+    |> UI.assert_text(description)
+    |> UI.assert_text(@status_to_on_screen[status])
   end
-  
-  def assert_previous_check_in_values(ctx, opts) do
+
+  def assert_check_in_visible_on_project_page(ctx, %{status: status, description: description}) do
     ctx
-    |> UI.assert_text("What's new since the last check-in?")
-    |> UI.assert_text(@labels.status[opts.status])
-    |> UI.assert_text(@labels.schedule[opts.schedule])
-    |> UI.assert_text(@labels.budget[opts.budget])
-    |> UI.assert_text(@labels.team[opts.team])
-    |> UI.assert_text(@labels.risks[opts.risks])
-    |> in_accordion("status", fn el ->
-      el |> UI.assert_text(opts.status_comments)
+    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.assert_text(description)
+    |> UI.assert_text(@status_to_on_screen[status])
+  end
+
+  def assert_check_in_visible_on_feed(ctx, %{status: status, description: description}) do
+    ctx
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> UI.assert_text(description)
+      |> UI.assert_text(@status_to_on_screen[status])
     end)
-    |> in_accordion("schedule", fn el ->
-      el |> UI.assert_text(opts.schedule_comments)
+  end
+
+  def assert_email_sent_to_reviewer(ctx, %{status: _status, description: _description}) do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "submitted a check-in",
+      author: ctx.champion,
+    })
+  end
+
+  def assert_notification_sent_to_reviewer(ctx, %{status: _status, description: _description}) do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "submitted a check-in",
+    })
+  end
+
+  def assert_next_check_in_scheduled(ctx, %{status: _status, description: _description}) do
+    project = Operately.Projects.get_project!(ctx.project.id)
+
+    assert Date.diff(project.next_check_in_scheduled_at, Date.utc_today()) >= 7
+
+    ctx
+  end
+
+  def open_check_in_from_notifications(ctx, %{status: _status, description: _description}) do
+    ctx
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "project-check-in-submitted")
+  end
+
+  def acknowledge_check_in(ctx) do
+    ctx |> UI.click(testid: "acknowledge-check-in")
+  end
+
+  def assert_check_in_acknowledged(ctx, %{status: _status, description: _description}) do
+    ctx |> UI.assert_text("#{ctx.reviewer.full_name} acknowledged this Check-In")
+  end
+
+  def assert_acknowledgement_email_sent_to_champion(ctx, %{status: _status, description: _description}) do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "acknowledged your check-in",
+      author: ctx.reviewer,
+    })
+  end
+
+  def assert_acknowledgement_notification_sent_to_champion(ctx, %{status: _status, description: _description}) do
+    ctx
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "acknowledged your check-in",
+      author: ctx.reviewer,
+    })
+  end
+
+  def assert_acknowledgement_visible_on_project_feed(ctx, %{status: _status, description: _description}) do
+    ctx
+    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el |> UI.assert_text("acknowledged")
     end)
-    |> in_accordion("budget", fn el ->
-      el |> UI.assert_text(opts.budget_comments)
-    end)
-    |> in_accordion("team", fn el ->
-      el |> UI.assert_text(opts.team_comments)
-    end)
-    |> in_accordion("risks", fn el ->
-      el |> UI.assert_text(opts.risks_comments)
-    end)
+  end
+
+  def acknowledge_check_in_from_email(ctx, %{status: _status, description: _description}) do
+    last_email = ctx |> UI.list_sent_emails() |> List.last()
+    link = find_acknowledgement_url(last_email)
+
+    UI.visit(ctx, link)
+  end
+
+  def leave_comment_on_check_in(ctx) do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+  end
+
+  def assert_comment_on_check_in_received_in_notifications(ctx) do
+    ctx
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      where: ctx.project.name,
+      action: "commented on the project check-in",
+      author: ctx.reviewer,
+    })
+  end
+
+  def assert_comment_on_check_in_received_in_email(ctx) do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "commented on a check-in",
+      author: ctx.reviewer,
+    })
+  end
+
+  defp find_acknowledgement_url(email) do
+    email.html_body
+    |> Floki.find("a[href]") 
+    |> Enum.find(fn el -> Floki.text(el) == "Acknowledge" end)
+    |> Floki.attribute("href")
+    |> hd()
+    |> String.replace(OperatelyWeb.Endpoint.url(), "")
   end
 end

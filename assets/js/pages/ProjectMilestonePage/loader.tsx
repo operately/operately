@@ -1,7 +1,7 @@
 import client from "@/graphql/client";
 
-import * as Projects from "@/graphql/Projects";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Projects from "@/models/projects";
+import * as Milestones from "@/models/milestones";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 
@@ -12,12 +12,6 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  let projectData = await client.query({
-    query: Projects.GET_PROJECT,
-    variables: { id: params.projectID },
-    fetchPolicy: "network-only",
-  });
-
   let milestoneData = await client.query({
     query: Milestones.GET_MILESTONE,
     variables: { id: params.id },
@@ -25,7 +19,10 @@ export async function loader({ params }): Promise<LoaderResult> {
   });
 
   return {
-    project: projectData.data.project,
+    project: await Projects.getProject(params.projectID, {
+      includeSpace: true,
+      includePermissions: true,
+    }),
     milestone: milestoneData.data.milestone,
     me: await People.getMe(),
   };

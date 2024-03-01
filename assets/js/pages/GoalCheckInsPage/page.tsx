@@ -2,14 +2,12 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as Updates from "@/graphql/Projects/updates";
-import * as UpdateContent from "@/graphql/Projects/update_content";
+import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
-import { GhostButton } from "@/components/Button";
-
+import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { DivLink } from "@/components/Link";
@@ -53,11 +51,15 @@ function CheckInButton({ goal }: { goal: Goals.Goal }) {
 
   const path = `/goals/${goal.id}/check-ins/new`;
 
-  return <GhostButton linkTo={path}>Check-In Now</GhostButton>;
+  return (
+    <FilledButton linkTo={path} size="sm">
+      Check-In Now
+    </FilledButton>
+  );
 }
 
-function UpdateList({ updates }: { updates: Updates.Update[] }) {
-  const groups = Updates.groupUpdatesByMonth(updates);
+function UpdateList({ updates }: { updates: GoalCheckIns.GoalCheckIn[] }) {
+  const groups = GoalCheckIns.groupUpdatesByMonth(updates);
 
   return (
     <div className="flex flex-col gap-16 mt-16">
@@ -68,7 +70,7 @@ function UpdateList({ updates }: { updates: Updates.Update[] }) {
   );
 }
 
-function UpdateGroup({ group }: { group: ReturnType<typeof Updates.groupUpdatesByMonth>[0] }) {
+function UpdateGroup({ group }: { group: ReturnType<typeof GoalCheckIns.groupUpdatesByMonth>[0] }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="text-sm font-semibold w-max text-content-dimmed">
@@ -94,7 +96,6 @@ function isCurrentYear(year: number) {
 }
 
 function CheckInCard({ update }) {
-  const content = update.content as UpdateContent.GoalCheckIn;
   const author = update.author;
   const checkInPath = createPath("goals", update.updatableId, "check-ins", update.id);
 
@@ -116,7 +117,7 @@ function CheckInCard({ update }) {
         </div>
 
         <div className="flex-1">
-          <Summary jsonContent={content.message} characterCount={250} />
+          <Summary jsonContent={update.content.message} characterCount={250} />
         </div>
       </div>
     </DivLink>

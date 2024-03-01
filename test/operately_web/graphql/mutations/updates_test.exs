@@ -24,14 +24,6 @@ defmodule MyAppWeb.GraphQL.Mutations.UpdatesTest do
     }
   """
 
-  @acknowledge_query """
-    mutation acknowledge($id: ID!) {
-      acknowledge(id: $id) {
-        id
-      }
-    }
-  """
-
   setup do
     company = company_fixture()
     creator = person_fixture(%{company_id: company.id})
@@ -58,14 +50,6 @@ defmodule MyAppWeb.GraphQL.Mutations.UpdatesTest do
     assert json_response(conn, 200)
   end
 
-  test "mutation: acknowledge", ctx do
-    conn = graphql(ctx.conn, @acknowledge_query, %{
-      id: ctx.update.id
-    })
-
-    assert json_response(conn, 200)
-  end
-      
   defp graphql(conn, query, variables) do
     conn |> post("/api/gql", %{query: query, variables: variables})
   end

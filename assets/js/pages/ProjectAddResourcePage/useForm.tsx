@@ -1,9 +1,9 @@
 import * as React from "react";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createPath } from "@/utils/paths";
-import { useAddResource } from "@/models/key_resources";
+import { useAddResource } from "@/models/keyResources";
 
 interface FormState {
   projectId: string;

@@ -62,7 +62,37 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :retrospective, non_null(:string)
   end
 
+  input_object :pause_project_input do
+    field :project_id, non_null(:string)
+  end
+
+  input_object :resume_project_input do
+    field :project_id, non_null(:string)
+  end
+
   object :project_mutations do
+    field :resume_project, non_null(:project) do
+      arg :input, non_null(:resume_project_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        project_id = input.project_id
+
+        Operately.Operations.ProjectResuming.run(author, project_id)
+      end
+    end
+
+    field :pause_project, non_null(:project) do
+      arg :input, non_null(:pause_project_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        project_id = input.project_id
+
+        Operately.Operations.ProjectPausing.run(author, project_id)
+      end
+    end
+
     field :move_project_to_space, non_null(:project) do
       arg :input, non_null(:project_move_input)
 
@@ -265,42 +295,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     end
 
     #
-    # Documents
-    #
-
-    field :post_project_document, non_null(:project_document) do
-      arg :project_id, non_null(:id)
-      arg :type, non_null(:string)
-      arg :content, non_null(:string)
-
-      resolve fn args, %{context: context} ->
-        Operately.Repo.transaction(fn ->
-          project = Operately.Projects.get_project!(args.project_id)
-
-          {:ok, document} = Operately.Projects.create_document(%{
-            project_id: args.project_id,
-            title: "New document",
-            content: Jason.decode!(args.content),
-            author_id: context.current_account.person.id
-          })
-
-          change = case args.type do
-            "pitch" -> %{pitch_document_id: document.id}
-            "plan" -> %{plan_document_id: document.id}
-            "execution_review" -> %{execution_review_document_id: document.id}
-            "control_review" -> %{control_review_document_id: document.id}
-            "retrospective" -> %{retrospective_document_id: document.id}
-            type -> raise "Unknown document type #{type}"
-          end
-
-          {:ok, _} = Operately.Projects.update_project(project, change)
-
-          document
-        end)
-      end
-    end
-
-    #
     # Contributors
     #
 
@@ -398,12 +392,13 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       end
     end
 
-    defp parse_date(date) do
-      if date do
-        NaiveDateTime.new!(date, ~T[00:00:00])
-      else
-        nil
-      end
+  end
+
+  defp parse_date(date) do
+    if date do
+      NaiveDateTime.new!(date, ~T[00:00:00])
+    else
+      nil
     end
   end
 end

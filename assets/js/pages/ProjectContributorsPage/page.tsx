@@ -1,14 +1,14 @@
 import React from "react";
 
-import * as Projects from "@/graphql/Projects";
-import * as Contributors from "@/graphql/Projects/contributors";
+import * as Projects from "@/models/projects";
+import * as ProjectContributors from "@/models/projectContributors";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton } from "./FormElements";
 import ContributorItem from "./ContributorItem";
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useForm } from "./useForm";
@@ -67,14 +67,16 @@ function AddContribForm({ form }) {
 
 function AddButton({ onClick }) {
   return (
-    <GhostButton onClick={onClick} testId="add-contributor-button">
+    <FilledButton onClick={onClick} testId="add-contributor-button" size="sm">
       Add Contributor
-    </GhostButton>
+    </FilledButton>
   );
 }
 
 function ContributorList({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
-  const { champion, reviewer, contributors } = Contributors.splitByRole(project.contributors);
+  const { champion, reviewer, contributors } = ProjectContributors.splitByRole(
+    project.contributors! as ProjectContributors.ProjectContributor[],
+  );
 
   return (
     <div className="flex flex-col border-t border-stroke-base">

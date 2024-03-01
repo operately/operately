@@ -149,3 +149,15 @@ function useEditor(props: UseEditorProps): EditorState {
 const EditorContent = TipTap.EditorContent;
 
 export { useEditor, EditorContent, Toolbar };
+
+export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element {
+  return (
+    <Root editor={editor}>
+      <Toolbar editor={editor} noTopBorder />
+
+      <div className="text-content-accent text-lg relative px-4 rounded-t">
+        <EditorContent editor={editor} />
+      </div>
+    </Root>
+  );
+}

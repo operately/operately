@@ -1,0 +1,3 @@
+<%= "#{short_name(@author)} submitted a check-in" %>
+
+<%= @cta_text %>: <%= @cta_url %>

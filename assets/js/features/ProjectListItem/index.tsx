@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
@@ -9,9 +9,9 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
-import { Indicator } from "@/components/ProjectHealthIndicators";
 import { TextTooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";
@@ -90,12 +90,7 @@ function MilestoneCompletion({ project }) {
 function Status({ project }) {
   return (
     <div className="flex flex-col shrink-0">
-      {project.isOutdated ? (
-        <Indicator value="outdated" type="status" />
-      ) : (
-        <Indicator value={project.health} type="status" />
-      )}
-      {!project.isOutdated && <HealthIssues checkIn={project.lastCheckIn} />}
+      <StatusIndicator project={project} />
     </div>
   );
 }
@@ -134,45 +129,5 @@ function PrivateIndicator({ project }) {
         <Icons.IconLock size={16} />
       </div>
     </TextTooltip>
-  );
-}
-
-function HealthIssues({ checkIn }) {
-  if (!checkIn) return null;
-
-  const issues = Object.keys(checkIn.content.health).filter((type) => {
-    if (type === "status") {
-      return false;
-    }
-
-    if (type === "schedule") {
-      return checkIn.content.health[type] !== "on_schedule";
-    }
-
-    if (type === "budget") {
-      return checkIn.content.health[type] !== "within_budget";
-    }
-
-    if (type === "team") {
-      return checkIn.content.health[type] !== "staffed";
-    }
-
-    if (type === "risks") {
-      return checkIn.content.health[type] !== "no_known_risks";
-    }
-
-    return false;
-  });
-
-  if (issues.length === 0) return null;
-
-  return (
-    <div className="flex flex-col shrink-0">
-      {issues.map((issue, index) => (
-        <div key={index}>
-          <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
-        </div>
-      ))}
-    </div>
   );
 }

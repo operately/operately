@@ -7,6 +7,7 @@ defmodule Operately.Projects do
   alias Operately.People.Person
   alias Operately.Updates
   alias Operately.Activities
+  alias Operately.Projects.CheckIn
 
   alias Operately.Projects.{
     Project,
@@ -22,6 +23,14 @@ defmodule Operately.Projects do
     query = from p in Project, where: p.id == ^id
 
     Repo.one(query, with_deleted: true)
+  end
+
+  def get_check_in!(id) do
+    Repo.get!(CheckIn, id)
+  end
+
+  def get_check_ins!(project_id) do
+    Repo.all(from c in CheckIn, where: c.project_id == ^project_id, order_by: [desc: c.inserted_at])
   end
 
   defdelegate create_project(params), to: Operately.Projects.ProjectCreation, as: :run
@@ -427,16 +436,20 @@ defmodule Operately.Projects do
   end
 
   def outdated?(project) do
-    today = Date.utc_today()
-    check_in_day = DateTime.to_date(project.next_update_scheduled_at)
-    check_in_missed_by = Date.diff(today, check_in_day)
+    if project.next_check_in_scheduled_at do
+      today = Date.utc_today()
+      check_in_day = DateTime.to_date(project.next_check_in_scheduled_at)
+      check_in_missed_by = Date.diff(today, check_in_day)
 
-    cond do
-      project.status == "closed" -> false
-      project.deleted_at != nil -> false
-      project.health == :paused -> false
-      check_in_missed_by > 3 -> true
-      true -> false
+      cond do
+        project.status == "closed" -> false
+        project.status == "paused" -> false
+        project.deleted_at != nil -> false
+        check_in_missed_by > 3 -> true
+        true -> false
+      end
+    else
+      true
     end
   end
 end

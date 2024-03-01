@@ -1,26 +1,22 @@
 defmodule OperatelyWeb.Graphql.Types.Goals do
   use Absinthe.Schema.Notation
+  import OperatelyWeb.Graphql.TypeHelpers
 
   object :goal do
     field :id, non_null(:id)
     field :name, non_null(:string)
-
     field :inserted_at, non_null(:date)
     field :updated_at, non_null(:date)
-
     field :timeframe, non_null(:string)
+    field :next_update_scheduled_at, :date
 
-    field :next_update_scheduled_at, :date do
-      resolve fn goal, _, _ ->
-        {:ok, goal.next_update_scheduled_at}
-      end
-    end
+    json_field :description, :string
 
-    field :description, :string do
-      resolve fn goal, _, _ ->
-        {:ok, goal.description && Jason.encode!(goal.description)}
-      end
-    end
+    assoc_field :champion, :person
+    assoc_field :reviewer, :person
+
+    assoc_field :targets, list_of(:target)
+    assoc_field :projects, list_of(:project)
 
     field :last_check_in, :update do
       resolve fn goal, _, _ ->
@@ -54,38 +50,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
       end
     end
 
-    field :champion, :person do
-      resolve fn goal, _, _ ->
-        {:ok, Operately.People.get_person!(goal.champion_id)}
-      end
-    end
-
-    field :reviewer, :person do
-      resolve fn goal, _, _ ->
-        {:ok, Operately.People.get_person!(goal.reviewer_id)}
-      end
-    end
-
     field :my_role, :string do
       resolve fn goal, _, %{context: context} ->
         person = context.current_account.person
         role = Operately.Goals.get_role(goal, person)
 
         {:ok, Atom.to_string(role)}
-      end
-    end
-
-    field :targets, list_of(:target) do
-      resolve fn goal, _, _ ->
-        {:ok, Operately.Goals.list_targets(goal.id)}
-      end
-    end
-
-    field :projects, list_of(:project) do
-      resolve fn goal, _, %{context: context} ->
-        person = context.current_account.person
-        
-        {:ok, Operately.Projects.list_projects(person, %{goal_id: goal.id})}
       end
     end
   end

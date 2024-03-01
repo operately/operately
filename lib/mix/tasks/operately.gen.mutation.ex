@@ -82,10 +82,7 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
           resolve fn %{input: input}, %{context: context} ->
             author = context.current_account.person
 
-            case Operately.Operations.#{operation}.run(author, input) do
-              {:ok, result} -> {:ok, result}
-              {:error, changeset} -> {:error, changeset}
-            end
+            Operately.Operations.#{operation}.run(author, input)
           end
         end
     """

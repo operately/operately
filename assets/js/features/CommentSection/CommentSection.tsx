@@ -1,20 +1,19 @@
 import React from "react";
 
 import * as People from "@/models/people";
-import * as Updates from "@/graphql/Projects/updates";
+import * as Comments from "@/models/comments";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Feed from "@/features/feed";
 import * as TipTapEditor from "@/components/Editor";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import Button from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 
 import { FormState } from "./form";
-import { useAddReaction } from "./useAddReaction";
 import { useBoolState } from "@/utils/useBoolState";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 interface CommentSectionProps {
   form: FormState;
@@ -28,13 +27,13 @@ export function CommentSection(props: CommentSectionProps) {
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {
-            return <Comment key={index} comment={item.value} me={props.me} refresh={props.refresh} />;
+            return <Comment key={index} comment={item.value} me={props.me} form={props.form} />;
           } else if (item.type === "milestone-completed") {
             return <MilestoneCompleted key={index} comment={item.value} />;
           } else if (item.type === "milestone-reopened") {
             return <MilestoneReopened key={index} comment={item.value} />;
           } else {
-            return <AckComment key={index} update={item.value} />;
+            return <AckComment key={index} person={item.value} ackAt={item.insertedAt} />;
           }
         })}
 
@@ -44,41 +43,29 @@ export function CommentSection(props: CommentSectionProps) {
   );
 }
 
-function Comment({ me, comment, refresh }) {
+function Comment({ me, comment, form }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
-    return <EditComment me={me} comment={comment} onCancel={stopEditing} refresh={refresh} />;
+    return <EditComment me={me} comment={comment} onCancel={stopEditing} form={form} />;
   } else {
-    return <ViewComment comment={comment} onEdit={startEditing} me={me} refresh={refresh} />;
+    return <ViewComment comment={comment} onEdit={startEditing} me={me} />;
   }
 }
 
-function EditComment({ me, comment, onCancel, refresh }) {
+function EditComment({ me, comment, onCancel, form }) {
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[200px] p-4",
-    content: JSON.parse(comment.message),
+    content: JSON.parse(comment.content)["message"],
   });
-
-  const [edit, { loading }] = Updates.useEditComment();
 
   const handlePost = async () => {
     if (!editor) return;
     if (uploading) return;
-    if (loading) return;
 
-    await edit({
-      variables: {
-        input: {
-          commentId: comment.id,
-          content: JSON.stringify(editor.getJSON()),
-        },
-      },
-    });
-
-    refresh();
+    await form.editComment(comment.id, editor.getJSON());
     await onCancel();
   };
 
@@ -93,20 +80,13 @@ function EditComment({ me, comment, onCancel, refresh }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <Button
-                  onClick={handlePost}
-                  loading={loading}
-                  variant="success"
-                  data-test-id="post-comment"
-                  size="small"
-                  disabled={uploading}
-                >
+                <FilledButton onClick={handlePost} type="primary" testId="post-comment" size="xs">
                   {uploading ? "Uploading..." : "Save Changes"}
-                </Button>
+                </FilledButton>
 
-                <Button variant="secondary" onClick={onCancel} size="small">
+                <FilledButton type="secondary" onClick={onCancel} size="xs">
                   Cancel
-                </Button>
+                </FilledButton>
               </div>
             </div>
           </div>
@@ -166,9 +146,11 @@ function MilestoneReopened({ comment }) {
   );
 }
 
-function ViewComment({ comment, onEdit, me, refresh }) {
-  const addReactionForm = useAddReaction(comment.id, "comment", refresh);
+function ViewComment({ comment, onEdit, me }) {
+  const entity = { id: comment.id, type: "comment" };
+  const addReactionForm = useReactionsForm(entity, comment.reactions, me);
   const testId = "comment-" + comment.id;
+  const content = JSON.parse(comment.content)["message"];
 
   return (
     <div
@@ -181,7 +163,7 @@ function ViewComment({ comment, onEdit, me, refresh }) {
 
       <div className="flex-1">
         <div className="flex-1">
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
 
             <div className="flex items-center justify-between gap-2">
@@ -190,7 +172,7 @@ function ViewComment({ comment, onEdit, me, refresh }) {
               </span>
 
               {me.id === comment.author.id && (
-                <PageOptions.Root testId="goal-options" noBorder>
+                <PageOptions.Root testId="comment-options" noBorder>
                   <PageOptions.Action
                     onClick={onEdit}
                     icon={Icons.IconEdit}
@@ -203,21 +185,17 @@ function ViewComment({ comment, onEdit, me, refresh }) {
           </div>
         </div>
 
-        <div className="mb-1">
-          <RichContent jsonContent={comment.message} />
+        <div className="mb-2">
+          <RichContent jsonContent={content} skipParse />
         </div>
 
-        <Feed.Reactions reactions={comment.reactions} size={20} form={addReactionForm} />
+        <ReactionList form={addReactionForm} size={20} />
       </div>
     </div>
   );
 }
 
-function AckComment({ update }) {
-  if (!update.acknowledged) return null;
-
-  const person = update.acknowledgingPerson;
-
+function AckComment({ person, ackAt }) {
   return (
     <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
       <div className="shrink-0">
@@ -232,7 +210,7 @@ function AckComment({ update }) {
 
         <div className="flex items-center justify-between">
           <span className="text-content-dimmed text-sm">
-            <FormattedTime time={update.acknowledgedAt} format="relative" />
+            <FormattedTime time={ackAt} format="relative" />
           </span>
         </div>
       </div>
@@ -294,20 +272,19 @@ function AddCommentActive({ onBlur, onPost, me, form }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <Button
+                <FilledButton
                   onClick={handlePost}
                   loading={form.submitting}
-                  variant="success"
-                  data-test-id="post-comment"
-                  size="small"
-                  disabled={uploading}
+                  type="primary"
+                  testId="post-comment"
+                  size="xs"
                 >
                   {uploading ? "Uploading..." : "Post"}
-                </Button>
+                </FilledButton>
 
-                <Button variant="secondary" onClick={onBlur} size="small">
+                <FilledButton type="secondary" onClick={onBlur} size="xs">
                   Cancel
-                </Button>
+                </FilledButton>
               </div>
             </div>
           </div>

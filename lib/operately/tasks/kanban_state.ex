@@ -1,6 +1,12 @@
 defmodule Operately.Tasks.KanbanState do
   def load(nil), do: initialize()
-  def load(map), do: map
+  def load(map) do
+    if map == %{} do
+      initialize()
+    else
+      map
+    end
+  end
 
   def initialize do
     %{

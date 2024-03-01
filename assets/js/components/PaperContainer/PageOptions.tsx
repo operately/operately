@@ -83,9 +83,9 @@ function Dropdown({ closeOptions, children }) {
 
 function Open({ onClick, noBorder, testId, position }) {
   const className = classNames({
-    "p-1 rounded-full border border-stroke-base cursor-pointer": true,
+    "rounded-full border border-stroke-base cursor-pointer": true,
     "border-transparent": noBorder,
-    "hover:border-surface-outline transition-colors duration-200": !noBorder,
+    "p-1 hover:border-surface-outline transition-colors duration-200": !noBorder,
     "absolute right-5 top-5": position === "top-right",
   });
 

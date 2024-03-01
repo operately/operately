@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Time from "@/utils/time";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import Duration from "@/components/Duration";

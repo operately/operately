@@ -28,6 +28,17 @@ defmodule Operately.Support.Features.UI do
     login_as(state, person)
   end
 
+  def sleep(passthrough_result, msg) do
+    IO.puts(msg)
+    :timer.sleep(1000)
+    passthrough_result
+  end
+
+  def log_time(passthrough_result, msg) do
+    IO.puts("#{:os.system_time(:millisecond)} - #{msg}")
+    passthrough_result
+  end
+
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
@@ -292,6 +303,8 @@ defmodule Operately.Support.Features.UI do
     Sent emails:
     #{emails |> Enum.map(fn {title, to} -> "  - Title: #{inspect(title)}\n    To: #{inspect(to)}" end) |> Enum.join("\n")}
     """
+
+    state
   end
 
   def refute_email_sent(state, title, to: to) do
@@ -317,5 +330,11 @@ defmodule Operately.Support.Features.UI do
       {:css, css} -> css
       _ -> raise "Unknown pattern #{inspect(p)}"
     end
+  end
+
+  def take_screenshot(state) do
+    execute(state, fn session ->
+      session |> Browser.take_screenshot()
+    end)
   end
 end

@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Milestones from "@/graphql/Projects/milestones";
-import * as Projects from "@/graphql/Projects";
+import * as Milestones from "@/models/milestones";
+import * as Projects from "@/models/projects";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/graphql/People";
 import * as Time from "@/utils/time";

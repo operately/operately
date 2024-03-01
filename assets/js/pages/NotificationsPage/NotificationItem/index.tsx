@@ -15,6 +15,10 @@ import GoalCheckInEdit from "./GoalCheckInEdit"
 import GoalCreated from "./GoalCreated"
 import GoalEditing from "./GoalEditing"
 import ProjectArchived from "./ProjectArchived"
+import ProjectCheckInAcknowledged from "./ProjectCheckInAcknowledged"
+import ProjectCheckInCommented from "./ProjectCheckInCommented"
+import ProjectCheckInEdit from "./ProjectCheckInEdit"
+import ProjectCheckInSubmitted from "./ProjectCheckInSubmitted"
 import ProjectClosed from "./ProjectClosed"
 import ProjectContributorAddition from "./ProjectContributorAddition"
 import ProjectCreated from "./ProjectCreated"
@@ -23,15 +27,13 @@ import ProjectGoalConnection from "./ProjectGoalConnection"
 import ProjectGoalDisconnection from "./ProjectGoalDisconnection"
 import ProjectMilestoneCommented from "./ProjectMilestoneCommented"
 import ProjectMoved from "./ProjectMoved"
+import ProjectPausing from "./ProjectPausing"
 import ProjectRenamed from "./ProjectRenamed"
+import ProjectResuming from "./ProjectResuming"
 import ProjectReviewAcknowledged from "./ProjectReviewAcknowledged"
 import ProjectReviewCommented from "./ProjectReviewCommented"
 import ProjectReviewRequestSubmitted from "./ProjectReviewRequestSubmitted"
 import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
-import ProjectStatusUpdateAcknowledged from "./ProjectStatusUpdateAcknowledged"
-import ProjectStatusUpdateCommented from "./ProjectStatusUpdateCommented"
-import ProjectStatusUpdateEdit from "./ProjectStatusUpdateEdit"
-import ProjectStatusUpdateSubmitted from "./ProjectStatusUpdateSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
 import TaskAdding from "./TaskAdding"
 import TaskAssigneeAssignment from "./TaskAssigneeAssignment"
@@ -78,6 +80,18 @@ export default function NotificationItem({notification}) {
     case "ActivityContentProjectArchived":
       return <ProjectArchived notification={notification} />;
     
+    case "ActivityContentProjectCheckInAcknowledged":
+      return <ProjectCheckInAcknowledged notification={notification} />;
+    
+    case "ActivityContentProjectCheckInCommented":
+      return <ProjectCheckInCommented notification={notification} />;
+    
+    case "ActivityContentProjectCheckInEdit":
+      return <ProjectCheckInEdit notification={notification} />;
+    
+    case "ActivityContentProjectCheckInSubmitted":
+      return <ProjectCheckInSubmitted notification={notification} />;
+    
     case "ActivityContentProjectClosed":
       return <ProjectClosed notification={notification} />;
     
@@ -102,8 +116,14 @@ export default function NotificationItem({notification}) {
     case "ActivityContentProjectMoved":
       return <ProjectMoved notification={notification} />;
     
+    case "ActivityContentProjectPausing":
+      return <ProjectPausing notification={notification} />;
+    
     case "ActivityContentProjectRenamed":
       return <ProjectRenamed notification={notification} />;
+    
+    case "ActivityContentProjectResuming":
+      return <ProjectResuming notification={notification} />;
     
     case "ActivityContentProjectReviewAcknowledged":
       return <ProjectReviewAcknowledged notification={notification} />;
@@ -116,18 +136,6 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectReviewSubmitted":
       return <ProjectReviewSubmitted notification={notification} />;
-    
-    case "ActivityContentProjectStatusUpdateAcknowledged":
-      return <ProjectStatusUpdateAcknowledged notification={notification} />;
-    
-    case "ActivityContentProjectStatusUpdateCommented":
-      return <ProjectStatusUpdateCommented notification={notification} />;
-    
-    case "ActivityContentProjectStatusUpdateEdit":
-      return <ProjectStatusUpdateEdit notification={notification} />;
-    
-    case "ActivityContentProjectStatusUpdateSubmitted":
-      return <ProjectStatusUpdateSubmitted notification={notification} />;
     
     case "ActivityContentProjectTimelineEdited":
       return <ProjectTimelineEdited notification={notification} />;

@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import * as People from "@/models/people";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Companies from "@/models/companies";
 import * as Groups from "@/models/groups";
 
@@ -123,13 +123,9 @@ function useSubmit(fields: Fields, cancelPath: string) {
 
   const [errors, setErrors] = React.useState<Error[]>([]);
 
-  const [add, { loading: submitting }] = Projects.useCreateProject({
+  const [add, { loading: submitting }] = Projects.useCreateMutation({
     onCompleted: (data: any) => {
-      if (fields.noAccess) {
-        navigate(`/spaces/${fields.space!.value}`);
-      } else {
-        navigate(`/projects/${data?.createProject?.id}`);
-      }
+      navigate(`/projects/${data?.createProject?.id}`);
     },
   });
 

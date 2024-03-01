@@ -1,0 +1,11 @@
+<%= title("#{short_name(@author)} commented on a Check-in for the #{@project.name} project") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= rich_text(@comment.content["message"]) %>
+<% end %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.project_check_in_url(@project.id, @check_in.id), "View Comment") %>
+<% end %>

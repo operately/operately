@@ -151,25 +151,17 @@ const query = gql`
             }
           }
 
-          ... on ActivityContentProjectStatusUpdateSubmitted {
-            projectId
-            statusUpdateId
-
+          ... on ActivityContentProjectCheckInSubmitted {
             project {
+              id
               name
-              health
             }
 
-            update {
-              content {
-                __typename
-
-                ... on UpdateContentStatusUpdate {
-                  health {
-                    status
-                  }
-                }
-              }
+            checkIn {
+              id
+              insertedAt
+              status
+              description
             }
           }
 
@@ -195,18 +187,18 @@ const query = gql`
             }
           }
 
-          ... on ActivityContentProjectStatusUpdateAcknowledged {
+          ... on ActivityContentProjectCheckInAcknowledged {
             projectId
-            statusUpdateId
+            checkInId
 
             project {
               name
             }
           }
 
-          ... on ActivityContentProjectStatusUpdateCommented {
+          ... on ActivityContentProjectCheckInCommented {
             projectId
-            statusUpdateId
+            checkInId
 
             project {
               name
@@ -260,6 +252,20 @@ const query = gql`
             reviewId
 
             project {
+              name
+            }
+          }
+
+          ... on ActivityContentProjectPausing {
+            project {
+              id
+              name
+            }
+          }
+
+          ... on ActivityContentProjectResuming {
+            project {
+              id
               name
             }
           }

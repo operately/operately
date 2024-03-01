@@ -22,6 +22,10 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalEditing
   import_types OperatelyWeb.Graphql.Types.ActivityContentGroupEdited
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectArchived
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInAcknowledged
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInEdit
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectClosed
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectContributorAddition
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCreated
@@ -30,15 +34,13 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectGoalDisconnection
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectMilestoneCommented
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectMoved
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectPausing
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectRenamed
+  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectResuming
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewAcknowledged
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewCommented
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewRequestSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateAcknowledged
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateCommented
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateEdit
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectStatusUpdateSubmitted
   import_types OperatelyWeb.Graphql.Types.ActivityContentProjectTimelineEdited
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAdding
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAssigneeAssignment
@@ -65,6 +67,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Notifications
   import_types OperatelyWeb.Graphql.Types.Objectives
   import_types OperatelyWeb.Graphql.Types.Person
+  import_types OperatelyWeb.Graphql.Types.ProjectCheckIn
   import_types OperatelyWeb.Graphql.Types.ProjectHealths
   import_types OperatelyWeb.Graphql.Types.ProjectPermissions
   import_types OperatelyWeb.Graphql.Types.ProjectReviewRequests
@@ -91,6 +94,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   # Queries
   import_types OperatelyWeb.Graphql.Queries.Activities
   import_types OperatelyWeb.Graphql.Queries.Assignments
+  import_types OperatelyWeb.Graphql.Queries.Comments
   import_types OperatelyWeb.Graphql.Queries.Companies
   import_types OperatelyWeb.Graphql.Queries.Discussions
   import_types OperatelyWeb.Graphql.Queries.Goals
@@ -102,6 +106,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Notifications
   import_types OperatelyWeb.Graphql.Queries.Objectives
   import_types OperatelyWeb.Graphql.Queries.People
+  import_types OperatelyWeb.Graphql.Queries.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Queries.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Queries.Projects
   import_types OperatelyWeb.Graphql.Queries.Tasks
@@ -110,6 +115,7 @@ defmodule OperatelyWeb.Graphql.Schema do
 
   # Mutations
   import_types OperatelyWeb.Graphql.Mutations.Blobs
+  import_types OperatelyWeb.Graphql.Mutations.Comments
   import_types OperatelyWeb.Graphql.Mutations.Companies
   import_types OperatelyWeb.Graphql.Mutations.Dashboards
   import_types OperatelyWeb.Graphql.Mutations.Discussions
@@ -121,8 +127,10 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Notifications
   import_types OperatelyWeb.Graphql.Mutations.Objectives
   import_types OperatelyWeb.Graphql.Mutations.People
+  import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Mutations.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Mutations.Projects
+  import_types OperatelyWeb.Graphql.Mutations.Reactions
   import_types OperatelyWeb.Graphql.Mutations.Tasks
   import_types OperatelyWeb.Graphql.Mutations.Tenets
   import_types OperatelyWeb.Graphql.Mutations.Updates
@@ -133,6 +141,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   query do
     import_fields :activity_queries
     import_fields :assignment_queries
+    import_fields :comment_queries
     import_fields :company_queries
     import_fields :discussion_queries
     import_fields :goal_queries
@@ -144,6 +153,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :notification_queries
     import_fields :objective_queries
     import_fields :person_queries
+    import_fields :project_check_in_queries
     import_fields :project_review_request_queries
     import_fields :project_queries
     import_fields :task_queries
@@ -153,6 +163,7 @@ defmodule OperatelyWeb.Graphql.Schema do
 
   mutation do
     import_fields :blob_mutations
+    import_fields :comment_mutations
     import_fields :company_mutations
     import_fields :dashboard_mutations
     import_fields :discussion_mutations
@@ -164,8 +175,10 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :notification_mutations
     import_fields :objective_mutations
     import_fields :person_mutations
+    import_fields :project_check_in_mutations
     import_fields :project_review_request_mutations
     import_fields :project_mutations
+    import_fields :reaction_mutations
     import_fields :task_mutations
     import_fields :tenet_mutations
     import_fields :update_mutations

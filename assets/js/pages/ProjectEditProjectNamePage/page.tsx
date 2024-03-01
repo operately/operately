@@ -1,7 +1,7 @@
 import React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
@@ -36,7 +36,7 @@ function Form({ project }) {
 
   const [projectName, setProjectName] = React.useState(project.name);
 
-  const [edit, { loading }] = Projects.useEditProjectName({
+  const [edit, { loading }] = Projects.useEditNameMutation({
     onCompleted: () => navigateToProject(),
   });
 

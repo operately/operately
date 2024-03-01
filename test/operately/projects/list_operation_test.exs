@@ -70,8 +70,8 @@ defmodule Operately.Projects.ListOperationTest do
       project1 = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group1.id})
       project2 = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group2.id})
 
-      assert load_ids(ctx.person, %{group_id: group1.id}) == [project1.id]
-      assert load_ids(ctx.person, %{group_id: group2.id}) == [project2.id]
+      assert load_ids(ctx.person, %{space_id: group1.id}) == [project1.id]
+      assert load_ids(ctx.person, %{space_id: group2.id}) == [project2.id]
     end
   end
 

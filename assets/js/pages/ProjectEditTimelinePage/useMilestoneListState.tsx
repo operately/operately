@@ -1,7 +1,7 @@
 import React from "react";
 
-import * as Milestones from "@/graphql/Projects/milestones";
-import * as Projects from "@/graphql/Projects";
+import * as Milestones from "@/models/milestones";
+import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 
 interface Milestone extends Milestones.Milestone {

@@ -4,7 +4,7 @@ import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
-import { Project } from "@/graphql/Projects";
+import { Project } from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 

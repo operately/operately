@@ -2,12 +2,11 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
-import * as Updates from "@/graphql/Projects/updates";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { useLoadedData, useRefresh } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
-import { useAddReaction } from "./useAddReaction";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { createPath } from "@/utils/paths";
 
 import { TextSeparator } from "@/components/TextSeparator";
@@ -16,8 +15,6 @@ import { AckCTA } from "./AckCTA";
 
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
-
-import * as Feed from "@/features/feed";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
 
 export function Page() {
@@ -25,7 +22,6 @@ export function Page() {
   const refresh = useRefresh();
 
   const commentsForm = useForGoalCheckIn(update);
-  const addReactionForm = useAddReaction(update.id, "update", refresh);
 
   return (
     <Pages.Page title={["Check-In", goal.name]}>
@@ -33,13 +29,13 @@ export function Page() {
         <Navigation goal={goal} />
 
         <Paper.Body>
-          {me.id === update.author.id && <Options />}
+          {me.id === update.author?.id && <Options />}
 
           <div className="flex flex-col items-center">
             <Title update={update} />
             <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
               <div className="flex items-center gap-2">
-                <Avatar person={update.author} size="tiny" /> {update.author.fullName}
+                <Avatar person={update.author!} size="tiny" /> {update.author?.fullName}
               </div>
               <TextSeparator />
               <Acknowledgement update={update} />
@@ -47,19 +43,28 @@ export function Page() {
           </div>
 
           <Spacer size={4} />
-          <RichContent jsonContent={update.message} className="text-lg" />
+          <RichContent jsonContent={update.content.message} className="text-lg" />
           <Spacer size={4} />
 
           <Spacer size={4} />
-          <Feed.Reactions reactions={update.reactions} size={20} form={addReactionForm} />
+          <Reactions />
 
           <AckCTA />
-          <Spacer size={4} />
+          <div className="border-t border-stroke-base mt-8" />
           <CommentSection form={commentsForm} me={me} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Reactions() {
+  const { update, me } = useLoadedData();
+  const reactions = update.reactions!.map((r) => r!);
+  const entity = { id: update.id, type: "update" };
+  const addReactionForm = useReactionsForm(entity, reactions, me);
+
+  return <ReactionList size={24} form={addReactionForm} />;
 }
 
 function Acknowledgement({ update }: { update: Updates.Update }) {

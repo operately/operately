@@ -1,8 +1,7 @@
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
-import * as Updates from "@/graphql/Projects/updates";
-import * as People from "@/graphql/People";
-import * as Projects from "@/graphql/Projects";
+import * as People from "@/models/people";
+import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
@@ -10,7 +9,7 @@ import { useListState } from "@/utils/useListState";
 interface UseFormOptions {
   mode: "create" | "edit";
   goal: Goals.Goal;
-  checkIn?: Updates.Update;
+  checkIn?: GoalCheckIns.GoalCheckIn;
 }
 
 export interface FormState {
@@ -39,11 +38,11 @@ export function useForm(options: UseFormOptions): FormState {
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);
 
-  const [post, { loading: submittingPost }] = Projects.usePostUpdate({
+  const [post, { loading: submittingPost }] = GoalCheckIns.usePostUpdate({
     onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.createUpdate.id}`),
   });
 
-  const [edit, { loading: submittingEdit }] = Projects.useEditUpdate({
+  const [edit, { loading: submittingEdit }] = GoalCheckIns.useEditUpdate({
     onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.editUpdate.id}`),
   });
 

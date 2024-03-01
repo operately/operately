@@ -2,8 +2,8 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import * as Projects from "@/graphql/Projects";
-import * as KeyResources from "@/models/key_resources";
+import * as Projects from "@/models/projects";
+import * as KeyResources from "@/models/keyResources";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
@@ -40,6 +40,8 @@ export function Page() {
 function ResourceList({ project }: { project: Projects.Project }) {
   if (project.keyResources!.length > 0) {
     return <ResourcesListWithData project={project} />;
+  } else {
+    return null;
   }
 }
 

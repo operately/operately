@@ -3,6 +3,14 @@ import client from "@/graphql/client";
 
 interface GetProjectOptions {
   includeGoal?: boolean;
+  includeReviewer?: boolean;
+  includeContributors?: boolean;
+  includePermissions?: boolean;
+  includeSpace?: boolean;
+  includeKeyResources?: boolean;
+  includeMilestones?: boolean;
+  includeLastCheckIn?: boolean;
+  includeRetrospective?: boolean;
 }
 
 export async function getProject(id: string, options: GetProjectOptions = {}) {
@@ -11,6 +19,14 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
     variables: {
       id: id,
       includeGoal: !!options.includeGoal,
+      includeReviewer: !!options.includeReviewer,
+      includeContributors: !!options.includeContributors,
+      includePermissions: !!options.includePermissions,
+      includeSpace: !!options.includeSpace,
+      includeKeyResources: !!options.includeKeyResources,
+      includeMilestones: !!options.includeMilestones,
+      includeLastCheckIn: !!options.includeLastCheckIn,
+      includeRetrospective: !!options.includeRetrospective,
     },
     fetchPolicy: "network-only",
   });
@@ -19,36 +35,18 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
 }
 
 const QUERY = gql`
-  fragment ProjectGoal on Project {
-    goal {
-      id
-      name
-
-      targets {
-        id
-        name
-        from
-        to
-        value
-      }
-
-      champion {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-
-      reviewer {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-    }
-  }
-
-  query GetProject($id: ID!, $includeGoal: Boolean!) {
+  query GetProject(
+    $id: ID!
+    $includeGoal: Boolean!
+    $includeReviewer: Boolean!
+    $includeContributors: Boolean!
+    $includePermissions: Boolean!
+    $includeSpace: Boolean!
+    $includeKeyResources: Boolean!
+    $includeMilestones: Boolean!
+    $includeLastCheckIn: Boolean!
+    $includeRetrospective: Boolean!
+  ) {
     project(id: $id) {
       id
       name
@@ -57,7 +55,6 @@ const QUERY = gql`
       startedAt
       deadline
       nextUpdateScheduledAt
-      health
 
       isArchived
       archivedAt
@@ -65,8 +62,109 @@ const QUERY = gql`
       private
       status
       closedAt
+      retrospective @include(if: $includeRetrospective)
 
-      ...ProjectGoal @include(if: $includeGoal)
+      space @include(if: $includeSpace) {
+        id
+        name
+        color
+        icon
+      }
+
+      lastCheckIn @include(if: $includeLastCheckIn) {
+        id
+        description
+        status
+        insertedAt
+
+        author {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+
+      milestones @include(if: $includeMilestones) {
+        id
+        title
+        status
+
+        deadlineAt
+        completedAt
+        description
+        insertedAt
+      }
+
+      keyResources @include(if: $includeKeyResources) {
+        id
+        title
+        link
+        resourceType
+      }
+
+      permissions @include(if: $includePermissions) {
+        canView
+
+        canCreateMilestone
+        canDeleteMilestone
+
+        canEditMilestone
+        canEditDescription
+        canEditContributors
+        canEditTimeline
+        canEditResources
+        canEditGoal
+
+        canCheckIn
+        canAcknowledgeCheckIn
+      }
+
+      goal @include(if: $includeGoal) {
+        id
+        name
+
+        targets {
+          id
+          name
+          from
+          to
+          value
+        }
+
+        champion {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+
+        reviewer {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+
+      reviewer @include(if: $includeReviewer) {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
+      contributors @include(if: $includeContributors) {
+        id
+        role
+
+        person {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
     }
   }
 `;

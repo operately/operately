@@ -1,8 +1,6 @@
-import client from "@/graphql/client";
-
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/graphql/Projects";
-import * as KeyResources from "@/models/key_resources";
+import * as Projects from "@/models/projects";
+import * as KeyResources from "@/models/keyResources";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -10,17 +8,12 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  let projectData = await client.query({
-    query: Projects.GET_PROJECT,
-    variables: { id: params.projectID },
-    fetchPolicy: "network-only",
-  });
-
-  let keyResourceData = await KeyResources.getKeyResource(params.id);
-
   return {
-    project: projectData.data.project,
-    keyResource: keyResourceData.data.keyResource,
+    project: await Projects.getProject(params.projectID, {
+      includeSpace: true,
+      includePermissions: true,
+    }),
+    keyResource: await KeyResources.getKeyResource(params.id),
   };
 }
 

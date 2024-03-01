@@ -45,6 +45,10 @@ function SizeClasses({ size }: { size: AvatarSize | number }): string {
 
 function TextClasses({ size }: { size: AvatarSize | number }): string {
   if (size.constructor.name === "Number") {
+    if ((size as number) <= 18) {
+      return "text-[8px] font-semibold";
+    }
+
     if ((size as number) <= 20) {
       return "text-[10px] font-semibold";
     }
@@ -96,7 +100,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass = classnames(
     "flex items-center justify-center",
     "text-dark-1",
-    "bg-pink-300",
+    "bg-sky-200",
     "rounded-full",
     "shrink-0",
   );

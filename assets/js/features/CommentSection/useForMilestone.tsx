@@ -1,5 +1,5 @@
-import * as Updates from "@/graphql/Projects/updates";
-import * as Milestones from "@/graphql/Projects/milestones";
+import * as Milestones from "@/models/milestones";
+import * as Comments from "@/models/comments";
 
 import { Item, ItemType, FormState } from "./form";
 
@@ -23,7 +23,7 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
   });
 
   const [post, { loading: submittingPost }] = Milestones.usePostComment();
-  const [edit, { loading: submittingEdit }] = Updates.useEditComment();
+  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const postComment = async (content: string) => {
     await post({

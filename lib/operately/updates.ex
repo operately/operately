@@ -266,9 +266,6 @@ defmodule Operately.Updates do
     })
 
     action = case update.type do
-      :project_discussion -> :project_discussion_acknowledged
-      :status_update -> :project_status_update_acknowledged
-      :review -> :project_review_acknowledged
       :goal_check_in -> :goal_check_in_acknowledgement
       _ -> raise "Unknown update type"
     end
@@ -276,18 +273,11 @@ defmodule Operately.Updates do
     Multi.new()
     |> Multi.update(:update, changeset)
     |> Activities.insert(author.id, action, fn _changes -> 
-      if update.type == :goal_check_in do
-        %{
-          company_id: author.company_id,
-          goal_id: update.updatable_id,
-          update_id: update.id
-        }
-      else
-        %{
-          project_id: update.updatable_id,
-          update_id: update.id
-        }
-      end
+      %{
+        company_id: author.company_id,
+        goal_id: update.updatable_id,
+        update_id: update.id
+      }
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
@@ -312,6 +302,14 @@ defmodule Operately.Updates do
   def list_comments(update_id) do
     query = from c in Comment,
       where: c.update_id == ^update_id,
+      order_by: [asc: c.inserted_at]
+
+    Repo.all(query)
+  end
+
+  def list_comments(entity_id, entity_type) do
+    query = from c in Comment,
+      where: c.entity_id == ^entity_id and c.entity_type == ^entity_type,
       order_by: [asc: c.inserted_at]
 
     Repo.all(query)

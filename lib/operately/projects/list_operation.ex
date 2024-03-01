@@ -8,7 +8,7 @@ defmodule Operately.Projects.ListOperation do
     query = (from p in Project, as: :project)
 
     query = apply_visibility_filter(query, person)
-    query = apply_group_filter(query, filters[:group_id])
+    query = apply_group_filter(query, filters[:space_id])
     query = apply_goal_filter(query, filters[:goal_id])
     query = apply_company_filter(query, filters[:company_id])
     query = apply_role_filter(query, person, filters[:filter])
@@ -27,8 +27,8 @@ defmodule Operately.Projects.ListOperation do
 
 
   defp apply_group_filter(query, nil), do: query
-  defp apply_group_filter(query, group_id) do
-    from p in query, where: p.group_id == ^group_id
+  defp apply_group_filter(query, space_id) do
+    from p in query, where: p.group_id == ^space_id
   end
 
   defp apply_goal_filter(query, nil), do: query

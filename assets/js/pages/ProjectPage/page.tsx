@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/graphql/Projects";
+import * as Projects from "@/models/projects";
 import * as Companies from "@/models/companies";
 
 import Banner from "./Banner";
@@ -18,15 +18,16 @@ import Avatar from "@/components/Avatar";
 import RichContent, { Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
-import { FeedForProject } from "@/components/Feed";
+import { Feed, useItemsQuery } from "@/features/Feed";
 import { DimmedLabel } from "./Label";
 
-import { Indicator } from "@/components/ProjectHealthIndicators";
 import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export function Page() {
   const { company, project } = useLoadedData();
@@ -110,22 +111,7 @@ export function Page() {
               </div>
             </div>
 
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Check-Ins</div>
-                  {project.lastCheckIn && (
-                    <div className="text-sm">
-                      <Link to={`/projects/${project.id}/status_updates`}>View all</Link>
-                    </div>
-                  )}
-                </div>
-
-                <div className="w-4/5">
-                  <LastCheckIn project={project} />
-                </div>
-              </div>
-            </div>
+            <CheckInSection project={project} />
 
             <div className="border-t border-stroke-base py-6">
               <div className="flex items-start gap-4">
@@ -150,7 +136,7 @@ export function Page() {
 
           <Paper.DimmedSection>
             <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
-            <FeedForProject project={project} />
+            <ProjectFeed project={project} />
           </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
@@ -158,8 +144,17 @@ export function Page() {
   );
 }
 
+function ProjectFeed({ project }) {
+  const { data, loading, error } = useItemsQuery("project", project.id);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+
+  return <Feed items={data.activities} testId="project-feed" />;
+}
+
 function LastCheckIn({ project }) {
-  const newCheckInPath = createPath("projects", project.id, "status_updates", "new");
+  const newCheckInPath = Paths.projectCheckInNewPath(project.id);
 
   const checkInNowLink = (
     <div className="flex">
@@ -169,7 +164,7 @@ function LastCheckIn({ project }) {
     </div>
   );
 
-  if (project.lastCheckIn === null) {
+  if (!project.lastCheckIn) {
     return (
       <div className="text-sm">
         Asking the champion to check-in every Friday.
@@ -180,9 +175,9 @@ function LastCheckIn({ project }) {
 
   const author = project.lastCheckIn.author;
   const time = project.lastCheckIn.insertedAt;
-  const message = project.lastCheckIn.content.message;
-  const path = `/projects/${project.id}/status_updates/${project.lastCheckIn.id}`;
-  const status = project.lastCheckIn.content.health.status;
+  const description = project.lastCheckIn.description;
+  const status = project.lastCheckIn.status;
+  const path = Paths.projectCheckInPath(project.id, project.lastCheckIn.id);
 
   return (
     <div>
@@ -196,7 +191,7 @@ function LastCheckIn({ project }) {
               Check-in <FormattedTime time={time} format="long-date" />
             </Link>
           </div>
-          <Summary jsonContent={message} characterCount={200} />
+          <Summary jsonContent={description} characterCount={200} />
         </div>
       </div>
 
@@ -204,15 +199,8 @@ function LastCheckIn({ project }) {
         <div>
           <DimmedLabel>Status</DimmedLabel>
           <div className="flex flex-col gap-1 text-sm">
-            <div>
-              <Indicator value={status} type="status" />
-            </div>
+            <SmallStatusIndicator status={status} />
           </div>
-        </div>
-
-        <div>
-          <DimmedLabel>Health Issues</DimmedLabel>
-          <HealthIssues checkIn={project.lastCheckIn} />
         </div>
 
         <div className="flex items-center gap-6">
@@ -224,46 +212,6 @@ function LastCheckIn({ project }) {
       </div>
 
       <div className="mt-6">{project.permissions.canCheckIn && checkInNowLink}</div>
-    </div>
-  );
-}
-
-function HealthIssues({ checkIn }) {
-  const issues = Object.keys(checkIn.content.health).filter((type) => {
-    if (type === "status") {
-      return false;
-    }
-
-    if (type === "schedule") {
-      return checkIn.content.health[type] !== "on_schedule";
-    }
-
-    if (type === "budget") {
-      return checkIn.content.health[type] !== "within_budget";
-    }
-
-    if (type === "team") {
-      return checkIn.content.health[type] !== "staffed";
-    }
-
-    if (type === "risks") {
-      return checkIn.content.health[type] !== "no_known_risks";
-    }
-
-    return false;
-  });
-
-  if (issues.length === 0) {
-    return <div className="text-sm text-content-dimmed">No issues</div>;
-  }
-
-  return (
-    <div className="flex flex-col text-sm">
-      {issues.map((issue, index) => (
-        <div key={index}>
-          <Indicator key={issue} value={checkIn.content.health[issue]} type={issue} />
-        </div>
-      ))}
     </div>
   );
 }
@@ -374,4 +322,25 @@ function showEditGoal(project: Projects.Project) {
   if (!project.permissions.canEditGoal) return false;
 
   return project.goal !== null;
+}
+
+function CheckInSection({ project }) {
+  return (
+    <div className="border-t border-stroke-base py-6">
+      <div className="flex items-start gap-4">
+        <div className="w-1/5">
+          <div className="font-bold text-sm">Check-Ins</div>
+          {project.lastCheckIn && (
+            <div className="text-sm">
+              <Link to={`/projects/${project.id}/check-ins`}>View all</Link>
+            </div>
+          )}
+        </div>
+
+        <div className="w-4/5">
+          <LastCheckIn project={project} />
+        </div>
+      </div>
+    </div>
+  );
 }
