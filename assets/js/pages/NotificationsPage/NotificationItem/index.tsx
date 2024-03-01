@@ -171,6 +171,6 @@ export default function NotificationItem({notification}) {
       return <TaskUpdate notification={notification} />;
     
     default:
-      throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";
+      console.error("unhandled activity type, notification:", notification.id, "activity", notification.activity.id);
   }
 }

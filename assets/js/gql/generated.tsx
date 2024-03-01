@@ -228,6 +228,7 @@ export type ActivityContentProjectMoved = {
 export type ActivityContentProjectPausing = {
   __typename?: 'ActivityContentProjectPausing';
   companyId: Scalars['String']['output'];
+  project: Project;
   projectId: Scalars['String']['output'];
 };
 
@@ -241,6 +242,7 @@ export type ActivityContentProjectRenamed = {
 export type ActivityContentProjectResuming = {
   __typename?: 'ActivityContentProjectResuming';
   companyId: Scalars['String']['output'];
+  project: Project;
   projectId: Scalars['String']['output'];
 };
 
