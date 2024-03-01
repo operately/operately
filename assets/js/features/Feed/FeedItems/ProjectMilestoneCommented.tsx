@@ -24,7 +24,7 @@ export const ProjectMilestoneCommented: FeedItem = {
 
     const title = <Title activity={activity} />;
 
-    const commentMessage = comment.content;
+    const commentMessage = JSON.parse(comment.content)["message"];
 
     const summary = <Summary jsonContent={commentMessage} characterCount={200} />;
 

@@ -2,12 +2,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
-  alias Operately.People.Person
-
-  @timeline_section UI.query(testid: "timeline")
-  @complete_button UI.query(testid: "complete-and-comment")
+  alias Operately.Support.Features.ProjectMilestoneSteps, as: Steps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Live support")
@@ -153,20 +148,15 @@ defmodule Operately.Features.ProjectMilestonesTest do
   #   |> UI.assert_text("This is a NEW description")
   # end
 
-  # feature "write a comment", ctx do
-  #   {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
-
-  #   ctx
-  #   |> visit_page(ctx.project, milestone)
-  #   |> UI.fill_rich_text(testid: "milestone-comment-editor", with: "This is a comment")
-  #   |> UI.click(testid: "post-comment")
-  #   |> UI.assert_text("This is a comment")
-
-  #   ctx
-  #   |> UI.login_as(ctx.reviewer)
-  #   |> NotificationsSteps.assert_milestone_comment_sent(author: ctx.champion, title: "Contract Signed")
-  #   |> EmailSteps.assert_milestone_comment_sent(author: ctx.champion, to: ctx.reviewer, title: "Contract Signed")
-  # end
+  feature "write a comment on a milestones", ctx do
+    ctx
+    |> Steps.given_that_a_milestone_exists("Contract Signed")
+    |> Steps.visit_milestone_page()
+    |> Steps.leave_a_comment("Hello world")
+    |> Steps.assert_comment_visible_in_project_feed("Hello world")
+    |> Steps.assert_comment_email_sent_to_project_reviewer()
+    |> Steps.assert_comment_notification_sent_to_project_reviewer()
+  end
 
   # feature "write a comment and complete the milestone", ctx do
   #   {:ok, milestone} = add_milestone(ctx, %{title: "Contract Signed", deadline_at: ~N[2023-06-17 00:00:00]})
@@ -210,14 +200,4 @@ defmodule Operately.Features.ProjectMilestonesTest do
   #   |> UI.click(testid: "save-milestone-title")
   #   |> UI.assert_text("Contract Signed 2")
   # end
-
-  # ===========================================================================
-
-  defp add_milestone(ctx, attrs) do
-    attrs = Map.merge(attrs, %{project_id: ctx.project.id})
-
-    Operately.Projects.create_milestone(ctx.champion, attrs)
-  end
-
-  defp visit_page(ctx, project, milestone), do: UI.visit(ctx, "/projects" <> "/" <> project.id <> "/milestones" <> "/" <> milestone.id)
 end
