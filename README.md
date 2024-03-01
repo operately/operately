@@ -7,7 +7,7 @@
   <a href="https://blog.operately.com/">Discord</a>
 </h4>
 
-<p>Open-source startup operating system. Coming in 2023.</p>
+<p>Open-source startup operating system. Coming in 2024.</p>
 
 <h4>
   <a href="https://operately.semaphoreci.com/projects/operately">
