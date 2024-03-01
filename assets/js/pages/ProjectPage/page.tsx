@@ -28,6 +28,7 @@ import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import * as Icons from "@tabler/icons-react";
 
 export function Page() {
   const { company, project } = useLoadedData();
@@ -40,37 +41,40 @@ export function Page() {
         <Paper.Body>
           <Banner project={project} />
 
-          <div className="mb-8">
+          <div className="mb-4 -mx-16 px-16 -mt-12">
             <Header project={project} />
+            <Overview project={project} />
           </div>
 
           <div className="">
-            <Overview project={project} />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-sm bg-sky-50 p-6 font-medium shadow rounded-lg">
+                <Icons.IconCompass size={24} />
+                <div className="font-bold text-sm mb-4 mt-2">Description</div>
+                <Description project={project} />
 
-            <div className="mt-4" />
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Overview</div>
-
-                  <div className="text-sm">
-                    {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
+                <div className="mt-2">
+                  <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description">
+                    Read Full Description
+                  </Link>
                 </div>
+              </div>
 
-                <div className="w-4/5">
-                  <Description project={project} />
+              <div className="text-sm bg-purple-50 p-6 font-medium shadow rounded-lg">
+                <Icons.IconReport size={24} />
+                <div className="font-bold text-sm mb-4 mt-2">Last Check-In</div>
+                <Description project={project} />
+
+                <div className="mt-2">
+                  <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description">
+                    Read Full Description
+                  </Link>
                 </div>
               </div>
             </div>
 
             {Companies.hasFeature(company, "goals") && (
-              <div className="border-t border-stroke-base py-6">
+              <div className="border-stroke-base py-6">
                 <div className="flex items-start gap-4">
                   <div className="w-1/5">
                     <div className="font-bold text-sm">Goal</div>
@@ -273,7 +277,7 @@ function Resource({ icon, title, href }) {
 
 function Description({ project }) {
   if (project.description) {
-    return <RichContent jsonContent={project.description} />;
+    return <Summary jsonContent={project.description} characterCount={400} />;
   } else {
     return <DescriptionZeroState project={project} />;
   }

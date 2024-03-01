@@ -5,7 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 export default function Options({ project }) {
   return (
-    <PageOptions.Root testId="project-options-button">
+    <PageOptions.Root testId="project-options-button" position="top-right">
       {Projects.isResumable(project) && (
         <PageOptions.Link
           icon={Icons.IconPlayerPlayFilled}
