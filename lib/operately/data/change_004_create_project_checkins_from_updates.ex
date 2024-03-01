@@ -44,7 +44,7 @@ defmodule Operately.Data.Change004CreateProjectCheckinsFromUpdates do
     Multi.new()
     |> Multi.insert(:check_in, check_in)
     |> Multi.update(:activity, fn changes ->
-      new_content = Map.put(activity.content, "check_in_id", check_in.id)
+      new_content = Map.put(activity.content, "check_in_id", changes.check_in.id)
       change(activity, action: "project_check_in_submitted", content: new_content)
     end)
     |> Repo.transaction()
