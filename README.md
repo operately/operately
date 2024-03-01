@@ -14,3 +14,4 @@
     <img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="Operately CI/CD Status" />
   </a>
 </h4>
+
