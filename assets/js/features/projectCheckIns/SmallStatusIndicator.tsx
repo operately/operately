@@ -10,7 +10,7 @@ export function SmallStatusIndicator({ status }: { status: string }) {
 
   const bgColor = CIRCLE_BACKGROUND_COLORS[color];
 
-  const outerClasses = classNames("flex items-center gap-2");
+  const outerClasses = classNames("flex items-center gap-1.5");
   const innerClasses = classNames("text-sm px-2 py-1 rounded-full h-4 w-4", bgColor);
 
   return (

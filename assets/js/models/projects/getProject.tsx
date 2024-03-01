@@ -57,6 +57,7 @@ const QUERY = gql`
       nextUpdateScheduledAt
 
       isArchived
+      isOutdated
       archivedAt
 
       private
