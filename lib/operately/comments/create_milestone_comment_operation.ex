@@ -48,7 +48,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   end
 
   defp record_activity(multi, author, milestone, action) do
-    Activities.insert(multi, author.id, :project_milestone_commented, fn changes ->
+    Activities.insert_sync(multi, author.id, :project_milestone_commented, fn changes ->
       project = Repo.get!(Operately.Projects.Project, milestone.project_id)
 
       %{
