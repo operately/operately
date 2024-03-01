@@ -28,7 +28,7 @@ defmodule Mix.Tasks.Operately.Gen.Notification.Items.Index do
         switch (activityType) {
           #{indent(generate_cases(types), 4)}
           default:
-            throw "unhandled activity type " + activityType + " in assets/js/pages/NotificationsPage/NotificationItem/index.tsx";
+            console.error("unhandled activity type, notification:", notification.id, "activity", notification.activity.id);
         }
       }
       """
