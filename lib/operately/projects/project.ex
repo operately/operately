@@ -24,7 +24,7 @@ defmodule Operately.Projects.Project do
     field :last_check_in_status, :string
     field :next_check_in_scheduled_at, :utc_datetime
 
-    field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track], default: :on_track
+    field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused], default: :on_track
     field :next_update_scheduled_at, :utc_datetime # Deprecated, use next_check_in_scheduled_at instead
 
     field :status, :string, default: "active"
