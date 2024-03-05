@@ -1,24 +1,27 @@
 import React from "react";
 import classnames from "classnames";
 
-import Avatar from "@/components/Avatar";
 import { GhostButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { Link } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
-import * as Companies from "@/models/companies";
+import * as Projects from "@/models/projects";
+import * as Icons from "@tabler/icons-react";
+import * as Router from "react-router-dom";
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
-import { ComingSoonBadge } from "@/components/ComingSoonBadge";
+import Avatar from "@/components/Avatar";
+import classNames from "classnames";
+import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { group } = useLoadedData();
 
   return (
     <Pages.Page title={group.name}>
-      <Paper.Root size="large">
+      <Paper.Root size="large" fluid>
         <Paper.Body minHeight="500px">
           <GroupPageNavigation group={group} activeTab="goals" />
           <Content />
@@ -29,21 +32,10 @@ export function Page() {
 }
 
 function Content() {
-  const { group, goals, company } = useLoadedData();
-
-  if (!Companies.hasFeature(company, "goals")) return <ComingSoonBadge />;
-
-  const newGoalPath = createPath("spaces", group.id, "goals", "new");
+  const { group, goals } = useLoadedData();
 
   return (
     <>
-      <div className="flex items-center justify-between mb-8">
-        <div className="font-extrabold text-3xl">Goals</div>
-        <GhostButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
-          Add Goal
-        </GhostButton>
-      </div>
-
       <GoalList goals={goals} />
     </>
   );
@@ -63,56 +55,86 @@ function GoalList({ goals }: { goals: Goals.Goal[] }) {
 
 function GoalItem({ goal }: { goal: Goals.Goal }) {
   const path = createPath("goals", goal.id);
-  const className = classnames("py-5", "bg-surface", "flex flex-col", "border-t last:border-b border-stroke-base");
+  const projects = (goal.projects || []).map((p) => p!);
 
   return (
-    <div className={className}>
-      <div className="flex flex-col gap-4">
-        <div>
-          <div className="text-xs text-content-accent font-medium">{goal.timeframe}</div>
+    <div className="flex justify-between">
+      <div className="flex items-start gap-4 flex-1">
+        <Avatar key={goal!.champion.id} person={goal!.champion} size={40} />
 
-          <div className="text-ellipsis font-bold">
-            <Link to={path} underline={false}>
-              {goal.name}
-            </Link>
+        <div className="flex-1">
+          <div className="flex justify-between items-center">
+            <div className="font-bold">
+              <Link to={path}>{goal.name}</Link>
+            </div>
+
+            <div className="h-px bg-stroke-base flex-1 mx-4" />
+
+            <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">
+              78%
+            </div>
           </div>
 
-          <div className="flex flex-col gap-1 mt-1 w-full">
-            {goal.targets!.map((target, index) => (
-              <div key={index} className="text-sm flex justify-between items-center">
-                <div>{target!.name}</div>
-                <ProgressBar target={target} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <Avatar person={goal.champion!} size={20} />
-          <Avatar person={goal.reviewer!} size={20} />
+          <ProjectList projects={projects} />
         </div>
       </div>
     </div>
   );
 }
 
-function ProgressBar({ target }: { target: Goals.Target }) {
-  const from = target!.from!;
-  const to = target!.to!;
-  const value = target!.value!;
+function ProjectList({ projects }: { projects: Projects.Project[] }) {
+  return (
+    <div className="flex flex-col gap-2 my-2">
+      {projects.map((project) => {
+        return <ProjectListItem project={project} key={project.id} />;
+      })}
 
-  let progress = Math.round(((value - from) / (to - from)) * 100);
-  if (progress < 0) progress = 0;
-  if (progress > 100) progress = 100;
+      <div className="flex items-center gap-2">
+        <GhostButton size="sm" linkTo="/new-project" type="secondary">
+          Add Project
+        </GhostButton>
+      </div>
+    </div>
+  );
+}
 
-  let color = "";
-  if (progress < 20) color = "bg-yellow-300";
-  if (progress >= 40 && progress < 80) color = "bg-yellow-500";
-  if (progress >= 70) color = "bg-green-600";
+export function SoftLink({ to, children, target }: { to: string; children: React.ReactNode; target?: string }) {
+  const className = classNames("text-content-base hover:underline underline-offset-2 cursor-pointer transition-colors");
 
   return (
-    <div className="text-ellipsis w-20 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
-      <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
+    <Router.Link to={to} className={className} target={target}>
+      {children}
+    </Router.Link>
+  );
+}
+
+function ProjectListItem({ project }: { project: Projects.Project }) {
+  return (
+    <div className="flex justify-between items-center flex-1">
+      <div className="flex gap-2 font-medium items-center">
+        <SoftLink to={`/projects/${project.id}`}>{project.name}</SoftLink>
+
+        <div className="bg-green-100 text-green-800 rounded-full px-1.5 py-0.5 text-xs font-semibold">On Track</div>
+
+        {project.deadline && (
+          <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+            <Icons.IconCalendar size={16} />
+            Due <FormattedTime time={project.deadline} format="short-date" />
+          </div>
+        )}
+
+        <div className="flex items-center -space-x-1">
+          {project.contributors!.map((contributor) => (
+            <div className="rounded-full bg-white-1 p-px" key={contributor!.person.id}>
+              <Avatar key={contributor!.person.id} person={contributor!.person} size={16} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
+
+      <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">30%</div>
     </div>
   );
 }
