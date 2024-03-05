@@ -1,7 +1,6 @@
 import React from "react";
-import classnames from "classnames";
 
-import { GhostButton } from "@/components/Button";
+import { GhostButton, FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { Link } from "@/components/Link";
 import * as Pages from "@/components/Pages";
@@ -33,9 +32,17 @@ export function Page() {
 
 function Content() {
   const { group, goals } = useLoadedData();
+  const newGoalPath = createPath("spaces", group.id, "goals", "new");
 
   return (
     <>
+      <div className="flex items-center justify-between mb-12">
+        <div className="font-extrabold text-3xl">Goals</div>
+        <FilledButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
+          Add Goal
+        </FilledButton>
+      </div>
+
       <GoalList goals={goals} />
     </>
   );
@@ -43,7 +50,7 @@ function Content() {
 
 function GoalList({ goals }: { goals: Goals.Goal[] }) {
   return (
-    <div className="">
+    <div className="flex flex-col gap-12">
       {goals
         .filter((goal) => !goal.isArchived)
         .map((goal) => {
