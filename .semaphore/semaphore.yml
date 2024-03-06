@@ -43,8 +43,6 @@ blocks:
 
   - name: Docker Build
     dependencies: []
-    run:
-      when: "branch = 'main'"
     task:
       secrets:
         - name: docker-push
