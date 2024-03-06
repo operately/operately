@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
     field :space_id, :id
     field :include_archived, :boolean
     field :filter, :string
+    field :list_only_without_goal, :boolean
   end
 
   object :project_queries do
@@ -20,6 +21,7 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
           space_id: filters[:space_id],
           include_archived: filters[:include_archived],
           filter: filters[:filter],
+          list_only_without_goal: filters[:list_only_without_goal]
         })
 
         projects = preload_contributors(projects, filters)

@@ -7,6 +7,7 @@ interface GetProjectsOptions {
   includeContributors?: boolean;
   includeMilestones?: boolean;
   includeLastCheckIn?: boolean;
+  hasNoGoal?: boolean;
   filter?: "my-projects" | "reviewed-by-me" | "all-projects";
 }
 
@@ -21,6 +22,7 @@ export async function getProjects(options: GetProjectsOptions = {}) {
       filters: {
         filter: options.filter || "all-projects",
         spaceId: options.spaceId,
+        listOnlyWithoutGoal: options.hasNoGoal,
       },
     },
     fetchPolicy: "network-only",

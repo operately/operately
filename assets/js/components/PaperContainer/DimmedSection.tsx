@@ -2,11 +2,12 @@ import React from "react";
 import classnames from "classnames";
 import { Context } from "./Context";
 
-export function DimmedSection(props: { children: React.ReactNode }) {
+export function DimmedSection(props: { children: React.ReactNode; bgColor?: string }) {
   const { size } = React.useContext(Context);
+  const bgColor = props.bgColor || "bg-surface-dimmed";
 
   const negativeMargin = calcNegativeMargins(size);
-  const className = classnames("mt-6 border-t border-surface-outline bg-surface-dimmed rounded-b", negativeMargin);
+  const className = classnames("mt-6 border-t border-surface-outline rounded-b", bgColor, negativeMargin);
 
   return <div className={className}>{props.children}</div>;
 }

@@ -9,7 +9,7 @@ defmodule Operately.Projects.ListOperation do
 
     query = apply_visibility_filter(query, person)
     query = apply_group_filter(query, filters[:space_id])
-    query = apply_goal_filter(query, filters[:goal_id])
+    query = apply_goal_filter(query, filters[:goal_id], filters[:list_only_without_goal])
     query = apply_company_filter(query, filters[:company_id])
     query = apply_role_filter(query, person, filters[:filter])
 
@@ -31,9 +31,16 @@ defmodule Operately.Projects.ListOperation do
     from p in query, where: p.group_id == ^space_id
   end
 
-  defp apply_goal_filter(query, nil), do: query
-  defp apply_goal_filter(query, goal_id) do
+  defp apply_goal_filter(query, nil, nil), do: query
+  defp apply_goal_filter(query, nil, false), do: query
+  defp apply_goal_filter(query, nil, true) do
+    from p in query, where: is_nil(p.goal_id)
+  end
+  defp apply_goal_filter(query, goal_id, false) do
     from p in query, where: p.goal_id == ^goal_id
+  end
+  defp apply_goal_filter(_query, _goal_id, true) do
+    raise "Cannot filter by goal_id and list_only_without_goal at the same time"
   end
 
   defp apply_company_filter(query, nil), do: query

@@ -102,7 +102,7 @@ function className(
   }
 
   if (type === "secondary") {
-    result += " border border-surface-outline hover:border-surface-outline ";
+    result += " border border-surface-outline hover:border-surface-outline bg-surface ";
     if (loading) {
       result += " text-content-subtle";
     } else {

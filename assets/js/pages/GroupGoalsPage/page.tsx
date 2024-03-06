@@ -2,7 +2,6 @@ import React from "react";
 
 import { GhostButton, FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { Link } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
@@ -26,9 +25,10 @@ interface FormState {
   setShowProjects: (show: boolean) => void;
   group: Groups.Group;
   goals: Goals.Goal[];
+  uncategorizedProjects: Projects.Project[];
 }
 
-function useForm(group: Groups.Group, goals: Goals.Goal[]): FormState {
+function useForm(group: Groups.Group, goals: Goals.Goal[], uncategorizedProjects: Projects.Project[]) {
   const [showProjects, setShowProjects] = React.useState(false);
   const [showMilestones, setShowMilestones] = React.useState(false);
   const [showCompletedWork, setShowCompletedWork] = React.useState(false);
@@ -42,12 +42,13 @@ function useForm(group: Groups.Group, goals: Goals.Goal[]): FormState {
     setShowCompletedWork,
     showProjects,
     setShowProjects,
+    uncategorizedProjects,
   };
 }
 
 export function Page() {
-  const { group, goals } = useLoadedData();
-  const form = useForm(group, goals);
+  const { group, goals, uncategorizedProjects } = useLoadedData();
+  const form = useForm(group, goals, uncategorizedProjects);
 
   return (
     <Pages.Page title={group.name}>
@@ -94,6 +95,7 @@ function Content({ form }: { form: FormState }) {
       </div>
 
       <GoalList form={form} />
+      <UncategorizedProjectsList form={form} />
     </>
   );
 }
@@ -110,22 +112,50 @@ function GoalList({ form }: { form: FormState }) {
   );
 }
 
+function UncategorizedProjectsList({ form }: { form: FormState }) {
+  return (
+    <Paper.DimmedSection>
+      <div className="font-bold text-lg">Uncategorized Projects</div>
+      <div className="text-sm text-content-dimmed">Ongoing projects that are not tied to a goal</div>
+
+      <div className="flex-1 mt-6 flex flex-col gap-2">
+        {form.uncategorizedProjects.map((project) => {
+          return <ProjectListItem project={project} key={project.id} form={form} />;
+        })}
+      </div>
+
+      <div className="flex items-center gap-2 mt-6">
+        <FilledButton size="sm" linkTo={createPath("spaces", form.group.id, "projects", "new")} type="secondary">
+          Add Project
+        </FilledButton>
+      </div>
+    </Paper.DimmedSection>
+  );
+}
+// <div className="flex items-center gap-1 mb-1">
+//   <Avatar person={goal.champion} size={18} />
+//   <div className="text-sm">
+//     <div className="font-medium">{goal.champion?.fullName}</div>
+//   </div>
+// </div>
+
 function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
   const path = createPath("goals", goal.id);
   const projects = (goal.projects || []).map((p) => p!);
 
   return (
-    <div className="flex justify-between border-t border-surface-outline pt-8 -mx-4 px-4">
+    <div className="flex justify-between border-t border-surface-outline pt-8 -mx-16 px-16">
       <div className="flex items-start gap-4 flex-1">
-        <Avatar person={goal.champion} size={32} />
-
         <div className="flex-1">
-          <div className="flex justify-between items-center gap-2 mb-4">
-            <div className="-mt-0.5">
-              <div className="text-xs uppercase">{goal.timeframe}</div>
-              <div className="font-bold text-lg">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div>
+              <div className="font-bold text-xl">
                 <SoftLink to={path}>{goal.name}</SoftLink>
               </div>
+            </div>
+
+            <div className="bg-surface-dimmed px-2 py-1 rounded-lg font-bold border border-stroke-base">
+              {goal.timeframe}
             </div>
           </div>
 

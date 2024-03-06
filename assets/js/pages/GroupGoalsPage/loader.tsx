@@ -3,12 +3,14 @@ import client from "@/graphql/client";
 import * as Pages from "@/components/Pages";
 import * as Groups from "@/graphql/Groups";
 import * as Goals from "@/models/goals";
+import * as Projects from "@/models/projects";
 
 import { Group } from "@/gql/generated";
 
 interface LoadedData {
   group: Group;
   goals: Goals.Goal[];
+  uncategorizedProjects: Projects.Project[];
 }
 
 export async function loader({ params }): Promise<LoadedData> {
@@ -25,6 +27,13 @@ export async function loader({ params }): Promise<LoadedData> {
       includeProjects: true,
     }),
     group: groupData.data.group,
+    uncategorizedProjects: await Projects.getProjects({
+      spaceId: groupData.data.group.id,
+      includeContributors: true,
+      includeMilestones: true,
+      includeLastCheckIn: true,
+      hasNoGoal: true,
+    }),
   };
 }
 
