@@ -90,6 +90,13 @@ const LIST_GOALS = gql`
             avatarUrl
           }
         }
+
+        milestones {
+          id
+          title
+          deadlineAt
+          status
+        }
       }
     }
   }

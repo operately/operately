@@ -33,6 +33,7 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
 
     field :status, :string
     field :closed_at, :date
+    field :last_check_in_status, :string
 
     json_field :retrospective, :string
     json_field :description, :string

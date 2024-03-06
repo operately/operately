@@ -6,32 +6,64 @@ import { Link } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
+import * as Groups from "@/models/groups";
 import * as Projects from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 import * as Router from "react-router-dom";
+import * as Forms from "@/components/Form";
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
+interface FormState {
+  showMilestones: boolean;
+  setShowMilestones: (show: boolean) => void;
+  showCompletedWork: boolean;
+  setShowCompletedWork: (show: boolean) => void;
+  showProjects: boolean;
+  setShowProjects: (show: boolean) => void;
+  group: Groups.Group;
+  goals: Goals.Goal[];
+}
+
+function useForm(group: Groups.Group, goals: Goals.Goal[]): FormState {
+  const [showProjects, setShowProjects] = React.useState(false);
+  const [showMilestones, setShowMilestones] = React.useState(false);
+  const [showCompletedWork, setShowCompletedWork] = React.useState(false);
+
+  return {
+    showMilestones,
+    setShowMilestones,
+    group,
+    goals,
+    showCompletedWork,
+    setShowCompletedWork,
+    showProjects,
+    setShowProjects,
+  };
+}
+
 export function Page() {
-  const { group } = useLoadedData();
+  const { group, goals } = useLoadedData();
+  const form = useForm(group, goals);
 
   return (
     <Pages.Page title={group.name}>
       <Paper.Root size="large" fluid>
         <Paper.Body minHeight="500px">
           <GroupPageNavigation group={group} activeTab="goals" />
-          <Content />
+
+          <Content form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Content() {
-  const { group, goals } = useLoadedData();
+function Content({ form }: { form: FormState }) {
+  const { group } = useLoadedData();
   const newGoalPath = createPath("spaces", group.id, "goals", "new");
 
   return (
@@ -43,32 +75,48 @@ function Content() {
         </FilledButton>
       </div>
 
-      <GoalList goals={goals} />
+      <div className="bg-surface-dimmed px-4 py-3 rounded-lg mb-12 -mx-4 flex flex-col justify-center items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Icons.IconChevronLeft size={20} />
+          <div className="font-bold">Q1 2024</div>
+          <Icons.IconChevronRight size={20} />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Forms.Checkbox label="Show Projects" value={form.showProjects} onChange={form.setShowProjects} />
+          <Forms.Checkbox label="Show Milestones" value={form.showMilestones} onChange={form.setShowMilestones} />
+          <Forms.Checkbox
+            label="Show Completed Work"
+            value={form.showCompletedWork}
+            onChange={form.setShowCompletedWork}
+          />
+        </div>
+      </div>
+
+      <GoalList form={form} />
     </>
   );
 }
 
-function GoalList({ goals }: { goals: Goals.Goal[] }) {
+function GoalList({ form }: { form: FormState }) {
   return (
     <div className="flex flex-col gap-12">
-      {goals
+      {form.goals
         .filter((goal) => !goal.isArchived)
         .map((goal) => {
-          return <GoalItem goal={goal} key={goal.id} />;
+          return <GoalItem goal={goal} key={goal.id} form={form} />;
         })}
     </div>
   );
 }
 
-function GoalItem({ goal }: { goal: Goals.Goal }) {
+function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
   const path = createPath("goals", goal.id);
   const projects = (goal.projects || []).map((p) => p!);
 
   return (
     <div className="flex justify-between">
       <div className="flex items-start gap-4 flex-1">
-        <Avatar key={goal!.champion.id} person={goal!.champion} size={40} />
-
         <div className="flex-1">
           <div className="flex justify-between items-center">
             <div className="font-bold">
@@ -82,18 +130,18 @@ function GoalItem({ goal }: { goal: Goals.Goal }) {
             </div>
           </div>
 
-          <ProjectList projects={projects} />
+          <ProjectList projects={projects} form={form} />
         </div>
       </div>
     </div>
   );
 }
 
-function ProjectList({ projects }: { projects: Projects.Project[] }) {
+function ProjectList({ projects, form }: { projects: Projects.Project[]; form: FormState }) {
   return (
     <div className="flex flex-col gap-2 my-2">
       {projects.map((project) => {
-        return <ProjectListItem project={project} key={project.id} />;
+        return <ProjectListItem project={project} key={project.id} form={form} />;
       })}
 
       <div className="flex items-center gap-2">
@@ -115,33 +163,91 @@ export function SoftLink({ to, children, target }: { to: string; children: React
   );
 }
 
-function ProjectListItem({ project }: { project: Projects.Project }) {
+function ProjectStatus({ project }: { project: Projects.Project }) {
+  switch (project.lastCheckInStatus) {
+    case "on-track":
+      return <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm">On Track</div>;
+    case "concern":
+      return <div className="bg-yellow-100 text-yellow-800 rounded px-1.5 py-0.5 font-semibold text-sm">Concern</div>;
+    case "issue":
+      return <div className="bg-red-100 text-red-800 rounded px-1.5 py-0.5 font-semibold text-sm">Issue</div>;
+    case null:
+      return <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm">On Track</div>;
+    default:
+      return <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm">On Track</div>;
+  }
+}
+
+function ProjectListItem({ project, form }: { project: Projects.Project; form: FormState }) {
   return (
-    <div className="flex justify-between items-center flex-1">
-      <div className="flex gap-2 font-medium items-center">
-        <SoftLink to={`/projects/${project.id}`}>{project.name}</SoftLink>
+    <div>
+      <div className="flex justify-between items-center flex-1 gap-2">
+        <div className="flex gap-2 font-medium items-center">
+          <ProjectStatus project={project} />
 
-        <div className="bg-green-100 text-green-800 rounded-full px-1.5 py-0.5 text-xs font-semibold">On Track</div>
-
-        {project.deadline && (
-          <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
-            <Icons.IconCalendar size={16} />
-            Due <FormattedTime time={project.deadline} format="short-date" />
+          <div className="font-medium flex items-center gap-1">
+            <SoftLink to={`/projects/${project.id}`}>{project.name}</SoftLink>
           </div>
-        )}
 
-        <div className="flex items-center -space-x-1">
-          {project.contributors!.map((contributor) => (
-            <div className="rounded-full bg-white-1 p-px" key={contributor!.person.id}>
-              <Avatar key={contributor!.person.id} person={contributor!.person} size={16} />
+          {project.deadline && (
+            <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+              <Icons.IconCalendar size={16} />
+              Due <FormattedTime time={project.deadline} format="short-date" />
             </div>
-          ))}
+          )}
+
+          <div className="flex items-center -space-x-1">
+            {project.contributors!.map((contributor) => (
+              <div className="rounded-full bg-white-1 p-px" key={contributor!.person.id}>
+                <Avatar key={contributor!.person.id} person={contributor!.person} size={16} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
+
+        {Math.random() > 0.5 ? (
+          <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">70%</div>
+        ) : (
+          <div className="bg-red-100 text-red-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">23%</div>
+        )}
+      </div>
+
+      {form.showMilestones && project.milestones?.length > 0 && (
+        <MilestoneList project={project} milestones={project.milestones!} />
+      )}
+    </div>
+  );
+}
+
+function MilestoneList({ project, milestones }: { milestones: Projects.Milestone[] }) {
+  return (
+    <div className="flex flex-col gap-2 mt-2 ml-6">
+      {milestones.map((milestone) => {
+        return <MilestoneListItem milestone={milestone} key={milestone.id} project={project} />;
+      })}
+    </div>
+  );
+}
+
+function MilestoneListItem({ project, milestone }: { milestone: Projects.Milestone; project: Projects.Project }) {
+  return (
+    <div className="flex justify-between items-center text-sm">
+      <div className="flex gap-1 items-center">
+        <div className="font-medium flex items-center gap-1">
+          <Icons.IconFlag3Filled size={14} />
+          <SoftLink to={`/projects/${project.id}/milestones/${milestone.id}`}>{milestone.title}</SoftLink>
         </div>
       </div>
 
       <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
 
-      <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">30%</div>
+      {milestone.status === "done" ? (
+        <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">100%</div>
+      ) : (
+        <div className="bg-gray-100 text-gray-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">0%</div>
+      )}
     </div>
   );
 }

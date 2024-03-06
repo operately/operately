@@ -134,6 +134,21 @@ export function TextInputNoLabel(props: TextInnputNoLabelProps) {
   );
 }
 
+export function Checkbox({ label, value, onChange }) {
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={value}
+        onChange={(e) => onChange(e.target.checked)}
+        className="w-4 h-4 rounded-md border border-stroke-base ring-0 focus:ring-0"
+      />
+
+      <label className="font-medium">{label}</label>
+    </div>
+  );
+}
+
 export function Switch({ label, value, onChange }) {
   return (
     <div className="flex items-center justify-between">
