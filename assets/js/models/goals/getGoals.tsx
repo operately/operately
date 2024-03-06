@@ -83,6 +83,14 @@ const LIST_GOALS = gql`
         name
         deadline
 
+        lastCheckInStatus
+
+        lastCheckIn {
+          id
+          insertedAt
+          status
+        }
+
         contributors {
           person {
             id

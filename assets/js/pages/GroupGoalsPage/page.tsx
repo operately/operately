@@ -115,22 +115,77 @@ function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
   const projects = (goal.projects || []).map((p) => p!);
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between border-t border-surface-outline pt-8 -mx-4 px-4">
       <div className="flex items-start gap-4 flex-1">
+        <Avatar person={goal.champion} size={32} />
+
         <div className="flex-1">
-          <div className="flex justify-between items-center">
-            <div className="font-bold">
-              <Link to={path}>{goal.name}</Link>
-            </div>
-
-            <div className="h-px bg-stroke-base flex-1 mx-4" />
-
-            <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">
-              78%
+          <div className="flex justify-between items-center gap-2 mb-4">
+            <div className="-mt-0.5">
+              <div className="text-xs uppercase">{goal.timeframe}</div>
+              <div className="font-bold text-lg">
+                <SoftLink to={path}>{goal.name}</SoftLink>
+              </div>
             </div>
           </div>
 
+          <div className="mt-6" />
+          <MetricList targets={goal.targets} form={form} />
+          <div className="mt-8" />
           <ProjectList projects={projects} form={form} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MetricList({ targets, form }: { targets: Goals.Target[]; form: FormState }) {
+  return (
+    <div className="flex flex-col gap-2 my-2">
+      <div className="uppercase text-xs font-medium text-slate-800 tracking-wide">Success Conditions</div>
+      {targets.map((target) => {
+        return <MetricListItem target={target} key={target.id} form={form} />;
+      })}
+    </div>
+  );
+}
+
+function MetricStatus({ target }: { target: Goals.Target }) {
+  const baseClass = "text-center rounded px-1.5 py-0.5 font-semibold text-xs w-[4.5rem] relative bg-gray-500";
+
+  let className = baseClass + " text-white-1";
+
+  let title = (
+    <span className="relative z-10">
+      {target.value} of {target.to}
+    </span>
+  );
+
+  const width = (target.value / target.to) * 100;
+
+  let meter = (
+    <div className="insert-0 rounded absolute top-0 left-0 w-full h-full bg-accent-1" style={{ width: width + "%" }} />
+  );
+
+  return (
+    <div className={className}>
+      {title} {meter}
+    </div>
+  );
+}
+
+function MetricListItem({ target, form }: { target: Goals.Target; form: FormState }) {
+  return (
+    <div>
+      <div className="flex gap-2 font-medium items-center">
+        <MetricStatus target={target} />
+        <div className="font-medium flex items-center gap-1">{target.name}</div>
+
+        <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
+
+        <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+          <Icons.IconCalendar size={16} />
+          Updated <FormattedTime time={new Date()} format="relative-day" />
         </div>
       </div>
     </div>
@@ -140,11 +195,12 @@ function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
 function ProjectList({ projects, form }: { projects: Projects.Project[]; form: FormState }) {
   return (
     <div className="flex flex-col gap-2 my-2">
+      <div className="uppercase text-xs font-medium text-slate-800 tracking-wide">Projects</div>
       {projects.map((project) => {
         return <ProjectListItem project={project} key={project.id} form={form} />;
       })}
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-2">
         <GhostButton size="sm" linkTo="/new-project" type="secondary">
           Add Project
         </GhostButton>
@@ -164,18 +220,33 @@ export function SoftLink({ to, children, target }: { to: string; children: React
 }
 
 function ProjectStatus({ project }: { project: Projects.Project }) {
-  switch (project.lastCheckInStatus) {
+  const baseClass = "text-center rounded px-1.5 py-1 font-semibold text-xs w-[4.5rem]";
+
+  let className = baseClass + " ";
+  let title = "On Track";
+
+  switch (project.lastCheckIn?.status) {
     case "on-track":
-      return <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm">On Track</div>;
-    case "concern":
-      return <div className="bg-yellow-100 text-yellow-800 rounded px-1.5 py-0.5 font-semibold text-sm">Concern</div>;
+      className += "bg-accent-1 text-white-1";
+      title = "On Track";
+      break;
+
+    case "caution":
+      className += "bg-yellow-300";
+      title = "Caution";
+      break;
+
     case "issue":
-      return <div className="bg-red-100 text-red-800 rounded px-1.5 py-0.5 font-semibold text-sm">Issue</div>;
-    case null:
-      return <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm">On Track</div>;
+      className += "bg-red-500 text-white-1";
+      title = "Issue";
+      break;
+
     default:
-      return <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm">On Track</div>;
+      className += "bg-accent-1 text-white-1";
+      title = "On Track";
   }
+
+  return <div className={className}>{title}</div>;
 }
 
 function ProjectListItem({ project, form }: { project: Projects.Project; form: FormState }) {
@@ -189,13 +260,6 @@ function ProjectListItem({ project, form }: { project: Projects.Project; form: F
             <SoftLink to={`/projects/${project.id}`}>{project.name}</SoftLink>
           </div>
 
-          {project.deadline && (
-            <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
-              <Icons.IconCalendar size={16} />
-              Due <FormattedTime time={project.deadline} format="short-date" />
-            </div>
-          )}
-
           <div className="flex items-center -space-x-1">
             {project.contributors!.map((contributor) => (
               <div className="rounded-full bg-white-1 p-px" key={contributor!.person.id}>
@@ -207,10 +271,11 @@ function ProjectListItem({ project, form }: { project: Projects.Project; form: F
 
         <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
 
-        {Math.random() > 0.5 ? (
-          <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">70%</div>
-        ) : (
-          <div className="bg-red-100 text-red-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">23%</div>
+        {project.deadline && (
+          <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+            <Icons.IconCalendar size={16} />
+            Due <FormattedTime time={project.deadline} format="short-date" />
+          </div>
         )}
       </div>
 
@@ -223,7 +288,7 @@ function ProjectListItem({ project, form }: { project: Projects.Project; form: F
 
 function MilestoneList({ project, milestones }: { milestones: Projects.Milestone[] }) {
   return (
-    <div className="flex flex-col gap-2 mt-2 ml-6">
+    <div className="flex flex-col mt-2 ml-[5rem] gap-2">
       {milestones.map((milestone) => {
         return <MilestoneListItem milestone={milestone} key={milestone.id} project={project} />;
       })}
@@ -243,10 +308,11 @@ function MilestoneListItem({ project, milestone }: { milestone: Projects.Milesto
 
       <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
 
-      {milestone.status === "done" ? (
-        <div className="bg-green-100 text-green-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">100%</div>
-      ) : (
-        <div className="bg-gray-100 text-gray-800 rounded px-1.5 py-0.5 font-semibold text-sm text-right">0%</div>
+      {milestone.deadlineAt && (
+        <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+          <Icons.IconCalendar size={16} />
+          Due <FormattedTime time={milestone.deadlineAt} format="short-date" />
+        </div>
       )}
     </div>
   );

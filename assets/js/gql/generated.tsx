@@ -843,6 +843,7 @@ export type Project = {
   isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
   lastCheckIn?: Maybe<ProjectCheckIn>;
+  lastCheckInStatus?: Maybe<Scalars['String']['output']>;
   milestones?: Maybe<Array<Maybe<Milestone>>>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
