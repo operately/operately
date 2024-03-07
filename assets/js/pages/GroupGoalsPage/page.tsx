@@ -52,13 +52,14 @@ export function Page() {
 
   return (
     <Pages.Page title={group.name}>
-      <Paper.Root size="large" fluid>
-        <Paper.Body minHeight="500px">
-          <GroupPageNavigation group={group} activeTab="goals" />
-
-          <Content form={form} />
-        </Paper.Body>
-      </Paper.Root>
+      <div className="grid grid-cols-2 h-full">
+        <div className="bg-surface rounded shadow m-2 p-4 mr-0">
+          <UncategorizedProjectsList form={form} />
+        </div>
+        <div className="bg-surface rounded shadow m-2 p-4">
+          <GoalList form={form} />
+        </div>
+      </div>
     </Pages.Page>
   );
 }
@@ -93,9 +94,6 @@ function Content({ form }: { form: FormState }) {
           />
         </div>
       </div>
-
-      <GoalList form={form} />
-      <UncategorizedProjectsList form={form} />
     </>
   );
 }
@@ -114,7 +112,7 @@ function GoalList({ form }: { form: FormState }) {
 
 function UncategorizedProjectsList({ form }: { form: FormState }) {
   return (
-    <Paper.DimmedSection>
+    <div>
       <div className="font-bold text-lg">Uncategorized Projects</div>
       <div className="text-sm text-content-dimmed">Ongoing projects that are not tied to a goal</div>
 
@@ -129,7 +127,7 @@ function UncategorizedProjectsList({ form }: { form: FormState }) {
           Add Project
         </FilledButton>
       </div>
-    </Paper.DimmedSection>
+    </div>
   );
 }
 // <div className="flex items-center gap-1 mb-1">
@@ -144,18 +142,14 @@ function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
   const projects = (goal.projects || []).map((p) => p!);
 
   return (
-    <div className="flex justify-between border-t border-surface-outline pt-8 -mx-16 px-16">
+    <div className="flex justify-between">
       <div className="flex items-start gap-4 flex-1">
         <div className="flex-1">
           <div className="flex items-center justify-between gap-2 mb-4">
             <div>
-              <div className="font-bold text-xl">
+              <div className="font-bold text-lg">
                 <SoftLink to={path}>{goal.name}</SoftLink>
               </div>
-            </div>
-
-            <div className="bg-surface-dimmed px-2 py-1 rounded-lg font-bold border border-stroke-base">
-              {goal.timeframe}
             </div>
           </div>
 
@@ -209,11 +203,11 @@ function MetricListItem({ target, form }: { target: Goals.Target; form: FormStat
     <div>
       <div className="flex gap-2 font-medium items-center">
         <MetricStatus target={target} />
-        <div className="font-medium flex items-center gap-1">{target.name}</div>
+        <div className="font-medium text-sm truncate">{target.name}</div>
 
-        <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
+        <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4 min-w-[50px]" />
 
-        <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+        <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed shink-0">
           <Icons.IconCalendar size={16} />
           Updated <FormattedTime time={new Date()} format="relative-day" />
         </div>
@@ -286,7 +280,7 @@ function ProjectListItem({ project, form }: { project: Projects.Project; form: F
         <div className="flex gap-2 font-medium items-center">
           <ProjectStatus project={project} />
 
-          <div className="font-medium flex items-center gap-1">
+          <div className="font-medium flex items-center gap-1 text-sm">
             <SoftLink to={`/projects/${project.id}`}>{project.name}</SoftLink>
           </div>
 
