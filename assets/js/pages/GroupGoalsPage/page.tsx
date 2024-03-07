@@ -26,12 +26,15 @@ interface FormState {
   group: Groups.Group;
   goals: Goals.Goal[];
   uncategorizedProjects: Projects.Project[];
+  selectedGoal?: string | null;
+  setSelectedGoal: (goal: string | null) => void;
 }
 
 function useForm(group: Groups.Group, goals: Goals.Goal[], uncategorizedProjects: Projects.Project[]) {
   const [showProjects, setShowProjects] = React.useState(false);
   const [showMilestones, setShowMilestones] = React.useState(false);
   const [showCompletedWork, setShowCompletedWork] = React.useState(false);
+  const [selectedGoal, setSelectedGoal] = React.useState<string | null>(null);
 
   return {
     showMilestones,
@@ -43,6 +46,8 @@ function useForm(group: Groups.Group, goals: Goals.Goal[], uncategorizedProjects
     showProjects,
     setShowProjects,
     uncategorizedProjects,
+    selectedGoal,
+    setSelectedGoal,
   };
 }
 
@@ -50,28 +55,69 @@ export function Page() {
   const { group, goals, uncategorizedProjects } = useLoadedData();
   const form = useForm(group, goals, uncategorizedProjects);
 
+  const className = classNames({
+    "grid grid-cols-2 h-full": form.selectedGoal !== null,
+    "mx-auto w-[900px] h-full grid grid-cols-1": form.selectedGoal === null,
+  });
+
   return (
     <Pages.Page title={group.name}>
-      <div className="grid grid-cols-2 h-full">
-        <div className="bg-surface rounded shadow m-2 p-4 mr-0">
+      <div className={className}>
+        <div
+          className={
+            "rounded shadow m-2 p-4 mr-0 border border-surface-outline" +
+            " " +
+            (form.selectedGoal ? "bg-surface-dimmed" : "bg-surface")
+          }
+        >
           <Plans form={form} />
         </div>
-        <div className="bg-surface rounded shadow m-2 p-4 border border-sky-200">
-          <GoalList form={form} />
-        </div>
+
+        {form.selectedGoal && (
+          <div className="bg-surface rounded shadow m-2 p-4 border border-sky-200 relative">
+            {form.selectedGoal && <GoalItem form={form} goal={form.goals.find((g) => g.id === form.selectedGoal)!} />}
+          </div>
+        )}
       </div>
     </Pages.Page>
   );
 }
+
 // <UncategorizedProjectsList form={form} />
+// <GoalList form={form} />
 
 function Plans({ form }: { form: FormState }) {
   return (
     <div>
-      <div className="font-bold text-lg">Plans 2024</div>
+      <div className="font-bold text-xl text-center my-8">{form.group.name} goals for Q1 2024</div>
 
-      <div className="bg-sky-50 border-l border-y border-sky-200 rounded-l-lg -mr-7 p-2 mt-4 text-sky-800 font-semibold relative z-10">
-        In Rendered Text, Operately Completely Takes Over Basecamp's Role
+      <div>
+        {form.goals.map((goal) => (
+          <div
+            className={
+              "last:border-b border-t border-stroke-base flex justify-between py-2 cursor-pointer px-1 hover:bg-surface-highlight" +
+              " " +
+              (form.selectedGoal === goal.id ? "bg-sky-100" : "")
+            }
+            onClick={() => form.setSelectedGoal(goal.id)}
+          >
+            <div className="flex items-center gap-2">
+              <Avatar person={goal.champion} size={20} />
+              <div className="font-medium">{goal.name}</div>
+            </div>
+
+            <Icons.IconChevronRight
+              size={20}
+              className={form.selectedGoal === goal.id ? " text-content-accent" : " text-content-subtle"}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 mt-4">
+        <FilledButton size="xs" linkTo="/new-project" type="primary">
+          Add Goal
+        </FilledButton>
       </div>
     </div>
   );
@@ -156,12 +202,18 @@ function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
 
   return (
     <div>
-      <div className="font-bold text-xl text-center my-4">{goal.name}</div>
+      <div className="font-bold text-xl text-center my-8 mx-8">{goal.name}</div>
 
       <div className="mt-6" />
       <MetricList targets={goal.targets} form={form} />
       <div className="mt-8" />
       <ProjectList projects={projects} form={form} />
+
+      <Icons.IconX
+        size={20}
+        className="absolute top-4 right-4 cursor-pointer"
+        onClick={() => form.setSelectedGoal(null)}
+      />
     </div>
   );
 }
