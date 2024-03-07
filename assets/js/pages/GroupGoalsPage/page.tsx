@@ -54,13 +54,26 @@ export function Page() {
     <Pages.Page title={group.name}>
       <div className="grid grid-cols-2 h-full">
         <div className="bg-surface rounded shadow m-2 p-4 mr-0">
-          <UncategorizedProjectsList form={form} />
+          <Plans form={form} />
         </div>
-        <div className="bg-surface rounded shadow m-2 p-4">
+        <div className="bg-surface rounded shadow m-2 p-4 border border-sky-200">
           <GoalList form={form} />
         </div>
       </div>
     </Pages.Page>
+  );
+}
+// <UncategorizedProjectsList form={form} />
+
+function Plans({ form }: { form: FormState }) {
+  return (
+    <div>
+      <div className="font-bold text-lg">Plans 2024</div>
+
+      <div className="bg-sky-50 border-l border-y border-sky-200 rounded-l-lg -mr-7 p-2 mt-4 text-sky-800 font-semibold relative z-10">
+        In Rendered Text, Operately Completely Takes Over Basecamp's Role
+      </div>
+    </div>
   );
 }
 
@@ -142,40 +155,38 @@ function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
   const projects = (goal.projects || []).map((p) => p!);
 
   return (
-    <div className="flex justify-between">
-      <div className="flex items-start gap-4 flex-1">
-        <div className="flex-1">
-          <div className="flex items-center justify-between gap-2 mb-4">
-            <div>
-              <div className="font-bold text-lg">
-                <SoftLink to={path}>{goal.name}</SoftLink>
-              </div>
-            </div>
-          </div>
+    <div>
+      <div className="font-bold text-xl text-center my-4">{goal.name}</div>
 
-          <div className="mt-6" />
-          <MetricList targets={goal.targets} form={form} />
-          <div className="mt-8" />
-          <ProjectList projects={projects} form={form} />
-        </div>
-      </div>
+      <div className="mt-6" />
+      <MetricList targets={goal.targets} form={form} />
+      <div className="mt-8" />
+      <ProjectList projects={projects} form={form} />
     </div>
   );
 }
 
 function MetricList({ targets, form }: { targets: Goals.Target[]; form: FormState }) {
   return (
-    <div className="flex flex-col gap-2 my-2">
-      <div className="uppercase text-xs font-medium text-slate-800 tracking-wide">Success Conditions</div>
-      {targets.map((target) => {
-        return <MetricListItem target={target} key={target.id} form={form} />;
-      })}
+    <div>
+      <div className="flex flex-col gap-2 my-2">
+        <div className="uppercase text-xs font-medium text-slate-800 tracking-wide">Success Conditions</div>
+        {targets.map((target) => {
+          return <MetricListItem target={target} key={target.id} form={form} />;
+        })}
+      </div>
+
+      <div className="flex items-center gap-2 mt-4">
+        <GhostButton size="xs" linkTo="/new-project" type="secondary">
+          Add Condition
+        </GhostButton>
+      </div>
     </div>
   );
 }
 
 function MetricStatus({ target }: { target: Goals.Target }) {
-  const baseClass = "text-center rounded px-1.5 py-0.5 font-semibold text-xs w-[4.5rem] relative bg-gray-500";
+  const baseClass = "text-center rounded px-1.5 py-1 font-semibold text-xs w-[4.5rem] relative bg-gray-500 shrink-0";
 
   let className = baseClass + " text-white-1";
 
@@ -225,7 +236,7 @@ function ProjectList({ projects, form }: { projects: Projects.Project[]; form: F
       })}
 
       <div className="flex items-center gap-2 mt-2">
-        <GhostButton size="sm" linkTo="/new-project" type="secondary">
+        <GhostButton size="xs" linkTo="/new-project" type="secondary">
           Add Project
         </GhostButton>
       </div>
