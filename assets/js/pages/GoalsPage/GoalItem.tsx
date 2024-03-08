@@ -11,6 +11,7 @@ import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
 export function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
+  console.log("GoalItem", goal);
   const projects = (goal.projects || []).map((p) => p!);
 
   return (
@@ -41,7 +42,7 @@ function MetricList({ targets, form }: { targets: Goals.Target[]; form: FormStat
 }
 
 function MetricStatus({ target }: { target: Goals.Target }) {
-  const baseClass = "text-center rounded px-1.5 py-0.5 font-semibold text-xs w-[4.5rem] relative bg-gray-500";
+  const baseClass = "text-center rounded px-1.5 py-0.5 font-semibold text-xs w-[4.5rem] relative bg-gray-500 shrink-0";
 
   let className = baseClass + " text-white-1";
 
@@ -69,11 +70,11 @@ function MetricListItem({ target, form }: { target: Goals.Target; form: FormStat
     <div>
       <div className="flex gap-2 font-medium items-center">
         <MetricStatus target={target} />
-        <div className="font-medium flex items-center gap-1">{target.name}</div>
+        <div className="font-medium truncate">{target.name}</div>
 
-        <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4" />
+        <div className="h-px border-t border-stroke-base border-dotted flex-1 mx-4 min-w-[50px]" />
 
-        <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed">
+        <div className="bg-surface-dimmed rounded-full px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1 text-content-dimmed shrink-0">
           <Icons.IconCalendar size={16} />
           Updated <FormattedTime time={new Date()} format="relative-day" />
         </div>

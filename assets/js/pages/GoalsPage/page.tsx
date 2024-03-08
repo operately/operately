@@ -47,6 +47,14 @@ function CompanyGoals() {
   const { goals } = useLoadedData();
   const companyGoals = goals.filter((goal) => goal.space.isCompanySpace);
 
+  const [openGoals, setOpenGoals] = React.useState<string[]>([
+    companyGoals[0]!.id,
+    companyGoals[3]!.id,
+    goals.find((g) => g.id === "a05c270b-c2ca-4d57-ae2d-6e89f181a248")!.id,
+  ]);
+
+  const expandedGoal = goals.find((g) => g.id === openGoals[openGoals.length - 1]);
+
   return (
     <div>
       <div className="flex items-center justify-center">
@@ -61,57 +69,52 @@ function CompanyGoals() {
         <div className="bg-dark-3 text-white-1 rounded-lg px-2 py-1 font-medium">Q1 2024</div>
       </div>
 
-      <div className="-mx-16 my-2">
-        <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
-      </div>
+      {openGoals.slice(0, -1).map((goalId) => {
+        const goal = goals.find((g) => g.id === goalId)!;
 
-      <div className="flex items-center justify-center">
-        <div className="w-1/4">
-          <GoalListItem2 goal={companyGoals[0]!} selected />
-        </div>
-      </div>
-
-      <div className="-mx-16 my-2">
-        <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
-      </div>
-
-      <div className="flex items-center justify-center">
-        <div className="w-1/4">
-          <GoalListItem2 goal={companyGoals[3]!} selected />
-        </div>
-      </div>
-
-      <div className="-mx-16 my-2">
-        <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
-      </div>
-
-      <div className="shadow rounded-lg p-8 border border-accent-1">
-        <div className="flex items-start justify-between mb-8">
-          <div className="">
-            <div className="font-bold text-lg mb-2">
-              {goals.find((g) => g.id === "a05c270b-c2ca-4d57-ae2d-6e89f181a248").name}
+        return (
+          <>
+            <div className="-mx-16 my-2">
+              <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
             </div>
 
-            <div className="flex items-center gap-1">
-              <Avatar
-                person={goals.find((g) => g.id === "a05c270b-c2ca-4d57-ae2d-6e89f181a248")?.champion!}
-                size={20}
-              />
-
-              <div className="font-medium text-sm">
-                {goals.find((g) => g.id === "a05c270b-c2ca-4d57-ae2d-6e89f181a248")?.champion?.fullName}
+            <div key={goal.id} className="flex items-center justify-center">
+              <div className="w-1/4">
+                <GoalListItem2 goal={goal} selected={openGoals.includes(goalId)} />
               </div>
             </div>
+          </>
+        );
+      })}
+
+      {expandedGoal && (
+        <>
+          <div className="-mx-16 my-2">
+            <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
           </div>
 
-          <div className="flex items-center gap-4">
-            <Icons.IconArrowsMaximize size={20} />
-            <Icons.IconX size={20} />
-          </div>
-        </div>
+          <div className="shadow rounded-lg p-8 border border-accent-1">
+            <div className="flex items-start justify-between mb-8">
+              <div className="">
+                <div className="font-bold text-lg mb-2">{expandedGoal.name}</div>
 
-        <GoalItem goal={goals.find((g) => g.id === "a05c270b-c2ca-4d57-ae2d-6e89f181a248")!} form={{}} />
-      </div>
+                <div className="flex items-center gap-1">
+                  <Avatar person={expandedGoal.champion!} size={20} />
+
+                  <div className="font-medium text-sm">{expandedGoal?.champion?.fullName}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Icons.IconArrowsMaximize size={20} />
+                <Icons.IconX size={20} onClick={() => setOpenGoals(openGoals.slice(0, -1))} />
+              </div>
+            </div>
+
+            <GoalItem goal={expandedGoal!} form={{ showMilestones: false }} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
