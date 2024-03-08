@@ -9,7 +9,7 @@ import { useLoadedData, useTimeframeControles } from "./loader";
 import { Link } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
-import { FilledButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Button";
 import classNames from "classnames";
 
 export function Page() {
@@ -18,15 +18,17 @@ export function Page() {
   const groups = Goals.groupBySpace(goals);
 
   return (
-    <Pages.Page title={"Goals"}>
-      <Paper.Root size="large" fluid>
-        <Paper.Body>
-          <CompanyGoals />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+    <div className="max-w-[90%] mx-auto my-8">
+      <CompanyGoals />
+    </div>
   );
 }
+// <Pages.Page title={"Goals"}>
+//   <Paper.Root size="large" fluid>
+//     <Paper.Body>
+//     </Paper.Body>
+//   </Paper.Root>
+// </Pages.Page>
 // <div className="flex gap-4 -mb-8">
 //   <FilledButton linkTo={"/goals/new"}>Add Goal</FilledButton>
 // </div>
@@ -35,38 +37,83 @@ export function Page() {
 // <h1 className="text-3xl font-bold text-center mt-2 mb-16">Goals in {company.name}</h1>
 // <div className="font-semibold mb-4 text-xl">Company Goals</div>
 
-// <div className="grid grid-cols-3 gap-4">
-//   {companyGoals.map((goal, index) => (
-//     <GoalListItem2 key={goal.id} goal={goal} selected={index === 0} />
-//   ))}
-// </div>
-
 import { GoalItem } from "./GoalItem";
 
 function CompanyGoals() {
   const { goals } = useLoadedData();
   const companyGoals = goals.filter((goal) => goal.space.isCompanySpace);
 
-  const [openGoals, setOpenGoals] = React.useState<string[]>([
-    companyGoals[0]!.id,
-    companyGoals[3]!.id,
-    goals.find((g) => g.id === "a05c270b-c2ca-4d57-ae2d-6e89f181a248")!.id,
-  ]);
+  const [openGoals, setOpenGoals] = React.useState<string[]>([companyGoals[0]!.id]);
 
   const expandedGoal = goals.find((g) => g.id === openGoals[openGoals.length - 1]);
 
   return (
     <div>
-      <div className="flex items-center justify-center">
-        <div className="bg-dark-1 text-white-1 rounded-lg px-4 py-3 font-medium">Rendered Text</div>
+      <div className="p-12 border border-surface-outline bg-surface rounded">
+        <div className="font-bold text-3xl mb-8 text-center">Rendered Text</div>
+
+        <div className="flex justify-center items-center gap-16">
+          <div className="flex flex-col items-center">
+            <div className="font-bold mb-1">2023</div>
+            <div className="flex items-center gap-2">
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q1</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q2</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q3</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q4</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <div className="font-bold mb-1">2024</div>
+            <div className="flex items-center gap-2">
+              <div className="px-2 py-1 rounded-lg border-2 border-accent-1 text-sm font-semibold">Q1</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q2</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q3</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q4</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <div className="font-bold mb-1">2025</div>
+            <div className="flex items-center gap-2">
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q1</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q2</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q3</div>
+              <div className="px-2 py-1 rounded-lg border border-surface-outline text-sm font-semibold">Q4</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="-mx-16 my-2">
-        <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
+      <div className="-mx-16 -my-2">
+        <div className="flex items-center justify-center">
+          <div className="bg-surface px-2 border-x border-surface-outline">
+            <Icons.IconArrowDown size={20} className="mx-auto" />
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center justify-center">
-        <div className="bg-dark-3 text-white-1 rounded-lg px-2 py-1 font-medium">Q1 2024</div>
+      <div className="p-12 border border-surface-outline bg-surface rounded">
+        <div className="font-bold text-lg mb-8">Plans for Q1 2024</div>
+
+        <div className="uppercase text-xs font-medium text-slate-800 tracking-wide mb-2">GOALS</div>
+        <div className="grid grid-cols-3 gap-4">
+          {companyGoals.map((goal, index) => (
+            <GoalListItem2
+              key={goal.id}
+              goal={goal}
+              selected={openGoals.includes(goal.id)}
+              hide={openGoals.length >= 1 && !openGoals.includes(goal.id)}
+              onSelect={(goalId) => setOpenGoals([goalId])}
+            />
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 mt-6">
+          <GhostButton size="sm" linkTo="/new-project" type="secondary">
+            Add Goal
+          </GhostButton>
+        </div>
       </div>
 
       {openGoals.slice(0, -1).map((goalId) => {
@@ -89,11 +136,15 @@ function CompanyGoals() {
 
       {expandedGoal && (
         <>
-          <div className="-mx-16 my-2">
-            <div className="h-3 border-l w-0.5 bg-dark-8 mx-auto mt-2" />
+          <div className="-mx-16 -my-2">
+            <div className="flex items-center justify-center">
+              <div className="bg-surface px-2 border-x border-surface-outline">
+                <Icons.IconArrowDown size={20} className="mx-auto" />
+              </div>
+            </div>
           </div>
 
-          <div className="shadow rounded-lg p-8 border border-accent-1">
+          <div className="p-12 border border-surface-outline bg-surface rounded">
             <div className="flex items-start justify-between mb-8">
               <div className="">
                 <div className="font-bold text-lg mb-2">{expandedGoal.name}</div>
@@ -107,11 +158,19 @@ function CompanyGoals() {
 
               <div className="flex items-center gap-4">
                 <Icons.IconArrowsMaximize size={20} />
-                <Icons.IconX size={20} onClick={() => setOpenGoals(openGoals.slice(0, -1))} />
+                <Icons.IconX
+                  size={20}
+                  onClick={() => setOpenGoals(openGoals.slice(0, -1))}
+                  className="cursor-pointer hover:scale-125"
+                />
               </div>
             </div>
 
-            <GoalItem goal={expandedGoal!} form={{ showMilestones: false }} />
+            <GoalItem
+              goal={expandedGoal!}
+              form={{ showMilestones: false }}
+              subgoals={goals.filter((g) => g.parentGoalId === expandedGoal.id)}
+            />
           </div>
         </>
       )}
@@ -122,16 +181,16 @@ function CompanyGoals() {
 //   <Icons.IconTargetArrow className="text-purple-800" size={20} />
 // </div>
 
-function GoalListItem2({ goal, selected }: { goal: Goals.Goal; selected?: boolean }) {
-  const className = classNames("p-1 rounded-lg shadow bg-surface-dimmed", {
-    "border border-accent-1": selected,
-    "opacity-30": !selected,
+function GoalListItem2({ goal, selected, onSelect, hide }: { goal: Goals.Goal; selected?: boolean }) {
+  const className = classNames("p-1 rounded-lg shadow bg-surface-dimmed cursor-pointer", {
+    "border-2 border-accent-1": selected,
+    "border border-stroke-base hover:border-accent-1 transition-all duration-50": !selected,
   });
 
   const bgCardClass = classNames("flex justify-between items-center p-2", {});
 
   return (
-    <div className={className}>
+    <div className={className} onClick={() => onSelect && onSelect(goal.id)}>
       <div className="p-3 bg-surface gap-4 rounded border border-stroke-base flex flex-col justify-between h-24">
         <div className="font-medium">{goal.name}</div>
       </div>

@@ -10,7 +10,7 @@ import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
-export function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) {
+export function GoalItem({ form, goal, subgoals }: { goal: Goals.Goal; form: FormState; subgoals: Goals.Goal[] }) {
   console.log("GoalItem", goal);
   const projects = (goal.projects || []).map((p) => p!);
 
@@ -20,6 +20,8 @@ export function GoalItem({ form, goal }: { goal: Goals.Goal; form: FormState }) 
       <MetricList targets={goal.targets} form={form} />
       <div className="mt-8" />
       <ProjectList projects={projects} form={form} />
+
+      {subgoals.map((g) => g.name)}
     </div>
   );
 }
