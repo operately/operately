@@ -5,9 +5,17 @@ import * as People from "@/graphql/People";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+
+interface Error {
+  field: string;
+  message: string;
+}
 
 interface FormState {
   project: Projects.Project;
+
+  errors: Error[];
 
   whatWentWell: TipTapEditor.EditorState;
   whatCouldHaveGoneBetter: TipTapEditor.EditorState;
@@ -18,6 +26,8 @@ interface FormState {
 }
 
 export function useForm(project: Projects.Project): FormState {
+  const [errors, setErrors] = React.useState<Error[]>([]);
+
   const whatWentWell = useWhatWentWellEditor();
   const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor();
   const whatDidYouLearn = useWhatDidYouLearnEditor();
@@ -29,7 +39,13 @@ export function useForm(project: Projects.Project): FormState {
   });
 
   const submit = React.useCallback(async () => {
-    if (!submittable) return;
+    if (!submittable) return false;
+
+    const errors = validate(whatWentWell, whatCouldHaveGoneBetter, whatDidYouLearn);
+    if (errors.length > 0) {
+      setErrors(errors);
+      return false;
+    }
 
     await post({
       variables: {
@@ -43,6 +59,8 @@ export function useForm(project: Projects.Project): FormState {
         },
       },
     });
+
+    return true;
   }, [project.id, whatWentWell.editor, whatCouldHaveGoneBetter.editor, whatDidYouLearn.editor]);
 
   const submittable =
@@ -50,6 +68,7 @@ export function useForm(project: Projects.Project): FormState {
 
   return {
     project,
+    errors,
     whatWentWell,
     whatCouldHaveGoneBetter,
     whatDidYouLearn,
@@ -81,4 +100,26 @@ function useWhatDidYouLearnEditor() {
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
   });
+}
+
+function validate(
+  whatWentWell: TipTapEditor.EditorState,
+  whatCouldHaveGoneBetter: TipTapEditor.EditorState,
+  whatDidYouLearn: TipTapEditor.EditorState,
+): Error[] {
+  let errors: Error[] = [];
+
+  if (isContentEmpty(whatWentWell.editor.getJSON())) {
+    errors.push({ field: "whatWentWell", message: "is required" });
+  }
+
+  if (isContentEmpty(whatCouldHaveGoneBetter.editor.getJSON())) {
+    errors.push({ field: "whatCouldHaveGoneBetter", message: "is required" });
+  }
+
+  if (isContentEmpty(whatDidYouLearn.editor.getJSON())) {
+    errors.push({ field: "whatDidYouLearn", message: "is required" });
+  }
+
+  return errors;
 }
