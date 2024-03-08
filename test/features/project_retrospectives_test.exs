@@ -54,6 +54,15 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
     |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.champion)
   end
 
+  @tag login_as: :champion
+  feature "can't close a project with an emtpy retrospective", ctx do
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click(testid: "close-project-button")
+    |> UI.click(testid: "submit")
+    |> UI.assert_text("Please fill in this field")
+  end
+
   #
   # Helpers
   #

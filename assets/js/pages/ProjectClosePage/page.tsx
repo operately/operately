@@ -21,9 +21,21 @@ export function Page() {
           <div className="uppercase text-content-accent text-sm">CLOSING THE PROJECT</div>
           <div className="text-content-accent text-3xl font-extrabold mb-8">Fill in the retrospective</div>
 
-          <Question title="What went well?" editor={form.whatWentWell.editor} />
-          <Question title="What could've gone better?" editor={form.whatCouldHaveGoneBetter.editor} />
-          <Question title="What did you learn?" editor={form.whatDidYouLearn.editor} />
+          <Question
+            title="What went well?"
+            editor={form.whatWentWell.editor}
+            error={form.errors.find((e) => e.field === "whatWentWell")}
+          />
+          <Question
+            title="What could've gone better?"
+            editor={form.whatCouldHaveGoneBetter.editor}
+            error={form.errors.find((e) => e.field === "whatCouldHaveGoneBetter")}
+          />
+          <Question
+            title="What did you learn?"
+            editor={form.whatDidYouLearn.editor}
+            error={form.errors.find((e) => e.field === "whatDidYouLearn")}
+          />
 
           <SubmitButton form={form} />
         </Paper.Body>
@@ -32,12 +44,14 @@ export function Page() {
   );
 }
 
-function Question({ title, editor }) {
+function Question({ title, editor, error }) {
   const testId = createTestId(title);
 
   return (
     <div className="" data-test-id={testId}>
       <h2 className="text-content-accent text font-bold mb-1">{title}</h2>
+      {error && <div className="text-sm text-red-500 mb-2 font-medium">Please fill in this field</div>}
+
       <div className="border-x border-stroke-base">
         <TipTapEditor.Root editor={editor}>
           <TipTapEditor.Toolbar editor={editor} />
@@ -54,7 +68,7 @@ function Question({ title, editor }) {
 function SubmitButton({ form }) {
   return (
     <div className="flex justify-center mt-8">
-      <FilledButton size="lg" onClick={form.submit} testId="submit">
+      <FilledButton size="lg" onClick={form.submit} testId="submit" bzzzOnClickFailure>
         Submit &amp; Close Project
       </FilledButton>
     </div>
