@@ -10,7 +10,7 @@ type Update = (id: string, field: string, value: any) => void;
 
 type ListState<T> = [T[], { add: Add<T>; remove: Remove; update: Update }];
 
-export function useListState<T extends Id>(initial: T[]): ListState<T> {
+export function useListState<T extends Id>(initial: T[] | (() => T[])): ListState<T> {
   const [list, setList] = React.useState<T[]>(initial);
 
   const add = (item: T) => setList((prev) => [...prev, item]);

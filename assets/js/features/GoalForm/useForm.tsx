@@ -10,9 +10,10 @@ import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
-import { useLoadedData } from "./loader";
 
 export interface FormState {
+  mode: "create" | "edit";
+  spaceConfig: SpaceConfig;
   fields: Fields;
   errors: Error[];
   submitting: boolean;
@@ -68,15 +69,28 @@ interface Target {
   from: string;
   to: string;
   unit: string;
+  isNew?: boolean;
 }
 
-export function useForm(company: Companies.Company, me: People.Person, initialSpaceId?: string): FormState {
-  const [name, setName] = React.useState<string>("");
-  const [champion, setChampion] = React.useState<People.Person | null>(me);
-  const [reviewer, setReviewer] = React.useState<People.Person | null>(null);
-  const [timeframe, setTimeframe, timeframeOptions] = useTimeframe();
-  const [targets, addTarget, removeTarget, updateTarget] = useTargets();
-  const [space, setSpace, spaceOptions] = useSpaces();
+interface SpaceConfig {
+  allowSpaceSelection: boolean;
+  space?: Groups.Group;
+  spaces?: Groups.Group[];
+}
+
+export function useForm(
+  mode: "create" | "edit",
+  company: Companies.Company,
+  me: People.Person,
+  spaceConfig: SpaceConfig,
+  goal?: Goals.Goal,
+): FormState {
+  const [name, setName] = React.useState<string>(goal?.name || "");
+  const [champion, setChampion] = React.useState<People.Person | null>(goal?.champion || me);
+  const [reviewer, setReviewer] = React.useState<People.Person | null>(goal?.reviewer || null);
+  const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(mode, goal);
+  const [targets, addTarget, removeTarget, updateTarget] = useTargets(mode, goal);
+  const [space, setSpace, spaceOptions] = useSpaces(mode, spaceConfig);
 
   const [hasDescription, setHasDescription] = React.useState<boolean>(false);
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
@@ -112,11 +126,12 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
     setHasDescription,
   } as Fields;
 
-  const cancelPath = initialSpaceId ? createPath("group", initialSpaceId) : "/goals";
-
-  const [submit, cancel, submitting, errors] = useSubmit(fields, cancelPath);
+  const cancelPath = createCancelPath(mode, spaceConfig, space, goal);
+  const [submit, cancel, submitting, errors] = useSubmit(fields, cancelPath, mode, goal);
 
   return {
+    mode,
+    spaceConfig,
     fields,
     errors,
     submitting,
@@ -125,8 +140,11 @@ export function useForm(company: Companies.Company, me: People.Person, initialSp
   };
 }
 
-function useTimeframe(): [TimeframeOption, (timeframe: TimeframeOption) => void, TimeframeOption[]] {
-  const options: TimeframeOption[] = [
+function useTimeframe(
+  mode: "create" | "edit",
+  goal?: Goals.Goal,
+): [TimeframeOption, (timeframe: TimeframeOption) => void, TimeframeOption[]] {
+  let options: TimeframeOption[] = [
     { value: Time.nQuartersFromNow(0), label: `${Time.nQuartersFromNow(0)}` },
     { value: Time.nQuartersFromNow(1), label: `${Time.nQuartersFromNow(1)}` },
     { value: Time.nQuartersFromNow(2), label: `${Time.nQuartersFromNow(2)}` },
@@ -135,37 +153,63 @@ function useTimeframe(): [TimeframeOption, (timeframe: TimeframeOption) => void,
     { value: Time.nextYear().toString(), label: `${Time.nextYear()}` },
   ];
 
-  const [timeframe, setTimeframe] = React.useState<TimeframeOption>(options[0]!);
+  if (mode === "edit") {
+    options = options.filter((o) => o.value !== goal?.timeframe);
+    options.unshift({ value: goal!.timeframe, label: goal!.timeframe });
+  }
 
+  const [timeframe, setTimeframe] = React.useState<TimeframeOption>(options[0]!);
   return [timeframe, setTimeframe, options];
 }
 
-function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions"]] {
-  const loaded = useLoadedData();
-
+function useSpaces(
+  mode: "create" | "edit",
+  spaceConfig: SpaceConfig,
+): [SpaceOption | null, (space: SpaceOption | null) => void, SpaceOption[]] {
   const [space, setSpace] = React.useState<Fields["space"]>(() => {
-    if (loaded.allowSpaceSelection) {
+    if (spaceConfig.allowSpaceSelection || mode === "edit") {
       return null;
     } else {
-      return { value: loaded.space!.id, label: loaded.space!.name };
+      return { value: spaceConfig.space!.id, label: spaceConfig.space!.name };
     }
   });
 
   const options = React.useMemo(() => {
-    if (loaded.allowSpaceSelection) {
-      const spaces = Groups.sortGroups(loaded.spaces!);
+    if (mode === "edit") return [];
+
+    if (spaceConfig.allowSpaceSelection) {
+      const spaces = Groups.sortGroups(spaceConfig.spaces!);
 
       return spaces.map((space) => ({ value: space.id, label: space.name }));
     } else {
       return [];
     }
-  }, [loaded.spaces]);
+  }, [spaceConfig.spaces, spaceConfig.allowSpaceSelection]);
 
   return [space, setSpace, options];
 }
 
-function useTargets(): [Target[], () => void, (id: string) => void, (id: string, field: any, value: any) => void] {
-  const [list, { add, remove, update }] = useListState<Target>([newEmptyTarget(), newEmptyTarget(), newEmptyTarget()]);
+type TargetList = Target[];
+type AddTarget = (target: Target) => void;
+type RemoveTarget = (id: string) => void;
+type UpdateTarget = (id: string, field: string, value: any) => void;
+
+function useTargets(mode: "create" | "edit", goal?: Goals.Goal): [TargetList, AddTarget, RemoveTarget, UpdateTarget] {
+  const [list, { add, remove, update }] = useListState<Target>((): Target[] => {
+    if (mode === "edit") {
+      return (goal?.targets! || [])
+        .map((t) => t!)
+        .map((t) => ({
+          id: t.id,
+          name: t.name,
+          from: t.from.toString(),
+          to: t.to.toString(),
+          unit: t.unit,
+        }));
+    } else {
+      return [newEmptyTarget(), newEmptyTarget(), newEmptyTarget()];
+    }
+  });
 
   const addTarget = () => add(newEmptyTarget());
 
@@ -182,12 +226,23 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(
+  fields: Fields,
+  cancelPath: string,
+  mode: "create" | "edit",
+  goal?: Goals.Goal,
+): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
-  const [create, { loading: submitting }] = Goals.useCreateGoalMutation({
+  const [create, { loading: submittingCreate }] = Goals.useCreateGoalMutation({
     onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
   });
+
+  const [edit, { loading: submittingEdit }] = Goals.useEditGoalMutation({
+    onCompleted: (data: any) => navigate(createPath("goals", data.editGoal.id)),
+  });
+
+  const submitting = submittingCreate || submittingEdit;
 
   const [errors, setErrors] = React.useState<Error[]>([]);
 
@@ -199,27 +254,65 @@ function useSubmit(fields: Fields, cancelPath: string): [() => Promise<boolean>,
       return false;
     }
 
-    await create({
-      variables: {
-        input: {
-          name: fields.name,
-          spaceId: fields.space!.value,
-          championID: fields.champion!.id,
-          reviewerID: fields.reviewer!.id,
-          timeframe: fields.timeframe.value,
-          description: prepareDescriptionForSave(fields),
-          targets: fields.targets
-            .filter((t) => t.name.trim() !== "")
-            .map((t, index) => ({
-              name: t.name,
-              from: parseInt(t.from),
-              to: parseInt(t.to),
-              unit: t.unit,
-              index: index,
-            })),
+    if (mode === "create") {
+      await create({
+        variables: {
+          input: {
+            name: fields.name,
+            spaceId: fields.space!.value,
+            championID: fields.champion!.id,
+            reviewerID: fields.reviewer!.id,
+            timeframe: fields.timeframe.value,
+            description: prepareDescriptionForSave(fields),
+            targets: fields.targets
+              .filter((t) => t.name.trim() !== "")
+              .map((t, index) => ({
+                name: t.name,
+                from: parseInt(t.from),
+                to: parseInt(t.to),
+                unit: t.unit,
+                index: index,
+              })),
+          },
         },
-      },
-    });
+      });
+
+      return true;
+    } else {
+      await edit({
+        variables: {
+          input: {
+            goalId: goal!.id,
+            name: fields.name,
+            championID: fields.champion!.id,
+            reviewerID: fields.reviewer!.id,
+            timeframe: fields.timeframe.value,
+            description: prepareDescriptionForSave(fields),
+            addedTargets: fields.targets
+              .filter((t) => t.name.trim() !== "")
+              .filter((t) => t.isNew)
+              .map((t, index) => ({
+                name: t.name,
+                from: parseInt(t.from),
+                to: parseInt(t.to),
+                unit: t.unit,
+                index: index,
+              })),
+            updatedTargets: fields.targets
+              .filter((t) => t.name.trim() !== "")
+              .filter((t) => !t.isNew)
+              .map((t, index) => ({
+                id: t.id,
+                name: t.name,
+                from: parseInt(t.from),
+                to: parseInt(t.to),
+                unit: t.unit,
+                index: index,
+              })),
+          },
+        },
+      });
+    }
 
     return true;
   };
@@ -277,4 +370,19 @@ function prepareDescriptionForSave(fields: Fields): string | null {
   }
 
   return JSON.stringify(content);
+}
+
+function createCancelPath(
+  mode: "create" | "edit",
+  spaceConfig: SpaceConfig,
+  space: SpaceOption | null,
+  goal?: Goals.Goal,
+): string {
+  if (mode === "edit") {
+    return createPath("goals", goal?.id);
+  } else if (spaceConfig.allowSpaceSelection) {
+    return "/goals";
+  } else {
+    return createPath("group", space!.value);
+  }
 }
