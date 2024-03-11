@@ -208,8 +208,8 @@ function GoalName({ form }: { form: FormState }) {
 
   return (
     <input
-      className={className}
       autoFocus
+      className={className}
       placeholder="e.g. Improve product onboarding"
       value={form.fields.name}
       onChange={(e) => form.fields.setName(e.target.value)}

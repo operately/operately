@@ -25,9 +25,19 @@ export function AddTarget({ form }: { form: FormState }) {
     "cursor-pointer",
   );
 
+  const handleClick = () => {
+    form.fields.addTarget();
+
+    setTimeout(() => {
+      const lastIndex = form.fields.targets.length;
+      const last = document.querySelector(`[id="target-${lastIndex}-name"]`) as HTMLInputElement | null;
+      if (last) last.focus();
+    }, 20);
+  };
+
   return (
     <div className="flex items-center gap-2">
-      <div className={className} onClick={form.fields.addTarget}>
+      <div className={className} onClick={handleClick}>
         + Add More
       </div>
     </div>
@@ -52,6 +62,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
 
   const nameInput = (
     <TextInput
+      id={`target-${index}-name`}
       active={active}
       setActive={setActive}
       placeholder={placeholders[0]}
@@ -109,9 +120,10 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
   return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} remove={removeButton} />;
 }
 
-function TextInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
+function TextInput({ id, autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
   return (
     <GenericInput
+      id={id}
       autoFocus={autoFocus}
       placeholder={placeholder}
       active={active}
@@ -147,7 +159,17 @@ function NumberInput({ autoFocus = false, placeholder, active, setActive, value,
   );
 }
 
-function GenericInput({ autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
+function GenericInput({
+  id = undefined,
+  autoFocus = false,
+  placeholder,
+  active,
+  setActive,
+  value,
+  setValue,
+  testId = "",
+  error,
+}) {
   const className = classnames(
     "placeholder:text-content-subtle px-0 py-1 w-full group-hover/row:bg-surface-highlight",
     {
@@ -159,6 +181,7 @@ function GenericInput({ autoFocus = false, placeholder, active, setActive, value
 
   return (
     <input
+      id={id}
       className={className}
       placeholder={placeholder}
       value={value}
