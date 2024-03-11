@@ -247,7 +247,7 @@ function useSubmit(
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const submit = async () => {
-    const errors = validateForm(fields);
+    const errors = validateForm(fields, mode);
 
     if (errors.length > 0) {
       setErrors(errors);
@@ -322,14 +322,14 @@ function useSubmit(
   return [submit, cancel, submitting, errors];
 }
 
-function validateForm(fields: Fields): Error[] {
+function validateForm(fields: Fields, mode: "create" | "edit"): Error[] {
   const errors: Error[] = [];
 
   if (fields.name.length === 0) errors.push({ field: "name", message: "Name is required" });
   if (fields.champion === null) errors.push({ field: "champion", message: "Champion is required" });
   if (fields.reviewer === null) errors.push({ field: "reviewer", message: "Reviewer is required" });
   if (fields.timeframe.value === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
-  if (fields.space === null) errors.push({ field: "space", message: "Space is required" });
+  if (fields.space === null && mode === "create") errors.push({ field: "space", message: "Space is required" });
 
   fields.targets.forEach((target, index) => {
     let { name, from, to, unit } = target;
