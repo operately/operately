@@ -9,6 +9,10 @@ export function daysAgo(days: number) {
   return datefsn.subDays(today(), days);
 }
 
+export function isThisWeek(date: Date) {
+  return datefsn.isThisWeek(date);
+}
+
 export function daysFromNow(days: number) {
   return datefsn.addDays(today(), days);
 }
@@ -52,6 +56,14 @@ export function parseISO(date: string) {
 
 export function isToday(date: Date) {
   return datefsn.isToday(date);
+}
+
+export function isYesterday(date: Date) {
+  return datefsn.isYesterday(date);
+}
+
+export function isTomorrow(date: Date) {
+  return datefsn.isTomorrow(date);
 }
 
 export function isPast(date: Date) {

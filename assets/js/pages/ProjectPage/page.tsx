@@ -206,7 +206,9 @@ function LastCheckIn({ project }) {
         <div className="flex items-center gap-6">
           <div>
             <DimmedLabel>Next Check-In</DimmedLabel>
-            <div className="text-sm font-medium">Scheduled for this Friday</div>
+            <div className="text-sm font-medium">
+              Scheduled for <FormattedTime time={project.nextCheckInScheduledAt} format="relative-weekday-or-date" />
+            </div>
           </div>
         </div>
       </div>
