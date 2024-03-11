@@ -75,7 +75,7 @@ function Form({ form }: { form: FormState }) {
 
         <Description form={form} />
 
-        <div className="font-bold mt-12">Measurments</div>
+        <div className="font-bold mt-12">Success Conditions</div>
         <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
         <div className="mt-4">
           <TargetHeader />
