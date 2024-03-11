@@ -70,7 +70,7 @@ export function Page() {
           </div>
 
           <div className="mt-8">
-            {(goal.projects?.length || 0) > 0 && <DimmedLabel>Projects</DimmedLabel>}
+            <DimmedLabel>Projects</DimmedLabel>
             <ProjectList goal={goal} />
           </div>
 
@@ -111,6 +111,10 @@ const AvatarAndName = ({ person }) => (
 );
 
 export function ProjectList({ goal }: { goal: Goals.Goal }) {
+  if (goal.projects?.length === 0) {
+    return <div className="text-sm">No projects yet</div>;
+  }
+
   return (
     <>
       {goal.projects!.map((project) => (

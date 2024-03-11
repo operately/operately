@@ -17,7 +17,7 @@ function TargetItem({ target }: { target: Goals.Target }) {
       <div className="flex flex-col">
         <div className="font-semibold text-content-accent">{target.name}</div>
         <div className="text-content-dimmed text-xs">
-          Target {target.to} {target.unit}
+          Current {target.value} - Target {target.to} {target.unit}
         </div>
       </div>
 
