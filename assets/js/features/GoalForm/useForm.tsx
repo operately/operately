@@ -347,6 +347,12 @@ function validateForm(fields: Fields): Error[] {
     if (unit === "") errors.push({ field: `target-${index}-unit`, message: "Unit is required" });
   });
 
+  const submittableTargets = fields.targets.filter((t) => t.name.trim() !== "");
+
+  if (submittableTargets.length === 0) {
+    errors.push({ field: "targets", message: "At least one target is required" });
+  }
+
   return errors;
 }
 

@@ -46,6 +46,10 @@ function FormMain({ form }: { form: FormState }) {
       )}
 
       <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
+      {form.errors.find((e) => e.field === "targets") && (
+        <div className="text-red-500 text-sm">At least one success condition is required</div>
+      )}
+
       <div className="mt-4">
         <TargetHeader />
         {form.fields.targets.map((target, index) => (

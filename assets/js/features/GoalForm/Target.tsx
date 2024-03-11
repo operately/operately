@@ -170,14 +170,12 @@ function GenericInput({
   testId = "",
   error,
 }) {
-  const className = classnames(
-    "placeholder:text-content-subtle px-0 py-1 w-full group-hover/row:bg-surface-highlight",
-    {
-      "bg-surface-highlight": active,
-      "bg-transparent": !active,
-      "bg-red-400/10": error,
-    },
-  );
+  const className = classnames("placeholder:text-content-subtle px-0 py-1 w-full", {
+    "bg-surface-highlight": active,
+    "bg-transparent": !active,
+    "group-hover:bg-surface-highlight": !active,
+    "bg-red-500/10 group-hover:bg-red-500/20": !!error,
+  });
 
   return (
     <input
