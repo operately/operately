@@ -4,6 +4,7 @@ import { RelativeTime, RelativeDay } from "./RelativeTime";
 import ShortDate from "./ShortDate";
 import ShortDateWithTime from "./ShortDateWithTime";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
+import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
 import * as Time from "@/utils/time";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +16,7 @@ type Format =
   | "short-date-with-time"
   | "time-only"
   | "short-date-with-weekday-relative"
+  | "relative-weekday-or-date"
   | "long-date";
 
 interface FormattedTimeProps {
@@ -34,8 +36,10 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
       return <RelativeDay time={parsedTime} />;
     case "relative":
       return <RelativeTime time={parsedTime} />;
+    case "relative-weekday-or-date":
+      return <RelativeWeekdayOrDate time={parsedTime} />;
     case "short-date":
-      return <ShortDate time={parsedTime} />;
+      return <ShortDate time={parsedTime} weekday={false} />;
     case "short-date-with-weekday":
       return <ShortDateWithWeekday time={parsedTime} />;
     case "short-date-with-time":

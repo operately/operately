@@ -29,6 +29,7 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     field :started_at, :date
     field :deadline, :date
     field :next_update_scheduled_at, :date
+    field :next_check_in_scheduled_at, :date
     field :private, non_null(:boolean)
 
     field :status, :string

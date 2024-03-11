@@ -54,7 +54,7 @@ const QUERY = gql`
       insertedAt
       startedAt
       deadline
-      nextUpdateScheduledAt
+      nextCheckInScheduledAt
 
       isArchived
       isOutdated
