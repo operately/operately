@@ -12,7 +12,7 @@ export default function MemberList({ group }: { group: Groups.Group }) {
   if (group.isCompanySpace) {
     return (
       <div>
-        <div className="inline-flex gap-2 items-center mb-4 flex-wrap" data-test-id="group-members">
+        <div className="inline-flex gap-2 justify-center mb-4 flex-wrap mx-8" data-test-id="group-members">
           {group.members!.map((m) => (
             <Avatar key={m.id} person={m} size={32} />
           ))}
@@ -23,7 +23,7 @@ export default function MemberList({ group }: { group: Groups.Group }) {
     return (
       <div>
         <div
-          className="inline-flex gap-2 items-center mb-4 cursor-pointer flex-wrap"
+          className="inline-flex gap-2 justify-center mb-4 flex-wrap mx-8"
           onClick={gotoGroupMembersPage}
           data-test-id="group-members"
         >
