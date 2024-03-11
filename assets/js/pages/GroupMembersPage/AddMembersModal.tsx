@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import Button, { GhostButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Button";
 
 import PeopleSearch, { Option, Person } from "@/components/PeopleSearch";
 import * as Groups from "@/graphql/Groups";
@@ -39,7 +39,8 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
       },
     });
 
-    return result.data.potentialGroupMembers;
+    let people = [...result.data.potentialGroupMembers].sort((a, b) => a.fullName.localeCompare(b.fullName));
+    return people;
   };
 
   const submit = async () => {
@@ -81,10 +82,10 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
           <PeopleList />
         </div>
 
-        <div className="mt-4">
-          <Button variant="success" onClick={submit} data-test-id="submit-group-members">
+        <div className="mt-4 flex">
+          <FilledButton type="primary" onClick={submit} testId="submit-group-members">
             {t("forms.add_group_members_button")}
-          </Button>
+          </FilledButton>
         </div>
       </Modal>
     </Context.Provider>
