@@ -90,7 +90,12 @@ export function Page() {
 }
 
 function SpaceActivity({ space }) {
-  const { data, loading, error } = useItemsQuery("space", space.id);
+  const { loadedAt } = useLoadedData();
+  const { data, loading, error, refetch } = useItemsQuery("space", space.id);
+
+  React.useEffect(() => {
+    refetch();
+  }, [loadedAt]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
@@ -107,12 +112,11 @@ function JoinButton({ group }) {
 
   const handleClick = async () => {
     await join({ variables: { input: { spaceId: group.id } } });
-    console.log("Joined space");
   };
 
   return (
     <div className="flex justify-center mb-8">
-      <FilledButton type="primary" size="sm" onClick={handleClick}>
+      <FilledButton type="primary" size="sm" onClick={handleClick} testId="join-space-button">
         Join this Space
       </FilledButton>
     </div>

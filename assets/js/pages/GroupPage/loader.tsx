@@ -7,6 +7,7 @@ import { Company, Group } from "@/gql/generated";
 interface LoadedData {
   company: Company;
   group: Group;
+  loadedAt: Date;
 }
 
 export async function loader({ params }): Promise<LoadedData> {
@@ -15,6 +16,7 @@ export async function loader({ params }): Promise<LoadedData> {
     group: await Groups.getGroup(params.id, {
       includeMembers: true,
     }),
+    loadedAt: new Date(),
   };
 }
 
