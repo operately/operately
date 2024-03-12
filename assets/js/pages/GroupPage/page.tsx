@@ -9,6 +9,8 @@ import MemberList from "./MemberList";
 import { useLoadedData } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { ComingSoonBadge } from "@/components/ComingSoonBadge";
+import { Feed, useItemsQuery } from "@/features/Feed";
+import { FilledButton } from "@/components/Button";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -26,13 +28,19 @@ export function Page() {
 
             <div className="font-bold text-4xl text-center">{group.name}</div>
 
-            <div className="text-center">
+            <div className="text-center mt-1">
               <div className="">{group.mission}</div>
             </div>
           </div>
 
           <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="group-members">
             <MemberList group={group} />
+          </div>
+
+          <div className="flex justify-center">
+            <FilledButton type="primary" size="sm">
+              Join this Space
+            </FilledButton>
           </div>
 
           <div className="mt-8 mb-4" />
@@ -76,11 +84,20 @@ export function Page() {
           </div>
 
           <Paper.DimmedSection>
-            <div className="uppercase text-xs font-bold">Activity</div>
-            <ComingSoonBadge />
+            <div className="uppercase text-xs font-semibold mb-2">Activity</div>
+            <SpaceActivity space={group} />
           </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function SpaceActivity({ space }) {
+  const { data, loading, error } = useItemsQuery("space", space.id);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+
+  return <Feed items={data.activities} testId="space-feed" />;
 }
