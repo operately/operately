@@ -7,6 +7,7 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
 
 import RichContent from "@/components/RichContent";
+import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -17,8 +18,12 @@ export function Page() {
         <ProjectPageNavigation project={project} />
 
         <Paper.Body minHeight="none">
-          <div className="text-content-accent text-3xl font-extrabold">Project Retrospective</div>
-          {project.closedAt && (<AvatarWithName person={project.closedBy} size={16} />} 
+          <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
+          <div className="flex items-center gap-2 font-medium justify-center mt-2">
+            {project.closedBy && <AvatarWithName person={project.closedBy!} size={16} />}
+            {project.closedBy && <span>&middot;</span>}
+            <FormattedTime time={project.closedAt} format="long-date" />
+          </div>
           <Content project={project} />
         </Paper.Body>
       </Paper.Root>

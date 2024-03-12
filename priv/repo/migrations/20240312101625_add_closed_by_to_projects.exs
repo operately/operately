@@ -3,7 +3,7 @@ defmodule Operately.Repo.Migrations.AddClosedByToProjects do
 
   def change do
     alter table(:projects) do
-      add :closed_by, references(:people, type: :binary_id)
+      add :closed_by_id, references(:people, type: :binary_id)
     end
   end
 end
