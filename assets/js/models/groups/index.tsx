@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+export { useJoinSpaceMutation } from './useJoinSpaceMutation';
 import client from "@/graphql/client";
 
 export type { Group } from "@/gql/generated";
