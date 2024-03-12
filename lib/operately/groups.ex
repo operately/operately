@@ -117,7 +117,8 @@ defmodule Operately.Groups do
   def is_member?(group, person) do
     query = (
       from m in Member,
-      where: m.group_id == ^group.id and m.person_id == ^person.id
+      where: m.group_id == ^group.id and m.person_id == ^person.id,
+      limit: 1
     )
 
     Repo.one(query) != nil

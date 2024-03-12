@@ -21,3 +21,7 @@ export async function loader({ params }): Promise<LoadedData> {
 export function useLoadedData(): LoadedData {
   return Pages.useLoadedData() as LoadedData;
 }
+
+export function useRefresh() {
+  return Pages.useRefresh();
+}

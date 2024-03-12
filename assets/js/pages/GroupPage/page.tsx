@@ -6,11 +6,13 @@ import * as Icons from "@tabler/icons-react";
 
 import MemberList from "./MemberList";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { FilledButton } from "@/components/Button";
+
+import { useJoinSpaceMutation } from "@/models/groups";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -93,15 +95,24 @@ function SpaceActivity({ space }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data.activities} testId="space-feed" />;
+  return <Feed items={data.activities} testId="space-feed" page="space" />;
 }
 
 function JoinButton({ group }) {
+  const refresh = useRefresh();
+
+  const [join] = useJoinSpaceMutation({ onCompleted: refresh });
+
   if (group.isMember) return null;
+
+  const handleClick = async () => {
+    await join({ variables: { input: { spaceId: group.id } } });
+    console.log("Joined space");
+  };
 
   return (
     <div className="flex justify-center mb-8">
-      <FilledButton type="primary" size="sm">
+      <FilledButton type="primary" size="sm" onClick={handleClick}>
         Join this Space
       </FilledButton>
     </div>

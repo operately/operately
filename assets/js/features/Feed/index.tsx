@@ -9,12 +9,14 @@ import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-export function Feed({ items, testId }: { items: Activities.Activity[]; testId?: string }) {
+type Page = "project" | "goal" | "space";
+
+export function Feed({ items, testId, page }: { items: Activities.Activity[]; testId?: string; page: Page }) {
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
       <div className="w-full" data-test-id={testId}>
         {Activities.groupByDate(items).map((group, index) => (
-          <ActivityGroup key={index} group={group} page="project" />
+          <ActivityGroup key={index} group={group} page={page} />
         ))}
       </div>
     </ErrorBoundary>

@@ -37,15 +37,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :space_id, non_null(:string)
   end
 
-
   object :group_mutations do
     field :join_space, non_null(:group) do
       arg :input, non_null(:join_space_input)
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        space_id = input.space_id
 
-        Operately.Operations.SpaceJoining.run(author, input)
+        Operately.Operations.SpaceJoining.run(author, space_id)
       end
     end
 
