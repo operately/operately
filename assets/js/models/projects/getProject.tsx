@@ -11,6 +11,7 @@ interface GetProjectOptions {
   includeMilestones?: boolean;
   includeLastCheckIn?: boolean;
   includeRetrospective?: boolean;
+  includeClosedBy?: boolean;
 }
 
 export async function getProject(id: string, options: GetProjectOptions = {}) {
@@ -27,6 +28,7 @@ export async function getProject(id: string, options: GetProjectOptions = {}) {
       includeMilestones: !!options.includeMilestones,
       includeLastCheckIn: !!options.includeLastCheckIn,
       includeRetrospective: !!options.includeRetrospective,
+      includeClosedBy: !!options.includeClosedBy,
     },
     fetchPolicy: "network-only",
   });
@@ -46,6 +48,7 @@ const QUERY = gql`
     $includeMilestones: Boolean!
     $includeLastCheckIn: Boolean!
     $includeRetrospective: Boolean!
+    $includeClosedBy: Boolean!
   ) {
     project(id: $id) {
       id
@@ -165,6 +168,13 @@ const QUERY = gql`
           avatarUrl
           title
         }
+      }
+
+      closedBy @include(if: $includeClosedBy) {
+        id
+        fullName
+        avatarUrl
+        title
       }
     }
   }

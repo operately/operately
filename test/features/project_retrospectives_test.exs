@@ -31,6 +31,7 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
     |> FeedSteps.assert_project_retrospective_posted(author: ctx.champion)
     |> UI.assert_text("This project was closed on")
     |> UI.click(testid: "project-retrospective-link")
+    |> UI.assert_text(ctx.champion.full_name)
     |> UI.assert_text("We built the thing")
     |> UI.assert_text("We learned the thing")
     |> UI.assert_text("We built the thing")

@@ -647,6 +647,7 @@ export type Goal = {
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
+  parentGoalId?: Maybe<Scalars['ID']['output']>;
   permissions: GoalPermissions;
   projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
@@ -832,6 +833,7 @@ export type Project = {
   archivedAt?: Maybe<Scalars['Date']['output']>;
   champion?: Maybe<Person>;
   closedAt?: Maybe<Scalars['Date']['output']>;
+  closedBy?: Maybe<Person>;
   contributors?: Maybe<Array<Maybe<ProjectContributor>>>;
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
@@ -846,6 +848,7 @@ export type Project = {
   milestones?: Maybe<Array<Maybe<Milestone>>>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  nextCheckInScheduledAt?: Maybe<Scalars['Date']['output']>;
   nextMilestone?: Maybe<Milestone>;
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
   permissions: ProjectPermissions;

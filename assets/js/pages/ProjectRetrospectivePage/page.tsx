@@ -4,6 +4,8 @@ import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
+
 import RichContent from "@/components/RichContent";
 
 export function Page() {
@@ -16,6 +18,7 @@ export function Page() {
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Project Retrospective</div>
+          {project.closedAt && (<AvatarWithName person={project.closedBy} size={16} />} 
           <Content project={project} />
         </Paper.Body>
       </Paper.Root>
