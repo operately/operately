@@ -6,9 +6,13 @@ import * as Icons from "@tabler/icons-react";
 
 import MemberList from "./MemberList";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 import { ComingSoonBadge } from "@/components/ComingSoonBadge";
+import { Feed, useItemsQuery } from "@/features/Feed";
+import { FilledButton } from "@/components/Button";
+
+import { useJoinSpaceMutation } from "@/models/groups";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -26,7 +30,7 @@ export function Page() {
 
             <div className="font-bold text-4xl text-center">{group.name}</div>
 
-            <div className="text-center">
+            <div className="text-center mt-1">
               <div className="">{group.mission}</div>
             </div>
           </div>
@@ -35,9 +39,9 @@ export function Page() {
             <MemberList group={group} />
           </div>
 
-          <div className="mt-8 mb-4" />
+          <JoinButton group={group} />
 
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8 my-8">
             <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Quick Actions</div>
               <ComingSoonBadge />
@@ -76,11 +80,45 @@ export function Page() {
           </div>
 
           <Paper.DimmedSection>
-            <div className="uppercase text-xs font-bold">Activity</div>
-            <ComingSoonBadge />
+            <div className="uppercase text-xs font-semibold mb-2">Activity</div>
+            <SpaceActivity space={group} />
           </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function SpaceActivity({ space }) {
+  const { loadedAt } = useLoadedData();
+  const { data, loading, error, refetch } = useItemsQuery("space", space.id);
+
+  React.useEffect(() => {
+    refetch();
+  }, [loadedAt]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+
+  return <Feed items={data.activities} testId="space-feed" page="space" />;
+}
+
+function JoinButton({ group }) {
+  const refresh = useRefresh();
+
+  const [join] = useJoinSpaceMutation({ onCompleted: refresh });
+
+  if (group.isMember) return null;
+
+  const handleClick = async () => {
+    await join({ variables: { input: { spaceId: group.id } } });
+  };
+
+  return (
+    <div className="flex justify-center mb-8">
+      <FilledButton type="primary" size="sm" onClick={handleClick} testId="join-space-button">
+        Join this Space
+      </FilledButton>
+    </div>
   );
 }

@@ -63,6 +63,20 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_has(Query.text(person.full_name))
   end
 
+  feature "joining a group", ctx do
+    group = group_fixture(ctx.person, %{name: "Marketing"})
+    person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
+
+    ctx
+    |> UI.login_as(person)
+    |> UI.visit("/spaces/#{group.id}")
+    |> UI.click(testid: "join-space-button")
+    |> UI.assert_text("Mati A. joined this space")
+
+    members = Operately.Groups.list_members(group)
+    assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
+  end
+
   feature "adding group members", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})

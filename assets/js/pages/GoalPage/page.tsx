@@ -96,7 +96,7 @@ function FeedForGoal({ goal }) {
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
 
-  return <Feed items={data.activities} />;
+  return <Feed items={data.activities} page="goal" />;
 }
 
 const DimmedLabel = ({ children }) => (

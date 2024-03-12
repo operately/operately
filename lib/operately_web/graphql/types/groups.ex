@@ -6,6 +6,14 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
     field :name, non_null(:string)
     field :mission, :string
 
+    field :is_member, non_null(:boolean) do
+      resolve fn group, _, %{context: context} ->
+        person = context.current_account.person
+
+        {:ok, Operately.Groups.is_member?(group, person)}
+      end
+    end
+
     field :is_company_space, non_null(:boolean) do
       resolve fn group, _, _ ->
         company = Operately.Companies.get_company!(group.company_id)

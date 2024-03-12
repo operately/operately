@@ -150,7 +150,7 @@ function ProjectFeed({ project }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data.activities} testId="project-feed" />;
+  return <Feed items={data.activities} testId="project-feed" page="project" />;
 }
 
 function LastCheckIn({ project }) {

@@ -35,6 +35,7 @@ import ProjectReviewCommented from "./ProjectReviewCommented"
 import ProjectReviewRequestSubmitted from "./ProjectReviewRequestSubmitted"
 import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
+import SpaceJoining from "./SpaceJoining"
 import TaskAdding from "./TaskAdding"
 import TaskAssigneeAssignment from "./TaskAssigneeAssignment"
 import TaskClosing from "./TaskClosing"
@@ -139,6 +140,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentProjectTimelineEdited":
       return <ProjectTimelineEdited notification={notification} />;
+    
+    case "ActivityContentSpaceJoining":
+      return <SpaceJoining notification={notification} />;
     
     case "ActivityContentTaskAdding":
       return <TaskAdding notification={notification} />;
