@@ -17,7 +17,7 @@ defmodule Operately.Operations.DiscussionPosting do
 
     Multi.new()
     |> Multi.insert(:update, update)
-    |> Activities.insert(creator.id, :discussion_posting, fn changes -> %{
+    |> Activities.insert_sync(creator.id, :discussion_posting, fn changes -> %{
       company_id: space.company_id,
       space_id: space.id,
       discussion_id: changes.update.id,
