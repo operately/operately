@@ -1,22 +1,18 @@
 defmodule Operately.Activities.Notifications.GoalCheckInCommented do
-  alias Operately.Projects
-
   def dispatch(activity) do
     goal_id = activity.content.goal_id
     goal = Operately.Goals.get_goal!(goal_id)
+    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
 
-    notifications = [
+    people = Enum.uniq([goal.champion_id, goal.reviewer_id] ++ [comment.author_id])
+
+    notifications = Enum.map(people, fn person ->
       %{
-        person_id: goal.champion_id,
-        activity_id: activity.id,
-        should_send_email: true,
-      },
-      %{
-        person_id: goal.reviewer_id,
+        person_id: person.id,
         activity_id: activity.id,
         should_send_email: true,
       }
-    ]
+    end)
 
     notifications = Enum.filter(notifications, fn n -> n.person_id != activity.author_id end)
 

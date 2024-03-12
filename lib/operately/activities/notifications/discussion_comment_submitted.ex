@@ -16,7 +16,14 @@ defmodule Operately.Activities.Notifications.DiscussionCommentSubmitted do
       comment_author
     end)
 
-    people = members ++ [discussion_author] ++ comment_authors
+    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
+
+    mentioned = 
+      comment.content["message"]
+      |> ProsemirrorMentions.extract_ids()
+      |> Enum.map(fn id -> Operately.People.get_person!(id) end)
+
+    people = members ++ [discussion_author] ++ comment_authors ++ mentioned
     people = Enum.uniq(people)
     people = Enum.filter(people, fn person ->
       person.id != author_id
