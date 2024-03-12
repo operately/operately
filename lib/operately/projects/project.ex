@@ -30,6 +30,7 @@ defmodule Operately.Projects.Project do
     field :status, :string, default: "active"
     field :retrospective, :map
     field :closed_at, :utc_datetime
+    belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
 
     timestamps()
     soft_delete()
@@ -60,6 +61,7 @@ defmodule Operately.Projects.Project do
       :last_check_in_id,
       :last_check_in_status,
       :next_update_scheduled_at,
+      :closed_by_id,
     ])
     |> validate_required([
       :name,

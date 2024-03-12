@@ -11,6 +11,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includePermissions: true,
       includeRetrospective: true,
+      includeClosedBy: true,
     }),
   };
 }

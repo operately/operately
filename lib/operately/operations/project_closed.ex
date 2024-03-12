@@ -8,6 +8,7 @@ defmodule Operately.Operations.ProjectClosed do
     change = Project.changeset(project, %{
       status: "closed",
       closed_at: DateTime.utc_now(),
+      closed_by_id: author.id,
       retrospective: Jason.decode!(retrospective)
     })
 

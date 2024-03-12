@@ -1,11 +1,7 @@
 import { gql } from "@apollo/client";
 import client from "@/graphql/client";
 
-interface GetPeopleOpts {
-  includeManager?: boolean;
-}
-
-export async function getPeople(opts?: GetPeopleOpts) {
+export async function getPeople() {
   let res = await client.query({
     query: QUERY,
     variables: {},

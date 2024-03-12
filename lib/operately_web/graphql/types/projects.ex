@@ -43,6 +43,7 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
     assoc_field :milestones, list_of(:milestone)
     assoc_field :contributors, list_of(:project_contributor)
     assoc_field :key_resources, list_of(:project_key_resource)
+    assoc_field :closed_by, :person
 
     field :is_outdated, non_null(:boolean) do
       resolve fn project, _, _ ->
