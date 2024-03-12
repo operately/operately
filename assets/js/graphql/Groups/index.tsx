@@ -11,6 +11,7 @@ export const GET_GROUP = gql`
       icon
       color
       isCompanySpace
+      isMember
 
       members {
         id

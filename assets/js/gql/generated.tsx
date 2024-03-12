@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -283,6 +283,12 @@ export type ActivityContentProjectTimelineEdited = {
   oldStartDate?: Maybe<Scalars['Date']['output']>;
   project: Project;
   updatedMilestones?: Maybe<Array<Maybe<Milestone>>>;
+};
+
+export type ActivityContentSpaceJoining = {
+  __typename?: 'ActivityContentSpaceJoining';
+  companyId: Scalars['String']['output'];
+  spaceId: Scalars['String']['output'];
 };
 
 export type ActivityContentTaskAdding = {
@@ -676,6 +682,7 @@ export type Group = {
   icon: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isCompanySpace: Scalars['Boolean']['output'];
+  isMember: Scalars['Boolean']['output'];
   members?: Maybe<Array<Person>>;
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -689,6 +696,10 @@ export type GroupContact = {
   name: Scalars['String']['output'];
   type: Scalars['String']['output'];
   value: Scalars['String']['output'];
+};
+
+export type JoinSpaceInput = {
+  spaceId: Scalars['String']['input'];
 };
 
 export type KeyResult = {
@@ -995,6 +1006,7 @@ export type RootMutationType = {
   editProjectName: Project;
   editProjectTimeline: Project;
   editUpdate: Update;
+  joinSpace: Group;
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
@@ -1238,6 +1250,11 @@ export type RootMutationTypeEditProjectTimelineArgs = {
 
 export type RootMutationTypeEditUpdateArgs = {
   input: EditUpdateInput;
+};
+
+
+export type RootMutationTypeJoinSpaceArgs = {
+  input: JoinSpaceInput;
 };
 
 

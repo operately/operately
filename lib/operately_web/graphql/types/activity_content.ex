@@ -39,6 +39,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_project_review_request_submitted,
     :activity_content_project_review_submitted,
     :activity_content_project_timeline_edited,
+    :activity_content_space_joining,
     :activity_content_task_adding,
     :activity_content_task_assignee_assignment,
     :activity_content_task_closing,

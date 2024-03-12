@@ -37,15 +37,9 @@ export function Page() {
             <MemberList group={group} />
           </div>
 
-          <div className="flex justify-center">
-            <FilledButton type="primary" size="sm">
-              Join this Space
-            </FilledButton>
-          </div>
+          <JoinButton group={group} />
 
-          <div className="mt-8 mb-4" />
-
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8 my-8">
             <div className="border border-stroke-base rounded p-8 py-4">
               <div className="text-lg font-bold">Quick Actions</div>
               <ComingSoonBadge />
@@ -100,4 +94,16 @@ function SpaceActivity({ space }) {
   if (error) return <div>Error</div>;
 
   return <Feed items={data.activities} testId="space-feed" />;
+}
+
+function JoinButton({ group }) {
+  if (group.isMember) return null;
+
+  return (
+    <div className="flex justify-center mb-8">
+      <FilledButton type="primary" size="sm">
+        Join this Space
+      </FilledButton>
+    </div>
+  );
 }

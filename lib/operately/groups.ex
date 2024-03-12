@@ -114,6 +114,15 @@ defmodule Operately.Groups do
     Repo.all(query)
   end
 
+  def is_member?(group, person) do
+    query = (
+      from m in Member,
+      where: m.group_id == ^group.id and m.person_id == ^person.id
+    )
+
+    Repo.one(query) != nil
+  end
+
   def add_members(group, people_ids) do
     members = Enum.map(people_ids, fn id ->
       Member.changeset(%Member{}, %{

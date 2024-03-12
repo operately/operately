@@ -30,6 +30,7 @@ import { ProjectPausing } from "./ProjectPausing"
 import { ProjectRenamed } from "./ProjectRenamed"
 import { ProjectResuming } from "./ProjectResuming"
 import { ProjectTimelineEdited } from "./ProjectTimelineEdited"
+import { SpaceJoining } from "./SpaceJoining"
 import { TaskAdding } from "./TaskAdding"
 import { TaskDescriptionChange } from "./TaskDescriptionChange"
 import { TaskStatusChange } from "./TaskStatusChange"
@@ -61,6 +62,7 @@ const FeedItems : FeedItem[] = [
   ProjectRenamed,
   ProjectResuming,
   ProjectTimelineEdited,
+  SpaceJoining,
   TaskAdding,
   TaskDescriptionChange,
   TaskStatusChange,

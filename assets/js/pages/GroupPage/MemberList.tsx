@@ -9,6 +9,8 @@ export default function MemberList({ group }: { group: Groups.Group }) {
   const navigate = useNavigate();
   const gotoGroupMembersPage = () => navigate(`/spaces/${group.id}/members`);
 
+  if (group.members!.length === 0) return null;
+
   if (group.isCompanySpace) {
     return (
       <div>
