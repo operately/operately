@@ -34,12 +34,6 @@ export default function Options({ project }) {
         to={`/projects/${project.id}/move`}
         dataTestId="move-project-link"
       />
-      <PageOptions.Link
-        icon={Icons.IconArchive}
-        title="Archive this project"
-        to={`/projects/${project.id}/archive`}
-        dataTestId="archive-project-link"
-      />
     </PageOptions.Root>
   );
 }
