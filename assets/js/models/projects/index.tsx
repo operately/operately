@@ -34,7 +34,7 @@ export function sortByClosedAt(projects: Project[]) {
     if (!closedAtA) return 1;
     if (!closedAtB) return -1;
 
-    return Time.compareAsc(closedAtA, closedAtB);
+    return Time.compareAsc(closedAtB, closedAtA);
   });
 }
 
