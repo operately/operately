@@ -15,6 +15,7 @@ const routes = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       pageRoute("/", pages.GroupListPage),
+      pageRoute("/feed", pages.FeedPage),
 
       pageRoute("/company/admin", pages.CompanyAdminPage),
       pageRoute("/company/admin/manageAdmins", pages.CompanyAdminManageAdminsPage),

@@ -15,6 +15,7 @@ import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmail
 import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
+import * as FeedPage from "./FeedPage";
 import * as GoalAddPage from "./GoalAddPage";
 import * as GoalArchivePage from "./GoalArchivePage";
 import * as GoalCheckInEditPage from "./GoalCheckInEditPage";
@@ -116,6 +117,10 @@ export default {
   DiscussionPage: {
     loader: DiscussionPage.loader,
     Page: DiscussionPage.Page
+  },
+  FeedPage: {
+    loader: FeedPage.loader,
+    Page: FeedPage.Page
   },
   GoalAddPage: {
     loader: GoalAddPage.loader,

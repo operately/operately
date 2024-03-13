@@ -9,7 +9,7 @@ import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-type Page = "project" | "goal" | "space";
+type Page = "company" | "project" | "goal" | "space";
 
 export function Feed({ items, testId, page }: { items: Activities.Activity[]; testId?: string; page: Page }) {
   return (
