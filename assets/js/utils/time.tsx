@@ -21,6 +21,10 @@ export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }
 
+export function compareAsc(date1: Date, date2: Date) {
+  return datefsn.compareAsc(date1, date2);
+}
+
 export function parse(date: string | Date | null | undefined) {
   if (date === null || date === undefined) {
     return null;

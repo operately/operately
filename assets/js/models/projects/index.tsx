@@ -1,9 +1,7 @@
 import type { Project, ProjectContributor, Milestone } from "@/gql";
-export { useResumeProjectMutation } from './useResumeProjectMutation';
-export { usePauseProjectMutation } from "./usePauseProjectMutation";
-export type { Project, ProjectContributor, Milestone } from "@/gql";
-
 import * as Time from "@/utils/time";
+
+export type { Project, ProjectContributor, Milestone } from "@/gql";
 
 export { groupBySpace } from "./groupBySpace";
 export { getProjects } from "./getProjects";
@@ -20,9 +18,24 @@ export { useProjectContributorCandidatesQuery } from "./useProjectContributorCan
 export { useAddProjectContributorMutation } from "./useAddProjectContributorMutation";
 export { useUpdateProjectContributorMutation } from "./useUpdateProjectContributorMutation";
 export { useRemoveProjectContributorMutation } from "./useRemoveProjectContributorMutation";
+export { useResumeProjectMutation } from "./useResumeProjectMutation";
+export { usePauseProjectMutation } from "./usePauseProjectMutation";
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function sortByClosedAt(projects: Project[]) {
+  return [...projects].sort((a, b) => {
+    const closedAtA = Time.parseDate(a.closedAt);
+    const closedAtB = Time.parseDate(b.closedAt);
+
+    if (!closedAtA && !closedAtB) return 0;
+    if (!closedAtA) return 1;
+    if (!closedAtB) return -1;
+
+    return Time.compareAsc(closedAtA, closedAtB);
+  });
 }
 
 export function sortContributorsByRole(contributors: ProjectContributor[]): ProjectContributor[] {

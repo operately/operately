@@ -1,6 +1,7 @@
 import React from "react";
 
 import * as Projects from "@/models/projects";
+import * as Time from "@/utils/time";
 
 import { ProjectListItem } from "@/features/ProjectListItem";
 import classNames from "classnames";
@@ -31,14 +32,11 @@ export function ProjectList(props: ProjectListProps) {
 function useProjectListState(projects: Projects.Project[]) {
   const [state, setState] = React.useState<"active" | "paused" | "closed">("active");
 
-  const activeProjects = Projects.sortByName(
-    projects.filter((p) => !p.isArchived && p.status !== "closed" && p.status !== "paused"),
-  );
+  const nonArchived = projects.filter((p) => !p.isArchived);
 
-  const pausedProjects = Projects.sortByName(projects.filter((p) => p.status === "paused"));
-  const closedProjects = [...projects.filter((p) => p.isArchived || p.status === "closed")].sort(
-    (a, b) => b.closedAt - a.closedAt,
-  );
+  const activeProjects = Projects.sortByName(nonArchived.filter((p) => p.status !== "closed" && p.status !== "paused"));
+  const pausedProjects = Projects.sortByName(nonArchived.filter((p) => p.status === "paused"));
+  const closedProjects = Projects.sortByClosedAt(nonArchived.filter((p) => p.status === "closed"));
 
   const displayedProjects = state === "active" ? activeProjects : state === "paused" ? pausedProjects : closedProjects;
 
