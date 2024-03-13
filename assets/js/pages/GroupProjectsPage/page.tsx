@@ -2,14 +2,13 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Projects from "@/models/projects";
 
 import { FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { ProjectList } from "@/features/ProjectList";
 
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
-import { ProjectListItem } from "@/features/ProjectListItem";
 
 export function Page() {
   const { group, projects } = useLoadedData();
@@ -32,20 +31,5 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function ProjectList({ projects }: { projects: Projects.Project[] }) {
-  const activeProjects = projects.filter((project) => !project.isArchived);
-  const sortedProjects = Projects.sortByName(activeProjects);
-
-  return (
-    <div className="">
-      {sortedProjects.map((project) => (
-        <div key={project.id} className="py-4 bg-surface flex flex-col border-t last:border-b border-stroke-base">
-          <ProjectListItem project={project} key={project.id} avatarPosition="right" />
-        </div>
-      ))}
-    </div>
   );
 }

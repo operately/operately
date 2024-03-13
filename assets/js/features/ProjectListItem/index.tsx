@@ -19,9 +19,10 @@ import classNames from "classnames";
 interface ProjectListItemProps {
   project: Projects.Project;
   avatarPosition?: "bottom" | "right";
+  showSpace?: boolean;
 }
 
-export function ProjectListItem({ project, avatarPosition = "bottom" }: ProjectListItemProps) {
+export function ProjectListItem({ project, avatarPosition = "bottom", showSpace = false }: ProjectListItemProps) {
   const className = classNames("flex", {
     "items-center justify-between": avatarPosition === "right",
     "flex-col gap-4": avatarPosition === "bottom",
@@ -32,7 +33,8 @@ export function ProjectListItem({ project, avatarPosition = "bottom" }: ProjectL
   return (
     <div className={className}>
       <div className="flex flex-col">
-        <ProjectNameLine project={project} />
+        {showSpace && <div className="text-xs text-content-dimmed font-medium">{project.space.name}</div>}
+        <ProjectNameLine project={project} showSpace={showSpace} />
         <ProjectStatusLine project={project} />
       </div>
       <ContribList project={project} size={avatarSize} />
@@ -40,7 +42,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom" }: ProjectL
   );
 }
 
-function ProjectNameLine({ project }) {
+function ProjectNameLine({ project, showSpace }) {
   const path = createPath("projects", project.id);
 
   return (

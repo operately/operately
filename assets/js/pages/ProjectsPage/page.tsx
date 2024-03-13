@@ -1,32 +1,30 @@
 import * as React from "react";
-import type { ProjectGroup } from "@/models/projects/groupBySpace";
-
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/models/projects";
+import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData, useFilters } from "./loader";
 import { FilledButton } from "@/components/Button";
-import { ProjectListItem } from "@/features/ProjectListItem";
+import { ProjectList } from "@/features/ProjectList";
 
 import classNames from "classnames";
 
 export function Page() {
   const { projects } = useLoadedData();
 
-  const groups = Projects.groupBySpace(projects);
-
   return (
     <Pages.Page title={"Projects"}>
-      <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
-        <Filters />
-        <Title />
+      <Paper.Root size="large">
+        <Paper.Body minHeight="500px" backgroundColor="bg-surface">
+          <Filters />
+          <Title />
 
-        <div className="flex items-center justify-center mb-10 gap-4">
-          <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
-        </div>
+          <div className="flex items-center justify-center mb-10 gap-4">
+            <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
+          </div>
 
-        <ProjectGroups groups={groups} />
-      </div>
+          <ProjectList projects={projects} showSpace />
+        </Paper.Body>
+      </Paper.Root>
     </Pages.Page>
   );
 }
@@ -74,43 +72,6 @@ function FilterButton({ onClick, children, active }) {
   return (
     <div className={className} onClick={onClick}>
       {children}
-    </div>
-  );
-}
-
-function ProjectGroups({ groups }: { groups: ProjectGroup[] }) {
-  return (
-    <div className="flex flex-col gap-8">
-      {groups.map((group) => (
-        <ProjectGroup key={group.space.id} group={group} />
-      ))}
-    </div>
-  );
-}
-
-function ProjectGroup({ group }: { group: ProjectGroup }) {
-  const projects = Projects.sortByName(group.projects);
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="uppercase text-xs font-medium tracking-wide text-center flex items-center gap-4 w-full">
-        <div className="h-px bg-stroke-base w-full" />
-        <span className="whitespace-nowrap">{group.space.name}</span>
-        <div className="h-px bg-stroke-base w-full" />
-      </div>
-      <ProjectList projects={projects} />
-    </div>
-  );
-}
-
-function ProjectList({ projects }: { projects: Projects.Project[] }) {
-  return (
-    <div className="flex flex-col gap-4">
-      {projects.map((project) => (
-        <div key={project.id} className="px-4 py-4 bg-surface border border-stroke-base shadow rounded">
-          <ProjectListItem key={project.id} project={project} avatarPosition="bottom" />
-        </div>
-      ))}
     </div>
   );
 }
