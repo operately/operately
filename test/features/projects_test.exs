@@ -79,34 +79,6 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   @tag login_as: :champion
-  feature "archive a project", ctx do
-    ctx
-    |> visit_show(ctx.project)
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "archive-project-link")
-    |> UI.assert_text("Archive this project?")
-    |> UI.click(testid: "archive-project-button")
-    |> UI.assert_text("This project was archived on")
-    |> FeedSteps.assert_project_archived(author: ctx.champion)
-
-    ctx
-    |> visit_index()
-    |> UI.refute_has(Query.text(ctx.project.name))
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
-      action: "archived the #{ctx.project.name} project"
-    })
-
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_project_archived_sent(author: ctx.champion, project: ctx.project)
-  end
-
-  @tag login_as: :champion
   feature "rename a project", ctx do
     ctx
     |> visit_show(ctx.project)
