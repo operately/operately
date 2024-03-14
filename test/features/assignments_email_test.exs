@@ -10,7 +10,7 @@ defmodule Operately.Features.AssignmentsEmailTest do
 
   feature "receiving an assignment email for check-ins", ctx do
     one_hour_ago = DateTime.utc_now() |> DateTime.add(-1, :hour)
-    {:ok, _} = Operately.Projects.update_project(ctx.project, %{next_update_scheduled_at: one_hour_ago})
+    {:ok, _} = Operately.Projects.update_project(ctx.project, %{next_check_in_scheduled_at: one_hour_ago})
 
     champion_with_account = Operately.Repo.preload(ctx.champion, :account)
     OperatelyEmail.Emails.AssignmentsEmail.send(champion_with_account)

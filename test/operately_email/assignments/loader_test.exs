@@ -18,7 +18,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
     goal = goal_fixture(champion, %{company_id: company.id, space_id: group.id})
 
     {:ok, project} = Operately.Repo.update(Project.changeset(project, %{
-      next_update_scheduled_at: days_from_now(10)
+      next_check_in_scheduled_at: days_from_now(10)
     }))
 
     {:ok, %{company: company, champion: champion, project: project, goal: goal}}
@@ -49,7 +49,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
   describe "project check-in" do
     test "it doesn't send if project check is not due", ctx do
       {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{
-        next_update_scheduled_at: days_from_now(10)
+        next_check_in_scheduled_at: days_from_now(10)
       }))
 
       assert load_names(ctx) == []
@@ -57,7 +57,7 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
 
     test "it sends if project check is due", ctx do
       {:ok, _} = Operately.Repo.update(Project.changeset(ctx.project, %{
-        next_update_scheduled_at: days_from_now(0)
+        next_check_in_scheduled_at: days_from_now(0)
       }))
 
       assert Enum.member?(load_names(ctx), "Check-in")

@@ -46,11 +46,11 @@ defmodule OperatelyEmail.Assignments.Loader do
   end
 
   defp project_check_ins(project) do
-    if due?(project.next_update_scheduled_at) do
+    if due?(project.next_check_in_scheduled_at) do
       [
         %{
           type: :project_check_in,
-          due: relative_due(project.next_update_scheduled_at),
+          due: relative_due(project.next_check_in_scheduled_at),
           url: OperatelyEmail.project_check_in_new_url(project.id),
           name: "Check-in"
         }
