@@ -188,4 +188,8 @@ defmodule OperatelyWeb.Graphql.Schema do
   subscription do
     import_fields :notification_subscriptions
   end
+
+  def middleware(middleware, _field, _object) do
+    Enum.map(middleware, &OperatelyWeb.Graphql.Middlewares.ExceptionHandler.handle_exceptions/1)
+  end
 end
