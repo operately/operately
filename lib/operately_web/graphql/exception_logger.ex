@@ -3,6 +3,10 @@ defmodule OperatelyWeb.Graphql.Middlewares.ExceptionHandler do
 
   alias Absinthe.Resolution
 
+  def wrap_all_middlewares(middlewares) do
+    middlewares |> Enum.map(&handle_exceptions/1)
+  end
+
   def handle_exceptions(middleware_spec) do
     fn resolution, config ->
       middleware_spec
