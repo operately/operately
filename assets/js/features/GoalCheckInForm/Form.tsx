@@ -4,6 +4,7 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Forms from "@/components/Form";
 
 import { FormState } from "./useForm";
+import { createTestId } from "@/utils/testid";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -64,7 +65,8 @@ function TargetInputs({ form }: { form: FormState }) {
             <div className="">
               <Forms.TextInputNoLabel
                 id={target.id}
-                value={target.value}
+                testId={createTestId("target", target.name)}
+                value={target.value.toString()}
                 onChange={(value: string) => form.updateTarget(target.id, Number(value))}
               />
             </div>

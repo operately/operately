@@ -1,6 +1,9 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
+
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.FeedSteps
+  alias Operately.Support.Features.EmailSteps
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -38,6 +41,40 @@ defmodule Operately.Support.Features.GoalSteps do
     })
 
     Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
+  end
+
+  def submit_check_in(ctx, message, target_values: target_values) do
+    ctx
+    |> visit_page()
+    |> UI.click(testid: "check-in-now")
+    |> UI.fill_rich_text(message)
+    |> UI.fill(testid: "target-first-response-time", with: to_string(Enum.at(target_values, 0)))
+    |> UI.fill(testid: "target-increase-feedback-score-to-90-", with: to_string(Enum.at(target_values, 1)))
+    |> UI.click(testid: "submit-check-in")
+  end
+
+  def assert_check_in(ctx, message, _target_values) do
+    ctx
+    |> UI.assert_text("Check-In from")
+    |> UI.assert_text(message)
+    # |> UI.assert_text("First response time: #{Enum.at(target_values, 0)} minutes")
+    # |> UI.assert_text("Increase feedback score to 90%: #{Enum.at(target_values, 1)}%")
+  end
+
+  def assert_check_in_visible_in_goal_feed(ctx) do
+    ctx
+    |> visit_page()
+    |> FeedSteps.assert_goal_check_in(author: ctx.champion)
+  end
+
+  def assert_check_in_email_sent_to_reviewer(ctx) do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer, 
+      author: ctx.champion, 
+      action: "submitted a check-in"
+    })
   end
 
   def visit_page(ctx) do

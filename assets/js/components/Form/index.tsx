@@ -93,6 +93,7 @@ export function TextInput({ label, value, onChange, placeholder = "", error, ...
 
 interface TextInnputNoLabelProps {
   id: string;
+  testId?: string;
   value: string;
   placeholder?: string;
   error?: boolean;
@@ -122,6 +123,7 @@ export function TextInputNoLabel(props: TextInnputNoLabelProps) {
   return (
     <input
       id={id}
+      data-test-id={props.testId}
       className={className}
       type="text"
       value={value}
