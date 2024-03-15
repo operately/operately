@@ -1,5 +1,4 @@
 export type { Goal } from "@/gql/generated";
-export { useChangeGoalParentMutation } from './useChangeGoalParentMutation';
 export type { Target } from "@/gql/generated";
 
 export { getGoals } from "./getGoals";
@@ -10,3 +9,4 @@ export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutati
 export { useEditGoalMutation } from "./useEditGoalMutation";
 export { useCreateGoalMutation } from "./useCreateGoalMutation";
 export { groupBySpace } from "./groupBySpace";
+export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";

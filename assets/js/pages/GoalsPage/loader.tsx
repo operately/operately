@@ -21,6 +21,7 @@ export async function loader({ request }): Promise<LoaderResult> {
       includeSpace: true,
       timeframe: timeframe,
       includeLongerTimeframes: true,
+      includeProjects: true,
     }),
   };
 }
