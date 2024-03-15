@@ -59,12 +59,15 @@ const LIST_GOALS = gql`
       updatedAt
       isArchived
       timeframe
+      parentGoalId
+
       champion {
         id
         fullName
         avatarUrl
         title
       }
+
       reviewer {
         id
         fullName
