@@ -1,3 +1,4 @@
+import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
@@ -5,6 +6,12 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+
+interface Error {
+  field: string;
+  message: string;
+}
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -13,6 +20,8 @@ interface UseFormOptions {
 }
 
 export interface FormState {
+  errors: Error[];
+
   editor: TipTapEditor.EditorState;
   targets: TargetState[];
   updateTarget: (id: string, value: number) => void;
@@ -28,6 +37,7 @@ export interface FormState {
 export function useForm(options: UseFormOptions): FormState {
   const navigate = useNavigate();
   const goal = options.goal;
+  const [errors, setErrors] = React.useState<Error[]>([]);
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
@@ -46,12 +56,18 @@ export function useForm(options: UseFormOptions): FormState {
     onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.editUpdate.id}`),
   });
 
-  const submit = () => {
-    if (!editor.editor) return;
-    if (editor.uploading) return;
+  const submit = async (): Promise<boolean> => {
+    if (!editor.editor) return false;
+    if (editor.uploading) return false;
+
+    const errors = validate(editor.editor.getJSON(), targets);
+    if (errors.length > 0) {
+      setErrors(errors);
+      return false;
+    }
 
     if (options.mode === "create") {
-      post({
+      await post({
         variables: {
           input: {
             updatableType: "goal",
@@ -62,9 +78,10 @@ export function useForm(options: UseFormOptions): FormState {
           },
         },
       });
-      return;
+
+      return true;
     } else {
-      edit({
+      await edit({
         variables: {
           input: {
             updateId: options.checkIn!.id,
@@ -74,7 +91,7 @@ export function useForm(options: UseFormOptions): FormState {
         },
       });
 
-      return;
+      return true;
     }
   };
 
@@ -91,6 +108,7 @@ export function useForm(options: UseFormOptions): FormState {
     submitting,
     submitButtonLabel,
     cancelPath,
+    errors,
   };
 }
 
@@ -118,4 +136,20 @@ function useTargetListState(goal: Goals.Goal): [TargetState[], { update: (id: st
   const updateValue = (id: string, value: number) => update(id, "value", value);
 
   return [targets, { update: updateValue }];
+}
+
+function validate(content: any, targets: TargetState[]): Error[] {
+  const errors: Error[] = [];
+
+  if (isContentEmpty(content)) {
+    errors.push({ field: "content", message: "Content cannot be empty" });
+  }
+
+  targets.forEach((target) => {
+    if (target.value.toString().trim() === "") {
+      errors.push({ field: target.id, message: `cannot be empty` });
+    }
+  });
+
+  return errors;
 }

@@ -24,20 +24,23 @@ function Header() {
   );
 }
 
-function Editor({ form }) {
+function Editor({ form }: { form: FormState }) {
+  const contentError = form.errors.find((e) => e.field === "content");
+
   return (
     <div className="mt-4">
       <TipTapEditor.Root editor={form.editor.editor}>
         <TipTapEditor.Toolbar editor={form.editor.editor} />
 
         <div
-          className="mb-8 text-content-accent text-lg relative border-b border-stroke-base"
+          className="text-content-accent text-lg relative border-b border-stroke-base"
           style={{ minHeight: "350px" }}
         >
           <TipTapEditor.EditorContent editor={form.editor.editor} />
         </div>
+        {contentError && <div className="text-red-500 text-sm font-medium mt-1">Check-In message is required</div>}
 
-        <p className="font-bold text-lg">Success Conditions</p>
+        <p className="font-bold text-lg mt-8">Success Conditions</p>
         <p className="text-content-dimmed">What are the current values of your success conditions?</p>
 
         <TargetInputs form={form} />
