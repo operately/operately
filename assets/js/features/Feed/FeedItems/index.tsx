@@ -14,6 +14,7 @@ import { GoalCheckInAcknowledgement } from "./GoalCheckInAcknowledgement"
 import { GoalCheckInEdit } from "./GoalCheckInEdit"
 import { GoalCreated } from "./GoalCreated"
 import { GoalEditing } from "./GoalEditing"
+import { GoalReparent } from "./GoalReparent"
 import { ProjectArchived } from "./ProjectArchived"
 import { ProjectCheckInAcknowledged } from "./ProjectCheckInAcknowledged"
 import { ProjectCheckInCommented } from "./ProjectCheckInCommented"
@@ -46,6 +47,7 @@ const FeedItems : FeedItem[] = [
   GoalCheckInEdit,
   GoalCreated,
   GoalEditing,
+  GoalReparent,
   ProjectArchived,
   ProjectCheckInAcknowledged,
   ProjectCheckInCommented,

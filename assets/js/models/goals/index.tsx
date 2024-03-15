@@ -8,5 +8,5 @@ export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromPro
 export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutation";
 export { useEditGoalMutation } from "./useEditGoalMutation";
 export { useCreateGoalMutation } from "./useCreateGoalMutation";
-
 export { groupBySpace } from "./groupBySpace";
+export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";

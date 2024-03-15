@@ -8,6 +8,7 @@ interface GetGoalsOptions {
   includeSpace?: boolean;
   timeframe?: string;
   includeLongerTimeframes?: boolean;
+  includeProjects?: boolean;
 }
 
 export async function getGoals(options: GetGoalsOptions = {}): Promise<Goal[]> {
@@ -19,6 +20,7 @@ export async function getGoals(options: GetGoalsOptions = {}): Promise<Goal[]> {
       includeSpace: !!options.includeSpace,
       timeframe: options.timeframe,
       includeLongerTimeframes: options.includeLongerTimeframes || false,
+      includeProjects: options.includeProjects || false,
     },
     fetchPolicy: "network-only",
   });
@@ -51,6 +53,7 @@ const LIST_GOALS = gql`
     $includeTargets: Boolean!
     $includeSpace: Boolean!
     $includeLongerTimeframes: Boolean!
+    $includeProjects: Boolean!
   ) {
     goals(spaceId: $spaceId, timeframe: $timeframe, includeLongerTimeframes: $includeLongerTimeframes) {
       id
@@ -59,17 +62,25 @@ const LIST_GOALS = gql`
       updatedAt
       isArchived
       timeframe
+      parentGoalId
+
       champion {
         id
         fullName
         avatarUrl
         title
       }
+
       reviewer {
         id
         fullName
         avatarUrl
         title
+      }
+
+      projects @include(if: $includeProjects) {
+        id
+        name
       }
 
       ...GoalSpace @include(if: $includeSpace)

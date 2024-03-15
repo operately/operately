@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -124,6 +124,13 @@ export type ActivityContentGoalEditing = {
   oldReviewerId: Scalars['String']['output'];
   oldTimeframe: Scalars['String']['output'];
   updatedTargets: Array<Maybe<GoalEditingUpdatedTarget>>;
+};
+
+export type ActivityContentGoalReparent = {
+  __typename?: 'ActivityContentGoalReparent';
+  companyId: Scalars['String']['output'];
+  newGoalParentId: Scalars['String']['output'];
+  oldParentGoalId: Scalars['String']['output'];
 };
 
 export type ActivityContentGroupEdited = {
@@ -432,6 +439,11 @@ export type Blob = {
 
 export type BlobInput = {
   filename: Scalars['String']['input'];
+};
+
+export type ChangeGoalParentInput = {
+  goalId: Scalars['String']['input'];
+  parentGoalId: Scalars['String']['input'];
 };
 
 export type ChangeTaskDescriptionInput = {
@@ -980,6 +992,7 @@ export type RootMutationType = {
   addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
+  changeGoalParent: Goal;
   changeTaskDescription: Task;
   closeProject: Project;
   connectGoalToProject: Project;
@@ -1116,6 +1129,11 @@ export type RootMutationTypeArchiveGoalArgs = {
 
 export type RootMutationTypeArchiveProjectArgs = {
   projectId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeChangeGoalParentArgs = {
+  input: ChangeGoalParentInput;
 };
 
 

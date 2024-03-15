@@ -5,6 +5,7 @@ interface GetGoalOptions {
   includeTargets?: boolean;
   includeProjects?: boolean;
   includeLastCheckIn?: boolean;
+  includeParentGoal?: boolean;
 }
 
 export async function getGoal(id: string, options: GetGoalOptions = {}) {
@@ -15,6 +16,7 @@ export async function getGoal(id: string, options: GetGoalOptions = {}) {
       includeTargets: options.includeTargets || false,
       includeProjects: options.includeProjects || false,
       includeLastCheckIn: options.includeLastCheckIn || false,
+      includeParentGoal: options.includeParentGoal || false,
     },
     fetchPolicy: "network-only",
   });
@@ -23,7 +25,13 @@ export async function getGoal(id: string, options: GetGoalOptions = {}) {
 }
 
 const QUERY = gql`
-  query GetGoal($id: ID!, $includeTargets: Boolean!, $includeProjects: Boolean!, $includeLastCheckIn: Boolean!) {
+  query GetGoal(
+    $id: ID!
+    $includeTargets: Boolean!
+    $includeProjects: Boolean!
+    $includeLastCheckIn: Boolean!
+    $includeParentGoal: Boolean!
+  ) {
     goal(id: $id) {
       id
       name
@@ -32,6 +40,11 @@ const QUERY = gql`
       archivedAt
       description
       nextUpdateScheduledAt
+
+      parentGoal @include(if: $includeParentGoal) {
+        id
+        name
+      }
 
       space {
         id
