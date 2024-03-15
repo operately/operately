@@ -192,6 +192,7 @@ const query = gql`
             checkInId
 
             project {
+              id
               name
             }
           }

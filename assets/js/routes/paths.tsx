@@ -43,7 +43,7 @@ const UNACCEPTABLE_CHARACTERS = ["/", "?", "#", "[", "]"];
 function validatePathElements(elements: string[]) {
   elements.forEach((element) => {
     if (!element) {
-      throw new Error("Path elements cannot be null or undefined");
+      throw new Error("Unsuported path elements: " + JSON.stringify(elements));
     }
 
     UNACCEPTABLE_CHARACTERS.forEach((char) => {
