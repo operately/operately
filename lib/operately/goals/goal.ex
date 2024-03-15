@@ -7,7 +7,7 @@ defmodule Operately.Goals.Goal do
   schema "goals" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
-    belongs_to :goal, Operately.Goals.Goal, foreign_key: :parent_goal_id
+    belongs_to :parent_goal, Operately.Goals.Goal, foreign_key: :parent_goal_id
 
     belongs_to :champion, Operately.People.Person, foreign_key: :champion_id
     belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
@@ -40,7 +40,8 @@ defmodule Operately.Goals.Goal do
       :creator_id, 
       :timeframe, 
       :description,
-      :next_update_scheduled_at
+      :next_update_scheduled_at,
+      :parent_goal_id,
     ])
     |> validate_required([
       :name, 

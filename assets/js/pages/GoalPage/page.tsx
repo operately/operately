@@ -15,6 +15,8 @@ import { Banner } from "./Banner";
 import { ProjectListItem } from "@/features/ProjectListItem";
 import { useLoadedData } from "./loader";
 import RichContent from "@/components/RichContent";
+import { Link } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -32,7 +34,7 @@ export function Page() {
               className={classnames(
                 "flex gap-2 items-center",
                 "font-bold",
-                "break-all",
+                "break-word",
                 "text-3xl",
                 "text-content-accent",
               )}
@@ -67,6 +69,11 @@ export function Page() {
           <div className="mt-8">
             <DimmedLabel>Success Conditions</DimmedLabel>
             <TargetList goal={goal} />
+          </div>
+
+          <div className="mt-8">
+            <DimmedLabel>Parent Goal</DimmedLabel>
+            <ParentGoal goal={goal} />
           </div>
 
           <div className="mt-8">
@@ -133,6 +140,22 @@ function Description({ goal }) {
     <div className="mt-8">
       <DimmedLabel>Description</DimmedLabel>
       <RichContent jsonContent={goal.description} />
+    </div>
+  );
+}
+
+function ParentGoal({ goal }) {
+  if (!goal.parentGoal) {
+    return <div className="text-sm">No parent goal</div>;
+  }
+
+  const path = Paths.goalPath(goal.parentGoal.id);
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="font-medium">
+        <Link to={path}>{goal.parentGoal.name}</Link>
+      </div>
     </div>
   );
 }

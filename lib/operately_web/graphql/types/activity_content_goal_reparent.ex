@@ -9,18 +9,16 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalReparent do
     end
     
     
-    field :old_parent_goal_id, non_null(:string) do
+    field :old_parent_goal_id, :string do
       resolve fn activity, _, _ ->
         {:ok, activity.content["old_parent_goal_id"]}
       end
     end
     
-    
-    field :new_goal_parent_id, non_null(:string) do
+    field :new_parent_goal_id, :string do
       resolve fn activity, _, _ ->
-        {:ok, activity.content["new_goal_parent_id"]}
+        {:ok, activity.content["new_parent_goal_id"]}
       end
     end
-    
   end
 end

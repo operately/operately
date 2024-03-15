@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
 
     assoc_field :targets, list_of(:target)
     assoc_field :projects, list_of(:project)
+    assoc_field :parent_goal, :goal
 
     field :last_check_in, :update do
       resolve fn goal, _, _ ->
