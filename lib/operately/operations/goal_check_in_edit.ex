@@ -6,7 +6,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   def run(author, goal, update, content, new_target_values) do
     targets = Operately.Goals.list_targets(goal.id)
-    encoded_new_target_values = encode_new_target_values(targets, new_target_values)
+    encoded_new_target_values = encode_new_target_values(new_target_values, update)
 
     changeset = Update.changeset(update, %{
       content: Operately.Updates.Types.GoalCheckIn.build(encoded_new_target_values, content),
@@ -20,15 +20,11 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Repo.extract_result(:update)
   end
 
-  defp encode_new_target_values(targets, new_target_values) do
+  defp encode_new_target_values(new_target_values, update) do
     Enum.map(new_target_values, fn target_value -> 
-      target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
+      target = update.content["targets"] |> Enum.find(fn target -> target["id"] == target_value["id"] end)
 
-      %{
-        target_id: target.id,
-        target_name: target.name,
-        value: target_value["value"],
-      } 
+      target |> Map.merge(%{value: target_value["value"]})
     end)
   end
 

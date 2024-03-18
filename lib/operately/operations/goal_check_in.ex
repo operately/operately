@@ -61,9 +61,14 @@ defmodule Operately.Operations.GoalCheckIn do
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
 
       %{
-        target_id: target.id,
-        target_name: target.name,
-        value: target_value["value"],
+        "id" => target.id,
+        "name" => target.name,
+        "value" => target_value["value"],
+        "from" => target.from,
+        "to" => target.to,
+        "unit" => target.unit,
+        "index" => target.index,
+        "previous_value" => target.value
       } 
     end)
   end

@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { useLoadedData, useRefresh } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
@@ -22,6 +23,7 @@ export function Page() {
   const refresh = useRefresh();
 
   const commentsForm = useForGoalCheckIn(update);
+  const content = update.content as GoalCheckIns.GoalCheckInContent;
 
   return (
     <Pages.Page title={["Check-In", goal.name]}>
@@ -43,8 +45,10 @@ export function Page() {
           </div>
 
           <Spacer size={4} />
-          <RichContent jsonContent={update.content.message} className="text-lg" />
+          <RichContent jsonContent={content.message} className="text-lg" />
           <Spacer size={4} />
+
+          <Targets />
 
           <Spacer size={4} />
           <Reactions />
@@ -113,5 +117,47 @@ function Options() {
         dataTestId="edit-check-in"
       />
     </PageOptions.Root>
+  );
+}
+
+function Targets() {
+  const { update } = useLoadedData();
+  const content = update.content as GoalCheckIns.GoalCheckInContent;
+  const targets = (content.targets || [])
+    .map((t) => t!)
+    .slice()
+    .sort((a, b) => a.index - b.index);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="text-content-accent text-xs font-medium uppercase">Success Conditions</div>
+      <div className="flex flex-col gap-2">
+        {targets.map((target) => (
+          <div key={target.id} className="flex justify-between items-center">
+            <div className="shrink-0">{target.name}</div>
+            <div className="h-px bg-stroke-base flex-1 mx-2" />
+            <div className="flex gap-2 items-center shrink-0">
+              <TargetProgress value={target.value} start={target.from} end={target.to} unit={target.unit} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TargetProgress({ value, start, end, unit }) {
+  const total = end - start;
+  const progress = (value - start) / total;
+  const width = 100 * progress;
+
+  return (
+    <div className="text-xs font-medium bg-gray-500 rounded px-1.5 py-0.5 text-white-1 relative w-24 text-right">
+      <div className="absolute top-0 left-0 bottom-0 bg-accent-1 rounded" style={{ width: `${width}%` }} />
+
+      <div className="relative">
+        {value} / {end} {unit}
+      </div>
+    </div>
   );
 }

@@ -129,8 +129,8 @@ export type ActivityContentGoalEditing = {
 export type ActivityContentGoalReparent = {
   __typename?: 'ActivityContentGoalReparent';
   companyId: Scalars['String']['output'];
-  newGoalParentId: Scalars['String']['output'];
-  oldParentGoalId: Scalars['String']['output'];
+  newParentGoalId?: Maybe<Scalars['String']['output']>;
+  oldParentGoalId?: Maybe<Scalars['String']['output']>;
 };
 
 export type ActivityContentGroupEdited = {
@@ -443,7 +443,7 @@ export type BlobInput = {
 
 export type ChangeGoalParentInput = {
   goalId: Scalars['String']['input'];
-  parentGoalId: Scalars['String']['input'];
+  parentGoalId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ChangeTaskDescriptionInput = {
@@ -665,6 +665,7 @@ export type Goal = {
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nextUpdateScheduledAt?: Maybe<Scalars['Date']['output']>;
+  parentGoal?: Maybe<Goal>;
   parentGoalId?: Maybe<Scalars['ID']['output']>;
   permissions: GoalPermissions;
   projects?: Maybe<Array<Maybe<Project>>>;
@@ -1738,6 +1739,20 @@ export type UpdateContent = UpdateContentGoalCheckIn | UpdateContentMessage | Up
 export type UpdateContentGoalCheckIn = {
   __typename?: 'UpdateContentGoalCheckIn';
   message: Scalars['String']['output'];
+  targets?: Maybe<Array<Maybe<UpdateContentGoalCheckInTarget>>>;
+};
+
+export type UpdateContentGoalCheckInTarget = {
+  __typename?: 'UpdateContentGoalCheckInTarget';
+  from: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  index: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  previousValue: Scalars['Float']['output'];
+  target: Scalars['Float']['output'];
+  to: Scalars['Float']['output'];
+  unit: Scalars['String']['output'];
+  value: Scalars['Float']['output'];
 };
 
 export type UpdateContentMessage = {

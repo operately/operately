@@ -104,7 +104,17 @@ interface TextInnputNoLabelProps {
 }
 
 export function TextInputNoLabel(props: TextInnputNoLabelProps) {
-  const { id, value, onChange, placeholder = "", error = false, autoFocus = false, onEnter = null, ...rest } = props;
+  const {
+    id,
+    testId,
+    value,
+    onChange,
+    placeholder = "",
+    error = false,
+    autoFocus = false,
+    onEnter = null,
+    ...rest
+  } = props;
 
   const className = classname(
     "w-full bg-surface text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
