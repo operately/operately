@@ -18,7 +18,7 @@ defmodule Operately.Features.GoalCheckInTest do
     ctx
     |> GoalSteps.visit_page()
     |> GoalSteps.submit_check_in("Checking-in on my goal", target_values: [20, 80])
-    |> GoalSteps.assert_check_in("Checking-in on my goal", target_values: [20, 80])
+    |> GoalSteps.assert_check_in_submitted("Checking-in on my goal", target_values: [20, 80])
     |> GoalSteps.assert_check_in_visible_in_goal_feed()
     |> GoalSteps.assert_check_in_email_sent_to_reviewer()
   end

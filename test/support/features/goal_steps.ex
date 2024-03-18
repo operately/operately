@@ -53,12 +53,14 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "submit-check-in")
   end
 
-  def assert_check_in(ctx, message, target_values) do
+  def assert_check_in_submitted(ctx, message, target_values: target_values) do
     ctx
     |> UI.assert_text("Check-In from")
     |> UI.assert_text(message)
-    |> UI.assert_text("First response time value changed from 10 to #{Enum.at(target_values, 0)} minutes")
-    |> UI.assert_text("Increase feedback score to 90% value changed from 80 to #{Enum.at(target_values, 1)}%")
+    |> UI.assert_text("First response time")
+    |> UI.assert_text("Increase feedback score to 90%")
+    |> UI.assert_text("#{Enum.at(target_values, 1)} / 90 percent")
+    |> UI.assert_text("#{Enum.at(target_values, 0)} / 15 minutes")
   end
 
   def assert_check_in_visible_in_goal_feed(ctx) do

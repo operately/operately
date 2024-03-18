@@ -152,7 +152,7 @@ function TargetProgress({ value, start, end, unit }) {
   const width = 100 * progress;
 
   return (
-    <div className="text-xs font-medium bg-gray-500 rounded px-1.5 py-0.5 text-white-1 relative w-24 text-right">
+    <div className="text-xs font-medium bg-gray-500 rounded px-1.5 py-0.5 text-white-1 relative w-[120px] text-right truncate">
       <div className="absolute top-0 left-0 bottom-0 bg-accent-1 rounded" style={{ width: `${width}%` }} />
 
       <div className="relative">

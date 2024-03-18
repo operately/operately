@@ -24,7 +24,7 @@ export interface FormState {
 
   editor: TipTapEditor.EditorState;
   targets: TargetState[];
-  updateTarget: (id: string, value: number) => void;
+  updateTarget: (id: string, value: number | null) => void;
 
   submit: () => void;
   submitting: boolean;
@@ -115,7 +115,7 @@ export function useForm(options: UseFormOptions): FormState {
 interface TargetState {
   id: string;
   name: string;
-  value: number;
+  value: number | null;
   from: number;
   to: number;
   unit: string;
@@ -133,7 +133,7 @@ function useTargetListState(goal: Goals.Goal): [TargetState[], { update: (id: st
     })),
   );
 
-  const updateValue = (id: string, value: number) => update(id, "value", value);
+  const updateValue = (id: string, value: number | null) => update(id, "value", value);
 
   return [targets, { update: updateValue }];
 }
@@ -146,7 +146,7 @@ function validate(content: any, targets: TargetState[]): Error[] {
   }
 
   targets.forEach((target) => {
-    if (target.value.toString().trim() === "") {
+    if (!target.value || target.value?.toString().trim() === "") {
       errors.push({ field: target.id, message: `cannot be empty` });
     }
   });

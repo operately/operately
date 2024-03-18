@@ -69,8 +69,9 @@ function TargetInputs({ form }: { form: FormState }) {
               <Forms.TextInputNoLabel
                 id={target.id}
                 testId={createTestId("target", target.name)}
-                value={target.value.toString()}
-                onChange={(value: string) => form.updateTarget(target.id, Number(value))}
+                value={target.value?.toString() || ""}
+                onChange={(value: string) => form.updateTarget(target.id, value === "" ? null : Number(value))}
+                error={!!form.errors.find((e) => e.field === target.id)}
               />
             </div>
           </div>
