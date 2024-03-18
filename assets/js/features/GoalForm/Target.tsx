@@ -37,7 +37,7 @@ export function AddTarget({ form }: { form: FormState }) {
 
   return (
     <div className="flex items-center gap-2">
-      <div className={className} onClick={handleClick}>
+      <div className={className} onClick={handleClick} data-test-id="add-target">
         + Add More
       </div>
     </div>
@@ -120,7 +120,17 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
   return <Row icon={icon} name={nameInput} from={fromInput} to={toInput} unit={unitInput} remove={removeButton} />;
 }
 
-function TextInput({ id, autoFocus = false, placeholder, active, setActive, value, setValue, testId = "", error }) {
+function TextInput({
+  id = undefined,
+  autoFocus = false,
+  placeholder,
+  active,
+  setActive,
+  value,
+  setValue,
+  testId = "",
+  error,
+}) {
   return (
     <GenericInput
       id={id}
