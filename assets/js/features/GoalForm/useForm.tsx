@@ -218,6 +218,7 @@ function useTargets(mode: "create" | "edit", goal?: Goals.Goal): [TargetList, Ad
 
 function newEmptyTarget() {
   return {
+    isNew: true,
     id: Math.random().toString(),
     name: "",
     from: "",

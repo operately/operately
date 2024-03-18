@@ -54,6 +54,11 @@ defmodule Operately.Features.GoalCreationTest do
     |> UI.fill(testid: "goal-name", with: "New Goal Name")
     |> UI.select_person_in(id: "champion-search", name: "John New Champion")
     |> UI.select_person_in(id: "reviewer-search", name: "Leonardo New Reviewer")
+    |> UI.click(testid: "add-target")
+    |> UI.fill(testid: "target-2-name", with: "Sold 1000 units")
+    |> UI.fill(testid: "target-2-current", with: "0")
+    |> UI.fill(testid: "target-2-target", with: "1000")
+    |> UI.fill(testid: "target-2-unit", with: "units")
     |> UI.click(testid: "save-changes")
 
     ctx
