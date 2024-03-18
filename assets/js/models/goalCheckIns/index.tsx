@@ -2,11 +2,12 @@ import client from "@/graphql/client";
 import { gql, useMutation } from "@apollo/client";
 
 import * as Time from "@/utils/time";
-import { Update } from "@/gql";
+import { Update, UpdateContentGoalCheckIn } from "@/gql";
 
 type GoalCheckIn = Update;
+type GoalCheckInContent = UpdateContentGoalCheckIn;
 
-export type { GoalCheckIn };
+export type { GoalCheckIn, GoalCheckInContent };
 
 export function usePostUpdate(options: any) {
   return useMutation(
@@ -81,6 +82,16 @@ export async function getCheckIn(id: string, options: any) {
 
             ... on UpdateContentGoalCheckIn {
               message
+
+              targets {
+                id
+                name
+                value
+                previousValue
+                unit
+                from
+                to
+              }
             }
           }
         }

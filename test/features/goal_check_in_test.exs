@@ -17,22 +17,10 @@ defmodule Operately.Features.GoalCheckInTest do
   feature "check-in on a goal", ctx do
     ctx
     |> GoalSteps.visit_page()
-    |> UI.click(testid: "check-in-now")
-    |> UI.fill_rich_text("Checking-in on my goal")
-    |> UI.click(testid: "submit-check-in")
-    |> UI.assert_text("Check-In from")
-
-    ctx
-    |> GoalSteps.visit_page()
-    |> FeedSteps.assert_goal_check_in(author: ctx.champion)
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.goal.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
-      action: "submitted a check-in"
-    })
+    |> GoalSteps.submit_check_in("Checking-in on my goal", target_values: [20, 80])
+    |> GoalSteps.assert_check_in_submitted("Checking-in on my goal", target_values: [20, 80])
+    |> GoalSteps.assert_check_in_visible_in_goal_feed()
+    |> GoalSteps.assert_check_in_email_sent_to_reviewer()
   end
 
   @tag login_as: :champion

@@ -93,6 +93,7 @@ export function TextInput({ label, value, onChange, placeholder = "", error, ...
 
 interface TextInnputNoLabelProps {
   id: string;
+  testId?: string;
   value: string;
   placeholder?: string;
   error?: boolean;
@@ -103,7 +104,17 @@ interface TextInnputNoLabelProps {
 }
 
 export function TextInputNoLabel(props: TextInnputNoLabelProps) {
-  const { id, value, onChange, placeholder = "", error = false, autoFocus = false, onEnter = null, ...rest } = props;
+  const {
+    id,
+    testId,
+    value,
+    onChange,
+    placeholder = "",
+    error = false,
+    autoFocus = false,
+    onEnter = null,
+    ...rest
+  } = props;
 
   const className = classname(
     "w-full bg-surface text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
@@ -122,6 +133,7 @@ export function TextInputNoLabel(props: TextInnputNoLabelProps) {
   return (
     <input
       id={id}
+      data-test-id={props.testId}
       className={className}
       type="text"
       value={value}
