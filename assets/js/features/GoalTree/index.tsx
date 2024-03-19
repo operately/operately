@@ -99,7 +99,9 @@ function ProjectNode({ project }: { project: Projects.Project }) {
   return (
     <div className="flex items-center gap-1.5 my-1.5">
       <Icons.IconHexagonFilled size={14} className="text-blue-500" />
-      <div className="font-medium text-sm">{project.name}</div>
+      <DivLink to={Paths.projectPath(project.id)} className="font-medium text-sm">
+        {project.name}
+      </DivLink>
     </div>
   );
 }
