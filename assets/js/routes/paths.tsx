@@ -11,6 +11,10 @@ export class Paths {
     return createPath(["projects", projectId, "check-ins", "new"]);
   }
 
+  static projectNewPath({ goalId }: { goalId: string }) {
+    return createPath(["projects", "new"]) + "?goalId=" + goalId;
+  }
+
   static projectCheckInEditPath(projectId: string, checkInId: string) {
     return createPath(["projects", projectId, "check-ins", checkInId, "edit"]);
   }
@@ -25,6 +29,10 @@ export class Paths {
 
   static goalPath(goalId: string) {
     return createPath(["goals", goalId]);
+  }
+
+  static goalNewPath({ parentGoalId }: { parentGoalId: string }) {
+    return createPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
   static goalCheckInPath(goalId: string, checkInId: string) {

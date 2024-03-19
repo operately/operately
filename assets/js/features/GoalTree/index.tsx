@@ -2,11 +2,12 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
-import * as Popover from "@radix-ui/react-popover";
+
+import classNames from "classnames";
 
 import { DivLink } from "@/components/Link";
-import classNames from "classnames";
 import { Paths } from "@/routes/paths";
+import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
 
 import { Node } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";
@@ -76,29 +77,19 @@ function HiddenGoalActions({ node }: { node: Node }) {
 }
 
 function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOpen: (open: boolean) => void }) {
-  const dropdownClassName = classNames("rounded-lg border border-surface-outline z-[100] shadow-xl overflow-hidden");
+  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
+  const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <Icons.IconDots size={14} className="cursor-pointer" />
-      </Popover.Trigger>
-
-      <Popover.Portal>
-        <Popover.Content className={dropdownClassName} align="center" sideOffset={5}>
-          <div className="bg-surface px-1 py-1 flex flex-col gap-0.5">
-            <div className="add-goal-button hover:bg-accent-1 hover:text-white-1 rounded-md px-1.5 py-0.5 text-sm cursor-pointer">
-              Add Subgoal
-            </div>
-
-            <div className="add-goal-button hover:bg-accent-1 hover:text-white-1 rounded-md px-1.5 py-0.5 text-sm cursor-pointer">
-              Add Project
-            </div>
-          </div>
-          <Popover.Arrow className="fill-surface-outline scale-150" style={{}} />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <DropdownMenu
+      open={open}
+      setOpen={setOpen}
+      trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
+      options={[
+        <DropdownMenuLinkItem to={newGoalPath} title="Add Subgoal" />,
+        <DropdownMenuLinkItem to={newProjectPath} title="Add Project" />,
+      ]}
+    />
   );
 }
 
