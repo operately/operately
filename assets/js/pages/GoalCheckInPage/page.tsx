@@ -137,7 +137,7 @@ function Targets() {
             <div className="font-medium truncate">{target.name}</div>
             <div className="h-px bg-stroke-base flex-1" />
             <TargetChange target={target} />
-            <TargetProgress value={target.value} start={target.from} end={target.to} unit={target.unit} />
+            <TargetProgress value={target.value} start={target.from} end={target.to} />
           </div>
         ))}
       </div>
@@ -145,7 +145,7 @@ function Targets() {
   );
 }
 
-function TargetProgress({ value, start, end, unit }) {
+function TargetProgress({ value, start, end }) {
   const total = end - start;
   const progress = (value - start) / total;
   const width = 100 * progress;
