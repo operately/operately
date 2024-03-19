@@ -21,7 +21,10 @@ export function Page() {
 function NewGoalForSpacePage() {
   const { company, me, space } = useLoadedData();
 
-  const form = useForm("create", company, me, {
+  const form = useForm({
+    mode: "create",
+    company: company,
+    me: me,
     allowSpaceSelection: false,
     space: space,
   });
@@ -46,10 +49,15 @@ function NewGoalForSpacePage() {
 }
 
 function NewGoalPage() {
-  const { company, me, spaces } = useLoadedData();
-  const form = useForm("create", company, me, {
+  const { company, me, spaces, parentGoalId } = useLoadedData();
+
+  const form = useForm({
+    mode: "create",
+    company: company,
+    me: me,
     allowSpaceSelection: true,
     spaces: spaces,
+    parentGoalId,
   });
 
   return (

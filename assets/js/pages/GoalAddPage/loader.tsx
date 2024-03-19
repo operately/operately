@@ -12,6 +12,8 @@ interface LoaderResult {
   spaces?: Groups.Group[];
 
   allowSpaceSelection: boolean;
+
+  parentGoalId?: string;
 }
 
 // There are two ways we can end up on this page:
@@ -20,6 +22,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const spaceID = params.id;
+  const parentGoalId = params.parentGoalId;
 
   const company = await Companies.getCompany();
   const me = await People.getMe();
@@ -27,10 +30,10 @@ export async function loader({ params }): Promise<LoaderResult> {
   if (spaceID) {
     const space = await Groups.getGroup(params.id);
 
-    return { company, me, spaceID, space, allowSpaceSelection: false };
+    return { company, me, spaceID, space, allowSpaceSelection: false, parentGoalId };
   } else {
     const spaces = await Groups.getGroups();
-    return { company, me, spaces, allowSpaceSelection: true };
+    return { company, me, spaces, allowSpaceSelection: true, parentGoalId };
   }
 }
 

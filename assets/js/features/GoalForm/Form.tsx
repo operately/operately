@@ -26,7 +26,7 @@ function FormMain({ form }: { form: FormState }) {
 
   return (
     <div className="font-medium">
-      {form.mode === "create" ? (
+      {form.config.mode === "create" ? (
         <div className="font-bold text-lg mb-3">Goal</div>
       ) : (
         <div className="font-bold">Name</div>
@@ -39,7 +39,7 @@ function FormMain({ form }: { form: FormState }) {
 
       <Description form={form} />
 
-      {form.mode === "create" ? (
+      {form.config.mode === "create" ? (
         <div className="font-bold text-lg">Success Conditions</div>
       ) : (
         <div className="font-bold">Success Conditions</div>
@@ -82,14 +82,14 @@ function Description({ form }: { form: FormState }) {
 function FormFooter({ form }: { form: FormState }) {
   const bottomGridStyle = classnames({
     "grid grid-cols-1 sm:grid-cols-2 gap-4": true,
-    "lg:grid-cols-3": !form.spaceConfig.allowSpaceSelection,
-    "lg:grid-cols-4": form.spaceConfig.allowSpaceSelection,
+    "lg:grid-cols-3": !form.config.allowSpaceSelection,
+    "lg:grid-cols-4": form.config.allowSpaceSelection,
   });
 
   return (
     <Paper.DimmedSection>
       <div className={bottomGridStyle}>
-        {form.spaceConfig.allowSpaceSelection && (
+        {form.config.allowSpaceSelection && (
           <div className="basis-1/4">
             <SpaceSelector form={form} />
           </div>
