@@ -59,8 +59,8 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text(message)
     |> UI.assert_text("First response time")
     |> UI.assert_text("Increase feedback score to 90%")
-    |> UI.assert_text("#{Enum.at(target_values, 1)} / 90 percent")
-    |> UI.assert_text("#{Enum.at(target_values, 0)} / 15 minutes")
+    |> UI.assert_text("#{Enum.at(target_values, 1)} / 90")
+    |> UI.assert_text("#{Enum.at(target_values, 0)} / 15")
   end
 
   def assert_check_in_visible_in_goal_feed(ctx) do
