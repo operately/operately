@@ -20,10 +20,11 @@ interface LoaderResult {
 // 1. We are navigating to a specific space, and we have the space ID in the URL.
 // 2. We are navigating to /goals/new, and we need to pick a space.
 
-export async function loader({ params }): Promise<LoaderResult> {
-  const spaceID = params.id;
-  const parentGoalId = params.parentGoalId;
+export async function loader({ request, params }): Promise<LoaderResult> {
+  const searchParams = new URL(request.url).searchParams;
 
+  const spaceID = params.id;
+  const parentGoalId = searchParams.get("parentGoalId") || undefined;
   const company = await Companies.getCompany();
   const me = await People.getMe();
 

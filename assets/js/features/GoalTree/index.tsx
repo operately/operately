@@ -26,7 +26,7 @@ function GoalTreeRoots() {
   return (
     <div>
       {tree.getRoots().map((root) => (
-        <GoalNode node={root} />
+        <GoalNode key={root.goal.id} node={root} />
       ))}
     </div>
   );
@@ -86,8 +86,8 @@ function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOp
       setOpen={setOpen}
       trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
       options={[
-        <DropdownMenuLinkItem to={newGoalPath} title="Add Subgoal" />,
-        <DropdownMenuLinkItem to={newProjectPath} title="Add Project" />,
+        <DropdownMenuLinkItem key="add-goal" to={newGoalPath} title="Add Subgoal" />,
+        <DropdownMenuLinkItem key="add-project" to={newProjectPath} title="Add Project" />,
       ]}
     />
   );
@@ -114,8 +114,8 @@ function GoalChildren({ node }: { node: Node }) {
     <div className="relative">
       <div className="absolute top-0 left-1.5 w-0.5 h-full bg-surface-outline" />
       <div className="pl-6">
-        <div>{node.subGoals?.map((node) => <GoalNode node={node} />)}</div>
-        <div>{node.goal.projects?.map((project) => <ProjectNode project={project!} />)}</div>
+        <div>{node.subGoals?.map((node) => <GoalNode key={node.goal.id} node={node} />)}</div>
+        <div>{node.goal.projects?.map((project) => <ProjectNode key={project!.id} project={project!} />)}</div>
       </div>
     </div>
   );

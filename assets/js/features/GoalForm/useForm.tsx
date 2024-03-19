@@ -125,14 +125,7 @@ export function useForm(config: FormConfig): FormState {
     setHasDescription,
   } as Fields;
 
-  const cancelPath = createCancelPath(config);
-  const [submit, cancel, submitting, errors] = useSubmit(
-    fields,
-    cancelPath,
-    config.mode,
-    config.goal,
-    config.parentGoalId,
-  );
+  const [submit, cancel, submitting, errors] = useSubmit(fields, config);
 
   return {
     config,
@@ -225,14 +218,10 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(
-  fields: Fields,
-  cancelPath: string,
-  mode: "create" | "edit",
-  goal?: Goals.Goal,
-  parentGoalId?: string,
-): [() => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
+
+  const cancel = useNavigateTo(createCancelPath(config));
 
   const [create, { loading: submittingCreate }] = Goals.useCreateGoalMutation({
     onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
@@ -247,14 +236,14 @@ function useSubmit(
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const submit = async () => {
-    const errors = validateForm(fields, mode);
+    const errors = validateForm(fields, config.mode);
 
     if (errors.length > 0) {
       setErrors(errors);
       return false;
     }
 
-    if (mode === "create") {
+    if (config.mode === "create") {
       await create({
         variables: {
           input: {
@@ -264,7 +253,7 @@ function useSubmit(
             reviewerID: fields.reviewer!.id,
             timeframe: fields.timeframe.value,
             description: prepareDescriptionForSave(fields),
-            parentGoalID: parentGoalId,
+            parentGoalID: config.parentGoalId,
             targets: fields.targets
               .filter((t) => t.name.trim() !== "")
               .map((t, index) => ({
@@ -283,7 +272,7 @@ function useSubmit(
       await edit({
         variables: {
           input: {
-            goalId: goal!.id,
+            goalId: config.goal!.id,
             name: fields.name,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
@@ -317,8 +306,6 @@ function useSubmit(
 
     return true;
   };
-
-  const cancel = useNavigateTo(cancelPath);
 
   return [submit, cancel, submitting, errors];
 }
