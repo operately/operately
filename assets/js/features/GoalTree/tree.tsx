@@ -39,12 +39,16 @@ export class Tree {
 
 export class Node {
   public goal: Goal;
-  public children: Node[];
+  public subGoals: Node[];
+  public projects: any;
   public depth: number;
+  public hasChildren: boolean;
 
   constructor(goal: Goal, children: Node[], depth: number = 0) {
     this.goal = goal;
-    this.children = children;
     this.depth = depth;
+    this.subGoals = children;
+    this.projects = goal.projects;
+    this.hasChildren = this.subGoals.length > 0 || this.projects.length > 0;
   }
 }
