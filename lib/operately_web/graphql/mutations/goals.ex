@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
         goal_id = input.goal_id
-        parent_goal_id = input.parent_goal_id
+        parent_goal_id = input[:parent_goal_id]
 
         Operately.Operations.GoalReparent.run(author, goal_id, parent_goal_id)
       end

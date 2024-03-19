@@ -15,7 +15,8 @@ defmodule Operately.Projects.ProjectCreation do
     :creator_role, 
     :creator_is_contributor,
     :visibility, 
-    :group_id
+    :group_id,
+    :goal_id
   ]
 
   def run(%__MODULE__{} = params) do
@@ -24,6 +25,7 @@ defmodule Operately.Projects.ProjectCreation do
       Project.changeset(%{
         :company_id => params.company_id,
         :group_id => params.group_id,
+        :goal_id => params.goal_id,
         :name => params.name,
         :private => is_private(params.visibility),
         :creator_id => params.creator_id,

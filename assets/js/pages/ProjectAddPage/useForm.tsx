@@ -54,7 +54,7 @@ interface Error {
 }
 
 export function useForm() {
-  const { company, me, spaceID } = useLoadedData();
+  const { company, me, spaceID, goalID } = useLoadedData();
 
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
@@ -107,7 +107,7 @@ export function useForm() {
 
   const cancelPath = spaceID ? `/spaces/${spaceID}` : "/projects";
 
-  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath);
+  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath, goalID);
 
   return {
     fields,
@@ -118,7 +118,7 @@ export function useForm() {
   };
 }
 
-function useSubmit(fields: Fields, cancelPath: string) {
+function useSubmit(fields: Fields, cancelPath: string, goalID: string | undefined) {
   const navigate = useNavigate();
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -147,6 +147,7 @@ function useSubmit(fields: Fields, cancelPath: string) {
           creatorIsContributor: fields.creatorIsContributor,
           creatorRole: fields.creatorRole,
           spaceId: fields.space!.value,
+          goalId: goalID,
         },
       },
     });
