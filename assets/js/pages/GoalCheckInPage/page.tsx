@@ -171,6 +171,6 @@ function TargetChange({ target }) {
   } else if (newProgress < oldProgress) {
     return <div className="text-red-500 font-bold shrink-0 test-sm">- {Math.abs(diff)}</div>;
   } else {
-    return <div className="flex items-center gap-1 text-content-subtle font-medium shrink-0 text-xs">No Change</div>;
+    return <div className="flex items-center gap-1 text-content-dimmed font-medium shrink-0 text-xs">No Change</div>;
   }
 }
