@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :visibility, non_null(:string)
     field :creator_is_contributor, non_null(:string)
     field :creator_role, :string
+    field :goal_id, :id
   end
 
   input_object :add_key_resource_input do
@@ -176,7 +177,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           visibility: args.input.visibility,
           creator_id: person.id,
           company_id: person.company_id,
-          group_id: args.input.space_id
+          group_id: args.input.space_id,
+          goal_id: args.input[:goal_id]
         }
         |> Operately.Projects.create_project()
       end

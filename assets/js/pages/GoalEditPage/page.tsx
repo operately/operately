@@ -9,7 +9,14 @@ import { FormState, useForm, Form } from "@/features/GoalForm";
 
 export function Page() {
   const { company, me, goal } = useLoadedData();
-  const form = useForm("edit", company, me, { allowSpaceSelection: false }, goal);
+
+  const form = useForm({
+    mode: "edit",
+    company,
+    me,
+    allowSpaceSelection: false,
+    goal,
+  });
 
   return (
     <Pages.Page title={["Edit", goal.name]}>

@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :timeframe, non_null(:string)
     field :targets, non_null(list_of(:create_target_input))
     field :description, :string
+    field :parent_goal_id, :id
   end
 
   input_object :edit_goal_input do
@@ -51,7 +52,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
         goal_id = input.goal_id
-        parent_goal_id = input.parent_goal_id
+        parent_goal_id = input[:parent_goal_id]
 
         Operately.Operations.GoalReparent.run(author, goal_id, parent_goal_id)
       end

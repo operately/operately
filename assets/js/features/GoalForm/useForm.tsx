@@ -12,8 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 
 export interface FormState {
-  mode: "create" | "edit";
-  spaceConfig: SpaceConfig;
+  config: FormConfig;
   fields: Fields;
   errors: Error[];
   submitting: boolean;
@@ -72,25 +71,25 @@ interface Target {
   isNew?: boolean;
 }
 
-interface SpaceConfig {
+interface FormConfig {
+  mode: "create" | "edit";
+  company: Companies.Company;
+  me: People.Person;
+  goal?: Goals.Goal;
+  parentGoalId?: string;
+
   allowSpaceSelection: boolean;
   space?: Groups.Group;
   spaces?: Groups.Group[];
 }
 
-export function useForm(
-  mode: "create" | "edit",
-  company: Companies.Company,
-  me: People.Person,
-  spaceConfig: SpaceConfig,
-  goal?: Goals.Goal,
-): FormState {
-  const [name, setName] = React.useState<string>(goal?.name || "");
-  const [champion, setChampion] = React.useState<People.Person | null>(goal?.champion || me);
-  const [reviewer, setReviewer] = React.useState<People.Person | null>(goal?.reviewer || null);
-  const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(mode, goal);
-  const [targets, addTarget, removeTarget, updateTarget] = useTargets(mode, goal);
-  const [space, setSpace, spaceOptions] = useSpaces(mode, spaceConfig);
+export function useForm(config: FormConfig): FormState {
+  const [name, setName] = React.useState<string>(config.goal?.name || "");
+  const [champion, setChampion] = React.useState<People.Person | null>(config.goal?.champion || config.me);
+  const [reviewer, setReviewer] = React.useState<People.Person | null>(config.goal?.reviewer || null);
+  const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(config);
+  const [targets, addTarget, removeTarget, updateTarget] = useTargets(config);
+  const [space, setSpace, spaceOptions] = useSpaces(config);
 
   const [hasDescription, setHasDescription] = React.useState<boolean>(false);
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
@@ -101,8 +100,8 @@ export function useForm(
   });
 
   const fields = {
-    company,
-    me,
+    company: config.company,
+    me: config.me,
 
     name,
     champion,
@@ -126,12 +125,10 @@ export function useForm(
     setHasDescription,
   } as Fields;
 
-  const cancelPath = createCancelPath(mode, spaceConfig, space, goal);
-  const [submit, cancel, submitting, errors] = useSubmit(fields, cancelPath, mode, goal);
+  const [submit, cancel, submitting, errors] = useSubmit(fields, config);
 
   return {
-    mode,
-    spaceConfig,
+    config,
     fields,
     errors,
     submitting,
@@ -140,10 +137,7 @@ export function useForm(
   };
 }
 
-function useTimeframe(
-  mode: "create" | "edit",
-  goal?: Goals.Goal,
-): [TimeframeOption, (timeframe: TimeframeOption) => void, TimeframeOption[]] {
+function useTimeframe(config: FormConfig): [TimeframeOption, (timeframe: TimeframeOption) => void, TimeframeOption[]] {
   let options: TimeframeOption[] = [
     { value: Time.nQuartersFromNow(0), label: `${Time.nQuartersFromNow(0)}` },
     { value: Time.nQuartersFromNow(1), label: `${Time.nQuartersFromNow(1)}` },
@@ -153,38 +147,35 @@ function useTimeframe(
     { value: Time.nextYear().toString(), label: `${Time.nextYear()}` },
   ];
 
-  if (mode === "edit") {
-    options = options.filter((o) => o.value !== goal?.timeframe);
-    options.unshift({ value: goal!.timeframe, label: goal!.timeframe });
+  if (config.mode === "edit") {
+    options = options.filter((o) => o.value !== config.goal!.timeframe);
+    options.unshift({ value: config.goal!.timeframe, label: config.goal!.timeframe });
   }
 
   const [timeframe, setTimeframe] = React.useState<TimeframeOption>(options[0]!);
   return [timeframe, setTimeframe, options];
 }
 
-function useSpaces(
-  mode: "create" | "edit",
-  spaceConfig: SpaceConfig,
-): [SpaceOption | null, (space: SpaceOption | null) => void, SpaceOption[]] {
+function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption | null) => void, SpaceOption[]] {
   const [space, setSpace] = React.useState<Fields["space"]>(() => {
-    if (spaceConfig.allowSpaceSelection || mode === "edit") {
+    if (config.allowSpaceSelection || config.mode === "edit") {
       return null;
     } else {
-      return { value: spaceConfig.space!.id, label: spaceConfig.space!.name };
+      return { value: config.space!.id, label: config.space!.name };
     }
   });
 
   const options = React.useMemo(() => {
-    if (mode === "edit") return [];
+    if (config.mode === "edit") return [];
 
-    if (spaceConfig.allowSpaceSelection) {
-      const spaces = Groups.sortGroups(spaceConfig.spaces!);
+    if (config.allowSpaceSelection) {
+      const spaces = Groups.sortGroups(config.spaces!);
 
       return spaces.map((space) => ({ value: space.id, label: space.name }));
     } else {
       return [];
     }
-  }, [spaceConfig.spaces, spaceConfig.allowSpaceSelection]);
+  }, [config.spaces, config.allowSpaceSelection]);
 
   return [space, setSpace, options];
 }
@@ -194,10 +185,10 @@ type AddTarget = (target: Target) => void;
 type RemoveTarget = (id: string) => void;
 type UpdateTarget = (id: string, field: string, value: any) => void;
 
-function useTargets(mode: "create" | "edit", goal?: Goals.Goal): [TargetList, AddTarget, RemoveTarget, UpdateTarget] {
+function useTargets(config: FormConfig): [TargetList, AddTarget, RemoveTarget, UpdateTarget] {
   const [list, { add, remove, update }] = useListState<Target>((): Target[] => {
-    if (mode === "edit") {
-      return (goal?.targets! || [])
+    if (config.mode === "edit") {
+      return (config.goal?.targets! || [])
         .map((t) => t!)
         .map((t) => ({
           id: t.id,
@@ -227,13 +218,10 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(
-  fields: Fields,
-  cancelPath: string,
-  mode: "create" | "edit",
-  goal?: Goals.Goal,
-): [() => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
+
+  const cancel = useNavigateTo(createCancelPath(config));
 
   const [create, { loading: submittingCreate }] = Goals.useCreateGoalMutation({
     onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
@@ -248,14 +236,14 @@ function useSubmit(
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const submit = async () => {
-    const errors = validateForm(fields, mode);
+    const errors = validateForm(fields, config.mode);
 
     if (errors.length > 0) {
       setErrors(errors);
       return false;
     }
 
-    if (mode === "create") {
+    if (config.mode === "create") {
       await create({
         variables: {
           input: {
@@ -265,6 +253,7 @@ function useSubmit(
             reviewerID: fields.reviewer!.id,
             timeframe: fields.timeframe.value,
             description: prepareDescriptionForSave(fields),
+            parentGoalID: config.parentGoalId,
             targets: fields.targets
               .filter((t) => t.name.trim() !== "")
               .map((t, index) => ({
@@ -283,7 +272,7 @@ function useSubmit(
       await edit({
         variables: {
           input: {
-            goalId: goal!.id,
+            goalId: config.goal!.id,
             name: fields.name,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
@@ -317,8 +306,6 @@ function useSubmit(
 
     return true;
   };
-
-  const cancel = useNavigateTo(cancelPath);
 
   return [submit, cancel, submitting, errors];
 }
@@ -379,17 +366,12 @@ function prepareDescriptionForSave(fields: Fields): string | null {
   return JSON.stringify(content);
 }
 
-function createCancelPath(
-  mode: "create" | "edit",
-  spaceConfig: SpaceConfig,
-  space: SpaceOption | null,
-  goal?: Goals.Goal,
-): string {
-  if (mode === "edit") {
-    return createPath("goals", goal?.id);
-  } else if (spaceConfig.allowSpaceSelection) {
+function createCancelPath(config: FormConfig): string {
+  if (config.mode === "edit") {
+    return createPath("goals", config.goal?.id);
+  } else if (config.allowSpaceSelection) {
     return "/goals";
   } else {
-    return createPath("group", space!.value);
+    return createPath("group", config.space!.id);
   }
 }
