@@ -42,17 +42,23 @@ function Header() {
 
 function PersonFeed() {
   const { person } = useLoadedData();
-  const { data, loading, error } = useItemsQuery("person", person.id);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
 
   return (
     <Paper.DimmedSection>
       <div className="uppercase text-xs text-content-accent font-semibold mb-4">
         {People.firstName(person)}'s Activity
       </div>
-      <Feed items={data.activities} testId="profile-feed" page="profile" />
+      <PersonFeedContent />
     </Paper.DimmedSection>
   );
+}
+
+function PersonFeedContent() {
+  const { person } = useLoadedData();
+  const { data, loading, error } = useItemsQuery("person", person.id);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+
+  return <Feed items={data.activities} testId="profile-feed" page="profile" />;
 }
