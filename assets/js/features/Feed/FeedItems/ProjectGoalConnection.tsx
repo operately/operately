@@ -52,5 +52,14 @@ function Title({ activity, content, page }) {
     );
   }
 
+  if (page === "company" || page === "space" || page === "profile") {
+    return (
+      <>
+        {People.shortName(activity.author)} connected the <Link to={projectPage}>{content.project.name}</Link> project
+        to the <Link to={goalPath}>{content.goal.name}</Link> goal.
+      </>
+    );
+  }
+
   throw new Error(`The activity feed item was rendered on an unknown page: ${page}`);
 }

@@ -2,7 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 
 import FeedItems from "./FeedItems";
 
-type ScopeType = "company" | "project" | "goal" | "space";
+type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
 export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
   const query = constructQuery();

@@ -9,7 +9,7 @@ import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-type Page = "company" | "project" | "goal" | "space";
+type Page = "company" | "project" | "goal" | "space" | "profile";
 
 export function Feed({ items, testId, page }: { items: Activities.Activity[]; testId?: string; page: Page }) {
   return (
@@ -24,6 +24,26 @@ export function Feed({ items, testId, page }: { items: Activities.Activity[]; te
 }
 
 function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page: string }) {
+  const activitiesWithKnownTypes = group.activities.filter((activity) => {
+    return FeedItems.some((item) => item.typename === activity.content.__typename);
+  });
+
+  const activitiesWithoutKnownTypes = group.activities.filter((activity) => {
+    return !FeedItems.some((item) => item.typename === activity.content.__typename);
+  });
+
+  if (activitiesWithoutKnownTypes.length > 0) {
+    console.log(
+      `The following activities have no known types: ${activitiesWithoutKnownTypes
+        .map((activity) => activity.content.__typename)
+        .join(", ")}`,
+    );
+  }
+
+  if (activitiesWithKnownTypes.length === 0) {
+    return null;
+  }
+
   return (
     <div className="w-full border-t border-stroke-base py-4">
       <div className="flex items-start gap-2">
@@ -35,7 +55,7 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
         </div>
 
         <div className="flex-1 flex flex-col gap-4">
-          {group.activities.map((activity) => (
+          {activitiesWithKnownTypes.map((activity) => (
             <ErrorBoundary key={activity.id} fallback={null}>
               <ActivityItem key={activity.id} activity={activity} page={page} />
             </ErrorBoundary>
