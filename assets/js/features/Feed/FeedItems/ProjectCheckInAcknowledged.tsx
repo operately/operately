@@ -15,15 +15,20 @@ export const ProjectCheckInAcknowledged: FeedItem = {
   contentQuery: `
     projectId
     checkInId
+    project {
+      id
+      name
+    }
   `,
 
-  component: ({ activity, content }) => {
+  component: ({ activity, content, page }) => {
     const title = (
       <Title
-        projectId={content.projectId}
+        project={content.project}
         checkInId={content.checkInId}
         insertedAt={Time.parseISO(activity.insertedAt)}
         author={activity.author}
+        page={page}
       />
     );
 
@@ -31,14 +36,21 @@ export const ProjectCheckInAcknowledged: FeedItem = {
   },
 };
 
-function Title({ projectId, checkInId, insertedAt, author }) {
-  const path = Paths.projectCheckInPath(projectId, checkInId);
+function Title({ project, checkInId, insertedAt, author, page }) {
+  const path = Paths.projectCheckInPath(project.id, checkInId);
+  const projectPath = Paths.projectPath(project.id);
 
   return (
     <>
-      {People.shortName(author)} acknowledged:{" "}
+      {People.shortName(author)} acknowledged{" "}
       <Link to={path}>Check-In on {<FormattedTime time={insertedAt} format="short-date" />}</Link>
-      <Icons.IconSquareCheckFilled size={20} className="text-accent-1 inline ml-2" />
+      {page !== "goal" && (
+        <>
+          {" "}
+          for the <Link to={projectPath}>{project.name}</Link> project
+        </>
+      )}
+      <Icons.IconSquareCheckFilled size={20} className="text-accent-1 inline ml-1" />
     </>
   );
 }

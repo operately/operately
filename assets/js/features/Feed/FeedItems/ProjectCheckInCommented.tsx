@@ -22,10 +22,11 @@ export const ProjectCheckInCommented: FeedItem = {
     }
     project {
       id
+      name
     }
   `,
 
-  component: ({ activity, content }) => {
+  component: ({ activity, content, page }) => {
     const comment = content.comment;
     const commentContent = JSON.parse(comment.content)["message"];
     const project = content.project;
@@ -37,7 +38,13 @@ export const ProjectCheckInCommented: FeedItem = {
     const link = <Link to={path}>Check-In on {time}</Link>;
     const title = (
       <>
-        {People.shortName(activity.author)} commented on: {link}
+        {People.shortName(activity.author)} commented on {link}
+        {page !== "project" && (
+          <>
+            {" "}
+            from the <Link to={Paths.projectPath(project.id)}>{project.name}</Link> project
+          </>
+        )}
       </>
     );
 

@@ -20,10 +20,11 @@ export const GoalCheckIn: FeedItem = {
 
     goal {
       id
+      name
     }
   `,
 
-  component: ({ activity, content }) => {
+  component: ({ activity, content, page }) => {
     const update = content.update;
     const goal = content.goal;
 
@@ -32,10 +33,18 @@ export const GoalCheckIn: FeedItem = {
 
     const path = Paths.goalCheckInPath(goal.id, update.id);
     const link = <Link to={path}>Check-In on {time}</Link>;
+    const goalPath = Paths.goalPath(goal.id);
 
     const title = (
       <>
-        {People.shortName(activity.author)} submitted: {link}
+        {People.shortName(activity.author)} submitted: {link}{" "}
+        <>
+          {page !== "goal" && (
+            <>
+              for the <Link to={goalPath}>{goal.name}</Link> goal
+            </>
+          )}{" "}
+        </>
       </>
     );
 

@@ -7,15 +7,18 @@ import * as Icons from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 
+import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
 import { FeedItem, Container } from "../FeedItem";
 
 export const ProjectTimelineEdited: FeedItem = {
   typename: "ActivityContentProjectTimelineEdited",
+
   contentQuery: `
     project {
       id
+      name
     }
     oldStartDate
     newStartDate
@@ -32,10 +35,11 @@ export const ProjectTimelineEdited: FeedItem = {
       deadlineAt
     }
   `,
-  component: ({ activity }) => {
+
+  component: ({ activity, content, page }) => {
     return (
       <Container
-        title={People.shortName(activity.author) + " edited the timeline"}
+        title={<Title activity={activity} content={content} page={page} />}
         author={activity.author}
         time={activity.insertedAt}
         content={<Content activity={activity} />}
@@ -43,6 +47,22 @@ export const ProjectTimelineEdited: FeedItem = {
     );
   },
 };
+
+function Title({ activity, content, page }) {
+  const projectPath = Paths.projectPath(content.project.id);
+
+  return (
+    <>
+      {People.shortName(activity.author)} edited the timeline
+      {page !== "project" && (
+        <>
+          {" "}
+          on the <Link to={projectPath}>{content.project.name}</Link> project
+        </>
+      )}
+    </>
+  );
+}
 
 function Content({ activity }) {
   const content = prepareContent(activity.content);
