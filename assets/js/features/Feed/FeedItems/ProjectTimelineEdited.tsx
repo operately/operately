@@ -53,11 +53,11 @@ function Title({ activity, content, page }) {
 
   return (
     <>
-      {People.shortName(activity.author)} edited the project timeline{" "}
+      {People.shortName(activity.author)} edited the timeline
       {page !== "project" && (
         <>
           {" "}
-          for the <Link to={projectPath}>{content.project.name}</Link> project
+          on the <Link to={projectPath}>{content.project.name}</Link> project
         </>
       )}
     </>

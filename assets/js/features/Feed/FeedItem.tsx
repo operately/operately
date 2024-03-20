@@ -4,6 +4,8 @@ import * as People from "@/models/people";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
+import { DivLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 //
 // Every feed item defined in the in the items folder should implement this interface
@@ -24,10 +26,14 @@ interface ContainerProps {
 
 export function Container({ author, time, title, content }: ContainerProps) {
   const alignement = content ? "items-start" : "items-center";
+  const profilePath = Paths.profilePath(author.id);
 
   return (
     <div className={"flex flex-1 gap-3" + " " + alignement}>
-      <Avatar person={author} size="small" />
+      <DivLink to={profilePath}>
+        <Avatar person={author} size="small" />
+      </DivLink>
+
       <div className="flex-1">
         <Title>{title}</Title>
         {content && <Content>{content}</Content>}

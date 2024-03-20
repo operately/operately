@@ -23,6 +23,10 @@ export class Paths {
     return createPath(["projects", projectId, "check-ins"]);
   }
 
+  static projectRetrospectivePath(projectId: string) {
+    return createPath(["projects", projectId, "retrospective"]);
+  }
+
   static spacePath(spaceId: string) {
     return createPath(["spaces", spaceId]);
   }
@@ -37,6 +41,10 @@ export class Paths {
 
   static goalCheckInPath(goalId: string, checkInId: string) {
     return createPath(["goals", goalId, "check-ins", checkInId]);
+  }
+
+  static profilePath(personId: string) {
+    return createPath(["people", personId]);
   }
 }
 
