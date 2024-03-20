@@ -63,6 +63,7 @@ const LIST_GOALS = gql`
       isArchived
       timeframe
       parentGoalId
+      progressPercentage
 
       champion {
         id
