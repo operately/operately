@@ -66,4 +66,31 @@ defmodule Operately.Goals do
     from(target in Target, where: target.goal_id == ^goal_id, order_by: target.index)
     |> Repo.all()
   end
+
+  def progress_percentage(goal) do
+    targets = Repo.preload(goal, :targets).targets
+    target_progresses = Enum.map(targets, &target_progress_percentage/1)
+
+    Enum.sum(target_progresses) / length(target_progresses)
+  end
+
+  def target_progress_percentage(target) do
+    from = target.from
+    to = target.to
+    current = target.value
+
+    if from < to do
+      cond do
+        current > to -> 100
+        current < from -> 0
+        true -> (from - current) / (from - to) * 100
+      end
+    else
+      cond do
+        current < to -> 100
+        current > from -> 0
+        true -> (to - current) / (to - from) * 100
+      end
+    end
+  end
 end

@@ -51,12 +51,17 @@ function GoalHeader({ node }: { node: Node }) {
   const path = Paths.goalPath(node.goal.id);
 
   return (
-    <div className="flex items-center gap-1.5 group relative">
-      <HiddenGoalActions node={node} />
-      <Icons.IconTarget size={iconSize} className="text-red-500" />
-      <DivLink to={path} className={titleClass}>
-        {node.goal.name}
-      </DivLink>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-1.5 group relative">
+        <HiddenGoalActions node={node} />
+        <Icons.IconTarget size={iconSize} className="text-red-500" />
+        <DivLink to={path} className={titleClass}>
+          {node.goal.name}
+        </DivLink>
+      </div>
+      <div>
+        <GoalProgressBar goal={node.goal} />
+      </div>
     </div>
   );
 }
@@ -128,6 +133,17 @@ function ProjectNode({ project }: { project: Projects.Project }) {
       <DivLink to={Paths.projectPath(project.id)} className="font-medium text-sm">
         {project.name}
       </DivLink>
+    </div>
+  );
+}
+
+function GoalProgressBar({ goal }: { goal: Goals.Goal }) {
+  return (
+    <div className={"w-24 h-2.5 bg-surface-outline rounded relative"}>
+      <div
+        className="bg-accent-1 rounded absolute top-0 bottom-0 left-0"
+        style={{ width: `${goal.progressPercentage}%` }}
+      />
     </div>
   );
 }

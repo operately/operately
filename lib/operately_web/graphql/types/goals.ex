@@ -20,6 +20,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     assoc_field :projects, list_of(:project)
     assoc_field :parent_goal, :goal
 
+    field :progress_percentage, non_null(:float) do
+      resolve fn goal, _, _ ->
+        {:ok, Operately.Goals.progress_percentage(goal)}
+      end
+    end
+
     field :last_check_in, :update do
       resolve fn goal, _, _ ->
         {:ok, Operately.Updates.get_last_goal_check_in(goal.id)}

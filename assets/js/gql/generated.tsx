@@ -112,6 +112,7 @@ export type ActivityContentGoalEditing = {
   addedTargets: Array<Maybe<Target>>;
   companyId: Scalars['String']['output'];
   deletedTargets: Array<Maybe<Target>>;
+  goal: Goal;
   goalId: Scalars['String']['output'];
   newChampion: Person;
   newChampionId: Scalars['String']['output'];
@@ -295,6 +296,7 @@ export type ActivityContentProjectTimelineEdited = {
 export type ActivityContentSpaceJoining = {
   __typename?: 'ActivityContentSpaceJoining';
   companyId: Scalars['String']['output'];
+  space: Group;
   spaceId: Scalars['String']['output'];
 };
 
@@ -494,6 +496,7 @@ export type CreateGoalInput = {
   championId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  parentGoalId?: InputMaybe<Scalars['ID']['input']>;
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
   targets: Array<InputMaybe<CreateTargetInput>>;
@@ -535,6 +538,7 @@ export type CreateProjectInput = {
   championId: Scalars['ID']['input'];
   creatorIsContributor: Scalars['String']['input'];
   creatorRole?: InputMaybe<Scalars['String']['input']>;
+  goalId?: InputMaybe<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
@@ -668,6 +672,7 @@ export type Goal = {
   parentGoal?: Maybe<Goal>;
   parentGoalId?: Maybe<Scalars['ID']['output']>;
   permissions: GoalPermissions;
+  progressPercentage: Scalars['Float']['output'];
   projects?: Maybe<Array<Maybe<Project>>>;
   reviewer?: Maybe<Person>;
   space: Group;
@@ -1749,7 +1754,6 @@ export type UpdateContentGoalCheckInTarget = {
   index: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   previousValue: Scalars['Float']['output'];
-  target: Scalars['Float']['output'];
   to: Scalars['Float']['output'];
   unit: Scalars['String']['output'];
   value: Scalars['Float']['output'];
