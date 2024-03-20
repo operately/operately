@@ -1,11 +1,10 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import * as Icons from "@tabler/icons-react";
 
+import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { FeedItem, Container } from "../FeedItem";
-import { Paths } from "@/routes/paths";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -20,10 +19,11 @@ export const GoalCheckInAcknowledgement: FeedItem = {
 
     goal {
       id
+      name
     }
   `,
 
-  component: ({ activity, content }) => {
+  component: ({ activity, content, page }) => {
     const update = content.update;
     const goal = content.goal;
 
@@ -32,10 +32,16 @@ export const GoalCheckInAcknowledgement: FeedItem = {
 
     const path = Paths.goalCheckInPath(goal.id, update.id);
     const link = <Link to={path}>Check-In on {time}</Link>;
+    const goalPath = Paths.goalPath(goal.id);
+
     const title = (
       <>
-        {People.shortName(activity.author)} acknowledged: {link}
-        <Icons.IconSquareCheckFilled size={20} className="text-accent-1 inline ml-2" />
+        {People.shortName(activity.author)} acknowledged: {link}{" "}
+        {page !== "goal" && (
+          <>
+            for the <Link to={goalPath}>{goal.name}</Link> goal
+          </>
+        )}
       </>
     );
 

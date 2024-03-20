@@ -26,24 +26,31 @@ export const ProjectCheckInSubmitted: FeedItem = {
     }
   `,
 
-  component: ({ activity, content }) => {
+  component: ({ activity, content, page }) => {
     const project = content.project;
     const checkIn = content.checkIn;
 
-    const title = <Title author={activity.author} project={project} checkIn={checkIn} />;
+    const title = <Title author={activity.author} project={project} checkIn={checkIn} page={page} />;
     const summary = <Content checkIn={checkIn} />;
 
     return <Container title={title} author={activity.author} time={activity.insertedAt} content={summary} />;
   },
 };
 
-function Title({ author, project, checkIn }) {
+function Title({ author, project, checkIn, page }) {
   const checkInPath = Paths.projectCheckInPath(project.id, checkIn.id);
   const time = <FormattedTime time={checkIn.insertedAt} format="long-date" />;
+  const projectPath = Paths.projectPath(project.id);
 
   return (
     <>
-      {People.shortName(author)} submitted: <Link to={checkInPath}>Check-In on {time}</Link>
+      {People.shortName(author)} submitted: <Link to={checkInPath}>Check-In on {time}</Link>{" "}
+      {page !== "project" && (
+        <>
+          {" "}
+          for the <Link to={projectPath}>{project.name}</Link> project
+        </>
+      )}
     </>
   );
 }
