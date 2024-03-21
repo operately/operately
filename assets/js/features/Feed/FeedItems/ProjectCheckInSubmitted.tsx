@@ -5,7 +5,7 @@ import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 import { FeedItem, Container } from "../FeedItem";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { StatusIndicator } from "@/features/ProjectStatusIndicator";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -58,7 +58,7 @@ function Title({ author, project, checkIn, page }) {
 function Content({ checkIn }) {
   return (
     <div className="flex flex-col gap-2">
-      <SmallStatusIndicator status={checkIn.status} />
+      <StatusIndicator status={checkIn.status} />
       <Summary jsonContent={checkIn.description} characterCount={200} />
     </div>
   );

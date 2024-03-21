@@ -12,7 +12,7 @@ import { DivLink } from "@/components/Link";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { StatusIndicator } from "@/features/ProjectStatusIndicator";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -123,7 +123,7 @@ export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheck
         </div>
 
         <div className="font-medium p-3 bg-surface-accent border-t border-stroke-base">
-          <SmallStatusIndicator status={checkIn.status} />
+          <StatusIndicator status={checkIn.status} />
         </div>
       </div>
     </DivLink>

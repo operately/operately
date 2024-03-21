@@ -8,6 +8,7 @@ import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
+import { StatusIndicator } from "@/features/ProjectStatusIndicator";
 
 import { Node } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";
@@ -180,8 +181,8 @@ function ProjectDetails({ project }: { project: Projects.Project }) {
   if (!expanded[project.id]) return null;
 
   return (
-    <div className="pl-6">
-      <div className="text-xs text-gray-500">{project.lastCheckIn?.status}</div>
+    <div className="pl-5">
+      <StatusIndicator project={project} textSize="text-xs" circleSize="h-2.5 w-2.5" gapSize="gap-1" />
     </div>
   );
 }

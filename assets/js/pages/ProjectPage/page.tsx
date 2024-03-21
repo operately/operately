@@ -27,7 +27,7 @@ import { Link } from "@/components/Link";
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { StatusIndicator } from "@/features/ProjectStatusIndicator";
 
 export function Page() {
   const { company, project } = useLoadedData();
@@ -199,7 +199,7 @@ function LastCheckIn({ project }) {
         <div>
           <DimmedLabel>Status</DimmedLabel>
           <div className="flex flex-col gap-1 text-sm">
-            <SmallStatusIndicator status={status} />
+            <StatusIndicator status={status} />
           </div>
         </div>
 
