@@ -71,7 +71,11 @@ defmodule Operately.Goals do
     targets = Repo.preload(goal, :targets).targets
     target_progresses = Enum.map(targets, &target_progress_percentage/1)
 
-    Enum.sum(target_progresses) / length(target_progresses)
+    if Enum.empty?(target_progresses) do
+      0
+    else
+      Enum.sum(target_progresses) / length(target_progresses)
+    end
   end
 
   def target_progress_percentage(target) do

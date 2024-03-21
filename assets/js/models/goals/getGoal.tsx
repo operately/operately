@@ -40,6 +40,7 @@ const QUERY = gql`
       archivedAt
       description
       nextUpdateScheduledAt
+      parentGoalId
 
       parentGoal @include(if: $includeParentGoal) {
         id

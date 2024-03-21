@@ -48,7 +48,7 @@ function GoalList() {
     });
   }, []);
 
-  const selectableGoals = goals.filter((g) => g.id !== goal.id);
+  const selectableGoals = Goals.filterPossibleParentGoals(goals, goal);
 
   return (
     <div>
