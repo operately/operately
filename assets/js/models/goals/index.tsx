@@ -10,3 +10,4 @@ export { useEditGoalMutation } from "./useEditGoalMutation";
 export { useCreateGoalMutation } from "./useCreateGoalMutation";
 export { groupBySpace } from "./groupBySpace";
 export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";
+export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
