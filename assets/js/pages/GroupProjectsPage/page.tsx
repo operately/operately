@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { ProjectList } from "@/features/ProjectList";
+import { ProjectList } from "@/components/ProjectList";
 
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";

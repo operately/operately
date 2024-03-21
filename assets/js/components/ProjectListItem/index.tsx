@@ -11,7 +11,7 @@ import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { TextTooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { StatusIndicator } from "@/features/ProjectStatusIndicator";
+import { StatusIndicator } from "@/components/ProjectStatusIndicator";
 
 import { createPath } from "@/utils/paths";
 import classNames from "classnames";

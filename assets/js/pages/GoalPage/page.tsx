@@ -12,7 +12,7 @@ import { Options } from "./Options";
 import { CheckIns } from "./CheckIns";
 import { Navigation } from "./Navigation";
 import { Banner } from "./Banner";
-import { ProjectListItem } from "@/features/ProjectListItem";
+import { ProjectListItem } from "@/components/ProjectListItem";
 import { useLoadedData } from "./loader";
 import RichContent from "@/components/RichContent";
 import { Link } from "@/components/Link";

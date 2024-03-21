@@ -27,7 +27,7 @@ import { Link } from "@/components/Link";
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
-import { StatusIndicator } from "@/features/ProjectStatusIndicator";
+import { StatusIndicator } from "@/components/ProjectStatusIndicator";
 
 export function Page() {
   const { company, project } = useLoadedData();

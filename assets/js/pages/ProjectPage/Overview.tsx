@@ -5,7 +5,7 @@ import { DimmedLabel } from "./Label";
 import * as Projects from "@/models/projects";
 import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
-import { StatusIndicator } from "@/features/ProjectStatusIndicator";
+import { StatusIndicator } from "@/components/ProjectStatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
 
 export default function Overview({ project }) {

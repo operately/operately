@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData, useFilters } from "./loader";
 import { FilledButton } from "@/components/Button";
-import { ProjectList } from "@/features/ProjectList";
+import { ProjectList } from "@/components/ProjectList";
 
 import classNames from "classnames";
 

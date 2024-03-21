@@ -8,7 +8,7 @@ import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
-import { StatusIndicator } from "@/features/ProjectStatusIndicator";
+import { StatusIndicator } from "@/components/ProjectStatusIndicator";
 
 import { Node } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";

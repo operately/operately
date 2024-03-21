@@ -5,7 +5,7 @@ import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 import { FeedItem, Container } from "../FeedItem";
-import { StatusIndicator } from "@/features/ProjectStatusIndicator";
+import { StatusIndicator } from "@/components/ProjectStatusIndicator";
 
 import FormattedTime from "@/components/FormattedTime";
 
