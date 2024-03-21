@@ -82,6 +82,10 @@ const LIST_GOALS = gql`
       projects @include(if: $includeProjects) {
         id
         name
+
+        lastCheckIn {
+          status
+        }
       }
 
       ...GoalSpace @include(if: $includeSpace)

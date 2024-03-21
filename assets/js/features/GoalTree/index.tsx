@@ -128,6 +128,16 @@ function GoalExpandCollapseToggle({ node }: { node: Node }) {
   return <ChevronIcon size={size} className="cursor-pointer" onClick={handleClick} />;
 }
 
+function ProjectExpandCollapseToggle({ project }: { project: Projects.Project }) {
+  const { expanded, toggleExpanded } = useTreeContext();
+
+  const handleClick = () => toggleExpanded(project.id);
+  const size = 14;
+  const ChevronIcon = expanded[project.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
+
+  return <ChevronIcon size={size} className="cursor-pointer" onClick={handleClick} />;
+}
+
 function GoalChildren({ node }: { node: Node }) {
   const { expanded } = useTreeContext();
 
@@ -146,11 +156,44 @@ function GoalChildren({ node }: { node: Node }) {
 
 function ProjectNode({ project }: { project: Projects.Project }) {
   return (
-    <div className="flex items-center gap-1.5 my-1.5">
+    <div className="my-1">
+      <ProjectHeader project={project} />
+      <ProjectDetails project={project} />
+    </div>
+  );
+}
+
+function ProjectHeader({ project }: { project: Projects.Project }) {
+  return (
+    <div className="flex items-center gap-1.5 my-1.5 group relative">
+      <HiddenProjectActions project={project} />
       <Icons.IconHexagonFilled size={14} className="text-blue-500" />
       <DivLink to={Paths.projectPath(project.id)} className="font-medium text-sm">
         {project.name}
       </DivLink>
+    </div>
+  );
+}
+
+function ProjectDetails({ project }: { project: Projects.Project }) {
+  const { expanded } = useTreeContext();
+  if (!expanded[project.id]) return null;
+
+  return (
+    <div className="pl-6">
+      <div className="text-xs text-gray-500">{project.lastCheckIn?.status}</div>
+    </div>
+  );
+}
+
+function HiddenProjectActions({ project }: { project: Projects.Project }) {
+  const className = classNames("absolute flex items-center flex-row-reverse gap-1 -translate-x-[42px] w-[40px]", {
+    "opacity-0 group-hover:opacity-100 transition-opacity": true,
+  });
+
+  return (
+    <div className={className}>
+      <ProjectExpandCollapseToggle project={project} />
     </div>
   );
 }
