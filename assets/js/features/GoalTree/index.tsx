@@ -58,6 +58,7 @@ function GoalHeader({ node }: { node: Node }) {
         <DivLink to={path} className={titleClass}>
           {node.goal.name}
         </DivLink>
+        <ChildrenInfo node={node} />
       </div>
       <div>
         <GoalProgressBar goal={node.goal} />
@@ -79,6 +80,23 @@ function HiddenGoalActions({ node }: { node: Node }) {
       <GoalOptions node={node} open={optionsOpen} setOpen={setOptionsOpen} />
     </div>
   );
+}
+
+function ChildrenInfo({ node }: { node: Node }) {
+  const { expanded } = useTreeContext();
+
+  if (!node.hasChildren) return null;
+  if (expanded[node.goal.id]) return null;
+
+  const subgoalCount = node.subGoals.length;
+  const projectCount = node.projects.length;
+
+  const labels = [
+    subgoalCount > 0 ? `${subgoalCount} ${subgoalCount === 1 ? "subgoal" : "subgoals"}` : null,
+    projectCount > 0 ? `${projectCount} ${projectCount === 1 ? "project" : "projects"}` : null,
+  ];
+
+  return <div className="text-xs text-gray-500">{labels.filter((l) => l).join(", ")}</div>;
 }
 
 function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOpen: (open: boolean) => void }) {
