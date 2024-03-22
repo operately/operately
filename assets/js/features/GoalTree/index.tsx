@@ -32,7 +32,7 @@ function GoalTreeRoots() {
         <div className="font-bold text-xs uppercase">Goal</div>
         <div className="flex items-center gap-4">
           <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
-          <div className="font-bold text-xs uppercase w-24">LAST CHECK-IN</div>
+          <div className="font-bold text-xs uppercase w-[110px]">LAST CHECK-IN</div>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ function GoalLastCheckIn({ node }: { node: Node }) {
   const { lastCheckIn } = node.goal;
 
   return (
-    <div className="text-sm w-24 leading-none flex items-center gap-1">
+    <div className="text-sm w-[110px] leading-none flex items-center gap-1">
       <Icons.IconCalendar size={14} />
       {lastCheckIn ? (
         <FormattedTime time={lastCheckIn.insertedAt} format="relative-day" />
