@@ -22,6 +22,7 @@ export async function loader({ request }): Promise<LoaderResult> {
       timeframe: timeframe,
       includeLongerTimeframes: true,
       includeProjects: true,
+      includeLastCheckIn: true,
     }),
   };
 }
