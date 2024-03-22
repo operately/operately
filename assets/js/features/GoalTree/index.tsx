@@ -158,7 +158,7 @@ function GoalChildren({ node }: { node: Node }) {
 function TargetNode({ target }: { target: Goals.Target }) {
   return (
     <div className="flex items-center justify-between group relative hover:bg-surface-highlight px-1 -mx-1 gap-4">
-      <div className="inline-flex items-center gap-1.5 truncate flex-1 font-medium">
+      <div className="inline-flex items-center gap-1.5 truncate flex-1">
         <Icons.IconShieldCheckFilled size={14} className="text-accent-1" />
         {target.name}
       </div>
