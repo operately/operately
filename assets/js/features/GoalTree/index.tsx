@@ -135,10 +135,10 @@ function GoalChildren({ node }: { node: Node }) {
   if (!expanded[node.goal.id]) return null;
 
   return (
-    <div className="relative pb-1">
+    <div className="relative">
       <div className="absolute top-0 left-1.5 w-0.5 h-full bg-surface-outline" />
       <div className="pl-6">
-        <div className="flex items-center gap-4 mb-1">
+        <div className="flex items-center gap-4 mb-2">
           <div className="flex items-center gap-1.5 font-medium text-sm text-content-dimmed">
             <Icons.IconCalendar size={16} />
             {node.goal.timeframe.split(" ")[0]}
