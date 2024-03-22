@@ -17,7 +17,7 @@ export function DaysAgo({ date, className }: { date: string; className?: string 
   } else if (diff === 1) {
     value = "Yesterday";
   } else {
-    value = `${diff} days ago`;
+    value = `${diff}d ago`;
   }
 
   return <span className={className}>{value}</span>;

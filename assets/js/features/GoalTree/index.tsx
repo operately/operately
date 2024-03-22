@@ -2,17 +2,19 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
+import * as Popover from "@radix-ui/react-popover";
 
-import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 
 import { Link, DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
+import FormattedTime from "@/components/FormattedTime";
 import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 
 import { Node } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";
+import { Summary } from "@/components/RichContent";
 
 export function GoalTree({ goals }: { goals: Goals.Goal[] }) {
   return (
@@ -27,6 +29,14 @@ function GoalTreeRoots() {
 
   return (
     <div>
+      <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 mb-2">
+        <div className="font-bold text-xs uppercase">Goal</div>
+        <div className="flex items-center gap-4">
+          <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
+          <div className="font-bold text-xs uppercase w-24">LAST CHECK-IN</div>
+        </div>
+      </div>
+
       {tree.getRoots().map((root) => (
         <GoalNode key={root.goal.id} node={root} />
       ))}
@@ -36,7 +46,7 @@ function GoalTreeRoots() {
 
 function GoalNode({ node }: { node: Node }) {
   return (
-    <div className="">
+    <div className="my-1">
       <GoalHeader node={node} />
       <GoalChildren node={node} />
     </div>
@@ -64,7 +74,8 @@ function GoalHeader({ node }: { node: Node }) {
         <ChildrenInfo node={node} />
       </div>
       <div className="flex items-center gap-4">
-        <GoalProgressBar goal={node.goal} />
+        <GoalProgress goal={node.goal} />
+        <GoalLastCheckIn node={node} />
       </div>
     </div>
   );
@@ -122,6 +133,8 @@ function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOp
 function GoalExpandCollapseToggle({ node }: { node: Node }) {
   const { expanded, toggleExpanded } = useTreeContext();
 
+  if (!node.hasChildren) return null;
+
   const handleClick = () => toggleExpanded(node.goal.id);
   const size = node.depth === 0 ? 14 : 13;
   const ChevronIcon = expanded[node.goal.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
@@ -132,30 +145,12 @@ function GoalExpandCollapseToggle({ node }: { node: Node }) {
 function GoalChildren({ node }: { node: Node }) {
   const { expanded } = useTreeContext();
 
-  if (!expanded[node.goal.id]) return null;
+  if (!expanded[node.goal.id] || !node.hasChildren) return null;
 
   return (
     <div className="relative">
       <div className="absolute top-0 left-1.5 w-0.5 h-full bg-surface-outline" />
       <div className="pl-6">
-        <div className="flex items-center gap-4 mb-2">
-          <div className="flex items-center gap-1.5 font-medium text-sm text-content-dimmed">
-            <Icons.IconCalendar size={16} />
-            {node.goal.timeframe.split(" ")[0]}
-          </div>
-
-          <div>
-            {node.goal.lastCheckIn && (
-              <div className="flex items-center gap-1.5 font-medium text-sm">
-                <Avatar person={node.goal.lastCheckIn!.author!} size={16} />
-                <Link to={Paths.goalCheckInPath(node.goal.id, node.goal.lastCheckIn.id)}>
-                  updated <DaysAgo date={node.goal.lastCheckIn.insertedAt} />
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-        <div>{node.goal.targets?.map((target) => <TargetNode key={target!.id} target={target!} />)}</div>
         <div>{node.subGoals?.map((node) => <GoalNode key={node.goal.id} node={node} />)}</div>
         <div>{node.goal.projects?.map((project) => <ProjectNode key={project!.id} project={project!} />)}</div>
       </div>
@@ -163,25 +158,11 @@ function GoalChildren({ node }: { node: Node }) {
   );
 }
 
-function TargetNode({ target }: { target: Goals.Target }) {
-  return (
-    <div className="flex items-center justify-between group relative hover:bg-surface-highlight px-1 -mx-1 gap-4">
-      <div className="inline-flex items-center gap-1.5 truncate flex-1">
-        <Icons.IconShieldCheckFilled size={14} className="text-accent-1" />
-        {target.name}
-      </div>
-      <div className="flex items-center gap-4">
-        <TargetProgressBar target={target} />
-      </div>
-    </div>
-  );
-}
-
 function ProjectNode({ project }: { project: Projects.Project }) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5 my-1.5">
       <Icons.IconHexagonFilled size={14} className="text-blue-500" />
-      <DivLink to={Paths.projectPath(project.id)} className="font-medium">
+      <DivLink to={Paths.projectPath(project.id)} className="font-medium text-sm">
         {project.name}
       </DivLink>
     </div>
@@ -200,6 +181,61 @@ function GoalLastCheckIn({ node }: { node: Node }) {
         <div className="text-content-dimmed">Never</div>
       )}
     </div>
+  );
+}
+
+function GoalProgress({ goal }: { goal: Goals.Goal }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer pt-0.5">
+        <GoalProgressBar goal={goal} />
+      </Popover.Trigger>
+
+      <Popover.Content
+        sideOffset={5}
+        alignOffset={-30}
+        side="left"
+        align="start"
+        className="z-[1000] relative w-[550px]"
+      >
+        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+          <div className="font-bold px-4 pt-4 flex items-center justify-between">
+            <div className="font-bold">Goal Progress</div>
+            <div className="text-accent-1 font-extrabold">{Math.round(goal.progressPercentage)}% Complete</div>
+          </div>
+
+          <div className="px-4 pt-4 pb-2 text-sm">
+            <div className="uppercase text-xs font-bold mb-2">Success Conditions</div>
+            {goal.targets!.length > 0 ? (
+              <div>
+                {goal.targets!.map((target) => (
+                  <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+                    <div className="truncate">{target!.name}</div>
+                    <TargetProgressBar target={target!} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>No Success Conditions</div>
+            )}
+          </div>
+
+          {goal.lastCheckIn && (
+            <div className="p-4 border-t border-surface-outline bg-surface-dimmed font-medium rounded-b text-sm">
+              <div className="uppercase text-xs font-bold mb-2">Last Check-in</div>
+
+              <Summary jsonContent={goal.lastCheckIn?.content!["message"]} characterCount={200} />
+
+              <div className="mt-2 flex items-center justify-between">
+                <FormattedTime time={goal.updatedAt} format="short-date" />
+                <Link to={Paths.goalCheckInPath(goal.id, goal.lastCheckIn!.id)}>View Check-in</Link>
+              </div>
+            </div>
+          )}
+        </div>
+        <Popover.Arrow className="bg-surface" />
+      </Popover.Content>
+    </Popover.Root>
   );
 }
 
@@ -222,7 +258,7 @@ function TargetProgressBar({ target }: { target: Goals.Target }) {
   const width = ((Math.min(value, to) - from) / (Math.max(to, value) - from)) * 100;
 
   return (
-    <div className={"w-16 h-1.5 bg-surface-outline rounded relative shrink-0"}>
+    <div className={"w-16 h-2 bg-surface-outline rounded relative shrink-0"}>
       <div className="bg-accent-1 rounded absolute top-0 bottom-0 left-0" style={{ width: `${width}%` }} />
     </div>
   );
