@@ -85,7 +85,6 @@ const LIST_GOALS = gql`
       projects @include(if: $includeProjects) {
         id
         name
-        status
       }
 
       lastCheckIn @include(if: $includeLastCheckIn) {
