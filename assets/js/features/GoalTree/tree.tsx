@@ -1,4 +1,5 @@
 import { Goal } from "@/models/goals";
+import { Project } from "@/models/projects";
 
 export class Tree {
   private allGoals: Goal[];
@@ -40,15 +41,45 @@ export class Tree {
 export class Node {
   public goal: Goal;
   public subGoals: Node[];
-  public projects: any;
+  public projects: Project[];
   public depth: number;
   public hasChildren: boolean;
+  public totalNestedProjects: number;
+  public totalNestedSubGoals: number;
 
   constructor(goal: Goal, children: Node[], depth: number = 0) {
     this.goal = goal;
     this.depth = depth;
+
     this.subGoals = children;
-    this.projects = goal.projects;
+    this.projects = goal.projects!.map((p) => p!);
     this.hasChildren = this.subGoals.length > 0 || this.projects.length > 0;
+
+    this.totalNestedProjects = this.projects.length + this.subGoals.reduce((acc, n) => acc + n.totalNestedProjects, 0);
+    this.totalNestedSubGoals = this.subGoals.length + this.subGoals.reduce((acc, n) => acc + n.totalNestedSubGoals, 0);
+  }
+
+  childrenInfoLabel(): string {
+    return [this.nestedGoalCount(), this.nestedProjectCount()].filter((x) => x).join(", ");
+  }
+
+  nestedGoalCount() {
+    if (this.totalNestedSubGoals === 0) return null;
+
+    if (this.totalNestedSubGoals === 1) {
+      return "1 subgoal";
+    } else {
+      return `${this.totalNestedSubGoals} subgoals`;
+    }
+  }
+
+  nestedProjectCount() {
+    if (this.totalNestedProjects === 0) return null;
+
+    if (this.totalNestedProjects === 1) {
+      return "1 project";
+    } else {
+      return `${this.totalNestedProjects} projects`;
+    }
   }
 }
