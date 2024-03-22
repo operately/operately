@@ -12,8 +12,8 @@ export function Page() {
 
   return (
     <Pages.Page title={"Goals"}>
-      <Paper.Root size="large">
-        <Paper.Body>
+      <Paper.Root fluid>
+        <Paper.Body className="max-w-screen-xl mx-auto">
           <div className="flex gap-4 -mb-8">
             <FilledButton linkTo={"/goals/new"}>Add Goal</FilledButton>
           </div>

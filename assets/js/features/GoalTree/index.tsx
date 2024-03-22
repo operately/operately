@@ -28,6 +28,14 @@ function GoalTreeRoots() {
 
   return (
     <div>
+      <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 mb-2">
+        <div className="font-bold text-xs uppercase">Goal</div>
+        <div className="flex items-center gap-4">
+          <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
+          <div className="font-bold text-xs uppercase w-24">LAST CHECK-IN</div>
+        </div>
+      </div>
+
       {tree.getRoots().map((root) => (
         <GoalNode key={root.goal.id} node={root} />
       ))}
@@ -54,8 +62,8 @@ function GoalHeader({ node }: { node: Node }) {
   const path = Paths.goalPath(node.goal.id);
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-1.5 group relative">
+    <div className="flex items-center justify-between group relative hover:bg-surface-highlight px-1 -mx-1">
+      <div className="flex items-center gap-1.5">
         <HiddenGoalActions node={node} />
         <Icons.IconTarget size={iconSize} className="text-red-500" />
         <DivLink to={path} className={titleClass}>
@@ -63,8 +71,9 @@ function GoalHeader({ node }: { node: Node }) {
         </DivLink>
         <ChildrenInfo node={node} />
       </div>
-      <div>
+      <div className="flex items-center gap-4">
         <GoalProgress goal={node.goal} />
+        <GoalLastCheckIn node={node} />
       </div>
     </div>
   );
@@ -158,10 +167,25 @@ function ProjectNode({ project }: { project: Projects.Project }) {
   );
 }
 
+function GoalLastCheckIn({ node }: { node: Node }) {
+  const { lastCheckIn } = node.goal;
+
+  return (
+    <div className="text-sm w-24 leading-none flex items-center gap-1">
+      <Icons.IconCalendar size={14} />
+      {lastCheckIn ? (
+        <FormattedTime time={lastCheckIn.insertedAt} format="relative-day" />
+      ) : (
+        <div className="text-content-dimmed">Never</div>
+      )}
+    </div>
+  );
+}
+
 function GoalProgress({ goal }: { goal: Goals.Goal }) {
   return (
     <Popover.Root>
-      <Popover.Trigger className="cursor-pointer">
+      <Popover.Trigger className="cursor-pointer pt-0.5">
         <GoalProgressBar goal={goal} />
       </Popover.Trigger>
 
