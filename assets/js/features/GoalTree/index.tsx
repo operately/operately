@@ -91,15 +91,7 @@ function ChildrenInfo({ node }: { node: Node }) {
   if (!node.hasChildren) return null;
   if (expanded[node.goal.id]) return null;
 
-  const subgoalCount = node.subGoals.length;
-  const projectCount = node.projects.length;
-
-  const labels = [
-    subgoalCount > 0 ? `${subgoalCount} ${subgoalCount === 1 ? "subgoal" : "subgoals"}` : null,
-    projectCount > 0 ? `${projectCount} ${projectCount === 1 ? "project" : "projects"}` : null,
-  ];
-
-  return <div className="text-xs text-gray-500">{labels.filter((l) => l).join(", ")}</div>;
+  return <div className="text-xs text-gray-500">{node.childrenInfoLabel()}</div>;
 }
 
 function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOpen: (open: boolean) => void }) {
@@ -157,7 +149,7 @@ function GoalChildren({ node }: { node: Node }) {
         </div>
         <div>{node.goal.targets?.map((target) => <TargetNode key={target!.id} target={target!} />)}</div>
         <div>{node.subGoals?.map((node) => <GoalNode key={node.goal.id} node={node} />)}</div>
-        <div>{node.goal.projects?.map((project) => <ProjectNode key={project!.id} project={project!} />)}</div>
+        <div>{node.projects?.map((project) => <ProjectNode key={project!.id} project={project!} />)}</div>
       </div>
     </div>
   );
@@ -184,21 +176,6 @@ function ProjectNode({ project }: { project: Projects.Project }) {
       <DivLink to={Paths.projectPath(project.id)} className="font-medium">
         {project.name}
       </DivLink>
-    </div>
-  );
-}
-
-function GoalLastCheckIn({ node }: { node: Node }) {
-  const { lastCheckIn } = node.goal;
-
-  return (
-    <div className="text-sm w-24 leading-none flex items-center gap-1">
-      <Icons.IconCalendar size={14} />
-      {lastCheckIn ? (
-        <DaysAgo date={lastCheckIn.insertedAt} className="font-medium" />
-      ) : (
-        <div className="text-content-dimmed">Never</div>
-      )}
     </div>
   );
 }
