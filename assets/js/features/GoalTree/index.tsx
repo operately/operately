@@ -56,16 +56,17 @@ function GoalHeader({ node }: { node: Node }) {
   const titleClass = classNames({
     "font-bold text-lg": node.depth === 0,
     "font-medium": node.depth > 0,
+    truncate: true,
   });
 
   const iconSize = node.depth === 0 ? 16 : 14;
   const path = Paths.goalPath(node.goal.id);
 
   return (
-    <div className="flex items-center justify-between group relative hover:bg-surface-highlight px-1 -mx-1">
-      <div className="flex items-center gap-1.5">
+    <div className="flex items-center justify-between group relative hover:bg-surface-highlight px-1 -mx-1 gap-4">
+      <div className="inline-flex items-center gap-1.5 truncate flex-1">
         <HiddenGoalActions node={node} />
-        <Icons.IconTarget size={iconSize} className="text-red-500" />
+        <Icons.IconTarget size={iconSize} className="text-red-500 shrink-0" />
         <DivLink to={path} className={titleClass}>
           {node.goal.name}
         </DivLink>
