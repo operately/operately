@@ -3,6 +3,7 @@ import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 import * as Popover from "@radix-ui/react-popover";
+import * as Milestones from "@/models/milestones";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -299,21 +300,25 @@ function TargetProgressBar({ target }: { target: Goals.Target }) {
   );
 }
 
-function ProjectProgressBar({ project }: { project: Projects.Project }) {
-  const width = 78;
-
+function ProjectProgressBar({ progress }: { progress: number }) {
   return (
     <div className={"w-24 h-2.5 bg-surface-outline rounded relative"}>
-      <div className="bg-accent-1 rounded absolute top-0 bottom-0 left-0" style={{ width: `${width}%` }} />
+      <div className="bg-accent-1 rounded absolute top-0 bottom-0 left-0" style={{ width: `${progress}%` }} />
     </div>
   );
 }
 
 function ProjectProgress({ project }: { project: Projects.Project }) {
+  const completedMilestones = project.milestones!.filter((m) => m!.status === "done").length;
+  const totalMilestones = project.milestones!.length;
+  const progress = (completedMilestones / totalMilestones) * 100;
+
+  const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
+
   return (
     <Popover.Root>
       <Popover.Trigger className="cursor-pointer pt-0.5">
-        <ProjectProgressBar project={project} />
+        <ProjectProgressBar progress={progress} />
       </Popover.Trigger>
 
       <Popover.Content
@@ -323,7 +328,27 @@ function ProjectProgress({ project }: { project: Projects.Project }) {
         align="start"
         className="z-[1000] relative w-[550px]"
       >
-        <div className="bg-surface rounded border border-surface-outline shadow-xl">Hello</div>
+        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+          <div className="font-bold px-4 pt-4 flex items-center justify-between">
+            <div className="font-bold">Project Progress</div>
+            <div className="text-accent-1 font-extrabold">{Math.round(progress)}% Complete</div>
+          </div>
+
+          <div className="px-4 pt-4 pb-2 text-sm">
+            <div className="uppercase text-xs font-bold mb-2">Milestones</div>
+            {milestones.length > 0 ? (
+              <div>
+                {milestones!.map((milestone) => (
+                  <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+                    <div className="truncate">{milestone!.title}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>No Milestones</div>
+            )}
+          </div>
+        </div>
         <Popover.Arrow className="bg-surface" />
       </Popover.Content>
     </Popover.Root>

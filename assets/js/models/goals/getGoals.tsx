@@ -91,6 +91,13 @@ const LIST_GOALS = gql`
           id
           insertedAt
         }
+
+        milestones {
+          id
+          title
+          deadlineAt
+          status
+        }
       }
 
       lastCheckIn @include(if: $includeLastCheckIn) {
