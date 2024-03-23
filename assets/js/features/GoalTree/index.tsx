@@ -29,7 +29,7 @@ function GoalTreeRoots() {
 
   return (
     <div>
-      <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 mb-2">
+      <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
         <div className="font-bold text-xs uppercase">Goal</div>
         <div className="flex items-center gap-4">
           <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
@@ -46,26 +46,32 @@ function GoalTreeRoots() {
 
 function GoalNode({ node }: { node: Node }) {
   return (
-    <div className="my-1">
+    <div className="">
       <GoalHeader node={node} />
       <GoalChildren node={node} />
     </div>
   );
 }
 
+function TableRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-stroke-base -mx-12 px-12">{children}</div>
+  );
+}
+
 function GoalHeader({ node }: { node: Node }) {
   const titleClass = classNames({
-    "font-bold text-lg": node.depth === 0,
+    "font-bold": node.depth === 0,
     "font-medium": node.depth > 0,
     truncate: true,
   });
 
-  const iconSize = node.depth === 0 ? 16 : 14;
+  const iconSize = 16;
   const path = Paths.goalPath(node.goal.id);
 
   return (
-    <div className="flex items-center justify-between group relative hover:bg-surface-highlight px-1 -mx-1 gap-4">
-      <div className="inline-flex items-center gap-1.5 truncate flex-1">
+    <TableRow>
+      <div className="inline-flex items-center gap-1.5 truncate flex-1" style={{ paddingLeft: node.depth * 24 }}>
         <HiddenGoalActions node={node} />
         <Icons.IconTarget size={iconSize} className="text-red-500 shrink-0" />
         <DivLink to={path} className={titleClass}>
@@ -77,7 +83,7 @@ function GoalHeader({ node }: { node: Node }) {
         <GoalProgress goal={node.goal} />
         <GoalLastCheckIn node={node} />
       </div>
-    </div>
+    </TableRow>
   );
 }
 
@@ -141,14 +147,15 @@ function GoalChildren({ node }: { node: Node }) {
 
   return (
     <div className="relative">
-      <div className="absolute top-0 left-1.5 w-0.5 h-full bg-surface-outline" />
-      <div className="pl-6">
+      <div className="absolute -top-1 left-1.5 w-0.5 -bottom-1 bg-surface-outline z-[100]" />
+      <div className="">
         <div>{node.subGoals?.map((node) => <GoalNode key={node.goal.id} node={node} />)}</div>
-        <div>{node.projects?.map((project) => <ProjectNode key={project!.id} project={project!} />)}</div>
       </div>
     </div>
   );
 }
+
+// <div>{node.projects?.map((project) => <ProjectNode key={project!.id} project={project!} />)}</div>
 
 function ProjectNode({ project }: { project: Projects.Project }) {
   return (
