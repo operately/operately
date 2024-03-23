@@ -33,6 +33,7 @@
     "react-select": "^5.7.1",
     "react-spinners": "^0.13.8",
     "tippy.js": "^6.3.7",
+    "ts-pattern": "^5.0.8",
     "tsc": "^2.0.4"
   },
   "devDependencies": {

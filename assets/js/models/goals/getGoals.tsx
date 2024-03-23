@@ -86,6 +86,11 @@ const LIST_GOALS = gql`
         id
         name
         status
+
+        lastCheckIn {
+          id
+          insertedAt
+        }
       }
 
       lastCheckIn @include(if: $includeLastCheckIn) {
