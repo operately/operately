@@ -95,8 +95,9 @@ const LIST_GOALS = gql`
         milestones {
           id
           title
-          deadlineAt
           status
+          deadlineAt
+          completedAt
         }
       }
 

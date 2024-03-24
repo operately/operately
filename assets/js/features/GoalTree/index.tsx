@@ -8,6 +8,7 @@ import * as Milestones from "@/models/milestones";
 import classNames from "classnames";
 import { match } from "ts-pattern";
 
+import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { Link, DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
@@ -314,6 +315,7 @@ function ProjectProgress({ project }: { project: Projects.Project }) {
   const progress = (completedMilestones / totalMilestones) * 100;
 
   const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
+  const { pending, done } = Milestones.splitByStatus(milestones);
 
   return (
     <Popover.Root>
@@ -334,23 +336,65 @@ function ProjectProgress({ project }: { project: Projects.Project }) {
             <div className="text-accent-1 font-extrabold">{Math.round(progress)}% Complete</div>
           </div>
 
-          <div className="px-4 pt-4 pb-2 text-sm">
-            <div className="uppercase text-xs font-bold mb-2">Milestones</div>
-            {milestones.length > 0 ? (
-              <div>
-                {milestones!.map((milestone) => (
-                  <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
-                    <div className="truncate">{milestone!.title}</div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div>No Milestones</div>
-            )}
-          </div>
+          <PendingMilestones project={project} pending={pending} />
+          <DoneMilestones project={project} done={done} />
         </div>
         <Popover.Arrow className="bg-surface" />
       </Popover.Content>
     </Popover.Root>
+  );
+}
+
+function PendingMilestones({ project, pending }: { project: Projects.Project; pending: Milestones.Milestone[] }) {
+  if (pending.length === 0) return null;
+
+  return (
+    <div className="px-4 pb-4 text-sm">
+      <div className="uppercase text-xs font-bold mb-1 mt-4 tracking-wide">Upcoming Milestones</div>
+
+      <div>
+        {pending!.map((milestone) => (
+          <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+            <div className="inline-flex items-center gap-1 flex-1 truncate">
+              <MilestoneIcon milestone={milestone!} />
+              <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(project.id, milestone!.id)}>
+                {milestone!.title}
+              </DivLink>
+            </div>
+
+            <div className="shrink-0">
+              <FormattedTime time={milestone!.deadlineAt!} format="short-date" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DoneMilestones({ project, done }: { project: Projects.Project; done: Milestones.Milestone[] }) {
+  if (done.length === 0) return null;
+
+  return (
+    <div className="bg-surface-dimmed border-t border-surface-outline px-4 py-4 text-sm">
+      <div className="uppercase text-xs font-bold tracking-wide mb-1">Completed Milestones</div>
+
+      <div>
+        {done!.map((milestone) => (
+          <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+            <div className="inline-flex items-center gap-1 truncate">
+              <MilestoneIcon milestone={milestone!} />
+              <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(project.id, milestone!.id)}>
+                {milestone!.title}
+              </DivLink>
+            </div>
+
+            <div className="shrink-0">
+              Completed on <FormattedTime time={milestone!.completedAt!} format="short-date" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
