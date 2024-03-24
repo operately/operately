@@ -90,6 +90,16 @@ const LIST_GOALS = gql`
         lastCheckIn {
           id
           insertedAt
+
+          author {
+            id
+            fullName
+            avatarUrl
+            title
+          }
+
+          status
+          description
         }
 
         milestones {

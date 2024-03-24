@@ -203,14 +203,48 @@ function ProjectLastCheckIn({ project }: { project: Projects.Project }) {
   const lastCheckIn = project.lastCheckIn;
 
   return (
-    <div className="text-sm w-24 leading-none flex items-center gap-1">
-      <Icons.IconCalendar size={14} />
+    <div className="text-sm w-24">
       {lastCheckIn ? (
-        <DaysAgo date={lastCheckIn.insertedAt} className="font-medium" />
+        <ProjectLastCheckInDateWithPopover project={project} />
       ) : (
-        <div className="text-content-dimmed">Never</div>
+        <div className="flex items-center gap-1 leading-none">
+          <Icons.IconCalendar size={14} />
+          <div className="text-content-dimmed">Never</div>
+        </div>
       )}
     </div>
+  );
+}
+
+function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Project }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer pt-0.5 flex items-center gap-1">
+        <Icons.IconCalendar size={14} />
+        <DaysAgo date={project.lastCheckIn!.insertedAt} className="font-medium" />
+      </Popover.Trigger>
+
+      <Popover.Content
+        sideOffset={5}
+        alignOffset={-30}
+        side="left"
+        align="start"
+        className="z-[1000] relative w-[550px]"
+      >
+        <div className="bg-surface rounded border border-surface-outline shadow-xl p-4">
+          <div className="uppercase text-xs font-bold mb-2">Last Check-in</div>
+
+          <Summary jsonContent={project.lastCheckIn?.description} characterCount={400} />
+
+          <div className="mt-2 flex items-center justify-between">
+            <FormattedTime time={project.lastCheckIn!.insertedAt} format="short-date" />
+            <Link to={Paths.projectCheckInPath(project.id, project.lastCheckIn!.id)}>View Check-in</Link>
+          </div>
+        </div>
+
+        <Popover.Arrow className="bg-surface" />
+      </Popover.Content>
+    </Popover.Root>
   );
 }
 
@@ -256,25 +290,15 @@ function GoalProgress({ goal }: { goal: Goals.Goal }) {
               <div>No Success Conditions</div>
             )}
           </div>
-
-          {goal.lastCheckIn && (
-            <div className="p-4 border-t border-surface-outline bg-surface-dimmed font-medium rounded-b text-sm">
-              <div className="uppercase text-xs font-bold mb-2">Last Check-in</div>
-
-              <Summary jsonContent={goal.lastCheckIn?.content!["message"]} characterCount={200} />
-
-              <div className="mt-2 flex items-center justify-between">
-                <FormattedTime time={goal.updatedAt} format="short-date" />
-                <Link to={Paths.goalCheckInPath(goal.id, goal.lastCheckIn!.id)}>View Check-in</Link>
-              </div>
-            </div>
-          )}
         </div>
         <Popover.Arrow className="bg-surface" />
       </Popover.Content>
     </Popover.Root>
   );
 }
+
+// {goal.lastCheckIn && (
+// )}
 
 function GoalProgressBar({ goal }: { goal: Goals.Goal }) {
   return (
