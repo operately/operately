@@ -84,9 +84,9 @@ function NodeHeader({ node }: { node: Node }) {
 function NodeIcon({ node }: { node: Node }) {
   switch (node.type) {
     case "goal":
-      return <Icons.IconTarget size={16} className="text-red-500 shrink-0" />;
+      return <Icons.IconTarget size={15} className="text-red-500 shrink-0" />;
     case "project":
-      return <Icons.IconHexagonFilled size={16} className="text-blue-500 shrink-0" />;
+      return <Icons.IconHexagons size={15} className="text-indigo-500 shrink-0" />;
     default:
       throw new Error(`Unknown node type: ${node.type}`);
   }
@@ -141,7 +141,7 @@ function NodeChildren({ node }: { node: Node }) {
 
 function TableRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-stroke-base -mx-12 px-12 hover:bg-surface-highlight">
+    <div className="flex items-center justify-between py-2 border-b border-dashed border-stone-200 -mx-12 px-12 hover:bg-surface-highlight">
       {children}
     </div>
   );
@@ -157,28 +157,27 @@ function NodeActions({ node }: { node: Node }) {
   return (
     <div className={className}>
       <NodeExpandCollapseToggle node={node} />
+      {node.type === "goal" && <GoalOptions node={node as GoalNode} open={optionsOpen} setOpen={setOptionsOpen} />}
     </div>
   );
 }
 
-// <GoalOptions node={node} open={optionsOpen} setOpen={setOptionsOpen} />
+function GoalOptions({ node, open, setOpen }: { node: GoalNode; open: boolean; setOpen: (open: boolean) => void }) {
+  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
+  const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
 
-// function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOpen: (open: boolean) => void }) {
-//   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
-//   const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
-
-//   return (
-//     <DropdownMenu
-//       open={open}
-//       setOpen={setOpen}
-//       trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
-//       options={[
-//         <DropdownMenuLinkItem key="add-goal" to={newGoalPath} title="Add Subgoal" />,
-//         <DropdownMenuLinkItem key="add-project" to={newProjectPath} title="Add Project" />,
-//       ]}
-//     />
-//   );
-// }
+  return (
+    <DropdownMenu
+      open={open}
+      setOpen={setOpen}
+      trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
+      options={[
+        <DropdownMenuLinkItem key="add-goal" to={newGoalPath} title="Add Subgoal" />,
+        <DropdownMenuLinkItem key="add-project" to={newProjectPath} title="Add Project" />,
+      ]}
+    />
+  );
+}
 
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const { expanded, toggleExpanded } = useTreeContext();
@@ -186,8 +185,8 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   if (!node.hasChildren) return null;
 
   const handleClick = () => toggleExpanded(node.id);
-  const size = 14;
-  const ChevronIcon = expanded[node.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
+  const size = 16;
+  const ChevronIcon = expanded[node.id] ? Icons.IconChevronRight : Icons.IconChevronDown;
 
   return <ChevronIcon size={size} className="cursor-pointer" onClick={handleClick} />;
 }
