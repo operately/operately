@@ -1,7 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
 import * as Time from "@/utils/time";
 
-type MilestoneStatus = "pending" | "done";
+import { Milestone } from "@/gql";
+export type { Milestone };
 
 export const FRAGMENT = `
   {
@@ -50,23 +51,6 @@ export const GET_MILESTONE = gql`
     milestone(id: $id) ${FRAGMENT}
   }
 `;
-
-export interface Milestone {
-  id: string;
-  title: string;
-  status: MilestoneStatus;
-
-  comments: Array<{
-    id: string;
-    action: string;
-    insertedAt: string;
-    comment: any;
-  }>;
-
-  deadlineAt: string;
-  completedAt: string | null;
-  description: string | null;
-}
 
 export function filterPending(milestones: Milestone[]) {
   return milestones.filter((m) => m.status === "pending");

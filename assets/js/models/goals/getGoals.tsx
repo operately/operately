@@ -86,6 +86,36 @@ const LIST_GOALS = gql`
         id
         name
         status
+
+        champion {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+
+        lastCheckIn {
+          id
+          insertedAt
+
+          author {
+            id
+            fullName
+            avatarUrl
+            title
+          }
+
+          status
+          description
+        }
+
+        milestones {
+          id
+          title
+          status
+          deadlineAt
+          completedAt
+        }
       }
 
       lastCheckIn @include(if: $includeLastCheckIn) {

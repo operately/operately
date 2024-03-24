@@ -27,6 +27,10 @@ export class Paths {
     return createPath(["projects", projectId, "retrospective"]);
   }
 
+  static projectMilestonePath(projectId: string, milestoneId: string) {
+    return createPath(["projects", projectId, "milestones", milestoneId]);
+  }
+
   static spacePath(spaceId: string) {
     return createPath(["spaces", spaceId]);
   }
