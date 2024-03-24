@@ -87,6 +87,13 @@ const LIST_GOALS = gql`
         name
         status
 
+        champion {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+
         lastCheckIn {
           id
           insertedAt

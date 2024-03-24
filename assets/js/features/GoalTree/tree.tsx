@@ -2,7 +2,7 @@ import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 import { Paths } from "@/routes/paths";
 
-import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 export class Tree {
   private allGoals: Goal[];
@@ -45,6 +45,7 @@ export interface Node {
   id: string;
   type: "goal" | "project";
   name: string;
+  champion?: People.Person;
   linkTo: string;
   children: Node[];
   depth: number;
@@ -57,6 +58,7 @@ export class GoalNode implements Node {
   public id: string;
   public type: "goal" = "goal";
   public goal: Goal;
+  public champion?: People.Person;
   public name: string;
   public linkTo: string;
   public children: Node[];
@@ -74,6 +76,7 @@ export class GoalNode implements Node {
     this.linkTo = Paths.goalPath(goal.id);
     this.goal = goal;
     this.depth = depth;
+    this.champion = goal.champion!;
 
     this.subGoals = subGoals;
     this.projects = this.buildProjectNodes();
@@ -123,6 +126,7 @@ export class ProjectNode implements Node {
   public children: Node[];
   public depth: number;
   public hasChildren: boolean;
+  public champion: People.Person;
 
   constructor(project: Project, depth: number = 0) {
     this.id = project.id;
@@ -133,6 +137,7 @@ export class ProjectNode implements Node {
     this.depth = depth;
     this.children = [];
     this.hasChildren = false;
+    this.champion = project.champion!;
   }
 
   childrenInfoLabel(): string | null {

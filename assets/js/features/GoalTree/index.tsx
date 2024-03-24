@@ -4,6 +4,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 import * as Popover from "@radix-ui/react-popover";
 import * as Milestones from "@/models/milestones";
+import * as People from "@/models/people";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -38,8 +39,9 @@ function GoalTreeRoots() {
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
         <div className="font-bold text-xs uppercase">Goal</div>
         <div className="flex items-center gap-4">
+          <div className="font-bold text-xs uppercase w-24">CHAMPION</div>
+          <div className="font-bold text-xs uppercase w-24">CHECK-IN</div>
           <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
-          <div className="font-bold text-xs uppercase w-24">LAST CHECK-IN</div>
         </div>
       </div>
 
@@ -69,8 +71,9 @@ function NodeHeader({ node }: { node: Node }) {
         <NodeHeaderChildrenInfo node={node} />
       </div>
       <div className="flex items-center gap-4">
-        <NodeProgress node={node} />
+        <NodeChampion node={node} />
         <NodeLastCheckIn node={node} />
+        <NodeProgress node={node} />
       </div>
     </TableRow>
   );
@@ -100,6 +103,15 @@ function NodeHeaderNameLink({ node }: { node: Node }) {
     <DivLink to={node.linkTo} className={titleClass}>
       {node.name}
     </DivLink>
+  );
+}
+
+function NodeChampion({ node }: { node: Node }) {
+  return (
+    <div className="flex items-center gap-1.5 text-sm truncate w-24">
+      <Avatar person={node.champion!} size={16} />
+      <div className="truncate">{People.firstName(node.champion!)}</div>
+    </div>
   );
 }
 
