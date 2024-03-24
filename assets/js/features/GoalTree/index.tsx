@@ -9,7 +9,7 @@ import classNames from "classnames";
 import { match } from "ts-pattern";
 
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { Link, DivLink } from "@/components/Link";
+import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
 import FormattedTime from "@/components/FormattedTime";
@@ -17,7 +17,10 @@ import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 
 import { Node, GoalNode, ProjectNode } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";
-import { Summary } from "@/components/RichContent";
+
+import RichContent from "@/components/RichContent";
+import Avatar from "@/components/Avatar";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export function GoalTree({ goals }: { goals: Goals.Goal[] }) {
   return (
@@ -148,22 +151,22 @@ function NodeActions({ node }: { node: Node }) {
 
 // <GoalOptions node={node} open={optionsOpen} setOpen={setOptionsOpen} />
 
-function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOpen: (open: boolean) => void }) {
-  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
-  const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
+// function GoalOptions({ node, open, setOpen }: { node: Node; open: boolean; setOpen: (open: boolean) => void }) {
+//   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
+//   const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
 
-  return (
-    <DropdownMenu
-      open={open}
-      setOpen={setOpen}
-      trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
-      options={[
-        <DropdownMenuLinkItem key="add-goal" to={newGoalPath} title="Add Subgoal" />,
-        <DropdownMenuLinkItem key="add-project" to={newProjectPath} title="Add Project" />,
-      ]}
-    />
-  );
-}
+//   return (
+//     <DropdownMenu
+//       open={open}
+//       setOpen={setOpen}
+//       trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
+//       options={[
+//         <DropdownMenuLinkItem key="add-goal" to={newGoalPath} title="Add Subgoal" />,
+//         <DropdownMenuLinkItem key="add-project" to={newProjectPath} title="Add Project" />,
+//       ]}
+//     />
+//   );
+// }
 
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const { expanded, toggleExpanded } = useTreeContext();
@@ -182,21 +185,6 @@ function NodeLastCheckIn({ node }: { node: Node }) {
     .with("goal", () => <GoalLastCheckIn goal={(node as GoalNode).goal} />)
     .with("project", () => <ProjectLastCheckIn project={(node as ProjectNode).project} />)
     .exhaustive();
-}
-
-function GoalLastCheckIn({ goal }: { goal: Goals.Goal }) {
-  const lastCheckIn = goal.lastCheckIn;
-
-  return (
-    <div className="text-sm w-24 leading-none flex items-center gap-1">
-      <Icons.IconCalendar size={14} />
-      {lastCheckIn ? (
-        <DaysAgo date={lastCheckIn.insertedAt} className="font-medium" />
-      ) : (
-        <div className="text-content-dimmed">Never</div>
-      )}
-    </div>
-  );
 }
 
 function ProjectLastCheckIn({ project }: { project: Projects.Project }) {
@@ -231,14 +219,72 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
         align="start"
         className="z-[1000] relative w-[550px]"
       >
-        <div className="bg-surface rounded border border-surface-outline shadow-xl p-4">
-          <div className="uppercase text-xs font-bold mb-2">Last Check-in</div>
+        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+          <div className="flex items-center justify-between px-4 pt-4 text-sm">
+            <div className="uppercase font-bold">Last Check-in</div>
+            <SmallStatusIndicator status={project.lastCheckIn!.status} />
+          </div>
 
-          <Summary jsonContent={project.lastCheckIn?.description} characterCount={400} />
-
-          <div className="mt-2 flex items-center justify-between">
+          <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
+            <Avatar person={project.lastCheckIn!.author} size={16} /> {project.lastCheckIn!.author.fullName} on{" "}
             <FormattedTime time={project.lastCheckIn!.insertedAt} format="short-date" />
-            <Link to={Paths.projectCheckInPath(project.id, project.lastCheckIn!.id)}>View Check-in</Link>
+          </div>
+
+          <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
+            <RichContent jsonContent={project.lastCheckIn?.description!} />
+          </div>
+        </div>
+
+        <Popover.Arrow className="bg-surface" />
+      </Popover.Content>
+    </Popover.Root>
+  );
+}
+
+function GoalLastCheckIn({ goal }: { goal: Goals.Goal }) {
+  const lastCheckIn = goal.lastCheckIn;
+
+  return (
+    <div className="text-sm w-24">
+      {lastCheckIn ? (
+        <GoalLastCheckInDateWithPopover goal={goal} />
+      ) : (
+        <div className="flex items-center gap-1 leading-none">
+          <Icons.IconCalendar size={14} />
+          <div className="text-content-dimmed">Never</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer pt-0.5 flex items-center gap-1">
+        <Icons.IconCalendar size={14} />
+        <DaysAgo date={goal.lastCheckIn!.insertedAt} className="font-medium" />
+      </Popover.Trigger>
+
+      <Popover.Content
+        sideOffset={5}
+        alignOffset={-30}
+        side="left"
+        align="start"
+        className="z-[1000] relative w-[550px]"
+      >
+        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+          <div className="flex items-center justify-between px-4 pt-4 text-sm">
+            <div className="uppercase font-bold">Last Check-in</div>
+          </div>
+
+          <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
+            <Avatar person={goal.lastCheckIn!.author!} size={16} /> {goal.lastCheckIn!.author!.fullName} on{" "}
+            <FormattedTime time={goal.lastCheckIn!.insertedAt} format="short-date" />
+          </div>
+
+          <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
+            <RichContent jsonContent={goal.lastCheckIn?.content!["message"]!} />
           </div>
         </div>
 
