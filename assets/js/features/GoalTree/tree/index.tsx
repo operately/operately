@@ -43,4 +43,8 @@ export class Tree {
 
     return new GoalNode(goal, childNodes, depth, this.sortColumn, this.sortDirection);
   }
+
+  getAllNodes(): Node[] {
+    return this.roots.flatMap((root) => root.getAllNodes());
+  }
 }

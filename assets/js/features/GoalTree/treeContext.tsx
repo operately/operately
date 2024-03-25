@@ -10,23 +10,55 @@ export interface TreeContextValue {
 
   expanded: ExpandedNodesMap;
   toggleExpanded: (id: string) => void;
+  expandAll: () => void;
+  collapseAll: () => void;
 
   sortColumn: SortColumn;
   sortDirection: SortDirection;
   setSortColumn: (column: SortColumn) => void;
   setSortDirection: (direction: SortDirection) => void;
+
+  timeframe: string;
+  nextTimeframe: () => void;
+  prevTimeframe: () => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
 
-export function TreeContextProvider({ goals, children }: { goals: Goals.Goal[]; children: React.ReactNode }) {
-  const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
-  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
+export function TreeContextProvider({
+  goals,
+  timeframe,
+  nextTimeframe,
+  prevTimeframe,
+  children,
+}: {
+  goals: Goals.Goal[];
+  children: React.ReactNode;
+  timeframe: string;
+  nextTimeframe: () => void;
+  prevTimeframe: () => void;
+}) {
+  const [sortColumn, setSortColumn] = React.useState<SortColumn>("progress");
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
 
   const tree = React.useMemo(() => Tree.build(goals, sortColumn, sortDirection), [goals, sortColumn, sortDirection]);
-  const { expanded, toggleExpanded } = useExpandedNodesState(tree);
+  const { expanded, toggleExpanded, expandAll, collapseAll } = useExpandedNodesState(tree);
 
-  const value = { tree, expanded, toggleExpanded, sortColumn, setSortColumn, setSortDirection, sortDirection };
+  const value = {
+    tree,
+    expanded,
+    toggleExpanded,
+    expandAll,
+    collapseAll,
+    sortColumn,
+    setSortColumn,
+    setSortDirection,
+    sortDirection,
+
+    timeframe,
+    nextTimeframe,
+    prevTimeframe,
+  };
 
   return <TreeContext.Provider value={value}>{children}</TreeContext.Provider>;
 }
@@ -40,21 +72,24 @@ export function useTreeContext() {
 }
 
 export function useExpandedNodesState(tree: Tree) {
-  const [expanded, setExpanded] = React.useState<ExpandedNodesMap>(() => {
-    var res = {};
-    tree
-      .getRoots()
-      .map((root) => root.id)
-      .forEach((id) => (res[id] = true));
-    return res;
-  });
+  const [expanded, setExpanded] = React.useState<ExpandedNodesMap>({});
 
   const toggleExpanded = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const expandAll = () => {
+    setExpanded(tree.getAllNodes().reduce((acc, node) => ({ ...acc, [node.id]: true }), {}));
+  };
+
+  const collapseAll = () => {
+    setExpanded({});
+  };
+
   return {
     expanded,
     toggleExpanded,
+    expandAll,
+    collapseAll,
   };
 }
