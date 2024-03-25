@@ -17,11 +17,27 @@ export interface TreeContextValue {
   sortDirection: SortDirection;
   setSortColumn: (column: SortColumn) => void;
   setSortDirection: (direction: SortDirection) => void;
+
+  timeframe: string;
+  nextTimeframe: () => void;
+  prevTimeframe: () => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
 
-export function TreeContextProvider({ goals, children }: { goals: Goals.Goal[]; children: React.ReactNode }) {
+export function TreeContextProvider({
+  goals,
+  timeframe,
+  nextTimeframe,
+  prevTimeframe,
+  children,
+}: {
+  goals: Goals.Goal[];
+  children: React.ReactNode;
+  timeframe: string;
+  nextTimeframe: () => void;
+  prevTimeframe: () => void;
+}) {
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("progress");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
 
@@ -38,6 +54,10 @@ export function TreeContextProvider({ goals, children }: { goals: Goals.Goal[]; 
     setSortColumn,
     setSortDirection,
     sortDirection,
+
+    timeframe,
+    nextTimeframe,
+    prevTimeframe,
   };
 
   return <TreeContext.Provider value={value}>{children}</TreeContext.Provider>;

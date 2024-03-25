@@ -14,43 +14,37 @@ import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
-import FormattedTime from "@/components/FormattedTime";
 import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
+import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 import { Node, GoalNode, ProjectNode, SortColumn } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import FormattedTime from "@/components/FormattedTime";
 
-export function GoalTree({ goals }: { goals: Goals.Goal[] }) {
+interface GoalTreeProps {
+  goals: Goals.Goal[];
+  timeframe: string;
+  nextTimeframe: () => void;
+  prevTimeframe: () => void;
+}
+
+export function GoalTree(props: GoalTreeProps) {
   return (
-    <TreeContextProvider goals={goals}>
+    <TreeContextProvider {...props}>
       <GoalTreeRoots />
     </TreeContextProvider>
   );
 }
 
 function GoalTreeRoots() {
-  const { tree, expanded, expandAll, collapseAll } = useTreeContext();
+  const { tree } = useTreeContext();
 
   return (
     <div>
-      <div className="flex items-center gap-1 mb-4">
-        {Object.keys(expanded).length === 0 && (
-          <FilledButton type="secondary" size="xxs" onClick={expandAll}>
-            Expand All
-          </FilledButton>
-        )}
-
-        {Object.keys(expanded).length > 0 && (
-          <FilledButton type="secondary" size="xxs" onClick={collapseAll}>
-            Collapse All
-          </FilledButton>
-        )}
-      </div>
-
+      <GoalTreeControls />
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
         <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
 
@@ -64,6 +58,32 @@ function GoalTreeRoots() {
       {tree.getRoots().map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
+    </div>
+  );
+}
+
+function GoalTreeControls() {
+  const { expanded, expandAll, collapseAll, timeframe, prevTimeframe, nextTimeframe } = useTreeContext();
+
+  return (
+    <div className="flex mb-4 items-center gap-2">
+      {Object.keys(expanded).length === 0 && (
+        <FilledButton type="secondary" size="xs" onClick={expandAll}>
+          Expand All
+        </FilledButton>
+      )}
+
+      {Object.keys(expanded).length > 0 && (
+        <FilledButton type="secondary" size="xs" onClick={collapseAll}>
+          Collapse All
+        </FilledButton>
+      )}
+
+      <div className="flex items-center justify-center border border-surface-outline text-sm rounded-2xl pl-2.5 py-0.5 pr-1.5">
+        <span className="font-medium text-content-dimmed mr-3">{timeframe}</span>
+        <Icons.IconChevronLeft onClick={prevTimeframe} className="cursor-pointer text-content-dimmed" size={14} />
+        <Icons.IconChevronRight onClick={nextTimeframe} className="cursor-pointer text-content-dimmed" size={14} />
+      </div>
     </div>
   );
 }
