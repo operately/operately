@@ -8,20 +8,25 @@ import { DivLink } from "@/components/Link";
 import { createPath } from "@/utils/paths";
 import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
+import classNames from "classnames";
 
 interface GroupPageNavigationProps {
   group: Groups.Group;
   activeTab: "overview" | "discussions" | "goals" | "projects";
+  margins?: string;
 }
 
-export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationProps) {
+export function GroupPageNavigation({ group, activeTab, margins }: GroupPageNavigationProps) {
+  margins = margins || "-mx-16 -mt-12";
+
   const overviewPath = createPath("spaces", group.id);
   const goalsPath = createPath("spaces", group.id, "goals");
   const projectsPath = createPath("spaces", group.id, "projects");
   const discussionsPath = createPath("spaces", group.id, "discussions");
+  const wrapperClassName = classNames("mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t", margins);
 
   return (
-    <div className="-mx-16 -mt-12 mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t">
+    <div className={wrapperClassName}>
       <div className="flex items-center justify-between">
         <div className="font-medium pl-4 text-sm w-3/12 truncate pt-1">{group.name}</div>
 

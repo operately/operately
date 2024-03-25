@@ -1,12 +1,12 @@
-import React from "react";
-
-import { GhostButton } from "@/components/Button";
-import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+
 import { createPath } from "@/utils/paths";
 import { useLoadedData, useTimeframeControles } from "./loader";
 import { GoalTree } from "@/features/GoalTree";
+import { FilledButton } from "@/components/Button";
+import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 
 export function Page() {
   const { group } = useLoadedData();
@@ -15,7 +15,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root fluid>
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation group={group} activeTab="goals" />
+          <GroupPageNavigation group={group} activeTab="goals" margins="-mx-12 -mt-10" />
           <Content />
         </Paper.Body>
       </Paper.Root>
@@ -32,9 +32,9 @@ function Content() {
     <>
       <div className="flex items-center justify-between mb-8">
         <div className="font-extrabold text-3xl">Goals in {group.name}</div>
-        <GhostButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
+        <FilledButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
           Add Goal
-        </GhostButton>
+        </FilledButton>
       </div>
 
       <GoalTree goals={goals} timeframe={timeframe} nextTimeframe={next} prevTimeframe={prev} />
