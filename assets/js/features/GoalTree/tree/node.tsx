@@ -8,6 +8,7 @@ export interface Node {
   id: string;
   type: NodeTypes;
   name: string;
+  spaceId: string;
   champion: People.Person;
   linkTo: string;
   children: Node[];

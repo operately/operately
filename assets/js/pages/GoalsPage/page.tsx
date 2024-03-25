@@ -23,7 +23,13 @@ export function Page() {
             </FilledButton>
           </div>
 
-          <GoalTree goals={goals} timeframe={timeframe} nextTimeframe={next} prevTimeframe={prev} />
+          <GoalTree
+            goals={goals}
+            timeframe={timeframe}
+            nextTimeframe={next}
+            prevTimeframe={prev}
+            filters={{ spaceId: null }}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

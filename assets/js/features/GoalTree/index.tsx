@@ -18,20 +18,13 @@ import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 import { Node, GoalNode, ProjectNode, SortColumn } from "./tree";
-import { useTreeContext, TreeContextProvider } from "./treeContext";
+import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
-interface GoalTreeProps {
-  goals: Goals.Goal[];
-  timeframe: string;
-  nextTimeframe: () => void;
-  prevTimeframe: () => void;
-}
-
-export function GoalTree(props: GoalTreeProps) {
+export function GoalTree(props: TreeContextProviderProps) {
   return (
     <TreeContextProvider {...props}>
       <GoalTreeRoots />
@@ -415,7 +408,10 @@ function GoalProgress({ node }: { node: GoalNode }) {
             {goal.targets!.length > 0 ? (
               <div>
                 {goal.targets!.map((target) => (
-                  <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+                  <div
+                    key={target!.id}
+                    className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between"
+                  >
                     <div className="truncate">{target!.name}</div>
                     <TargetProgressBar target={target!} />
                   </div>

@@ -24,6 +24,7 @@ export class GoalNode implements Node {
   public totalNestedSubGoals: number;
   public progress: number;
   public lastCheckInDate: Date | null;
+  public spaceId: string;
 
   constructor(
     goal: Goal,
@@ -39,6 +40,7 @@ export class GoalNode implements Node {
     this.goal = goal;
     this.depth = depth;
     this.champion = goal.champion!;
+    this.spaceId = goal.space.id;
 
     this.subGoals = subGoals.sort((a, b) => a.compare(b, sortColumn, sortDirection));
     this.projects = this.buildProjectNodes().sort((a, b) => a.compare(b, sortColumn, sortDirection));

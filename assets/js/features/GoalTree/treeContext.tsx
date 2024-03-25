@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 
-import { Tree, SortColumn, SortDirection } from "./tree";
+import { Tree, SortColumn, SortDirection, TreeFilters } from "./tree";
 
 export type ExpandedNodesMap = Record<string, boolean>;
 
@@ -25,23 +25,27 @@ export interface TreeContextValue {
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
 
-export function TreeContextProvider({
-  goals,
-  timeframe,
-  nextTimeframe,
-  prevTimeframe,
-  children,
-}: {
+export interface TreeContextProviderProps {
   goals: Goals.Goal[];
-  children: React.ReactNode;
   timeframe: string;
   nextTimeframe: () => void;
   prevTimeframe: () => void;
-}) {
+  filters: TreeFilters;
+}
+
+interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps {
+  children: React.ReactNode;
+}
+
+export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("progress");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
 
-  const tree = React.useMemo(() => Tree.build(goals, sortColumn, sortDirection), [goals, sortColumn, sortDirection]);
+  const tree = React.useMemo(
+    () => Tree.build(props.goals, sortColumn, sortDirection, props.filters),
+    [props.goals, sortColumn, sortDirection, props.filters.spaceId],
+  );
+
   const { expanded, toggleExpanded, expandAll, collapseAll } = useExpandedNodesState(tree);
 
   const value = {
@@ -55,12 +59,12 @@ export function TreeContextProvider({
     setSortDirection,
     sortDirection,
 
-    timeframe,
-    nextTimeframe,
-    prevTimeframe,
+    timeframe: props.timeframe,
+    nextTimeframe: props.nextTimeframe,
+    prevTimeframe: props.prevTimeframe,
   };
 
-  return <TreeContext.Provider value={value}>{children}</TreeContext.Provider>;
+  return <TreeContext.Provider value={value}>{props.children}</TreeContext.Provider>;
 }
 
 export function useTreeContext() {
