@@ -415,7 +415,10 @@ function GoalProgress({ node }: { node: GoalNode }) {
             {goal.targets!.length > 0 ? (
               <div>
                 {goal.targets!.map((target) => (
-                  <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+                  <div
+                    key={target!.id}
+                    className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between"
+                  >
                     <div className="truncate">{target!.name}</div>
                     <TargetProgressBar target={target!} />
                   </div>

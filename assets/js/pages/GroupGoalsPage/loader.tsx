@@ -1,7 +1,5 @@
-import client from "@/graphql/client";
-
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/graphql/Groups";
+import * as Groups from "@/models/groups";
 import * as Goals from "@/models/goals";
 import * as Companies from "@/models/companies";
 import * as Time from "@/utils/time";
@@ -18,20 +16,17 @@ interface LoadedData {
 export async function loader({ request, params }): Promise<LoadedData> {
   const timeframe = new URL(request.url).searchParams.get("timeframe") || Time.currentQuarter();
 
-  const groupData = await client.query({
-    query: Groups.GET_GROUP,
-    variables: { id: params.id },
-    fetchPolicy: "network-only",
-  });
-
   return {
     company: await Companies.getCompany(),
+    group: await Groups.getGroup(params.id),
     goals: await Goals.getGoals({
-      spaceId: groupData.data.group.id,
-      timeframe,
       includeTargets: true,
+      includeSpace: true,
+      timeframe: timeframe,
+      includeLongerTimeframes: true,
+      includeProjects: true,
+      includeLastCheckIn: true,
     }),
-    group: groupData.data.group,
   };
 }
 
