@@ -21,8 +21,12 @@ export function endOfToday() {
   return datefsn.endOfDay(new Date());
 }
 
-export function compareAsc(date1: Date, date2: Date) {
-  return datefsn.compareAsc(date1, date2);
+export function compareAsc(date1: Date | null, date2: Date | null, { nullsFirst = false } = {}) {
+  if (!date1 && !date2) return 0;
+  if (!date1 && date2) return nullsFirst ? -1 : 1;
+  if (date1 && !date2) return nullsFirst ? 1 : -1;
+
+  return datefsn.compareAsc(date1!, date2!);
 }
 
 export function parse(date: string | Date | null | undefined) {

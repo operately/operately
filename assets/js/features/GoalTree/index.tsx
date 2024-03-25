@@ -16,7 +16,7 @@ import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
 import FormattedTime from "@/components/FormattedTime";
 import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 
-import { Node, GoalNode, ProjectNode } from "./tree";
+import { Node, GoalNode, ProjectNode, SortColumn } from "./tree";
 import { useTreeContext, TreeContextProvider } from "./treeContext";
 
 import RichContent from "@/components/RichContent";
@@ -37,17 +37,56 @@ function GoalTreeRoots() {
   return (
     <div>
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
-        <div className="font-bold text-xs uppercase">Goal</div>
+        <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
+
         <div className="flex items-center gap-4">
-          <div className="font-bold text-xs uppercase w-24">CHAMPION</div>
-          <div className="font-bold text-xs uppercase w-24">CHECK-IN</div>
-          <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
+          <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
+          <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
+          <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
         </div>
       </div>
 
       {tree.getRoots().map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
+    </div>
+  );
+}
+
+function GoalTreeColumnHeader({ title, width, sortId }: { title: string; width: string; sortId: SortColumn }) {
+  const className = classNames("font-bold text-xs uppercase flex items-center gap-1 group", width);
+  const { sortColumn, sortDirection, setSortColumn, setSortDirection } = useTreeContext();
+
+  const handleArrowClick = () => {
+    if (sortColumn === sortId) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(sortId);
+      setSortDirection("asc");
+    }
+  };
+
+  let icon = Icons.IconArrowDown;
+
+  if (sortColumn === sortId) {
+    if (sortDirection === "asc") {
+      icon = Icons.IconArrowDown;
+    } else {
+      icon = Icons.IconArrowUp;
+    }
+  } else {
+    icon = Icons.IconArrowDown;
+  }
+
+  const sortArrowClass = classNames("cursor-pointer", {
+    "opacity-0 group-hover:opacity-100 transition-opacity": sortColumn !== sortId,
+  });
+
+  const sortArrow = React.createElement(icon, { size: 12, onClick: handleArrowClick, className: sortArrowClass });
+
+  return (
+    <div className={className}>
+      {title} {sortArrow}
     </div>
   );
 }
@@ -307,12 +346,14 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
 
 function NodeProgress({ node }: { node: Node }) {
   return match(node.type)
-    .with("goal", () => <GoalProgress goal={(node as GoalNode).goal} />)
-    .with("project", () => <ProjectProgress project={(node as ProjectNode).project} />)
+    .with("goal", () => <GoalProgress node={node as GoalNode} />)
+    .with("project", () => <ProjectProgress node={node as ProjectNode} />)
     .exhaustive();
 }
 
-function GoalProgress({ goal }: { goal: Goals.Goal }) {
+function GoalProgress({ node }: { node: GoalNode }) {
+  const goal = node.goal;
+
   return (
     <Popover.Root>
       <Popover.Trigger className="cursor-pointer pt-0.5">
@@ -329,7 +370,7 @@ function GoalProgress({ goal }: { goal: Goals.Goal }) {
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="font-bold px-4 pt-4 flex items-center justify-between">
             <div className="font-bold">Goal Progress</div>
-            <div className="text-accent-1 font-extrabold">{Math.round(goal.progressPercentage)}% Complete</div>
+            <div className="text-accent-1 font-extrabold">{Math.round(node.progress)}% Complete</div>
           </div>
 
           <div className="px-4 pt-4 pb-2 text-sm">
@@ -390,10 +431,9 @@ function ProjectProgressBar({ progress }: { progress: number }) {
   );
 }
 
-function ProjectProgress({ project }: { project: Projects.Project }) {
-  const completedMilestones = project.milestones!.filter((m) => m!.status === "done").length;
-  const totalMilestones = project.milestones!.length;
-  const progress = (completedMilestones / totalMilestones) * 100;
+function ProjectProgress({ node }: { node: ProjectNode }) {
+  const project = node.project;
+  const progress = project.progress;
 
   const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
   const { pending, done } = Milestones.splitByStatus(milestones);
