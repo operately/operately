@@ -9,17 +9,23 @@ export { Node } from "./node";
 export { GoalNode } from "./goalNode";
 export { ProjectNode } from "./projectNode";
 
+interface TreeFilters {
+  spaceId: string | null;
+}
+
 export class Tree {
   private allGoals: Goal[];
   private roots: GoalNode[];
   private sortColumn: SortColumn;
   private sortDirection: SortDirection;
+  private filters: TreeFilters;
 
-  static build(allGoals: Goal[], sortColumn: SortColumn, sortDirection: SortDirection): Tree {
-    return new Tree(allGoals, sortColumn, sortDirection);
+  static build(allGoals: Goal[], sortColumn: SortColumn, sortDirection: SortDirection, filters: TreeFilters): Tree {
+    return new Tree(allGoals, sortColumn, sortDirection, filters);
   }
 
-  constructor(allGoals: Goal[], sortColumn: SortColumn, sortDirection: SortDirection) {
+  constructor(allGoals: Goal[], sortColumn: SortColumn, sortDirection: SortDirection, filters: TreeFilters) {
+    this.filters = filters;
     this.allGoals = allGoals;
     this.sortColumn = sortColumn;
     this.sortDirection = sortDirection;
@@ -32,7 +38,7 @@ export class Tree {
 
   buildRoots(): GoalNode[] {
     return this.allGoals
-      .filter((g) => !g.parentGoalId)
+      .filter((g) => (this.filters.spaceId ? g.space.id === this.filters.spaceId : !g.parentGoalId))
       .map((g) => this.buildTree(g))
       .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
   }

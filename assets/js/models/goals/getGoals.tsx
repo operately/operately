@@ -68,6 +68,11 @@ const LIST_GOALS = gql`
       parentGoalId
       progressPercentage
 
+      space {
+        id
+        name
+      }
+
       champion {
         id
         fullName
@@ -86,6 +91,11 @@ const LIST_GOALS = gql`
         id
         name
         status
+
+        space {
+          id
+          name
+        }
 
         champion {
           id

@@ -37,7 +37,13 @@ function Content() {
         </FilledButton>
       </div>
 
-      <GoalTree goals={goals} timeframe={timeframe} nextTimeframe={next} prevTimeframe={prev} />
+      <GoalTree
+        goals={goals}
+        timeframe={timeframe}
+        nextTimeframe={next}
+        prevTimeframe={prev}
+        filters={{ spaceId: group.id }}
+      />
     </>
   );
 }

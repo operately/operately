@@ -18,20 +18,13 @@ import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 import { Node, GoalNode, ProjectNode, SortColumn } from "./tree";
-import { useTreeContext, TreeContextProvider } from "./treeContext";
+import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
-interface GoalTreeProps {
-  goals: Goals.Goal[];
-  timeframe: string;
-  nextTimeframe: () => void;
-  prevTimeframe: () => void;
-}
-
-export function GoalTree(props: GoalTreeProps) {
+export function GoalTree(props: TreeContextProviderProps) {
   return (
     <TreeContextProvider {...props}>
       <GoalTreeRoots />

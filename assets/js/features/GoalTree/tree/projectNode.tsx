@@ -21,6 +21,7 @@ export class ProjectNode implements Node {
   public champion: People.Person;
   public lastCheckInDate: Date | null;
   public progress: number;
+  public spaceId: string;
 
   constructor(project: Project, depth: number = 0) {
     this.id = project.id;
@@ -34,6 +35,7 @@ export class ProjectNode implements Node {
     this.champion = project.champion!;
     this.lastCheckInDate = Time.parse(project.lastCheckIn?.insertedAt);
     this.progress = this.calculateProgress();
+    this.spaceId = project.space.id;
   }
 
   childrenInfoLabel(): string | null {
