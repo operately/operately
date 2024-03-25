@@ -40,14 +40,7 @@ export function useTreeContext() {
 }
 
 export function useExpandedNodesState(tree: Tree) {
-  const [expanded, setExpanded] = React.useState<ExpandedNodesMap>(() => {
-    var res = {};
-    tree
-      .getRoots()
-      .map((root) => root.id)
-      .forEach((id) => (res[id] = true));
-    return res;
-  });
+  const [expanded, setExpanded] = React.useState<ExpandedNodesMap>({});
 
   const toggleExpanded = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
