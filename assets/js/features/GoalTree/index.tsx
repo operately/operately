@@ -17,7 +17,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 
 import { Node, GoalNode, ProjectNode } from "./tree";
-import { useTreeContext, TreeContextProvider } from "./treeContext";
+import { useTreeContext, TreeContextProvider, SortColumn } from "./treeContext";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
@@ -37,17 +37,47 @@ function GoalTreeRoots() {
   return (
     <div>
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
-        <div className="font-bold text-xs uppercase">Goal</div>
+        <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
+
         <div className="flex items-center gap-4">
-          <div className="font-bold text-xs uppercase w-24">CHAMPION</div>
-          <div className="font-bold text-xs uppercase w-24">CHECK-IN</div>
-          <div className="font-bold text-xs uppercase w-24">PROGRESS</div>
+          <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
+          <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
+          <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
         </div>
       </div>
 
       {tree.getRoots().map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
+    </div>
+  );
+}
+
+function GoalTreeColumnHeader({ title, width, sortId }: { title: string; width: string; sortId: SortColumn }) {
+  const className = classNames("font-bold text-xs uppercase flex items-center gap-1", width);
+  const { sortColumn, sortDirection, setSortColumn, setSortDirection } = useTreeContext();
+
+  const handleArrowClick = () => {
+    if (sortColumn === sortId) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(sortId);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortArrow =
+    sortColumn === sortId ? (
+      sortDirection === "asc" ? (
+        <Icons.IconArrowDown size={12} onClick={handleArrowClick} className="cursor-pointer" />
+      ) : (
+        <Icons.IconArrowUp size={12} onClick={handleArrowClick} className="cursor-pointer" />
+      )
+    ) : null;
+
+  return (
+    <div className={className}>
+      {title} {sortArrow}
     </div>
   );
 }
