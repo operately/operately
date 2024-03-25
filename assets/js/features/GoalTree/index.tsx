@@ -70,12 +70,12 @@ function GoalTreeColumnHeader({ title, width, sortId }: { title: string; width: 
 
   if (sortColumn === sortId) {
     if (sortDirection === "asc") {
-      icon = Icons.IconArrowDown;
-    } else {
       icon = Icons.IconArrowUp;
+    } else {
+      icon = Icons.IconArrowDown;
     }
   } else {
-    icon = Icons.IconArrowDown;
+    icon = Icons.IconArrowUp;
   }
 
   const sortArrowClass = classNames("cursor-pointer", {
@@ -176,7 +176,6 @@ function NodeChildren({ node }: { node: Node }) {
     </div>
   );
 }
-// <div className="absolute -top-1 left-1.5 w-0.5 -bottom-1 bg-surface-outline z-[100]" />
 
 function TableRow({ children }: { children: React.ReactNode }) {
   return (
@@ -395,9 +394,6 @@ function GoalProgress({ node }: { node: GoalNode }) {
   );
 }
 
-// {goal.lastCheckIn && (
-// )}
-
 function GoalProgressBar({ goal }: { goal: Goals.Goal }) {
   return (
     <div className={"w-24 h-2.5 bg-surface-outline rounded relative"}>
@@ -433,7 +429,7 @@ function ProjectProgressBar({ progress }: { progress: number }) {
 
 function ProjectProgress({ node }: { node: ProjectNode }) {
   const project = node.project;
-  const progress = project.progress;
+  const progress = node.progress;
 
   const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
   const { pending, done } = Milestones.splitByStatus(milestones);
