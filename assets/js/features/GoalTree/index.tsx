@@ -103,7 +103,10 @@ function NodeView({ node }: { node: Node }) {
 function NodeHeader({ node }: { node: Node }) {
   return (
     <TableRow>
-      <div className="inline-flex items-center gap-1.5 truncate flex-1 group" style={{ paddingLeft: node.depth * 30 }}>
+      <div
+        className="inline-flex items-center gap-1.5 truncate flex-1 group pr-2"
+        style={{ paddingLeft: node.depth * 30 }}
+      >
         <NodeActions node={node} />
         <NodeIcon node={node} />
         <NodeHeaderNameLink node={node} />
