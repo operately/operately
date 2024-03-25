@@ -16,8 +16,8 @@ import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
 import FormattedTime from "@/components/FormattedTime";
 import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
 
-import { Node, GoalNode, ProjectNode } from "./tree";
-import { useTreeContext, TreeContextProvider, SortColumn } from "./treeContext";
+import { Node, GoalNode, ProjectNode, SortColumn } from "./tree";
+import { useTreeContext, TreeContextProvider } from "./treeContext";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
@@ -337,12 +337,14 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
 
 function NodeProgress({ node }: { node: Node }) {
   return match(node.type)
-    .with("goal", () => <GoalProgress goal={(node as GoalNode).goal} />)
-    .with("project", () => <ProjectProgress project={(node as ProjectNode).project} />)
+    .with("goal", () => <GoalProgress node={node as GoalNode} />)
+    .with("project", () => <ProjectProgress node={node as ProjectNode} />)
     .exhaustive();
 }
 
-function GoalProgress({ goal }: { goal: Goals.Goal }) {
+function GoalProgress({ node }: { node: GoalNode }) {
+  const goal = node.goal;
+
   return (
     <Popover.Root>
       <Popover.Trigger className="cursor-pointer pt-0.5">
@@ -359,7 +361,7 @@ function GoalProgress({ goal }: { goal: Goals.Goal }) {
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="font-bold px-4 pt-4 flex items-center justify-between">
             <div className="font-bold">Goal Progress</div>
-            <div className="text-accent-1 font-extrabold">{Math.round(goal.progressPercentage)}% Complete</div>
+            <div className="text-accent-1 font-extrabold">{Math.round(node.progress)}% Complete</div>
           </div>
 
           <div className="px-4 pt-4 pb-2 text-sm">
@@ -420,10 +422,9 @@ function ProjectProgressBar({ progress }: { progress: number }) {
   );
 }
 
-function ProjectProgress({ project }: { project: Projects.Project }) {
-  const completedMilestones = project.milestones!.filter((m) => m!.status === "done").length;
-  const totalMilestones = project.milestones!.length;
-  const progress = (completedMilestones / totalMilestones) * 100;
+function ProjectProgress({ node }: { node: ProjectNode }) {
+  const project = node.project;
+  const progress = project.progress;
 
   const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
   const { pending, done } = Milestones.splitByStatus(milestones);
