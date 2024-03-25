@@ -20,8 +20,8 @@ export interface TreeContextValue {
 const TreeContext = React.createContext<TreeContextValue | null>(null);
 
 export function TreeContextProvider({ goals, children }: { goals: Goals.Goal[]; children: React.ReactNode }) {
-  const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
-  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
+  const [sortColumn, setSortColumn] = React.useState<SortColumn>("progress");
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
 
   const tree = React.useMemo(() => Tree.build(goals, sortColumn, sortDirection), [goals, sortColumn, sortDirection]);
   const { expanded, toggleExpanded } = useExpandedNodesState(tree);
