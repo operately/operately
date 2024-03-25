@@ -9,6 +9,7 @@ import * as People from "@/models/people";
 import classNames from "classnames";
 import { match } from "ts-pattern";
 
+import { FilledButton } from "@/components/Button";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
@@ -32,10 +33,24 @@ export function GoalTree({ goals }: { goals: Goals.Goal[] }) {
 }
 
 function GoalTreeRoots() {
-  const { tree } = useTreeContext();
+  const { tree, expanded, expandAll, collapseAll } = useTreeContext();
 
   return (
     <div>
+      <div className="flex items-center gap-1 mb-4">
+        {Object.keys(expanded).length === 0 && (
+          <FilledButton type="secondary" size="xxs" onClick={expandAll}>
+            Expand All
+          </FilledButton>
+        )}
+
+        {Object.keys(expanded).length > 0 && (
+          <FilledButton type="secondary" size="xxs" onClick={collapseAll}>
+            Collapse All
+          </FilledButton>
+        )}
+      </div>
+
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
         <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
 

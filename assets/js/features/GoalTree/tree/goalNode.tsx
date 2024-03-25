@@ -69,6 +69,10 @@ export class GoalNode implements Node {
     return result * directionFactor;
   }
 
+  getAllNodes(): Node[] {
+    return [this, ...this.subGoals.flatMap((g) => g.getAllNodes()), ...this.projects];
+  }
+
   private buildProjectNodes(): ProjectNode[] {
     return this.goal.projects!.map((p) => p!).map((p) => new ProjectNode(p, this.depth + 1));
   }

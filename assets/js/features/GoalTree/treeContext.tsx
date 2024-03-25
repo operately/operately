@@ -10,6 +10,8 @@ export interface TreeContextValue {
 
   expanded: ExpandedNodesMap;
   toggleExpanded: (id: string) => void;
+  expandAll: () => void;
+  collapseAll: () => void;
 
   sortColumn: SortColumn;
   sortDirection: SortDirection;
@@ -24,9 +26,19 @@ export function TreeContextProvider({ goals, children }: { goals: Goals.Goal[]; 
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
 
   const tree = React.useMemo(() => Tree.build(goals, sortColumn, sortDirection), [goals, sortColumn, sortDirection]);
-  const { expanded, toggleExpanded } = useExpandedNodesState(tree);
+  const { expanded, toggleExpanded, expandAll, collapseAll } = useExpandedNodesState(tree);
 
-  const value = { tree, expanded, toggleExpanded, sortColumn, setSortColumn, setSortDirection, sortDirection };
+  const value = {
+    tree,
+    expanded,
+    toggleExpanded,
+    expandAll,
+    collapseAll,
+    sortColumn,
+    setSortColumn,
+    setSortDirection,
+    sortDirection,
+  };
 
   return <TreeContext.Provider value={value}>{children}</TreeContext.Provider>;
 }
@@ -46,8 +58,18 @@ export function useExpandedNodesState(tree: Tree) {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const expandAll = () => {
+    setExpanded(tree.getAllNodes().reduce((acc, node) => ({ ...acc, [node.id]: true }), {}));
+  };
+
+  const collapseAll = () => {
+    setExpanded({});
+  };
+
   return {
     expanded,
     toggleExpanded,
+    expandAll,
+    collapseAll,
   };
 }
