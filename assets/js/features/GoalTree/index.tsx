@@ -54,7 +54,7 @@ function GoalTreeRoots() {
 }
 
 function GoalTreeColumnHeader({ title, width, sortId }: { title: string; width: string; sortId: SortColumn }) {
-  const className = classNames("font-bold text-xs uppercase flex items-center gap-1", width);
+  const className = classNames("font-bold text-xs uppercase flex items-center gap-1 group", width);
   const { sortColumn, sortDirection, setSortColumn, setSortDirection } = useTreeContext();
 
   const handleArrowClick = () => {
@@ -66,14 +66,23 @@ function GoalTreeColumnHeader({ title, width, sortId }: { title: string; width: 
     }
   };
 
-  const sortArrow =
-    sortColumn === sortId ? (
-      sortDirection === "asc" ? (
-        <Icons.IconArrowDown size={12} onClick={handleArrowClick} className="cursor-pointer" />
-      ) : (
-        <Icons.IconArrowUp size={12} onClick={handleArrowClick} className="cursor-pointer" />
-      )
-    ) : null;
+  let icon = Icons.IconArrowDown;
+
+  if (sortColumn === sortId) {
+    if (sortDirection === "asc") {
+      icon = Icons.IconArrowDown;
+    } else {
+      icon = Icons.IconArrowUp;
+    }
+  } else {
+    icon = Icons.IconArrowDown;
+  }
+
+  const sortArrowClass = classNames("cursor-pointer", {
+    "opacity-0 group-hover:opacity-100 transition-opacity": sortColumn !== sortId,
+  });
+
+  const sortArrow = React.createElement(icon, { size: 12, onClick: handleArrowClick, className: sortArrowClass });
 
   return (
     <div className={className}>
