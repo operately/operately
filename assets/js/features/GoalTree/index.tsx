@@ -341,7 +341,15 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
-            <SmallStatusIndicator status={project.lastCheckIn!.status} />
+
+            <FilledButton
+              size="xs"
+              type="secondary"
+              linkTo={Paths.projectCheckInPath(project.id, project.lastCheckIn!.id)}
+              linkTarget="_blank"
+            >
+              Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
+            </FilledButton>
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
@@ -350,6 +358,9 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
+            <div className="mb-2">
+              <SmallStatusIndicator status={project.lastCheckIn!.status} />
+            </div>
             <RichContent jsonContent={project.lastCheckIn?.description!} />
           </div>
         </div>
@@ -395,6 +406,15 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
+
+            <FilledButton
+              size="xs"
+              type="secondary"
+              linkTo={Paths.goalCheckInPath(goal.id, goal.lastCheckIn!.id)}
+              linkTarget="_blank"
+            >
+              Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
+            </FilledButton>
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
