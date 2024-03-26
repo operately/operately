@@ -43,6 +43,7 @@ function Content() {
         nextTimeframe={next}
         prevTimeframe={prev}
         filters={{ spaceId: group.id }}
+        hideSpaceColumn={true}
       />
     </>
   );

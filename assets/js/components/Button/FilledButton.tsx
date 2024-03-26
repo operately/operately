@@ -1,10 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
+import { DivLink } from "@/components/Link";
 
 interface FilledButtonProps {
   children: any;
   linkTo?: string;
+  linkTarget?: "_blank" | "_self" | "_parent" | "_top";
   onClick?: ((e: any) => Promise<boolean>) | ((e: any) => void);
   testId?: string;
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
@@ -15,36 +16,35 @@ interface FilledButtonProps {
 
 export function FilledButton(props: FilledButtonProps) {
   const [shake, setShake] = React.useState(false);
-  const navigate = useNavigate();
 
   const handleClick = async (e: any) => {
-    if (props.loading) {
-      return;
-    }
+    if (!props.onClick) return;
 
-    if (props.linkTo) {
-      navigate(props.linkTo);
-      return;
-    }
+    const res = await props.onClick(e);
 
-    if (props.onClick) {
-      const res = await props.onClick(e);
-
-      if (res === false && props.bzzzOnClickFailure) {
-        setShake(true);
-        setTimeout(() => setShake(false), 500);
-      }
+    if (res === false && props.bzzzOnClickFailure) {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
     }
   };
 
   const klass = className(props.size, props.type, props.loading, shake);
 
-  return (
-    <div className={klass} onClick={handleClick} data-test-id={props.testId}>
-      {props.children}
-      <Spinner active={props.loading} />
-    </div>
-  );
+  if (props.linkTo) {
+    return (
+      <DivLink className={klass} to={props.linkTo} target={props.linkTarget} data-test-id={props.testId}>
+        {props.children}
+        <Spinner active={props.loading} />
+      </DivLink>
+    );
+  } else {
+    return (
+      <div className={klass} onClick={handleClick} data-test-id={props.testId}>
+        {props.children}
+        <Spinner active={props.loading} />
+      </div>
+    );
+  }
 }
 
 function Spinner({ active }: { active?: boolean }) {

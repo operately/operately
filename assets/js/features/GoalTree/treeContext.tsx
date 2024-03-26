@@ -21,6 +21,8 @@ export interface TreeContextValue {
   timeframe: string;
   nextTimeframe: () => void;
   prevTimeframe: () => void;
+
+  hideSpaceColumn?: boolean;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
@@ -31,6 +33,7 @@ export interface TreeContextProviderProps {
   nextTimeframe: () => void;
   prevTimeframe: () => void;
   filters: TreeFilters;
+  hideSpaceColumn?: boolean;
 }
 
 interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps {
@@ -62,6 +65,7 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     timeframe: props.timeframe,
     nextTimeframe: props.nextTimeframe,
     prevTimeframe: props.prevTimeframe,
+    hideSpaceColumn: props.hideSpaceColumn,
   };
 
   return <TreeContext.Provider value={value}>{props.children}</TreeContext.Provider>;

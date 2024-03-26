@@ -34,7 +34,7 @@ export function GoalTree(props: TreeContextProviderProps) {
 }
 
 function GoalTreeRoots() {
-  const { tree } = useTreeContext();
+  const context = useTreeContext();
 
   return (
     <div>
@@ -44,14 +44,14 @@ function GoalTreeRoots() {
 
         <div className="flex items-center gap-4">
           <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
-          <GoalTreeColumnHeader title="Space" width="w-24" sortId="space" />
+          {context.hideSpaceColumn ? null : <GoalTreeColumnHeader title="Space" width="w-24" sortId="space" />}
           <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
           <GoalTreeColumnHeader title="Timeframe" width="w-24" sortId="timeframe" />
           <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
         </div>
       </div>
 
-      {tree.getRoots().map((root) => (
+      {context.tree.getRoots().map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
     </div>
@@ -132,6 +132,8 @@ function NodeView({ node }: { node: Node }) {
 }
 
 function NodeHeader({ node }: { node: Node }) {
+  const context = useTreeContext();
+
   return (
     <TableRow>
       <div
@@ -145,7 +147,7 @@ function NodeHeader({ node }: { node: Node }) {
       </div>
       <div className="flex items-center gap-4">
         <NodeChampion node={node} />
-        <NodeSpace node={node} />
+        {context.hideSpaceColumn ? null : <NodeSpace node={node} />}
         <NodeLastCheckIn node={node} />
         <NodeTimeframe node={node} />
         <NodeProgress node={node} />
@@ -155,7 +157,16 @@ function NodeHeader({ node }: { node: Node }) {
 }
 
 function NodeSpace({ node }: { node: Node }) {
-  return <div className="text-sm w-24 truncate">{node.space.name}</div>;
+  return (
+    <div className="text-sm w-24 truncate">
+      <DivLink
+        to={Paths.spaceGoalsPath(node.space.id)}
+        className="hover:underline decoration-content-subtle font-medium"
+      >
+        {node.space.name}
+      </DivLink>
+    </div>
+  );
 }
 
 function NodeTimeframe({ node }: { node: Node }) {
@@ -205,6 +216,8 @@ function NodeHeaderNameLink({ node }: { node: Node }) {
   const titleClass = classNames({
     "font-bold": node.depth === 0,
     "font-medium": node.depth > 0,
+    "hover:underline": true,
+    "decoration-content-subtle": true,
     truncate: true,
   });
 
@@ -341,7 +354,15 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
-            <SmallStatusIndicator status={project.lastCheckIn!.status} />
+
+            <FilledButton
+              size="xs"
+              type="secondary"
+              linkTo={Paths.projectCheckInPath(project.id, project.lastCheckIn!.id)}
+              linkTarget="_blank"
+            >
+              Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
+            </FilledButton>
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
@@ -350,6 +371,9 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
+            <div className="mb-2">
+              <SmallStatusIndicator status={project.lastCheckIn!.status} />
+            </div>
             <RichContent jsonContent={project.lastCheckIn?.description!} />
           </div>
         </div>
@@ -395,6 +419,15 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
+
+            <FilledButton
+              size="xs"
+              type="secondary"
+              linkTo={Paths.goalCheckInPath(goal.id, goal.lastCheckIn!.id)}
+              linkTarget="_blank"
+            >
+              Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
+            </FilledButton>
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
