@@ -5,9 +5,11 @@ import { Paths } from "@/routes/paths";
 import { Node } from "./node";
 
 import { match } from "ts-pattern";
+import { spaceCompare } from "./spaceCompare";
 
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
+import * as Groups from "@/models/groups";
 
 export class ProjectNode implements Node {
   public id: string;
@@ -22,6 +24,7 @@ export class ProjectNode implements Node {
   public lastCheckInDate: Date | null;
   public progress: number;
   public spaceId: string;
+  public space: Groups.Group;
 
   constructor(project: Project, depth: number = 0) {
     this.id = project.id;
@@ -36,6 +39,7 @@ export class ProjectNode implements Node {
     this.lastCheckInDate = Time.parse(project.lastCheckIn?.insertedAt);
     this.progress = this.calculateProgress();
     this.spaceId = project.space.id;
+    this.space = project.space;
   }
 
   childrenInfoLabel(): string | null {
@@ -49,6 +53,7 @@ export class ProjectNode implements Node {
       .with("progress", () => this.progress - b.progress)
       .with("lastCheckIn", () => Time.compareAsc(this.lastCheckInDate!, b.lastCheckInDate!))
       .with("champion", () => this.champion.fullName.localeCompare(b.champion.fullName))
+      .with("space", () => spaceCompare(this.space, b.space))
       .exhaustive();
 
     const directionFactor = direction === "asc" ? 1 : -1;

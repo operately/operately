@@ -44,6 +44,7 @@ function GoalTreeRoots() {
 
         <div className="flex items-center gap-4">
           <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
+          <GoalTreeColumnHeader title="Space" width="w-24" sortId="space" />
           <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
           <GoalTreeColumnHeader title="Timeframe" width="w-24" sortId="timeframe" />
           <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
@@ -144,12 +145,17 @@ function NodeHeader({ node }: { node: Node }) {
       </div>
       <div className="flex items-center gap-4">
         <NodeChampion node={node} />
+        <NodeSpace node={node} />
         <NodeLastCheckIn node={node} />
         <NodeTimeframe node={node} />
         <NodeProgress node={node} />
       </div>
     </TableRow>
   );
+}
+
+function NodeSpace({ node }: { node: Node }) {
+  return <div className="text-sm w-24 truncate">{node.space.name}</div>;
 }
 
 function NodeTimeframe({ node }: { node: Node }) {

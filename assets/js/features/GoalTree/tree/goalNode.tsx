@@ -4,9 +4,11 @@ import { Paths } from "@/routes/paths";
 import { ProjectNode } from "./projectNode";
 import { Node, NodeTypes } from "./node";
 import { SortColumn, SortDirection } from "./";
+import { spaceCompare } from "./spaceCompare";
 
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
+import * as Groups from "@/models/groups";
 
 export class GoalNode implements Node {
   public id: string;
@@ -25,6 +27,7 @@ export class GoalNode implements Node {
   public progress: number;
   public lastCheckInDate: Date | null;
   public spaceId: string;
+  public space: Groups.Group;
 
   constructor(
     goal: Goal,
@@ -53,6 +56,7 @@ export class GoalNode implements Node {
 
     this.progress = goal.progressPercentage;
     this.lastCheckInDate = Time.parse(goal.lastCheckIn?.insertedAt);
+    this.space = goal.space;
   }
 
   childrenInfoLabel(): string {
@@ -66,6 +70,7 @@ export class GoalNode implements Node {
       .with("progress", () => this.progress - b.progress)
       .with("lastCheckIn", () => Time.compareAsc(this.lastCheckInDate!, b.lastCheckInDate!))
       .with("champion", () => this.champion?.fullName.localeCompare(b.champion?.fullName!)!)
+      .with("space", () => spaceCompare(this.space, b.space))
       .exhaustive();
 
     const directionFactor = sortDirection === "asc" ? 1 : -1;
