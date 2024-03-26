@@ -9,7 +9,7 @@ export { Node } from "./node";
 export { GoalNode } from "./goalNode";
 export { ProjectNode } from "./projectNode";
 
-interface TreeFilters {
+export interface TreeFilters {
   spaceId: string | null;
 }
 
