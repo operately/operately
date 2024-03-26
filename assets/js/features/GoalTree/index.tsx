@@ -45,7 +45,7 @@ function GoalTreeRoots() {
         <div className="flex items-center gap-4">
           <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
           <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
-          <GoalTreeColumnHeader title="Timeframe" width="w-[110px]" sortId="timeframe" />
+          <GoalTreeColumnHeader title="Timeframe" width="w-24" sortId="timeframe" />
           <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
         </div>
       </div>
@@ -178,7 +178,7 @@ function ProjectTimeframe({ project }: { project: Projects.Project }) {
   if (!start || !end) return <div className="text-sm w-24 text-content-dimmed">Not set</div>;
 
   return (
-    <div className="text-xs w-24">
+    <div className="text-xs w-24 truncate">
       <FormattedTime time={start} format="short-date" /> - <FormattedTime time={end} format="short-date" />
     </div>
   );
