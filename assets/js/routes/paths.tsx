@@ -35,6 +35,10 @@ export class Paths {
     return createPath(["spaces", spaceId]);
   }
 
+  static spaceGoalsPath(spaceId: string) {
+    return createPath(["spaces", spaceId, "goals"]);
+  }
+
   static goalPath(goalId: string) {
     return createPath(["goals", goalId]);
   }

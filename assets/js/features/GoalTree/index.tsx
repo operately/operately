@@ -155,7 +155,16 @@ function NodeHeader({ node }: { node: Node }) {
 }
 
 function NodeSpace({ node }: { node: Node }) {
-  return <div className="text-sm w-24 truncate">{node.space.name}</div>;
+  return (
+    <div className="text-sm w-24 truncate">
+      <DivLink
+        to={Paths.spaceGoalsPath(node.space.id)}
+        className="hover:underline decoration-content-subtle font-medium"
+      >
+        {node.space.name}
+      </DivLink>
+    </div>
+  );
 }
 
 function NodeTimeframe({ node }: { node: Node }) {
@@ -205,6 +214,8 @@ function NodeHeaderNameLink({ node }: { node: Node }) {
   const titleClass = classNames({
     "font-bold": node.depth === 0,
     "font-medium": node.depth > 0,
+    "hover:underline": true,
+    "decoration-content-subtle": true,
     truncate: true,
   });
 
