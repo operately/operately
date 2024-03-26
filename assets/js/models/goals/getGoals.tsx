@@ -92,6 +92,9 @@ const LIST_GOALS = gql`
         name
         status
 
+        startedAt
+        deadline
+
         space {
           id
           name

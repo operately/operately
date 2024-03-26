@@ -5,6 +5,7 @@ import * as Projects from "@/models/projects";
 import * as Popover from "@radix-ui/react-popover";
 import * as Milestones from "@/models/milestones";
 import * as People from "@/models/people";
+import * as Time from "@/utils/time";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -44,6 +45,7 @@ function GoalTreeRoots() {
         <div className="flex items-center gap-4">
           <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
           <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
+          <GoalTreeColumnHeader title="Timeframe" width="w-24" sortId="timeframe" />
           <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
         </div>
       </div>
@@ -143,13 +145,44 @@ function NodeHeader({ node }: { node: Node }) {
       <div className="flex items-center gap-4">
         <NodeChampion node={node} />
         <NodeLastCheckIn node={node} />
+        <NodeTimeframe node={node} />
         <NodeProgress node={node} />
       </div>
     </TableRow>
   );
 }
 
-// <HiddenGoalActions node={node} />
+function NodeTimeframe({ node }: { node: Node }) {
+  return match(node.type)
+    .with("goal", () => <GoalTimeframe goal={(node as GoalNode).goal} />)
+    .with("project", () => <ProjectTimeframe project={(node as ProjectNode).project} />)
+    .exhaustive();
+}
+
+function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
+  let parts = goal.timeframe.split(" ");
+
+  if (parts.length > 1) {
+    if (Time.currentYear() === parseInt(parts[1]!)) {
+      parts = [parts[0]!];
+    }
+  }
+
+  return <div className="text-sm w-24">{parts[0]}</div>;
+}
+
+function ProjectTimeframe({ project }: { project: Projects.Project }) {
+  const start = Time.parse(project.startedAt);
+  const end = Time.parse(project.deadline);
+
+  if (!start || !end) return <div className="text-sm w-24 text-content-dimmed">Not set</div>;
+
+  return (
+    <div className="text-xs w-24 truncate">
+      <FormattedTime time={start} format="short-date" /> - <FormattedTime time={end} format="short-date" />
+    </div>
+  );
+}
 
 function NodeIcon({ node }: { node: Node }) {
   switch (node.type) {

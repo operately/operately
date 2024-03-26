@@ -62,6 +62,7 @@ export class GoalNode implements Node {
   compare(b: GoalNode, sortColumn: SortColumn, sortDirection: SortDirection): number {
     const result = match(sortColumn)
       .with("name", () => this.name.localeCompare(b.name))
+      .with("timeframe", () => Time.compareQuarters(this.goal.timeframe, b.goal.timeframe))
       .with("progress", () => this.progress - b.progress)
       .with("lastCheckIn", () => Time.compareAsc(this.lastCheckInDate!, b.lastCheckInDate!))
       .with("champion", () => this.champion?.fullName.localeCompare(b.champion?.fullName!)!)

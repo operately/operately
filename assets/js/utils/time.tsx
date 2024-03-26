@@ -123,6 +123,39 @@ export function nQuartersFromNow(quarters: number) {
   return Quarters.toString(result);
 }
 
+export function compareQuarters(a: string, b: string): number {
+  const partsA = a.split(" ");
+  const partsB = b.split(" ");
+
+  if (partsA.length === 2 && partsB.length === 2) {
+    const qA = Quarters.fromString(a);
+    const qB = Quarters.fromString(b);
+
+    if (qA.year === qB.year) {
+      return qA.index - qB.index;
+    } else {
+      return qA.year - qB.year;
+    }
+  } else if (partsA.length === 2) {
+    if (partsA[1] === partsB[0]) {
+      return -1;
+    } else {
+      return parseInt(partsA[1]!) - parseInt(partsB[0]!);
+    }
+  } else if (partsB.length === 2) {
+    if (partsA[0] === partsB[1]) {
+      return 1;
+    } else {
+      return parseInt(partsA[0]!) - parseInt(partsB[1]!);
+    }
+  } else {
+    const yearA = parseInt(partsA[0]!);
+    const yearB = parseInt(partsB[0]!);
+
+    return yearA - yearB;
+  }
+}
+
 export function isCurrentYear(date: Date) {
   return date.getFullYear() === new Date().getFullYear();
 }

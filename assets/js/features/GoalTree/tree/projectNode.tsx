@@ -45,6 +45,7 @@ export class ProjectNode implements Node {
   compare(b: ProjectNode, column: SortColumn, direction: SortDirection): number {
     const result = match(column)
       .with("name", () => this.name.localeCompare(b.name))
+      .with("timeframe", () => Time.compareAsc(this.project.deadline, b.project.deadline))
       .with("progress", () => this.progress - b.progress)
       .with("lastCheckIn", () => Time.compareAsc(this.lastCheckInDate!, b.lastCheckInDate!))
       .with("champion", () => this.champion.fullName.localeCompare(b.champion.fullName))
