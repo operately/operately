@@ -83,18 +83,22 @@ defmodule Operately.Goals do
     to = target.to
     current = target.value
 
-    if from < to do
-      cond do
-        current > to -> 100
-        current < from -> 0
-        true -> (from - current) / (from - to) * 100
-      end
-    else
-      cond do
-        current < to -> 100
-        current > from -> 0
-        true -> (to - current) / (to - from) * 100
-      end
+    cond do
+      from == to -> 100
+
+      from < to ->
+        cond do
+          current > to -> 100
+          current < from -> 0
+          true -> (from - current) / (from - to) * 100
+        end
+
+      from > to ->
+        cond do
+          current < to -> 100
+          current > from -> 0
+          true -> (to - current) / (to - from) * 100
+        end
     end
   end
 end
