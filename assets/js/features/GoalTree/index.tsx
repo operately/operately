@@ -34,7 +34,7 @@ export function GoalTree(props: TreeContextProviderProps) {
 }
 
 function GoalTreeRoots() {
-  const { tree } = useTreeContext();
+  const context = useTreeContext();
 
   return (
     <div>
@@ -44,14 +44,14 @@ function GoalTreeRoots() {
 
         <div className="flex items-center gap-4">
           <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
-          <GoalTreeColumnHeader title="Space" width="w-24" sortId="space" />
+          {context.hideSpaceColumn ? null : <GoalTreeColumnHeader title="Space" width="w-24" sortId="space" />}
           <GoalTreeColumnHeader title="Check-in" width="w-24" sortId="lastCheckIn" />
           <GoalTreeColumnHeader title="Timeframe" width="w-24" sortId="timeframe" />
           <GoalTreeColumnHeader title="Progress" width="w-24" sortId="progress" />
         </div>
       </div>
 
-      {tree.getRoots().map((root) => (
+      {context.tree.getRoots().map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
     </div>
@@ -132,6 +132,8 @@ function NodeView({ node }: { node: Node }) {
 }
 
 function NodeHeader({ node }: { node: Node }) {
+  const context = useTreeContext();
+
   return (
     <TableRow>
       <div
@@ -145,7 +147,7 @@ function NodeHeader({ node }: { node: Node }) {
       </div>
       <div className="flex items-center gap-4">
         <NodeChampion node={node} />
-        <NodeSpace node={node} />
+        {context.hideSpaceColumn ? null : <NodeSpace node={node} />}
         <NodeLastCheckIn node={node} />
         <NodeTimeframe node={node} />
         <NodeProgress node={node} />
