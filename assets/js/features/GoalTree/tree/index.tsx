@@ -2,7 +2,7 @@ import { Goal } from "@/models/goals";
 import { Node } from "./node";
 import { GoalNode } from "./goalNode";
 
-export type SortColumn = "name" | "timeframe" | "progress" | "lastCheckIn" | "champion";
+export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
 
 export { Node } from "./node";

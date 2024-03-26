@@ -1,6 +1,7 @@
 import type { SortColumn, SortDirection } from "./";
 
 import * as People from "@/models/people";
+import * as Groups from "@/models/groups";
 
 export type NodeTypes = "goal" | "project";
 
@@ -15,6 +16,7 @@ export interface Node {
   depth: number;
   hasChildren: boolean;
   progress: number;
+  space: Groups.Group;
 
   childrenInfoLabel(): string | null;
   compare(b: Node, column: SortColumn, direction: SortDirection): number;
