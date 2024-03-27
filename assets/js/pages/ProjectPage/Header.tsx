@@ -1,19 +1,16 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/models/projects";
 
 import classnames from "classnames";
-import ContributorAvatar from "@/components/ContributorAvatar";
 
-import { Link } from "react-router-dom";
 import { DivLink } from "@/components/Link";
 import { Project } from "@/models/projects";
 
 import { TextTooltip } from "@/components/Tooltip";
-import { GhostButton } from "@/components/Button";
 import { Paths } from "@/routes/paths";
 
 import Options from "./Options";
+import Avatar from "@/components/Avatar";
 
 interface HeaderProps {
   project: Project;
@@ -30,15 +27,18 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 function ProjectName({ project }) {
   return (
     <div className="flex items-center justify-between">
-      <div>
+      <div className="flex-1">
         <ParentGoal project={project} />
 
-        <div className={classnames("flex gap-3 items-start", "text-content-accent", "max-w-[90%]")}>
-          <div className="bg-indigo-500/10 p-1.5 rounded-full">
+        <div className={classnames("flex gap-3 items-center", "text-content-accent", "max-w-[90%]")}>
+          <div className="bg-indigo-500/10 p-1.5 rounded-lg">
             <Icons.IconHexagons size={24} className="text-indigo-500" />
           </div>
 
-          <div className="font-bold text-3xl text-content-accent">{project.name}</div>
+          <div className="inline-flex items-center gap-2 flex-1">
+            <div className="font-bold text-2xl text-content-accent">{project.name}</div>
+            <ContributorList project={project} />
+          </div>
           <PrivateIndicator project={project} />
         </div>
       </div>
@@ -46,6 +46,24 @@ function ProjectName({ project }) {
       <div className="flex gap-4 items-center">
         <Options project={project} />
       </div>
+    </div>
+  );
+}
+
+function ContributorList({ project }) {
+  return (
+    <div className="flex items-center -space-x-2">
+      {project.contributors.map((contributor, index) => (
+        <div
+          key={contributor.id}
+          className="relative border-surface border-2 rounded-full"
+          style={{ zIndex: 100 - index }}
+        >
+          <div className="rounded-full border border-stroke-base">
+            <Avatar person={contributor.person} size={24} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -59,7 +77,7 @@ function ParentGoal({ project }) {
       <Icons.IconTarget size={14} className="text-red-500" />
       <DivLink
         to={Paths.goalPath(project.goal.id)}
-        className="text-xs text-content-dimmed mx-1 hover:underline font-medium"
+        className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
       >
         {project.goal.name}
       </DivLink>
@@ -76,28 +94,5 @@ function PrivateIndicator({ project }) {
         <Icons.IconLock size={20} />
       </div>
     </TextTooltip>
-  );
-}
-
-function ContributorList({ project }: { project: Projects.Project }) {
-  const contributorsPath = `/projects/${project.id}/contributors`;
-  const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
-
-  return (
-    <div className="flex items-center">
-      <Link to={contributorsPath} data-test-id="project-contributors">
-        <div className="flex items-center justify-center gap-1 cursor-pointer">
-          {sortedContributors.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
-
-          {project.permissions.canEditContributors && (
-            <div className="ml-2">
-              <GhostButton size="xs" type="secondary" testId="manage-team-button">
-                Manage Team
-              </GhostButton>
-            </div>
-          )}
-        </div>
-      </Link>
-    </div>
   );
 }

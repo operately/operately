@@ -9,6 +9,7 @@ import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
+import ContributorAvatar from "@/components/ContributorAvatar";
 import { GhostButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -26,6 +27,7 @@ import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { match } from "ts-pattern";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -37,73 +39,18 @@ export function Page() {
 
         <Paper.Body>
           <Banner project={project} />
-          <Header project={project} />
-          <Tabs />
-          <Overview project={project} />
 
-          <div className="">
-            <div className="mt-4" />
+          <div className="-mx-16 px-10">
+            <Header project={project} />
+            <Tabs />
+          </div>
 
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Overview</div>
-
-                  <div className="text-sm">
-                    {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Description project={project} />
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Timeline</div>
-
-                  <div className="text-sm">
-                    {showEditMilestones(project) && (
-                      <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
-                        View
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Timeline project={project} />
-                </div>
-              </div>
-            </div>
-
-            <CheckInSection project={project} />
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Resources</div>
-
-                  <div className="text-sm">
-                    {showEditResource(project) && (
-                      <Link to={`/projects/${project.id}/edit/resources`} testId="edit-resources-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Resources project={project} />
-                </div>
-              </div>
+          <div className="-mx-16 px-10 bg-surface-dimmed py-6">
+            <div className="bg-surface px-8 rounded-lg border border-stroke-base divide-y divide-stroke-base">
+              <Overview project={project} />
+              <Description project={project} />
+              <LastCheckInSection project={project} />
+              <ResourcesSection project={project} />
             </div>
           </div>
 
@@ -154,7 +101,6 @@ function LastCheckIn({ project }) {
 
   return (
     <div>
-      <DimmedLabel>Last Check-In</DimmedLabel>
       <div className="flex items-start gap-2 max-w-xl mt-2">
         <div className="flex flex-col gap-1">
           <div className="font-bold flex items-center gap-1">
@@ -247,11 +193,16 @@ function Resource({ icon, title, href }) {
 }
 
 function Description({ project }) {
-  if (project.description) {
-    return <RichContent jsonContent={project.description} />;
-  } else {
-    return <DescriptionZeroState project={project} />;
-  }
+  return (
+    <div className="py-6">
+      <div className="uppercase text-xs font-bold mb-2">Description</div>
+      {project.description ? (
+        <RichContent jsonContent={project.description} />
+      ) : (
+        <DescriptionZeroState project={project} />
+      )}
+    </div>
+  );
 }
 
 function DescriptionZeroState({ project }) {
@@ -293,23 +244,11 @@ function showEditMilestones(project: Projects.Project) {
   return milestones.length > 0;
 }
 
-function CheckInSection({ project }) {
+function LastCheckInSection({ project }) {
   return (
-    <div className="border-t border-stroke-base py-6">
-      <div className="flex items-start gap-4">
-        <div className="w-1/5">
-          <div className="font-bold text-sm">Check-Ins</div>
-          {project.lastCheckIn && (
-            <div className="text-sm">
-              <Link to={`/projects/${project.id}/check-ins`}>View all</Link>
-            </div>
-          )}
-        </div>
-
-        <div className="w-4/5">
-          <LastCheckIn project={project} />
-        </div>
-      </div>
+    <div className="py-8 border-b border-dashed border-stroke-base">
+      <div className="uppercase text-xs font-bold mb-4">Last Check-In</div>
+      <LastCheckIn project={project} />
     </div>
   );
 }
@@ -322,7 +261,57 @@ function Tabs() {
         <div className="border-b-2 border-transparent hover:border-orange-500 font-medium py-1 px-1">Milestones</div>
         <div className="border-b-2 border-transparent hover:border-orange-500 font-medium py-1 px-1">Team</div>
       </div>
-      <div className="-mx-16 border-t border-stroke-base" />
+      <div className="-mx-10 border-t border-stroke-base" />
+    </div>
+  );
+}
+
+function Team({ project }: { project: Projects.Project }) {
+  const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
+
+  return (
+    <div className="py-6">
+      <div className="uppercase text-xs font-bold mb-4">Contributors</div>
+      <div className="flex items-center gap-16 ">
+        <div>
+          <div className="flex items-center justify-center gap-8 cursor-pointer">
+            {sortedContributors.map(
+              (c) =>
+                c && (
+                  <div className="flex items-center gap-2" key={c.id}>
+                    <Avatar person={c.person} size={32} />
+                    <div className="flex flex-col">
+                      <div className="text-sm font-bold">{People.shortName(c.person)}</div>
+                      <div className="text-sm truncate max-w-32">{role(c)}</div>
+                    </div>
+                  </div>
+                ),
+            )}
+
+            {project.permissions.canEditContributors && <div className="ml-2"></div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function role(contributor: Projects.ProjectContributor) {
+  return match(contributor.role)
+    .with("champion", () => "Champion")
+    .with("reviewer", () => "Reviewer")
+    .with("contributor", () => contributor.responsibility)
+    .otherwise(() => {
+      throw new Error("Invalid role");
+    });
+}
+
+function ResourcesSection({ project }) {
+  return (
+    <div className="py-6">
+      <div className="uppercase text-xs font-bold mb-4">Resources</div>
+
+      <Resources project={project} />
     </div>
   );
 }

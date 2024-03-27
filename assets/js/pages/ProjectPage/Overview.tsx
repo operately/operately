@@ -8,11 +8,13 @@ import { GhostButton } from "@/components/Button";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import FormattedTime from "@/components/FormattedTime";
 
 export default function Overview({ project }) {
   return (
-    <div className="flex items-center gap-16 -mx-16 py-8 border-b border-stroke-base px-16">
+    <div className="flex items-center gap-16 py-6">
       <Status project={project} />
+      <Timeframe project={project} />
       <Completion project={project} />
       <NextMilestone project={project} />
     </div>
@@ -25,6 +27,19 @@ function Status({ project }: { project: Projects.Project }) {
     <div className="font-medium">
       <div className="uppercase text-xs font-bold mb-2">Status</div>
       <StatusIndicator project={project} />
+    </div>
+  );
+}
+
+function Timeframe({ project }: { project: Projects.Project }) {
+  return (
+    <div className="font-medium">
+      <div className="uppercase text-xs font-bold mb-2">Timeframe</div>
+      <div className="text-content-accent font-medium">
+        <FormattedTime time={project.startedAt} format="short-date" />
+        {" - "}
+        <FormattedTime time={project.deadline} format="short-date" />
+      </div>
     </div>
   );
 }
@@ -69,7 +84,7 @@ function AllCompleted() {
   return (
     <div className="flex items-center gap-2">
       <MiniPieChart completed={10} total={10} />
-      <span className="font-medium">All Milestones Completed</span>
+      <span className="font-medium">All Milestones Done</span>
     </div>
   );
 }
@@ -79,7 +94,7 @@ function CompletionPieChart({ done, total }) {
     <div className="flex items-center gap-2">
       <MiniPieChart completed={done} total={total} size={16} />
       <span className="font-medium">
-        {done}/{total} milestones completed
+        {done}/{total} milestones done
       </span>
     </div>
   );
