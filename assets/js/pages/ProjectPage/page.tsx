@@ -69,28 +69,6 @@ export function Page() {
               </div>
             </div>
 
-            {Companies.hasFeature(company, "goals") && (
-              <div className="border-t border-stroke-base py-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-1/5">
-                    <div className="font-bold text-sm">Goal</div>
-
-                    <div className="text-sm">
-                      {showEditGoal(project) && (
-                        <Link to={`/projects/${project.id}/edit/goal`} testId="edit-project-goal">
-                          Edit
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="w-4/5">
-                    <Goal project={project} />
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div className="border-t border-stroke-base py-6">
               <div className="flex items-start gap-4">
                 <div className="w-1/5">
@@ -318,12 +296,6 @@ function showEditMilestones(project: Projects.Project) {
   const milestones = project.milestones || [];
 
   return milestones.length > 0;
-}
-
-function showEditGoal(project: Projects.Project) {
-  if (!project.permissions.canEditGoal) return false;
-
-  return project.goal !== null;
 }
 
 function CheckInSection({ project }) {

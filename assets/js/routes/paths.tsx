@@ -31,6 +31,26 @@ export class Paths {
     return createPath(["projects", projectId, "milestones", milestoneId]);
   }
 
+  static editProjectGoalPath(projectId: string) {
+    return createPath(["projects", projectId, "edit", "goal"]);
+  }
+
+  static editProjectNamePath(projectId: string) {
+    return createPath(["projects", projectId, "edit", "name"]);
+  }
+
+  static moveProjectPath(projectId: string) {
+    return createPath(["projects", projectId, "move"]);
+  }
+
+  static pauseProjectPath(projectId: string) {
+    return createPath(["projects", projectId, "pause"]);
+  }
+
+  static resumeProjectPath(projectId: string) {
+    return createPath(["projects", projectId, "resume"]);
+  }
+
   static spacePath(spaceId: string) {
     return createPath(["spaces", spaceId]);
   }
