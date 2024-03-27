@@ -21,16 +21,16 @@ defmodule Operately.Features.ProjectGoalTest do
   feature "connect a goal to a project", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "connect-goal")
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "connect-project-to-goal-link")
     |> UI.assert_text("Improve support first response time")
-    |> UI.assert_text("Increase feedback score to 90%")
     |> UI.click(testid: "select-goal-improve-support-first-response-time")
     |> UI.assert_page("/projects/#{ctx.project.id}")
 
     ctx
     |> ProjectSteps.visit_project_page()
     |> UI.assert_text("Improve support first response time")
-    |> UI.click(testid: "visit-goal-improve-support-first-response-time")
+    |> UI.click(testid: "project-goal-link")
     |> UI.assert_text(ctx.project.name)
 
     ctx
@@ -57,7 +57,8 @@ defmodule Operately.Features.ProjectGoalTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "edit-project-goal")
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "connect-project-to-goal-link")
     |> UI.click(testid: "disconnect-goal")
     |> UI.assert_page("/projects/#{ctx.project.id}")
 

@@ -8,7 +8,7 @@ import { Paths } from "@/routes/paths";
 export default function Options({ project }) {
   return (
     <PageOptions.Root testId="project-options-button">
-      {!project.permissions.canEdit && Projects.isResumable(project) && (
+      {!project.permissions.canPause && Projects.isResumable(project) && (
         <PageOptions.Link
           icon={Icons.IconPlayerPlayFilled}
           title="Resume the project"
@@ -17,7 +17,7 @@ export default function Options({ project }) {
         />
       )}
 
-      {!project.permissions.canEdit && (
+      {project.permissions.canEditName && (
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit project name"
@@ -26,7 +26,7 @@ export default function Options({ project }) {
         />
       )}
 
-      {!project.permissions.canEdit && Projects.isPausable(project) && (
+      {project.permissions.canPause && Projects.isPausable(project) && (
         <PageOptions.Link
           icon={Icons.IconPlayerPauseFilled}
           title="Pause the project"
@@ -35,16 +35,16 @@ export default function Options({ project }) {
         />
       )}
 
-      {!project.permissions.canEdit && (
+      {project.permissions.canEditGoal && (
         <PageOptions.Link
           icon={Icons.IconExchange}
           title="Change Parent Goal"
           to={Paths.editProjectGoalPath(project.id)}
-          dataTestId="change-parent"
+          dataTestId="connect-project-to-goal-link"
         />
       )}
 
-      {!project.permissions.canEdit && (
+      {project.permissions.canEditSpace && (
         <PageOptions.Link
           icon={Icons.IconReplace}
           title="Move project to another space"

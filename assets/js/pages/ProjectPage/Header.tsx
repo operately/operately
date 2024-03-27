@@ -62,6 +62,7 @@ function ParentGoal({ project }) {
       <DivLink
         to={Paths.goalPath(project.goal.id)}
         className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
+        testId="project-goal-link"
       >
         {project.goal.name}
       </DivLink>

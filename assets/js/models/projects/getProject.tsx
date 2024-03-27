@@ -113,13 +113,16 @@ const QUERY = gql`
         canCreateMilestone
         canDeleteMilestone
 
+        canEditName
         canEditMilestone
         canEditDescription
         canEditContributors
         canEditTimeline
         canEditResources
         canEditGoal
+        canEditSpace
 
+        canPause
         canCheckIn
         canAcknowledgeCheckIn
       }

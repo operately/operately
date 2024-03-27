@@ -5,7 +5,6 @@ defmodule Operately.Projects.Permissions do
 
     %{
       can_view: is_public_or_contributor?(project, user),
-      can_edit_contributors: is_contributor?(project, user),
 
       can_create_milestone: is_contributor?(project, user),
       can_delete_milestone: is_contributor?(project, user),
@@ -14,7 +13,11 @@ defmodule Operately.Projects.Permissions do
       can_edit_timeline: is_contributor?(project, user),
       can_edit_resources: is_contributor?(project, user),
       can_edit_goal: is_contributor?(project, user),
+      can_edit_name: is_contributor?(project, user),
+      can_edit_space: is_contributor?(project, user),
+      can_edit_contributors: is_contributor?(project, user),
 
+      can_pause: is_contributor?(project, user),
       can_check_in: is_contributor?(project, user),
       can_acknowledge_check_in: is_reviewer?(project, user)
     }
