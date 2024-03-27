@@ -7,25 +7,40 @@ import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
+import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 export default function Overview({ project }) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-start gap-12 text-sm">
-        <Status project={project} />
-        <Completion project={project} />
-      </div>
+    <div className="flex items-center gap-16 -mx-16 py-8 border-b border-stroke-base px-16">
+      <Status project={project} />
+      <Completion project={project} />
+      <NextMilestone project={project} />
+    </div>
+  );
+}
+// <CloseButton project={project} />
 
-      <CloseButton project={project} />
+function Status({ project }: { project: Projects.Project }) {
+  return (
+    <div className="font-medium">
+      <div className="uppercase text-xs font-bold mb-2">Status</div>
+      <StatusIndicator project={project} />
     </div>
   );
 }
 
-function Status({ project }: { project: Projects.Project }) {
+function NextMilestone({ project }: { project: Projects.Project }) {
   return (
-    <div>
-      <DimmedLabel>Status</DimmedLabel>
-      <StatusIndicator project={project} />
+    <div className="font-medium">
+      <div className="uppercase text-xs font-bold mb-2">Next Milestone</div>
+      <div className="flex items-center gap-1.5">
+        <MilestoneIcon milestone={project.milestones![0]} />
+        {project.milestones![0] ? (
+          <div className="text-content-accent font-medium">{project.milestones![0].title}</div>
+        ) : (
+          <DimmedLabel>No milestones set</DimmedLabel>
+        )}
+      </div>
     </div>
   );
 }
@@ -37,7 +52,7 @@ function Completion({ project }: { project: Projects.Project }) {
 
   return (
     <div>
-      <DimmedLabel>Completion</DimmedLabel>
+      <div className="uppercase text-xs font-bold mb-2">PROGRESS</div>
 
       {pending.length === 0 && done.length === 0 && <NoMilestones />}
       {pending.length === 0 && done.length > 0 && <AllCompleted />}

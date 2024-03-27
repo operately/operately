@@ -38,23 +38,10 @@ export function Page() {
         <Paper.Body>
           <Banner project={project} />
           <Header project={project} />
-
-          <div className="my-8">
-            <div className="flex items-center gap-2">
-              <div className="border-b-2 border-orange-500 text-sm font-medium py-1 px-2">Overview</div>
-              <div className="border-b-2 border-transparent hover:border-orange-500 text-sm font-medium py-1 px-2">
-                Milestones
-              </div>
-              <div className="border-b-2 border-transparent hover:border-orange-500 text-sm font-medium py-1 px-2">
-                Team
-              </div>
-            </div>
-            <div className="-mx-16 border-t border-stroke-base" />
-          </div>
+          <Tabs />
+          <Overview project={project} />
 
           <div className="">
-            <Overview project={project} />
-
             <div className="mt-4" />
 
             <div className="border-t border-stroke-base py-6">
@@ -323,6 +310,19 @@ function CheckInSection({ project }) {
           <LastCheckIn project={project} />
         </div>
       </div>
+    </div>
+  );
+}
+
+function Tabs() {
+  return (
+    <div className="mt-8">
+      <div className="flex items-center gap-2 text-sm">
+        <div className="border-b-2 border-orange-500 font-medium py-1 px-1">Overview</div>
+        <div className="border-b-2 border-transparent hover:border-orange-500 font-medium py-1 px-1">Milestones</div>
+        <div className="border-b-2 border-transparent hover:border-orange-500 font-medium py-1 px-1">Team</div>
+      </div>
+      <div className="-mx-16 border-t border-stroke-base" />
     </div>
   );
 }
