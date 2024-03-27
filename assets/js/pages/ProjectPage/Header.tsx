@@ -1,16 +1,19 @@
-import React from "react";
+import * as React from "react";
+import * as Icons from "@tabler/icons-react";
+import * as Projects from "@/models/projects";
 
 import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
+import { DivLink } from "@/components/Link";
 import { Project } from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/models/projects";
 
 import { TextTooltip } from "@/components/Tooltip";
-import Options from "./Options";
 import { GhostButton } from "@/components/Button";
+import { Paths } from "@/routes/paths";
+
+import Options from "./Options";
 
 interface HeaderProps {
   project: Project;
@@ -29,17 +32,36 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 function ProjectName({ project }) {
   return (
     <div className="flex items-center justify-between">
-      <div
-        className={classnames("flex gap-2 items-center", "font-bold", "break-all", "text-3xl", "text-content-accent")}
-      >
-        {project.name}
+      <div>
+        <ParentGoal project={project} />
 
-        <PrivateIndicator project={project} />
+        <div className={classnames("flex gap-4 items-center", "text-content-accent")}>
+          <div className="bg-indigo-500/10 p-1.5 rounded-full">
+            <Icons.IconHexagons size={24} className="text-indigo-500" />
+          </div>
+
+          <div className="font-bold text-3xl text-content-accent">{project.name}</div>
+          <PrivateIndicator project={project} />
+        </div>
       </div>
 
       <div className="flex gap-4 items-center">
         <Options project={project} />
       </div>
+    </div>
+  );
+}
+
+function ParentGoal({ project }) {
+  if (!project.goal) return null;
+
+  return (
+    <div className="flex items-center">
+      <div className="border-t-2 border-l-2 border-stroke-base rounded-tl w-8 h-2.5 ml-4 mb-1 mt-2.5 mr-1" />
+      <Icons.IconTarget size={14} className="text-red-500" />
+      <DivLink to={Paths.goalPath(project.goal.id)} className="text-xs text-content-accent mx-1 hover:underline">
+        {project.goal.name}
+      </DivLink>
     </div>
   );
 }
