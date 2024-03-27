@@ -23,8 +23,6 @@ export default function Header({ project }: HeaderProps): JSX.Element {
   return (
     <div>
       <ProjectName project={project} />
-      <div className="mt-2"></div>
-      <ContributorList project={project} />
     </div>
   );
 }
@@ -35,7 +33,7 @@ function ProjectName({ project }) {
       <div>
         <ParentGoal project={project} />
 
-        <div className={classnames("flex gap-4 items-center", "text-content-accent")}>
+        <div className={classnames("flex gap-3 items-start", "text-content-accent", "max-w-[90%]")}>
           <div className="bg-indigo-500/10 p-1.5 rounded-full">
             <Icons.IconHexagons size={24} className="text-indigo-500" />
           </div>
@@ -57,9 +55,12 @@ function ParentGoal({ project }) {
 
   return (
     <div className="flex items-center">
-      <div className="border-t-2 border-l-2 border-stroke-base rounded-tl w-8 h-2.5 ml-4 mb-1 mt-2.5 mr-1" />
+      <div className="border-t-2 border-l-2 border-stroke-base rounded-tl w-7 h-2.5 ml-4 mb-1 mt-2.5 mr-1" />
       <Icons.IconTarget size={14} className="text-red-500" />
-      <DivLink to={Paths.goalPath(project.goal.id)} className="text-xs text-content-accent mx-1 hover:underline">
+      <DivLink
+        to={Paths.goalPath(project.goal.id)}
+        className="text-xs text-content-dimmed mx-1 hover:underline font-medium"
+      >
         {project.goal.name}
       </DivLink>
     </div>
