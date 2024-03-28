@@ -1,18 +1,16 @@
 defmodule Operately.Features.ProjectGoalTest do
   use Operately.FeatureCase
 
-  alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.EmailSteps
-  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   setup ctx do
-    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
-    ctx = ProjectSteps.login(ctx)
-
-    Operately.Companies.enable_experimental_feature(ctx.company, "goals")
+    ctx = Steps.create_project(ctx, name: "Test Project")
+    ctx = Steps.login(ctx)
 
     ctx = create_goal(ctx, "Increase feedback score to 90%")
     ctx = create_goal(ctx, "Improve support first response time")
+
+    ctx = Map.put(ctx, :goal, hd(ctx.goals))
 
     {:ok, ctx}
   end
@@ -20,65 +18,23 @@ defmodule Operately.Features.ProjectGoalTest do
   @tag login_as: :champion
   feature "connect a goal to a project", ctx do
     ctx
-    |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "connect-goal")
-    |> UI.assert_text("Improve support first response time")
-    |> UI.assert_text("Increase feedback score to 90%")
-    |> UI.click(testid: "select-goal-improve-support-first-response-time")
-    |> UI.assert_page("/projects/#{ctx.project.id}")
-
-    ctx
-    |> ProjectSteps.visit_project_page()
-    |> UI.assert_text("Improve support first response time")
-    |> UI.click(testid: "visit-goal-improve-support-first-response-time")
-    |> UI.assert_text(ctx.project.name)
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.project.name,
-      to: ctx.reviewer,
-      author: ctx.champion,
-      action: "connected the project to the Improve support first response time goal",
-    })
-
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
-      action: "connected the #{ctx.project.name} project to the Improve support first response time goal",
-    })
+    |> Steps.visit_project_page()
+    |> Steps.choose_new_goal(goal_name: "Improve support first response time")
+    |> Steps.assert_goal_connected(goal_name: "Improve support first response time")
+    |> Steps.assert_goal_link_on_project_page(goal_name: "Improve support first response time")
+    |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: "Improve support first response time")
   end
 
   @tag login_as: :champion
   feature "disconnect a goal from a project", ctx do
-    Operately.Projects.update_project(ctx.project, %{
-      goal_id: hd(ctx.goals).id
-    })
-
     ctx
-    |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "edit-project-goal")
-    |> UI.click(testid: "disconnect-goal")
-    |> UI.assert_page("/projects/#{ctx.project.id}")
-
-    ctx
-    |> ProjectSteps.visit_project_page()
-    |> UI.assert_text("Not yet connected with a goal")
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.project.name,
-      to: ctx.reviewer,
-      author: ctx.champion,
-      action: "disconnected the project from the Improve support first response time goal",
-    })
-
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
-      action: "disconnected the #{ctx.project.name} project from the Improve support first response time goal",
-    })
+    |> Steps.connect_goal(ctx.goal)
+    |> Steps.visit_project_page()
+    |> Steps.assert_goal_connected(goal_name: ctx.goal.name)
+    |> Steps.disconnect_goal()
+    |> Steps.assert_goal_link_not_on_project_page()
+    |> Steps.assert_goal_disconnected_email_sent_to_champion(goal_name: ctx.goal.name)
+    |> Steps.assert_goal_disconnected_notification_sent_to_reviewer()
   end
 
   #

@@ -3,13 +3,11 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-import * as Companies from "@/models/companies";
 
 import Banner from "./Banner";
 import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
-import Goal from "./Goal";
 import Navigation from "./Navigation";
 import { GhostButton } from "@/components/Button";
 
@@ -30,7 +28,7 @@ import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export function Page() {
-  const { company, project } = useLoadedData();
+  const { project } = useLoadedData();
 
   return (
     <Pages.Page title={project.name}>
@@ -68,28 +66,6 @@ export function Page() {
                 </div>
               </div>
             </div>
-
-            {Companies.hasFeature(company, "goals") && (
-              <div className="border-t border-stroke-base py-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-1/5">
-                    <div className="font-bold text-sm">Goal</div>
-
-                    <div className="text-sm">
-                      {showEditGoal(project) && (
-                        <Link to={`/projects/${project.id}/edit/goal`} testId="edit-project-goal">
-                          Edit
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="w-4/5">
-                    <Goal project={project} />
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="border-t border-stroke-base py-6">
               <div className="flex items-start gap-4">
@@ -318,12 +294,6 @@ function showEditMilestones(project: Projects.Project) {
   const milestones = project.milestones || [];
 
   return milestones.length > 0;
-}
-
-function showEditGoal(project: Projects.Project) {
-  if (!project.permissions.canEditGoal) return false;
-
-  return project.goal !== null;
 }
 
 function CheckInSection({ project }) {

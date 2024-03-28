@@ -13,7 +13,10 @@ defmodule OperatelyWeb.Graphql.Types.ProjectPermissions do
     field :can_edit_timeline, non_null(:boolean)
     field :can_edit_resources, non_null(:boolean)
     field :can_edit_goal, non_null(:boolean)
+    field :can_edit_name, non_null(:boolean)
+    field :can_edit_space, non_null(:boolean)
 
+    field :can_pause, non_null(:boolean)
     field :can_check_in, non_null(:boolean)
     field :can_acknowledge_check_in, non_null(:boolean)
   end

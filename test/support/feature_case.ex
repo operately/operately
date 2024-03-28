@@ -7,6 +7,8 @@ defmodule Operately.FeatureCase do
       use Wallaby.Feature
       use Bamboo.Test, shared: true
 
+      import Operately.FeatureSteps
+
       alias Operately.Repo
       alias Operately.Support.Features.UI
 

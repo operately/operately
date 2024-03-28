@@ -307,7 +307,7 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
   const handleClick = () => toggleExpanded(node.id);
   const size = 16;
-  const ChevronIcon = expanded[node.id] ? Icons.IconChevronRight : Icons.IconChevronDown;
+  const ChevronIcon = expanded[node.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
 
   return <ChevronIcon size={size} className="cursor-pointer" onClick={handleClick} />;
 }
