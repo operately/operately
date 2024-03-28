@@ -3,7 +3,7 @@
   "entry": ["js/app.tsx", "build.js", "codegen.ts"],
   "project": ["js/**/*.ts", "js/**/*.tsx"],
   "ignore": ["js/gql/generated.tsx"],
-  "ignoreDependencies": ["@types/jest", "tsc"],
+  "ignoreDependencies": ["@types/jest"],
 
   "rules": {
     "nsTypes": "off",
