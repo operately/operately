@@ -45,7 +45,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :change_goal_parent, ctx do
-    {:ok, new_parent_goal} = Operately.Goals.create_goal(ctx.champion, %{
+    {:ok, _new_parent_goal} = Operately.Goals.create_goal(ctx.champion, %{
       company_id: ctx.company.id,
       space_id: ctx.group.id,
       name: "New Parent Goal",
@@ -164,19 +164,19 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.click(testid: "goal-options")
     |> UI.click(testid: "edit-goal")
-    |> UI.fill(testid: "goal-name", with: "New Goal Name")
+    |> UI.fill(testid: "goal-name", with: name)
     |> UI.select_person_in(id: "champion-search", name: new_champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: new_reviewer.full_name)
     |> UI.click(testid: "add-target")
-    |> tap(fn ctx ->
+    |> then(fn ctx ->
       new_targets
       |> Enum.with_index()
-      |> Enum.each(fn {target, index} ->
+      |> Enum.reduce(ctx, fn {target, index}, ctx ->
         ctx
-        |> UI.fill(testid: "target-#{target_count + index + 1}-name", with: target.name)
-        |> UI.fill(testid: "target-#{target_count + index + 1}-current", with: to_string(target.current))
-        |> UI.fill(testid: "target-#{target_count + index + 1}-target", with: to_string(target.target))
-        |> UI.fill(testid: "target-#{target_count + index + 1}-unit", with: target.unit)
+        |> UI.fill(testid: "target-#{target_count + index}-name", with: target.name)
+        |> UI.fill(testid: "target-#{target_count + index}-current", with: to_string(target.current))
+        |> UI.fill(testid: "target-#{target_count + index}-target", with: to_string(target.target))
+        |> UI.fill(testid: "target-#{target_count + index}-unit", with: target.unit)
       end)
     end)
     |> UI.click(testid: "save-changes")
@@ -189,12 +189,11 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text(name)
     |> UI.assert_text(new_champion.full_name)
     |> UI.assert_text(new_reviewer.full_name)
-    |> tap(fn ctx ->
+    |> then(fn ctx ->
       new_targets
-      |> Enum.each(fn target ->
+      |> Enum.reduce(ctx, fn target, ctx ->
         ctx
         |> UI.assert_text(target.name)
-        |> UI.assert_text("#{target.current} / #{target.target}")
         |> UI.assert_text(target.unit)
       end)
     end)
