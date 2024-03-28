@@ -6,6 +6,7 @@ import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
 import Options from "./Options";
 
+import { match } from "ts-pattern";
 import { Link } from "react-router-dom";
 import { DivLink } from "@/components/Link";
 import { Project } from "@/models/projects";
@@ -52,20 +53,31 @@ function ProjectName({ project }) {
   );
 }
 
-function ParentGoal({ project }) {
-  if (!project.goal) return null;
+function ParentGoal({ project }: { project: Projects.Project }) {
+  let goal = project.goal;
+  let content: React.ReactNode;
+
+  if (goal) {
+    content = (
+      <>
+        <Icons.IconTarget size={14} className="text-red-500" />
+        <DivLink
+          to={Paths.goalPath(goal.id)}
+          className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
+          testId="project-goal-link"
+        >
+          {goal.name}
+        </DivLink>
+      </>
+    );
+  } else {
+    content = <div className="text-sm text-content-dimmed mx-1 font-medium">Not yet connected to a goal</div>;
+  }
 
   return (
     <div className="flex items-center">
       <div className="border-t-2 border-l-2 border-stroke-base rounded-tl w-7 h-2.5 ml-4 mb-1 mt-2.5 mr-1" />
-      <Icons.IconTarget size={14} className="text-red-500" />
-      <DivLink
-        to={Paths.goalPath(project.goal.id)}
-        className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
-        testId="project-goal-link"
-      >
-        {project.goal.name}
-      </DivLink>
+      {content}
     </div>
   );
 }
