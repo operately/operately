@@ -6,7 +6,6 @@ import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
 import Options from "./Options";
 
-import { match } from "ts-pattern";
 import { Link } from "react-router-dom";
 import { DivLink } from "@/components/Link";
 import { Project } from "@/models/projects";

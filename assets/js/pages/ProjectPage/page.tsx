@@ -3,13 +3,11 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-import * as Companies from "@/models/companies";
 
 import Banner from "./Banner";
 import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
-import Goal from "./Goal";
 import Navigation from "./Navigation";
 import { GhostButton } from "@/components/Button";
 
@@ -30,7 +28,7 @@ import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 
 export function Page() {
-  const { company, project } = useLoadedData();
+  const { project } = useLoadedData();
 
   return (
     <Pages.Page title={project.name}>

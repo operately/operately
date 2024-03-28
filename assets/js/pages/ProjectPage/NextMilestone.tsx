@@ -58,7 +58,13 @@ function AllMilestonesCompleted({ project }) {
   );
 }
 
-function NextMilestoneList({ project, nextMilestones }) {
+function NextMilestoneList({
+  project,
+  nextMilestones,
+}: {
+  project: Projects.Project;
+  nextMilestones: Projects.Milestone[];
+}) {
   return (
     <div>
       <DimmedLabel>Upcoming Milestones</DimmedLabel>
@@ -91,7 +97,8 @@ function MilestoneLink({ project, milestone }) {
 }
 
 function getNextMilestones(project: Projects.Project) {
-  const pending = Milestones.filterPending(project.milestones!);
+  const milestones = project.milestones!.map((m) => m!);
+  const pending = Milestones.filterPending(milestones);
 
   return Milestones.sortByDeadline(pending);
 }
