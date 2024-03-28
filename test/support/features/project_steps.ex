@@ -87,7 +87,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "acknowledge-update")
   end
 
-  def choose_new_goal(ctx, goal_name: goal_name) do
+  step :choose_new_goal, ctx, goal_name: goal_name do
     ctx
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "connect-project-to-goal-link")
@@ -100,13 +100,15 @@ defmodule Operately.Support.Features.ProjectSteps do
     Map.put(ctx, :project, project)
   end
 
-  def assert_goal_connected(ctx, goal_name: goal_name) do
-    assert ctx.project.goal.name == goal_name
+  step :assert_goal_connected, ctx, goal_name: goal_name do
+    project = Operately.Projects.get_project!(ctx.project.id)
+    project = Operately.Repo.preload(project, :goal)
 
+    assert ctx.project.goal.name == goal_name
     ctx
   end
 
-  def assert_goal_link_on_project_page(ctx, goal_name: goal_name) do
+  step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
     ctx 
     |> UI.assert_page("/projects/#{ctx.project.id}")
     |> UI.assert_text(goal_name)
@@ -115,7 +117,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_text(goal_name)
   end
 
-  def assert_goal_connected_email_sent_to_champion(ctx, goal_name: goal_name) do
+  step :assert_goal_connected_email_sent_to_champion, ctx, goal_name: goal_name do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
@@ -125,7 +127,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  def assert_goal_connected_notification_sent_to_reviewer(ctx, goal_name: goal_name) do
+  step :assert_goal_connected_notification_sent_to_reviewer, ctx, goal_name: goal_name do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
@@ -134,14 +136,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  def connect_goal(ctx, goal) do
+  step :connect_goal, ctx, goal do
     {:ok, project} = Operately.Projects.update_project(ctx.project, %{goal_id: goal.id})
     project = Operately.Repo.preload(project, :goal)
 
     Map.put(ctx, :project, project)
   end
 
-  def disconnect_goal(ctx) do
+  step :disconnect_goal, ctx do
     ctx
     |> UI.assert_page("/projects/#{ctx.project.id}")
     |> UI.click(testid: "project-options-button")
@@ -149,13 +151,13 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "disconnect-goal")
   end
 
-  def assert_goal_link_not_on_project_page(ctx) do
+  step :assert_goal_link_not_on_project_page, ctx do
     ctx
     |> UI.assert_page("/projects/#{ctx.project.id}")
     |> UI.assert_text("Not yet connected to a goal")
   end
 
-  def assert_goal_disconnected_email_sent_to_champion(ctx, goal_name: goal_name) do
+  step :assert_goal_disconnected_email_sent_to_champion, ctx, goal_name: goal_name do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
@@ -165,7 +167,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     })  
   end
 
-  def assert_goal_disconnected_notification_sent_to_reviewer(ctx) do
+  step :assert_goal_disconnected_notification_sent_to_reviewer, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
@@ -178,7 +180,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   # Navigation between project pages
   #
 
-  def visit_project_page(ctx) do
+  step :visit_project_page, ctx do
     ctx |> UI.visit("/projects/#{ctx.project.id}")
   end
 
@@ -214,6 +216,84 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   def assert_discussion_exists(ctx, title: title) do
     ctx |> UI.assert_text(title)
+  end
+
+  step :pause_project, ctx do
+    ctx 
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "pause-project-link")
+    |> UI.click(testid: "pause-project-button")
+  end
+
+  step :assert_project_paused, ctx do
+    ctx |> UI.assert_text("Paused")
+  end
+
+  step :assert_pause_notification_sent_to_reviewer, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "paused the project",
+    })
+  end
+
+  step :assert_pause_email_sent_to_reviewer, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "paused the project",
+      author: ctx.champion,
+    })
+  end
+
+  step :assert_pause_visible_on_project_feed, ctx do
+    ctx
+    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el |> UI.assert_text("paused the project")
+    end)
+  end
+
+  step :resume_project, ctx do
+    ctx 
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "resume-project-link")
+    |> UI.click(testid: "resume-project-button")
+  end
+
+  step :assert_project_active, ctx do
+    ctx |> UI.assert_text("On Track")
+  end
+
+  step :assert_resume_notification_sent_to_reviewer, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "resumed the project",
+    })
+  end
+
+  step :assert_resume_email_sent_to_reviewer, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "resumed the project",
+      author: ctx.champion,
+    })
+  end
+
+  step :assert_resume_visible_on_project_feed, ctx do
+    ctx
+    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el |> UI.assert_text("resumed the project")
+    end)
   end
 
 end
