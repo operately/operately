@@ -7,6 +7,7 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
+import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -89,10 +90,12 @@ function NoParentGoal({ onSelect }) {
 }
 
 function GoalListItem({ parentGoal, onSelect }) {
+  const testId = createTestId("goal-list-item", parentGoal.name);
+
   return (
     <div className="flex items-center justify-between py-3 first:border-t border-b border-stroke-base">
       <div>{parentGoal.name}</div>
-      <FilledButton type="primary" size="xxs" onClick={onSelect}>
+      <FilledButton type="primary" size="xxs" onClick={onSelect} testId={testId}>
         Select
       </FilledButton>
     </div>

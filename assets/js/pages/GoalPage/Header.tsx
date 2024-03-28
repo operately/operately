@@ -45,7 +45,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="text-sm text-content-dimmed font-medium flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        Company wide goal
+        Company-wide goal
       </div>
     );
   }

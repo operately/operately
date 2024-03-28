@@ -70,6 +70,30 @@ defmodule Operately.Support.Features.UI do
     execute(state, fn session ->
       session |> Browser.click(Query.css(css_query))
     end)
+  rescue
+    e in Wallaby.QueryError ->
+      raise """
+      Failed to click on element with query: #{inspect(opts)}
+
+      Avalable elements with test-id:
+      #{list_all_testids(state)}
+      """
+  end
+
+  defp list_all_testids(state) do
+    script = """
+      return Array.from(document.querySelectorAll('[data-test-id]')).map(function(e) { 
+        return e.attributes['data-test-id'].value;
+      })
+    """
+
+    Browser.execute_script(state[:session], script, fn result ->
+      send(self(), {:testids, result})
+    end)
+
+    receive do
+      {:testids, testids} -> inspect(testids)
+    end
   end
 
   def hover(state, opts) do
