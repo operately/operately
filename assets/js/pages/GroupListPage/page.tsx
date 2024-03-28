@@ -36,6 +36,8 @@ export function Page() {
               id: company.companySpaceId!,
               mission: "Everyone in the company",
               privateSpace: false,
+              isCompanySpace: true,
+              isMember: true,
             }}
           />
 
@@ -47,6 +49,8 @@ export function Page() {
               id: "personal",
               mission: "Your own private space in Operately",
               privateSpace: true,
+              isCompanySpace: false,
+              isMember: true,
             }}
             comingSoon={true}
           />

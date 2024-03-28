@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 
-import classnames from "classnames";
 import Avatar from "@/components/Avatar";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -15,37 +14,20 @@ import { Banner } from "./Banner";
 import { ProjectListItem } from "@/features/ProjectListItem";
 import { useLoadedData } from "./loader";
 import RichContent from "@/components/RichContent";
-import { Link } from "@/components/Link";
-import { Paths } from "@/routes/paths";
+import { Header } from "./Header";
 
 export function Page() {
   const { goal } = useLoadedData();
 
   return (
     <Pages.Page title={[goal.name]}>
-      <Paper.Root size="medium">
+      <Paper.Root size="large">
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
           <Banner goal={goal} />
-
-          <div className="flex items-center justify-between">
-            <div
-              className={classnames(
-                "flex gap-2 items-center",
-                "font-bold",
-                "break-word",
-                "text-3xl",
-                "text-content-accent",
-              )}
-            >
-              {goal.name}
-            </div>
-
-            <div className="flex gap-4 items-center">
-              <Options goal={goal} />
-            </div>
-          </div>
+          <Options goal={goal} />
+          <Header goal={goal} />
 
           <div className="flex item-center mt-4 gap-12">
             <div>
@@ -69,11 +51,6 @@ export function Page() {
           <div className="mt-8">
             <DimmedLabel>Success Conditions</DimmedLabel>
             <TargetList goal={goal} />
-          </div>
-
-          <div className="mt-8">
-            <DimmedLabel>Parent Goal</DimmedLabel>
-            <ParentGoal goal={goal} />
           </div>
 
           <div className="mt-8">
@@ -140,22 +117,6 @@ function Description({ goal }) {
     <div className="mt-8">
       <DimmedLabel>Description</DimmedLabel>
       <RichContent jsonContent={goal.description} />
-    </div>
-  );
-}
-
-function ParentGoal({ goal }) {
-  if (!goal.parentGoal) {
-    return <div className="text-sm">No parent goal</div>;
-  }
-
-  const path = Paths.goalPath(goal.parentGoal.id);
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="font-medium">
-        <Link to={path}>{goal.parentGoal.name}</Link>
-      </div>
     </div>
   );
 }

@@ -55,6 +55,7 @@ const QUERY = gql`
       }
 
       permissions {
+        canEdit
         canCheckIn
         canAcknowledgeCheckIn
       }

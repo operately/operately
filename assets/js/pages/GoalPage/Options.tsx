@@ -5,7 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 export function Options({ goal }) {
   return (
     <PageOptions.Root testId="goal-options" position="top-right">
-      {!goal.permissions.canEdit && (
+      {goal.permissions.canEdit && (
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit Goal"
@@ -14,12 +14,12 @@ export function Options({ goal }) {
         />
       )}
 
-      {!goal.permissions.canEdit && (
+      {goal.permissions.canEdit && (
         <PageOptions.Link
           icon={Icons.IconExchange}
           title="Change Parent"
           to={`/goals/${goal.id}/edit/parent`}
-          dataTestId="change-parent"
+          dataTestId="change-parent-goal"
         />
       )}
 

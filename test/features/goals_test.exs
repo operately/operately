@@ -1,15 +1,11 @@
 defmodule Operately.Features.GoalCreationTest do
   use Operately.FeatureCase
 
-  alias Operately.Support.Features.GoalSteps
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
-  alias Operately.Support.Features.FeedSteps
-
+  alias Operately.Support.Features.GoalSteps, as: Steps
   import Operately.PeopleFixtures
 
   setup ctx do
-    ctx = GoalSteps.create_goal(ctx)
+    ctx = Steps.create_goal(ctx)
     ctx = UI.login_based_on_tag(ctx)
 
     {:ok, ctx}
@@ -18,70 +14,37 @@ defmodule Operately.Features.GoalCreationTest do
   @tag login_as: :champion
   feature "archive goal", ctx do
     ctx
-    |> GoalSteps.visit_page()
-    |> UI.click(testid: "goal-options")
-    |> UI.click(testid: "archive-goal")
-    |> UI.assert_text("Archive this goal?")
-    |> UI.click(testid: "confirm-archive-goal")
-    |> UI.assert_text("This goal was archived on")
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
-      action: "archived the #{ctx.goal.name} goal"
-    })
-
-    ctx
-    |> GoalSteps.visit_goal_list_page()
-    |> UI.refute_has(Query.text(ctx.goal.name))
-
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal)
+    |> Steps.visit_page()
+    |> Steps.archive_goal()
+    |> Steps.assert_goal_archived()
+    |> Steps.assert_goal_archived_email_sent()
+    |> Steps.assert_goal_archived_feed_posted()
   end
 
   @tag login_as: :champion
   feature "editing goals", ctx do
-    new_champion = person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John New Champion"})
-    new_reviewer = person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Leonardo New Reviewer"})
+    values = %{
+      name: "New Goal Name", 
+      champion: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John New Champion"}),
+      reviewer: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Leonardo New Reviewer"}),
+      new_targets: [%{name: "Sold 1000 units", current: 0, target: 1000, unit: "units"}]
+    }
 
     ctx
-    |> GoalSteps.visit_page()
-    |> UI.click(testid: "goal-options")
-    |> UI.click(testid: "edit-goal")
-    |> UI.fill(testid: "goal-name", with: "New Goal Name")
-    |> UI.select_person_in(id: "champion-search", name: "John New Champion")
-    |> UI.select_person_in(id: "reviewer-search", name: "Leonardo New Reviewer")
-    |> UI.click(testid: "add-target")
-    |> UI.fill(testid: "target-2-name", with: "Sold 1000 units")
-    |> UI.fill(testid: "target-2-current", with: "0")
-    |> UI.fill(testid: "target-2-target", with: "1000")
-    |> UI.fill(testid: "target-2-unit", with: "units")
-    |> UI.click(testid: "save-changes")
+    |> Steps.visit_page()
+    |> Steps.edit_goal(values)
+    |> Steps.assert_goal_edited(values)
+    |> Steps.assert_goal_edited_email_sent(values)
+    |> Steps.assert_goal_edited_feed_posted()
+  end
 
+  @tag login_as: :champion
+  feature "changing goal parent", ctx do
     ctx
-    |> UI.assert_text("New Goal Name")
-    |> UI.assert_text("John New Champion")
-    |> UI.assert_text("Leonardo New Reviewer")
-    |> FeedSteps.assert_goal_edited(author: ctx.champion)
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: "New Goal Name",
-      to: new_champion,
-      author: ctx.champion,
-      action: "edited the goal"
-    })
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: "New Goal Name",
-      to: new_reviewer,
-      author: ctx.champion,
-      action: "edited the goal"
-    })
+    |> Steps.visit_page()
+    |> Steps.assert_goal_is_company_wide()
+    |> Steps.change_goal_parent()
+    |> Steps.assert_goal_parent_changed()
   end
   
 end
