@@ -23,7 +23,16 @@ export function Options({ goal }) {
         />
       )}
 
-      {!goal.isArchived && (
+      {goal.permissions.canClose && (
+        <PageOptions.Link
+          icon={Icons.IconCircleCheck}
+          title="Mark as Complete"
+          to={`/goals/${goal.id}/complete`}
+          dataTestId="mark-as-complete"
+        />
+      )}
+
+      {goal.canArchive && !goal.isArchived && (
         <PageOptions.Link
           icon={Icons.IconTrash}
           title="Archive"

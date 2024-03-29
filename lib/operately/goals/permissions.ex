@@ -3,7 +3,9 @@ defmodule Operately.Goals.Permissions do
     %{
       can_edit: is_champion?(goal, user) || is_reviewer?(goal, user),
       can_check_in: is_champion?(goal, user),
-      can_acknowledge_check_in: is_reviewer?(goal, user)
+      can_acknowledge_check_in: is_reviewer?(goal, user),
+      can_complete: is_champion?(goal, user),
+      can_archive: is_champion?(goal, user)
     }
   end
 

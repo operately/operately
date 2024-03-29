@@ -58,6 +58,8 @@ const QUERY = gql`
         canEdit
         canCheckIn
         canAcknowledgeCheckIn
+        canComplete
+        canArchive
       }
 
       champion {
