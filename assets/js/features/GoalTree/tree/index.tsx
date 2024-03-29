@@ -37,10 +37,11 @@ export class Tree {
   }
 
   buildRoots(): GoalNode[] {
-    return this.allGoals
-      .filter((g) => (this.filters.spaceId ? g.space.id === this.filters.spaceId : !g.parentGoalId))
-      .map((g) => this.buildTree(g))
-      .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
+    const goals = this.filters.spaceId
+      ? this.allSpaceGoalsWithoutParentInSpace(this.filters.spaceId)
+      : this.allGoalsWithoutParent();
+
+    return goals.map((g) => this.buildTree(g)).sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
   }
 
   buildTree(goal: Goal, depth: number = 0): GoalNode {
@@ -52,5 +53,16 @@ export class Tree {
 
   getAllNodes(): Node[] {
     return this.roots.flatMap((root) => root.getAllNodes());
+  }
+
+  private allGoalsWithoutParent(): Goal[] {
+    return this.allGoals.filter((g) => !g.parentGoalId);
+  }
+
+  private allSpaceGoalsWithoutParentInSpace(spaceId: string): Goal[] {
+    const goalsNotInSpace = this.allGoals.filter((g) => g.space.id !== spaceId);
+    const goalsInSpace = this.allGoals.filter((g) => g.space.id === spaceId);
+
+    return goalsInSpace.filter((g) => goalsNotInSpace.some((goal) => goal.id === g.parentGoalId));
   }
 }
