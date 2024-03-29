@@ -38,7 +38,7 @@ export function Page() {
 function ArchiveButton({ goal }) {
   const navigateToGoal = useNavigateTo(`/goals/${goal.id}`);
 
-  const [close, { loading: loading }] = Goals.useArchiveGoalMutation({
+  const [close, { loading: loading }] = Goals.useCloseGoalMutation({
     variables: {
       goalId: goal.id,
     },

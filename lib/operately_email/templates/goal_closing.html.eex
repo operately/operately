@@ -1,1 +1,7 @@
-<%= raise "HTML Email for GoalClosing not implemented" %>
+<%= title("#{short_name(@author)} completed the #{@goal.name} goal") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.goal_url(@goal.id), "View Goal") %>
+<% end %>

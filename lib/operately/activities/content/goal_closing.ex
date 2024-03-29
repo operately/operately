@@ -3,8 +3,8 @@ defmodule Operately.Activities.Content.GoalClosing do
 
   embedded_schema do
     field :company_id, :string
-  field :space_id, :string
-  field :goal_id, :string
+    field :space_id, :string
+    field :goal_id, :string
   end
 
   def changeset(attrs) do

@@ -1,1 +1,3 @@
-<%= raise "Text Email for GoalClosing not implemented" %>
+<%= short_name(@author) %> completed the goal "<%= @goal.name %>".
+
+Link: <%= OperatelyEmail.goal_url(@goal.id) %>
