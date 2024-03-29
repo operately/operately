@@ -46,7 +46,21 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
     end
 
     test "it doesn't send if goal is closed", ctx do
-      raise "Not implemented"
+      {:ok, _} = Operately.Repo.update(Goal.changeset(ctx.goal, %{
+        next_update_scheduled_at: days_from_now(0)
+      }))
+
+      # it sends before closing
+      assignments = OperatelyEmail.Assignments.Loader.load(ctx.champion)
+      assert Enum.member?(assignment_types(assignments), :goal_check_in)
+
+      {:ok, _} = Operately.Repo.update(Goal.changeset(ctx.goal, %{
+        closed_at: DateTime.utc_now()
+      }))
+
+      # it doesn't send after closing
+      assignments = OperatelyEmail.Assignments.Loader.load(ctx.champion)
+      refute Enum.member?(assignment_types(assignments), :goal_check_in)
     end
   end
 

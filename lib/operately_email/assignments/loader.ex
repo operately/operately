@@ -21,7 +21,7 @@ defmodule OperatelyEmail.Assignments.Loader do
         preload: [:milestones]
     )
 
-    goals = Repo.all(from g in Goal, where: g.champion_id == ^person.id)
+    goals = Repo.all(from g in Goal, where: g.champion_id == ^person.id, where: is_nil(g.closed_at))
 
     assignment_groups = []
 
