@@ -7,6 +7,7 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { Validators } from "@/utils/validators";
 
 interface Error {
   field: string;
@@ -146,7 +147,7 @@ function validate(content: any, targets: TargetState[]): Error[] {
   }
 
   targets.forEach((target) => {
-    if (!target.value || target.value?.toString().trim() === "") {
+    if (!Validators.nonEmptyNumber(target.value)) {
       errors.push({ field: target.id, message: `cannot be empty` });
     }
   });
