@@ -158,18 +158,26 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal)
   end
 
-  step :edit_goal, ctx, %{name: name, champion: new_champion, reviewer: new_reviewer, new_targets: new_targets} do
+  step :edit_goal, ctx do
+    values = %{
+      name: "New Goal Name", 
+      new_champion: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John New Champion"}),
+      new_reviewer: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Leonardo New Reviewer"}),
+      new_targets: [%{name: "Sold 1000 units", current: 0, target: 1000, unit: "units"}]
+    }
+
     target_count = Enum.count(Operately.Repo.preload(ctx.goal, :targets).targets)
 
     ctx
+    |> Map.put(:edit_values, values)
     |> UI.click(testid: "goal-options")
     |> UI.click(testid: "edit-goal")
-    |> UI.fill(testid: "goal-name", with: name)
-    |> UI.select_person_in(id: "champion-search", name: new_champion.full_name)
-    |> UI.select_person_in(id: "reviewer-search", name: new_reviewer.full_name)
+    |> UI.fill(testid: "goal-name", with: values.name)
+    |> UI.select_person_in(id: "champion-search", name: values.new_champion.full_name)
+    |> UI.select_person_in(id: "reviewer-search", name: values.new_reviewer.full_name)
     |> UI.click(testid: "add-target")
     |> then(fn ctx ->
-      new_targets
+      values.new_targets
       |> Enum.with_index()
       |> Enum.reduce(ctx, fn {target, index}, ctx ->
         ctx
@@ -183,14 +191,14 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end
 
-  step :assert_goal_edited, ctx, %{name: name, champion: new_champion, reviewer: new_reviewer, new_targets: new_targets} do
+  step :assert_goal_edited, ctx do
     ctx
     |> UI.assert_page("/goals/#{ctx.goal.id}")
-    |> UI.assert_text(name)
-    |> UI.assert_text(new_champion.full_name)
-    |> UI.assert_text(new_reviewer.full_name)
+    |> UI.assert_text(ctx.edit_values.name)
+    |> UI.assert_text(ctx.edit_values.new_champion.full_name)
+    |> UI.assert_text(ctx.edit_values.new_reviewer.full_name)
     |> then(fn ctx ->
-      new_targets
+      ctx.edit_values.new_targets
       |> Enum.reduce(ctx, fn target, ctx ->
         ctx
         |> UI.assert_text(target.name)
@@ -199,17 +207,17 @@ defmodule Operately.Support.Features.GoalSteps do
     end)
   end
   
-  step :assert_goal_edited_email_sent, ctx, %{name: name, champion: new_champion, reviewer: new_reviewer} do
+  step :assert_goal_edited_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
-      where: name,
-      to: new_champion,
+      where: ctx.edit_values.name,
+      to: ctx.edit_values.new_reviewer,
       author: ctx.champion,
       action: "edited the goal"
     })
     |> EmailSteps.assert_activity_email_sent(%{
-      where: name,
-      to: new_reviewer,
+      where: ctx.edit_values.name,
+      to: ctx.edit_values.new_champion,
       author: ctx.champion,
       action: "edited the goal"
     })
@@ -236,7 +244,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")
-    # |> UI.assert_text("This goal was closed on")
+    |> UI.assert_text("This goal was closed on")
   end
 
   step :assert_goal_closed_email_sent, ctx do

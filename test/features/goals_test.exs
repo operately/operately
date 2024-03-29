@@ -2,7 +2,6 @@ defmodule Operately.Features.GoalTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.GoalSteps, as: Steps
-  import Operately.PeopleFixtures
 
   setup ctx do
     ctx = Steps.create_goal(ctx)
@@ -23,18 +22,11 @@ defmodule Operately.Features.GoalTest do
 
   @tag login_as: :champion
   feature "editing goals", ctx do
-    values = %{
-      name: "New Goal Name", 
-      champion: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John New Champion"}),
-      reviewer: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Leonardo New Reviewer"}),
-      new_targets: [%{name: "Sold 1000 units", current: 0, target: 1000, unit: "units"}]
-    }
-
     ctx
     |> Steps.visit_page()
-    |> Steps.edit_goal(values)
-    |> Steps.assert_goal_edited(values)
-    |> Steps.assert_goal_edited_email_sent(values)
+    |> Steps.edit_goal()
+    |> Steps.assert_goal_edited()
+    |> Steps.assert_goal_edited_email_sent()
     |> Steps.assert_goal_edited_feed_posted()
   end
 
