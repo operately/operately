@@ -262,7 +262,7 @@ function NodeChildren({ node }: { node: Node }) {
 
 function TableRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-dashed border-stone-200 -mx-12 px-12 hover:bg-surface-highlight">
+    <div className="flex items-center justify-between py-2 border-b border-dashed border-stroke-base -mx-12 px-12 hover:bg-surface-highlight">
       {children}
     </div>
   );
