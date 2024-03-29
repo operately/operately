@@ -15,6 +15,7 @@ describe("Tree", () => {
       goalStub("E", marketingSpace, "D"),
       goalStub("F", productSpace, "A"),
       goalStub("G", marketingSpace, "F"),
+      goalStub("H", marketingSpace),
     ] as Goal[];
 
     const filters = {
@@ -23,11 +24,12 @@ describe("Tree", () => {
 
     const tree = new Tree(allGoals, "name", "asc", filters);
 
-    expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "G"]);
+    expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "G", "H"]);
     expect(getChildNames(tree, "B")).toEqual(["D"]);
     expect(getChildNames(tree, "C")).toEqual([]);
     expect(getChildNames(tree, "D")).toEqual(["E"]);
     expect(getChildNames(tree, "G")).toEqual([]);
+    expect(getChildNames(tree, "H")).toEqual([]);
   });
 });
 

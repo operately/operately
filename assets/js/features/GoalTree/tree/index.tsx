@@ -63,6 +63,6 @@ export class Tree {
     const goalsNotInSpace = this.allGoals.filter((g) => g.space.id !== spaceId);
     const goalsInSpace = this.allGoals.filter((g) => g.space.id === spaceId);
 
-    return goalsInSpace.filter((g) => goalsNotInSpace.some((goal) => goal.id === g.parentGoalId));
+    return goalsInSpace.filter((g) => !g.parentGoalId || goalsNotInSpace.some((goal) => goal.id === g.parentGoalId));
   }
 }
