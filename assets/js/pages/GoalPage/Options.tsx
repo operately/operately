@@ -24,7 +24,7 @@ export function Options({ goal }) {
         />
       )}
 
-      {goal.permissions.canClose && (
+      {goal.permissions.canClose && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
           title="Mark as Complete"
@@ -33,7 +33,7 @@ export function Options({ goal }) {
         />
       )}
 
-      {goal.canArchive && !goal.isArchived && (
+      {goal.permissions.canArchive && !goal.isArchived && (
         <PageOptions.Link
           icon={Icons.IconTrash}
           title="Archive"

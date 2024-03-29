@@ -1,18 +1,16 @@
 import * as Pages from "@/components/Pages";
+import * as Goals from "@/models/goals";
 
 interface LoaderResult {
+  goal: Goals.Goal;
 }
 
-export async function loader({params}) : Promise<LoaderResult> {
-  // TODO: Implement
-
-  return {}
+export async function loader({ params }): Promise<LoaderResult> {
+  return {
+    goal: await Goals.getGoal(params.goalId),
+  };
 }
 
-export function useLoadedData() : LoaderResult {
+export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
-}
-
-export function useRefresh() {
-  return Pages.useRefresh();
 }

@@ -672,10 +672,13 @@ export type Goal = {
   __typename?: 'Goal';
   archivedAt?: Maybe<Scalars['Date']['output']>;
   champion?: Maybe<Person>;
+  closedAt?: Maybe<Scalars['Date']['output']>;
+  closedBy?: Maybe<Person>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
+  isClosed: Scalars['Boolean']['output'];
   lastCheckIn?: Maybe<Update>;
   myRole?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];

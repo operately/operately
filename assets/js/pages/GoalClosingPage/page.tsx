@@ -5,10 +5,10 @@ import * as Pages from "@/components/Pages";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const data = useLoadedData();
+  const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={"GoalClosingPage"}>
+    <Pages.Page title={"Closing " + goal.name}>
       <Paper.Root>
         <Paper.Body>
           <div className="text-content-accent text-3xl font-extrabold">GoalClosingPage</div>

@@ -11,10 +11,13 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :next_update_scheduled_at, :date
     field :parent_goal_id, :id
 
+    field :closed_at, :date
+
     json_field :description, :string
 
     assoc_field :champion, :person
     assoc_field :reviewer, :person
+    assoc_field :closed_by, :person
 
     assoc_field :targets, list_of(:target)
     assoc_field :projects, list_of(:project)
@@ -43,6 +46,12 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :is_archived, non_null(:boolean) do
       resolve fn goal, _, _ ->
         {:ok, goal.deleted_at != nil}
+      end
+    end
+
+    field :is_closed, non_null(:boolean) do
+      resolve fn goal, _, _ ->
+        {:ok, goal.closed_at != nil}
       end
     end
 
