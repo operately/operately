@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 
 export function Page() {
@@ -46,8 +46,8 @@ function ArchiveButton({ goal }) {
   });
 
   return (
-    <GhostButton onClick={archive} testId="confirm-archive-goal" loading={loading}>
+    <FilledButton onClick={archive} testId="confirm-archive-goal" loading={loading}>
       Archive the Goal
-    </GhostButton>
+    </FilledButton>
   );
 }
