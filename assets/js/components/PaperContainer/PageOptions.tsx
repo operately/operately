@@ -86,7 +86,7 @@ function Open({ onClick, noBorder, testId, position }) {
     "rounded-full border border-stroke-base cursor-pointer": true,
     "border-transparent": noBorder,
     "p-1 hover:border-surface-outline transition-colors duration-200": !noBorder,
-    "absolute right-5 top-5": position === "top-right",
+    "absolute right-2.5 top-2.5": position === "top-right",
   });
 
   return (

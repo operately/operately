@@ -6,7 +6,7 @@ import { Paths } from "@/routes/paths";
 export function Options({ goal }) {
   return (
     <PageOptions.Root testId="goal-options" position="top-right">
-      {goal.permissions.canEdit && (
+      {goal.permissions.canEdit && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit Goal"
@@ -15,7 +15,7 @@ export function Options({ goal }) {
         />
       )}
 
-      {goal.permissions.canEdit && (
+      {goal.permissions.canEdit && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconExchange}
           title="Change Parent"

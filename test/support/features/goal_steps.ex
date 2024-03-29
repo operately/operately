@@ -244,7 +244,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")
-    |> UI.assert_text("This goal was closed on")
+    |> UI.assert_text("This goal was completed on")
   end
 
   step :assert_goal_closed_email_sent, ctx do
@@ -279,5 +279,14 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :visit_goal_list_page, ctx do
     UI.visit(ctx, "/spaces/#{ctx.group.id}/goals")
+  end
+
+  step :assert_goal_is_not_editable, ctx do
+    ctx
+    |> UI.refute_text("Check-In Now")
+    |> UI.click(testid: "goal-options")
+    |> UI.refute_text("Edit Goal")
+    |> UI.refute_text("Change Parent")
+    |> UI.refute_text("Mark as Complete")
   end
 end

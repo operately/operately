@@ -21,6 +21,8 @@ export function CheckIns({ goal }) {
 }
 
 function NextCheckIn({ goal }) {
+  if (goal.isClosed || goal.isArchived) return null;
+
   let copy = "";
   let scheduledAt = Time.parseDate(goal.nextUpdateScheduledAt);
 
@@ -63,6 +65,8 @@ function LastCheckIn({ goal }) {
 
 function CheckInButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
+  if (goal.isClosed || goal.isArchived) return null;
+
   const newCheckInPath = createPath("goals", goal.id, "check-ins", "new");
 
   return (

@@ -45,6 +45,7 @@ defmodule Operately.Features.GoalTest do
     |> Steps.visit_page()
     |> Steps.close_goal()
     |> Steps.assert_goal_closed()
+    |> Steps.assert_goal_is_not_editable()
     |> Steps.assert_goal_closed_email_sent()
     |> Steps.assert_goal_closed_feed_posted()
     |> Steps.assert_goal_closed_notification_sent()

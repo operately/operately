@@ -44,6 +44,10 @@ defmodule OperatelyEmail.Assignments.LoaderTest do
 
       refute Enum.member?(assignment_types(assignments), :goal_check_in)
     end
+
+    test "it doesn't send if goal is closed", ctx do
+      raise "Not implemented"
+    end
   end
 
   describe "project check-in" do
