@@ -21,6 +21,9 @@ defmodule Operately.Goals.Goal do
 
     field :description, :map
 
+    field :closed_at, :utc_datetime
+    belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
+
     timestamps()
     soft_delete()
   end
@@ -42,6 +45,8 @@ defmodule Operately.Goals.Goal do
       :description,
       :next_update_scheduled_at,
       :parent_goal_id,
+      :closed_at,
+      :closed_by_id,
     ])
     |> validate_required([
       :name, 
