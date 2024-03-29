@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import { Paths } from "@/routes/paths";
 
 export function Options({ goal }) {
   return (
@@ -9,7 +10,7 @@ export function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit Goal"
-          to={`/goals/${goal.id}/edit`}
+          to={Paths.editGoalPath(goal.id)}
           dataTestId="edit-goal"
         />
       )}
@@ -18,7 +19,7 @@ export function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconExchange}
           title="Change Parent"
-          to={`/goals/${goal.id}/edit/parent`}
+          to={Paths.editGoalParentPath(goal.id)}
           dataTestId="change-parent-goal"
         />
       )}
@@ -27,7 +28,7 @@ export function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
           title="Mark as Complete"
-          to={`/goals/${goal.id}/complete`}
+          to={Paths.closeGoalPath(goal.id)}
           dataTestId="mark-as-complete"
         />
       )}
@@ -36,7 +37,7 @@ export function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconTrash}
           title="Archive"
-          to={`/goals/${goal.id}/archive`}
+          to={Paths.archiveGoalPath(goal.id)}
           dataTestId="archive-goal"
         />
       )}
