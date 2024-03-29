@@ -12,6 +12,7 @@ import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
 import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
 import GoalCheckInEdit from "./GoalCheckInEdit"
+import GoalClosing from "./GoalClosing"
 import GoalCreated from "./GoalCreated"
 import GoalEditing from "./GoalEditing"
 import GoalReparent from "./GoalReparent"
@@ -72,6 +73,9 @@ export default function NotificationItem({notification}) {
     
     case "ActivityContentGoalCheckInEdit":
       return <GoalCheckInEdit notification={notification} />;
+    
+    case "ActivityContentGoalClosing":
+      return <GoalClosing notification={notification} />;
     
     case "ActivityContentGoalCreated":
       return <GoalCreated notification={notification} />;

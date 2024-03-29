@@ -4,7 +4,6 @@ import * as Projects from "@/models/projects";
 
 import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
-import Options from "./Options";
 
 import { Link } from "react-router-dom";
 import { DivLink } from "@/components/Link";
@@ -30,24 +29,20 @@ export default function Header({ project }: HeaderProps): JSX.Element {
 
 function ProjectName({ project }) {
   return (
-    <div className="flex items-start justify-between truncate">
-      <div className="flex-1 truncate">
-        <ParentGoal project={project} />
+    <div className="flex-1 truncate">
+      <ParentGoal project={project} />
 
-        <div className={classnames("flex gap-3 items-center", "text-content-accent", "truncate mr-12")}>
-          <div className="bg-indigo-500/10 p-1.5 rounded-lg">
-            <Icons.IconHexagons size={24} className="text-indigo-500" />
-          </div>
-
-          <div className="inline-flex items-center gap-2 truncate">
-            <div className="font-bold text-2xl text-content-accent truncate flex-1">{project.name}</div>
-          </div>
-
-          <PrivateIndicator project={project} />
+      <div className={classnames("flex gap-3 items-center", "text-content-accent", "truncate mr-12")}>
+        <div className="bg-indigo-500/10 p-1.5 rounded-lg">
+          <Icons.IconHexagons size={24} className="text-indigo-500" />
         </div>
-      </div>
 
-      <Options project={project} />
+        <div className="inline-flex items-center gap-2 truncate">
+          <div className="font-bold text-2xl text-content-accent truncate flex-1">{project.name}</div>
+        </div>
+
+        <PrivateIndicator project={project} />
+      </div>
     </div>
   );
 }

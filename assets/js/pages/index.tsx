@@ -21,6 +21,7 @@ import * as GoalArchivePage from "./GoalArchivePage";
 import * as GoalCheckInEditPage from "./GoalCheckInEditPage";
 import * as GoalCheckInPage from "./GoalCheckInPage";
 import * as GoalCheckInsPage from "./GoalCheckInsPage";
+import * as GoalClosingPage from "./GoalClosingPage";
 import * as GoalEditPage from "./GoalEditPage";
 import * as GoalEditParentPage from "./GoalEditParentPage";
 import * as GoalNewCheckInPage from "./GoalNewCheckInPage";
@@ -142,6 +143,10 @@ export default {
   GoalCheckInsPage: {
     loader: GoalCheckInsPage.loader,
     Page: GoalCheckInsPage.Page
+  },
+  GoalClosingPage: {
+    loader: GoalClosingPage.loader,
+    Page: GoalClosingPage.Page
   },
   GoalEditPage: {
     loader: GoalEditPage.loader,

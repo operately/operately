@@ -45,7 +45,20 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :parent_goal_id, :string
   end
 
+  input_object :close_goal_input do
+    field :goal_id, non_null(:string)
+  end
+
   object :goal_mutations do
+    field :close_goal, non_null(:goal) do
+      arg :input, non_null(:close_goal_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        Operately.Operations.GoalClosing.run(author, input.goal_id)
+      end
+    end
+
     field :change_goal_parent, non_null(:goal) do
       arg :input, non_null(:change_goal_parent_input)
 

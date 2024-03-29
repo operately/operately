@@ -26,6 +26,7 @@ import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import Options from "./Options";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -37,6 +38,7 @@ export function Page() {
 
         <Paper.Body>
           <Banner project={project} />
+          <Options project={project} />
 
           <div className="mb-8">
             <Header project={project} />

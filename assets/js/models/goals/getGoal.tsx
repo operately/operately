@@ -37,6 +37,14 @@ const QUERY = gql`
       name
       timeframe
       isArchived
+      isClosed
+      closedAt
+      closedBy {
+        id
+        fullName
+        avatarUrl
+        title
+      }
       archivedAt
       description
       nextUpdateScheduledAt
@@ -58,6 +66,8 @@ const QUERY = gql`
         canEdit
         canCheckIn
         canAcknowledgeCheckIn
+        canClose
+        canArchive
       }
 
       champion {

@@ -7,7 +7,7 @@ import { Paths } from "@/routes/paths";
 
 export default function Options({ project }) {
   return (
-    <PageOptions.Root testId="project-options-button">
+    <PageOptions.Root testId="project-options-button" position="top-right">
       {project.permissions.canPause && Projects.isResumable(project) && (
         <PageOptions.Link
           icon={Icons.IconPlayerPlayFilled}

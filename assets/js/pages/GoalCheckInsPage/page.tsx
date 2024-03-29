@@ -48,6 +48,7 @@ function Navigation({ goal }) {
 
 function CheckInButton({ goal }: { goal: Goals.Goal }) {
   if (!goal.permissions.canCheckIn) return null;
+  if (goal.isClosed || goal.isArchived) return null;
 
   const path = `/goals/${goal.id}/check-ins/new`;
 
