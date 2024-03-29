@@ -71,6 +71,10 @@ export class Paths {
     return createPath(["goals", goalId, "check-ins", checkInId]);
   }
 
+  static closeGoalPath(goalId: string) {
+    return createPath(["goals", goalId, "complete"]);
+  }
+
   static profilePath(personId: string) {
     return createPath(["people", personId]);
   }
