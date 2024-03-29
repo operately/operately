@@ -13,6 +13,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     |> from(author)
     |> to(person)
     |> subject(where: space.name, who: author, action: "completed the #{goal.name} goal")
+    |> assign(:goal, goal)
     |> assign(:author, author)
     |> render("goal_closing")
   end

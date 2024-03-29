@@ -26,7 +26,7 @@ export function Page() {
           </div>
 
           <div className="flex items-center gap-6 mt-8">
-            <ArchiveButton goal={goal} />
+            <SubmitButton goal={goal} />
             <DimmedLink to={`/goals/${goal.id}`}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
@@ -35,18 +35,20 @@ export function Page() {
   );
 }
 
-function ArchiveButton({ goal }) {
+function SubmitButton({ goal }) {
   const navigateToGoal = useNavigateTo(`/goals/${goal.id}`);
 
   const [close, { loading: loading }] = Goals.useCloseGoalMutation({
     variables: {
-      goalId: goal.id,
+      input: {
+        goalId: goal.id,
+      },
     },
     onCompleted: () => navigateToGoal(),
   });
 
   return (
-    <FilledButton onClick={close} testId="confirm-archive-goal" loading={loading}>
+    <FilledButton onClick={close} testId="confirm-close-goal" loading={loading}>
       Mark as Complete
     </FilledButton>
   );

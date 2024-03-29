@@ -93,6 +93,13 @@ const query = gql`
             }
           }
 
+          ... on ActivityContentGoalClosing {
+            goal {
+              id
+              name
+            }
+          }
+
           ... on ActivityContentGoalArchived {
             goal {
               id
