@@ -1,4 +1,5 @@
 export type { Goal } from "@/gql/generated";
+export { useCloseGoalMutation } from './useCloseGoalMutation';
 export type { Target } from "@/gql/generated";
 
 export { getGoals } from "./getGoals";
