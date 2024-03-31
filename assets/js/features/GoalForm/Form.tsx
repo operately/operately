@@ -7,10 +7,14 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as People from "@/graphql/People";
 import * as TipTapEditor from "@/components/Editor";
+import * as Icons from "@tabler/icons-react";
+import * as Goals from "@/models/goals";
 
 import { GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
+import { DivLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -26,6 +30,8 @@ function FormMain({ form }: { form: FormState }) {
 
   return (
     <div className="font-medium">
+      <ParentGoal goal={form.config.parentGoal} />
+
       {form.config.mode === "create" ? (
         <div className="font-bold text-lg mb-3">Goal</div>
       ) : (
@@ -202,6 +208,39 @@ function AddDescription({ form }: { form: FormState }) {
       <GhostButton size="xxs" type="secondary" onClick={form.fields.setHasDescription}>
         Add Description
       </GhostButton>
+    </div>
+  );
+}
+
+function ParentGoal({ goal }: { goal?: Goals.Goal }) {
+  let content: React.ReactNode;
+
+  if (goal) {
+    content = (
+      <>
+        <Icons.IconTarget size={14} className="text-red-500" />
+        <DivLink
+          to={Paths.goalPath(goal.id)}
+          className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
+          testId="project-goal-link"
+        >
+          {goal.name}
+        </DivLink>
+      </>
+    );
+  } else {
+    content = (
+      <div className="text-sm text-content-dimmed font-medium flex items-center gap-1">
+        <Icons.IconBuildingEstate size={14} />
+        Company-wide goal
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-sm flex items-center gap-2">
+      <div>Creating a subgoal for:</div>
+      {content}
     </div>
   );
 }

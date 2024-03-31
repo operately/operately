@@ -19,7 +19,7 @@ export function Page() {
 }
 
 function NewGoalForSpacePage() {
-  const { company, me, space } = useLoadedData();
+  const { company, me, space, parentGoal } = useLoadedData();
 
   const form = useForm({
     mode: "create",
@@ -27,6 +27,7 @@ function NewGoalForSpacePage() {
     me: me,
     allowSpaceSelection: false,
     space: space,
+    parentGoal,
   });
 
   return (
@@ -36,7 +37,7 @@ function NewGoalForSpacePage() {
           <DimmedLink to={`/spaces/${space!.id}/goals`}>Back to {space!.name} Space</DimmedLink>
         </div>
 
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal for {space!.name}</h1>
+        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new subgoal for {space!.name}</h1>
 
         <Paper.Body minHeight="300px">
           <Form form={form} />
@@ -49,7 +50,7 @@ function NewGoalForSpacePage() {
 }
 
 function NewGoalPage() {
-  const { company, me, spaces, parentGoalId } = useLoadedData();
+  const { company, me, spaces, parentGoal } = useLoadedData();
 
   const form = useForm({
     mode: "create",
@@ -57,7 +58,7 @@ function NewGoalPage() {
     me: me,
     allowSpaceSelection: true,
     spaces: spaces,
-    parentGoalId,
+    parentGoal,
   });
 
   return (

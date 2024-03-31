@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Groups from "@/models/groups";
+import * as Goals from "@/models/goals";
 
 interface LoaderResult {
   company: Companies.Company;
@@ -12,8 +13,7 @@ interface LoaderResult {
   spaces?: Groups.Group[];
 
   allowSpaceSelection: boolean;
-
-  parentGoalId?: string;
+  parentGoal?: Goals.Goal;
 }
 
 // There are two ways we can end up on this page:
@@ -24,18 +24,24 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const searchParams = new URL(request.url).searchParams;
 
   const spaceID = params.id;
-  const parentGoalId = searchParams.get("parentGoalId") || undefined;
   const company = await Companies.getCompany();
   const me = await People.getMe();
+  const allowSpaceSelection = !spaceID;
+  const parentGoalId = searchParams.get("parentGoalId") || undefined;
+
+  let loadedData: LoaderResult = { company, me, allowSpaceSelection, spaceID };
 
   if (spaceID) {
-    const space = await Groups.getGroup(params.id);
-
-    return { company, me, spaceID, space, allowSpaceSelection: false, parentGoalId };
+    loadedData.space = await Groups.getGroup(spaceID);
   } else {
-    const spaces = await Groups.getGroups();
-    return { company, me, spaces, allowSpaceSelection: true, parentGoalId };
+    loadedData.spaces = await Groups.getGroups();
   }
+
+  if (parentGoalId) {
+    loadedData.parentGoal = await Goals.getGoal(parentGoalId);
+  }
+
+  return loadedData;
 }
 
 export function useLoadedData(): LoaderResult {

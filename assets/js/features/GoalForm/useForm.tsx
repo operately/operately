@@ -76,7 +76,7 @@ interface FormConfig {
   company: Companies.Company;
   me: People.Person;
   goal?: Goals.Goal;
-  parentGoalId?: string;
+  parentGoal?: Goals.Goal;
 
   allowSpaceSelection: boolean;
   space?: Groups.Group;
@@ -253,7 +253,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             reviewerID: fields.reviewer!.id,
             timeframe: fields.timeframe.value,
             description: prepareDescriptionForSave(fields),
-            parentGoalID: config.parentGoalId,
+            parentGoal: config.parentGoal?.id,
             targets: fields.targets
               .filter((t) => t.name.trim() !== "")
               .map((t, index) => ({
