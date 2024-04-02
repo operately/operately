@@ -54,7 +54,7 @@ interface Error {
 }
 
 export function useForm() {
-  const { company, me, spaceID, goalID } = useLoadedData();
+  const { company, me, spaceID, goal } = useLoadedData();
 
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
@@ -107,7 +107,7 @@ export function useForm() {
 
   const cancelPath = spaceID ? `/spaces/${spaceID}` : "/projects";
 
-  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath, goalID);
+  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath, goal?.id);
 
   return {
     fields,

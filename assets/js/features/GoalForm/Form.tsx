@@ -215,7 +215,12 @@ function ParentGoal({ form }: { form: FormState }) {
       <div>
         <div className="flex items-center">
           <Icons.IconTarget size={14} className="text-red-500" />
-          <DivLink to={Paths.goalPath(goal.id)} className="hover:underline font-medium ml-1" testId="parent-goal-link">
+          <DivLink
+            to={Paths.goalPath(goal.id)}
+            className="hover:underline font-medium ml-1"
+            testId="parent-goal-link"
+            target="_blank"
+          >
             {goal.name}
           </DivLink>
         </div>

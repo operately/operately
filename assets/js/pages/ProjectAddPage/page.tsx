@@ -7,7 +7,10 @@ import PeopleSearch from "@/components/PeopleSearch";
 import * as People from "@/graphql/People";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
 
+import { DivLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 import { FilledButton } from "@/components/Button";
@@ -98,15 +101,19 @@ function Form({ form }: { form: FormState }) {
   return (
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={true} onCancel={form.cancel}>
       <div className="flex flex-col gap-8">
-        <Forms.TextInput
-          autoFocus
-          label="Project Name"
-          value={form.fields.name}
-          onChange={form.fields.setName}
-          placeholder="e.g. HR System Update"
-          data-test-id="project-name-input"
-          error={!!form.errors.find((e) => e.field === "name")?.message}
-        />
+        <div>
+          <Goal />
+
+          <Forms.TextInput
+            autoFocus
+            label="Project Name"
+            value={form.fields.name}
+            onChange={form.fields.setName}
+            placeholder="e.g. HR System Update"
+            data-test-id="project-name-input"
+            error={!!form.errors.find((e) => e.field === "name")?.message}
+          />
+        </div>
 
         {allowSpaceSelection && <SpaceSelector form={form} />}
 
@@ -217,5 +224,28 @@ function SpaceSelector({ form }: { form: FormState }) {
       defaultValue={null}
       error={hasError}
     />
+  );
+}
+
+function Goal() {
+  const { goal } = useLoadedData();
+
+  if (!goal) return null;
+
+  return (
+    <div>
+      <div className="flex items-center">
+        <Icons.IconTarget size={14} className="text-red-500" />
+        <DivLink
+          to={Paths.goalPath(goal.id)}
+          className="hover:underline font-medium ml-1"
+          testId="parent-goal-link"
+          target="_blank"
+        >
+          {goal.name}
+        </DivLink>
+      </div>
+      <div className="ml-1 border-l h-4 border-surface-outline" />
+    </div>
   );
 }
