@@ -4,12 +4,7 @@ import AsyncSelect from "react-select/async";
 import Avatar, { AvatarSize } from "@/components/Avatar";
 import classnames from "classnames";
 
-export interface Person {
-  id: string;
-  fullName: string;
-  avatarUrl: string;
-  title: string;
-}
+import { Person } from "@/models/people";
 
 export interface Option {
   value: string;

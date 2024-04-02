@@ -9,6 +9,7 @@ import * as People from "@/graphql/People";
 import * as TipTapEditor from "@/components/Editor";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
+import * as Groups from "@/models/groups";
 
 import { GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
@@ -30,13 +31,7 @@ function FormMain({ form }: { form: FormState }) {
 
   return (
     <div className="font-medium">
-      <ParentGoal goal={form.config.parentGoal} />
-
-      {form.config.mode === "create" ? (
-        <div className="font-bold text-lg mb-3">Goal</div>
-      ) : (
-        <div className="font-bold">Name</div>
-      )}
+      <GoalHeader form={form} />
 
       <div className="mb-12 text-lg">
         <GoalName form={form} />
@@ -212,35 +207,55 @@ function AddDescription({ form }: { form: FormState }) {
   );
 }
 
-function ParentGoal({ goal }: { goal?: Goals.Goal }) {
-  let content: React.ReactNode;
+function ParentGoal({ form }: { form: FormState }) {
+  if (form.config.parentGoal) {
+    const goal = form.config.parentGoal as Goals.Goal;
 
-  if (goal) {
-    content = (
-      <>
-        <Icons.IconTarget size={14} className="text-red-500" />
-        <DivLink
-          to={Paths.goalPath(goal.id)}
-          className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
-          testId="project-goal-link"
-        >
-          {goal.name}
-        </DivLink>
-      </>
+    return (
+      <div>
+        <div className="flex items-center">
+          <Icons.IconTarget size={14} className="text-red-500" />
+          <DivLink to={Paths.goalPath(goal.id)} className="hover:underline font-medium ml-1" testId="parent-goal-link">
+            {goal.name}
+          </DivLink>
+        </div>
+        <div className="ml-1 border-l h-4 border-surface-outline" />
+      </div>
+    );
+  } else if (!form.config.allowSpaceSelection) {
+    const space = form.config.space as Groups.Group;
+
+    return (
+      <div>
+        <div className="flex items-center text-sm gap-1">
+          <Icons.IconBuildingEstate size={14} className="text-blue-500" />
+          Company-wide goal for {space.name}
+        </div>
+        <div className="ml-1 border-l h-2 border-surface-outline" />
+      </div>
     );
   } else {
-    content = (
-      <div className="text-sm text-content-dimmed font-medium flex items-center gap-1">
-        <Icons.IconBuildingEstate size={14} />
-        Company-wide goal
+    return (
+      <div>
+        <div className="flex items-center text-sm gap-1">
+          <Icons.IconBuildingEstate size={14} className="text-blue-500" />
+          Company-wide
+        </div>
+        <div className="ml-1 border-l h-2 border-surface-outline" />
       </div>
     );
   }
+}
 
-  return (
-    <div className="text-sm flex items-center gap-2">
-      <div>Creating a subgoal for:</div>
-      {content}
-    </div>
-  );
+function GoalHeader({ form }: { form: FormState }) {
+  if (form.config.mode === "create") {
+    return (
+      <>
+        <ParentGoal form={form} />
+        <div className="font-bold text-lg mb-3">{form.config.parentGoal ? "Subgoal Name" : "Goal"}</div>
+      </>
+    );
+  } else {
+    return <div className="font-bold">Name</div>;
+  }
 }
