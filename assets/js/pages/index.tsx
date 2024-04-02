@@ -41,6 +41,7 @@ import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
 import * as PeopleOrgChartPage from "./PeopleOrgChartPage";
 import * as PeoplePage from "./PeoplePage";
+import * as ProfileActivityPage from "./ProfileActivityPage";
 import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
@@ -223,6 +224,10 @@ export default {
   PeoplePage: {
     loader: PeoplePage.loader,
     Page: PeoplePage.Page
+  },
+  ProfileActivityPage: {
+    loader: ProfileActivityPage.loader,
+    Page: ProfileActivityPage.Page
   },
   ProfilePage: {
     loader: ProfilePage.loader,

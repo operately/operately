@@ -1,4 +1,8 @@
 export class Paths {
+  static peoplePath() {
+    return createPath(["people"]);
+  }
+
   static projectPath(projectId: string) {
     return createPath(["projects", projectId]);
   }
@@ -89,6 +93,10 @@ export class Paths {
 
   static profilePath(personId: string) {
     return createPath(["people", personId]);
+  }
+
+  static profileActivityPath(personId: string) {
+    return createPath(["people", personId, "activity"]);
   }
 }
 

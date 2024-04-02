@@ -105,6 +105,7 @@ export type ActivityContentGoalCheckInEdit = {
 export type ActivityContentGoalClosing = {
   __typename?: 'ActivityContentGoalClosing';
   companyId: Scalars['String']['output'];
+  goal: Goal;
   goalId: Scalars['String']['output'];
   spaceId: Scalars['String']['output'];
 };
@@ -707,7 +708,7 @@ export type GoalPermissions = {
   canAcknowledgeCheckIn: Scalars['Boolean']['output'];
   canArchive: Scalars['Boolean']['output'];
   canCheckIn: Scalars['Boolean']['output'];
-  canComplete: Scalars['Boolean']['output'];
+  canClose: Scalars['Boolean']['output'];
   canEdit: Scalars['Boolean']['output'];
 };
 
