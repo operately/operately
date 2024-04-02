@@ -8,7 +8,7 @@ import classNames from "classnames";
 
 interface PageHeaderProps {
   person: Person;
-  activeTab: "about" | "activity";
+  activeTab: "about" | "activity" | "goals";
 }
 
 export function PageHeader(props: PageHeaderProps) {
@@ -28,14 +28,15 @@ export function PageHeader(props: PageHeaderProps) {
 }
 
 function Tabs(props: PageHeaderProps) {
+  const profilePath = Paths.profilePath(props.person.id);
+  const activityPath = Paths.profileActivityPath(props.person.id);
+  const goalsPath = Paths.profileGoalsPath(props.person.id);
+
   return (
     <div className="flex gap-2 border-b border-surface-outline mt-6 -mx-12 px-12">
-      <Tab title="About" linkTo={Paths.profilePath(props.person.id)} isActive={props.activeTab === "about"} />
-      <Tab
-        title="Activity"
-        linkTo={Paths.profileActivityPath(props.person.id)}
-        isActive={props.activeTab === "activity"}
-      />
+      <Tab title="About" linkTo={profilePath} isActive={props.activeTab === "about"} />
+      <Tab title="Goals" linkTo={goalsPath} isActive={props.activeTab === "goals"} />
+      <Tab title="Activity" linkTo={activityPath} isActive={props.activeTab === "activity"} />
     </div>
   );
 }

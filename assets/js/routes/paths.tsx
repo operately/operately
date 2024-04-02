@@ -98,6 +98,10 @@ export class Paths {
   static profileActivityPath(personId: string) {
     return createPath(["people", personId, "activity"]);
   }
+
+  static profileGoalsPath(personId: string) {
+    return createPath(["people", personId, "goals"]);
+  }
 }
 
 function createPath(elements: string[]) {
