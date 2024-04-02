@@ -19,23 +19,14 @@ export function Page() {
 
         <Paper.Body>
           <PageHeader person={person} activeTab="activity" />
-          <PersonFeed />
+
+          <div className="mt-6">
+            <div className="text-xs mt-6 mb-3 uppercase font-bold">{People.firstName(person)}'s Activity</div>
+            <PersonFeedContent />
+          </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function PersonFeed() {
-  const { person } = useLoadedData();
-
-  return (
-    <Paper.DimmedSection>
-      <div className="uppercase text-xs text-content-accent font-semibold mb-4">
-        {People.firstName(person)}'s Activity
-      </div>
-      <PersonFeedContent />
-    </Paper.DimmedSection>
   );
 }
 

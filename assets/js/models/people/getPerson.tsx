@@ -3,6 +3,8 @@ import client from "@/graphql/client";
 
 interface GetPeopleOpts {
   id: string;
+  includeManager?: boolean;
+  includeReports?: boolean;
 }
 
 export async function getPerson(opts: GetPeopleOpts) {
@@ -10,6 +12,8 @@ export async function getPerson(opts: GetPeopleOpts) {
     query: QUERY,
     variables: {
       id: opts.id,
+      includeManager: !!opts.includeManager,
+      includeReports: !!opts.includeReports,
     },
     fetchPolicy: "network-only",
   });
@@ -18,12 +22,27 @@ export async function getPerson(opts: GetPeopleOpts) {
 }
 
 const QUERY = gql`
-  query GetPerson($id: ID!) {
+  query GetPerson($id: ID!, $includeManager: Boolean!, $includeReports: Boolean!) {
     person(id: $id) {
       id
       fullName
       title
       avatarUrl
+      email
+
+      manager @include(if: $includeManager) {
+        id
+        fullName
+        title
+        avatarUrl
+      }
+
+      reports @include(if: $includeReports) {
+        id
+        fullName
+        title
+        avatarUrl
+      }
     }
   }
 `;

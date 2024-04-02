@@ -29,7 +29,7 @@ export function PageHeader(props: PageHeaderProps) {
 
 function Tabs(props: PageHeaderProps) {
   return (
-    <div className="flex gap-2 border-b border-gray-200 mt-6 -mx-12 px-12">
+    <div className="flex gap-2 border-b border-surface-outline mt-6 -mx-12 px-12">
       <Tab title="About" linkTo={Paths.profilePath(props.person.id)} isActive={props.activeTab === "about"} />
       <Tab
         title="Activity"
@@ -41,9 +41,9 @@ function Tabs(props: PageHeaderProps) {
 }
 
 function Tab({ title, linkTo, isActive }) {
-  const className = classNames("border-stroke-base rounded-t px-4 py-1 -mb-px cursor-pointer bg-surface", {
+  const className = classNames("border-surface-outline rounded-t px-4 py-1 -mb-px cursor-pointer bg-surface", {
     "border-x border-t font-medium": isActive,
-    "border text-content-dimmed": !isActive,
+    border: !isActive,
     "hover:text-content": !isActive,
   });
 
