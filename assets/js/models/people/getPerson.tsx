@@ -5,6 +5,7 @@ interface GetPeopleOpts {
   id: string;
   includeManager?: boolean;
   includeReports?: boolean;
+  includePeers?: boolean;
 }
 
 export async function getPerson(opts: GetPeopleOpts) {
@@ -14,6 +15,7 @@ export async function getPerson(opts: GetPeopleOpts) {
       id: opts.id,
       includeManager: !!opts.includeManager,
       includeReports: !!opts.includeReports,
+      includePeers: !!opts.includePeers,
     },
     fetchPolicy: "network-only",
   });
@@ -22,7 +24,7 @@ export async function getPerson(opts: GetPeopleOpts) {
 }
 
 const QUERY = gql`
-  query GetPerson($id: ID!, $includeManager: Boolean!, $includeReports: Boolean!) {
+  query GetPerson($id: ID!, $includeManager: Boolean!, $includeReports: Boolean!, $includePeers: Boolean!) {
     person(id: $id) {
       id
       fullName
@@ -38,6 +40,13 @@ const QUERY = gql`
       }
 
       reports @include(if: $includeReports) {
+        id
+        fullName
+        title
+        avatarUrl
+      }
+
+      peers @include(if: $includePeers) {
         id
         fullName
         title

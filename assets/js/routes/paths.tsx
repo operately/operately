@@ -95,10 +95,6 @@ export class Paths {
     return createPath(["people", personId]);
   }
 
-  static profileActivityPath(personId: string) {
-    return createPath(["people", personId, "activity"]);
-  }
-
   static profileGoalsPath(personId: string) {
     return createPath(["people", personId, "goals"]);
   }

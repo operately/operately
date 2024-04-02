@@ -29,7 +29,7 @@ const routes = createBrowserRouter([
       pageRoute("/account/appearance", pages.AccountAppearancePage),
 
       pageRoute("/people/:id", pages.ProfilePage),
-      pageRoute("/people/:id/activity", pages.ProfileActivityPage),
+      pageRoute("/people/:id/goals", pages.ProfileGoalsPage),
       pageRoute("/notifications", pages.NotificationsPage),
 
       pageRoute("/people", pages.PeoplePage),

@@ -3,11 +3,21 @@ import * as People from "@/models/people";
 
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
+import { FilledButton } from "@/components/Button";
 
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 
 export function Colleagues({ person }: { person: People.Person }) {
+  const [allPeersVisible, setAllPeersVisible] = React.useState(false);
+  const [allReportsVisible, setAllReportsVisible] = React.useState(false);
+
+  const sortedPeers = person.peers!.slice().sort((a, b) => a!.fullName.localeCompare(b!.fullName));
+  const sortedReports = person.reports!.slice().sort((a, b) => a!.fullName.localeCompare(b!.fullName));
+
+  const visiblePeers = allPeersVisible ? sortedPeers : sortedPeers.slice(0, 4);
+  const visibleReports = allReportsVisible ? sortedReports : sortedReports.slice(0, 4);
+
   return (
     <div className="py-6">
       <div className="text-xs mb-2 uppercase font-bold">Colleagues</div>
@@ -22,15 +32,37 @@ export function Colleagues({ person }: { person: People.Person }) {
 
         <div>
           <div className="text-xs font-medium text-content-dimmed mb-2">Peers</div>
-          <PersonCard
-            person={person!}
-            highlight
-            connectLeft={!!person.manager}
-            connectRight={person.reports!.length > 0}
-          />
+
+          <div className="flex flex-col gap-2">
+            <PersonCard
+              person={person!}
+              highlight
+              connectLeft={!!person.manager}
+              connectRight={person.reports!.length > 0}
+            />
+
+            {visiblePeers.map((peer, index) => (
+              <PersonCard
+                key={peer!.id}
+                person={peer!}
+                link
+                connectUp={!!person.manager}
+                connectUpJoinLeft={index === 0}
+                connectColor="border-surface-outline"
+              />
+            ))}
+          </div>
+
+          {!allPeersVisible && person.peers!.length > visiblePeers.length && (
+            <div className="mt-2 flex items-center justify-center">
+              <FilledButton type="secondary" size="xxs" onClick={() => setAllPeersVisible(true)}>
+                Show all
+              </FilledButton>
+            </div>
+          )}
         </div>
 
-        {person.reports!.length > 0 && (
+        {visibleReports.length > 0 && (
           <div>
             <div className="text-xs font-medium text-content-dimmed mb-2">Reports</div>
 
@@ -45,6 +77,14 @@ export function Colleagues({ person }: { person: People.Person }) {
                 />
               ))}
             </div>
+
+            {!allReportsVisible && person.reports!.length > visibleReports.length && (
+              <div className="mt-2 flex items-center justify-center">
+                <FilledButton type="secondary" size="xxs" onClick={() => setAllReportsVisible(true)}>
+                  Show all
+                </FilledButton>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -83,18 +123,6 @@ function PersonCard(props: PersonCardProps) {
         <div className="text-xs truncate">{person.title}</div>
       </div>
 
-      {props.connectLeft && (
-        <div
-          className={classNames("absolute top-1/2 -left-5 w-5 border-t-2", "transform -translate-y-1/2", connectColor)}
-        />
-      )}
-
-      {props.connectRight && (
-        <div
-          className={classNames("absolute top-1/2 -right-5 w-5 border-t-2", "transform -translate-y-1/2", connectColor)}
-        />
-      )}
-
       {props.connectUp && (
         <div
           className={classNames(
@@ -110,7 +138,7 @@ function PersonCard(props: PersonCardProps) {
         />
       )}
 
-      {props.connectUpJoinLeft && (
+      {props.connectUp && props.connectUpJoinLeft && (
         <div
           className={classNames("absolute border-t-2 border-r-2 rounded-tr-lg", connectColor)}
           style={{
@@ -119,6 +147,28 @@ function PersonCard(props: PersonCardProps) {
             left: "-18px",
             top: "calc(-100% + 17px)",
           }}
+        />
+      )}
+
+      {props.connectLeft && (
+        <div
+          className={classNames(
+            "absolute top-1/2 -left-5 w-5 border-t-2",
+            "transform -translate-y-1/2",
+            "z-[1]",
+            connectColor,
+          )}
+        />
+      )}
+
+      {props.connectRight && (
+        <div
+          className={classNames(
+            "absolute top-1/2 -right-5 w-5 border-t-2",
+            "transform -translate-y-1/2",
+            "z-[1]",
+            connectColor,
+          )}
         />
       )}
     </>

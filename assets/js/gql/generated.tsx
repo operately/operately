@@ -842,7 +842,7 @@ export type PauseProjectInput = {
 export type Person = {
   __typename?: 'Person';
   avatarUrl?: Maybe<Scalars['String']['output']>;
-  company: Company;
+  company?: Maybe<Company>;
   companyRole?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
@@ -851,6 +851,7 @@ export type Person = {
   managerId?: Maybe<Scalars['String']['output']>;
   notifyAboutAssignments: Scalars['Boolean']['output'];
   notifyOnMention: Scalars['Boolean']['output'];
+  peers?: Maybe<Array<Maybe<Person>>>;
   reports?: Maybe<Array<Maybe<Person>>>;
   sendDailySummary: Scalars['Boolean']['output'];
   theme?: Maybe<Scalars['String']['output']>;
