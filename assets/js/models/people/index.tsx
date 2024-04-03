@@ -12,6 +12,8 @@ import {
   useGetMeQuery,
 } from "@/gql/generated";
 
+export { Person } from "@/gql/generated";
+
 export async function getPeople(): Promise<Person[]> {
   let res = await client.query({
     query: GetPeopleDocument,
