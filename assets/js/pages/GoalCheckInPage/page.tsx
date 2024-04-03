@@ -71,7 +71,7 @@ function Reactions() {
   return <ReactionList size={24} form={addReactionForm} />;
 }
 
-function Acknowledgement({ update }: { update: Updates.Update }) {
+function Acknowledgement({ update }) {
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">

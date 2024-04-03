@@ -7,7 +7,8 @@ interface LoadedData {
 
 export async function loader({ params }): Promise<LoadedData> {
   return {
-    project: await Projects.getProject(params.projectID, {
+    project: await Projects.getProject({
+      id: params.projectID,
       includeSpace: true,
       includePermissions: true,
       includeMilestones: true,

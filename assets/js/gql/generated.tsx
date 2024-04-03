@@ -1973,6 +1973,34 @@ export type GetPersonQueryVariables = Exact<{
 
 export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null } | null };
 
+export type GetProjectQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  includeGoal?: InputMaybe<Scalars['Boolean']['input']>;
+  includeReviewer?: InputMaybe<Scalars['Boolean']['input']>;
+  includeContributors?: InputMaybe<Scalars['Boolean']['input']>;
+  includePermissions?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSpace?: InputMaybe<Scalars['Boolean']['input']>;
+  includeKeyResources?: InputMaybe<Scalars['Boolean']['input']>;
+  includeMilestones?: InputMaybe<Scalars['Boolean']['input']>;
+  includeLastCheckIn?: InputMaybe<Scalars['Boolean']['input']>;
+  includeRetrospective?: InputMaybe<Scalars['Boolean']['input']>;
+  includeClosedBy?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type GetProjectQuery = { __typename?: 'RootQueryType', project?: { __typename?: 'Project', id: string, name: string, description?: string | null, insertedAt: any, startedAt?: any | null, deadline?: any | null, nextCheckInScheduledAt?: any | null, isArchived: boolean, isOutdated: boolean, archivedAt?: any | null, private: boolean, status?: string | null, closedAt?: any | null, retrospective?: string | null, space?: { __typename?: 'Group', id: string, name: string, color: string, icon: string }, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, description: string, status: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, deadlineAt?: any | null, completedAt?: any | null, description?: string | null, insertedAt?: any | null } | null> | null, keyResources?: Array<{ __typename?: 'ProjectKeyResource', id: string, title: string, link: string, resourceType: string } | null> | null, permissions?: { __typename?: 'ProjectPermissions', canView: boolean, canCreateMilestone: boolean, canDeleteMilestone: boolean, canEditName: boolean, canEditMilestone: boolean, canEditDescription: boolean, canEditContributors: boolean, canEditTimeline: boolean, canEditResources: boolean, canEditGoal: boolean, canEditSpace: boolean, canPause: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean }, goal?: { __typename?: 'Goal', id: string, name: string, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, value: number } | null> | null, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null };
+
+export type GetProjectsQueryVariables = Exact<{
+  filters?: InputMaybe<ProjectListFilters>;
+  includeSpace?: InputMaybe<Scalars['Boolean']['input']>;
+  includeMilestones?: InputMaybe<Scalars['Boolean']['input']>;
+  includeContributors?: InputMaybe<Scalars['Boolean']['input']>;
+  includeLastCheckIn?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type GetProjectsQuery = { __typename?: 'RootQueryType', projects?: Array<{ __typename?: 'Project', id: string, name: string, private: boolean, insertedAt: any, updatedAt: any, startedAt?: any | null, closedAt?: any | null, deadline?: any | null, isArchived: boolean, isOutdated: boolean, status?: string | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, space?: { __typename?: 'Group', id: string, name: string }, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null> | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string, description: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null } | null> | null };
+
 export type SearchPeopleQueryVariables = Exact<{
   query: Scalars['String']['input'];
   ignoredIds?: InputMaybe<Array<Scalars['ID']['input']> | Scalars['ID']['input']>;
@@ -2165,6 +2193,246 @@ export function useGetPersonLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type GetPersonQueryHookResult = ReturnType<typeof useGetPersonQuery>;
 export type GetPersonLazyQueryHookResult = ReturnType<typeof useGetPersonLazyQuery>;
 export type GetPersonQueryResult = Apollo.QueryResult<GetPersonQuery, GetPersonQueryVariables>;
+export const GetProjectDocument = gql`
+    query GetProject($id: ID!, $includeGoal: Boolean = false, $includeReviewer: Boolean = false, $includeContributors: Boolean = false, $includePermissions: Boolean = false, $includeSpace: Boolean = false, $includeKeyResources: Boolean = false, $includeMilestones: Boolean = false, $includeLastCheckIn: Boolean = false, $includeRetrospective: Boolean = false, $includeClosedBy: Boolean = false) {
+  project(id: $id) {
+    id
+    name
+    description
+    insertedAt
+    startedAt
+    deadline
+    nextCheckInScheduledAt
+    isArchived
+    isOutdated
+    archivedAt
+    private
+    status
+    closedAt
+    retrospective @include(if: $includeRetrospective)
+    space @include(if: $includeSpace) {
+      id
+      name
+      color
+      icon
+    }
+    lastCheckIn @include(if: $includeLastCheckIn) {
+      id
+      description
+      status
+      insertedAt
+      author {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+    milestones @include(if: $includeMilestones) {
+      id
+      title
+      status
+      deadlineAt
+      completedAt
+      description
+      insertedAt
+    }
+    keyResources @include(if: $includeKeyResources) {
+      id
+      title
+      link
+      resourceType
+    }
+    permissions @include(if: $includePermissions) {
+      canView
+      canCreateMilestone
+      canDeleteMilestone
+      canEditName
+      canEditMilestone
+      canEditDescription
+      canEditContributors
+      canEditTimeline
+      canEditResources
+      canEditGoal
+      canEditSpace
+      canPause
+      canCheckIn
+      canAcknowledgeCheckIn
+    }
+    goal @include(if: $includeGoal) {
+      id
+      name
+      targets {
+        id
+        name
+        from
+        to
+        value
+      }
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+    reviewer @include(if: $includeReviewer) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
+    contributors @include(if: $includeContributors) {
+      id
+      role
+      person {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+    closedBy @include(if: $includeClosedBy) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProjectQuery__
+ *
+ * To run a query within a React component, call `useGetProjectQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProjectQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      includeGoal: // value for 'includeGoal'
+ *      includeReviewer: // value for 'includeReviewer'
+ *      includeContributors: // value for 'includeContributors'
+ *      includePermissions: // value for 'includePermissions'
+ *      includeSpace: // value for 'includeSpace'
+ *      includeKeyResources: // value for 'includeKeyResources'
+ *      includeMilestones: // value for 'includeMilestones'
+ *      includeLastCheckIn: // value for 'includeLastCheckIn'
+ *      includeRetrospective: // value for 'includeRetrospective'
+ *      includeClosedBy: // value for 'includeClosedBy'
+ *   },
+ * });
+ */
+export function useGetProjectQuery(baseOptions: Apollo.QueryHookOptions<GetProjectQuery, GetProjectQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProjectQuery, GetProjectQueryVariables>(GetProjectDocument, options);
+      }
+export function useGetProjectLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProjectQuery, GetProjectQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProjectQuery, GetProjectQueryVariables>(GetProjectDocument, options);
+        }
+export type GetProjectQueryHookResult = ReturnType<typeof useGetProjectQuery>;
+export type GetProjectLazyQueryHookResult = ReturnType<typeof useGetProjectLazyQuery>;
+export type GetProjectQueryResult = Apollo.QueryResult<GetProjectQuery, GetProjectQueryVariables>;
+export const GetProjectsDocument = gql`
+    query GetProjects($filters: ProjectListFilters, $includeSpace: Boolean = false, $includeMilestones: Boolean = false, $includeContributors: Boolean = false, $includeLastCheckIn: Boolean = false) {
+  projects(filters: $filters) {
+    id
+    name
+    private
+    insertedAt
+    updatedAt
+    startedAt
+    closedAt
+    deadline
+    isArchived
+    isOutdated
+    status
+    contributors @include(if: $includeContributors) {
+      id
+      role
+      person {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+    space @include(if: $includeSpace) {
+      id
+      name
+    }
+    nextMilestone @include(if: $includeMilestones) {
+      id
+      title
+      status
+      insertedAt
+      deadlineAt
+    }
+    milestones @include(if: $includeMilestones) {
+      id
+      title
+      status
+      insertedAt
+      deadlineAt
+    }
+    lastCheckIn @include(if: $includeLastCheckIn) {
+      id
+      status
+      description
+      insertedAt
+      author {
+        id
+        fullName
+        avatarUrl
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProjectsQuery__
+ *
+ * To run a query within a React component, call `useGetProjectsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProjectsQuery({
+ *   variables: {
+ *      filters: // value for 'filters'
+ *      includeSpace: // value for 'includeSpace'
+ *      includeMilestones: // value for 'includeMilestones'
+ *      includeContributors: // value for 'includeContributors'
+ *      includeLastCheckIn: // value for 'includeLastCheckIn'
+ *   },
+ * });
+ */
+export function useGetProjectsQuery(baseOptions?: Apollo.QueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options);
+      }
+export function useGetProjectsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options);
+        }
+export type GetProjectsQueryHookResult = ReturnType<typeof useGetProjectsQuery>;
+export type GetProjectsLazyQueryHookResult = ReturnType<typeof useGetProjectsLazyQuery>;
+export type GetProjectsQueryResult = Apollo.QueryResult<GetProjectsQuery, GetProjectsQueryVariables>;
 export const SearchPeopleDocument = gql`
     query SearchPeople($query: String!, $ignoredIds: [ID!]) {
   searchPeople(query: $query, ignoredIds: $ignoredIds) {

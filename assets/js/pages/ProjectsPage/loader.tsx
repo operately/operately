@@ -16,8 +16,6 @@ export async function loader({ request }): Promise<LoaderResult> {
   const searchParams = new URL(request.url).searchParams;
   const filter = parseFilter(searchParams);
 
-  console.log("filter", filter);
-
   return {
     company: await Companies.getCompany(),
     projects: await Projects.getProjects({
@@ -25,7 +23,9 @@ export async function loader({ request }): Promise<LoaderResult> {
       includeContributors: true,
       includeMilestones: true,
       includeLastCheckIn: true,
-      filter: filter,
+      filters: {
+        filter: filter,
+      },
     }),
     activeFilter: filter,
   };
