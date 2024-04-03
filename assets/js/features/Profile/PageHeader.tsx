@@ -33,13 +33,13 @@ function Tabs(props: PageHeaderProps) {
 
   return (
     <div className="flex gap-2 border-b border-surface-outline mt-6 -mx-12 px-12">
-      <Tab title="About" linkTo={profilePath} isActive={props.activeTab === "about"} />
-      <Tab title="Goals" linkTo={goalsPath} isActive={props.activeTab === "goals"} />
+      <Tab id="about" title="About" linkTo={profilePath} isActive={props.activeTab === "about"} />
+      <Tab id="goals" title="Goals" linkTo={goalsPath} isActive={props.activeTab === "goals"} />
     </div>
   );
 }
 
-function Tab({ title, linkTo, isActive }) {
+function Tab({ title, linkTo, isActive, id }: { title: string; linkTo: string; isActive: boolean; id: string }) {
   const className = classNames("border-surface-outline rounded-t px-4 py-1 -mb-px cursor-pointer bg-surface", {
     "border-x border-t font-medium": isActive,
     border: !isActive,
@@ -47,7 +47,7 @@ function Tab({ title, linkTo, isActive }) {
   });
 
   return (
-    <DivLink to={linkTo} className={className}>
+    <DivLink to={linkTo} className={className} testId={`tab-${id}`}>
       {title}
     </DivLink>
   );

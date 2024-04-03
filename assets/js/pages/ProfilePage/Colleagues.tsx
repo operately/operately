@@ -107,8 +107,6 @@ interface PersonCardProps {
 function PersonCard(props: PersonCardProps) {
   const { person, highlight, link } = props;
 
-  const connectColor = props.connectColor || "border-accent-1";
-
   const className = classNames("flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-surface-dimmed", "relative", {
     "border-2 border-accent-1": highlight,
     "border-2 border-stroke-base": !highlight,
@@ -123,6 +121,24 @@ function PersonCard(props: PersonCardProps) {
         <div className="text-xs truncate">{person.title}</div>
       </div>
 
+      <ConnectionLines props={props} />
+    </>
+  );
+
+  const testid = `person-card-${person.id}`;
+
+  if (link) {
+    return <DivLink to={Paths.profilePath(person.id)} className={className} children={content} testId={testid} />;
+  } else {
+    return <div className={className} children={content} data-test-id={testid} />;
+  }
+}
+
+function ConnectionLines({ props }: { props: PersonCardProps }) {
+  const connectColor = props.connectColor || "border-accent-1";
+
+  return (
+    <>
       {props.connectUp && (
         <div
           className={classNames(
@@ -173,10 +189,4 @@ function PersonCard(props: PersonCardProps) {
       )}
     </>
   );
-
-  if (link) {
-    return <DivLink to={Paths.profilePath(person.id)} className={className} children={content} />;
-  } else {
-    return <div className={className} children={content} />;
-  }
 }
