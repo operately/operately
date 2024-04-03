@@ -7,7 +7,7 @@ import { GhostButton } from "@/components/Button";
 import PeopleSearch, { Option, Person } from "@/components/PeopleSearch";
 import * as Icons from "@tabler/icons-react";
 import { FormState } from "./useForm";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 export function AddAdminsModal({ form }: { form: FormState }) {
   const state = useAddAdminsModalState(form);

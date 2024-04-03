@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import Avatar from "@/components/Avatar";
 
 /**

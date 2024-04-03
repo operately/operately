@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 

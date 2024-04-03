@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";

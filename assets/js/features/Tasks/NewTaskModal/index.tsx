@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as Tasks from "@/models/tasks";
 
 import classnames from "classnames";

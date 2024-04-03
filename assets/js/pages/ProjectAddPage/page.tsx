@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import PeopleSearch from "@/components/PeopleSearch";
 
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
