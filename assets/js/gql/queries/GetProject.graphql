@@ -1,0 +1,144 @@
+query GetProject(
+  $id: ID!
+  $includeGoal: Boolean = false
+  $includeReviewer: Boolean = false
+  $includeContributors: Boolean = false
+  $includePermissions: Boolean = false
+  $includeSpace: Boolean = false
+  $includeKeyResources: Boolean = false
+  $includeMilestones: Boolean = false
+  $includeLastCheckIn: Boolean = false
+  $includeRetrospective: Boolean = false
+  $includeClosedBy: Boolean = false
+) {
+  project(id: $id) {
+    id
+    name
+    description
+    insertedAt
+    startedAt
+    deadline
+    nextCheckInScheduledAt
+
+    isArchived
+    isOutdated
+    archivedAt
+
+    private
+    status
+    closedAt
+    retrospective @include(if: $includeRetrospective)
+
+    space @include(if: $includeSpace) {
+      id
+      name
+      color
+      icon
+    }
+
+    lastCheckIn @include(if: $includeLastCheckIn) {
+      id
+      description
+      status
+      insertedAt
+
+      author {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+
+    milestones @include(if: $includeMilestones) {
+      id
+      title
+      status
+
+      deadlineAt
+      completedAt
+      description
+      insertedAt
+    }
+
+    keyResources @include(if: $includeKeyResources) {
+      id
+      title
+      link
+      resourceType
+    }
+
+    permissions @include(if: $includePermissions) {
+      canView
+
+      canCreateMilestone
+      canDeleteMilestone
+
+      canEditName
+      canEditMilestone
+      canEditDescription
+      canEditContributors
+      canEditTimeline
+      canEditResources
+      canEditGoal
+      canEditSpace
+
+      canPause
+      canCheckIn
+      canAcknowledgeCheckIn
+    }
+
+    goal @include(if: $includeGoal) {
+      id
+      name
+
+      targets {
+        id
+        name
+        from
+        to
+        value
+      }
+
+      champion {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+
+      reviewer {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+
+    reviewer @include(if: $includeReviewer) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
+
+    contributors @include(if: $includeContributors) {
+      id
+      role
+
+      person {
+        id
+        fullName
+        avatarUrl
+        title
+      }
+    }
+
+    closedBy @include(if: $includeClosedBy) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
+  }
+}
