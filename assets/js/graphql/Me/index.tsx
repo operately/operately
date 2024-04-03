@@ -1,9 +1,7 @@
 import { useMutation, gql } from "@apollo/client";
 
 import { Project } from "@/models/projects";
-import { GET_ME_QUERY } from "@/models/people/getMe";
-
-export { useMe } from "@/models/people/getMe";
+import { GetMeDocument } from "@/gql";
 
 export interface Dashboard {
   id: string;
@@ -44,7 +42,7 @@ export function useProfileMutation(options = {}) {
     {
       refetchQueries: [
         {
-          query: GET_ME_QUERY,
+          query: GetMeDocument,
           variables: {
             includeManager: true,
           },
@@ -69,7 +67,7 @@ export function useUpdateNotificationsSettings(options = {}) {
     {
       refetchQueries: [
         {
-          query: GET_ME_QUERY,
+          query: GetMeDocument,
           variables: {
             includeManager: true,
           },
