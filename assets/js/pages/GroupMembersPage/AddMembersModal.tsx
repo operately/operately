@@ -5,7 +5,8 @@ import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
 import { FilledButton, GhostButton } from "@/components/Button";
 
-import PeopleSearch, { Option, Person } from "@/components/PeopleSearch";
+import { Person } from "@/models/people";
+import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import * as Groups from "@/graphql/Groups";
 import client from "@/graphql/client";
 import * as Icons from "@tabler/icons-react";

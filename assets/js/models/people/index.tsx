@@ -34,7 +34,7 @@ export async function getPerson(variables: GetPersonQueryVariables): Promise<Per
   return res.data.person;
 }
 
-export async function getMe(variables: GetMeQueryVariables): Promise<Person> {
+export async function getMe(variables?: GetMeQueryVariables): Promise<Person> {
   let meData = await client.query({
     query: GetMeDocument,
     fetchPolicy: "network-only",
