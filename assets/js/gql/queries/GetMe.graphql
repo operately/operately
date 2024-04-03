@@ -1,0 +1,22 @@
+query GetMe($includeManager: Boolean = false) {
+  me {
+    id
+    fullName
+    avatarUrl
+    title
+
+    sendDailySummary
+    notifyOnMention
+    notifyAboutAssignments
+
+    theme
+    companyRole
+
+    manager @include(if: $includeManager) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
+  }
+}
