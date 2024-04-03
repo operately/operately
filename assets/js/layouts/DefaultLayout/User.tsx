@@ -1,11 +1,11 @@
 import React from "react";
 
-import Avatar from "../../components/Avatar";
-import { useMe } from "../../graphql/Me";
+import Avatar from "@/components/Avatar";
+import { useMe } from "@/models/people";
 import { Link } from "react-router-dom";
 
 export function User() {
-  const { data, loading, error } = useMe();
+  const { data, loading, error } = useMe({});
 
   if (loading) return <div></div>;
   if (error) return <div></div>;
