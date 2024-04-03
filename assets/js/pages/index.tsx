@@ -32,7 +32,6 @@ import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
 import * as GroupEditPage from "./GroupEditPage";
 import * as GroupGoalsPage from "./GroupGoalsPage";
-import * as GroupKpisPage from "./GroupKpisPage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
@@ -188,10 +187,6 @@ export default {
   GroupGoalsPage: {
     loader: GroupGoalsPage.loader,
     Page: GroupGoalsPage.Page
-  },
-  GroupKpisPage: {
-    loader: GroupKpisPage.loader,
-    Page: GroupKpisPage.Page
   },
   GroupListPage: {
     loader: GroupListPage.loader,
