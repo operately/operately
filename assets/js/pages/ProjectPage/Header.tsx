@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
+import * as Tabs from "@/components/Tabs";
 
 import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
@@ -15,14 +16,18 @@ import { GhostButton } from "@/components/Button";
 
 interface HeaderProps {
   project: Project;
+  activeTab: "overview" | "milestones";
 }
 
-export default function Header({ project }: HeaderProps): JSX.Element {
+export default function Header(props: HeaderProps) {
   return (
     <div>
-      <ProjectName project={project} />
-      <div className="mt-2"></div>
-      <ContributorList project={project} />
+      <ProjectName project={props.project} />
+      <Tabs.Root activeTab={props.activeTab}>
+        <Tabs.Tab id="overview" title="Overview" linkTo={Paths.projectPath(props.project.id)} />
+        <Tabs.Tab id="milestones" title="Milestones" linkTo={Paths.projectPath(props.project.id)} />
+        <Tabs.Tab id="check-ins" title="Check-Ins" linkTo={Paths.projectPath(props.project.id)} />
+      </Tabs.Root>
     </div>
   );
 }
@@ -85,28 +90,5 @@ function PrivateIndicator({ project }) {
         <Icons.IconLock size={20} />
       </div>
     </TextTooltip>
-  );
-}
-
-function ContributorList({ project }: { project: Projects.Project }) {
-  const contributorsPath = `/projects/${project.id}/contributors`;
-  const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
-
-  return (
-    <div className="flex items-center">
-      <Link to={contributorsPath} data-test-id="project-contributors">
-        <div className="flex items-center justify-center gap-1 cursor-pointer">
-          {sortedContributors.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
-
-          {project.permissions.canEditContributors && (
-            <div className="ml-2">
-              <GhostButton size="xs" type="secondary" testId="manage-team-button">
-                Manage Team
-              </GhostButton>
-            </div>
-          )}
-        </div>
-      </Link>
-    </div>
   );
 }

@@ -1,10 +1,10 @@
 import * as React from "react";
+import * as Tabs from "@/components/Tabs";
+
+import { Person } from "@/models/people";
+import { Paths } from "@/routes/paths";
 
 import Avatar from "@/components/Avatar";
-import { Person } from "@/models/people";
-import { DivLink } from "@/components/Link";
-import { Paths } from "@/routes/paths";
-import classNames from "classnames";
 
 interface PageHeaderProps {
   person: Person;
@@ -22,33 +22,10 @@ export function PageHeader(props: PageHeaderProps) {
         </div>
       </div>
 
-      <Tabs {...props} />
+      <Tabs.Root activeTab={props.activeTab}>
+        <Tabs.Tab id="about" title="About" linkTo={Paths.profilePath(props.person.id)} />
+        <Tabs.Tab id="goals" title="Goals" linkTo={Paths.profileGoalsPath(props.person.id)} />
+      </Tabs.Root>
     </div>
-  );
-}
-
-function Tabs(props: PageHeaderProps) {
-  const profilePath = Paths.profilePath(props.person.id);
-  const goalsPath = Paths.profileGoalsPath(props.person.id);
-
-  return (
-    <div className="flex gap-2 border-b border-surface-outline mt-6 -mx-12 px-12">
-      <Tab id="about" title="About" linkTo={profilePath} isActive={props.activeTab === "about"} />
-      <Tab id="goals" title="Goals" linkTo={goalsPath} isActive={props.activeTab === "goals"} />
-    </div>
-  );
-}
-
-function Tab({ title, linkTo, isActive, id }: { title: string; linkTo: string; isActive: boolean; id: string }) {
-  const className = classNames("border-surface-outline rounded-t px-4 py-1 -mb-px cursor-pointer bg-surface", {
-    "border-x border-t font-medium": isActive,
-    border: !isActive,
-    "hover:text-content": !isActive,
-  });
-
-  return (
-    <DivLink to={linkTo} className={className} testId={`tab-${id}`}>
-      {title}
-    </DivLink>
   );
 }

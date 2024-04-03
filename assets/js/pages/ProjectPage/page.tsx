@@ -3,13 +3,15 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
+import * as People from "@/models/people";
 
 import Banner from "./Banner";
 import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
-import { GhostButton } from "@/components/Button";
+import { GhostButton, FilledButton } from "@/components/Button";
+import { DivLink } from "@/components/Link";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -17,9 +19,6 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { DimmedLabel } from "./Label";
-
-import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
@@ -33,83 +32,17 @@ export function Page() {
 
   return (
     <Pages.Page title={project.name}>
-      <Paper.Root size="large">
+      <Paper.Root>
         <Navigation space={project.space} />
 
         <Paper.Body>
           <Banner project={project} />
           <Options project={project} />
+          <Header project={project} activeTab="overview" />
 
-          <div className="mb-8">
-            <Header project={project} />
-          </div>
-
-          <div className="">
+          <div className="flex flex-col my-10">
             <Overview project={project} />
-
-            <div className="mt-4" />
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Overview</div>
-
-                  <div className="text-sm">
-                    {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Description project={project} />
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Timeline</div>
-
-                  <div className="text-sm">
-                    {showEditMilestones(project) && (
-                      <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
-                        View
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Timeline project={project} />
-                </div>
-              </div>
-            </div>
-
-            <CheckInSection project={project} />
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Resources</div>
-
-                  <div className="text-sm">
-                    {showEditResource(project) && (
-                      <Link to={`/projects/${project.id}/edit/resources`} testId="edit-resources-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Resources project={project} />
-                </div>
-              </div>
-            </div>
+            <LastCheckIn project={project} />
           </div>
 
           <Paper.DimmedSection>
@@ -136,9 +69,9 @@ function LastCheckIn({ project }) {
 
   const checkInNowLink = (
     <div className="flex">
-      <GhostButton linkTo={newCheckInPath} testId="check-in-now" size="xs" type="secondary">
+      <FilledButton linkTo={newCheckInPath} testId="check-in-now" size="xs" type="primary">
         Check-In Now
-      </GhostButton>
+      </FilledButton>
     </div>
   );
 
@@ -158,41 +91,48 @@ function LastCheckIn({ project }) {
   const path = Paths.projectCheckInPath(project.id, project.lastCheckIn.id);
 
   return (
-    <div>
-      <DimmedLabel>Last Check-In</DimmedLabel>
-      <div className="flex items-start gap-2 max-w-xl mt-2">
-        <div className="flex flex-col gap-1">
-          <div className="font-bold flex items-center gap-1">
-            <Avatar person={author} size="tiny" />
-            {People.shortName(author)} submitted:
-            <Link to={path} testId="last-check-in-link">
-              Check-in <FormattedTime time={time} format="long-date" />
-            </Link>
-          </div>
-          <Summary jsonContent={description} characterCount={200} />
-        </div>
-      </div>
+    <DivLink className="border-t border-stroke-base pt-8 mt-8" to={path}>
+      <div className="uppercase text-xs text-content-accent font-semibold">Last Check-In</div>
 
-      <div className="flex items-start gap-12 mt-6">
-        <div>
-          <DimmedLabel>Status</DimmedLabel>
-          <div className="flex flex-col gap-1 text-sm">
-            <SmallStatusIndicator status={status} />
+      <div className="flex items-start gap-6 mt-4">
+        <div className="p-3 border border-stroke-base rounded-lg w-[500px] shadow bg-surface">
+          <div className="">
+            <div className="flex flex-col gap-1 text-sm">
+              <SmallStatusIndicator status={status} />
+            </div>
+            <div className="flex flex-col gap-1 my-3 text-sm">
+              <Summary jsonContent={description} characterCount={200} />
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-6">
-          <div>
-            <DimmedLabel>Next Check-In</DimmedLabel>
-            <div className="text-sm font-medium">
-              Scheduled for <FormattedTime time={project.nextCheckInScheduledAt} format="relative-weekday-or-date" />
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-2">
+              <Avatar person={author} size={32} />
+
+              <div className="flex flex-col">
+                <div className="font-bold leading-snug text-sm">{author.fullName}</div>
+                <div className="text-xs leading-snug">
+                  <FormattedTime time={time} format="long-date" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-6">{project.permissions.canCheckIn && checkInNowLink}</div>
-    </div>
+        <div className="">
+          <div className="flex items-center gap-6">
+            <div>
+              <div className="text-sm font-semibold">Next Check-In</div>
+              <div className="text-sm font-medium">
+                Scheduled for <FormattedTime time={project.nextCheckInScheduledAt} format="relative-weekday-or-date" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4">{project.permissions.canCheckIn && checkInNowLink}</div>
+        </div>
+      </div>
+    </DivLink>
   );
 }
 
@@ -252,6 +192,23 @@ function Resource({ icon, title, href }) {
 }
 
 function Description({ project }) {
+  return (
+    <div className="border-t border-stroke-base mt-6 py-6">
+      <div className="flex items-center gap-4">
+        <div className="text-xs mb-2 uppercase font-bold">Project Description</div>
+        {showEditDescription(project) && (
+          <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
+            Edit
+          </Link>
+        )}
+      </div>
+
+      <DescriptionContent project={project} />
+    </div>
+  );
+}
+
+function DescriptionContent({ project }) {
   if (project.description) {
     return <RichContent jsonContent={project.description} />;
   } else {
@@ -288,33 +245,4 @@ function showEditDescription(project: Projects.Project) {
   if (!project.permissions.canEditDescription) return false;
 
   return project.description !== null;
-}
-
-function showEditMilestones(project: Projects.Project) {
-  if (!project.permissions.canEditMilestone) return false;
-
-  const milestones = project.milestones || [];
-
-  return milestones.length > 0;
-}
-
-function CheckInSection({ project }) {
-  return (
-    <div className="border-t border-stroke-base py-6">
-      <div className="flex items-start gap-4">
-        <div className="w-1/5">
-          <div className="font-bold text-sm">Check-Ins</div>
-          {project.lastCheckIn && (
-            <div className="text-sm">
-              <Link to={`/projects/${project.id}/check-ins`}>View all</Link>
-            </div>
-          )}
-        </div>
-
-        <div className="w-4/5">
-          <LastCheckIn project={project} />
-        </div>
-      </div>
-    </div>
-  );
 }
