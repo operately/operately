@@ -1,6 +1,6 @@
 cd assets
 
-MAX_ERRORS=100
+MAX_ERRORS=90
 
 errors=$(npx tsc --noEmit -p . | grep "error TS" | tee /dev/tty | wc -l)
 
