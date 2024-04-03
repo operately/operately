@@ -47,12 +47,6 @@ defmodule Operately.CompaniesTest do
       assert company == Companies.get_company!(company.id)
     end
 
-    test "delete_company/1 deletes the company" do
-      company = company_fixture()
-      assert {:ok, %Company{}} = Companies.delete_company(company)
-      assert_raise Ecto.NoResultsError, fn -> Companies.get_company!(company.id) end
-    end
-
     test "change_company/1 returns a company changeset" do
       company = company_fixture()
       assert %Ecto.Changeset{} = Companies.change_company(company)

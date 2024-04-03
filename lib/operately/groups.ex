@@ -16,10 +16,6 @@ defmodule Operately.Groups do
     |> Repo.update()
   end
 
-  def list_groups do
-    Repo.all(Group)
-  end
-
   def list_groups_for_company(company_id) do
     query = from(group in Group, where: group.company_id == ^company_id)
 
