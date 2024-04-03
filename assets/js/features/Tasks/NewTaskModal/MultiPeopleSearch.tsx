@@ -2,7 +2,7 @@ import * as React from "react";
 
 import classNames from "classnames";
 
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";

@@ -1,5 +1,15 @@
 defmodule Operately.FeatureSteps do
 
+  defmacro step(name, do: block) do
+    quote do
+      def unquote(name)() do
+        IO.write("\n    #{unquote(name)}")
+
+        unquote(block)
+      end
+    end
+  end
+
   defmacro step(name, ctx, do: block) do
     quote do
       def unquote(name)(unquote(ctx)) do

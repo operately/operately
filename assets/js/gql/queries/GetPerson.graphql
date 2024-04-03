@@ -1,0 +1,35 @@
+query GetPerson(
+  $id: ID!, 
+  $includeManager: Boolean = false,
+  $includeReports: Boolean = false,
+  $includePeers: Boolean = false
+) {
+  person(id: $id) {
+    id
+    fullName
+    title
+    avatarUrl
+    email
+
+    manager @include(if: $includeManager) {
+      id
+      fullName
+      title
+      avatarUrl
+    }
+
+    reports @include(if: $includeReports) {
+      id
+      fullName
+      title
+      avatarUrl
+    }
+
+    peers @include(if: $includePeers) {
+      id
+      fullName
+      title
+      avatarUrl
+    }
+  }
+}

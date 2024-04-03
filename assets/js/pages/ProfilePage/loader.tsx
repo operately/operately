@@ -7,7 +7,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    person: await People.getPerson({ id: params.id }),
+    person: await People.getPerson({ id: params.id, includeManager: true, includeReports: true, includePeers: true }),
   };
 }
 

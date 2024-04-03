@@ -50,6 +50,14 @@ defmodule Operately.People do
     Repo.all(from p in Person, where: p.manager_id == ^person.id)
   end
 
+  def get_peers(%Person{} = person) do
+    if person.manager_id == nil do
+      Repo.all(from p in Person, where: is_nil(p.manager_id) and p.id != ^person.id)
+    else
+      Repo.all(from p in Person, where: p.manager_id == ^person.manager_id and p.id != ^person.id)
+    end
+  end
+
   def delete_person(%Person{} = person) do
     Repo.delete(person)
   end
@@ -389,6 +397,10 @@ defmodule Operately.People do
         end)
 
     Enum.sort_by(assignments, & &1.due)
+  end
+
+  def get_theme(%Person{} = person) do
+    person.theme || "system"
   end
 
 end

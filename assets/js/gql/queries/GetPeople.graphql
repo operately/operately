@@ -1,0 +1,9 @@
+query GetPeople {
+  people {
+    id
+    fullName
+    title
+    avatarUrl
+    managerId
+  }
+}

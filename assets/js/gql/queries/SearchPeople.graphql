@@ -1,0 +1,8 @@
+query SearchPeople($query: String!, $ignoredIds: [ID!]) {
+  searchPeople(query: $query, ignoredIds: $ignoredIds) {
+    id
+    fullName
+    title
+    avatarUrl
+  }
+}

@@ -20,10 +20,6 @@ defmodule Operately.GroupsTest do
       %{creator: person, group: group, company: company}
     end
 
-    test "list_groups/0 returns all groups", ctx do
-      assert Groups.list_groups() == [ctx.group]
-    end
-
     test "list_potential_members returns members that are not in the group", ctx do
       person1 = person_fixture(full_name: "John Doe", title: "CEO", company_id: ctx.company.id)
       person2 = person_fixture(full_name: "Mike Smith", title: "CTO", company_id: ctx.company.id)

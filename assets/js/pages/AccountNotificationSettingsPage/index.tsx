@@ -2,7 +2,8 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import Avatar from "@/components/Avatar";
-import { useMe, useUpdateNotificationsSettings } from "@/graphql/Me";
+import { useMe } from "@/models/people";
+import { useUpdateNotificationsSettings } from "@/graphql/Me";
 import * as Forms from "@/components/Form";
 
 export async function loader(): Promise<null> {
@@ -10,7 +11,7 @@ export async function loader(): Promise<null> {
 }
 
 export function Page() {
-  const { data } = useMe();
+  const { data } = useMe({});
 
   if (!data) return null;
 

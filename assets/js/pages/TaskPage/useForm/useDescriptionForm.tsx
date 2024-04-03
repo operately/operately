@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Tasks from "@/models/tasks";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 import { Fields } from "./fields";
 

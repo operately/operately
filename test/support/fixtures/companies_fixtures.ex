@@ -17,6 +17,8 @@ defmodule Operately.CompaniesFixtures do
       })
       |> Operately.Companies.create_company()
 
-    company
+    {:ok, res} = Operately.Companies.create_company_space(company)
+
+    res.company
   end
 end

@@ -1,12 +1,12 @@
 import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 
 import { useProfileMutation } from "@/graphql/Me";
 
 import Avatar from "@/components/Avatar";
-import { useMe } from "@/graphql/Me";
+import { useMe } from "@/models/people";
 
 import * as Forms from "@/components/Form";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -73,8 +73,8 @@ function ProfileForm({ me }) {
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
-      <Forms.TextInput value={name} onChange={setName} label="Name" />
-      <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" />
+      <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
+      <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" error={title.length === 0} />
 
       <ManagerSearch
         manager={manager}

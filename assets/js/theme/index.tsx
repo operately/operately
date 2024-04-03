@@ -1,5 +1,5 @@
 import React from "react";
-import * as Me from "@/graphql/Me";
+import { useMe } from "@/models/people";
 
 const ThemeContext = React.createContext({
   theme: "dark",
@@ -8,7 +8,7 @@ const ThemeContext = React.createContext({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { data, loading, error } = Me.useMe();
+  const { data, loading, error } = useMe({});
 
   if (loading) return null;
   if (error) return null;

@@ -5,7 +5,7 @@ import PeopleSearch from "@/components/PeopleSearch";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
-import * as People from "@/graphql/People";
+import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";

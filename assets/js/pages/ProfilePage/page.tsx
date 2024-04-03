@@ -1,10 +1,13 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
 
+import { PageHeader } from "@/features/Profile/PageHeader";
+import { PageNavigation } from "@/features/Profile/PageNavigation";
 import { useLoadedData } from "./loader";
-import Avatar from "@/components/Avatar";
+import { Colleagues } from "./Colleagues";
 import { Feed, useItemsQuery } from "@/features/Feed";
 
 export function Page() {
@@ -13,43 +16,37 @@ export function Page() {
   return (
     <Pages.Page title={[person.fullName, "Profile"]}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={`/people`}>People</Paper.NavItem>
-        </Paper.Navigation>
+        <PageNavigation />
 
         <Paper.Body>
-          <Header />
-          <PersonFeed />
+          <PageHeader person={person} activeTab="about" />
+
+          <div className="mt-4 flex flex-col divide-y divide-stroke-base">
+            <Contact person={person} />
+            <Colleagues person={person} />
+          </div>
+
+          <Paper.DimmedSection>
+            <div className="mt-6">
+              <div className="text-xs mt-6 mb-3 uppercase font-bold">{People.firstName(person)}'s Activity</div>
+              <PersonFeedContent />
+            </div>
+          </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Header() {
-  const { person } = useLoadedData();
-
+function Contact({ person }: { person: People.Person }) {
   return (
-    <div className="flex items-center gap-4">
-      <Avatar person={person} size={72} />
-      <div className="flex flex-col">
-        <div className="text-xl font-bold">{person.fullName}</div>
-        <div className="font-medium">{person.title}</div>
+    <div className="py-6">
+      <div className="text-xs mb-2 uppercase font-bold">Contact</div>
+      <div className="flex items-center gap-1 font-medium">
+        <Icons.IconMail size={20} className="text-content-dimmed" />
+        {person.email}
       </div>
     </div>
-  );
-}
-
-function PersonFeed() {
-  const { person } = useLoadedData();
-
-  return (
-    <Paper.DimmedSection>
-      <div className="uppercase text-xs text-content-accent font-semibold mb-4">
-        {People.firstName(person)}'s Activity
-      </div>
-      <PersonFeedContent />
-    </Paper.DimmedSection>
   );
 }
 

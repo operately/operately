@@ -32,7 +32,6 @@ import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
 import * as GroupEditPage from "./GroupEditPage";
 import * as GroupGoalsPage from "./GroupGoalsPage";
-import * as GroupKpisPage from "./GroupKpisPage";
 import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as GroupPage from "./GroupPage";
@@ -41,6 +40,7 @@ import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
 import * as PeopleOrgChartPage from "./PeopleOrgChartPage";
 import * as PeoplePage from "./PeoplePage";
+import * as ProfileGoalsPage from "./ProfileGoalsPage";
 import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
 import * as ProjectAddResourcePage from "./ProjectAddResourcePage";
@@ -188,10 +188,6 @@ export default {
     loader: GroupGoalsPage.loader,
     Page: GroupGoalsPage.Page
   },
-  GroupKpisPage: {
-    loader: GroupKpisPage.loader,
-    Page: GroupKpisPage.Page
-  },
   GroupListPage: {
     loader: GroupListPage.loader,
     Page: GroupListPage.Page
@@ -223,6 +219,10 @@ export default {
   PeoplePage: {
     loader: PeoplePage.loader,
     Page: PeoplePage.Page
+  },
+  ProfileGoalsPage: {
+    loader: ProfileGoalsPage.loader,
+    Page: ProfileGoalsPage.Page
   },
   ProfilePage: {
     loader: ProfilePage.loader,

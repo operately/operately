@@ -4,10 +4,11 @@ import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
 import { GhostButton } from "@/components/Button";
 
-import PeopleSearch, { Option, Person } from "@/components/PeopleSearch";
+import { Person } from "@/models/people";
+import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import * as Icons from "@tabler/icons-react";
-import { FormState } from "./useForm";
-import * as People from "@/graphql/People";
+import { FormState, AdminModalState } from "./useForm";
+import * as People from "@/models/people";
 
 export function AddAdminsModal({ form }: { form: FormState }) {
   const state = useAddAdminsModalState(form);
@@ -44,7 +45,7 @@ export function AddAdminsModal({ form }: { form: FormState }) {
   );
 }
 
-function PeopleList({ state }) {
+function PeopleList({ state }: { state: AdminModalState }) {
   return (
     <div className="flex flex-col gap-2">
       {state.selected.map((s) => (
@@ -103,7 +104,20 @@ function RemoveIcon({ onClick }) {
   );
 }
 
-function useAddAdminsModalState(form: FormState) {
+export interface AdminModalState {
+  selected: Option[];
+  add: (selection: Option) => void;
+  remove: (id: string) => void;
+  isModalOpen: boolean;
+  setIsModalOpen: (value: boolean) => void;
+  submit: () => Promise<void>;
+  openModal: () => void;
+  hideModal: () => void;
+  search: (query: string) => Promise<Person[]>;
+  excludeIds: string[];
+}
+
+function useAddAdminsModalState(form: FormState): AdminModalState {
   const search = People.usePeopleSearch();
 
   const [selected, setSelectedList] = React.useState<Option[]>([]);

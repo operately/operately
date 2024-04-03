@@ -29,6 +29,7 @@ const routes = createBrowserRouter([
       pageRoute("/account/appearance", pages.AccountAppearancePage),
 
       pageRoute("/people/:id", pages.ProfilePage),
+      pageRoute("/people/:id/goals", pages.ProfileGoalsPage),
       pageRoute("/notifications", pages.NotificationsPage),
 
       pageRoute("/people", pages.PeoplePage),
@@ -43,7 +44,6 @@ const routes = createBrowserRouter([
       pageRoute("/spaces/:id/projects", pages.GroupProjectsPage),
       pageRoute("/spaces/:id/goals/new", pages.GoalAddPage),
       pageRoute("/spaces/:id/goals", pages.GroupGoalsPage),
-      pageRoute("/spaces/:id/kpis", pages.GroupKpisPage),
 
       pageRoute("/tasks/:id", pages.TaskPage),
 

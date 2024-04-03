@@ -29,4 +29,19 @@ defmodule OperatelyWeb.Graphql.TypeHelpers do
     end
   end
 
+  defmacro delegate_field(field_name, field_type, handler) do
+    quote do
+      field unquote(field_name), unquote(field_type) do
+        resolve fn db_record, _, _ ->
+          case unquote(handler).(db_record) do
+            nil -> {:ok, nil}
+            {:error, e} -> {:error, e}
+            {:ok, value} -> {:ok, value}
+            value -> {:ok, value}
+          end
+        end
+      end
+    end
+  end
+
 end

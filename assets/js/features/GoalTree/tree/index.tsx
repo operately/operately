@@ -10,7 +10,8 @@ export { GoalNode } from "./goalNode";
 export { ProjectNode } from "./projectNode";
 
 export interface TreeFilters {
-  spaceId: string | null;
+  spaceId?: string | null;
+  personId?: string | null;
 }
 
 export class Tree {
@@ -37,11 +38,9 @@ export class Tree {
   }
 
   buildRoots(): GoalNode[] {
-    const goals = this.filters.spaceId
-      ? this.allSpaceGoalsWithoutParentInSpace(this.filters.spaceId)
-      : this.allGoalsWithoutParent();
-
-    return goals.map((g) => this.buildTree(g)).sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
+    return this.filterGoals()
+      .map((g) => this.buildTree(g))
+      .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
   }
 
   buildTree(goal: Goal, depth: number = 0): GoalNode {
@@ -55,6 +54,18 @@ export class Tree {
     return this.roots.flatMap((root) => root.getAllNodes());
   }
 
+  private filterGoals(): Goal[] {
+    if (this.filters.spaceId) {
+      return this.allSpaceGoalsWithoutParentInSpace(this.filters.spaceId);
+    }
+
+    if (this.filters.personId) {
+      return this.allTopLevelGoalsForPerson(this.filters.personId);
+    }
+
+    return this.allGoalsWithoutParent();
+  }
+
   private allGoalsWithoutParent(): Goal[] {
     return this.allGoals.filter((g) => !g.parentGoalId);
   }
@@ -64,5 +75,26 @@ export class Tree {
     const goalsInSpace = this.allGoals.filter((g) => g.space.id === spaceId);
 
     return goalsInSpace.filter((g) => !g.parentGoalId || goalsNotInSpace.some((goal) => goal.id === g.parentGoalId));
+  }
+
+  private allTopLevelGoalsForPerson(personId: string): Goal[] {
+    return this.allGoals
+      .filter((g) => g.champion?.id === personId)
+      .filter((g) => !this.hasAnyParentWith(g, (goal) => goal.champion?.id === personId));
+  }
+
+  private hasAnyParentWith(goal: Goal, predicate: (goal: Goal) => boolean): boolean {
+    let currentGoal = this.findParent(goal);
+
+    while (currentGoal) {
+      if (predicate(currentGoal)) return true;
+      currentGoal = this.findParent(currentGoal!);
+    }
+
+    return false;
+  }
+
+  private findParent(goal: Goal): Goal | undefined {
+    return this.allGoals.find((g) => g.id === goal.parentGoalId);
   }
 }
