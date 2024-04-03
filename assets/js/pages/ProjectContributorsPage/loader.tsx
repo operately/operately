@@ -7,7 +7,8 @@ interface LoaderData {
 
 export async function loader({ params }): Promise<LoaderData> {
   return {
-    project: await Projects.getProject(params.projectID, {
+    project: await Projects.getProject({
+      id: params.projectID,
       includeSpace: true,
       includePermissions: true,
       includeContributors: true,

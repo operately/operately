@@ -27,10 +27,10 @@ export { useRemoveProjectContributorMutation } from "./useRemoveProjectContribut
 export { useResumeProjectMutation } from "./useResumeProjectMutation";
 export { usePauseProjectMutation } from "./usePauseProjectMutation";
 
-export async function getProject(id: string, variables: GetProjectQueryVariables): Promise<Project> {
+export async function getProject(variables: GetProjectQueryVariables): Promise<Project> {
   let data = await client.query({
     query: GetProjectDocument,
-    variables: { ...variables, id },
+    variables: variables,
     fetchPolicy: "network-only",
   });
 

@@ -9,7 +9,8 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    project: await Projects.getProject(params.projectID, {
+    project: await Projects.getProject({
+      id: params.projectID,
       includePermissions: true,
     }),
     checkIns: await ProjectCheckIns.getCheckIns(params.projectID, {
