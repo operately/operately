@@ -8,6 +8,35 @@ defmodule Operately.Support.Features.ProjectSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
+  step :given_a_goal_exists, ctx, [name: name] do
+    {:ok, goal} = Operately.Goals.create_goal(ctx.champion, %{
+      company_id: ctx.company.id,
+      space_id: ctx.group.id,
+      name: name,
+      champion_id: ctx.champion.id,
+      reviewer_id: ctx.reviewer.id,
+      timeframe: "2023-Q4",
+      targets: [
+        %{
+          name: "First response time",
+          from: 30,
+          to: 15,
+          unit: "minutes",
+          index: 0
+        },
+        %{
+          name: "Increase feedback score to 90%",
+          from: 80,
+          to: 90,
+          unit: "percent",
+          index: 1
+        }
+      ]
+    })
+
+    Map.put(ctx, :goal, goal)
+  end
+
   def create_project(ctx, name: name) do
     company = company_fixture(%{name: "Test Org"})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
@@ -136,8 +165,8 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  step :connect_goal, ctx, goal do
-    {:ok, project} = Operately.Projects.update_project(ctx.project, %{goal_id: goal.id})
+  step :given_the_goal_is_connected_with_project, ctx do
+    {:ok, project} = Operately.Projects.update_project(ctx.project, %{goal_id: ctx.goal.id})
     project = Operately.Repo.preload(project, :goal)
 
     Map.put(ctx, :project, project)
