@@ -22,7 +22,7 @@ describe("Tree", () => {
       spaceId: marketingSpace.id,
     };
 
-    const tree = new Tree(allGoals, "name", "asc", filters);
+    const tree = new Tree(allGoals, "name", "asc", filters, true);
 
     expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "G", "H"]);
     expect(getChildNames(tree, "B")).toEqual(["D"]);
@@ -51,7 +51,7 @@ describe("Tree", () => {
       personId: personA.id,
     };
 
-    const tree = new Tree(allGoals, "name", "asc", filters);
+    const tree = new Tree(allGoals, "name", "asc", filters, true);
 
     expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "F"]);
     expect(getChildNames(tree, "B")).toEqual(["D"]);

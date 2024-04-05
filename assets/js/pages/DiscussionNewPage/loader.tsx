@@ -10,7 +10,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   return {
     space: await Groups.getGroup(params.spaceId),
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

@@ -25,7 +25,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
     }),
     milestone: milestoneData.data.milestone,
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

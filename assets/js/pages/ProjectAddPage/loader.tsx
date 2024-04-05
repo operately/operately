@@ -24,10 +24,10 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const spaceID = params.id;
   const searchParams = new URL(request.url).searchParams;
   const goalID = searchParams.get("goalId") || undefined;
-  const goal = goalID ? await Goals.getGoal(goalID) : undefined;
+  const goal = goalID ? await Goals.getGoal({ id: goalID }) : undefined;
 
   const company = await Companies.getCompany();
-  const me = await People.getMe();
+  const me = await People.getMe({});
 
   if (spaceID) {
     const space = await Groups.getGroup(params.id);
