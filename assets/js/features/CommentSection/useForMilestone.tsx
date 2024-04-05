@@ -5,21 +5,22 @@ import { Item, ItemType, FormState } from "./form";
 
 export function useForMilestone(milestone: Milestones.Milestone): FormState {
   let items: Item[] = milestone.comments!.map((c) => {
-    const comment = c.comment;
+    const comment = c!.comment;
+    const action = c!.action;
 
-    if (c.action === "none") {
+    if (action === "none") {
       return { type: "comment" as ItemType, insertedAt: comment.insertedAt, value: comment };
     }
 
-    if (c.action === "complete") {
+    if (action === "complete") {
       return { type: "milestone-completed" as ItemType, insertedAt: comment.insertedAt, value: comment };
     }
 
-    if (c.action === "reopen") {
+    if (action === "reopen") {
       return { type: "milestone-reopened" as ItemType, insertedAt: comment.insertedAt, value: comment };
     }
 
-    throw new Error("Invalid comment action " + c.action);
+    throw new Error("Invalid comment action " + action);
   });
 
   const [post, { loading: submittingPost }] = Milestones.usePostComment();

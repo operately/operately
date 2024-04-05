@@ -164,7 +164,7 @@ interface TitleAndDeadlineState {
   startEditing: () => void;
 
   title: string;
-  date: Date;
+  date: Date | null;
 
   setTitle: (value: string) => void;
   setDate: (value: Date | null) => void;

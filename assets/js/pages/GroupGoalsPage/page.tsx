@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { createPath } from "@/utils/paths";
-import { useLoadedData, useTimeframeControles } from "./loader";
+import { useLoadedData } from "./loader";
 import { GoalTree } from "@/features/GoalTree";
 import { FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
@@ -25,7 +25,6 @@ export function Page() {
 
 function Content() {
   const { group, goals } = useLoadedData();
-  const [timeframe, next, prev] = useTimeframeControles();
   const newGoalPath = createPath("spaces", group.id, "goals", "new");
 
   return (
@@ -37,14 +36,7 @@ function Content() {
         </FilledButton>
       </div>
 
-      <GoalTree
-        goals={goals}
-        timeframe={timeframe}
-        nextTimeframe={next}
-        prevTimeframe={prev}
-        filters={{ spaceId: group.id }}
-        hideSpaceColumn={true}
-      />
+      <GoalTree goals={goals} filters={{ spaceId: group.id }} hideSpaceColumn={true} />
     </>
   );
 }

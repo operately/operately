@@ -1,4 +1,5 @@
 query GetProjects(
+  $spaceId: ID
   $filters: ProjectListFilters
   $includeSpace: Boolean = false
   $includeMilestones: Boolean = false

@@ -64,6 +64,7 @@ function Form({ project }) {
           onChange={setProjectName}
           placeholder="e.g. HR System Update"
           data-test-id="project-name-input"
+          error={!isValid}
         />
       </div>
 

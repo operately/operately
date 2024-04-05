@@ -13,7 +13,7 @@ export interface Option {
 }
 
 interface PeopleSearchProps {
-  onChange: (value: Option | null) => void;
+  onChange: (value: Option | Person | null) => void;
   loader: (input: string) => Promise<Person[]>;
   filterOption?: (candidate: any) => boolean;
   placeholder: string;
@@ -88,7 +88,7 @@ function classNames(error: boolean | undefined) {
   };
 }
 
-function personAsOption(person: Person, showTitle = null): Option {
+function personAsOption(person: Person, showTitle = false): Option {
   return {
     value: person.id,
     label: <PersonLabel person={person} showTitle={!!showTitle} />,

@@ -21,7 +21,6 @@ interface ButtonLinkProps extends Props {
 interface DivLinkProps extends Props {
   to: string;
   className?: string;
-  onDragStart?: (event: React.DragEvent<HTMLDivElement>) => void;
 }
 
 const baseClassNoUnderline = classnames(

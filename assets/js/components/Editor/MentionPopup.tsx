@@ -73,7 +73,7 @@ export default class MentionPopup {
 
     if (!this.component.ref) return;
 
-    return this.component.ref?.onKeyDown(props);
+    return (this.component.ref as any).onKeyDown(props);
   }
 
   onExit() {

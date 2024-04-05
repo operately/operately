@@ -1,3 +1,3 @@
-export default function () {
-  return null;
+export default function ({ notification }): JSX.Element {
+  throw "Not implemented";
 }

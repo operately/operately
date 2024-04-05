@@ -7,7 +7,7 @@ interface LoaderResult {
   goals: Goals.Goal[];
 }
 
-export async function loader({ request }): Promise<LoaderResult> {
+export async function loader(): Promise<LoaderResult> {
   return {
     company: await Companies.getCompany(),
     goals: await Goals.getGoals({

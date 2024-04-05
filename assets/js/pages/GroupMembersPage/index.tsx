@@ -59,7 +59,7 @@ function Header({ group }) {
 function MemberList({ group }: { group: Groups.Group }) {
   return (
     <div className="grid grid-cols-3 gap-4 mt-8">
-      {group.members.map((member) => (
+      {group.members!.map((member) => (
         <MemberListItem key={member.id} member={member} />
       ))}
     </div>
@@ -68,7 +68,7 @@ function MemberList({ group }: { group: Groups.Group }) {
 
 function MemberListItem({ member }) {
   const [{ group }, refetch] = Paper.useLoadedData() as [LoadedData, () => void];
-  const [remove, { loading }] = Groups.useRemoveMemberFromGroup();
+  const [remove] = Groups.useRemoveMemberFromGroup();
 
   const handleRemove = async () => {
     await remove({ variables: { groupId: group.id, memberId: member.id } });

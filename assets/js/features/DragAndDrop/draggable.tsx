@@ -55,7 +55,7 @@ class DraggableElement {
   private id: string;
 
   // ID of the drop zone where the element is being dragged from
-  private zoneId: string;
+  public zoneId: string;
 
   // The DOM element (ref) that is being dragged
   private el: HTMLElement;

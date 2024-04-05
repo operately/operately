@@ -1,7 +1,6 @@
 import React from "react";
 
 import * as People from "@/models/people";
-import * as Comments from "@/models/comments";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as TipTapEditor from "@/components/Editor";
