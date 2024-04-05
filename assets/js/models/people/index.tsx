@@ -1,4 +1,4 @@
-import client from "@/graphql/client";
+import { makeQueryFn } from "@/graphql/client";
 import { useApolloClient } from "@apollo/client";
 
 import {
@@ -14,35 +14,9 @@ import {
 
 export { Person } from "@/gql/generated";
 
-export async function getPeople(): Promise<Person[]> {
-  let res = await client.query({
-    query: GetPeopleDocument,
-    variables: {},
-    fetchPolicy: "network-only",
-  });
-
-  return res.data.people;
-}
-
-export async function getPerson(variables: GetPersonQueryVariables): Promise<Person> {
-  let res = await client.query({
-    query: GetPersonDocument,
-    variables: variables,
-    fetchPolicy: "network-only",
-  });
-
-  return res.data.person;
-}
-
-export async function getMe(variables?: GetMeQueryVariables): Promise<Person> {
-  let meData = await client.query({
-    query: GetMeDocument,
-    fetchPolicy: "network-only",
-    variables: variables,
-  });
-
-  return meData.data.me;
-}
+export const getPeople = makeQueryFn(GetPeopleDocument, "people") as () => Promise<Person[]>;
+export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
+export const getMe = makeQueryFn(GetMeDocument, "me") as (v: GetMeQueryVariables) => Promise<Person>;
 
 export function useMe(variables: GetMeQueryVariables): any {
   return useGetMeQuery({

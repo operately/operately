@@ -15,21 +15,15 @@ export interface TreeFilters {
 }
 
 export class Tree {
-  private allGoals: Goal[];
   private roots: GoalNode[];
-  private sortColumn: SortColumn;
-  private sortDirection: SortDirection;
-  private filters: TreeFilters;
 
-  static build(allGoals: Goal[], sortColumn: SortColumn, sortDirection: SortDirection, filters: TreeFilters): Tree {
-    return new Tree(allGoals, sortColumn, sortDirection, filters);
-  }
-
-  constructor(allGoals: Goal[], sortColumn: SortColumn, sortDirection: SortDirection, filters: TreeFilters) {
-    this.filters = filters;
-    this.allGoals = allGoals;
-    this.sortColumn = sortColumn;
-    this.sortDirection = sortDirection;
+  constructor(
+    private allGoals: Goal[],
+    private sortColumn: SortColumn,
+    private sortDirection: SortDirection,
+    private filters: TreeFilters,
+    private showCompleted: boolean,
+  ) {
     this.roots = this.buildRoots();
   }
 
@@ -40,6 +34,7 @@ export class Tree {
   buildRoots(): GoalNode[] {
     return this.filterGoals()
       .map((g) => this.buildTree(g))
+      .filter((g) => this.showCompleted || !g.isClosed)
       .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
   }
 
@@ -47,7 +42,7 @@ export class Tree {
     const children = this.allGoals.filter((g) => g.parentGoalId === goal.id);
     const childNodes = children.map((g) => this.buildTree(g, depth + 1));
 
-    return new GoalNode(goal, childNodes, depth, this.sortColumn, this.sortDirection);
+    return new GoalNode(goal, childNodes, depth, this.sortColumn, this.sortDirection, this.showCompleted);
   }
 
   getAllNodes(): Node[] {
@@ -71,10 +66,9 @@ export class Tree {
   }
 
   private allSpaceGoalsWithoutParentInSpace(spaceId: string): Goal[] {
-    const goalsNotInSpace = this.allGoals.filter((g) => g.space.id !== spaceId);
-    const goalsInSpace = this.allGoals.filter((g) => g.space.id === spaceId);
-
-    return goalsInSpace.filter((g) => !g.parentGoalId || goalsNotInSpace.some((goal) => goal.id === g.parentGoalId));
+    return this.allGoals
+      .filter((g) => g.space.id === spaceId)
+      .filter((g) => !this.hasAnyParentWith(g, (goal) => goal.space.id === spaceId));
   }
 
   private allTopLevelGoalsForPerson(personId: string): Goal[] {

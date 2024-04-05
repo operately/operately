@@ -8,10 +8,11 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal(params.goalId, {
+    goal: await Goals.getGoal({
+      id: params.goalId,
       includeParentGoal: true,
     }),
-    goals: await Goals.getGoals(),
+    goals: await Goals.getGoals({}),
   };
 }
 

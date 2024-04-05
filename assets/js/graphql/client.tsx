@@ -82,3 +82,15 @@ if (typeof window !== "undefined") {
 }
 
 export default client;
+
+export function makeQueryFn<V, R>(query: any, field: string): (variables: V) => Promise<R> {
+  return async (variables: V) => {
+    const data = await client.query({
+      query: query,
+      variables: variables,
+      fetchPolicy: "network-only",
+    });
+
+    return data.data[field];
+  };
+}

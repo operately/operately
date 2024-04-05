@@ -7,7 +7,8 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal(params.id, {
+    goal: await Goals.getGoal({
+      id: params.id,
       includeTargets: true,
       includeProjects: true,
       includeLastCheckIn: true,

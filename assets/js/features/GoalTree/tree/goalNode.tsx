@@ -1,33 +1,17 @@
-import { match } from "ts-pattern";
 import { Goal } from "@/models/goals";
 import { Paths } from "@/routes/paths";
 import { ProjectNode } from "./projectNode";
-import { Node, NodeTypes } from "./node";
+import { Node } from "./node";
 import { SortColumn, SortDirection } from "./";
-import { spaceCompare } from "./spaceCompare";
 
-import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import * as Groups from "@/models/groups";
 
-export class GoalNode implements Node {
-  public id: string;
-  public type: NodeTypes;
+export class GoalNode extends Node {
   public goal: Goal;
-  public champion: People.Person;
-  public name: string;
-  public linkTo: string;
-  public children: Node[];
   public subGoals: GoalNode[];
   public projects: ProjectNode[];
-  public depth: number;
-  public hasChildren: boolean;
   public totalNestedProjects: number;
   public totalNestedSubGoals: number;
-  public progress: number;
-  public lastCheckInDate: Date | null;
-  public spaceId: string;
-  public space: Groups.Group;
 
   constructor(
     goal: Goal,
@@ -35,46 +19,47 @@ export class GoalNode implements Node {
     depth: number = 0,
     sortColumn: SortColumn,
     sortDirection: SortDirection,
+    showCompleted: boolean,
   ) {
+    super();
+
     this.id = goal.id;
     this.type = "goal";
-    this.name = goal.name;
-    this.linkTo = Paths.goalPath(goal.id);
-    this.goal = goal;
     this.depth = depth;
+    this.name = goal.name;
+    this.sortColumn = sortColumn;
+    this.sortDirection = sortDirection;
+    this.showCompleted = showCompleted;
+
+    this.linkTo = Paths.goalPath(goal.id);
     this.champion = goal.champion!;
-    this.spaceId = goal.space.id;
 
-    this.subGoals = subGoals.sort((a, b) => a.compare(b, sortColumn, sortDirection));
-    this.projects = this.buildProjectNodes().sort((a, b) => a.compare(b, sortColumn, sortDirection));
+    this.subGoals = subGoals;
+    this.goal = goal;
 
+    this.subGoals = this.subGoals.sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
+    this.projects = this.buildProjectNodes()
+      .filter((p) => (this.showCompleted ? true : !p.project.closedAt))
+      .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
     this.children = [...this.subGoals, ...this.projects];
-    this.hasChildren = this.subGoals.length > 0 || this.projects.length > 0;
+
+    this.hasChildren = this.children.length > 0;
+    this.space = goal.space;
+    this.isClosed = goal.isClosed;
+    this.progress = this.goal.progressPercentage;
+    this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
+    this.spaceId = goal.space.id;
 
     this.totalNestedProjects = this.projects.length + this.subGoals.reduce((acc, n) => acc + n.totalNestedProjects, 0);
     this.totalNestedSubGoals = this.subGoals.length + this.subGoals.reduce((acc, n) => acc + n.totalNestedSubGoals, 0);
-
-    this.progress = goal.progressPercentage;
-    this.lastCheckInDate = Time.parse(goal.lastCheckIn?.insertedAt);
-    this.space = goal.space;
   }
 
   childrenInfoLabel(): string {
     return [this.nestedGoalCount(), this.nestedProjectCount()].filter((x) => x).join(", ");
   }
 
-  compare(b: GoalNode, sortColumn: SortColumn, sortDirection: SortDirection): number {
-    const result = match(sortColumn)
-      .with("name", () => this.name.localeCompare(b.name))
-      .with("timeframe", () => Time.compareQuarters(this.goal.timeframe, b.goal.timeframe))
-      .with("progress", () => this.progress - b.progress)
-      .with("lastCheckIn", () => Time.compareAsc(this.lastCheckInDate!, b.lastCheckInDate!))
-      .with("champion", () => this.champion?.fullName.localeCompare(b.champion?.fullName!)!)
-      .with("space", () => spaceCompare(this.space, b.space))
-      .exhaustive();
-
-    const directionFactor = sortDirection === "asc" ? 1 : -1;
-    return result * directionFactor;
+  compareTimeframe(b: GoalNode): number {
+    return Time.compareQuarters(this.goal.timeframe, b.goal.timeframe);
   }
 
   getAllNodes(): Node[] {

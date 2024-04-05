@@ -25,6 +25,8 @@ import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
+import { Controls } from "./components/Controls";
+
 export function GoalTree(props: TreeContextProviderProps) {
   return (
     <TreeContextProvider {...props}>
@@ -38,7 +40,7 @@ function GoalTreeRoots() {
 
   return (
     <div>
-      <GoalTreeControls />
+      <Controls />
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
         <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
 
@@ -54,32 +56,6 @@ function GoalTreeRoots() {
       {context.tree.getRoots().map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
-    </div>
-  );
-}
-
-function GoalTreeControls() {
-  const { expanded, expandAll, collapseAll, timeframe, prevTimeframe, nextTimeframe } = useTreeContext();
-
-  return (
-    <div className="flex mb-4 items-center gap-2">
-      {Object.keys(expanded).length === 0 && (
-        <FilledButton type="secondary" size="xs" onClick={expandAll}>
-          Expand All
-        </FilledButton>
-      )}
-
-      {Object.keys(expanded).length > 0 && (
-        <FilledButton type="secondary" size="xs" onClick={collapseAll}>
-          Collapse All
-        </FilledButton>
-      )}
-
-      <div className="flex items-center justify-center border border-surface-outline text-sm rounded-2xl pl-2.5 py-0.5 pr-1.5">
-        <span className="font-medium text-content-dimmed mr-3">{timeframe}</span>
-        <Icons.IconChevronLeft onClick={prevTimeframe} className="cursor-pointer text-content-dimmed" size={14} />
-        <Icons.IconChevronRight onClick={nextTimeframe} className="cursor-pointer text-content-dimmed" size={14} />
-      </div>
     </div>
   );
 }
@@ -230,10 +206,13 @@ function NodeHeaderNameLink({ node }: { node: Node }) {
 
 function NodeChampion({ node }: { node: Node }) {
   return (
-    <div className="flex items-center gap-1.5 text-sm truncate w-24">
+    <DivLink
+      className="flex items-center gap-1.5 text-sm truncate w-24 cursor-pointer"
+      to={Paths.profileGoalsPath(node.champion!.id)}
+    >
       <Avatar person={node.champion!} size={16} />
       <div className="truncate">{People.firstName(node.champion!)}</div>
-    </div>
+    </DivLink>
   );
 }
 
@@ -454,6 +433,8 @@ function NodeProgress({ node }: { node: Node }) {
 }
 
 function GoalProgress({ node }: { node: GoalNode }) {
+  if (node.isClosed) return <CompletedProgress />;
+
   const goal = node.goal;
 
   return (
@@ -537,6 +518,8 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
   const project = node.project;
   const progress = node.progress;
 
+  if (project.closedAt) return <CompletedProgress />;
+
   const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
   const { pending, done } = Milestones.splitByStatus(milestones);
 
@@ -618,6 +601,14 @@ function DoneMilestones({ project, done }: { project: Projects.Project; done: Mi
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function CompletedProgress() {
+  return (
+    <div className={"w-24 h-2.5 flex items-center gap-1 text-sm font-medium"}>
+      <Icons.IconCircleCheckFilled className="text-accent-1" size={20} /> Completed
     </div>
   );
 }

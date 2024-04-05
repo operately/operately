@@ -3,13 +3,12 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { useLoadedData, useTimeframeControles } from "./loader";
+import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
 import { GoalTree } from "@/features/GoalTree";
 
 export function Page() {
   const { company, goals } = useLoadedData();
-  const [timeframe, next, prev] = useTimeframeControles();
 
   return (
     <Pages.Page title={"Goals"}>
@@ -23,7 +22,7 @@ export function Page() {
             </FilledButton>
           </div>
 
-          <GoalTree goals={goals} timeframe={timeframe} nextTimeframe={next} prevTimeframe={prev} filters={{}} />
+          <GoalTree goals={goals} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
