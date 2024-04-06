@@ -17,16 +17,6 @@ defmodule Operately.Goals do
     |> apply_if(filter.company_id, fn query -> 
       from(goal in query, where: goal.company_id == ^filter.company_id) 
     end)
-    |> apply_if(filter.timeframe, fn query ->
-      timeframes = 
-        if filter.include_longer_timeframes do
-          [filter.timeframe, String.split(filter.timeframe, " ") |> List.last()]
-        else
-          [filter.timeframe]
-        end
-
-      from(goal in query, where: goal.timeframe in ^timeframes)
-    end)
     |> Repo.all()
   end
 

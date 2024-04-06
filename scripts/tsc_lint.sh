@@ -1,8 +1,8 @@
 cd assets
 
-MAX_ERRORS=90
+MAX_ERRORS=50
 
-errors=$(npx tsc --noEmit -p . | grep "error TS" | tee /dev/tty | wc -l)
+errors=$(npx tsc --noEmit -p . | grep "error TS" | sed 's|^js/|assets/js/|' | tee /dev/tty | wc -l)
 
 if [ $errors -gt $MAX_ERRORS ]; then
   echo "Found more than $MAX_ERRORS errors, (found $errors errors)"

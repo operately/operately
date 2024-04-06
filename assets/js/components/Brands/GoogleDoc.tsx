@@ -11,9 +11,6 @@ export function GoogleDoc({ size }) {
       width={size + "px"}
       height={size + "px"}
       viewBox="0 0 64 88"
-      style={{
-        enableBackground: "new 0 0 64 88",
-      }}
       xmlSpace="preserve"
     >
       <style type="text/css">{"\n\t.st0{fill:#3086F6;}\n\t.st1{fill:#0C67D6;}\n\t.st2{fill:#FDFFFF;}\n"}</style>

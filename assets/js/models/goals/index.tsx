@@ -1,14 +1,20 @@
-export type { Goal } from "@/gql/generated";
-export { useCloseGoalMutation } from './useCloseGoalMutation';
-export type { Target } from "@/gql/generated";
+import { makeQueryFn } from "@/graphql/client";
 
-export { getGoals } from "./getGoals";
-export { getGoal } from "./getGoal";
+import { GetGoalsDocument, GetGoalsQueryVariables, GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
+import { Goal } from "@/gql/generated";
+
+export type { Target, Goal } from "@/gql/generated";
+
+export const getGoal = makeQueryFn(GetGoalDocument, "goal") as (v: GetGoalQueryVariables) => Promise<Goal>;
+export const getGoals = makeQueryFn(GetGoalsDocument, "goals") as (v: GetGoalsQueryVariables) => Promise<Goal[]>;
+
+export { useCloseGoalMutation } from "./useCloseGoalMutation";
 export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
 export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromProjectMutation";
 export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutation";
 export { useEditGoalMutation } from "./useEditGoalMutation";
 export { useCreateGoalMutation } from "./useCreateGoalMutation";
-export { groupBySpace } from "./groupBySpace";
 export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";
+
+export { groupBySpace } from "./groupBySpace";
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";

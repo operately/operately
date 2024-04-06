@@ -58,9 +58,11 @@ function Dates({ project }) {
     <div className="flex items-center gap-12 mb-8">
       <div className="flex flex-col">
         <div className="text-sm font-bold">Start Date</div>
-        <div className="text-content-accent">
-          <FormattedTime time={start} format="long-date" />
-        </div>
+        {start && (
+          <div className="text-content-accent">
+            <FormattedTime time={start} format="long-date" />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col">

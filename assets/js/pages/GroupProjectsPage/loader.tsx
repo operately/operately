@@ -14,7 +14,9 @@ export async function loader({ params }): Promise<LoadedData> {
     company: await Companies.getCompany(),
     group: await Groups.getGroup(params.id),
     projects: await Projects.getProjects({
-      spaceId: params.id,
+      filters: {
+        spaceId: params.id,
+      },
       includeContributors: true,
       includeMilestones: true,
       includeLastCheckIn: true,

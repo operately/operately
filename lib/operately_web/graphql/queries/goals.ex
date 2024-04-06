@@ -9,13 +9,7 @@ defmodule OperatelyWeb.Graphql.Queries.Goals do
 
       resolve fn _, args, %{context: context} ->
         person = context.current_account.person
-
-        goals = Operately.Goals.list_goals(%{
-          company_id: person.company_id,
-          space_id: args[:space_id],
-          timeframe: args[:timeframe],
-          include_longer_timeframes: args[:include_longer_timeframes]
-        })
+        goals = Operately.Goals.list_goals(%{company_id: person.company_id, space_id: args[:space_id]})
 
         {:ok, goals}
       end
@@ -25,9 +19,7 @@ defmodule OperatelyWeb.Graphql.Queries.Goals do
       arg :id, non_null(:id)
 
       resolve fn _, args, _ ->
-        goal = Operately.Goals.get_goal!(args.id)
-
-        {:ok, goal}
+        {:ok, Operately.Goals.get_goal!(args.id)}
       end
     end
   end

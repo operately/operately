@@ -50,12 +50,19 @@ function Form() {
 
   return (
     <Forms.Form isValid={isValid} onSubmit={onSubmit} onCancel={onCancel} loading={loading}>
-      <Forms.TextInput label="Space Name" value={name} onChange={setName} placeholder="e.g. Marketing Team" />
+      <Forms.TextInput
+        label="Space Name"
+        value={name}
+        onChange={setName}
+        placeholder="e.g. Marketing Team"
+        error={name.length === 0}
+      />
       <Forms.TextInput
         label="Purpose"
         value={mission}
         onChange={setMission}
         placeholder="e.g. Create product awareness and bring new leads"
+        error={mission.length === 0}
       />
 
       <div>

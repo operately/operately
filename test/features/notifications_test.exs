@@ -9,19 +9,16 @@ defmodule Operately.Features.NotificationsTest do
   
   setup ctx do
     ctx = Map.put(ctx, :company, company_fixture(%{name: "Test Org"}))
-
     ctx = Map.put(ctx, :champion, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Dorcy Devonshire"}))
     ctx = Map.put(ctx, :reviewer, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John Reviewer"}))
-
     ctx = Map.put(ctx, :group, group_fixture(ctx.champion, %{company_id: ctx.company.id, name: "Designers"}))
 
     UI.login_as(ctx, ctx.reviewer)
   end
 
   feature "unread notifications count", ctx do
-    create_a_project(ctx)
-
     ctx
+    |> given_a_project_creation_notification_exists()
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(1)
     |> NotificationsSteps.visit_notifications_page()
@@ -30,10 +27,9 @@ defmodule Operately.Features.NotificationsTest do
   end
 
   feature "mark all unread notifications as read", ctx do
-    create_a_project(ctx)
-    create_a_project(ctx)
-
     ctx
+    |> given_a_project_creation_notification_exists()
+    |> given_a_project_creation_notification_exists()
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(2)
     |> NotificationsSteps.visit_notifications_page()
@@ -45,7 +41,7 @@ defmodule Operately.Features.NotificationsTest do
   # Helpers
   #
 
-  defp create_a_project(ctx) do
+  step :given_a_project_creation_notification_exists, ctx do
     ctx
     |> UI.visit("/spaces/#{ctx.group.id}")
     |> UI.click(testid: "projects-tab")

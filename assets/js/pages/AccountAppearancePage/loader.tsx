@@ -7,7 +7,7 @@ interface LoadedData {
 
 export async function loader(): Promise<LoadedData> {
   return {
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

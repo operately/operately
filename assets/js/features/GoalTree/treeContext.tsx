@@ -18,21 +18,17 @@ export interface TreeContextValue {
   setSortColumn: (column: SortColumn) => void;
   setSortDirection: (direction: SortDirection) => void;
 
-  timeframe: string;
-  nextTimeframe: () => void;
-  prevTimeframe: () => void;
-
   hideSpaceColumn?: boolean;
+
+  showCompleted: boolean;
+  setShowCompleted: (show: boolean) => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
 
 export interface TreeContextProviderProps {
   goals: Goals.Goal[];
-  timeframe: string;
-  nextTimeframe: () => void;
-  prevTimeframe: () => void;
-  filters: TreeFilters;
+  filters?: TreeFilters;
   hideSpaceColumn?: boolean;
 }
 
@@ -43,10 +39,11 @@ interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps 
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("progress");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
+  const [showCompleted, setShowCompleted] = React.useState<boolean>(false);
 
   const tree = React.useMemo(
-    () => Tree.build(props.goals, sortColumn, sortDirection, props.filters),
-    [props.goals, sortColumn, sortDirection, props.filters.spaceId],
+    () => new Tree(props.goals, sortColumn, sortDirection, props.filters || {}, showCompleted),
+    [props.goals, sortColumn, sortDirection, props.filters, showCompleted],
   );
 
   const { expanded, toggleExpanded, expandAll, collapseAll } = useExpandedNodesState(tree);
@@ -61,11 +58,9 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setSortColumn,
     setSortDirection,
     sortDirection,
-
-    timeframe: props.timeframe,
-    nextTimeframe: props.nextTimeframe,
-    prevTimeframe: props.prevTimeframe,
     hideSpaceColumn: props.hideSpaceColumn,
+    showCompleted,
+    setShowCompleted,
   };
 
   return <TreeContext.Provider value={value}>{props.children}</TreeContext.Provider>;

@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import * as Activities from "@/models/activities";
 import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
+import * as Gql from "@/gql/generated";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -188,7 +188,7 @@ interface Content {
   hasUpdatedMilestones: boolean;
 }
 
-function prepareContent(content: Activities.ActivityContentProjectTimelineEdited): Content {
+function prepareContent(content: Gql.ActivityContentProjectTimelineEdited): Content {
   const oldStartDate = Time.parseDate(content.oldStartDate);
   const newStartDate = Time.parseDate(content.newStartDate);
   const oldEndDate = Time.parseDate(content.oldEndDate);

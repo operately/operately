@@ -91,7 +91,7 @@ export function TextInput({ label, value, onChange, placeholder = "", error, ...
   );
 }
 
-interface TextInnputNoLabelProps {
+interface TextInnputNoLabelProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   id: string;
   testId?: string;
   value: string;
@@ -113,6 +113,7 @@ export function TextInputNoLabel(props: TextInnputNoLabelProps) {
     error = false,
     autoFocus = false,
     onEnter = null,
+    onKeyDown = null,
     ...rest
   } = props;
 

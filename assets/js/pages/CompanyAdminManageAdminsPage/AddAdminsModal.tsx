@@ -7,7 +7,7 @@ import { GhostButton } from "@/components/Button";
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import * as Icons from "@tabler/icons-react";
-import { FormState, AdminModalState } from "./useForm";
+import { FormState } from "./useForm";
 import * as People from "@/models/people";
 
 export function AddAdminsModal({ form }: { form: FormState }) {
@@ -104,7 +104,7 @@ function RemoveIcon({ onClick }) {
   );
 }
 
-export interface AdminModalState {
+interface AdminModalState {
   selected: Option[];
   add: (selection: Option) => void;
   remove: (id: string) => void;

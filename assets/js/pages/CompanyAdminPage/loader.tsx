@@ -10,7 +10,7 @@ interface LoaderResult {
 export async function loader(): Promise<LoaderResult> {
   return {
     company: await Companies.getCompany({ include: ["admins"] }),
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

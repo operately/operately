@@ -14,7 +14,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeAuthor: true,
       includeReactions: true,
     }),
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

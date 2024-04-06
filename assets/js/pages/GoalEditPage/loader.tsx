@@ -14,8 +14,8 @@ export async function loader({ params }): Promise<LoaderResult> {
   return {
     spaceID: params.id,
     company: await Companies.getCompany(),
-    goal: await Goals.getGoal(params.goalId, { includeTargets: true }),
-    me: await People.getMe(),
+    goal: await Goals.getGoal({ id: params.goalId, includeTargets: true }),
+    me: await People.getMe({}),
   };
 }
 

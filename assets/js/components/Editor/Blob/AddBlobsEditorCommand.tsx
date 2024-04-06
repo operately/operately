@@ -70,6 +70,8 @@ function findNode(id: string, doc: any) {
       result.pos = pos;
 
       return false; // stop searching
+    } else {
+      return true;
     }
   });
 

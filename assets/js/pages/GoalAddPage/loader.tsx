@@ -25,7 +25,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
 
   const spaceID = params.id;
   const company = await Companies.getCompany();
-  const me = await People.getMe();
+  const me = await People.getMe({});
   const allowSpaceSelection = !spaceID;
   const parentGoalId = searchParams.get("parentGoalId") || undefined;
 
@@ -38,7 +38,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   }
 
   if (parentGoalId) {
-    loadedData.parentGoal = await Goals.getGoal(parentGoalId);
+    loadedData.parentGoal = await Goals.getGoal({ id: parentGoalId });
   }
 
   return loadedData;

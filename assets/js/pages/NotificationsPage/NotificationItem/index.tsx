@@ -49,7 +49,7 @@ import TaskSizeChange from "./TaskSizeChange"
 import TaskStatusChange from "./TaskStatusChange"
 import TaskUpdate from "./TaskUpdate"
 
-export default function NotificationItem({notification}) {
+export default function NotificationItem({notification}) : JSX.Element | null {
   const activityType = notification.activity.content.__typename;
 
   switch (activityType) {
@@ -184,5 +184,6 @@ export default function NotificationItem({notification}) {
     
     default:
       console.error("unhandled activity type, notification:", notification.id, "activity", notification.activity.id);
+      return null;
   }
 }

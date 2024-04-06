@@ -11,11 +11,12 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal(params.goalId, {
+    goal: await Goals.getGoal({
+      id: params.goalId,
       includeTargets: true,
     }),
     update: await GoalCheckIns.getCheckIn(params.id, {}),
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

@@ -22,13 +22,14 @@ defmodule Mix.Tasks.Operately.Gen.Notification.Items.Index do
 
       #{import_types(types)}
 
-      export default function NotificationItem({notification}) {
+      export default function NotificationItem({notification}) : JSX.Element | null {
         const activityType = notification.activity.content.__typename;
 
         switch (activityType) {
           #{indent(generate_cases(types), 4)}
           default:
             console.error("unhandled activity type, notification:", notification.id, "activity", notification.activity.id);
+            return null;
         }
       }
       """

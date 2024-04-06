@@ -10,7 +10,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   return {
     discussion: await Discussions.getDiscussion(params.id),
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 

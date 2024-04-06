@@ -1,63 +1,41 @@
-import { SortColumn, SortDirection } from "./";
+import * as Time from "@/utils/time";
 
 import { Project } from "@/models/projects";
 import { Paths } from "@/routes/paths";
 import { Node } from "./node";
 
-import { match } from "ts-pattern";
-import { spaceCompare } from "./spaceCompare";
-
-import * as People from "@/models/people";
-import * as Time from "@/utils/time";
-import * as Groups from "@/models/groups";
-
-export class ProjectNode implements Node {
-  public id: string;
-  public type: "goal" | "project";
-  public name: string;
-  public linkTo: string;
+export class ProjectNode extends Node {
   public project: Project;
-  public children: Node[];
-  public depth: number;
-  public hasChildren: boolean;
-  public champion: People.Person;
-  public lastCheckInDate: Date | null;
-  public progress: number;
-  public spaceId: string;
-  public space: Groups.Group;
 
   constructor(project: Project, depth: number = 0) {
+    super();
+
     this.id = project.id;
     this.type = "project";
-    this.name = project.name;
-    this.linkTo = Paths.projectPath(project.id);
-    this.project = project;
     this.depth = depth;
+    this.name = project.name;
+    this.sortColumn = "name";
+    this.sortDirection = "desc";
+    this.showCompleted = false;
+    this.project = project;
+
+    this.linkTo = Paths.projectPath(project.id);
+    this.champion = project.champion!;
     this.children = [];
     this.hasChildren = false;
-    this.champion = project.champion!;
-    this.lastCheckInDate = Time.parse(project.lastCheckIn?.insertedAt);
-    this.progress = this.calculateProgress();
-    this.spaceId = project.space.id;
     this.space = project.space;
+    this.isClosed = !!project.closedAt;
+    this.progress = this.calculateProgress();
+    this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
+    this.spaceId = project.space.id;
   }
 
   childrenInfoLabel(): string | null {
     return null;
   }
 
-  compare(b: ProjectNode, column: SortColumn, direction: SortDirection): number {
-    const result = match(column)
-      .with("name", () => this.name.localeCompare(b.name))
-      .with("timeframe", () => Time.compareAsc(this.project.deadline, b.project.deadline))
-      .with("progress", () => this.progress - b.progress)
-      .with("lastCheckIn", () => Time.compareAsc(this.lastCheckInDate!, b.lastCheckInDate!))
-      .with("champion", () => this.champion.fullName.localeCompare(b.champion.fullName))
-      .with("space", () => spaceCompare(this.space, b.space))
-      .exhaustive();
-
-    const directionFactor = direction === "asc" ? 1 : -1;
-    return result * directionFactor;
+  compareTimeframe(b: Node): number {
+    return Time.compareAsc(this.project.deadline, (b as ProjectNode).project.deadline);
   }
 
   private calculateProgress(): number {

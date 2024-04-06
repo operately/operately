@@ -10,7 +10,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   return {
     project: await Projects.getProject({ id: params.projectID, includeReviewer: true, includeContributors: true }),
-    me: await People.getMe(),
+    me: await People.getMe({}),
   };
 }
 
