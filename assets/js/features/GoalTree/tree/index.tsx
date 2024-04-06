@@ -39,7 +39,10 @@ export class Tree {
   }
 
   buildTree(goal: Goal, depth: number = 0): GoalNode {
-    const children = this.allGoals.filter((g) => g.parentGoalId === goal.id);
+    const children = this.allGoals
+      .filter((g) => g.parentGoalId === goal.id)
+      .filter((g) => this.showCompleted || !g.isClosed);
+
     const childNodes = children.map((g) => this.buildTree(g, depth + 1));
 
     return new GoalNode(goal, childNodes, depth, this.sortColumn, this.sortDirection, this.showCompleted);

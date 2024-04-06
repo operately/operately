@@ -79,10 +79,11 @@ describe("Tree", () => {
 
     const tree = new Tree(allGoals, "name", "asc", filters, false);
 
-    expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "G"]);
+    expect(tree.getRoots().map((n) => n.name)).toEqual(["A"]);
+    expect(getChildNames(tree, "A")).toEqual(["B", "C", "F"]);
     expect(getChildNames(tree, "B")).toEqual([]);
     expect(getChildNames(tree, "C")).toEqual([]);
-    expect(getChildNames(tree, "G")).toEqual(["F"]);
+    expect(getChildNames(tree, "F")).toEqual(["G"]);
   });
 });
 
