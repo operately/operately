@@ -58,9 +58,40 @@ describe("Tree", () => {
     expect(getChildNames(tree, "C")).toEqual([]);
     expect(getChildNames(tree, "F")).toEqual(["G"]);
   });
+
+  it("is able to hide/show completed goals", () => {
+    const companySpace = { id: "1" };
+    const marketingSpace = { id: "2" };
+    const productSpace = { id: "3" };
+
+    const allGoals = [
+      goalForSpace(companySpace, "A", null, false),
+      goalForSpace(marketingSpace, "B", "A"),
+      goalForSpace(marketingSpace, "C", "A"),
+      goalForSpace(marketingSpace, "D", "B", true),
+      goalForSpace(marketingSpace, "E", "D", true),
+      goalForSpace(productSpace, "F", "A"),
+      goalForSpace(marketingSpace, "G", "F"),
+      goalForSpace(marketingSpace, "H", null, true),
+    ] as Goal[];
+
+    const filters = {};
+
+    const tree = new Tree(allGoals, "name", "asc", filters, false);
+
+    expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "G"]);
+    expect(getChildNames(tree, "B")).toEqual([]);
+    expect(getChildNames(tree, "C")).toEqual([]);
+    expect(getChildNames(tree, "G")).toEqual(["F"]);
+  });
 });
 
-function goalForSpace(space: { id: string }, name: string, parentGoalId: string | null): Goal {
+function goalForSpace(
+  space: { id: string },
+  name: string,
+  parentGoalId: string | null,
+  isClosed: boolean = false,
+): Goal {
   return {
     id: name,
     name,
@@ -68,6 +99,7 @@ function goalForSpace(space: { id: string }, name: string, parentGoalId: string 
     parentGoalId,
     title: name,
     projects: [],
+    isClosed,
   } as unknown as Goal;
 }
 
