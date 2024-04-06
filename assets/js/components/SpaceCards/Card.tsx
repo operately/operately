@@ -16,6 +16,10 @@ export function Card({ children, linkTo, testId, ...props }: CardProps) {
       </Link>
     );
   } else {
-    return <div {...props}>{children}</div>;
+    return (
+      <div {...props} data-test-id={testId}>
+        {children}
+      </div>
+    );
   }
 }
