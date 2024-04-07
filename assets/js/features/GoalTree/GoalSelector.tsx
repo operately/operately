@@ -11,6 +11,7 @@ import { FilledButton } from "@/components/Button";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";
+import { createTestId } from "@/utils/testid";
 
 interface GoalSelectorProps {
   goals: Goals.Goal[];
@@ -52,7 +53,7 @@ function NodeView({ node, onSelect, isFirstChild }: NodeProps) {
         </div>
 
         <div>
-          <FilledButton onClick={() => onSelect(node.goal)} size="xxs">
+          <FilledButton onClick={() => onSelect(node.goal)} size="xxs" testId={createTestId("goal", node.name)}>
             Select
           </FilledButton>
         </div>
