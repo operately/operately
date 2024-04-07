@@ -2,16 +2,10 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 
 import { Tree, SortColumn, SortDirection, TreeFilters } from "./tree";
-
-export type ExpandedNodesMap = Record<string, boolean>;
+import { ExpandableProvider } from "./context/Expandable";
 
 export interface TreeContextValue {
   tree: Tree;
-
-  expanded: ExpandedNodesMap;
-  toggleExpanded: (id: string) => void;
-  expandAll: () => void;
-  collapseAll: () => void;
 
   sortColumn: SortColumn;
   sortDirection: SortDirection;
@@ -46,14 +40,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     [props.goals, sortColumn, sortDirection, props.filters, showCompleted],
   );
 
-  const { expanded, toggleExpanded, expandAll, collapseAll } = useExpandedNodesState(tree);
-
   const value = {
     tree,
-    expanded,
-    toggleExpanded,
-    expandAll,
-    collapseAll,
     sortColumn,
     setSortColumn,
     setSortDirection,
@@ -63,7 +51,11 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setShowCompleted,
   };
 
-  return <TreeContext.Provider value={value}>{props.children}</TreeContext.Provider>;
+  return (
+    <TreeContext.Provider value={value}>
+      <ExpandableProvider tree={tree}>{props.children}</ExpandableProvider>
+    </TreeContext.Provider>
+  );
 }
 
 export function useTreeContext() {
@@ -72,27 +64,4 @@ export function useTreeContext() {
     throw new Error("useTreeContext must be used within a TreeProvider");
   }
   return context;
-}
-
-export function useExpandedNodesState(tree: Tree) {
-  const [expanded, setExpanded] = React.useState<ExpandedNodesMap>({});
-
-  const toggleExpanded = (id: string) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const expandAll = () => {
-    setExpanded(tree.getAllNodes().reduce((acc, node) => ({ ...acc, [node.id]: true }), {}));
-  };
-
-  const collapseAll = () => {
-    setExpanded({});
-  };
-
-  return {
-    expanded,
-    toggleExpanded,
-    expandAll,
-    collapseAll,
-  };
 }

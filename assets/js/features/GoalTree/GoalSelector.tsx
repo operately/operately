@@ -8,6 +8,7 @@ import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
 import { FilledButton } from "@/components/Button";
+import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";
 
@@ -19,25 +20,14 @@ interface GoalSelectorProps {
 export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
   const tree = React.useMemo(() => new Tree(goals, "name", "asc", {}, false), [goals]);
 
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
-
-  const toggleExpanded = React.useCallback((id: string) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  }, []);
-
   return (
-    <div>
-      {tree.getRoots().map((root, index) => (
-        <NodeView
-          key={root.id}
-          node={root}
-          onSelect={onSelect}
-          isFirstChild={index === 0}
-          expanded={expanded}
-          toggleExpanded={toggleExpanded}
-        />
-      ))}
-    </div>
+    <ExpandableProvider tree={tree}>
+      <div>
+        {tree.getRoots().map((root, index) => (
+          <NodeView key={root.id} node={root} onSelect={onSelect} isFirstChild={index === 0} />
+        ))}
+      </div>
+    </ExpandableProvider>
   );
 }
 
@@ -45,11 +35,9 @@ interface NodeProps {
   node: GoalNode;
   onSelect: (goal: Goals.Goal) => void;
   isFirstChild?: boolean;
-  expanded: Record<string, boolean>;
-  toggleExpanded: (id: string) => void;
 }
 
-function NodeView({ node, onSelect, isFirstChild, expanded, toggleExpanded }: NodeProps) {
+function NodeView({ node, onSelect, isFirstChild }: NodeProps) {
   return (
     <div>
       <TableRow topBorder={isFirstChild}>
@@ -57,10 +45,10 @@ function NodeView({ node, onSelect, isFirstChild, expanded, toggleExpanded }: No
           className="inline-flex items-center gap-1.5 truncate flex-1 group pr-2"
           style={{ paddingLeft: node.depth * 30 }}
         >
-          <NodeExpandCollapseToggle node={node} expanded={expanded} toggleExpanded={toggleExpanded} />
+          <NodeExpandCollapseToggle node={node} />
           <NodeIcon node={node as Node} />
           <NodeName node={node as Node} />
-          <SubgoalCount node={node} expanded={expanded} />
+          <SubgoalCount node={node} />
         </div>
 
         <div>
@@ -70,12 +58,14 @@ function NodeView({ node, onSelect, isFirstChild, expanded, toggleExpanded }: No
         </div>
       </TableRow>
 
-      <ChildGoals node={node} onSelect={onSelect} expanded={expanded} toggleExpanded={toggleExpanded} />
+      <ChildGoals node={node} onSelect={onSelect} />
     </div>
   );
 }
 
-function ChildGoals({ node, onSelect, expanded, toggleExpanded }: NodeProps) {
+function ChildGoals({ node, onSelect }: { node: GoalNode; onSelect: (goal: Goals.Goal) => void }) {
+  const { expanded } = useExpandable();
+
   if (!expanded[node.id]) {
     return null;
   }
@@ -83,21 +73,15 @@ function ChildGoals({ node, onSelect, expanded, toggleExpanded }: NodeProps) {
   return (
     <div>
       {node.subGoals.map((child) => (
-        <NodeView key={child.id} node={child} onSelect={onSelect} expanded={expanded} toggleExpanded={toggleExpanded} />
+        <NodeView key={child.id} node={child} onSelect={onSelect} />
       ))}
     </div>
   );
 }
 
-function NodeExpandCollapseToggle({
-  node,
-  expanded,
-  toggleExpanded,
-}: {
-  node: GoalNode;
-  expanded: Record<string, boolean>;
-  toggleExpanded: (id: string) => void;
-}) {
+function NodeExpandCollapseToggle({ node }: { node: GoalNode }) {
+  const { toggleExpanded, expanded } = useExpandable();
+
   if (!node.hasChildren) return null;
 
   const handleClick = () => toggleExpanded(node.id);
@@ -117,7 +101,9 @@ function NodeExpandCollapseToggle({
   );
 }
 
-function SubgoalCount({ node, expanded }: { node: GoalNode; expanded: Record<string, boolean> }) {
+function SubgoalCount({ node }: { node: GoalNode }) {
+  const { expanded } = useExpandable();
+
   if (!node.hasChildren) return null;
   if (expanded[node.id]) return null;
 

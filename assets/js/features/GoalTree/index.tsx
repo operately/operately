@@ -30,6 +30,8 @@ import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
 
+import { useExpandable } from "./context/Expandable";
+
 export function GoalTree(props: TreeContextProviderProps) {
   return (
     <TreeContextProvider {...props}>
@@ -194,7 +196,7 @@ function NodeChampion({ node }: { node: Node }) {
 }
 
 function NodeHeaderChildrenInfo({ node }: { node: Node }) {
-  const { expanded } = useTreeContext();
+  const { expanded } = useExpandable();
 
   if (!node.hasChildren) return null;
   if (expanded[node.id]) return null;
@@ -203,7 +205,7 @@ function NodeHeaderChildrenInfo({ node }: { node: Node }) {
 }
 
 function NodeChildren({ node }: { node: Node }) {
-  const { expanded } = useTreeContext();
+  const { expanded } = useExpandable();
 
   if (!expanded[node.id] || !node.hasChildren) return null;
 
@@ -249,7 +251,7 @@ function GoalOptions({ node, open, setOpen }: { node: GoalNode; open: boolean; s
 }
 
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
-  const { expanded, toggleExpanded } = useTreeContext();
+  const { expanded, toggleExpanded } = useExpandable();
 
   if (!node.hasChildren) return null;
 
