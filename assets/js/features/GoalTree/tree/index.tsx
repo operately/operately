@@ -27,7 +27,7 @@ export class Tree {
     this.roots = this.buildRoots();
   }
 
-  getRoots(): Node[] {
+  getRoots(): GoalNode[] {
     return this.roots;
   }
 
