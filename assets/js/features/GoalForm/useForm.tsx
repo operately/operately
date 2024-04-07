@@ -253,7 +253,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             reviewerID: fields.reviewer!.id,
             timeframe: fields.timeframe.value,
             description: prepareDescriptionForSave(fields),
-            parentGoal: config.parentGoal?.id,
+            parentGoalId: config.parentGoal?.id,
             targets: fields.targets
               .filter((t) => t.name.trim() !== "")
               .map((t, index) => ({
