@@ -44,8 +44,8 @@ defmodule Operately.Support.Features.GoalSteps do
     Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
   end
 
-  step :change_goal_parent, ctx do
-    {:ok, _new_parent_goal} = Operately.Goals.create_goal(ctx.champion, %{
+  step :given_a_goal_exists, ctx, label do
+    {:ok, new_parent_goal} = Operately.Goals.create_goal(ctx.champion, %{
       company_id: ctx.company.id,
       space_id: ctx.group.id,
       name: "New Parent Goal",
@@ -70,16 +70,20 @@ defmodule Operately.Support.Features.GoalSteps do
       ]
     })
 
+    Map.put(ctx, label, new_parent_goal)
+  end
+
+  step :change_goal_parent, ctx, parent_goal do
     ctx
     |> UI.click(testid: "goal-options")
     |> UI.click(testid: "change-parent-goal")
-    |> UI.click(testid: "goal-list-item-new-parent-goal")
+    |> UI.click(testid: "goal-#{ctx[parent_goal].name |> String.downcase() |> String.replace(" ", "-")}")
   end
 
-  step :assert_goal_parent_changed, ctx do
+  step :assert_goal_parent_changed, ctx, parent_goal do
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")
-    |> UI.assert_text("New Parent Goal")
+    |> UI.assert_text(ctx[parent_goal].name)
   end
 
   step :assert_goal_is_company_wide, ctx do

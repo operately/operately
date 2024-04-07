@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { FilledButton } from "@/components/Button";
 import { useTreeContext } from "../treeContext";
+import { useExpandable } from "../context/Expandable";
 
 export function Controls() {
   return (
@@ -13,7 +14,7 @@ export function Controls() {
 }
 
 function ExpandCollapseButton() {
-  const { expanded, expandAll, collapseAll } = useTreeContext();
+  const { expanded, expandAll, collapseAll } = useExpandable();
 
   if (Object.keys(expanded).length === 0) {
     return (

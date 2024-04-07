@@ -35,8 +35,9 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.visit_page()
     |> Steps.assert_goal_is_company_wide()
-    |> Steps.change_goal_parent()
-    |> Steps.assert_goal_parent_changed()
+    |> Steps.given_a_goal_exists(:new_parent_goal)
+    |> Steps.change_goal_parent(:new_parent_goal)
+    |> Steps.assert_goal_parent_changed(:new_parent_goal)
   end
 
   @tag login_as: :champion

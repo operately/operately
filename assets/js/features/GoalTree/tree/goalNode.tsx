@@ -38,9 +38,11 @@ export class GoalNode extends Node {
     this.goal = goal;
 
     this.subGoals = this.subGoals.sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
+
     this.projects = this.buildProjectNodes()
       .filter((p) => (this.showCompleted ? true : !p.project.closedAt))
       .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
+
     this.children = [...this.subGoals, ...this.projects];
 
     this.hasChildren = this.children.length > 0;
@@ -67,6 +69,8 @@ export class GoalNode extends Node {
   }
 
   private buildProjectNodes(): ProjectNode[] {
+    if (!this.goal.projects) return [];
+
     return this.goal.projects!.map((p) => p!).map((p) => new ProjectNode(p, this.depth + 1));
   }
 

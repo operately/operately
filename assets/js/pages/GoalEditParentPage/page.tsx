@@ -3,11 +3,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 
-import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
-import { createTestId } from "@/utils/testid";
+import { GoalSelector } from "@/features/GoalTree/GoalSelector";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -22,7 +21,8 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body>
-          <div className="text-content-accent text-2xl font-extrabold">Choosing a new parent</div>
+          <div className="text-content-accent text-2xl font-extrabold mb-8">Choose a new parent for the goal</div>
+
           <GoalList />
         </Paper.Body>
       </Paper.Root>
@@ -38,12 +38,12 @@ function GoalList() {
 
   const [select] = Goals.useChangeGoalParentMutation({ onCompleted: () => navigate(goalPath) });
 
-  const handleSelect = React.useCallback(async (parentGoalId: string | null) => {
+  const handleSelect = React.useCallback(async (selectedGoal: Goals.Goal) => {
     await select({
       variables: {
         input: {
           goalId: goal.id,
-          parentGoalId: parentGoalId,
+          parentGoalId: selectedGoal.id,
         },
       },
     });
@@ -51,53 +51,5 @@ function GoalList() {
 
   const selectableGoals = Goals.filterPossibleParentGoals(goals, goal);
 
-  return (
-    <div>
-      <CurrentParentGoal goal={goal} onRemove={() => handleSelect(null)} />
-
-      <div className="text-sm font-bold mt-8 mb-2">Choose a new parent</div>
-      <div>
-        {selectableGoals.map((parentGoal) => (
-          <GoalListItem key={parentGoal.id} parentGoal={parentGoal} onSelect={() => handleSelect(parentGoal.id)} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CurrentParentGoal({ goal, onRemove }) {
-  if (!goal.parentGoal) return null;
-
-  return (
-    <div className="bg-surface-dimmed border-y border-stroke-base -mx-12 px-12 py-3 my-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xs font-bold">Current parent</div>
-          {goal.parentGoal.name}
-        </div>
-        <NoParentGoal onSelect={onRemove} />
-      </div>
-    </div>
-  );
-}
-
-function NoParentGoal({ onSelect }) {
-  return (
-    <FilledButton type="primary" size="xxs" onClick={onSelect}>
-      Remove parent
-    </FilledButton>
-  );
-}
-
-function GoalListItem({ parentGoal, onSelect }) {
-  const testId = createTestId("goal-list-item", parentGoal.name);
-
-  return (
-    <div className="flex items-center justify-between py-3 first:border-t border-b border-stroke-base">
-      <div>{parentGoal.name}</div>
-      <FilledButton type="primary" size="xxs" onClick={onSelect} testId={testId}>
-        Select
-      </FilledButton>
-    </div>
-  );
+  return <GoalSelector goals={selectableGoals} onSelect={handleSelect} />;
 }

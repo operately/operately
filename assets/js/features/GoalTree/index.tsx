@@ -26,6 +26,11 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
 import { Controls } from "./components/Controls";
+import { NodeIcon } from "./components/NodeIcon";
+import { NodeName } from "./components/NodeName";
+import { TableRow } from "./components/TableRow";
+
+import { useExpandable } from "./context/Expandable";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -41,6 +46,7 @@ function GoalTreeRoots() {
   return (
     <div>
       <Controls />
+
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
         <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
 
@@ -100,7 +106,7 @@ function GoalTreeColumnHeader({ title, width, sortId }: { title: string; width: 
 
 function NodeView({ node }: { node: Node }) {
   return (
-    <div className="">
+    <div>
       <NodeHeader node={node} />
       <NodeChildren node={node} />
     </div>
@@ -118,7 +124,7 @@ function NodeHeader({ node }: { node: Node }) {
       >
         <NodeActions node={node} />
         <NodeIcon node={node} />
-        <NodeHeaderNameLink node={node} />
+        <NodeName node={node} />
         <NodeHeaderChildrenInfo node={node} />
       </div>
       <div className="flex items-center gap-4">
@@ -177,33 +183,6 @@ function ProjectTimeframe({ project }: { project: Projects.Project }) {
   );
 }
 
-function NodeIcon({ node }: { node: Node }) {
-  switch (node.type) {
-    case "goal":
-      return <Icons.IconTarget size={15} className="text-red-500 shrink-0" />;
-    case "project":
-      return <Icons.IconHexagons size={15} className="text-indigo-500 shrink-0" />;
-    default:
-      throw new Error(`Unknown node type: ${node.type}`);
-  }
-}
-
-function NodeHeaderNameLink({ node }: { node: Node }) {
-  const titleClass = classNames({
-    "font-bold": node.depth === 0,
-    "font-medium": node.depth > 0,
-    "hover:underline": true,
-    "decoration-content-subtle": true,
-    truncate: true,
-  });
-
-  return (
-    <DivLink to={node.linkTo} className={titleClass}>
-      {node.name}
-    </DivLink>
-  );
-}
-
 function NodeChampion({ node }: { node: Node }) {
   return (
     <DivLink
@@ -217,7 +196,7 @@ function NodeChampion({ node }: { node: Node }) {
 }
 
 function NodeHeaderChildrenInfo({ node }: { node: Node }) {
-  const { expanded } = useTreeContext();
+  const { expanded } = useExpandable();
 
   if (!node.hasChildren) return null;
   if (expanded[node.id]) return null;
@@ -226,7 +205,7 @@ function NodeHeaderChildrenInfo({ node }: { node: Node }) {
 }
 
 function NodeChildren({ node }: { node: Node }) {
-  const { expanded } = useTreeContext();
+  const { expanded } = useExpandable();
 
   if (!expanded[node.id] || !node.hasChildren) return null;
 
@@ -235,14 +214,6 @@ function NodeChildren({ node }: { node: Node }) {
       <div className="">
         <div>{node.children?.map((node) => <NodeView key={node.id} node={node} />)}</div>
       </div>
-    </div>
-  );
-}
-
-function TableRow({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between py-2 border-b border-dashed border-stroke-base -mx-12 px-12 hover:bg-surface-highlight">
-      {children}
     </div>
   );
 }
@@ -280,7 +251,7 @@ function GoalOptions({ node, open, setOpen }: { node: GoalNode; open: boolean; s
 }
 
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
-  const { expanded, toggleExpanded } = useTreeContext();
+  const { expanded, toggleExpanded } = useExpandable();
 
   if (!node.hasChildren) return null;
 
