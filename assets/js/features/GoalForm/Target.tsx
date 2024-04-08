@@ -8,8 +8,8 @@ export function TargetHeader() {
     <Row
       icon={<Icons.IconHash className="text-content-base ml-1.5" size={12} />}
       name={<div className="text-xs font-bold">NAME</div>}
-      from={<div className="text-xs font-bold">CURRENT</div>}
-      to={<div className="text-xs font-bold">TARGET</div>}
+      from={<div className="text-xs font-bold">START VALUE</div>}
+      to={<div className="text-xs font-bold">TARGET VALUE</div>}
       unit={<div className="text-xs font-bold">UNIT</div>}
     />
   );
