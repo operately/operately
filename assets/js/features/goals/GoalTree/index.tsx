@@ -31,6 +31,7 @@ import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
 
 import { useExpandable } from "./context/Expandable";
+import { useSortable } from "./context/Sortable";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (

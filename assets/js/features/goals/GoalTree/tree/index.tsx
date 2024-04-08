@@ -12,6 +12,7 @@ export { ProjectNode } from "./projectNode";
 export interface TreeFilters {
   spaceId?: string | null;
   personId?: string | null;
+  parentGoalId?: string | null;
 }
 
 export class Tree {
@@ -61,6 +62,10 @@ export class Tree {
       return this.allTopLevelGoalsForPerson(this.filters.personId);
     }
 
+    if (this.filters.parentGoalId) {
+      return this.allTopLevelGoalsForParent(this.filters.parentGoalId);
+    }
+
     return this.allGoalsWithoutParent();
   }
 
@@ -78,6 +83,10 @@ export class Tree {
     return this.allGoals
       .filter((g) => g.champion?.id === personId)
       .filter((g) => !this.hasAnyParentWith(g, (goal) => goal.champion?.id === personId));
+  }
+
+  private allTopLevelGoalsForParent(parentGoalId: string): Goal[] {
+    return this.allGoals.filter((g) => g.parentGoalId === parentGoalId);
   }
 
   private hasAnyParentWith(goal: Goal, predicate: (goal: Goal) => boolean): boolean {

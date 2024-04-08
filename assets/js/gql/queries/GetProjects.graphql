@@ -4,6 +4,7 @@ query GetProjects(
   $includeMilestones: Boolean = false
   $includeContributors: Boolean = false
   $includeLastCheckIn: Boolean = false
+  $includeChampion: Boolean = false
 ) {
   projects(filters: $filters) {
     id
@@ -19,6 +20,13 @@ query GetProjects(
     isArchived
     isOutdated
     status
+
+    champion @include(if: $includeChampion) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
 
     contributors @include(if: $includeContributors) {
       id
