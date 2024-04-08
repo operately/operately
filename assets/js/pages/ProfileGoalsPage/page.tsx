@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 
 import { PageHeader } from "@/features/Profile/PageHeader";
 import { PageNavigation } from "@/features/Profile/PageNavigation";
-import { GoalTree } from "@/features/GoalTree";
+import { GoalTree } from "@/features/goals/GoalTree";
 import { useLoadedData } from "./loader";
 
 export function Page() {

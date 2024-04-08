@@ -5,7 +5,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
-import { GoalTree } from "@/features/GoalTree";
+import { GoalTree } from "@/features/goals/GoalTree";
 
 export function Page() {
   const { company, goals } = useLoadedData();

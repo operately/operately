@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
-import { GoalSelector } from "@/features/GoalTree/GoalSelector";
+import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 
 export function Page() {
   const { goal } = useLoadedData();

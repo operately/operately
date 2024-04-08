@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
-import { GoalTree } from "@/features/GoalTree";
+import { GoalTree } from "@/features/goals/GoalTree";
 import { FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 

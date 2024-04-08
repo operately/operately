@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
-import { Form, useForm } from "@/features/GoalCheckInForm";
+import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 
 import FormattedTime from "@/components/FormattedTime";
 
