@@ -4,10 +4,9 @@ import * as Pages from "@/components/Pages";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { TargetList } from "./TargetList";
-import { Options } from "./Options";
 import { CheckIns } from "./CheckIns";
-import { Navigation } from "./Navigation";
-import { Banner } from "./Banner";
+
+import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 
 import Avatar from "@/components/Avatar";
@@ -24,8 +23,6 @@ export function Page() {
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
-          <Banner goal={goal} />
-          <Options goal={goal} />
           <Header goal={goal} activeTab="about" />
 
           <div className="flex item-center mt-8 gap-12">
