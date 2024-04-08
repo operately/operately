@@ -7,7 +7,14 @@ import { DivLink } from "@/components/Link";
 
 import classnames from "classnames";
 
-export function Header({ goal }: { goal: Goals.Goal }) {
+import * as Tabs from "@/components/Tabs";
+
+interface HeaderProps {
+  activeTab: "about" | "subgoals";
+  goal: Goals.Goal;
+}
+
+export function Header({ goal, activeTab }: HeaderProps) {
   return (
     <div className="flex-1">
       <ParentGoal goal={goal.parentGoal} />
@@ -21,6 +28,11 @@ export function Header({ goal }: { goal: Goals.Goal }) {
           <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
         </div>
       </div>
+
+      <Tabs.Root activeTab={activeTab}>
+        <Tabs.Tab id="about" title="About" linkTo={Paths.goalPath(goal.id)} />
+        <Tabs.Tab id="goals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id)} />
+      </Tabs.Root>
     </div>
   );
 }
