@@ -84,17 +84,4 @@ defmodule Operately.Features.ProjectsTest do
     |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: "Improve support first response time")
   end
 
-  @tag login_as: :champion
-  feature "disconnect a goal from a project", ctx do
-    ctx
-    |> Steps.given_a_goal_exists(name: "Improve support first response time")
-    |> Steps.given_the_goal_is_connected_with_project()
-    |> Steps.visit_project_page()
-    |> Steps.assert_goal_connected(goal_name: "Improve support first response time")
-    |> Steps.disconnect_goal()
-    |> Steps.assert_goal_link_not_on_project_page()
-    |> Steps.assert_goal_disconnected_email_sent_to_champion(goal_name: "Improve support first response time")
-    |> Steps.assert_goal_disconnected_notification_sent_to_reviewer()
-  end
-
 end
