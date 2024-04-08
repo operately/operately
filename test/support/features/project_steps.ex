@@ -122,7 +122,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "connect-project-to-goal-link")
     |> UI.assert_text(goal_name)
-    |> UI.click(testid: "select-goal-#{String.downcase(goal_name) |> String.replace(" ", "-")}")
+    |> UI.click(testid: "goal-#{String.downcase(goal_name) |> String.replace(" ", "-")}")
 
     project = Operately.Projects.get_project!(ctx.project.id)
     project = Operately.Repo.preload(project, :goal)

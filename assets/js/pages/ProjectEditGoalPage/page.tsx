@@ -2,198 +2,47 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as Groups from "@/models/groups";
-import * as Projects from "@/models/projects";
-
-import Avatar from "@/components/Avatar";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { FilledButton, GhostButton } from "@/components/Button";
-import { createTestId } from "@/utils/testid";
-import { createPath } from "@/utils/paths";
-import { Link } from "@/components/Link";
 import { useLoadedData } from "./loader";
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { Paths } from "@/routes/paths";
+import { GoalSelector } from "@/features/GoalTree/GoalSelector";
+import { useNavigate } from "react-router-dom";
 
 export function Page() {
-  const { project, goals } = useLoadedData();
+  const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit Project Goal", project.name]}>
-      <Paper.Root size="medium">
+    <Pages.Page title={["Set Project Goal", project.name]}>
+      <Paper.Root>
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          {project.goal ? <ConnectedState project={project} goals={goals} /> : <ZeroState goals={goals} />}
+          <div className="text-content-accent text-2xl font-extrabold mb-8">Choose a goal for the project</div>
+
+          <GoalList />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function ZeroState({ goals }: { goals: Goals.Goal[] }) {
-  return (
-    <>
-      <div className="text-content-accent font-extrabold text-3xl">Select a goal to connect</div>
+function GoalList() {
+  const { project, goals } = useLoadedData();
 
-      <div className="max-w-prose mt-2">
-        Linking a goal indicates that this project contributes to achieving that goal.
-      </div>
+  const navigate = useNavigate();
+  const projectPath = Paths.projectPath(project.id);
 
-      <SelectableGoals goals={goals} />
-    </>
-  );
-}
+  const [connect] = Goals.useConnectGoalToProjectMutation({ onCompleted: () => navigate(projectPath) });
 
-function ConnectedState({ project, goals }: { project: Projects.Project; goals: Goals.Goal[] }) {
-  return (
-    <>
-      <SelectedGoal goal={project.goal!} />
-
-      <Paper.DimmedSection>
-        <div className="text-content-accent font-extrabold">Select a different goal to connect</div>
-
-        <div className="max-w-prose mt-2">
-          Linking a goal indicates that this project contributes to achieving that goal.
-        </div>
-
-        <SelectableGoals goals={goals} />
-      </Paper.DimmedSection>
-    </>
-  );
-}
-
-function SelectableGoals({ goals }: { goals: Goals.Goal[] }) {
-  const { project } = useLoadedData();
-
-  const goalsWithoutConnected = goals.filter((goal) => goal.id !== project.goal?.id);
-  const groups = Goals.groupBySpace(goalsWithoutConnected);
-
-  return (
-    <>
-      {groups.map((group) => (
-        <SelectableGoalGroup key={group.space.id} space={group.space} goals={group.goals} />
-      ))}
-    </>
-  );
-}
-
-function SelectableGoalGroup({ space, goals }: { space: Groups.Group; goals: Goals.Goal[] }) {
-  return (
-    <div className="flex flex-col mt-12">
-      <div className="uppercase text-content-primary text-xs font-bold mb-4">{space.name} Space</div>
-
-      {goals.map((goal) => (
-        <SelectableGoal key={goal.id} goal={goal} />
-      ))}
-    </div>
-  );
-}
-
-function SelectableGoal({ goal }: { goal: Goals.Goal }) {
-  const { project } = useLoadedData();
-  const gotoProjectRoot = useNavigateTo(createPath("projects", project.id));
-
-  const testId = createTestId("select-goal", goal.name);
-
-  const [connect, { loading }] = Goals.useConnectGoalToProjectMutation({ onCompleted: gotoProjectRoot });
-
-  const handleClick = async (): Promise<boolean> => {
+  const handleSelect = React.useCallback(async (selectedGoal: Goals.Goal) => {
     connect({
       variables: {
-        goalId: goal.id,
+        goalId: selectedGoal.id,
         projectId: project.id,
       },
     });
+  }, []);
 
-    return true;
-  };
-
-  return (
-    <div className="border-t last:border-b border-stroke-base py-3">
-      <div className="flex items-center justify-between">
-        <div className="text-content-primary">{goal.name}</div>
-        <div className="">
-          <FilledButton size="xs" testId={testId} loading={loading} onClick={handleClick}>
-            Select
-          </FilledButton>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SelectedGoal({ goal }: { goal: Goals.Goal }) {
-  const { project } = useLoadedData();
-  const gotoProjectRoot = useNavigateTo(createPath("projects", project.id));
-
-  const [connect, { loading }] = Goals.useDisconnectGoalFromProjectMutation({ onCompleted: gotoProjectRoot });
-
-  const handleClick = async (): Promise<boolean> => {
-    connect({
-      variables: {
-        goalId: goal.id,
-        projectId: project.id,
-      },
-    });
-
-    return true;
-  };
-
-  const goalPath = createPath("goals", goal.id);
-
-  return (
-    <>
-      <div className="uppercase text-content-primary text-xs font-bold mb-2">Connected Goal</div>
-
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-content-primary text-xl font-bold">
-            <Link to={goalPath}>{goal.name}</Link>
-          </div>
-
-          <div className="mt-2">
-            {goal.targets!.map((target) => (
-              <div key={target!.id} className="flex items-center gap-1">
-                <div className="text-ellipsis w-96">{target!.name}</div>
-                <ProgressBar target={target!} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <Avatar person={goal.champion!} />
-          <Avatar person={goal.reviewer!} />
-        </div>
-      </div>
-
-      <div className="flex mt-4">
-        <GhostButton type="secondary" size="xs" onClick={handleClick} loading={loading} testId="disconnect-goal">
-          Disconnect
-        </GhostButton>
-      </div>
-    </>
-  );
-}
-
-function ProgressBar({ target }: { target: Goals.Target }) {
-  const from = target!.from!;
-  const to = target!.to!;
-  const value = target!.value!;
-
-  let progress = Math.round(((value - from) / (to - from)) * 100);
-  if (progress < 0) progress = 0;
-  if (progress > 100) progress = 100;
-
-  let color = "";
-  if (progress < 20) color = "bg-yellow-300";
-  if (progress >= 40 && progress < 80) color = "bg-yellow-500";
-  if (progress >= 70) color = "bg-green-600";
-
-  return (
-    <div className="text-ellipsis w-40 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
-      <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
-    </div>
-  );
+  return <GoalSelector goals={goals} onSelect={handleSelect} />;
 }
