@@ -12,12 +12,16 @@ query GetGoal(
     isArchived
     isClosed
     closedAt
+
+    progressPercentage
+
     closedBy {
       id
       fullName
       avatarUrl
       title
     }
+
     archivedAt
     description
     nextUpdateScheduledAt

@@ -29,22 +29,15 @@ function TargetItem({ target }: { target: Goals.Target }) {
 }
 
 function ProgressBar({ target }: { target: Goals.Target }) {
-  const from = target!.from!;
-  const to = target!.to!;
-  const value = target!.value!;
+  const from = target.from!;
+  const to = target.to!;
+  const value = target.value!;
 
-  let progress = Math.round(((value - from) / (to - from)) * 100);
-  if (progress < 0) progress = 0;
-  if (progress > 100) progress = 100;
-
-  let color = "";
-  if (progress < 20) color = "bg-yellow-300";
-  if (progress >= 40 && progress < 80) color = "bg-yellow-500";
-  if (progress >= 70) color = "bg-green-600";
+  const width = ((Math.min(value, to) - from) / (Math.max(to, value) - from)) * 100;
 
   return (
-    <div className="text-ellipsis w-40 bg-gray-200 relative h-3 overflow-hidden rounded-sm">
-      <div className={"absolute top-0 left-0 h-full" + " " + color} style={{ width: `${progress}%` }} />
+    <div className={"w-24 h-2.5 bg-surface-outline rounded relative"}>
+      <div className="bg-accent-1 rounded absolute top-0 bottom-0 left-0" style={{ width: `${width}%` }} />
     </div>
   );
 }
