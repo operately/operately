@@ -27,6 +27,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 
     projects: await Projects.getProjects({
       includeGoal: true,
+      includeSpace: true,
       includeLastCheckIn: true,
       includeChampion: true,
       includeMilestones: true,

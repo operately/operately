@@ -8,7 +8,7 @@ import { FilledButton } from "@/components/Button";
 import { GoalTree } from "@/features/goals/GoalTree";
 
 export function Page() {
-  const { company, goals } = useLoadedData();
+  const { company, goals, projects } = useLoadedData();
 
   return (
     <Pages.Page title={"Goals"}>
@@ -22,7 +22,7 @@ export function Page() {
             </FilledButton>
           </div>
 
-          <GoalTree goals={goals} />
+          <GoalTree goals={goals} projects={projects} options={{}} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

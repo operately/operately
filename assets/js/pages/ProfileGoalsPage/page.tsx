@@ -8,7 +8,7 @@ import { GoalTree } from "@/features/goals/GoalTree";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { person, goals } = useLoadedData();
+  const { person, goals, projects } = useLoadedData();
 
   return (
     <Pages.Page title={[person.fullName, "Profile"]}>
@@ -20,7 +20,7 @@ export function Page() {
 
           <div className="mt-4" />
 
-          <GoalTree goals={goals} filters={{ personId: person.id }} hideSpaceColumn={false} />
+          <GoalTree goals={goals} projects={projects} options={{ personId: person.id }} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

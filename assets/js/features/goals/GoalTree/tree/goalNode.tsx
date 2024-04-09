@@ -1,96 +1,66 @@
+import { Node } from "./node";
 import { Goal } from "@/models/goals";
 import { Paths } from "@/routes/paths";
-import { ProjectNode } from "./projectNode";
-import { Node } from "./node";
-import { SortColumn, SortDirection } from "./";
 
 import * as Time from "@/utils/time";
 
 export class GoalNode extends Node {
   public goal: Goal;
-  public subGoals: GoalNode[];
-  public projects: ProjectNode[];
-  public totalNestedProjects: number;
-  public totalNestedSubGoals: number;
 
-  constructor(
-    goal: Goal,
-    subGoals: GoalNode[],
-    depth: number = 0,
-    sortColumn: SortColumn,
-    sortDirection: SortDirection,
-    showCompleted: boolean,
-  ) {
+  constructor(goal: Goal) {
     super();
 
-    this.id = goal.id;
-    this.type = "goal";
-    this.depth = depth;
-    this.name = goal.name;
-    this.sortColumn = sortColumn;
-    this.sortDirection = sortDirection;
-    this.showCompleted = showCompleted;
-
-    this.linkTo = Paths.goalPath(goal.id);
-    this.champion = goal.champion!;
-
-    this.subGoals = subGoals;
     this.goal = goal;
 
-    this.subGoals = this.subGoals.sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
+    this.id = goal.id;
+    this.parentId = goal.parentGoalId!;
 
-    this.projects = this.buildProjectNodes()
-      .filter((p) => (this.showCompleted ? true : !p.project.closedAt))
-      .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
-
-    this.children = [...this.subGoals, ...this.projects];
-
-    this.hasChildren = this.children.length > 0;
-    this.space = goal.space;
+    this.type = "goal";
+    this.name = goal.name;
+    this.champion = goal.champion!;
     this.isClosed = goal.isClosed;
     this.progress = this.goal.progressPercentage;
     this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
-    this.spaceId = goal.space.id;
 
-    this.totalNestedProjects = this.projects.length + this.subGoals.reduce((acc, n) => acc + n.totalNestedProjects, 0);
-    this.totalNestedSubGoals = this.subGoals.length + this.subGoals.reduce((acc, n) => acc + n.totalNestedSubGoals, 0);
+    this.space = goal.space;
+    this.spaceId = goal.space.id;
+  }
+
+  linkTo(): string {
+    return Paths.goalPath(this.goal.id);
   }
 
   childrenInfoLabel(): string {
-    return [this.nestedGoalCount(), this.nestedProjectCount()].filter((x) => x).join(", ");
+    const subGoals = this.totalNestedSubGoals();
+    const projects = this.totalNestedProjects();
+
+    if (subGoals > 0 && projects > 0) {
+      return pluralize(subGoals, "subgoal") + ", " + pluralize(projects, "project");
+    } else if (subGoals > 0) {
+      return pluralize(subGoals, "subgoal");
+    } else if (projects > 0) {
+      return pluralize(projects, "project");
+    } else {
+      return "";
+    }
   }
 
   compareTimeframe(b: GoalNode): number {
     return Time.compareQuarters(this.goal.timeframe, b.goal.timeframe);
   }
 
-  getAllNodes(): Node[] {
-    return [this, ...this.subGoals.flatMap((g) => g.getAllNodes()), ...this.projects];
+  totalNestedSubGoals(): number {
+    return (
+      this.children.filter((n) => n.type === "goal").length +
+      this.children.filter((n) => n.type === "goal").reduce((acc, n) => acc + (n as GoalNode).totalNestedSubGoals(), 0)
+    );
   }
 
-  private buildProjectNodes(): ProjectNode[] {
-    if (!this.goal.projects) return [];
-
-    return this.goal.projects!.map((p) => p!).map((p) => new ProjectNode(p, this.depth + 1));
+  totalNestedProjects(): number {
+    return this.children.filter((n) => n.type === "project").length;
   }
+}
 
-  private nestedGoalCount() {
-    if (this.totalNestedSubGoals === 0) return null;
-
-    if (this.totalNestedSubGoals === 1) {
-      return "1 subgoal";
-    } else {
-      return `${this.totalNestedSubGoals} subgoals`;
-    }
-  }
-
-  private nestedProjectCount() {
-    if (this.totalNestedProjects === 0) return null;
-
-    if (this.totalNestedProjects === 1) {
-      return "1 project";
-    } else {
-      return `${this.totalNestedProjects} projects`;
-    }
-  }
+function pluralize(count: number, word: string): string {
+  return count === 1 ? `${count} ${word}` : `${count} ${word}s`;
 }

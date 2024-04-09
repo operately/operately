@@ -1,98 +1,87 @@
 import { Goal } from "@/models/goals";
+import { Project } from "@/models/projects";
+
 import { Node } from "./node";
 import { GoalNode } from "./goalNode";
+import { ProjectNode } from "./projectNode";
+
+export { Node } from "./node";
+export { ProjectNode } from "./projectNode";
+export { GoalNode } from "./goalNode";
 
 export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
 
-export { Node } from "./node";
-export { GoalNode } from "./goalNode";
-export { ProjectNode } from "./projectNode";
+export interface TreeOptions {
+  sortColumn: SortColumn;
+  sortDirection: SortDirection;
+  showCompleted: boolean;
 
-export interface TreeFilters {
-  spaceId?: string | null;
-  personId?: string | null;
+  spaceId?: string;
+  personId?: string;
+  goalId?: string;
 }
 
-export class Tree {
-  private roots: GoalNode[];
+export function buildTree(allGoals: Goal[], allProjects: Project[], options: TreeOptions): Node[] {
+  const goalNodes = allGoals.map((g) => new GoalNode(g));
+  const projectNodes = allProjects.map((p) => new ProjectNode(p));
 
-  constructor(
-    private allGoals: Goal[],
-    private allProjects: Goal[],
-    private sortColumn: SortColumn,
-    private sortDirection: SortDirection,
-    private filters: TreeFilters,
-    private showCompleted: boolean,
-  ) {
-    this.roots = this.buildRoots();
+  let nodes = [...goalNodes, ...projectNodes];
+
+  if (!options.showCompleted) {
+    nodes = nodes.filter((n) => !n.isClosed);
   }
 
-  getRoots(): GoalNode[] {
-    return this.roots;
+  connectNodes(nodes);
+
+  let roots = findRoots(nodes, options);
+
+  setDepth(roots, 0);
+
+  return roots;
+}
+
+function findRoots(nodes: Node[], options: TreeOptions): Node[] {
+  if (options.spaceId) {
+    return rootNodesForSpace(nodes, options.spaceId);
+  } else if (options.personId) {
+    return rootNodesForPerson(nodes, options.personId);
+  } else if (options.goalId) {
+    return rootNodesForGoal(nodes, options.goalId);
+  } else {
+    return rootNodesInTheCompany(nodes);
   }
+}
 
-  buildRoots(): GoalNode[] {
-    return this.filterGoals()
-      .map((g) => this.buildTree(g))
-      .filter((g) => this.showCompleted || !g.isClosed)
-      .sort((a, b) => a.compare(b, this.sortColumn, this.sortDirection));
-  }
+function rootNodesForSpace(nodes: Node[], spaceId: string): Node[] {
+  return nodes.filter((n) => n.space.id === spaceId && n.hasNoParentWith((node) => node.space.id === spaceId));
+}
 
-  buildTree(goal: Goal, depth: number = 0): GoalNode {
-    const children = this.allGoals
-      .filter((g) => g.parentGoalId === goal.id)
-      .filter((g) => this.showCompleted || !g.isClosed);
+function rootNodesForPerson(nodes: Node[], personId: string): Node[] {
+  return nodes.filter((n) => n.champion.id === personId && n.hasNoParentWith((node) => node.champion.id === personId));
+}
 
-    const childNodes = children.map((g) => this.buildTree(g, depth + 1));
+function rootNodesInTheCompany(nodes: Node[]): Node[] {
+  return nodes.filter((n) => !n.parentId);
+}
 
-    return new GoalNode(goal, childNodes, depth, this.sortColumn, this.sortDirection, this.showCompleted);
-  }
+function rootNodesForGoal(nodes: Node[], goalId: string): Node[] {
+  return nodes.filter((n) => n.parentId === goalId && n.hasNoParentWith((node) => node.id === goalId));
+}
 
-  getAllNodes(): Node[] {
-    return this.roots.flatMap((root) => root.getAllNodes());
-  }
+function setDepth(nodes: Node[], depth: number = 0): void {
+  nodes.forEach((n) => {
+    n.depth = depth;
+    setDepth(n.children, depth + 1);
+  });
+}
 
-  private filterGoals(): Goal[] {
-    if (this.filters.spaceId) {
-      return this.allSpaceGoalsWithoutParentInSpace(this.filters.spaceId);
-    }
+function connectNodes(nodes: Node[]): void {
+  nodes.forEach((n) => {
+    const children = nodes.filter((c) => c.parentId === n.id);
+    const parent = nodes.find((c) => c.id === n.parentId);
 
-    if (this.filters.personId) {
-      return this.allTopLevelGoalsForPerson(this.filters.personId);
-    }
-
-    return this.allGoalsWithoutParent();
-  }
-
-  private allGoalsWithoutParent(): Goal[] {
-    return this.allGoals.filter((g) => !g.parentGoalId);
-  }
-
-  private allSpaceGoalsWithoutParentInSpace(spaceId: string): Goal[] {
-    return this.allGoals
-      .filter((g) => g.space.id === spaceId)
-      .filter((g) => !this.hasAnyParentWith(g, (goal) => goal.space.id === spaceId));
-  }
-
-  private allTopLevelGoalsForPerson(personId: string): Goal[] {
-    return this.allGoals
-      .filter((g) => g.champion?.id === personId)
-      .filter((g) => !this.hasAnyParentWith(g, (goal) => goal.champion?.id === personId));
-  }
-
-  private hasAnyParentWith(goal: Goal, predicate: (goal: Goal) => boolean): boolean {
-    let currentGoal = this.findParent(goal);
-
-    while (currentGoal) {
-      if (predicate(currentGoal)) return true;
-      currentGoal = this.findParent(currentGoal!);
-    }
-
-    return false;
-  }
-
-  private findParent(goal: Goal): Goal | undefined {
-    return this.allGoals.find((g) => g.id === goal.parentGoalId);
-  }
+    n.addChildren(children);
+    n.setParent(parent);
+  });
 }

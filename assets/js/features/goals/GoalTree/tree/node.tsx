@@ -10,6 +10,8 @@ import { match } from "ts-pattern";
 
 export abstract class Node {
   public id: string;
+  public parentId: string | undefined;
+
   public type: NodeTypes;
   public depth: number;
   public name: string;
@@ -17,8 +19,8 @@ export abstract class Node {
   public sortDirection: SortDirection;
   public showCompleted: boolean;
 
-  public linkTo: string;
   public champion: People.Person;
+  public parent: Node | undefined;
   public children: Node[];
   public hasChildren: boolean;
   public space: Groups.Group;
@@ -29,8 +31,35 @@ export abstract class Node {
 
   abstract childrenInfoLabel(): string | null;
   abstract compareTimeframe(b: Node): number;
+  abstract linkTo(): string;
+
+  hasNoParentWith(predicate: (n: Node) => boolean): boolean {
+    let current: Node | undefined = this.parent;
+
+    while (current) {
+      if (predicate(current)) return false;
+      current = current.parent;
+    }
+
+    return true;
+  }
+
+  setParent(parent: Node | undefined): void {
+    if (parent) {
+      parent.hasChildren = true;
+    }
+  }
+
+  addChildren(children: Node[]): void {
+    this.children = children;
+    this.hasChildren = children.length > 0;
+  }
 
   compare(b: Node, column: SortColumn, direction: SortDirection): number {
+    if (this.type != b.type) {
+      return this.type === "goal" ? -1 : 1;
+    }
+
     const result = match(column)
       .with("name", () => this.compareName(b))
       .with("timeframe", () => this.compareTimeframe(b))

@@ -21,7 +21,13 @@ export function Page() {
 
           <div className="mt-4" />
 
-          <GoalTree goals={goals} projects={projects} />
+          <GoalTree
+            goals={goals}
+            projects={projects}
+            options={{
+              goalId: goal.id,
+            }}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
