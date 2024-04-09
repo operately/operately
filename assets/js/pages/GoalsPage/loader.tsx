@@ -13,7 +13,6 @@ export async function loader(): Promise<LoaderResult> {
     goals: await Goals.getGoals({
       includeTargets: true,
       includeSpace: true,
-      includeProjects: true,
       includeLastCheckIn: true,
     }),
   };
