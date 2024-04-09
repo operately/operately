@@ -19,6 +19,7 @@ export class Tree {
 
   constructor(
     private allGoals: Goal[],
+    private allProjects: Goal[],
     private sortColumn: SortColumn,
     private sortDirection: SortDirection,
     private filters: TreeFilters,

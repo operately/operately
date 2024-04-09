@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
+import * as Projects from "@/models/projects";
 
 import { Tree, SortColumn, SortDirection, TreeFilters } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
@@ -22,6 +23,8 @@ const TreeContext = React.createContext<TreeContextValue | null>(null);
 
 export interface TreeContextProviderProps {
   goals: Goals.Goal[];
+  projects: Projects.Project[];
+
   filters?: TreeFilters;
   hideSpaceColumn?: boolean;
 }
@@ -36,8 +39,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
   const [showCompleted, setShowCompleted] = React.useState<boolean>(false);
 
   const tree = React.useMemo(
-    () => new Tree(props.goals, sortColumn, sortDirection, props.filters || {}, showCompleted),
-    [props.goals, sortColumn, sortDirection, props.filters, showCompleted],
+    () => new Tree(props.goals, props.projects, sortColumn, sortDirection, props.filters || {}, showCompleted),
+    [props.goals, props.projects, sortColumn, sortDirection, props.filters, showCompleted],
   );
 
   const value = {
