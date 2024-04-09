@@ -2018,11 +2018,10 @@ export type GetProjectsQueryVariables = Exact<{
   includeMilestones?: InputMaybe<Scalars['Boolean']['input']>;
   includeContributors?: InputMaybe<Scalars['Boolean']['input']>;
   includeLastCheckIn?: InputMaybe<Scalars['Boolean']['input']>;
-  includeChampion?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type GetProjectsQuery = { __typename?: 'RootQueryType', projects?: Array<{ __typename?: 'Project', id: string, name: string, private: boolean, insertedAt: any, updatedAt: any, startedAt?: any | null, closedAt?: any | null, deadline?: any | null, isArchived: boolean, isOutdated: boolean, status?: string | null, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, space?: { __typename?: 'Group', id: string, name: string }, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null> | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string, description: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null } | null> | null };
+export type GetProjectsQuery = { __typename?: 'RootQueryType', projects?: Array<{ __typename?: 'Project', id: string, name: string, private: boolean, insertedAt: any, updatedAt: any, startedAt?: any | null, closedAt?: any | null, deadline?: any | null, isArchived: boolean, isOutdated: boolean, status?: string | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, space?: { __typename?: 'Group', id: string, name: string }, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null> | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string, description: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null } | null> | null };
 
 export type SearchPeopleQueryVariables = Exact<{
   query: Scalars['String']['input'];
@@ -2639,7 +2638,7 @@ export type GetProjectQueryHookResult = ReturnType<typeof useGetProjectQuery>;
 export type GetProjectLazyQueryHookResult = ReturnType<typeof useGetProjectLazyQuery>;
 export type GetProjectQueryResult = Apollo.QueryResult<GetProjectQuery, GetProjectQueryVariables>;
 export const GetProjectsDocument = gql`
-    query GetProjects($filters: ProjectListFilters, $includeSpace: Boolean = false, $includeMilestones: Boolean = false, $includeContributors: Boolean = false, $includeLastCheckIn: Boolean = false, $includeChampion: Boolean = false) {
+    query GetProjects($filters: ProjectListFilters, $includeSpace: Boolean = false, $includeMilestones: Boolean = false, $includeContributors: Boolean = false, $includeLastCheckIn: Boolean = false) {
   projects(filters: $filters) {
     id
     name
@@ -2652,12 +2651,6 @@ export const GetProjectsDocument = gql`
     isArchived
     isOutdated
     status
-    champion @include(if: $includeChampion) {
-      id
-      fullName
-      avatarUrl
-      title
-    }
     contributors @include(if: $includeContributors) {
       id
       role
@@ -2718,7 +2711,6 @@ export const GetProjectsDocument = gql`
  *      includeMilestones: // value for 'includeMilestones'
  *      includeContributors: // value for 'includeContributors'
  *      includeLastCheckIn: // value for 'includeLastCheckIn'
- *      includeChampion: // value for 'includeChampion'
  *   },
  * });
  */

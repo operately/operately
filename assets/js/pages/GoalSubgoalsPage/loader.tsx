@@ -1,11 +1,8 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as Projects from "@/models/projects";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  goals: Goals.Goal[];
-  projects: Projects.Project[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -16,19 +13,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeProjects: true,
       includeLastCheckIn: true,
       includeParentGoal: true,
-    }),
-
-    goals: await Goals.getGoals({
-      includeTargets: true,
-      includeSpace: true,
-      includeLastCheckIn: true,
-    }),
-
-    projects: await Projects.getProjects({
-      includeSpace: true,
-      includeMilestones: true,
-      includeLastCheckIn: true,
-      includeChampion: true,
     }),
   };
 }
