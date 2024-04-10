@@ -31,10 +31,10 @@ export function buildTree(allGoals: Goal[], allProjects: Project[], options: Tre
   connectNodes(nodes);
 
   let roots = findRoots(nodes, options);
+  let withDepth = setDepth(roots, 0);
+  let sorted = sortNodes(withDepth, options.sortColumn, options.sortDirection);
 
-  setDepth(roots, 0);
-
-  return roots;
+  return sorted;
 }
 
 function findRoots(nodes: Node[], options: TreeOptions): Node[] {
@@ -65,11 +65,13 @@ function rootNodesForGoal(nodes: Node[], goalId: string): Node[] {
   return nodes.filter((n) => n.parentId === goalId);
 }
 
-function setDepth(nodes: Node[], depth: number = 0): void {
+function setDepth(nodes: Node[], depth: number = 0): Node[] {
   nodes.forEach((n) => {
     n.depth = depth;
     setDepth(n.children, depth + 1);
   });
+
+  return nodes;
 }
 
 function connectNodes(nodes: Node[]): void {
@@ -80,4 +82,14 @@ function connectNodes(nodes: Node[]): void {
     n.addChildren(children);
     n.setParent(parent);
   });
+}
+
+function sortNodes(nodes: Node[], column: SortColumn, direction: SortDirection): Node[] {
+  let res = nodes.sort((a, b) => a.compare(b, column, direction));
+
+  res.forEach((n) => {
+    n.children = sortNodes(n.children, column, direction);
+  });
+
+  return res;
 }

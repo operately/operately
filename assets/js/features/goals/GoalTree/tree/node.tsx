@@ -55,9 +55,11 @@ export abstract class Node {
   }
 
   compare(b: Node, column: SortColumn, direction: SortDirection): number {
-    if (this.type != b.type) {
-      return this.type === "goal" ? -1 : 1;
-    }
+    if (this.type === "goal" && b.type === "project") return -1;
+    if (this.type === "project" && b.type === "goal") return 1;
+
+    if (this.isClosed && !b.isClosed) return 1;
+    if (!this.isClosed && b.isClosed) return -1;
 
     const result = match(column)
       .with("name", () => this.compareName(b))

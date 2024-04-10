@@ -249,4 +249,47 @@ describe("Tree", () => {
 
     assertTreeShape(withCompleted, ["name"], expected);
   });
+
+  it("can sort nodes by name asc/desc", () => {
+    const g1 = goalMock("A", company, john);
+    const g2 = goalMock("B", company, john);
+    const g3 = goalMock("C", company, john);
+
+    const g11 = goalMock("D", company, john, { parentGoalId: g1.id });
+    const g12 = goalMock("E", company, john, { parentGoalId: g1.id });
+    const g13 = goalMock("F", company, john, { parentGoalId: g1.id });
+
+    const treeAsc = buildTree([g1, g2, g3, g11, g12, g13], [], {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: false,
+    });
+
+    const treeDesc = buildTree([g1, g2, g3, g11, g12, g13], [], {
+      sortColumn: "name",
+      sortDirection: "desc",
+      showCompleted: false,
+    });
+
+    const expectedAsc = `
+      A
+        D
+        E
+        F
+      B
+      C
+    `;
+
+    const expectedDesc = `
+      C
+      B
+      A
+        F
+        E
+        D
+    `;
+
+    assertTreeShape(treeAsc, ["name"], expectedAsc);
+    assertTreeShape(treeDesc, ["name"], expectedDesc);
+  });
 });
