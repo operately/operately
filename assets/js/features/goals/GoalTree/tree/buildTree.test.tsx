@@ -191,13 +191,15 @@ describe("Tree", () => {
     const p1 = projectMock("P1", marketing, john, { goal: g1 });
     const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: new Date() });
 
-    const withCompleted = buildTree([g1, g2, g3, g4], [p1, p2], {
+    const g5 = goalMock("G5", company, john, { isClosed: true });
+
+    const withCompleted = buildTree([g1, g2, g3, g4, g5], [p1, p2], {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: true,
     });
 
-    const withoutCompleted = buildTree([g1, g2, g3, g4], [p1, p2], {
+    const withoutCompleted = buildTree([g1, g2, g3, g4, g5], [p1, p2], {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
@@ -210,6 +212,7 @@ describe("Tree", () => {
             G4
         P1
         P2
+      G5
     `;
 
     const expectedWithoutCompleted = `

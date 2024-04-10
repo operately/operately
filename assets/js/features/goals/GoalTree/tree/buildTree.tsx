@@ -114,7 +114,9 @@ class TreeBuilder {
   }
 
   private showHideCompleted(): void {
-    if (!this.options.showCompleted) TreeBuilder.hideCompleted(this.rootNodes);
+    if (!this.options.showCompleted) {
+      this.rootNodes = TreeBuilder.hideCompleted(this.rootNodes);
+    }
   }
 
   // Recursive utility functions
