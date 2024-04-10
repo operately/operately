@@ -21,22 +21,7 @@ export interface TreeOptions {
 export type Tree = Node[];
 
 export function buildTree(allGoals: Goal[], allProjects: Project[], options: TreeOptions): Node[] {
-  const goalNodes = allGoals.map((g) => new GoalNode(g));
-  const projectNodes = allProjects.map((p) => new ProjectNode(p));
-
-  let nodes = [...goalNodes, ...projectNodes];
-
-  if (!options.showCompleted) {
-    nodes = nodes.filter((n) => !n.isClosed);
-  }
-
-  connectNodes(nodes);
-
-  let roots = findRoots(nodes, options);
-  let withDepth = setDepth(roots, 0);
-  let sorted = sortNodes(withDepth, options.sortColumn, options.sortDirection);
-
-  return sorted;
+  return new TreeBuilder(allGoals, allProjects, options).build();
 }
 
 export function getAllIds(nodes: Node[]): string[] {
@@ -45,59 +30,119 @@ export function getAllIds(nodes: Node[]): string[] {
   }, []);
 }
 
-function findRoots(nodes: Node[], options: TreeOptions): Node[] {
-  if (options.spaceId) {
-    return rootNodesForSpace(nodes, options.spaceId);
-  } else if (options.personId) {
-    return rootNodesForPerson(nodes, options.personId);
-  } else if (options.goalId) {
-    return rootNodesForGoal(nodes, options.goalId);
-  } else {
-    return rootNodesInTheCompany(nodes);
+class TreeBuilder {
+  constructor(
+    private allGoals: Goal[],
+    private allProjects: Project[],
+    private options: TreeOptions,
+  ) {}
+
+  private goalNodes: GoalNode[];
+  private projectNodes: ProjectNode[];
+  private nodes: Node[];
+  private rootNodes: Node[];
+
+  build(): Tree {
+    this.createNodes();
+    this.connectNodes();
+    this.connectNodes();
+    this.findRoots();
+    this.setDepth();
+    this.sortNodes();
+    this.showHideCompleted();
+
+    return this.rootNodes;
   }
-}
 
-function rootNodesForSpace(nodes: Node[], spaceId: string): Node[] {
-  return nodes.filter((n) => n.space.id === spaceId && n.hasNoParentWith((node) => node.space.id === spaceId));
-}
+  private createNodes(): void {
+    this.goalNodes = this.allGoals.map((g) => new GoalNode(g));
+    this.projectNodes = this.allProjects.map((p) => new ProjectNode(p));
+    this.nodes = [...this.goalNodes, ...this.projectNodes];
+  }
 
-function rootNodesForPerson(nodes: Node[], personId: string): Node[] {
-  return nodes.filter((n) => n.champion.id === personId && n.hasNoParentWith((node) => node.champion.id === personId));
-}
+  private connectNodes(): void {
+    this.nodes.forEach((n) => {
+      const children = this.nodes.filter((c) => c.parentId === n.id);
+      const parent = this.nodes.find((c) => c.id === n.parentId);
 
-function rootNodesInTheCompany(nodes: Node[]): Node[] {
-  return nodes.filter((n) => !n.parentId);
-}
+      n.addChildren(children);
+      n.setParent(parent);
+    });
+  }
 
-function rootNodesForGoal(nodes: Node[], goalId: string): Node[] {
-  return nodes.filter((n) => n.parentId === goalId);
-}
+  private findRoots(): void {
+    if (this.options.spaceId) {
+      this.rootNodes = this.rootNodesForSpace();
+    } else if (this.options.personId) {
+      this.rootNodes = this.rootNodesForPerson();
+    } else if (this.options.goalId) {
+      this.rootNodes = this.rootNodesForGoal();
+    } else {
+      this.rootNodes = this.rootNodesInTheCompany();
+    }
+  }
 
-function setDepth(nodes: Node[], depth: number = 0): Node[] {
-  nodes.forEach((n) => {
-    n.depth = depth;
-    setDepth(n.children, depth + 1);
-  });
+  private rootNodesForSpace(): Node[] {
+    return this.nodes.filter(
+      (n) =>
+        n.space.id === this.options.spaceId! && n.hasNoParentWith((node) => node.space.id === this.options.spaceId),
+    );
+  }
 
-  return nodes;
-}
+  private rootNodesForPerson(): Node[] {
+    return this.nodes.filter(
+      (n) =>
+        n.champion.id === this.options.personId &&
+        n.hasNoParentWith((node) => node.champion.id === this.options.personId),
+    );
+  }
 
-function connectNodes(nodes: Node[]): void {
-  nodes.forEach((n) => {
-    const children = nodes.filter((c) => c.parentId === n.id);
-    const parent = nodes.find((c) => c.id === n.parentId);
+  private rootNodesInTheCompany(): Node[] {
+    return this.nodes.filter((n) => !n.parentId);
+  }
 
-    n.addChildren(children);
-    n.setParent(parent);
-  });
-}
+  private rootNodesForGoal(): Node[] {
+    return this.nodes.filter((n) => n.parentId === this.options.goalId);
+  }
 
-function sortNodes(nodes: Node[], column: SortColumn, direction: SortDirection): Node[] {
-  let res = nodes.sort((a, b) => a.compare(b, column, direction));
+  private setDepth(): void {
+    TreeBuilder.setDepth(this.rootNodes, 0);
+  }
 
-  res.forEach((n) => {
-    n.children = sortNodes(n.children, column, direction);
-  });
+  private sortNodes(): void {
+    TreeBuilder.sortNodes(this.rootNodes, this.options.sortColumn, this.options.sortDirection);
+  }
 
-  return res;
+  private showHideCompleted(): void {
+    if (!this.options.showCompleted) TreeBuilder.hideCompleted(this.rootNodes);
+  }
+
+  // Recursive utility functions
+
+  static sortNodes(nodes: Node[], column: SortColumn, direction: SortDirection): Node[] {
+    let res = nodes.sort((a, b) => a.compare(b, column, direction));
+
+    res.forEach((n) => {
+      n.children = TreeBuilder.sortNodes(n.children, column, direction);
+    });
+
+    return res;
+  }
+
+  static setDepth(nodes: Node[], depth: number): void {
+    nodes.forEach((n) => {
+      n.depth = depth;
+      TreeBuilder.setDepth(n.children, depth + 1);
+    });
+  }
+
+  static hideCompleted(nodes: Node[]): Node[] {
+    return nodes
+      .filter((n) => !n.isClosed)
+      .map((n) => {
+        n.children = TreeBuilder.hideCompleted(n.children);
+
+        return n;
+      });
+  }
 }

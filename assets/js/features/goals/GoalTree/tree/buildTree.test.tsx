@@ -216,11 +216,28 @@ describe("Tree", () => {
       G1
         G2
         P1
-      G4
     `;
 
     assertTreeShape(withCompleted, ["name"], expectedWithCompleted);
     assertTreeShape(withoutCompleted, ["name"], expectedWithoutCompleted);
+  });
+
+  it("is hides uncompleted subgoals when parent is completed", () => {
+    const g1 = goalMock("G1", company, john);
+    const g2 = goalMock("G2", marketing, sarah, { parentGoalId: g1.id, isClosed: true });
+    const g3 = goalMock("G3", marketing, john, { parentGoalId: g2.id });
+
+    const tree = buildTree([g1, g2, g3], [], {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: false,
+    });
+
+    const expected = `
+      G1
+    `;
+
+    assertTreeShape(tree, ["name"], expected);
   });
 
   it("completed work are always on the bottom", () => {
