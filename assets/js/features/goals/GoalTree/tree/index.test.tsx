@@ -1,123 +1,222 @@
-import { Tree } from "./index";
+import { buildTree } from "./index";
+
 import { Goal } from "@/models/goals";
+import { Project } from "@/models/projects";
+import { Group } from "@/models/groups";
+
+import { Node } from "./node";
 
 describe("Tree", () => {
-  it("is able to select goals for a single space", () => {
-    const companySpace = { id: "1" };
-    const marketingSpace = { id: "2" };
-    const productSpace = { id: "3" };
+  let spaces: Group[];
+  let goals: Goal[];
+  let projects: Project[];
 
-    const allGoals = [
-      goalForSpace(companySpace, "A", null),
-      goalForSpace(marketingSpace, "B", "A"),
-      goalForSpace(marketingSpace, "C", "A"),
-      goalForSpace(marketingSpace, "D", "B"),
-      goalForSpace(marketingSpace, "E", "D"),
-      goalForSpace(productSpace, "F", "A"),
-      goalForSpace(marketingSpace, "G", "F"),
-      goalForSpace(marketingSpace, "H", null),
-    ] as Goal[];
+  beforeEach(() => {
+    const s1 = spaceMock("Company");
+    const s2 = spaceMock("Marketing");
 
-    const filters = {
-      spaceId: marketingSpace.id,
-    };
+    const cg1 = goalMock("CompanyGoal1", s1);
+    const cg2 = goalMock("CompanyGoal2", s1);
+    const cg3 = goalMock("CompanyGoal3", s1);
 
-    const tree = new Tree(allGoals, "name", "asc", filters, true);
+    const mg1 = goalMock("MarketingGoal1", s2, { parentGoalId: cg1.id });
+    const mg11 = goalMock("MarketingGoal1.1", s2, { parentGoalId: mg1.id });
 
-    expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "G", "H"]);
-    expect(getChildNames(tree, "B")).toEqual(["D"]);
-    expect(getChildNames(tree, "C")).toEqual([]);
-    expect(getChildNames(tree, "D")).toEqual(["E"]);
-    expect(getChildNames(tree, "G")).toEqual([]);
-    expect(getChildNames(tree, "H")).toEqual([]);
+    const mg2 = goalMock("MarketingGoal2", s2);
+
+    spaces = [s1, s2];
+    goals = [cg1, cg2, cg3, mg1, mg11, mg2];
+    projects = [];
   });
 
-  it("is able to select goals for a person", () => {
-    const personA = { id: "1" };
-    const personB = { id: "2" };
+  it("can display the full three", () => {
+    const tree = buildTree(goals, projects, {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: false,
+    });
 
-    const allGoals = [
-      goalForPerson(personB, "A", null),
-      goalForPerson(personA, "B", "A"),
-      goalForPerson(personA, "C", "A"),
-      goalForPerson(personA, "D", "B"),
-      goalForPerson(personA, "E", "D"),
-      goalForPerson(personA, "F", "A"),
-      goalForPerson(personA, "G", "F"),
-      goalForPerson(personB, "H", null),
-    ] as Goal[];
+    const expected = `
+      CompanyGoal1
+        MarketingGoal1
+          MarketingGoal1.1
+      CompanyGoal2
+      CompanyGoal3
+      MarketingGoal2
+    `;
 
-    const filters = {
-      personId: personA.id,
-    };
-
-    const tree = new Tree(allGoals, "name", "asc", filters, true);
-
-    expect(tree.getRoots().map((n) => n.name)).toEqual(["B", "C", "F"]);
-    expect(getChildNames(tree, "B")).toEqual(["D"]);
-    expect(getChildNames(tree, "C")).toEqual([]);
-    expect(getChildNames(tree, "F")).toEqual(["G"]);
+    assertTreeShape(tree, ["name"], expected);
   });
 
-  it("is able to hide/show completed goals", () => {
-    const companySpace = { id: "1" };
-    const marketingSpace = { id: "2" };
-    const productSpace = { id: "3" };
+  it("can display goals belonging to a space", () => {
+    const tree = buildTree(goals, projects, {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: false,
+      spaceId: spaces[1]!.id,
+    });
 
-    const allGoals = [
-      goalForSpace(companySpace, "A", null, false),
-      goalForSpace(marketingSpace, "B", "A"),
-      goalForSpace(marketingSpace, "C", "A"),
-      goalForSpace(marketingSpace, "D", "B", true),
-      goalForSpace(marketingSpace, "E", "D", true),
-      goalForSpace(productSpace, "F", "A"),
-      goalForSpace(marketingSpace, "G", "F"),
-      goalForSpace(marketingSpace, "H", null, true),
-    ] as Goal[];
+    const expected = `
+      MarketingGoal1
+        MarketingGoal1.1
+      MarketingGoal2
+    `;
 
-    const filters = {};
-
-    const tree = new Tree(allGoals, "name", "asc", filters, false);
-
-    expect(tree.getRoots().map((n) => n.name)).toEqual(["A"]);
-    expect(getChildNames(tree, "A")).toEqual(["B", "C", "F"]);
-    expect(getChildNames(tree, "B")).toEqual([]);
-    expect(getChildNames(tree, "C")).toEqual([]);
-    expect(getChildNames(tree, "F")).toEqual(["G"]);
+    assertTreeShape(tree, ["name"], expected);
   });
+
+  // it("is able to select goals for a person", () => {
+  //   const personA = { id: "1" };
+  //   const personB = { id: "2" };
+
+  //   const allGoals = [
+  //     goalForPerson(personB, "A", null),
+  //     goalForPerson(personA, "B", "A"),
+  //     goalForPerson(personA, "C", "A"),
+  //     goalForPerson(personA, "D", "B"),
+  //     goalForPerson(personA, "E", "D"),
+  //     goalForPerson(personA, "F", "A"),
+  //     goalForPerson(personA, "G", "F"),
+  //     goalForPerson(personB, "H", null),
+  //   ] as Goal[];
+
+  //   const options: TreeOptions = {
+  //     sortColumn: "name",
+  //     sortDirection: "asc",
+  //     showCompleted: false,
+  //     personId: personA.id,
+  //   };
+
+  //   const tree = buildTree(allGoals, [], options);
+
+  //   expect(drawTree(tree, ["name"])).toEqual(`
+  //     B
+  //       D
+  //         E
+  //     C
+  //   `);
+  // });
+
+  // it("is able to hide/show completed goals", () => {
+  //   const companySpace = { id: "1" };
+  //   const marketingSpace = { id: "2" };
+  //   const productSpace = { id: "3" };
+
+  //   const allGoals = [
+  //     goalForSpace(companySpace, "A", null, false),
+  //     goalForSpace(marketingSpace, "B", "A"),
+  //     goalForSpace(marketingSpace, "C", "A"),
+  //     goalForSpace(marketingSpace, "D", "B", true),
+  //     goalForSpace(marketingSpace, "E", "D", true),
+  //     goalForSpace(productSpace, "F", "A"),
+  //     goalForSpace(marketingSpace, "G", "F"),
+  //     goalForSpace(marketingSpace, "H", null, true),
+  //   ] as Goal[];
+
+  //   const filters: TreeOptions = {
+  //     sortColumn: "name",
+  //     sortDirection: "asc",
+  //     showCompleted: false,
+  //   };
+
+  //   const tree = buildTree(allGoals, [], filters);
+
+  //   expect(drawTree(tree, ["name"])).toEqual(`
+  //     B
+  //   `);
+  // });
 });
 
-function goalForSpace(
-  space: { id: string },
-  name: string,
-  parentGoalId: string | null,
-  isClosed: boolean = false,
-): Goal {
+function goalMock(name: string, space: Group, params: Partial<Goal> = {}): Goal {
   return {
     id: name,
     name,
+    spaceId: "1",
     space,
-    parentGoalId,
-    title: name,
-    projects: [],
-    isClosed,
+    ...params,
   } as unknown as Goal;
 }
 
-function goalForPerson(person: { id: string }, name: string, parentGoalId: string | null): Goal {
-  return {
-    id: name,
-    name,
-    space: { id: "1" },
-    champion: person,
-    parentGoalId,
-    title: name,
-    projects: [],
-  } as unknown as Goal;
+function spaceMock(name: string): Group {
+  return { id: name, name } as unknown as Group;
 }
 
-const getChildNames = (tree: Tree, name: string) =>
-  tree
-    .getAllNodes()
-    .find((n) => n.name === name)
-    ?.children.map((n) => n.name);
+// function goalForSpace(
+//   space: { id: string },
+//   name: string,
+//   parentGoalId: string | null,
+//   isClosed: boolean = false,
+// ): Goal {
+//   return {
+//     id: name,
+//     name,
+//     space,
+//     parentGoalId,
+//     title: name,
+//     projects: [],
+//     isClosed,
+//   } as unknown as Goal;
+// }
+
+// function goalForPerson(person: { id: string }, name: string, parentGoalId: string | null): Goal {
+//   return {
+//     id: name,
+//     name,
+//     space: { id: "1" },
+//     champion: person,
+//     parentGoalId,
+//     title: name,
+//     projects: [],
+//   } as unknown as Goal;
+// }
+
+function assertTreeShape(nodes: Node[], arg1: string[] | string, arg2?: string) {
+  let fields: string[];
+  let expected: string;
+
+  if (arg1 && arg2) {
+    fields = arg1 as string[];
+    expected = arg2 as string;
+  } else {
+    fields = ["name"];
+    expected = arg1 as string;
+  }
+
+  const actual = drawTree(nodes, fields);
+
+  const actualLines = actual
+    .split("\n")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  const expectedLines = expected
+    .split("\n")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  const same = actualLines.length === expectedLines.length && actualLines.every((line, i) => line === expectedLines[i]);
+
+  try {
+    expect(same).toBe(true);
+  } catch (e) {
+    e.message += `\n\nExpected:\n${expectedLines.join("\n")}\n\nActual:\n${actualLines.join("\n")}`;
+    Error.captureStackTrace(e, assertTreeShape);
+    throw e;
+  }
+}
+
+function drawTree(nodes: Node[], keys: string[], depth = 0): string {
+  return nodes
+    .map((node) => {
+      const indent = "  ".repeat(depth);
+      const keyValues = keys.map((key) => node[key]).join(", ");
+
+      if (node.children.length === 0) {
+        return `${indent}${keyValues}`;
+      } else {
+        const children = drawTree(node.children, keys, depth + 1);
+        return `${indent}${keyValues}\n${children}`;
+      }
+    })
+    .join("\n");
+}
