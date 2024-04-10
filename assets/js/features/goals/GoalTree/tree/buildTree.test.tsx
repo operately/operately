@@ -1,16 +1,12 @@
 import { buildTree } from "./index";
 
-import { Goal } from "@/models/goals";
-import { Project } from "@/models/projects";
-import { Group } from "@/models/groups";
-import { Person } from "@/models/people";
-
-import { Node } from "./node";
+import { assertTreeShape } from "@/__tests__/utils/assertTreeShape";
+import { projectMock, personMock, spaceMock, goalMock } from "@/__tests__/mocks";
 
 describe("Tree", () => {
-  const john: Person = personMock("John");
-  const peter: Person = personMock("Peter");
-  const sarah: Person = personMock("Sarah");
+  const john = personMock("John");
+  const peter = personMock("Peter");
+  const sarah = personMock("Sarah");
 
   const company = spaceMock("Company");
   const product = spaceMock("Product");
@@ -186,123 +182,71 @@ describe("Tree", () => {
     assertTreeShape(tree, ["name"], expected);
   });
 
-  // it("is able to hide/show completed goals", () => {
-  //   const companySpace = { id: "1" };
-  //   const marketingSpace = { id: "2" };
-  //   const productSpace = { id: "3" };
+  it("is able to hide/show completed goals", () => {
+    const g1 = goalMock("G1", company, john);
+    const g2 = goalMock("G2", marketing, sarah, { parentGoalId: g1.id });
+    const g3 = goalMock("G3", marketing, john, { parentGoalId: g2.id, isClosed: true });
+    const g4 = goalMock("G4", marketing, john, { parentGoalId: g3.id });
 
-  //   const allGoals = [
-  //     goalForSpace(companySpace, "A", null, false),
-  //     goalForSpace(marketingSpace, "B", "A"),
-  //     goalForSpace(marketingSpace, "C", "A"),
-  //     goalForSpace(marketingSpace, "D", "B", true),
-  //     goalForSpace(marketingSpace, "E", "D", true),
-  //     goalForSpace(productSpace, "F", "A"),
-  //     goalForSpace(marketingSpace, "G", "F"),
-  //     goalForSpace(marketingSpace, "H", null, true),
-  //   ] as Goal[];
+    const p1 = projectMock("P1", marketing, john, { goal: g1 });
+    const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: new Date() });
 
-  //   const filters: TreeOptions = {
-  //     sortColumn: "name",
-  //     sortDirection: "asc",
-  //     showCompleted: false,
-  //   };
+    const withCompleted = buildTree([g1, g2, g3, g4], [p1, p2], {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: true,
+    });
 
-  //   const tree = buildTree(allGoals, [], filters);
+    const withoutCompleted = buildTree([g1, g2, g3, g4], [p1, p2], {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: false,
+    });
 
-  //   expect(drawTree(tree, ["name"])).toEqual(`
-  //     B
-  //   `);
-  // });
+    const expectedWithCompleted = `
+      G1
+        G2
+          G3
+            G4
+        P1
+        P2
+    `;
+
+    const expectedWithoutCompleted = `
+      G1
+        G2
+        P1
+      G4
+    `;
+
+    assertTreeShape(withCompleted, ["name"], expectedWithCompleted);
+    assertTreeShape(withoutCompleted, ["name"], expectedWithoutCompleted);
+  });
+
+  it("completed work are always on the bottom", () => {
+    const g1 = goalMock("G1", company, john);
+    const g2 = goalMock("G2", company, john, { isClosed: true });
+    const g3 = goalMock("G3", company, john);
+
+    const p1 = projectMock("P1", marketing, john, { goal: g1 });
+    const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: new Date() });
+    const p3 = projectMock("P3", marketing, john, { goal: g1 });
+
+    const withCompleted = buildTree([g1, g2, g3], [p1, p2, p3], {
+      sortColumn: "name",
+      sortDirection: "asc",
+      showCompleted: true,
+    });
+
+    const expected = `
+      G1
+        P1
+        P3
+        P2
+      G3
+      G2
+    `;
+
+    assertTreeShape(withCompleted, ["name"], expected);
+  });
 });
-
-function goalMock(name: string, space: Group, champion: Person, params: Partial<Goal> = {}): Goal {
-  return {
-    id: name,
-    name,
-    spaceId: "1",
-    space,
-    champion,
-    championId: champion.id,
-    ...params,
-  } as unknown as Goal;
-}
-
-function spaceMock(name: string): Group {
-  return { id: name, name } as unknown as Group;
-}
-
-function personMock(name: string): Person {
-  return { id: name, fullName: name } as unknown as Person;
-}
-
-function projectMock(name: string, space: Group, champion: Person, params: Partial<Project> = {}): Project {
-  return {
-    id: name,
-    name,
-    spaceId: "1",
-    space,
-    champion,
-    championId: champion.id,
-    milestones: [],
-    ...params,
-  } as unknown as Project;
-}
-
-function assertTreeShape(nodes: Node[], fields: string[], expected: string): void {
-  const actual = drawTree(nodes, fields);
-
-  const actualLines = actual.split("\n");
-  const expectedLines = removeIndentation(expected).split("\n");
-
-  const same = actualLines.length === expectedLines.length && actualLines.every((line, i) => line === expectedLines[i]);
-
-  try {
-    expect(same).toBe(true);
-  } catch (e) {
-    e.message += `\n\nExpected:\n${expectedLines.join("\n")}\n\nActual:\n${actualLines.join("\n")}`;
-    Error.captureStackTrace(e, assertTreeShape);
-    throw e;
-  }
-}
-
-function drawTree(nodes: Node[], keys: string[], depth = 0): string {
-  return nodes
-    .map((node) => {
-      const indent = "  ".repeat(depth);
-      const keyValues = keys
-        .map((key) => {
-          if (key === "champion") return `${node.champion?.fullName}`;
-          if (key === "name") return `${node.name}`;
-          if (key === "space") return `${node.space?.name}`;
-
-          throw new Error(`Unknown key: ${key}`);
-        })
-        .join(" ");
-
-      if (node.children.length === 0) {
-        return `${indent}${keyValues}`;
-      } else {
-        const children = drawTree(node.children, keys, depth + 1);
-        return `${indent}${keyValues}\n${children}`;
-      }
-    })
-    .join("\n");
-}
-
-function removeIndentation(str: string): string {
-  const noEmptyLines = str
-    .split("\n")
-    .filter((s) => !/^\s*$/.test(s))
-    .join("\n");
-
-  const sharedPaddingSize: number = noEmptyLines
-    .split("\n")
-    .map((s) => s.match(/^[ ]*/)?.[0].length as number)
-    .reduce((a: number, b: number) => Math.min(a, b), 1000);
-
-  return noEmptyLines
-    .split("\n")
-    .map((line) => line.slice(sharedPaddingSize).trimEnd())
-    .join("\n");
-}
