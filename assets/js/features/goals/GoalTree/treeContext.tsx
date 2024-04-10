@@ -2,11 +2,11 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 
-import { buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
+import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
 
 export interface TreeContextValue {
-  tree: Node[];
+  tree: Tree;
 
   sortColumn: SortColumn;
   sortDirection: SortDirection;

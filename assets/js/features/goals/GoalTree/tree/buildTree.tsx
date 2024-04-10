@@ -18,6 +18,8 @@ export interface TreeOptions {
   goalId?: string;
 }
 
+export type Tree = Node[];
+
 export function buildTree(allGoals: Goal[], allProjects: Project[], options: TreeOptions): Node[] {
   const goalNodes = allGoals.map((g) => new GoalNode(g));
   const projectNodes = allProjects.map((p) => new ProjectNode(p));
@@ -35,6 +37,12 @@ export function buildTree(allGoals: Goal[], allProjects: Project[], options: Tre
   let sorted = sortNodes(withDepth, options.sortColumn, options.sortDirection);
 
   return sorted;
+}
+
+export function getAllIds(nodes: Node[]): string[] {
+  return nodes.reduce((acc, n) => {
+    return [...acc, n.id, ...getAllIds(n.children)];
+  }, []);
 }
 
 function findRoots(nodes: Node[], options: TreeOptions): Node[] {

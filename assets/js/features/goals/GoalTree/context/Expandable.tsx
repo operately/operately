@@ -9,7 +9,8 @@
 //
 
 import React from "react";
-import { Tree } from "../tree";
+
+import { Tree, getAllIds } from "../tree";
 
 type ExpandedNodesMap = Record<string, boolean>;
 
@@ -35,7 +36,7 @@ export function ExpandableProvider({ children, tree }: ExpandableProviderProps) 
   };
 
   const expandAll = () => {
-    setExpanded(tree.getAllNodes().reduce((acc, node) => ({ ...acc, [node.id]: true }), {}));
+    setExpanded(getAllIds(tree).reduce((acc, id) => ({ ...acc, [id]: true }), {}));
   };
 
   const collapseAll = () => {
