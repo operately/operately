@@ -1960,7 +1960,7 @@ export type GetGoalQueryVariables = Exact<{
 }>;
 
 
-export type GetGoalQuery = { __typename?: 'RootQueryType', goal: { __typename?: 'Goal', id: string, name: string, timeframe: string, isArchived: boolean, isClosed: boolean, closedAt?: any | null, archivedAt?: any | null, description?: string | null, nextUpdateScheduledAt?: any | null, parentGoalId?: string | null, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, parentGoal?: { __typename?: 'Goal', id: string, name: string } | null, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string }, permissions: { __typename?: 'GoalPermissions', canEdit: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean, canClose: boolean, canArchive: boolean }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, unit: string, value: number } | null> | null, projects?: Array<{ __typename?: 'Project', id: string, name: string, status?: string | null, closedAt?: any | null, archivedAt?: any | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, responsibility?: string | null, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null> | null } | null> | null, lastCheckIn?: { __typename?: 'Update', id: string, insertedAt: any, author?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, content?: { __typename: 'UpdateContentGoalCheckIn', message: string } | { __typename: 'UpdateContentMessage' } | { __typename: 'UpdateContentProjectContributorAdded' } | { __typename: 'UpdateContentProjectContributorRemoved' } | { __typename: 'UpdateContentProjectCreated' } | { __typename: 'UpdateContentProjectDiscussion' } | { __typename: 'UpdateContentProjectEndTimeChanged' } | { __typename: 'UpdateContentProjectMilestoneCompleted' } | { __typename: 'UpdateContentProjectMilestoneCreated' } | { __typename: 'UpdateContentProjectMilestoneDeadlineChanged' } | { __typename: 'UpdateContentProjectMilestoneDeleted' } | { __typename: 'UpdateContentProjectStartTimeChanged' } | { __typename: 'UpdateContentReview' } | { __typename: 'UpdateContentStatusUpdate' } | null } | null } };
+export type GetGoalQuery = { __typename?: 'RootQueryType', goal: { __typename?: 'Goal', id: string, name: string, timeframe: string, isArchived: boolean, isClosed: boolean, closedAt?: any | null, progressPercentage: number, archivedAt?: any | null, description?: string | null, nextUpdateScheduledAt?: any | null, parentGoalId?: string | null, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, parentGoal?: { __typename?: 'Goal', id: string, name: string } | null, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string }, permissions: { __typename?: 'GoalPermissions', canEdit: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean, canClose: boolean, canArchive: boolean }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, unit: string, value: number } | null> | null, projects?: Array<{ __typename?: 'Project', id: string, name: string, status?: string | null, closedAt?: any | null, archivedAt?: any | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, responsibility?: string | null, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null> | null } | null> | null, lastCheckIn?: { __typename?: 'Update', id: string, insertedAt: any, author?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, content?: { __typename: 'UpdateContentGoalCheckIn', message: string } | { __typename: 'UpdateContentMessage' } | { __typename: 'UpdateContentProjectContributorAdded' } | { __typename: 'UpdateContentProjectContributorRemoved' } | { __typename: 'UpdateContentProjectCreated' } | { __typename: 'UpdateContentProjectDiscussion' } | { __typename: 'UpdateContentProjectEndTimeChanged' } | { __typename: 'UpdateContentProjectMilestoneCompleted' } | { __typename: 'UpdateContentProjectMilestoneCreated' } | { __typename: 'UpdateContentProjectMilestoneDeadlineChanged' } | { __typename: 'UpdateContentProjectMilestoneDeleted' } | { __typename: 'UpdateContentProjectStartTimeChanged' } | { __typename: 'UpdateContentReview' } | { __typename: 'UpdateContentStatusUpdate' } | null } | null } };
 
 export type GetGoalsQueryVariables = Exact<{
   spaceId?: InputMaybe<Scalars['ID']['input']>;
@@ -2018,10 +2018,12 @@ export type GetProjectsQueryVariables = Exact<{
   includeMilestones?: InputMaybe<Scalars['Boolean']['input']>;
   includeContributors?: InputMaybe<Scalars['Boolean']['input']>;
   includeLastCheckIn?: InputMaybe<Scalars['Boolean']['input']>;
+  includeChampion?: InputMaybe<Scalars['Boolean']['input']>;
+  includeGoal?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type GetProjectsQuery = { __typename?: 'RootQueryType', projects?: Array<{ __typename?: 'Project', id: string, name: string, private: boolean, insertedAt: any, updatedAt: any, startedAt?: any | null, closedAt?: any | null, deadline?: any | null, isArchived: boolean, isOutdated: boolean, status?: string | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, space?: { __typename?: 'Group', id: string, name: string }, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null> | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string, description: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null } | null> | null };
+export type GetProjectsQuery = { __typename?: 'RootQueryType', projects?: Array<{ __typename?: 'Project', id: string, name: string, private: boolean, insertedAt: any, updatedAt: any, startedAt?: any | null, closedAt?: any | null, deadline?: any | null, isArchived: boolean, isOutdated: boolean, status?: string | null, goal?: { __typename?: 'Goal', id: string, name: string } | null, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, space?: { __typename?: 'Group', id: string, name: string }, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null> | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string, description: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null } | null> | null };
 
 export type SearchPeopleQueryVariables = Exact<{
   query: Scalars['String']['input'];
@@ -2077,6 +2079,7 @@ export const GetGoalDocument = gql`
     isArchived
     isClosed
     closedAt
+    progressPercentage
     closedBy {
       id
       fullName
@@ -2637,7 +2640,7 @@ export type GetProjectQueryHookResult = ReturnType<typeof useGetProjectQuery>;
 export type GetProjectLazyQueryHookResult = ReturnType<typeof useGetProjectLazyQuery>;
 export type GetProjectQueryResult = Apollo.QueryResult<GetProjectQuery, GetProjectQueryVariables>;
 export const GetProjectsDocument = gql`
-    query GetProjects($filters: ProjectListFilters, $includeSpace: Boolean = false, $includeMilestones: Boolean = false, $includeContributors: Boolean = false, $includeLastCheckIn: Boolean = false) {
+    query GetProjects($filters: ProjectListFilters, $includeSpace: Boolean = false, $includeMilestones: Boolean = false, $includeContributors: Boolean = false, $includeLastCheckIn: Boolean = false, $includeChampion: Boolean = false, $includeGoal: Boolean = false) {
   projects(filters: $filters) {
     id
     name
@@ -2650,6 +2653,16 @@ export const GetProjectsDocument = gql`
     isArchived
     isOutdated
     status
+    goal @include(if: $includeGoal) {
+      id
+      name
+    }
+    champion @include(if: $includeChampion) {
+      id
+      fullName
+      avatarUrl
+      title
+    }
     contributors @include(if: $includeContributors) {
       id
       role
@@ -2710,6 +2723,8 @@ export const GetProjectsDocument = gql`
  *      includeMilestones: // value for 'includeMilestones'
  *      includeContributors: // value for 'includeContributors'
  *      includeLastCheckIn: // value for 'includeLastCheckIn'
+ *      includeChampion: // value for 'includeChampion'
+ *      includeGoal: // value for 'includeGoal'
  *   },
  * });
  */

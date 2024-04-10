@@ -48,7 +48,7 @@ function GoalTreeRoots() {
       <Controls />
 
       <div className="flex items-center justify-between py-2 bg-surface-dimmed -mx-12 px-12 border-y border-stroke-base">
-        <GoalTreeColumnHeader title="Goal" width="flex-1" sortId="name" />
+        <GoalTreeColumnHeader title="Name" width="flex-1" sortId="name" />
 
         <div className="flex items-center gap-4">
           <GoalTreeColumnHeader title="Champion" width="w-24" sortId="champion" />
@@ -59,7 +59,7 @@ function GoalTreeRoots() {
         </div>
       </div>
 
-      {context.tree.getRoots().map((root) => (
+      {context.tree.map((root) => (
         <NodeView key={root.id} node={root} />
       ))}
     </div>

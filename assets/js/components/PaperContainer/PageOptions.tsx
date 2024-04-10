@@ -28,6 +28,10 @@ export function Root(props: RootProps) {
     return "";
   }, [props.position]);
 
+  if (React.Children.toArray(props.children).length === 0) {
+    return null;
+  }
+
   return (
     <Context.Provider value={{ close: closeOptions }}>
       <div className={className}>

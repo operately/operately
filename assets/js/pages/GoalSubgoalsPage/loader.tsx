@@ -1,22 +1,23 @@
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/models/groups";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import * as Companies from "@/models/companies";
 
-import { Company, Group } from "@/gql/generated";
+interface LoaderResult {
+  goal: Goals.Goal;
 
-interface LoadedData {
-  company: Company;
-  group: Group;
   goals: Goals.Goal[];
   projects: Projects.Project[];
 }
 
-export async function loader({ params }): Promise<LoadedData> {
+export async function loader({ params }): Promise<LoaderResult> {
   return {
-    company: await Companies.getCompany(),
-    group: await Groups.getGroup(params.id),
+    goal: await Goals.getGoal({
+      id: params.id,
+      includeTargets: true,
+      includeProjects: true,
+      includeLastCheckIn: true,
+      includeParentGoal: true,
+    }),
 
     goals: await Goals.getGoals({
       includeTargets: true,
@@ -34,6 +35,6 @@ export async function loader({ params }): Promise<LoadedData> {
   };
 }
 
-export function useLoadedData(): LoadedData {
-  return Pages.useLoadedData() as LoadedData;
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
 }

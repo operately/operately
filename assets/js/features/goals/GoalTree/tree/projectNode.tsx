@@ -7,27 +7,26 @@ import { Node } from "./node";
 export class ProjectNode extends Node {
   public project: Project;
 
-  constructor(project: Project, depth: number = 0) {
+  constructor(project: Project) {
     super();
+
+    this.project = project;
+    this.parentId = project.goal?.id;
 
     this.id = project.id;
     this.type = "project";
-    this.depth = depth;
     this.name = project.name;
-    this.sortColumn = "name";
-    this.sortDirection = "desc";
-    this.showCompleted = false;
-    this.project = project;
 
-    this.linkTo = Paths.projectPath(project.id);
     this.champion = project.champion!;
-    this.children = [];
-    this.hasChildren = false;
     this.space = project.space;
     this.isClosed = !!project.closedAt;
     this.progress = this.calculateProgress();
     this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
     this.spaceId = project.space.id;
+  }
+
+  linkTo(): string {
+    return Paths.projectPath(this.project.id);
   }
 
   childrenInfoLabel(): string | null {

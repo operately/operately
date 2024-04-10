@@ -1,35 +1,31 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
-
-import Avatar from "@/components/Avatar";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { TargetList } from "./TargetList";
-import { Options } from "./Options";
 import { CheckIns } from "./CheckIns";
-import { Navigation } from "./Navigation";
-import { Banner } from "./Banner";
-import { ProjectListItem } from "@/features/ProjectListItem";
-import { useLoadedData } from "./loader";
+
+import { Navigation } from "@/features/goals/GoalPageNavigation";
+import { Header } from "@/features/goals/GoalPageHeader";
+
+import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
-import { Header } from "./Header";
+
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { goal } = useLoadedData();
 
   return (
     <Pages.Page title={[goal.name]}>
-      <Paper.Root size="large">
+      <Paper.Root>
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
-          <Banner goal={goal} />
-          <Options goal={goal} />
-          <Header goal={goal} />
+          <Header goal={goal} activeTab="about" />
 
-          <div className="flex item-center mt-4 gap-12">
+          <div className="flex item-center mt-8 gap-12">
             <div>
               <DimmedLabel>Timeframe</DimmedLabel>
               <div className="font-medium">{goal.timeframe}</div>
@@ -51,11 +47,6 @@ export function Page() {
           <div className="mt-8">
             <DimmedLabel>Success Conditions</DimmedLabel>
             <TargetList goal={goal} />
-          </div>
-
-          <div className="mt-8">
-            <DimmedLabel>Projects</DimmedLabel>
-            <ProjectList goal={goal} />
           </div>
 
           <div className="mt-8">
@@ -93,22 +84,6 @@ const AvatarAndName = ({ person }) => (
     <div className="font-medium">{person.fullName}</div>
   </div>
 );
-
-export function ProjectList({ goal }: { goal: Goals.Goal }) {
-  if (goal.projects?.length === 0) {
-    return <div className="text-sm">No projects yet</div>;
-  }
-
-  return (
-    <>
-      {goal.projects!.map((project) => (
-        <div key={project!.id} className="py-2 bg-surface flex flex-col border-t last:border-b border-stroke-base">
-          <ProjectListItem key={project!.id} project={project!} avatarPosition="right" />
-        </div>
-      ))}
-    </>
-  );
-}
 
 function Description({ goal }) {
   if (!goal.description) return null;

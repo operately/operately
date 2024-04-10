@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
 
-import { Tree, GoalNode, Node } from "./tree";
+import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
@@ -19,13 +19,19 @@ interface GoalSelectorProps {
 }
 
 export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
-  const tree = React.useMemo(() => new Tree(goals, "name", "asc", {}, false), [goals]);
+  const options = {
+    sortColumn: "name",
+    sortDirection: "asc",
+    showCompleted: false,
+  } as TreeOptions;
+
+  const tree = React.useMemo(() => buildTree(goals, [], options), [goals, options]);
 
   return (
     <ExpandableProvider tree={tree}>
       <div>
-        {tree.getRoots().map((root, index) => (
-          <NodeView key={root.id} node={root} onSelect={onSelect} isFirstChild={index === 0} />
+        {tree.map((root, index) => (
+          <NodeView key={root.id} node={root as GoalNode} onSelect={onSelect} isFirstChild={index === 0} />
         ))}
       </div>
     </ExpandableProvider>

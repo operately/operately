@@ -20,7 +20,7 @@ export function NodeName({ node, target = "_self" }: NodeNameProps) {
   });
 
   return (
-    <DivLink to={node.linkTo} className={titleClass} target={target}>
+    <DivLink to={node.linkTo()} className={titleClass} target={target}>
       {node.name}
     </DivLink>
   );

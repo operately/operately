@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
-import { GoalTree } from "@/features/GoalTree";
+import { GoalTree } from "@/features/goals/GoalTree";
 import { FilledButton } from "@/components/Button";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
 
@@ -24,7 +24,7 @@ export function Page() {
 }
 
 function Content() {
-  const { group, goals } = useLoadedData();
+  const { group, goals, projects } = useLoadedData();
   const newGoalPath = createPath("spaces", group.id, "goals", "new");
 
   return (
@@ -36,7 +36,7 @@ function Content() {
         </FilledButton>
       </div>
 
-      <GoalTree goals={goals} filters={{ spaceId: group.id }} hideSpaceColumn={true} />
+      <GoalTree goals={goals} projects={projects} options={{ spaceId: group.id }} />
     </>
   );
 }

@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 
 import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
-import { FormState, useForm, Form } from "@/features/GoalForm";
+import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 
 export function Page() {
   const { company, me, goal } = useLoadedData();
