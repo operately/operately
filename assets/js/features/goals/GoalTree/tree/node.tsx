@@ -45,9 +45,8 @@ export abstract class Node {
   }
 
   setParent(parent: Node | undefined): void {
-    if (parent) {
-      parent.hasChildren = true;
-    }
+    this.parent = parent;
+    this.parentId = parent?.id;
   }
 
   addChildren(children: Node[]): void {
