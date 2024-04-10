@@ -12,19 +12,19 @@ describe("Tree", () => {
   let projects: Project[];
 
   beforeEach(() => {
-    const s1 = spaceMock("Company");
-    const s2 = spaceMock("Marketing");
+    const company = spaceMock("Company");
+    const mkt = spaceMock("Marketing");
 
-    const cg1 = goalMock("CompanyGoal1", s1);
-    const cg2 = goalMock("CompanyGoal2", s1);
-    const cg3 = goalMock("CompanyGoal3", s1);
+    const cg1 = goalMock("CompanyGoal1", company);
+    const cg2 = goalMock("CompanyGoal2", company);
+    const cg3 = goalMock("CompanyGoal3", company);
 
-    const mg1 = goalMock("MarketingGoal1", s2, { parentGoalId: cg1.id });
-    const mg11 = goalMock("MarketingGoal1.1", s2, { parentGoalId: mg1.id });
+    const mg1 = goalMock("MarketingGoal1", mkt, { parentGoalId: cg1.id });
+    const mg11 = goalMock("MarketingGoal1.1", mkt, { parentGoalId: mg1.id });
 
-    const mg2 = goalMock("MarketingGoal2", s2);
+    const mg2 = goalMock("MarketingGoal2", mkt);
 
-    spaces = [s1, s2];
+    spaces = [company, mkt];
     goals = [cg1, cg2, cg3, mg1, mg11, mg2];
     projects = [];
   });
@@ -170,29 +170,11 @@ function spaceMock(name: string): Group {
 //   } as unknown as Goal;
 // }
 
-function assertTreeShape(nodes: Node[], arg1: string[] | string, arg2?: string) {
-  let fields: string[];
-  let expected: string;
-
-  if (arg1 && arg2) {
-    fields = arg1 as string[];
-    expected = arg2 as string;
-  } else {
-    fields = ["name"];
-    expected = arg1 as string;
-  }
-
+function assertTreeShape(nodes: Node[], fields: string[], expected: string): void {
   const actual = drawTree(nodes, fields);
 
-  const actualLines = actual
-    .split("\n")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-
-  const expectedLines = expected
-    .split("\n")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+  const actualLines = actual.split("\n");
+  const expectedLines = removeIndentation(expected).split("\n");
 
   const same = actualLines.length === expectedLines.length && actualLines.every((line, i) => line === expectedLines[i]);
 
@@ -218,5 +200,22 @@ function drawTree(nodes: Node[], keys: string[], depth = 0): string {
         return `${indent}${keyValues}\n${children}`;
       }
     })
+    .join("\n");
+}
+
+function removeIndentation(str: string): string {
+  const noEmptyLines = str
+    .split("\n")
+    .filter((s) => !/^\s*$/.test(s))
+    .join("\n");
+
+  const sharedPaddingSize: number = noEmptyLines
+    .split("\n")
+    .map((s) => s.match(/^[ ]*/)?.[0].length as number)
+    .reduce((a: number, b: number) => Math.min(a, b), 1000);
+
+  return noEmptyLines
+    .split("\n")
+    .map((line) => line.slice(sharedPaddingSize))
     .join("\n");
 }
