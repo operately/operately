@@ -5,7 +5,6 @@ import * as Icons from "@tabler/icons-react";
 import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
 import { NodeIcon } from "./components/NodeIcon";
-import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
 import { FilledButton } from "@/components/Button";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
@@ -13,12 +12,14 @@ import { ExpandableProvider, useExpandable } from "./context/Expandable";
 import classNames from "classnames";
 import { createTestId } from "@/utils/testid";
 
-interface GoalSelectorProps {
+interface GoalSelectorDropdownProps {
   goals: Goals.Goal[];
+  selected: Goals.Goal | null;
   onSelect: (goal: Goals.Goal) => void;
+  error?: boolean;
 }
 
-export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
+export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalSelectorDropdownProps) {
   const options = {
     sortColumn: "name",
     sortDirection: "asc",
@@ -27,12 +28,40 @@ export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
 
   const tree = React.useMemo(() => buildTree(goals, [], options), [goals, options]);
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleSelect = (goal: Goals.Goal) => {
+    setOpen(false);
+    onSelect(goal);
+  };
+
   return (
     <ExpandableProvider tree={tree}>
-      <div>
-        {tree.map((root, index) => (
-          <NodeView key={root.id} node={root as GoalNode} onSelect={onSelect} isFirstChild={index === 0} />
-        ))}
+      <div className="relative">
+        <div
+          className={classNames("border px-3 py-1.5 rounded-lg flex items-center justify-between cursor-pointer", {
+            "border-red-500": error,
+            "border-surface-outline": !error,
+          })}
+          onClick={() => setOpen(!open)}
+        >
+          {selected ? (
+            <div className="truncate flex items-center gap-1.5">
+              <NodeIcon node={{ type: "goal" }} /> {selected.name}
+            </div>
+          ) : (
+            <div className="text-content-dimmed">Select a goal &hellip;</div>
+          )}
+          <Icons.IconChevronDown size={20} />
+        </div>
+
+        {open && (
+          <div className="absolute mt-1 w-full bg-surface border border-surface-outline rounded-lg shadow-lg z-50">
+            {tree.map((root) => (
+              <NodeView key={root.id} node={root as GoalNode} onSelect={handleSelect} />
+            ))}
+          </div>
+        )}
       </div>
     </ExpandableProvider>
   );
@@ -44,22 +73,22 @@ interface NodeProps {
   isFirstChild?: boolean;
 }
 
-function NodeView({ node, onSelect, isFirstChild }: NodeProps) {
+function NodeView({ node, onSelect }: NodeProps) {
   return (
     <div>
-      <TableRow topBorder={isFirstChild} className="-mx-12 px-12">
+      <TableRow className="px-2">
         <div
           className="inline-flex items-center gap-1.5 truncate flex-1 group pr-2"
           style={{ paddingLeft: node.depth * 30 }}
         >
           <NodeExpandCollapseToggle node={node} />
           <NodeIcon node={node as Node} />
-          <NodeName node={node as Node} />
+          <div className="truncate">{node.name}</div>
           <SubgoalCount node={node} />
         </div>
 
         <div>
-          <FilledButton onClick={() => onSelect(node.goal)} size="xxs" testId={createTestId("goal", node.name)}>
+          <FilledButton onClick={() => onSelect(node.goal)} size="xxxs" testId={createTestId("goal", node.name)}>
             Select
           </FilledButton>
         </div>
@@ -89,17 +118,13 @@ function ChildGoals({ node, onSelect }: { node: GoalNode; onSelect: (goal: Goals
 function NodeExpandCollapseToggle({ node }: { node: GoalNode }) {
   const { toggleExpanded, expanded } = useExpandable();
 
-  if (!node.hasChildren) return null;
+  if (!node.hasChildren) return <div className="w-5" />;
 
   const handleClick = () => toggleExpanded(node.id);
   const size = 16;
   const ChevronIcon = expanded[node.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
 
-  const className = classNames(
-    "absolute flex items-center flex-row-reverse gap-1",
-    "-translate-x-[42px] w-[40px]",
-    "opacity-0 group-hover:opacity-100 transition-opacity",
-  );
+  const className = classNames("flex items-center flex-row-reverse gap-1 w-5");
 
   return (
     <div className={className}>

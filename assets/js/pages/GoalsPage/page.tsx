@@ -16,9 +16,9 @@ export function Page() {
         <Paper.Body className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">Goals in {company.name}</h1>
-            <FilledButton size="sm" linkTo={"/goals/new"}>
+            <FilledButton size="sm" linkTo={"/goals/new?company-wide=true"} testId="add-company-wide-goal">
               <Icons.IconPlus className="mr-2 inline-block" size={16} />
-              Add Goal
+              Add Company-Wide Goal
             </FilledButton>
           </div>
 

@@ -7,15 +7,11 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
-import * as Icons from "@tabler/icons-react";
-import * as Goals from "@/models/goals";
-import * as Groups from "@/models/groups";
 
 import { GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
-import { DivLink } from "@/components/Link";
-import { Paths } from "@/routes/paths";
+import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -31,7 +27,7 @@ function FormMain({ form }: { form: FormState }) {
 
   return (
     <div className="font-medium">
-      <GoalHeader form={form} />
+      <SectionHeader form={form} title={form.config.mode === "create" ? "Goal" : "Name"} />
 
       <div className="mb-12 text-lg">
         <GoalName form={form} />
@@ -39,14 +35,10 @@ function FormMain({ form }: { form: FormState }) {
       </div>
 
       <Description form={form} />
+      <ParentGoal form={form} />
 
-      {form.config.mode === "create" ? (
-        <div className="font-bold text-lg">Success Conditions</div>
-      ) : (
-        <div className="font-bold">Success Conditions</div>
-      )}
+      <SectionHeader form={form} title="Success Conditions" subtitle="How will you know that you succeded?" />
 
-      <div className="mt-1 text-sm text-content-dimmed">How will you know that you succeded?</div>
       {form.errors.find((e) => e.field === "targets") && (
         <div className="text-red-500 text-sm">At least one success condition is required</div>
       )}
@@ -67,8 +59,7 @@ function Description({ form }: { form: FormState }) {
 
   return (
     <div className="mb-12">
-      <div className="font-bold text-lg">Description</div>
-      <div className="text-sm text-content-dimmed mb-2">Add more context to your goal (optional)</div>
+      <SectionHeader form={form} title="Description" subtitle="Add more context to your goal (optional)" />
 
       <TipTapEditor.Root editor={form.fields.descriptionEditor}>
         <div className="border-x border-b border-stroke-base flex-1">
@@ -159,6 +150,7 @@ function SpaceSelector({ form }: { form: FormState }) {
       options={form.fields.spaceOptions}
       defaultValue={null}
       error={hasError}
+      data-test-id="space-selector"
     />
   );
 }
@@ -208,59 +200,32 @@ function AddDescription({ form }: { form: FormState }) {
 }
 
 function ParentGoal({ form }: { form: FormState }) {
-  if (form.config.parentGoal) {
-    const goal = form.config.parentGoal as Goals.Goal;
+  if (form.config.isCompanyWide) return null;
+  if (form.config.mode === "edit") return null;
 
-    return (
-      <div>
-        <div className="flex items-center">
-          <Icons.IconTarget size={14} className="text-red-500" />
-          <DivLink
-            to={Paths.goalPath(goal.id)}
-            className="hover:underline font-medium ml-1"
-            testId="parent-goal-link"
-            target="_blank"
-          >
-            {goal.name}
-          </DivLink>
-        </div>
-        <div className="ml-1 border-l h-4 border-surface-outline" />
-      </div>
-    );
-  } else if (!form.config.allowSpaceSelection) {
-    const space = form.config.space as Groups.Group;
+  return (
+    <div className="mb-12">
+      <SectionHeader form={form} title="Parent Goal" />
 
-    return (
-      <div>
-        <div className="flex items-center text-sm gap-1">
-          <Icons.IconBuildingEstate size={14} className="text-blue-500" />
-          Company-wide goal for {space.name}
-        </div>
-        <div className="ml-1 border-l h-2 border-surface-outline" />
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <div className="flex items-center text-sm gap-1">
-          <Icons.IconBuildingEstate size={14} className="text-blue-500" />
-          Company-wide
-        </div>
-        <div className="ml-1 border-l h-2 border-surface-outline" />
-      </div>
-    );
-  }
+      <div className="mt-2"></div>
+      <GoalSelectorDropdown
+        selected={form.fields.parentGoal}
+        goals={form.config.parentGoalOptions!}
+        onSelect={form.fields.setParentGoal}
+        error={!!form.errors.find((e) => e.field === "parentGoal")}
+      />
+    </div>
+  );
 }
 
-function GoalHeader({ form }: { form: FormState }) {
-  if (form.config.mode === "create") {
-    return (
-      <>
-        <ParentGoal form={form} />
-        <div className="font-bold text-lg mb-3">{form.config.parentGoal ? "Subgoal Name" : "Goal"}</div>
-      </>
-    );
-  } else {
-    return <div className="font-bold">Name</div>;
-  }
+function SectionHeader({ form, title, subtitle }: { form: FormState; title: string; subtitle?: string }) {
+  const headerTextSize = form.config.mode === "create" ? "text-lg" : "";
+
+  return (
+    <div className="">
+      <div className={`font-bold ${headerTextSize}`}>{title}</div>
+
+      {subtitle && <div className="mt-1 text-sm text-content-dimmed">{subtitle}</div>}
+    </div>
+  );
 }

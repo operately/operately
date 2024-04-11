@@ -10,6 +10,8 @@ defmodule Operately.Support.Features.GoalSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
+  import Ecto.Query, only: [from: 2]
+
   def create_goal(ctx) do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
@@ -44,46 +46,39 @@ defmodule Operately.Support.Features.GoalSteps do
     Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
   end
 
-  step :given_a_goal_exists, ctx, label do
-    {:ok, new_parent_goal} = Operately.Goals.create_goal(ctx.champion, %{
+  step :given_a_goal_exists, ctx, goal_params do
+    {:ok, _} = Operately.Goals.create_goal(ctx.champion, %{
       company_id: ctx.company.id,
       space_id: ctx.group.id,
-      name: "New Parent Goal",
+      name: goal_params.name,
       champion_id: ctx.champion.id,
       reviewer_id: ctx.reviewer.id,
       timeframe: "2023-Q4",
       targets: [
         %{
-          name: "First response time",
-          from: 30,
-          to: 15,
-          unit: "minutes",
+          name: goal_params.target_name,
+          from: goal_params.from |> Float.parse() |> elem(0),
+          to: goal_params.to |> Float.parse() |> elem(0),
+          unit: goal_params.unit,
           index: 0
-        },
-        %{
-          name: "Increase feedback score to 90%",
-          from: 80,
-          to: 90,
-          unit: "percent",
-          index: 1
         }
       ]
     })
 
-    Map.put(ctx, label, new_parent_goal)
+    ctx
   end
 
-  step :change_goal_parent, ctx, parent_goal do
+  step :change_goal_parent, ctx, parent_goal_name do
     ctx
     |> UI.click(testid: "goal-options")
     |> UI.click(testid: "change-parent-goal")
-    |> UI.click(testid: "goal-#{ctx[parent_goal].name |> String.downcase() |> String.replace(" ", "-")}")
+    |> UI.click(testid: "goal-#{parent_goal_name |> String.downcase() |> String.replace(" ", "-")}")
   end
 
-  step :assert_goal_parent_changed, ctx, parent_goal do
+  step :assert_goal_parent_changed, ctx, parent_goal_name do
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")
-    |> UI.assert_text(ctx[parent_goal].name)
+    |> UI.assert_text(parent_goal_name)
   end
 
   step :assert_goal_is_company_wide, ctx do
@@ -292,5 +287,108 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.refute_text("Edit Goal")
     |> UI.refute_text("Change Parent")
     |> UI.refute_text("Mark as Complete")
+  end
+
+  step :visit_company_goals_page, ctx do
+    UI.visit(ctx, "/goals")
+  end
+
+  step :add_company_goal, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
+    ctx
+    |> UI.click(testid: "add-company-wide-goal")
+    |> UI.fill(testid: "goal-name", with: name)
+    |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
+    |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
+    |> UI.fill(testid: "target-0-name", with: target_name)
+    |> UI.fill(testid: "target-0-current", with: current)
+    |> UI.fill(testid: "target-0-target", with: target)
+    |> UI.fill(testid: "target-0-unit", with: unit)
+    |> UI.select(testid: "space-selector", option: ctx.group.name)
+    |> UI.click(testid: "add-goal-button")
+    |> UI.assert_text("About") # TODO: this is a hack to wait for the goal page to load
+  end
+
+  step :assert_company_goal_added, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
+    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name, preload: [:targets])
+
+    assert goal != nil
+    assert goal.champion_id == ctx.champion.id
+    assert goal.reviewer_id == ctx.reviewer.id
+    assert goal.company_id == ctx.company.id
+    assert goal.parent_goal_id == nil
+    assert goal.group_id == ctx.group.id
+    assert goal.targets != nil
+    assert Enum.count(goal.targets) == 1
+    assert Enum.at(goal.targets, 0).name == target_name
+    assert Enum.at(goal.targets, 0).from == Float.parse(current) |> elem(0)
+    assert Enum.at(goal.targets, 0).to == Float.parse(target) |> elem(0)
+    assert Enum.at(goal.targets, 0).unit == unit
+
+    ctx
+    |> UI.visit("/goals")
+    |> UI.assert_text(name)
+  end
+
+  step :assert_company_goal_created_email_sent, ctx, goal_name do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "added the #{goal_name} goal"
+    })
+  end
+
+  step :add_subgoal, ctx, %{parent_name: parent_goal_name, goal_params: goal_params} do
+    parent_test_id = "#{parent_goal_name |> String.downcase() |> String.replace(" ", "-")}"
+
+    ctx
+    |> UI.hover(testid: "goal-#{parent_test_id}")
+    |> UI.click(testid: "goal-options-#{parent_test_id}")
+    |> UI.click(testid: "add-subgoal")
+    |> UI.fill(testid: "goal-name", with: goal_params.name)
+    |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
+    |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
+    |> UI.fill(testid: "target-0-name", with: goal_params.target_name)
+    |> UI.fill(testid: "target-0-current", with: goal_params.from)
+    |> UI.fill(testid: "target-0-target", with: goal_params.to)
+    |> UI.fill(testid: "target-0-unit", with: goal_params.unit)
+    |> UI.select(testid: "space-selector", option: ctx.group.name)
+    |> UI.click(testid: "add-goal-button")
+    |> UI.assert_text("About") # TODO: this is a hack to wait for the goal page to load
+  end
+
+  step :assert_subgoal_added, ctx, %{parent_name: parent_goal_name, goal_params: goal_params} do
+    parent_goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^parent_goal_name)
+    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.name, preload: [:targets])
+
+    assert goal != nil
+    assert goal.champion_id == ctx.champion.id
+    assert goal.reviewer_id == ctx.reviewer.id
+    assert goal.company_id == ctx.company.id
+    assert goal.parent_goal_id == parent_goal.id
+    assert goal.group_id == ctx.group.id
+    assert goal.targets != nil
+    assert Enum.count(goal.targets) == 1
+    assert Enum.at(goal.targets, 0).name == goal_params.target_name
+    assert Enum.at(goal.targets, 0).from == Float.parse(goal_params.from) |> elem(0)
+    assert Enum.at(goal.targets, 0).to == Float.parse(goal_params.to) |> elem(0)
+    assert Enum.at(goal.targets, 0).unit == goal_params.unit
+
+    ctx
+    |> UI.visit("/goals/#{goal.id}")
+    |> UI.assert_text(goal_params.name)
+    |> UI.assert_text(goal_params.target_name)
+    |> UI.assert_text(parent_goal_name)
+  end
+
+  step :assert_subgoal_created_email_sent, ctx, goal_name do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "added the #{goal_name} goal"
+    })
   end
 end

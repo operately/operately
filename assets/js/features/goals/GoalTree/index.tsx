@@ -9,6 +9,7 @@ import * as Time from "@/utils/time";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
+import { createTestId } from "@/utils/testid";
 
 import { FilledButton } from "@/components/Button";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
@@ -115,9 +116,10 @@ function NodeView({ node }: { node: Node }) {
 
 function NodeHeader({ node }: { node: Node }) {
   const context = useTreeContext();
+  const testId = createTestId(node.type, node.name);
 
   return (
-    <TableRow>
+    <TableRow className="-mx-12 px-12" testId={testId}>
       <div
         className="inline-flex items-center gap-1.5 truncate flex-1 group pr-2"
         style={{ paddingLeft: node.depth * 30 }}
@@ -236,14 +238,16 @@ function NodeActions({ node }: { node: Node }) {
 function GoalOptions({ node, open, setOpen }: { node: GoalNode; open: boolean; setOpen: (open: boolean) => void }) {
   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
   const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
+  const testId = createTestId(node.type, "options", node.goal.name);
 
   return (
     <DropdownMenu
+      testId={testId}
       open={open}
       setOpen={setOpen}
       trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
       options={[
-        <DropdownMenuLinkItem key="add-goal" to={newGoalPath} title="Add Subgoal" />,
+        <DropdownMenuLinkItem testId="add-subgoal" key="add-goal" to={newGoalPath} title="Add Subgoal" />,
         <DropdownMenuLinkItem key="add-project" to={newProjectPath} title="Add Project" />,
       ]}
     />

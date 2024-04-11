@@ -30,14 +30,22 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_edited_feed_posted()
   end
 
+  @parent_goal_params %{
+    name: "Reduce first response time for support tickets",
+    target_name: "First response time",
+    from: "30",
+    to: "15",
+    unit: "minutes",
+  }
+
   @tag login_as: :champion
   feature "changing goal parent", ctx do
     ctx
     |> Steps.visit_page()
     |> Steps.assert_goal_is_company_wide()
-    |> Steps.given_a_goal_exists(:new_parent_goal)
-    |> Steps.change_goal_parent(:new_parent_goal)
-    |> Steps.assert_goal_parent_changed(:new_parent_goal)
+    |> Steps.given_a_goal_exists(@parent_goal_params)
+    |> Steps.change_goal_parent(@parent_goal_params.name)
+    |> Steps.assert_goal_parent_changed(@parent_goal_params.name)
   end
 
   @tag login_as: :champion
