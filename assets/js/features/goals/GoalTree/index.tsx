@@ -117,7 +117,7 @@ function NodeHeader({ node }: { node: Node }) {
   const context = useTreeContext();
 
   return (
-    <TableRow>
+    <TableRow className="-mx-12 px-12">
       <div
         className="inline-flex items-center gap-1.5 truncate flex-1 group pr-2"
         style={{ paddingLeft: node.depth * 30 }}

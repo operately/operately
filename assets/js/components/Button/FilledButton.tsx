@@ -8,7 +8,7 @@ interface FilledButtonProps {
   linkTarget?: "_blank" | "_self" | "_parent" | "_top";
   onClick?: ((e: any) => Promise<boolean>) | ((e: any) => void);
   testId?: string;
-  size?: "xxs" | "xs" | "sm" | "base" | "lg";
+  size?: "xxxs" | "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
   loading?: boolean;
   bzzzOnClickFailure?: boolean;
@@ -56,7 +56,7 @@ function Spinner({ active }: { active?: boolean }) {
 }
 
 function className(
-  size?: "xxs" | "xs" | "sm" | "base" | "lg",
+  size?: "xxxs" | "xxs" | "xs" | "sm" | "base" | "lg",
   type?: "primary" | "secondary",
   loading?: boolean,
   shake?: boolean,
@@ -70,6 +70,10 @@ function className(
     result += " cursor-default";
   } else {
     result += " cursor-pointer";
+  }
+
+  if (size === "xxxs") {
+    result += " px-1.5 py-[1px] text-xs rounded-2xl";
   }
 
   if (size === "xxs") {

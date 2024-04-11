@@ -31,6 +31,7 @@ interface Fields {
   me: People.Person;
 
   name: string;
+  parentGoal: Goals.Goal | null;
   champion: People.Person | null;
   reviewer: People.Person | null;
   timeframe: TimeframeOption;
@@ -50,6 +51,7 @@ interface Fields {
   updateTarget: (id: string, field: any, value: any) => void;
   setSpace: (space: SpaceOption | null) => void;
   setHasDescription: (hasDescription: boolean) => void;
+  setParentGoal: (goal: Goals.Goal | null) => void;
 }
 
 interface TimeframeOption {
@@ -77,6 +79,7 @@ interface FormConfig {
   me: People.Person;
   goal?: Goals.Goal;
   parentGoal?: Goals.Goal;
+  parentGoalOptions?: Goals.Goal[];
 
   allowSpaceSelection: boolean;
   space?: Groups.Group;
@@ -90,6 +93,7 @@ export function useForm(config: FormConfig): FormState {
   const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(config);
   const [targets, addTarget, removeTarget, updateTarget] = useTargets(config);
   const [space, setSpace, spaceOptions] = useSpaces(config);
+  const [parentGoal, setParentGoal] = React.useState<Goals.Goal | null>(config.parentGoal || null);
 
   const [hasDescription, setHasDescription] = React.useState<boolean>(false);
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
@@ -113,6 +117,7 @@ export function useForm(config: FormConfig): FormState {
     spaceOptions,
     hasDescription,
     descriptionEditor,
+    parentGoal,
 
     setName,
     setChampion,
@@ -123,6 +128,7 @@ export function useForm(config: FormConfig): FormState {
     updateTarget,
     setSpace,
     setHasDescription,
+    setParentGoal,
   } as Fields;
 
   const [submit, cancel, submitting, errors] = useSubmit(fields, config);
@@ -318,6 +324,7 @@ function validateForm(fields: Fields, mode: "create" | "edit"): Error[] {
   if (fields.reviewer === null) errors.push({ field: "reviewer", message: "Reviewer is required" });
   if (fields.timeframe.value === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
   if (fields.space === null && mode === "create") errors.push({ field: "space", message: "Space is required" });
+  if (fields.parentGoal === null) errors.push({ field: "parentGoal", message: "Parent goal is required" });
 
   fields.targets.forEach((target, index) => {
     let { name, from, to, unit } = target;

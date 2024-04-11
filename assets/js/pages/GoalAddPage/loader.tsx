@@ -14,6 +14,8 @@ interface LoaderResult {
 
   allowSpaceSelection: boolean;
   parentGoal?: Goals.Goal;
+
+  goals?: Goals.Goal[];
 }
 
 // There are two ways we can end up on this page:
@@ -40,6 +42,8 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   if (parentGoalId) {
     loadedData.parentGoal = await Goals.getGoal({ id: parentGoalId });
   }
+
+  loadedData.goals = await Goals.getGoals({});
 
   return loadedData;
 }
