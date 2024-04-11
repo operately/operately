@@ -201,6 +201,7 @@ function AddDescription({ form }: { form: FormState }) {
 
 function ParentGoal({ form }: { form: FormState }) {
   if (form.config.isCompanyWide) return null;
+  if (form.config.mode === "edit") return null;
 
   return (
     <div className="mb-12">
