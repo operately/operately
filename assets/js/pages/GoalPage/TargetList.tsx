@@ -29,15 +29,12 @@ function TargetItem({ target }: { target: Goals.Target }) {
 }
 
 function ProgressBar({ target }: { target: Goals.Target }) {
-  const from = target.from!;
-  const to = target.to!;
-  const value = target.value!;
-
-  const width = ((Math.min(value, to) - from) / (Math.max(to, value) - from)) * 100;
-
   return (
     <div className={"w-24 h-2.5 bg-surface-outline rounded relative"}>
-      <div className="bg-accent-1 rounded absolute top-0 bottom-0 left-0" style={{ width: `${width}%` }} />
+      <div
+        className="bg-accent-1 rounded absolute top-0 bottom-0 left-0"
+        style={{ width: `${Goals.targetProgressPercentage(target)}%` }}
+      />
     </div>
   );
 }
