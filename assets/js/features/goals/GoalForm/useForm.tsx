@@ -84,6 +84,8 @@ interface FormConfig {
   allowSpaceSelection: boolean;
   space?: Groups.Group;
   spaces?: Groups.Group[];
+
+  isCompanyWide?: boolean;
 }
 
 export function useForm(config: FormConfig): FormState {
@@ -242,7 +244,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const submit = async () => {
-    const errors = validateForm(fields, config.mode);
+    const errors = validateForm(fields, config);
 
     if (errors.length > 0) {
       setErrors(errors);
@@ -316,7 +318,8 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
   return [submit, cancel, submitting, errors];
 }
 
-function validateForm(fields: Fields, mode: "create" | "edit"): Error[] {
+function validateForm(fields: Fields, config: FormConfig): Error[] {
+  const mode = config.mode;
   const errors: Error[] = [];
 
   if (fields.name.length === 0) errors.push({ field: "name", message: "Name is required" });
@@ -324,7 +327,10 @@ function validateForm(fields: Fields, mode: "create" | "edit"): Error[] {
   if (fields.reviewer === null) errors.push({ field: "reviewer", message: "Reviewer is required" });
   if (fields.timeframe.value === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
   if (fields.space === null && mode === "create") errors.push({ field: "space", message: "Space is required" });
-  if (fields.parentGoal === null) errors.push({ field: "parentGoal", message: "Parent goal is required" });
+
+  if (fields.parentGoal === null && !config.isCompanyWide) {
+    errors.push({ field: "parentGoal", message: "Parent goal is required" });
+  }
 
   fields.targets.forEach((target, index) => {
     let { name, from, to, unit } = target;

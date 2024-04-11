@@ -150,6 +150,7 @@ function SpaceSelector({ form }: { form: FormState }) {
       options={form.fields.spaceOptions}
       defaultValue={null}
       error={hasError}
+      data-test-id="space-selector"
     />
   );
 }
@@ -199,6 +200,8 @@ function AddDescription({ form }: { form: FormState }) {
 }
 
 function ParentGoal({ form }: { form: FormState }) {
+  if (form.config.isCompanyWide) return null;
+
   return (
     <div className="mb-12">
       <SectionHeader form={form} title="Parent Goal" />

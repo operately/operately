@@ -51,7 +51,7 @@ function NewGoalForSpacePage() {
 }
 
 function NewGoalPage() {
-  const { company, me, spaces, parentGoal, goals } = useLoadedData();
+  const { company, me, spaces, parentGoal, goals, isCompanyWide } = useLoadedData();
 
   const form = useForm({
     mode: "create",
@@ -61,6 +61,7 @@ function NewGoalPage() {
     spaces: spaces,
     parentGoal,
     parentGoalOptions: goals,
+    isCompanyWide,
   });
 
   return (
@@ -70,7 +71,9 @@ function NewGoalPage() {
           <DimmedLink to={`/goals`}>Back to Goals</DimmedLink>
         </div>
 
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal</h1>
+        <h1 className="mb-4 font-bold text-3xl text-center">
+          Adding a new {isCompanyWide ? "company-wide" : " "} goal
+        </h1>
 
         <Paper.Body minHeight="300px">
           <Form form={form} />

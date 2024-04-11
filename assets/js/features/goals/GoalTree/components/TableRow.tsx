@@ -6,9 +6,10 @@ interface TableRowProps {
   topBorder?: boolean;
   bottomBorder?: boolean;
   className?: string;
+  testId?: string;
 }
 
-export function TableRow({ children, topBorder = false, bottomBorder = true, className = "" }: TableRowProps) {
+export function TableRow({ children, topBorder = false, bottomBorder = true, className = "", testId }: TableRowProps) {
   const classname = classNames(
     "flex items-center justify-between",
     "py-2",
@@ -21,5 +22,9 @@ export function TableRow({ children, topBorder = false, bottomBorder = true, cla
     className,
   );
 
-  return <div className={classname}>{children}</div>;
+  return (
+    <div className={classname} data-test-id={testId}>
+      {children}
+    </div>
+  );
 }

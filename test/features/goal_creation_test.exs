@@ -8,6 +8,7 @@ defmodule Operately.Features.GoalCreationTest do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.FeedSteps
+  alias Operately.Support.Features.GoalSteps, as: Steps
 
   setup ctx do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
@@ -22,44 +23,40 @@ defmodule Operately.Features.GoalCreationTest do
     {:ok, ctx}
   end
 
+  @parent_goal_params %{
+    name: "Improve support first response time",
+    target_name: "First response time",
+    from: "30",
+    to: "15",
+    unit: "minutes",
+  }
+
+  @goal_params %{
+    name: "Reduce first response time for support tickets",
+    target_name: "First response time",
+    from: "30",
+    to: "15",
+    unit: "minutes",
+  }
+
   @tag login_as: :champion
-  feature "add goal", ctx do
-    goal_name = "Improve support first response time"
-
+  feature "add a company wide goal", ctx do
     ctx
-    |> UI.visit("/spaces/#{ctx.group.id}")
-    |> UI.click(testid: "goals-tab")
-    |> UI.click(testid: "add-goal")
-    |> UI.fill(testid: "goal-name", with: goal_name)
-    |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
-    |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
-    |> UI.fill(testid: "target-0-name", with: "First response time")
-    |> UI.fill(testid: "target-0-current", with: "30")
-    |> UI.fill(testid: "target-0-target", with: "15")
-    |> UI.fill(testid: "target-0-unit", with: "minutes")
-    |> UI.fill(testid: "target-1-name", with: "Increase feedback score to 90%")
-    |> UI.fill(testid: "target-1-current", with: "80")
-    |> UI.fill(testid: "target-1-target", with: "90")
-    |> UI.fill(testid: "target-1-unit", with: "percent")
-    |> UI.click(testid: "add-goal-button")
+    |> Steps.visit_company_goals_page()
+    |> Steps.add_company_goal(@goal_params)
+    |> Steps.assert_company_goal_added(@goal_params)
+    |> Steps.assert_company_goal_created_email_sent(@goal_params.name)
+  end
 
-    ctx
-    |> UI.assert_text("Improve support first response time")
-    |> UI.assert_text("First response time")
-    |> UI.assert_text("Increase feedback score to 90%")
-    |> FeedSteps.assert_goal_added(author: ctx.champion)
 
+  @tag login_as: :champion
+  feature "add subgoal to a company wide goal", ctx do
     ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
-      to: ctx.reviewer,
-      author: ctx.champion,
-      action: "added the #{goal_name} goal"
-    })
-
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_goal_created_sent(author: ctx.champion, role: "reviewer")
+    |> Steps.given_a_goal_exists(@parent_goal_params)
+    |> Steps.visit_company_goals_page()
+    |> Steps.add_subgoal(%{parent_name: @parent_goal_params.name, goal_params: @goal_params})
+    |> Steps.assert_subgoal_added(%{parent_name: @parent_goal_params.name, goal_params: @goal_params})
+    |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
   end
   
 end
