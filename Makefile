@@ -20,6 +20,7 @@ SHELL := /bin/bash
 .PHONY: test
 
 REPORTS_DIR ?= $(PWD)/testreports
+MEDIA_DIR ?= $(PWD)/media
 
 # If you want to run the tests that generate screenshots, you need to
 # set the SCREENSHOTS_DIR environment variable to a directory where
@@ -175,6 +176,7 @@ test: test.init
 test.init:
 	@mkdir -p $(SCREENSHOTS_DIR)
 	@mkdir -p $(REPORTS_DIR)
+	@mkdir -p $(MEDIA_DIR)
 
 test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
