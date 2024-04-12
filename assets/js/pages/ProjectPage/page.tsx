@@ -9,7 +9,7 @@ import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
-import { GhostButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -20,7 +20,7 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { DimmedLabel } from "./Label";
 
 import * as People from "@/models/people";
-import { Link } from "@/components/Link";
+import { DimmedLink, Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
 import { createPath } from "@/utils/paths";
@@ -49,66 +49,10 @@ export function Page() {
 
             <div className="mt-4" />
 
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Overview</div>
-
-                  <div className="text-sm">
-                    {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Description project={project} />
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Timeline</div>
-
-                  <div className="text-sm">
-                    {showEditMilestones(project) && (
-                      <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
-                        View
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Timeline project={project} />
-                </div>
-              </div>
-            </div>
-
-            <CheckInSection project={project} />
-
-            <div className="border-t border-stroke-base py-6">
-              <div className="flex items-start gap-4">
-                <div className="w-1/5">
-                  <div className="font-bold text-sm">Resources</div>
-
-                  <div className="text-sm">
-                    {showEditResource(project) && (
-                      <Link to={`/projects/${project.id}/edit/resources`} testId="edit-resources-link">
-                        Edit
-                      </Link>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-4/5">
-                  <Resources project={project} />
-                </div>
-              </div>
+            <div className="py-6 flex items-start justify-center gap-8">
+              <Description project={project} />
+              <CheckIns project={project} />
+              <Timeline2 project={project} />
             </div>
           </div>
 
@@ -129,6 +73,76 @@ function ProjectFeed({ project }) {
   if (error) return <div>Error</div>;
 
   return <Feed items={data.activities} testId="project-feed" page="project" />;
+}
+
+function CheckIns({ project }) {
+  return (
+    <div className="w-[330px]">
+      <div className="font-bold mb-2">Check-Ins</div>
+
+      <div className="w-[270px] h-[200px] border-stroke-base rounded overflow-hidden shadow shadow-sky-50 bg-surface-dimmed relative p-4 border-2 hover:border-accent-1 cursor-pointer">
+        <div className="font-bold text-xs mb-2">Last Check-In</div>
+
+        <div className="w-[230px] h-[300px] rounded p-4 bg-surface border border-surface-outline">
+          <div className="scale-[50%] w-[380px] h-[750px] origin-top-left">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-5 h-5 rounded-full bg-accent-1"></div>
+              On Track
+            </div>
+
+            <RichContent jsonContent={project.lastCheckIn?.description} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div className="flex items-center gap-2">
+          <FilledButton size="sm" type="secondary">
+            Check-In Now
+          </FilledButton>
+
+          <div className="text-xs">
+            <DimmedLink to={`/projects/${project.id}/check-ins`} testId="see-all-check-ins">
+              See All Check-Ins
+            </DimmedLink>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Timeline2({ project }) {
+  return (
+    <div className="w-[300px]">
+      <div className="font-bold mb-2">Milestones &amp; Tasks</div>
+
+      <div className="w-[270px] h-[200px] border-stroke-base rounded overflow-hidden shadow shadow-sky-50 bg-surface-dimmed relative p-4 border-2 hover:border-accent-1 cursor-pointer">
+        <div className="font-bold text-xs mb-2">Current Milestone</div>
+
+        <div className="w-[230px] h-[300px] rounded p-4 bg-surface border border-surface-outline">
+          <div className="scale-[50%] w-[380px] h-[750px] origin-top-left">
+            <div className="flex items-center gap-2 mb-5 text-2xl font-bold">
+              Get all customers to sign up for the new service
+            </div>
+
+            <div className="text-lg">
+              <div className="font-bold">Due Date</div>
+              <div>April 30th</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 text-center">
+        <div className="flex items-center gap-4">
+          <FilledButton size="sm" type="secondary">
+            Open Task Board
+          </FilledButton>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function LastCheckIn({ project }) {
@@ -252,11 +266,29 @@ function Resource({ icon, title, href }) {
 }
 
 function Description({ project }) {
-  if (project.description) {
-    return <RichContent jsonContent={project.description} />;
-  } else {
-    return <DescriptionZeroState project={project} />;
-  }
+  return (
+    <div className="w-[330px]">
+      <div className="font-bold mb-2">Project Description</div>
+
+      <div className="w-[270px] h-[200px] border-stroke-base rounded overflow-hidden shadow shadow-sky-50 bg-surface-dimmed relative p-4 border-2 hover:border-accent-1 cursor-pointer">
+        <div className="font-bold text-xs mb-2">Project Description</div>
+
+        <div className="w-[230px] h-[300px] rounded p-4 bg-surface border border-surface-outline">
+          <div className="scale-[50%] w-[380px] h-[750px] origin-top-left">
+            <RichContent jsonContent={project.description} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 ">
+        <div className="flex items-center gap-4 mt-2">
+          <FilledButton size="sm" type="secondary">
+            Read Description
+          </FilledButton>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function DescriptionZeroState({ project }) {

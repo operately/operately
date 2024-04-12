@@ -13,10 +13,7 @@ export default function Overview({ project }) {
     <div className="flex items-center justify-between">
       <div className="flex items-start gap-12 text-sm">
         <Status project={project} />
-        <Completion project={project} />
       </div>
-
-      <CloseButton project={project} />
     </div>
   );
 }
