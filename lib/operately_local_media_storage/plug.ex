@@ -3,14 +3,13 @@ defmodule OperatelyLocalMediaStorage.Plug do
 
   plug Plug.Logger
   plug :match
+  plug :verify_token
   plug :dispatch
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Jason
-
-  plug :verify_token
 
   get "*path" do
     send_file(conn, 200, "/media/#{path}")
@@ -34,8 +33,9 @@ defmodule OperatelyLocalMediaStorage.Plug do
   #
 
   def verify_token(conn, _) do
-    path = conn.params["path"]
+    path = conn.params["path"] |> List.first()
     token = conn.query_params["token"] || conn.body_params["token"]
+
     operation = case conn.method do
       "GET" -> "get"
       "POST" -> "upload"
@@ -43,7 +43,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
 
     case Operately.Blobs.Tokens.validate(operation, path, token) do
       :ok -> conn
-      {:error, :invalid_token} -> send_invalid_token(conn)
+      {:error, _} -> send_invalid_token(conn)
     end
   end
 

@@ -71,7 +71,7 @@ defmodule Operately.Support.Features.UI do
       session |> Browser.click(Query.css(css_query))
     end)
   rescue
-    e in Wallaby.QueryError ->
+    _e in Wallaby.QueryError ->
       raise """
       Failed to click on element with query: #{inspect(opts)}
 
@@ -329,6 +329,14 @@ defmodule Operately.Support.Features.UI do
     """
 
     state
+  end
+
+  def upload_file(state, testid: id, path: path) do
+    query = Query.css("[data-test-id=\"#{id}\"]", visible: false)
+
+    execute(state, fn session ->
+      session |> Browser.attach_file(query, path: path)
+    end)
   end
 
   def refute_email_sent(state, title, to: to) do
