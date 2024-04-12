@@ -1,7 +1,7 @@
 import { ReactRenderer } from "@tiptap/react";
 import tippy, { Instance, Props } from "tippy.js";
 
-import MentionList from "./MentionList";
+import { MentionList } from "./MentionList";
 
 type PopupInstance = Instance<Props>[] | null;
 type MentionPopupProps = Record<string, any>;
@@ -10,7 +10,7 @@ type MentionPopupProps = Record<string, any>;
  * @public
  * Declaring the MentionPopup class public to silence the knip dead code warning.
  */
-export default class MentionPopup {
+export class MentionPopup {
   component: ReactRenderer | null;
   popup: PopupInstance | null;
 
