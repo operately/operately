@@ -85,7 +85,7 @@ export const MentionList = forwardRef((props: MentionListProps, ref) => {
   }));
 
   return (
-    <div className="flex flex-col border border-surface-outline rounded overflow-hidden">
+    <div className="flex flex-col border border-surface-outline rounded overflow-hidden bg-surface">
       {props.items.length > 0 ? (
         <ItemList items={props.items} selectItem={selectItem} selectedIndex={selectedIndex} />
       ) : (

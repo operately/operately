@@ -116,7 +116,9 @@ function useEditor(props: UseEditorProps): EditorState {
         suggestion: {
           render: () => new MentionPopup(),
           items: props.peopleSearch,
+          allowedPrefixes: [",", "\\s"],
         },
+        deleteTriggerWithBackspace: true,
       }),
       Highlight.configure({
         multicolor: true,
