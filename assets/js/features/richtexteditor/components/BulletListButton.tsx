@@ -1,16 +1,16 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { MenuToggleButton } from "./MenuToggleButton";
+import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
 export function BulletListButton({ editor, iconSize }): JSX.Element {
   return (
-    <MenuToggleButton
+    <ToolbarToggleButton
       onClick={() => editor.chain().focus().toggleBulletList().run()}
       isActive={editor.isActive("bulletList")}
       title="Bullet List"
     >
       <Icons.IconList size={iconSize} />
-    </MenuToggleButton>
+    </ToolbarToggleButton>
   );
 }

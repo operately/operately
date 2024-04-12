@@ -2,7 +2,7 @@ import React from "react";
 
 import classnames from "classnames";
 
-export function MenuToggleButton({ children, isActive, title, onClick }): JSX.Element {
+export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX.Element {
   let className = classnames("p-1.5 text-content-accent", {
     "bg-toggle-active": isActive,
     "hover:bg-surface-highlight cursor-pointer": !isActive,

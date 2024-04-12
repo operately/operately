@@ -1,5 +1,6 @@
 import React from "react";
 
+import { AttachmentButton } from "./AttachmentButton";
 import { BlockquoteButton } from "./BlockquoteButton";
 import { BoldButton } from "./BoldButton";
 import { BulletListButton } from "./BulletListButton";
@@ -11,7 +12,6 @@ import { NumberListButton } from "./NumberListButton";
 import { RedoButton } from "./RedoButton";
 import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
-import { AttachmentButton } from "./AttachmentButton";
 
 import { LinkEditForm } from "@/components/Editor";
 
@@ -20,7 +20,7 @@ interface Props {
   noTopBorder?: boolean;
 }
 
-export function MenuBar({ editor, noTopBorder }: Props): JSX.Element {
+export function Toolbar({ editor, noTopBorder }: Props): JSX.Element {
   if (!editor) return <></>;
 
   const border = noTopBorder ? "border-b" : "border-y";

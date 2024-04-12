@@ -8,6 +8,8 @@ defmodule Operately.Features.DiscussionsTest do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
+  alias Operately.Support.Features.DiscussionSteps, as: Steps
+
   setup ctx do
     company = company_fixture(%{name: "Test Org"})
     author = person_fixture_with_account(%{full_name: "Andy Author", company_id: company.id})
@@ -109,6 +111,16 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.assert_text("Posted on")
     |> UI.assert_text("This is an edited discussion")
     |> UI.assert_text("This is the edited body of the discussion")
+  end
+
+  @tag login_as: :author
+  feature "attach a file to a discussion", ctx do
+    ctx
+    |> Steps.start_writting_discussion(%{title: "Testing file attachment"})
+    |> Steps.attach_file_to_discussion()
+    |> Steps.assert_file_is_added()
+    |> Steps.submit_discussion()
+    |> Steps.assert_discussion_is_posted_with_attachment()
   end
 
   #

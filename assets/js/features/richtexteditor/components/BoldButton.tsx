@@ -1,16 +1,16 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { MenuToggleButton } from "./MenuToggleButton";
+import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
 export function BoldButton({ editor, iconSize }): JSX.Element {
   return (
-    <MenuToggleButton
+    <ToolbarToggleButton
       onClick={() => editor.chain().focus().toggleBold().run()}
       isActive={editor.isActive("bold")}
       title="Bold"
     >
       <Icons.IconBold size={iconSize} />
-    </MenuToggleButton>
+    </ToolbarToggleButton>
   );
 }

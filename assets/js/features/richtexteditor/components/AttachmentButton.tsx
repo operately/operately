@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
 import { AddBlobsEditorCommand } from "@/components/Editor/Blob/AddBlobsEditorCommand";
-import { MenuButton } from "./MenuButton";
+import { ToolbarButton } from "./ToolbarButton";
 
 //
 // To activate the file chooser, we need to add a hiden input element to the DOM, with the type=file.
@@ -12,8 +12,7 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element {
   let ref = React.useRef<HTMLInputElement | null>(null);
 
   const handleClick = React.useCallback(() => {
-    console.log("click");
-    // if (ref.current) ref.current.click();
+    if (ref.current) ref.current.click();
   }, [ref]);
 
   const addBlob = React.useCallback(
@@ -30,18 +29,28 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element {
     [editor],
   );
 
+  //
+  // There is no direct way to know if the file chooser was triggered in e2e tests.
+  // We are going to add a data attribute to the input element when it is triggered.
+  //
+  const markAsTriggered = React.useCallback(() => {
+    ref.current!.setAttribute("data-test-upload-triggered", "true");
+  }, [ref]);
+
   return (
     <>
-      <MenuButton onClick={handleClick} title="Add an Image or File">
+      <ToolbarButton onClick={handleClick} title="Add an Image or File">
         <Icons.IconPaperclip size={iconSize} />
-      </MenuButton>
+      </ToolbarButton>
 
       <input
         multiple
         type="file"
         id="file"
-        style={{ display: "block" }}
+        style={{ display: "none" }}
         onChange={addBlob}
+        onClick={markAsTriggered}
+        data-test-id="attachment-input-field"
         ref={(r: any) => (ref.current = r)}
       />
     </>

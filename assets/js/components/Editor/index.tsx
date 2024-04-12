@@ -8,7 +8,7 @@ import Mention from "@tiptap/extension-mention";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 
-import { MenuBar as Toolbar } from "@/features/richtexteditor/components/MenuBar";
+import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
 import MentionPopup from "./MentionPopup";
 import Blob, { isUploadInProgress } from "./Blob";
 

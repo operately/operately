@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { MenuToggleButton } from "./MenuToggleButton";
+import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
 import { EditorContext } from "@/components/Editor";
 
@@ -17,8 +17,12 @@ export function LinkButton({ editor, iconSize }): JSX.Element {
   }, [editor]);
 
   return (
-    <MenuToggleButton onClick={toggleLink} isActive={editor.isActive("link") || linkEditActive} title="Add/Edit Links">
+    <ToolbarToggleButton
+      onClick={toggleLink}
+      isActive={editor.isActive("link") || linkEditActive}
+      title="Add/Edit Links"
+    >
       <Icons.IconLink size={iconSize} />
-    </MenuToggleButton>
+    </ToolbarToggleButton>
   );
 }
