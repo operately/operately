@@ -9,7 +9,8 @@ import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 
 import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
-import MentionPopup from "./MentionPopup";
+import { MentionPopup } from "@/features/richtexteditor/components/MentionPopup";
+
 import Blob, { isUploadInProgress } from "./Blob";
 
 export { LinkEditForm } from "./LinkEditForm";
@@ -115,7 +116,9 @@ function useEditor(props: UseEditorProps): EditorState {
         suggestion: {
           render: () => new MentionPopup(),
           items: props.peopleSearch,
+          allowedPrefixes: [",", "\\s"],
         },
+        deleteTriggerWithBackspace: true,
       }),
       Highlight.configure({
         multicolor: true,

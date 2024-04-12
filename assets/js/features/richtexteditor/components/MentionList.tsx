@@ -30,7 +30,7 @@ interface MentionListProps {
   command: ({ id, label }: { id: string; label: string }) => void;
 }
 
-const MentionList = forwardRef((props: MentionListProps, ref) => {
+export const MentionList = forwardRef((props: MentionListProps, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const selectItem = (index: number) => {
@@ -85,7 +85,7 @@ const MentionList = forwardRef((props: MentionListProps, ref) => {
   }));
 
   return (
-    <div className="flex flex-col border border-surface-outline rounded overflow-hidden">
+    <div className="flex flex-col border border-surface-outline rounded overflow-hidden bg-surface">
       {props.items.length > 0 ? (
         <ItemList items={props.items} selectItem={selectItem} selectedIndex={selectedIndex} />
       ) : (
@@ -127,5 +127,3 @@ function ItemList({ items, selectItem, selectedIndex }: ItemListProps): JSX.Elem
 function NoResult(): JSX.Element {
   return <div className="px-1.5 py-1 text-left">No result</div>;
 }
-
-export default MentionList;
