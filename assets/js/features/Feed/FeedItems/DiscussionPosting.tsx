@@ -4,6 +4,7 @@ import * as People from "@/models/people";
 import { FeedItem, Container } from "../FeedItem";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
+import { Summary } from "@/components/RichContent";
 
 export const DiscussionPosting: FeedItem = {
   typename: "ActivityContentDiscussionPosting",
@@ -14,8 +15,9 @@ export const DiscussionPosting: FeedItem = {
     }
 
     discussion {
+      id
       title
-      content
+      body
     }
   `,
 
@@ -29,7 +31,7 @@ export const DiscussionPosting: FeedItem = {
     const spacePath = Paths.spacePath(space.id);
     const spaceLink = <Link to={spacePath}>{space.name}</Link>;
 
-    const summary = <Summary jsonContent={discussion.content} characterCount={200} />;
+    const summary = <Summary jsonContent={discussion.body} characterCount={200} />;
 
     const title = (
       <>

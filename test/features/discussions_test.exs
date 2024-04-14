@@ -26,36 +26,19 @@ defmodule Operately.Features.DiscussionsTest do
     {:ok, ctx}
   end
 
+  @discussion %{
+    title: "This is a discussion",
+    body: "This is the body of the discussion."
+  }
+
   @tag login_as: :author
   feature "post a discussion", ctx do
     ctx
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
-    |> UI.click(testid: "new-discussion")
-    |> UI.fill(testid: "discussion-title", with: "This is a discussion")
-    |> UI.fill_rich_text("This is the body of the discussion.")
-    |> UI.click(testid: "post-discussion")
-
-    discussion = last_discussion(ctx)
-
-    ctx
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
-    |> UI.assert_text("This is a discussion")
-    |> UI.assert_text("This is the body of the discussion.")
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.space.name,
-      to: ctx.reader,
-      author: ctx.author,
-      action: "posted: This is a discussion"
-    })  
-
-    ctx
-    |> UI.login_as(ctx.reader)
-    |> NotificationsSteps.assert_discussion_posted(
-      author: ctx.author, 
-      title: "This is a discussion"
-    )
+    |> Steps.post_a_discussion(@discussion)
+    |> Steps.assert_discussion_is_posted()
+    |> Steps.assert_discussion_email_sent(@discussion)
+    |> Steps.assert_discussion_feed_on_space_page(@discussion)
+    |> Steps.assert_discussion_notification_sent(@discussion)
   end
 
   @tag login_as: :author
