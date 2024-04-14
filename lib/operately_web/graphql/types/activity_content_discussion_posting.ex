@@ -8,20 +8,17 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentDiscussionPosting do
       end
     end
     
-    
     field :space_id, non_null(:string) do
       resolve fn activity, _, _ ->
         {:ok, activity.content["space_id"]}
       end
     end
     
-    
     field :title, non_null(:string) do
       resolve fn activity, _, _ ->
         {:ok, activity.content["title"]}
       end
     end
-    
     
     field :discussion_id, non_null(:string) do
       resolve fn activity, _, _ ->
@@ -33,6 +30,13 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentDiscussionPosting do
       resolve fn activity, _, _ ->
         group = Operately.Groups.get_group!(activity.content["space_id"])
         {:ok, group}
+      end
+    end
+
+    field :discussion, non_null(:discussion) do
+      resolve fn activity, _, _ ->
+        update = Operately.Updates.get_update!(activity.content["discussion_id"])
+        {:ok, update}
       end
     end
   end

@@ -3,6 +3,10 @@ export class Paths {
     return createPath(["people"]);
   }
 
+  static discussionPath(spaceId: string, discussionId: string) {
+    return createPath(["spaces", spaceId, "discussions", discussionId]);
+  }
+
   static projectPath(projectId: string) {
     return createPath(["projects", projectId]);
   }

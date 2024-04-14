@@ -2,6 +2,49 @@ defmodule Operately.Support.Features.DiscussionSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
+
+  step :post_a_discussion, ctx, params do
+    ctx
+    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.click(testid: "new-discussion")
+    |> UI.fill(testid: "discussion-title", with: params[:title])
+    |> UI.fill_rich_text(params[:body])
+    |> UI.click(testid: "post-discussion")
+  end
+
+  step :assert_discussion_is_posted, ctx do
+    discussion = last_discussion(ctx)
+
+    ctx
+    |> UI.assert_page("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
+    |> UI.assert_text("This is a discussion")
+    |> UI.assert_text("This is the body of the discussion.")
+  end
+
+  step :assert_discussion_email_sent, ctx, params do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: ctx.reader,
+      author: ctx.author,
+      action: "posted: #{params[:title]}"
+    })
+  end
+
+  step :assert_discussion_notification_sent, ctx, params do
+    ctx
+    |> UI.login_as(ctx.reader)
+    |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: params[:title])
+  end
+
+  step :assert_discussion_feed_on_space_page, ctx, params do
+    ctx
+    |> UI.visit("/spaces/#{ctx.space.id}")
+    |> UI.assert_text(params[:title])
+    |> UI.assert_text(params[:body])
+  end
 
   step :start_writting_discussion, ctx, params do
     ctx
