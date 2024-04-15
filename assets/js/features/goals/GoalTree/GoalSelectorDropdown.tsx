@@ -14,7 +14,7 @@ import { createTestId } from "@/utils/testid";
 
 interface GoalSelectorDropdownProps {
   goals: Goals.Goal[];
-  selected: Goals.Goal | null;
+  selected: Goals.Goal | null | undefined;
   onSelect: (goal: Goals.Goal) => void;
   error?: boolean;
 }

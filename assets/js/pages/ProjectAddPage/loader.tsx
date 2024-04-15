@@ -12,6 +12,7 @@ interface LoaderResult {
   spaceID?: string;
   spaces?: Groups.Group[];
   goal?: Goals.Goal;
+  goals?: Goals.Goal[];
 
   allowSpaceSelection: boolean;
 }
@@ -28,16 +29,21 @@ export async function loader({ request, params }): Promise<LoaderResult> {
 
   const company = await Companies.getCompany();
   const me = await People.getMe({});
+  const goals = await Goals.getGoals({});
+
+  let space: Groups.Group | undefined;
+  let spaces: Groups.Group[] | undefined;
+  let allowSpaceSelection: boolean;
 
   if (spaceID) {
-    const space = await Groups.getGroup(params.id);
-
-    return { company, me, spaceID, space, allowSpaceSelection: false, goal };
+    space = await Groups.getGroup(params.id);
+    allowSpaceSelection = false;
   } else {
-    const spaces = await Groups.getGroups();
-
-    return { company, me, spaces, allowSpaceSelection: true, goal };
+    spaces = await Groups.getGroups();
+    allowSpaceSelection = true;
   }
+
+  return { company, me, spaceID, space, spaces, allowSpaceSelection, goal, goals };
 }
 
 export function useLoadedData(): LoaderResult {

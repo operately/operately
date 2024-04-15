@@ -6,6 +6,7 @@ import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Companies from "@/models/companies";
 import * as Groups from "@/models/groups";
+import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
 
@@ -29,6 +30,8 @@ interface Fields {
   creatorIsContributor: string;
   space: SpaceOption | null;
   spaceOptions: SpaceOption[];
+  goal: Goals.Goal | null;
+  goalOptions: Goals.Goal[];
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person) => void;
@@ -37,6 +40,7 @@ interface Fields {
   setVisibility: (visibility: string) => void;
   setCreatorIsContributor: (contributor: string) => void;
   setSpace: (space: SpaceOption | null) => void;
+  setGoal: (goal: Goals.Goal) => void;
 
   amIChampion: boolean;
   amIReviewer: boolean;
@@ -53,8 +57,8 @@ interface Error {
   message: string;
 }
 
-export function useForm() {
-  const { company, me, spaceID, goal } = useLoadedData();
+export function useForm(): FormState {
+  const { company, me, spaceID, goal: initialGoal, goals } = useLoadedData();
 
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
@@ -63,6 +67,7 @@ export function useForm() {
   const [creatorRole, setCreatorRole] = React.useState<string | null>(null);
   const [creatorIsContributor, setCreatorIsContributor] = React.useState<string>("no");
   const [space, setSpace, spaceOptions] = useSpaces();
+  const [goal, setGoal] = React.useState<Goals.Goal | null>(initialGoal || null);
 
   const amIChampion = champion?.id === me.id;
   const amIReviewer = reviewer?.id === me.id;
@@ -91,6 +96,8 @@ export function useForm() {
     creatorIsContributor,
     space,
     spaceOptions,
+    goal,
+    goalOptions: goals,
 
     setName,
     setChampion,
@@ -99,6 +106,7 @@ export function useForm() {
     setVisibility,
     setCreatorIsContributor,
     setSpace,
+    setGoal,
 
     amIChampion,
     amIReviewer,
@@ -107,7 +115,7 @@ export function useForm() {
 
   const cancelPath = spaceID ? `/spaces/${spaceID}` : "/projects";
 
-  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath, goal?.id);
+  const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath);
 
   return {
     fields,
@@ -118,7 +126,7 @@ export function useForm() {
   };
 }
 
-function useSubmit(fields: Fields, cancelPath: string, goalID: string | undefined) {
+function useSubmit(fields: Fields, cancelPath: string) {
   const navigate = useNavigate();
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -147,7 +155,7 @@ function useSubmit(fields: Fields, cancelPath: string, goalID: string | undefine
           creatorIsContributor: fields.creatorIsContributor,
           creatorRole: fields.creatorRole,
           spaceId: fields.space!.value,
-          goalId: goalID,
+          goalId: fields.goal?.id,
         },
       },
     });

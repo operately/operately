@@ -7,14 +7,13 @@ import PeopleSearch from "@/components/PeopleSearch";
 import * as People from "@/models/people";
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 
-import { DivLink } from "@/components/Link";
-import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
+import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { spaceID } = useLoadedData();
@@ -27,14 +26,16 @@ export function Page() {
 }
 
 function NewProjectForSpacePage() {
-  const { space } = useLoadedData();
+  const { space, spaceID } = useLoadedData();
   const form = useForm();
+
+  const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
 
   return (
     <Pages.Page title="New Project">
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/spaces/${form.fields.spaceID}/projects`}>Back to {space!.name} Space</DimmedLink>
+          <DimmedLink to={spaceProjectsPath}>Back to {space!.name} Space</DimmedLink>
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
@@ -102,8 +103,6 @@ function Form({ form }: { form: FormState }) {
     <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={true} onCancel={form.cancel}>
       <div className="flex flex-col gap-8">
         <div>
-          <Goal />
-
           <Forms.TextInput
             autoFocus
             label="Project Name"
@@ -116,6 +115,8 @@ function Form({ form }: { form: FormState }) {
         </div>
 
         {allowSpaceSelection && <SpaceSelector form={form} />}
+
+        <GoalSelector form={form} />
 
         <div className="grid grid-cols-2 gap-4">
           <ContributorSearch
@@ -200,7 +201,7 @@ function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
       <label className="font-bold mb-1 block">{title}</label>
       <div className="flex-1">
         <PeopleSearch
-          onChange={(option) => onSelect(option?.person)}
+          onChange={(option) => onSelect(option)}
           defaultValue={defaultValue}
           placeholder="Search by name..."
           loader={loader}
@@ -227,25 +228,17 @@ function SpaceSelector({ form }: { form: FormState }) {
   );
 }
 
-function Goal() {
-  const { goal } = useLoadedData();
-
-  if (!goal) return null;
-
+function GoalSelector({ form }: { form: FormState }) {
   return (
-    <div>
-      <div className="flex items-center">
-        <Icons.IconTarget size={14} className="text-red-500" />
-        <DivLink
-          to={Paths.goalPath(goal.id)}
-          className="hover:underline font-medium ml-1"
-          testId="parent-goal-link"
-          target="_blank"
-        >
-          {goal.name}
-        </DivLink>
-      </div>
-      <div className="ml-1 border-l h-4 border-surface-outline" />
+    <div className="flex flex-col">
+      <label className="font-bold mb-1 block">Goal</label>
+
+      <GoalSelectorDropdown
+        selected={form.fields.goal}
+        goals={form.fields.goalOptions}
+        onSelect={form.fields.setGoal}
+        error={false}
+      />
     </div>
   );
 }
