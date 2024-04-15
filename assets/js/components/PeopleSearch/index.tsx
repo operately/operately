@@ -13,7 +13,7 @@ export interface Option {
 }
 
 interface PeopleSearchProps {
-  onChange: (value: Option | Person | null) => void;
+  onChange: (value: Option | null) => void;
   loader: (input: string) => Promise<Person[]>;
   filterOption?: (candidate: any) => boolean;
   placeholder: string;
@@ -27,21 +27,7 @@ interface PeopleSearchProps {
 
 export default function PeopleSearch(props: PeopleSearchProps) {
   const defaultValue = props.defaultValue && personAsOption(props.defaultValue, props.showTitle);
-
-  const loadOptions = React.useCallback(
-    throttle((input: string, callback: any) => {
-      props
-        .loader(input)
-        .then((people) => {
-          callback(people.map((person) => personAsOption(person, props.showTitle)));
-        })
-        .catch((err) => {
-          console.error(err);
-          callback([]);
-        });
-    }, 500),
-    [props.loader],
-  );
+  const optionLoader = usePeopleOptionLoader(props);
 
   return (
     <AsyncSelect
@@ -49,12 +35,12 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       placeholder={props.placeholder}
       onChange={props.onChange}
       inputId={props.inputId || "people-search"}
-      loadOptions={loadOptions}
+      loadOptions={optionLoader}
       defaultValue={defaultValue}
       defaultOptions
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
-      value={props.value}
+      value={props.value && personAsOption(props.value)}
       classNames={classNames(props.error)}
       styles={{
         input: (provided) => ({
@@ -103,6 +89,25 @@ function PersonLabel({ person, showTitle }: { person: Person; showTitle: boolean
       {person.fullName}
       {showTitle && <>&middot; {person.title}</>}
     </div>
+  );
+}
+
+function usePeopleOptionLoader(
+  props: PeopleSearchProps,
+): (input: string, callback: (options: Option[]) => void) => void {
+  return React.useCallback(
+    throttle(async (input: string, callback: any) => {
+      try {
+        const people = await props.loader(input);
+        const options = people.map((person) => personAsOption(person, props.showTitle));
+
+        callback(options);
+      } catch (error) {
+        console.error(error);
+        callback([]);
+      }
+    }, 500),
+    [props.loader],
   );
 }
 

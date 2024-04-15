@@ -12,7 +12,7 @@ interface LoaderResult {
   spaceID?: string;
   spaces?: Groups.Group[];
   goal?: Goals.Goal;
-  goals?: Goals.Goal[];
+  goals: Goals.Goal[];
 
   allowSpaceSelection: boolean;
 }

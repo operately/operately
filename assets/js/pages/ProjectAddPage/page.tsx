@@ -201,7 +201,7 @@ function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
       <label className="font-bold mb-1 block">{title}</label>
       <div className="flex-1">
         <PeopleSearch
-          onChange={(option) => onSelect(option)}
+          onChange={(option) => onSelect(option?.person)}
           defaultValue={defaultValue}
           placeholder="Search by name..."
           loader={loader}

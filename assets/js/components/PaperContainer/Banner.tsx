@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { Context } from "./Context";
+import { Size } from "./";
 
 export function Banner(props: { children: React.ReactNode }) {
   const className = classnames(
@@ -16,8 +17,8 @@ export function Banner(props: { children: React.ReactNode }) {
 export function Header(props: { className: string; children: React.ReactNode }) {
   const { size } = React.useContext(Context);
 
-  const negHor = calcNegativeHorizontalMargins(size);
-  const negVer = calcNegativeVerticalMargins(size);
+  const negHor = calcNegativeHorizontalMargins(size as Size);
+  const negVer = calcNegativeVerticalMargins(size as Size);
 
   const className = classnames(props.className, "rounded-t border-b border-surface-outline", negHor, negVer);
 

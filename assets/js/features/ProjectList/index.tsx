@@ -1,7 +1,6 @@
 import React from "react";
 
 import * as Projects from "@/models/projects";
-import * as Time from "@/utils/time";
 
 import { ProjectListItem } from "@/features/ProjectListItem";
 import classNames from "classnames";

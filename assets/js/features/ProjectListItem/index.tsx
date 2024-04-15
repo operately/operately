@@ -34,7 +34,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
     <div className={className}>
       <div className="flex flex-col">
         {showSpace && <div className="text-xs text-content-dimmed font-medium">{project.space.name}</div>}
-        <ProjectNameLine project={project} showSpace={showSpace} />
+        <ProjectNameLine project={project} />
         <ProjectStatusLine project={project} />
       </div>
       <ContribList project={project} size={avatarSize} />
@@ -42,7 +42,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
   );
 }
 
-function ProjectNameLine({ project, showSpace }) {
+function ProjectNameLine({ project }) {
   const path = createPath("projects", project.id);
 
   return (

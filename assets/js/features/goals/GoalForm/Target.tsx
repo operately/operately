@@ -121,7 +121,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
 }
 
 function TextInput({
-  id = undefined,
+  id,
   autoFocus = false,
   placeholder,
   active,
@@ -130,6 +130,16 @@ function TextInput({
   setValue,
   testId = "",
   error,
+}: {
+  id?: string;
+  autoFocus?: boolean;
+  placeholder?: string;
+  active: boolean;
+  setActive: (active: boolean) => void;
+  value: string;
+  setValue: (value: string) => void;
+  testId: string;
+  error: any;
 }) {
   return (
     <GenericInput
@@ -170,7 +180,7 @@ function NumberInput({ autoFocus = false, placeholder, active, setActive, value,
 }
 
 function GenericInput({
-  id = undefined,
+  id,
   autoFocus = false,
   placeholder,
   active,
@@ -179,6 +189,16 @@ function GenericInput({
   setValue,
   testId = "",
   error,
+}: {
+  id?: string;
+  autoFocus?: boolean;
+  placeholder?: string;
+  active: boolean;
+  setActive: (active: boolean) => void;
+  value: string;
+  setValue: (value: string) => void;
+  testId: string;
+  error: any;
 }) {
   const className = classnames("placeholder:text-content-subtle px-0 py-1 w-full", {
     "bg-surface-highlight": active,
