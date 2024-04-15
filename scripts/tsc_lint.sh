@@ -1,6 +1,6 @@
 cd assets
 
-MAX_ERRORS=50
+MAX_ERRORS=30
 
 errors=$(npx tsc --noEmit -p . | grep "error TS" | sed 's|^js/|assets/js/|' | tee /dev/tty | wc -l)
 

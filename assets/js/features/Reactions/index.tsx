@@ -41,21 +41,17 @@ export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[], 
       return [...prev, reaction];
     });
 
-    const res = await add({
-      variables: {
-        input: {
-          entityId: entity.id,
-          entityType: entity.type,
-          emoji: emoji,
+    try {
+      const res = await add({
+        variables: {
+          input: {
+            entityId: entity.id,
+            entityType: entity.type,
+            emoji: emoji,
+          },
         },
-      },
-    }).catch((e: any) => ({ error: e }));
-
-    if (res.error) {
-      setReactions((prev) => {
-        return prev.filter((r) => r.id !== tempId);
       });
-    } else {
+
       setReactions((prev) => {
         return prev.map((r) => {
           if (r.id === tempId) {
@@ -64,6 +60,10 @@ export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[], 
             return r;
           }
         });
+      });
+    } catch (error) {
+      setReactions((prev) => {
+        return prev.filter((r) => r.id !== tempId);
       });
     }
   };

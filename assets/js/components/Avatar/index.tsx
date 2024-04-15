@@ -20,7 +20,7 @@ interface AvatarProps {
   size: AvatarSize | AvatarSizeString | number;
 }
 
-function SizeClasses({ size }: { size: AvatarSize | number }): string {
+function SizeClasses({ size }: { size: AvatarSizeString | number }): string {
   if (size.constructor.name === "Number") {
     return "";
   }
@@ -43,7 +43,7 @@ function SizeClasses({ size }: { size: AvatarSize | number }): string {
   return "";
 }
 
-function TextClasses({ size }: { size: AvatarSize | number }): string {
+function TextClasses({ size }: { size: AvatarSizeString | number }): string {
   if (size.constructor.name === "Number") {
     if ((size as number) <= 18) {
       return "text-[8px] font-semibold";
@@ -86,9 +86,9 @@ function initials(fullName: string): string {
     if (firstLeters.length === 0) {
       return "";
     } else if (firstLeters.length === 1) {
-      return firstLeters[0];
+      return firstLeters[0]!;
     } else {
-      return firstLeters[0] + firstLeters[firstLeters.length - 1];
+      return firstLeters[0]! + firstLeters[firstLeters.length - 1]!;
     }
   } catch (e) {
     console.error(e);
@@ -112,8 +112,8 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
 
   return (
-    <div title={person.fullName} className={className} style={style}>
-      {initials(person.fullName)}
+    <div title={person!.fullName} className={className} style={style}>
+      {initials(person!.fullName)}
     </div>
   );
 }
@@ -148,7 +148,7 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   );
 }
 
-function UnassingedAvatar({ size }: { size: AvatarSize }): JSX.Element {
+function UnassingedAvatar({ size }: { size: AvatarSizeString | number }): JSX.Element {
   const baseClass = "rounded-full overflow-hidden bg-surface-accent flex items-center justify-center shrink-0";
   const sizeClass = SizeClasses({ size });
   const className = baseClass + " " + sizeClass;
