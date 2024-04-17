@@ -13,7 +13,7 @@ import classnames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
 interface HeaderProps {
-  activeTab: "about" | "subgoals";
+  activeTab: "status" | "subgoals" | "about";
   goal: Goals.Goal;
 }
 
@@ -31,14 +31,16 @@ export function Header({ goal, activeTab }: HeaderProps) {
             <Icons.IconTarget size={24} className="text-red-500" />
           </div>
 
-          <div className="inline-flex items-center gap-2 mt-1">
+          <div className="gap-2 mt-1">
             <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
+            <Timeframe goal={goal} />
           </div>
         </div>
 
         <Tabs.Root activeTab={activeTab}>
-          <Tabs.Tab id="about" title="About" linkTo={Paths.goalPath(goal.id)} />
+          <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id)} />
           <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id)} />
+          <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id)} />
         </Tabs.Root>
       </div>
     </div>
@@ -138,4 +140,8 @@ function Options({ goal }) {
       )}
     </PageOptions.Root>
   );
+}
+
+function Timeframe({ goal }: { goal: Goals.Goal }) {
+  return <div className="font-medium text-sm mt-1 text-content-dimmed">Timeframe: {goal.timeframe}</div>;
 }

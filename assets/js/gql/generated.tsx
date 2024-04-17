@@ -72,6 +72,7 @@ export type ActivityContentDiscussionEditing = {
 export type ActivityContentDiscussionPosting = {
   __typename?: 'ActivityContentDiscussionPosting';
   companyId: Scalars['String']['output'];
+  discussion: Discussion;
   discussionId: Scalars['String']['output'];
   space: Group;
   spaceId: Scalars['String']['output'];

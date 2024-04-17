@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { DivLink } from "@/components/Link";
 import classNames from "classnames";
+import { usePaperSizeHelpers } from "@/components/PaperContainer";
 
 interface TabsContext {
   activeTab: string;
@@ -15,7 +16,9 @@ interface TabsProps {
 }
 
 export function Root(props: TabsProps) {
-  const className = "flex gap-2 border-b border-surface-outline mt-6 -mx-12 px-12";
+  const { negateHorizontalPadding } = usePaperSizeHelpers();
+
+  const className = "flex gap-2 border-b border-surface-outline mt-6" + " " + negateHorizontalPadding;
 
   return (
     <Context.Provider value={{ activeTab: props.activeTab }}>

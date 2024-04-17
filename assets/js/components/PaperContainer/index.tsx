@@ -168,3 +168,31 @@ export function useLoadedData() {
 
   return [data, refetch, fetchVersion];
 }
+
+export function usePaperSizeHelpers() {
+  const { size } = React.useContext(Context);
+
+  let negateHorizontalPadding = "";
+  switch (size) {
+    case "small":
+      negateHorizontalPadding = "-mx-10 px-10";
+      break;
+    case "medium":
+      negateHorizontalPadding = "-mx-12 px-12";
+      break;
+    case "large":
+      negateHorizontalPadding = "-mx-16 px-16";
+      break;
+    case "xlarge":
+      negateHorizontalPadding = "-mx-16 px-16";
+      break;
+    case "xxlarge":
+      negateHorizontalPadding = "-mx-16 px-16";
+      break;
+  }
+
+  return {
+    size: size,
+    negateHorizontalPadding,
+  };
+}
