@@ -1,7 +1,9 @@
 import * as Time from "@/utils/time";
 
 const YEAR_REGEX = /^\d{4}$/;
-const QUARTER_REGEX = /^Q[1-4] \d{4}$/;
+
+const QUARTER_REGEX_TYPE_1 = /^Q[1-4] \d{4}$/;
+const QUARTER_REGEX_TYPE_2 = /^\d{4}-Q[1-4]$/;
 
 const quarters = {
   Q1: { start: "01-01", end: "03-31" },
@@ -16,12 +18,21 @@ export class Timeframe {
       return new Timeframe(Time.parse(`${timeframe}-01-01`)!, Time.parse(`${timeframe}-12-31`)!);
     }
 
-    if (timeframe.match(QUARTER_REGEX)) {
+    if (timeframe.match(QUARTER_REGEX_TYPE_1)) {
       const quarter = quarters[timeframe.slice(0, 2)];
 
       return new Timeframe(
         Time.parseISO(`${timeframe.slice(3)}-${quarter.start}`),
         Time.parseISO(`${timeframe.slice(3)}-${quarter.end}`),
+      );
+    }
+
+    if (timeframe.match(QUARTER_REGEX_TYPE_2)) {
+      const quarter = quarters[timeframe.slice(5)];
+
+      return new Timeframe(
+        Time.parseISO(`${timeframe.slice(0, 4)}-${quarter.start}`),
+        Time.parseISO(`${timeframe.slice(0, 4)}-${quarter.end}`),
       );
     }
 
