@@ -47,7 +47,7 @@ export class Timeframe {
 
   overdueDays(): number {
     if (this.isOverdue()) {
-      return Time.daysBetween(Time.today(), this.end);
+      return Time.daysBetween(this.end, Time.today());
     }
 
     return 0;

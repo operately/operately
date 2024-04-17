@@ -145,19 +145,34 @@ function Options({ goal }) {
 }
 
 function TimeframeView({ goal }: { goal: Goals.Goal }) {
-  const timeframe = Timeframe.parse(goal.timeframe);
-
-  const isOverdue = timeframe.isOverdue();
-  const remainingDays = timeframe.remainingDays();
-  const overdueDays = timeframe.overdueDays();
-
-  const remainingText = isOverdue ? `Overdue by ${overdueDays} days` : `${remainingDays} days left`;
-  const remainingColor = isOverdue ? "text-red-500" : "text-accent-1";
-  const remainingComponent = <span className={remainingColor}>{remainingText}</span>;
-
   return (
     <div className="font-medium text-sm mt-1 text-content-dimmed">
-      Timeframe: {goal.timeframe} &middot; {remainingComponent}
+      Timeframe: {goal.timeframe} <TimeframeState goal={goal} />
     </div>
   );
+}
+
+function TimeframeState({ goal }) {
+  if (goal.isClosed) {
+    return (
+      <span>
+        &middot; Closed on <FormattedTime time={goal.closedAt} format="long-date" />
+      </span>
+    );
+  } else {
+    const timeframe = Timeframe.parse(goal.timeframe);
+
+    const isOverdue = timeframe.isOverdue();
+    const remainingDays = timeframe.remainingDays();
+    const overdueDays = timeframe.overdueDays();
+
+    const remainingText = isOverdue ? `Overdue by ${overdueDays} days` : `${remainingDays} days left`;
+    const remainingColor = isOverdue ? "text-red-500" : "text-accent-1";
+
+    return (
+      <span>
+        &middot; <span className={remainingColor}>{remainingText}</span>
+      </span>
+    );
+  }
 }
