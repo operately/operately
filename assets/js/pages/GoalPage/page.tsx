@@ -9,9 +9,6 @@ import { CheckIns } from "./CheckIns";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 
-import Avatar from "@/components/Avatar";
-import RichContent from "@/components/RichContent";
-
 import { useLoadedData } from "./loader";
 
 export function Page() {
@@ -19,30 +16,11 @@ export function Page() {
 
   return (
     <Pages.Page title={[goal.name]}>
-      <Paper.Root>
+      <Paper.Root size="large">
         <Navigation space={goal.space} />
 
         <Paper.Body minHeight="none">
-          <Header goal={goal} activeTab="about" />
-
-          <div className="flex item-center mt-8 gap-12">
-            <div>
-              <DimmedLabel>Timeframe</DimmedLabel>
-              <div className="font-medium">{goal.timeframe}</div>
-            </div>
-
-            <div>
-              <DimmedLabel>Champion</DimmedLabel>
-              <AvatarAndName person={goal.champion} />
-            </div>
-
-            <div>
-              <DimmedLabel>Reviewer</DimmedLabel>
-              <AvatarAndName person={goal.reviewer} />
-            </div>
-          </div>
-
-          <Description goal={goal} />
+          <Header goal={goal} activeTab="status" />
 
           <div className="mt-8">
             <DimmedLabel>Success Conditions</DimmedLabel>
@@ -77,21 +55,3 @@ function FeedForGoal({ goal }) {
 const DimmedLabel = ({ children }) => (
   <div className="text-xs uppercase font-medium mb-1 tracking-wider">{children}</div>
 );
-
-const AvatarAndName = ({ person }) => (
-  <div className="flex items-center gap-1.5">
-    <Avatar person={person} size="tiny" />
-    <div className="font-medium">{person.fullName}</div>
-  </div>
-);
-
-function Description({ goal }) {
-  if (!goal.description) return null;
-
-  return (
-    <div className="mt-8">
-      <DimmedLabel>Description</DimmedLabel>
-      <RichContent jsonContent={goal.description} />
-    </div>
-  );
-}
