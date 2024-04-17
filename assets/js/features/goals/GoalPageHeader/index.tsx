@@ -12,6 +12,8 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import classnames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
+import { Timeframe } from "@/utils/timeframe";
+
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "about";
   goal: Goals.Goal;
@@ -33,7 +35,7 @@ export function Header({ goal, activeTab }: HeaderProps) {
 
           <div className="gap-2 mt-1">
             <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
-            <Timeframe goal={goal} />
+            <TimeframeView goal={goal} />
           </div>
         </div>
 
@@ -142,6 +144,20 @@ function Options({ goal }) {
   );
 }
 
-function Timeframe({ goal }: { goal: Goals.Goal }) {
-  return <div className="font-medium text-sm mt-1 text-content-dimmed">Timeframe: {goal.timeframe}</div>;
+function TimeframeView({ goal }: { goal: Goals.Goal }) {
+  const timeframe = Timeframe.parse(goal.timeframe);
+
+  const isOverdue = timeframe.isOverdue();
+  const remainingDays = timeframe.remainingDays();
+  const overdueDays = timeframe.overdueDays();
+
+  const remainingText = isOverdue ? `Overdue by ${overdueDays} days` : `${remainingDays} days left`;
+  const remainingColor = isOverdue ? "text-red-500" : "text-accent-1";
+  const remainingComponent = <span className={remainingColor}>{remainingText}</span>;
+
+  return (
+    <div className="font-medium text-sm mt-1 text-content-dimmed">
+      Timeframe: {goal.timeframe} &middot; {remainingComponent}
+    </div>
+  );
 }
