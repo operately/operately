@@ -75,6 +75,10 @@ export class Paths {
     return createPath(["goals", goalId]);
   }
 
+  static goalsPath() {
+    return createPath(["goals"]);
+  }
+
   static goalAboutPath(goalId: string) {
     return createPath(["goals", goalId, "about"]);
   }
