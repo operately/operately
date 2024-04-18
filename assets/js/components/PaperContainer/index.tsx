@@ -87,8 +87,8 @@ export function NavSeparator() {
 const bodyPaddings = {
   small: "px-10 py-8",
   medium: "px-12 py-10",
-  large: "px-16 py-12",
-  xlarge: "px-16 py-12",
+  large: "px-12 py-10",
+  xlarge: "px-12 py-12",
   xxlarge: "px-16 py-12",
 };
 
@@ -181,10 +181,10 @@ export function usePaperSizeHelpers() {
       negateHorizontalPadding = "-mx-12 px-12";
       break;
     case "large":
-      negateHorizontalPadding = "-mx-16 px-16";
+      negateHorizontalPadding = "-mx-12 px-12";
       break;
     case "xlarge":
-      negateHorizontalPadding = "-mx-16 px-16";
+      negateHorizontalPadding = "-mx-12 px-12";
       break;
     case "xxlarge":
       negateHorizontalPadding = "-mx-16 px-16";
