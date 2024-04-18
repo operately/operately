@@ -1,13 +1,14 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { TargetList } from "./TargetList";
-import { CheckIns } from "./CheckIns";
+import { LastCheckIn, CheckInButton, LastCheckInAuthor, NextCheckIn } from "./CheckIns";
 
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
+import { SuccessConditions } from "@/features/goals/SuccessConditions";
 
 import { useLoadedData } from "./loader";
 
@@ -22,14 +23,23 @@ export function Page() {
         <Paper.Body minHeight="none">
           <Header goal={goal} activeTab="status" />
 
-          <div className="mt-8">
-            <DimmedLabel>Success Conditions</DimmedLabel>
-            <TargetList goal={goal} />
-          </div>
+          <div className="flex items-start gap-8 mt-8">
+            <div className="w-3/4">
+              <div className="text-xs font-bold uppercase mb-2">Last Update</div>
+              <LastCheckInAuthor goal={goal} />
 
-          <div className="mt-8">
-            <DimmedLabel>Last Check-in</DimmedLabel>
-            <CheckIns goal={goal} />
+              <div className="text-xs font-bold uppercase">Success Conditions</div>
+              <SuccessConditions goal={goal} />
+
+              <div className="text-xs font-bold uppercase mt-10 mb-2">Last Update Message</div>
+              <LastCheckIn goal={goal} />
+            </div>
+
+            <div className="flex flex-col gap-4 w-1/4">
+              <Icons.IconCalendarRepeat size={30} className="text-content-dimmed" strokeWidth={1.5} />
+              <NextCheckIn goal={goal} />
+              <CheckInButton goal={goal} />
+            </div>
           </div>
 
           <Paper.DimmedSection>
@@ -51,7 +61,3 @@ function FeedForGoal({ goal }) {
 
   return <Feed items={data.activities} page="goal" />;
 }
-
-const DimmedLabel = ({ children }) => (
-  <div className="text-xs uppercase font-medium mb-1 tracking-wider">{children}</div>
-);

@@ -34,7 +34,7 @@ function calcNegativeHorizontalMargins(size: Size) {
     case "large":
       return "-mx-16";
     case "xlarge":
-      throw new Error("XLarge not supported");
+      return "-mx-12";
     case "xxlarge":
       throw new Error("XXLarge not supported");
     default:
@@ -51,7 +51,7 @@ function calcNegativeVerticalMargins(size: Size) {
     case "large":
       return "-mt-12 mb-6 py-4";
     case "xlarge":
-      throw new Error("XLarge not supported");
+      return "-mt-12 mb-6 py-4";
     case "xxlarge":
       throw new Error("XXLarge not supported");
     default:

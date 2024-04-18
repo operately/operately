@@ -18,9 +18,9 @@ function calcNegativeMargins(size: string) {
     case "medium":
       return "-mx-12 px-12 -my-10 py-10";
     case "large":
-      return "-mx-16 px-16 -my-12 py-12";
+      return "-mx-12 px-12 -my-12 py-12";
     case "xlarge":
-      throw new Error("XLarge not supported");
+      return "-mx-12 px-12 -my-12 py-12";
     case "xxlarge":
       throw new Error("XXLarge not supported");
     default:
