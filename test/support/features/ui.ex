@@ -28,9 +28,14 @@ defmodule Operately.Support.Features.UI do
     login_as(state, person)
   end
 
-  def sleep(passthrough_result, msg) do
+  def sleep(passthrough_result, msg) when is_binary(msg) do
     IO.puts(msg)
     :timer.sleep(1000)
+    passthrough_result
+  end
+
+  def sleep(passthrough_result, duration_ms) when is_integer(duration_ms) do
+    :timer.sleep(duration_ms)
     passthrough_result
   end
 
@@ -151,14 +156,18 @@ defmodule Operately.Support.Features.UI do
   end
 
   def fill(state, placeholder: placeholder, with: value) do
+    query = Query.css("[placeholder=\"#{placeholder}\"]")
+
     execute(state, fn session ->
-      session |> Browser.fill_in(Query.css("[placeholder=\"#{placeholder}\"]"), with: value)
+      session |> Browser.clear(query) |> Browser.fill_in(query, with: value)
     end)
   end
 
   def fill(state, testid: id, with: value) do
+    q = query(testid: id)
+
     execute(state, fn session ->
-      session |> Browser.fill_in(Query.css("[data-test-id=\"#{id}\"]"), with: value)
+      session |> Browser.clear(q) |> Browser.fill_in(q, with: value)
     end)
   end
 

@@ -151,6 +151,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
   defp edit_milestone(ctx, selector, title, due_day) do
     ctx
     |> UI.click(testid: "edit-milestone-#{selector}")
+    |> UI.sleep(100) # wait for the modal to open
     |> UI.fill(testid: "new-milestone-title", with: title)
     |> UI.click(testid: "new-milestone-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{due_day}")
