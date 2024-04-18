@@ -1,18 +1,16 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
-
-import { Paths } from "@/routes/paths";
-import { DivLink } from "@/components/Link";
-
 import * as Tabs from "@/components/Tabs";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
+import { Timeframe } from "@/utils/timeframe";
+import { GhostLink } from "@/components/Link/GhostList";
+import { Paths } from "@/routes/paths";
+
 import classnames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
-
-import { Timeframe } from "@/utils/timeframe";
 
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "about";
@@ -54,22 +52,16 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
 
   if (goal) {
     content = (
-      <>
+      <div className="flex items-center gap-1">
         <Icons.IconTarget size={14} className="text-red-500" />
-        <DivLink
-          to={Paths.goalPath(goal.id)}
-          className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
-          testId="project-goal-link"
-        >
-          {goal.name}
-        </DivLink>
-      </>
+        <GhostLink to={Paths.goalPath(goal.id)} text={goal.name} testID="project-goal-link" dimmed size="sm" />
+      </div>
     );
   } else {
     content = (
-      <div className="text-sm text-content-dimmed font-medium flex items-center gap-1">
+      <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        Company-wide goal
+        <GhostLink to={Paths.goalsPath()} text="Company-wide goal" testID="company-goals-link" dimmed size="sm" />
       </div>
     );
   }
