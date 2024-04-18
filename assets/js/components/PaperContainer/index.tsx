@@ -88,7 +88,7 @@ const bodyPaddings = {
   small: "px-10 py-8",
   medium: "px-12 py-10",
   large: "px-12 py-10",
-  xlarge: "px-12 py-12",
+  xlarge: "px-12 py-10",
   xxlarge: "px-16 py-12",
 };
 
@@ -169,30 +169,54 @@ export function useLoadedData() {
   return [data, refetch, fetchVersion];
 }
 
-export function usePaperSizeHelpers() {
+export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: string } {
   const { size } = React.useContext(Context);
 
-  let negateHorizontalPadding = "";
+  let negHor = "";
   switch (size) {
     case "small":
-      negateHorizontalPadding = "-mx-10 px-10";
+      negHor = "-mx-10 px-10";
       break;
     case "medium":
-      negateHorizontalPadding = "-mx-12 px-12";
+      negHor = "-mx-12 px-12";
       break;
     case "large":
-      negateHorizontalPadding = "-mx-12 px-12";
+      negHor = "-mx-12 px-12";
       break;
     case "xlarge":
-      negateHorizontalPadding = "-mx-12 px-12";
+      negHor = "-mx-12 px-12";
       break;
     case "xxlarge":
-      negateHorizontalPadding = "-mx-16 px-16";
+      negHor = "-mx-16 px-16";
       break;
+    default:
+      throw new Error(`Unknown size ${size}`);
+  }
+
+  let negTop = "";
+  switch (size) {
+    case "small":
+      negTop = "-mt-8";
+      break;
+    case "medium":
+      negTop = "-mt-10";
+      break;
+    case "large":
+      negTop = "-mt-10";
+      break;
+    case "xlarge":
+      negTop = "-mt-10";
+      break;
+    case "xxlarge":
+      negTop = "-mt-12";
+      break;
+    default:
+      throw new Error(`Unknown size ${size}`);
   }
 
   return {
     size: size,
-    negateHorizontalPadding,
+    negHor: negHor,
+    negTop: negTop,
   };
 }
