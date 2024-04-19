@@ -3,7 +3,7 @@
 Any contributions to Operately must only contain code that can legally be contributed to Daytona, 
 and which the Operately project can distribute under its license.
 
-Prior to contributing to Operately please read the [Developer's Certificate of Origin](docs/legal/developer_certificate_of_origin.txt)
+Prior to contributing to Operately please read the [Developer's Certificate of Origin](/docs/legal/developer_certificate_of_origin.txt)
 and sign-off all commits with the `--signoff` option provided by `git commit`. 
 
 For example:
