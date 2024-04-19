@@ -4,10 +4,14 @@ import * as Icons from "@tabler/icons-react";
 
 export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="grid grid-cols-1 mt-2 border-stroke-base border shadow-sm rounded">
-      {goal.targets!.map((target) => (
-        <TargetItem key={target!.id} target={target!} />
-      ))}
+    <div className="flex flex-col gap-2">
+      <div className="text-xs font-bold uppercase">SUCCESS CONDITIONS</div>
+
+      <div className="grid grid-cols-1 border-stroke-base border shadow-sm rounded">
+        {goal.targets!.map((target) => (
+          <TargetItem key={target!.id} target={target!} />
+        ))}
+      </div>
     </div>
   );
 }
