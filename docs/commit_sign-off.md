@@ -28,3 +28,15 @@ To automatically signoff every commit, put the following in your `~/.gitconfig`:
 ```
 
 Use the new `git ci` alias to make commits: `git ci -m "Example commit messages"`.
+
+### Automatic verification of DCO
+
+When you open a Pull-Request, the [Github DCO App](https://github.com/apps/dco) will automatically
+check every commit in your pull request.
+
+### Fixing commits that don't have a signed-off message
+
+If you accidentally forgot to sign-off your commits, you can do one of the following:
+
+- For individual commits, do `git commit --amend --no-edit --signoff`.
+- Or for multiple commits, start an interactive rebase with the main branch: `git rebase -i main` and make sure to signoff every commit.
