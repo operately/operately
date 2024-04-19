@@ -15,3 +15,6 @@
   </a>
 </h4>
 
+- [Contributing](CONTRIBUTING.md): Start here if you want to contribute to Operately
+- [License](LICENSE): Operately is licensed under Apache 2.0.
+
