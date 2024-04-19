@@ -14,7 +14,7 @@ git commit --signoff --message "This is the commit message"
 
 This will add a `Signed-off-by` trailer to the end of the commit log message.
 
-### Adding signoff option to your ~/.gitconfig
+### Adding an alias command to git that signs off every commit
 
 To automatically signoff every commit, put the following in your `~/.gitconfig`:
 
@@ -23,6 +23,8 @@ To automatically signoff every commit, put the following in your `~/.gitconfig`:
   email = <YOUR_EMAIL>
   name = <YOUR FULL NAME>
   
-[format]
-  signOff = true
+[alias]
+  ci = commit -s
 ```
+
+Use the new `git ci` alias to make commits: `git ci -m "Example commit messages"`.
