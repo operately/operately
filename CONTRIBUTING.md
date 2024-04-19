@@ -39,7 +39,7 @@ Follow these steps to make sure that your contribution goes smoothly:
 
 1. Fork the GitHub Repository allowing you to make the changes in your own copy of the repository.
 2. Prepare your changes and ensure your commits are descriptive.
-3. Ensure that you [sign off on all your commits](docs/commit_sign-off.md) to comply with the [DCO v1.1](docs/legal/developer_certificate_of_authority.txt)
+3. Ensure that you [sign off on all your commits](/docs/commit_sign-off.md) to comply with the [DCO v1.1](docs/legal/developer_certificate_of_origin.txt)
 4. Create a pull request on GitHub.
 5. A member of the Operately team will review your code within a week, excluding holidays and either merge, comment, or assign someone for further review.
 
