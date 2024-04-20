@@ -23,6 +23,7 @@ export function Page() {
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
           <Header form={form} />
+          <ErrorMessage form={form} />
           <Form form={form} />
         </Paper.Body>
       </Paper.Root>
@@ -32,33 +33,33 @@ export function Page() {
 
 function Header({ form }: { form: FormState }) {
   return (
-    <div className="">
-      <Paper.Header className="bg-surface-dimmed">
-        <div className="flex items-end justify-between mx-10 my-2">
-          <h1 className="text-xl font-extrabold">Editing the goal</h1>
+    <Paper.Header className="bg-surface-dimmed">
+      <div className="flex items-end justify-between my-2">
+        <h1 className="text-xl font-extrabold">Editing the goal</h1>
 
-          <div className="flex items-center gap-2">
-            <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
-              Cancel
-            </FilledButton>
+        <div className="flex items-center gap-2">
+          <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+            Cancel
+          </FilledButton>
 
-            <FilledButton
-              type="primary"
-              onClick={form.submit}
-              loading={form.submitting}
-              size="sm"
-              testId="save-changes"
-              bzzzOnClickFailure
-            >
-              Save Changes
-            </FilledButton>
-          </div>
+          <FilledButton
+            type="primary"
+            onClick={form.submit}
+            loading={form.submitting}
+            size="sm"
+            testId="save-changes"
+            bzzzOnClickFailure
+          >
+            Save Changes
+          </FilledButton>
         </div>
-      </Paper.Header>
-
-      {form.errors.length > 0 && (
-        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
-      )}
-    </div>
+      </div>
+    </Paper.Header>
   );
+}
+
+function ErrorMessage({ form }: { form: FormState }) {
+  if (form.errors.length === 0) return null;
+
+  return <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>;
 }

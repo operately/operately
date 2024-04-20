@@ -169,7 +169,7 @@ export function useLoadedData() {
   return [data, refetch, fetchVersion];
 }
 
-export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: string } {
+export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: string; horPadding: string } {
   const { size } = React.useContext(Context);
 
   let negHor = "";
@@ -214,9 +214,31 @@ export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: str
       throw new Error(`Unknown size ${size}`);
   }
 
+  let horPadding = "";
+  switch (size) {
+    case "small":
+      horPadding = "px-10";
+      break;
+    case "medium":
+      horPadding = "px-12";
+      break;
+    case "large":
+      horPadding = "px-12";
+      break;
+    case "xlarge":
+      horPadding = "px-12";
+      break;
+    case "xxlarge":
+      horPadding = "px-16";
+      break;
+    default:
+      throw new Error(`Unknown size ${size}`);
+  }
+
   return {
     size: size,
     negHor: negHor,
     negTop: negTop,
+    horPadding,
   };
 }
