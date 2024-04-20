@@ -23,7 +23,7 @@ function TargetItem({ target }: { target: Goals.Target }) {
         <div className="font-semibold flex-1">{target.name}</div>
       </div>
 
-      <div className="w-64 p-4 py-2 border-l border-stroke-base">
+      <div className="shrink-0 w-64 p-4 py-2 border-l border-stroke-base">
         <CurrentValue target={target} />
         <ProgressBar target={target} />
         <Range target={target} />
