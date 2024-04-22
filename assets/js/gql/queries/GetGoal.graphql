@@ -134,6 +134,20 @@ query GetGoal(
         avatarUrl
         title
       }
+
+      reactions {
+        id
+        emoji
+
+        person {
+          id
+          fullName
+          avatarUrl
+          title
+        }
+      }
+
+      commentsCount
     }
   }
 }
