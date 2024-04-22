@@ -1,60 +1,122 @@
-# Development Environment
+# Operately Development Environment
 
-This project uses the following tools to manage your local development environment:
+This document describes how to set up a development environment for the Operately project.
 
-- **Docker** is a containerisation platform that allows us to package and run our
-  applications in a portable and isolated environment. With Docker, we can ensure
-  that our application runs consistently across different environments, reducing
-  the risk of configuration errors and improving our ability to deploy our
-  application quickly and efficiently.
+## Table of Contents
 
-- **Docker Compose** is a tool that allows us to define and run multi-container
-  Docker applications. With Docker Compose, we can define our application's services,
-  networks, and volumes in a single configuration file, making it easy to set
-  up and run our application locally.
+- [Pre-requisites](#0-pre-requisites)
+- [Clone the Repository](#1-clone-the-repository)
+- [Set up the Development Environment](#2-set-up-the-development-environment)
+- [Start the Development Environment](#3-start-the-development-environment)
+- [Run the migrations](#4-run-the-migrations)
+- [Create a development user and company](#5-create-a-development-user-and-company)
+- [Start the Phoenix server](#6-start-the-phoenix-server)
 
-- **Makefiles** are a simple yet powerful tool for automating tasks in our
-  development process. With Makefiles, we can define a set of tasks that we
-  frequently perform, such as building our application, running tests, and
-  deploying to a specific environment. By using Makefiles, we can automate these
-  tasks, reducing the time and effort required to perform them manually.
+## 0. Pre-requisites
 
-Make sure to have all three installed before you start development.
+The project uses Docker and Make to manage the development environment.
+Make sure you have both installed on your machine.
 
-## How to set up a development environment?
+- [Docker](https://docs.docker.com/get-docker/)
+- [Make](https://www.gnu.org/software/make/)
 
-First, clone this git repository:
+Test if you have Docker installed:
+
+``` bash
+docker --version
+```
+
+Test if your Docker version is comming with Docker Compose:
+
+``` bash
+docker compose --version
+```
+
+Test if you have Make installed:
+
+``` bash
+make --version
+```
+
+## 1. Clone the Repository
+
+Clone the repository to your local machine:
 
 ``` bash
 git clone git@github.com:/operately/operately
 ```
 
-Use make to setup build your development docker image, and set up the database:
+Change to the project directory:
+
+``` bash
+cd operately
+```
+
+## 2. Set up the Development Environment
+
+To set up the development environment, run the following command:
 
 ``` bash
 make setup
 ```
 
-Run tests to make sure that everything is configured properly:
+This command will build the Docker images and install the dependencies.
+
+## 3. Start the Development Environment
+
+Start your development environment with the following command:
 
 ``` bash
-make test
+make up
 ```
 
-## Available make targets
+This command will start the development environment, more specifically the
+Docker containers that run the application, database, and other services.
 
-The main targets available via `make` are:
+## 4. Run the migrations
 
-- `make dev.server - Start the web application on port 4000.`
-- `make dev.shell - Start a bash shell in the development docker image.`
-- `make dev.console - Start a development Elixir console.`
+Run the migrations to create the database schema:
 
-- `make dev.db.create - Create a development database.`
-- `make dev.db.migrate - Run migrations on the development database.`
-- `make dev.db.rollback - Rollback migrations on the development database.`
-- `make dev.db.reset - Destroy and Recreate the development database.`
+``` bash
+make dev.db.create
+make test.db.create
+make migrate
+```
 
-- `make test - Run all tests.`
-- `make test.watch - Run a test watcher that reruns tests that are modified.`
+## 5. Create a development user and company
 
-Open the [Makefile](/makefile) for detailed description, and additional make targets.
+To create a development user and company, start an Elixir interactive shell:
+
+``` bash
+make dev.mix.console
+```
+
+In the Elixir shell, run the following commands:
+
+``` elixir
+alias Operately.People
+alias Operately.Companies
+alias Operately.Repo
+
+name = "<YOUR_FULL_NAME>"
+email = "<YOUR_EMAIL>"
+password = "<YOUR_PASSWORD>" # min 12 characters
+
+{:ok, account} = Repo.insert(People.Account.registration_changeset(%{email: email, password: password}))
+{:ok, company} = Repo.insert(Companies.Company.changeset(%{name: "Acme Inc"}))
+{:ok, person} = Repo.insert(People.Person.changeset(%{account_id: account.id, company_id: company.id, full_name: name}))
+```
+
+When you run these commands, a new user and company will be created in the database.
+To close the Elixir shell, press `Ctrl+C` twice.
+
+## 6. Start the Phoenix server
+
+To start the Phoenix server, run the following command:
+
+``` bash
+make dev.server
+```
+
+The Phoenix server will start at [http://localhost:4000](http://localhost:4000).
+Enter the email and password you used to create the development user to log in.

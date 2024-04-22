@@ -124,16 +124,19 @@ gen.activity:
 #
 
 dev.server:
-	$(DEV_CONTAINER_WITH_PORTS) iex -S mix phx.server
+	./devenv iex -S mix phx.server
 
 dev.shell:
 	$(DEV_CONTAINER) bash
 
+dev.up:
+	./devenv up
+
+dev.mix.console:
+	./devenv iex -S mix
+
 dev.mix.task:
 	$(DEV_CONTAINER) mix $(TASK)
-
-dev.console:
-	$(DEV_CONTAINER) iex -S mix phx.server
 
 dev.db.create:
 	$(DEV_CONTAINER) mix ecto.create

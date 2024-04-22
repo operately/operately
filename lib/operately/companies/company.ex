@@ -14,10 +14,14 @@ defmodule Operately.Companies.Company do
     timestamps()
   end
 
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   @doc false
   def changeset(company, attrs) do
     company
     |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features, :company_space_id])
-    |> validate_required([:name, :mission])
+    |> validate_required([:name])
   end
 end

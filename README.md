@@ -43,3 +43,4 @@ Learn more about Operately:
 <h2>Development</h2>
 
 - [How to contribute to Operately](CONTRIBUTING.md)
+- [How to set up your development environment](docs/dev-env.md)
