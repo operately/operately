@@ -1,15 +1,15 @@
+<h4>
+  <a href="https://operately.semaphoreci.com/projects/operately">
+    <img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="Operately CI/CD Status" />
+  </a>
+</h4>
+
 <p align="center">
   <img alt="Operately" src="/docs/images/logo-white.svg" height="300px"/>
 </p>
 
 <h1>The missing startup operating system</h1>
 <p>Run your projects, goals, and processes like a high performance startup.</p>
-
-<h4>
-  <a href="https://operately.semaphoreci.com/projects/operately">
-    <img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="Operately CI/CD Status" />
-  </a>
-</h4>
 
 <h2>Why Operately?</h2>
 
