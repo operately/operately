@@ -41,6 +41,7 @@ defmodule OperatelyWeb.Router do
     end
     if Application.compile_env(:operately, :dev_routes) do
       get "/accounts/auth/dev_login", AccountOauthController, :dev_login
+      post "/accounts/log_in", AccountSessionController, :create
     end
   end
 

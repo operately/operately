@@ -26,6 +26,16 @@ defmodule Operately.People do
     Repo.one(from p in Person, where: p.email == ^email)
   end
 
+  def get_account_by_email_and_password(email, password) when is_binary(email) and is_binary(password) do
+    account = Repo.get_by(Operately.People.Account, email: email)
+
+    if Operately.People.Account.valid_password?(account, password) do 
+      account 
+    else
+      nil
+    end
+  end
+
   def create_person(attrs \\ %{}) do
     %Person{}
     |> Person.changeset(attrs)
