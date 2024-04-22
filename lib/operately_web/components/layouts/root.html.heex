@@ -23,11 +23,13 @@
 
       window.appConfig = {};
 
-      window.appConfig.companyID = "<%= Operately.Companies.get_company_id() %>";
       window.appConfig.environment = "<%= Application.get_env(:operately, :app_env) %>";
 
-      window.appConfig.graphql = {};
-      window.appConfig.graphql.socketToken = "<%= OperatelyWeb.GraphqlWSSocket.gen_token(@conn) %>";
+      <%= if @current_account && @current_account.person do %>
+        window.appConfig.companyID = "<%= @current_account.person.company_id %>";
+        window.appConfig.graphql = {};
+        window.appConfig.graphql.socketToken = "<%= OperatelyWeb.GraphqlWSSocket.gen_token(@conn) %>";
+      <% end %>
 
       window.appConfig.sentry = {};
       window.appConfig.sentry.enabled = <%= Application.get_env(:operately, :js_sentry_enabled) %>;

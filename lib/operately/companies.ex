@@ -7,10 +7,6 @@ defmodule Operately.Companies do
   alias Operately.Tenets.Tenet
   alias Operately.People.Person
 
-  def get_company_id() do
-    Repo.one(from c in Company, select: c.id)
-  end
-
   def list_companies do
     Repo.all(Company)
   end
