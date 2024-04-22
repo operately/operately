@@ -6,8 +6,8 @@ import RichContent from "@/components/RichContent";
 
 import { FilledButton } from "@/components/Button";
 import { createPath } from "@/utils/paths";
-import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
@@ -17,6 +17,9 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Pages from "@/components/Pages";
 
 export function LastCheckInMessage({ goal }) {
+  const { data, loading } = People.useMe({});
+  if (loading) return null;
+
   if (!goal.lastCheckIn) return null;
 
   const message = goal.lastCheckIn.content.message;
@@ -26,13 +29,46 @@ export function LastCheckInMessage({ goal }) {
     <div className="flex flex-col gap-2">
       <div className="text-xs font-bold uppercase">Last Update Message</div>
 
-      <DivLink className="" to={path}>
+      <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1 border border-stroke-base p-4 py-3 shadow-sm rounded-lg w-full min-h-[180px]">
           <RichContent jsonContent={message} />
         </div>
-      </DivLink>
+
+        <div className="flex items-center justify-between">
+          <LastMessageReactions goal={goal} me={data.me} />
+          <div className="flex items-center gap-3">
+            <LastMessageComments goal={goal} />
+
+            <FilledButton linkTo={path} size="xs" type="primary">
+              Discuss
+            </FilledButton>
+          </div>
+        </div>
+      </div>
     </div>
   );
+}
+
+function LastMessageComments({ goal }: { goal: Goals.Goal }) {
+  if (!goal.lastCheckIn) return null;
+
+  if (goal.lastCheckIn.commentsCount === 0) {
+    return <div className="text-sm text-content-dimmed">No comments</div>;
+  } else if (goal.lastCheckIn.commentsCount === 1) {
+    return <div className="text-sm text-content-dimmed">1 comment</div>;
+  } else {
+    return <div className="text-sm text-content-dimmed">{goal.lastCheckIn.commentsCount} comments</div>;
+  }
+}
+
+function LastMessageReactions({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
+  const update = goal.lastCheckIn!;
+  const reactions = update.reactions!.map((r) => r!);
+  const entity = { id: update.id, type: "update" };
+
+  const addReactionForm = useReactionsForm(entity, reactions, me);
+
+  return <ReactionList size={20} form={addReactionForm} />;
 }
 
 export function LastCheckInAuthor({ goal }) {

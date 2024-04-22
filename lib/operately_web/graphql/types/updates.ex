@@ -70,6 +70,14 @@ defmodule OperatelyWeb.Graphql.Types.Updates do
         {:ok, update}
       end
     end
+
+    field :comments_count, non_null(:integer) do
+      resolve fn update, _, _ ->
+        comments_count = Operately.Updates.count_comments(update.id, :update)
+
+        {:ok, comments_count}
+      end
+    end
   end
 
   union :update_content do
