@@ -71,12 +71,12 @@ function Acknowledgement({ goal }: { goal: Goals.Goal }) {
     );
   } else {
     if (goal.permissions.canAcknowledgeCheckIn) {
-      return <> &mdash; You didn't acknowledge this update yet.</>;
+      return <> &mdash; You didn't yet acknowledge this update.</>;
     } else {
       return (
         <div className="flex items-center gap-1">
-          &mdash; <Avatar person={goal.reviewer!} size={20} /> {People.firstName(goal.reviewer!)} didn't acknowledge
-          this update yet
+          &mdash; <Avatar person={goal.reviewer!} size={20} /> {People.firstName(goal.reviewer!)} didn't yet acknowledge
+          this update
         </div>
       );
     }
