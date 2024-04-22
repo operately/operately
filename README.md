@@ -39,3 +39,7 @@ Learn more about Operately:
 <p><strong>Playbook</strong><br/> No more dead letters. The playbook your team will build is made of actionable procedures connected to every role and reponsibility.</p>
 <p><strong>AI coach</strong><br/> Spend less time on internal training and feedback. It’s like every employee having a world-class mentor to help them continuously improve.</p>
 <p><strong>Compliance</strong><br/> Build the right habits from day one. All features are designed to give you the controls you need to meet SOC 2 and ISO 27001 requirements.</p>
+
+<h2>Development</h2>
+
+- [How to contribute to Operately](CONTRIBUTING.md)
