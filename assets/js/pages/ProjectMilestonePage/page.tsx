@@ -34,14 +34,14 @@ export function Page() {
           <Options form={form} />
           <Header milestone={milestone} form={form} />
 
-          <PageSection title="Description" color="bg-yellow-300">
-            <EditDescription form={form} color="bg-yellow-300" />
+          <PageSection title="Description">
+            <EditDescription form={form} />
           </PageSection>
           <Description milestone={milestone} form={form} />
 
           <TaskSection milestone={milestone} />
 
-          <PageSection title="Comments &amp; Activity Feed" color="bg-purple-200" />
+          <PageSection title="Comments &amp; Activity Feed" />
           <CommentSection form={commentsForm} me={me} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
@@ -49,50 +49,39 @@ export function Page() {
   );
 }
 
-function PageSection({ title, color, children = null }: { title: string; color: string; children?: React.ReactNode }) {
-  const textColor = "text-dark-1";
-
+function PageSection({ title, children = null }: { title: string; children?: React.ReactNode }) {
+  const { negHor } = Paper.usePaperSizeHelpers();
   return (
-    <div className="-mx-16 mt-8 mb-4 flex items-center">
-      <div className="border-t border-surface-outline w-16" />
-      <div className={"text-sm font-bold rounded px-1.5 tracking-wide" + " " + color + " " + textColor}>{title}</div>
+    <div className={classNames("mt-8 mb-4 flex items-center", negHor)}>
+      <div className="border-t border-surface-outline w-12" />
+      <div className={"font-bold rounded px-1.5"}>{title}</div>
       {children}
-      <div className="border-t border-surface-outline flex-1" />
+      <div className="ml-2 flex-1 border-t border-surface-outline" />
     </div>
   );
 }
 
-function EditDescription({ form, color }) {
-  const textColor = "text-dark-1";
-
+function EditDescription({ form }) {
   return (
     <>
-      <div className="border-t border-surface-outline w-2" />
       <div
-        className={
-          "text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer" + " " + color + " " + textColor
-        }
+        className={"text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer bg-sky-200"}
         onClick={() => form.description.startEditing()}
       >
-        <Icons.IconPencil size={12} />
+        <Icons.IconPencil size={14} />
       </div>
     </>
   );
 }
 
-function AddTask({ onClick, color }) {
-  const textColor = "text-dark-1";
-
+function AddTask({ onClick }) {
   return (
     <>
-      <div className="border-t border-surface-outline w-2" />
       <div
-        className={
-          "text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer" + " " + color + " " + textColor
-        }
+        className={"text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer bg-sky-200"}
         onClick={onClick}
       >
-        <Icons.IconPlus size={12} />
+        <Icons.IconPlus size={14} />
       </div>
     </>
   );
@@ -105,8 +94,8 @@ function TaskSection({ milestone }) {
 
   return (
     <div>
-      <PageSection title="Tasks" color="bg-sky-200">
-        <AddTask onClick={() => setNewTaskModalOpen(true)} color="bg-sky-200" />
+      <PageSection title="Tasks">
+        <AddTask onClick={() => setNewTaskModalOpen(true)} />
       </PageSection>
 
       {!loading && !error && data.tasks.length === 0 && (
@@ -138,6 +127,7 @@ interface TaskBoardState {
 
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
+import classNames from "classnames";
 
 function orderTasksByKanbanState(tasks: Tasks.Task[], kanbanState: any, status: string): Tasks.Task[] {
   return tasks

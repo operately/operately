@@ -37,7 +37,7 @@ function Header({ form }: { form: FormState }) {
   return (
     <div className="">
       <Paper.Header className="bg-surface-dimmed">
-        <div className="flex items-end justify-between mx-10 my-2">
+        <div className="flex items-end justify-between my-2">
           <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
 
           {form.milestoneBeingEdited ? null : (
