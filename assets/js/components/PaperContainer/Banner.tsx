@@ -14,9 +14,15 @@ export function Banner(props: { children: React.ReactNode }) {
 }
 
 export function Header(props: { className: string; children: React.ReactNode }) {
-  const { negHor, negTop } = usePaperSizeHelpers();
+  const { negHor, negTop, horPadding } = usePaperSizeHelpers();
 
-  const className = classnames(props.className, "rounded-t border-b border-surface-outline mb-6 py-4", negHor, negTop);
+  const className = classnames(
+    props.className,
+    "rounded-t border-b border-surface-outline mb-6 py-4",
+    negHor,
+    negTop,
+    horPadding,
+  );
 
   return <div className={className}>{props.children}</div>;
 }

@@ -16,9 +16,9 @@ interface TabsProps {
 }
 
 export function Root(props: TabsProps) {
-  const { negHor } = usePaperSizeHelpers();
+  const { negHor, horPadding } = usePaperSizeHelpers();
 
-  const className = classNames("flex gap-2 border-b border-surface-outline mt-6", negHor);
+  const className = classNames("flex gap-2 border-b border-surface-outline mt-6", negHor, horPadding);
 
   return (
     <Context.Provider value={{ activeTab: props.activeTab }}>

@@ -3,6 +3,7 @@ import React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Groups from "@/models/groups";
+import * as Paper from "@/components/PaperContainer";
 
 import { DivLink } from "@/components/Link";
 import { createPath } from "@/utils/paths";
@@ -13,17 +14,20 @@ import classNames from "classnames";
 interface GroupPageNavigationProps {
   group: Groups.Group;
   activeTab: "overview" | "discussions" | "goals" | "projects";
-  margins?: string;
 }
 
-export function GroupPageNavigation({ group, activeTab, margins }: GroupPageNavigationProps) {
-  margins = margins || "-mx-16 -mt-12";
+export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationProps) {
+  const { negTop, negHor } = Paper.usePaperSizeHelpers();
 
   const overviewPath = createPath("spaces", group.id);
   const goalsPath = createPath("spaces", group.id, "goals");
   const projectsPath = createPath("spaces", group.id, "projects");
   const discussionsPath = createPath("spaces", group.id, "discussions");
-  const wrapperClassName = classNames("mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t", margins);
+  const wrapperClassName = classNames(
+    "mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t",
+    negHor,
+    negTop,
+  );
 
   return (
     <div className={wrapperClassName}>

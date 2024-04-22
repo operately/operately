@@ -175,19 +175,19 @@ export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: str
   let negHor = "";
   switch (size) {
     case "small":
-      negHor = "-mx-10 px-10";
+      negHor = "-mx-10";
       break;
     case "medium":
-      negHor = "-mx-12 px-12";
+      negHor = "-mx-12";
       break;
     case "large":
-      negHor = "-mx-12 px-12";
+      negHor = "-mx-12";
       break;
     case "xlarge":
-      negHor = "-mx-12 px-12";
+      negHor = "-mx-12";
       break;
     case "xxlarge":
-      negHor = "-mx-16 px-16";
+      negHor = "-mx-16";
       break;
     default:
       throw new Error(`Unknown size ${size}`);
