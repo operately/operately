@@ -142,8 +142,7 @@ defmodule Operately.People.Account do
   If there is no account or the account doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%Operately.People.Account{hashed_password: hashed_password}, password)
-      when is_binary(hashed_password) and byte_size(password) > 0 do
+  def valid_password?(%Operately.People.Account{hashed_password: hashed_password}, password) when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)
   end
 

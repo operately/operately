@@ -1,12 +1,64 @@
-<div class="mx-auto max-w-sm">
-  <.header class="text-center">
-    Welcome to Operately
-  </.header>
+<div class="mx-auto w-[600px] bg-surface mt-40 border border-surface-outline p-16">
+  <%= if @flash["error"] do %>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-12" role="alert">
+      <span class="block sm:inline"><%= @flash["error"] %></span>
+    </div>
+  <% end %>
 
-  <div class="text-center mt-8">
-    <.link href={~p"/accounts/auth/google"} class="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55">
-      <svg class="w-4 h-4 mr-2 -ml-1" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path></svg>
-      Sign in with Google
-    </.link>
+  <div class="mb-4">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      id="Layer_1"
+      viewBox="193.04 193.04 613.92 613.92"
+      width="50px"
+      height="50px"
+    >
+      <polygon points="602.32 806.96 397.68 806.96 397.68 602.32 602.32 806.96" fill="#024fac"></polygon>
+      <polygon points="397.68 193.04 602.32 193.04 602.32 397.68 397.68 193.04" fill="#024fac"></polygon>
+      <polygon
+        points="602.32 193.04 602.32 397.68 602.32 602.32 602.32 806.96 806.96 602.32 806.96 397.68 602.32 193.04"
+        fill="#3185ff"
+      ></polygon>
+      <polygon
+        points="193.04 397.68 193.04 602.32 397.68 806.96 397.68 602.32 397.68 397.68 397.68 193.04 193.04 397.68"
+        fill="#3185ff"
+      ></polygon>
+    </svg>
+
+    <div class="text-2xl font-bold mt-4">Operately</div>
+    <div class="text-content-dimmed">Please enter your details to sign in</div>
+  </div>
+
+  <div class="my-8">
+    <.form for={%{}} action={~p"/accounts/log_in"} class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label for="email" class="text-sm font-bold">Email</label>
+        <input type="email" name="email" placeholder="@mail.com" class="input border-surface-outline rounded" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="email" class="text-sm font-bold">Password</label>
+        <input type="password" name="password" placeholder="Password" class="input border-surface-outline rounded" />
+      </div>
+
+      <div class="flex mt-4">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white-1 px-6 py-2.5 flex items-center justify-center font-semibold w-full">Sign in</button>
+      </div>
+    </.form>
+  </div>
+
+  <div class="flex items-center gap-4 my-8 text-content-dimmed uppercase text-xs font-medium tracking-wide">
+    <div class="border-t border-stroke-base flex-1" />
+    or
+    <div class="border-t border-stroke-base flex-1" />
+  </div>
+
+  <div class="flex justify-center">
+    <div class="text-center">
+      <a href={~p"/accounts/auth/google"} class="bg-blue-500 text-white-1 px-6 py-2.5 flex items-center font-medium hover:bg-blue-600">
+        <svg class="w-4 h-4 mr-2 -ml-1" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path></svg>
+        Sign in with Google
+      </a>
+    </div>
   </div>
 </div>
