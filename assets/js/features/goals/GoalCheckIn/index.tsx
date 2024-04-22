@@ -12,6 +12,9 @@ import { Paths } from "@/routes/paths";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";
+import * as Goals from "@/models/goals";
+import * as GoalCheckIns from "@/models/goalCheckIns";
+import * as Pages from "@/components/Pages";
 
 export function LastCheckInMessage({ goal }) {
   if (!goal.lastCheckIn) return null;
@@ -42,10 +45,58 @@ export function LastCheckInAuthor({ goal }) {
     <div className="flex flex-col gap-2">
       <div className="text-xs font-bold uppercase">Last Update</div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="inline-flex items-center gap-1.5">
         <Avatar person={author} size={20} />
-        {People.firstName(author)} on <FormattedTime time={time} format="short-date" />
+        {People.firstName(author)} updated on <FormattedTime time={time} format="short-date" />
+        <Acknowledgement goal={goal} />
       </div>
+
+      <AcknowledgeButton goal={goal} />
+    </div>
+  );
+}
+
+function Acknowledgement({ goal }: { goal: Goals.Goal }) {
+  const lastCheckIn = goal.lastCheckIn!;
+  if (!lastCheckIn) return null;
+
+  if (lastCheckIn.acknowledged) {
+    return (
+      <div className="flex items-center gap-1">
+        &mdash;
+        <Icons.IconCircleCheckFilled size={20} className="text-accent-1" strokeWidth={1.5} />
+        Acknowledged by <Avatar person={lastCheckIn.acknowledgingPerson!} size={20} />{" "}
+        {People.shortName(lastCheckIn.acknowledgingPerson!)}
+      </div>
+    );
+  } else {
+    if (goal.permissions.canAcknowledgeCheckIn) {
+      return <> &mdash; You didn't acknowledge this update yet.</>;
+    } else {
+      return (
+        <div className="flex items-center gap-1">
+          &mdash; <Avatar person={goal.reviewer!} size={20} /> {People.firstName(goal.reviewer!)} didn't acknowledge
+          this update yet
+        </div>
+      );
+    }
+  }
+}
+
+function AcknowledgeButton({ goal }: { goal: Goals.Goal }) {
+  if (!goal.lastCheckIn) return null;
+  if (!goal.permissions.canAcknowledgeCheckIn) return null;
+  if (goal.lastCheckIn.acknowledged) return null;
+
+  const refresh = Pages.useRefresh();
+  const [ack] = GoalCheckIns.useAckUpdate({ onCompleted: refresh });
+  const handleAcknowledge = () => ack({ variables: { id: goal.lastCheckIn!.id } });
+
+  return (
+    <div className="flex items-center gap-1">
+      <FilledButton size="xs" type="primary" onClick={handleAcknowledge}>
+        Acknowledge Now
+      </FilledButton>
     </div>
   );
 }
