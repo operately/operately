@@ -1,3 +1,7 @@
+We are hiring a software engineer. See our [careers page](https://careers.operately.com/).
+
+<hr/> 
+
 <h4>
   <a href="https://operately.semaphoreci.com/projects/operately">
     <img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="Operately CI/CD Status" />
