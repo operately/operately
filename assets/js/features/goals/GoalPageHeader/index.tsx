@@ -13,7 +13,7 @@ import classnames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
 interface HeaderProps {
-  activeTab: "status" | "subgoals" | "about";
+  activeTab: "status" | "subgoals" | "discussions" | "about";
   goal: Goals.Goal;
 }
 
@@ -40,6 +40,7 @@ export function Header({ goal, activeTab }: HeaderProps) {
         <Tabs.Root activeTab={activeTab}>
           <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id)} />
           <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id)} />
+          <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id)} />
           <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id)} />
         </Tabs.Root>
       </div>

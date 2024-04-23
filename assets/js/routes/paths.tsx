@@ -95,6 +95,14 @@ export class Paths {
     return createPath(["goals", goalId, "check-ins", checkInId]);
   }
 
+  static goalDiscussionsPath(goalId: string) {
+    return createPath(["goals", goalId, "discussions"]);
+  }
+
+  static newGoalDiscussionPath(goalId: string) {
+    return createPath(["goals", goalId, "discussions", "new"]);
+  }
+
   static closeGoalPath(goalId: string) {
     return createPath(["goals", goalId, "complete"]);
   }
