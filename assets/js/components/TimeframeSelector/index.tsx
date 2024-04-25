@@ -89,7 +89,7 @@ function TimeframeSelectorContent({
         calendarClassName="w-full"
         showQuarterYearPicker
         renderQuarterContent={renderQuarterContent}
-        renderCustomHeader={DatepickerHeader("condensed", "mb-3 text-sm", false)}
+        renderCustomHeader={QuarterPickerHeader}
       />
     );
   }
@@ -140,7 +140,27 @@ function TimeframeSelectorContent({
   }
 }
 
-function DatepickerHeader(variant: "streched" | "condensed", className?: string, showMonth = true) {
+function QuarterPickerHeader({ date, decreaseYear, increaseYear }) {
+  return (
+    <div className="flex items-center w-full px-1 pb-1 gap-2 font-medium mb-2">
+      <Icons.IconChevronLeft
+        size={16}
+        onClick={decreaseYear}
+        className="cursor-pointer text-content-dimmed hover:text-content"
+      />
+
+      <div>{date.getFullYear()}</div>
+
+      <Icons.IconChevronRight
+        size={16}
+        onClick={increaseYear}
+        className="cursor-pointer text-content-dimmed hover:text-content"
+      />
+    </div>
+  );
+}
+
+function DatepickerHeader(variant: "streched" | "condensed", className?: string) {
   return ({ date, decreaseMonth, increaseMonth }) => {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -160,7 +180,7 @@ function DatepickerHeader(variant: "streched" | "condensed", className?: string,
           className="cursor-pointer text-content-dimmed hover:text-content"
         />
         <div>
-          {showMonth && months[date.getMonth()]} {date.getFullYear()}
+          {months[date.getMonth()]} {date.getFullYear()}
         </div>
 
         <Icons.IconChevronRight
