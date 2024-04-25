@@ -117,6 +117,12 @@
   background-color: transparent;
 }
 
+/* 
+* ---------------------------------------------------------------------------
+* Quarter picker 
+* ---------------------------------------------------------------------------
+* */
+
 .react-datepicker__quarter-wrapper {
   width: 100%;
   display: flex;
@@ -145,6 +151,12 @@
 .react-datepicker__quarter-text:hover {
   background-color: var(--color-surface-highlight);
 }
+
+/* 
+* ---------------------------------------------------------------------------
+* Month picker 
+* ---------------------------------------------------------------------------
+* */
 
 .react-datepicker__month-wrapper {
   width: 100%;
@@ -176,11 +188,18 @@
   color: var(--color-white-1);
 }
 
+/* 
+* ---------------------------------------------------------------------------
+* Year picker 
+* ---------------------------------------------------------------------------
+* */
+
 .react-datepicker__year-wrapper {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 5px;
+  max-width: 100%;
 }
 
 .react-datepicker__year-text {
@@ -193,6 +212,11 @@
 
 .react-datepicker__year-text--selected {
   background-color: var(--color-accent-1);
+  color: var(--color-white-1);
+}
+
+.react-datepicker__year-text.react-datepicker__year-text--selected:hover {
+  background-color: var(--color-accent-1) !important;
   color: var(--color-white-1);
 }
 
