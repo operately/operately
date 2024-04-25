@@ -91,8 +91,8 @@ function Description({ form }: { form: FormState }) {
 function FormFooter({ form }: { form: FormState }) {
   const bottomGridStyle = classnames({
     "grid grid-cols-1 sm:grid-cols-2 gap-4": true,
-    "lg:grid-cols-3": !form.config.allowSpaceSelection,
-    "lg:grid-cols-4": form.config.allowSpaceSelection,
+    "lg:grid-cols-2": !form.config.allowSpaceSelection,
+    "lg:grid-cols-3": form.config.allowSpaceSelection,
   });
 
   return (
@@ -122,10 +122,6 @@ function FormFooter({ form }: { form: FormState }) {
             inputId="reviewer-search"
             error={form.errors.find((e) => e.field === "reviewer")}
           />
-        </div>
-
-        <div>
-          <TimeframeSelector form={form} />
         </div>
       </div>
     </Paper.DimmedSection>
