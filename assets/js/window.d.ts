@@ -21,4 +21,13 @@ declare global {
   }
 }
 
+import "react-datepicker";
+
+declare module 'react-datepicker' {
+  interface ReactDatePickerProps {
+    renderYearContent?: (number: number) => React.ReactNode;
+    renderQuarterContent?: (quarter: string) => React.ReactNode;
+  }
+}
+
 export {};

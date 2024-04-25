@@ -11,7 +11,7 @@ const DIALOG_CLASSNAME = "rounded-lg border border-surface-outline z-[100] shado
 
 export function TimeframeSelector(props: TimeframeSelectorProps) {
   const [open, setOpen] = React.useState(true);
-  const [segment, setSegment] = React.useState("quarterly");
+  const [segment, setSegment] = React.useState("annually");
   const [date, setDate] = React.useState<Date | null>(new Date());
 
   return (
@@ -61,7 +61,21 @@ function TimeframeSelectorContent({
   segment: string;
 }) {
   if (segment === "monthly") {
-    return <DatePicker inline selected={date} onChange={setDate} showMonthYearPicker />;
+    const renderMonthContent = (_monthIndex: number, _shortMonthText: string, fullMonthText: string) => (
+      <div className="text-left px-2 py-2 flex items-center justify-between font-medium">{fullMonthText}</div>
+    );
+
+    return (
+      <DatePicker
+        inline
+        selected={date}
+        onChange={setDate}
+        calendarClassName="w-full"
+        showMonthYearPicker
+        renderMonthContent={renderMonthContent}
+        renderCustomHeader={YearPickerHeader}
+      />
+    );
   }
 
   if (segment === "quarterly") {
@@ -89,13 +103,28 @@ function TimeframeSelectorContent({
         calendarClassName="w-full"
         showQuarterYearPicker
         renderQuarterContent={renderQuarterContent}
-        renderCustomHeader={QuarterPickerHeader}
+        renderCustomHeader={YearPickerHeader}
       />
     );
   }
 
   if (segment === "annually") {
-    return <DatePicker inline selected={date} onChange={setDate} showYearPicker />;
+    const renderContent = (year: number) => (
+      <div className="text-left px-2 py-2 flex items-center justify-between font-medium">{year}</div>
+    );
+
+    return (
+      <DatePicker
+        inline
+        selected={date}
+        onChange={setDate}
+        calendarClassName="w-full"
+        showYearPicker
+        yearItemNumber={6}
+        renderYearContent={renderContent}
+        renderCustomHeader={YearPickerHeader}
+      />
+    );
   }
 
   if (segment === "custom") {
@@ -138,9 +167,11 @@ function TimeframeSelectorContent({
       </div>
     );
   }
+
+  throw new Error("Invalid segment");
 }
 
-function QuarterPickerHeader({ date, decreaseYear, increaseYear }) {
+function YearPickerHeader({ date, decreaseYear, increaseYear }) {
   return (
     <div className="flex items-center w-full px-1 pb-1 gap-2 font-medium mb-2">
       <Icons.IconChevronLeft
