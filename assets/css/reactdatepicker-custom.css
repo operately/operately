@@ -112,22 +112,25 @@
 
 .react-datepicker__quarter-wrapper {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .react-datepicker__quarter-text {
-  height: 6rem;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
+  display: block;
   border-radius: 0.2rem;
+  margin: 0 !important;
   width: 100% !important;
   background-color: var(--color-surface-dimmed);
 }
 
 .react-datepicker__quarter-text--selected {
+  background-color: var(--color-accent-1);
+  color: var(--color-white-1);
+}
+
+.react-datepicker__quarter-text .react-datepicker__quarter-text--selected:hover {
   background-color: var(--color-accent-1);
   color: var(--color-white-1);
 }

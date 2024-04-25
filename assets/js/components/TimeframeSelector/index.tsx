@@ -3,6 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
 
 import DatePicker from "react-datepicker";
+import classNames from "classnames";
 
 interface TimeframeSelectorProps {}
 
@@ -10,7 +11,7 @@ const DIALOG_CLASSNAME = "rounded-lg border border-surface-outline z-[100] shado
 
 export function TimeframeSelector(props: TimeframeSelectorProps) {
   const [open, setOpen] = React.useState(true);
-  const [segment, setSegment] = React.useState("custom");
+  const [segment, setSegment] = React.useState("quarterly");
   const [date, setDate] = React.useState<Date | null>(new Date());
 
   return (
@@ -65,15 +66,18 @@ function TimeframeSelectorContent({
 
   if (segment === "quarterly") {
     const ranges = {
-      Q1: "Jan 1 - Mar 31",
-      Q2: "Apr 1 - Jun 30",
-      Q3: "Jul 1 - Sep 30",
-      Q4: "Oct 1 - Dec 31",
+      Q1: ["Jan 1", "Mar 31"],
+      Q2: ["Apr 1", "Jun 30"],
+      Q3: ["Jul 1", "Sep 30"],
+      Q4: ["Oct 1", "Dec 31"],
     };
 
     const renderQuarterContent = (quarter: string) => (
-      <div className="flex flex-col">
-        <span className="text-lg font-medium mb-1">Q{quarter}</span>
+      <div className="text-left px-4 py-2 flex items-center justify-between">
+        <span className="font-medium">Q{quarter}</span>
+        <span className="text-xs font-medium">
+          {ranges[`Q${quarter}`][0]} &ndash; {ranges[`Q${quarter}`][1]}
+        </span>
       </div>
     );
 
@@ -85,7 +89,7 @@ function TimeframeSelectorContent({
         calendarClassName="w-full"
         showQuarterYearPicker
         renderQuarterContent={renderQuarterContent}
-        renderCustomHeader={({ date, decreaseYear, increaseYear }) => null}
+        renderCustomHeader={DatepickerHeader("condensed", "mb-3 text-sm", false)}
       />
     );
   }
@@ -109,7 +113,7 @@ function TimeframeSelectorContent({
             startDate={startDate}
             endDate={endDate}
             showFourColumnMonthYearPicker
-            renderCustomHeader={DatepickerHeader}
+            renderCustomHeader={DatepickerHeader("streched")}
           />
         </div>
 
@@ -127,7 +131,7 @@ function TimeframeSelectorContent({
             endDate={endDate}
             onChange={setEndDate}
             minDate={startDate}
-            renderCustomHeader={DatepickerHeader}
+            renderCustomHeader={DatepickerHeader("streched")}
             showFourColumnMonthYearPicker
           />
         </div>
@@ -136,27 +140,37 @@ function TimeframeSelectorContent({
   }
 }
 
-function DatepickerHeader({ date, decreaseMonth, increaseMonth }) {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function DatepickerHeader(variant: "streched" | "condensed", className?: string, showMonth = true) {
+  return ({ date, decreaseMonth, increaseMonth }) => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  return (
-    <div className="flex items-center justify-between w-full px-1 pb-1 gap-4 font-medium">
-      <Icons.IconChevronLeft
-        size={16}
-        onClick={decreaseMonth}
-        className="cursor-pointer text-content-dimmed hover:text-content"
-      />
-      <div>
-        {months[date.getMonth()]} {date.getFullYear()}
+    return (
+      <div
+        className={classNames(
+          "flex items-center w-full px-1 pb-1 gap-4 font-medium",
+          {
+            "justify-between": variant === "streched",
+          },
+          className,
+        )}
+      >
+        <Icons.IconChevronLeft
+          size={16}
+          onClick={decreaseMonth}
+          className="cursor-pointer text-content-dimmed hover:text-content"
+        />
+        <div>
+          {showMonth && months[date.getMonth()]} {date.getFullYear()}
+        </div>
+
+        <Icons.IconChevronRight
+          size={16}
+          onClick={increaseMonth}
+          className="cursor-pointer text-content-dimmed hover:text-content"
+        />
       </div>
-
-      <Icons.IconChevronRight
-        size={16}
-        onClick={increaseMonth}
-        className="cursor-pointer text-content-dimmed hover:text-content"
-      />
-    </div>
-  );
+    );
+  };
 }
 
 function SegmentedControl({
