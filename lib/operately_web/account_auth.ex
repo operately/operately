@@ -204,7 +204,6 @@ defmodule OperatelyWeb.AccountAuth do
       conn
     else
       conn
-      |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
       |> redirect(to: ~p"/accounts/log_in")
       |> halt()
