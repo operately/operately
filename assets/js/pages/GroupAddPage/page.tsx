@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Groups from "@/graphql/Groups";
+
 import { GroupColorChooser } from "@/components/GroupColorChooser";
 import { GroupIconChooser } from "@/components/GroupIconChooser";
 
@@ -29,7 +30,12 @@ function Form() {
   const [icon, setIcon] = React.useState("IconStar");
   const [color, setColor] = React.useState("text-blue-500");
 
+  const [errors, setErrors] = React.useState<[string, string][]>([]);
+
   const onSubmit = async () => {
+    const errors = validate(name, mission);
+    setErrors(errors);
+
     const res = await createGroup({
       variables: {
         input: {
@@ -46,23 +52,21 @@ function Form() {
 
   const onCancel = () => navigate("/");
 
-  const isValid = name.length > 0 && mission.length > 0;
-
   return (
-    <Forms.Form isValid={isValid} onSubmit={onSubmit} onCancel={onCancel} loading={loading}>
+    <Forms.Form isValid={true} onSubmit={onSubmit} onCancel={onCancel} loading={loading}>
       <Forms.TextInput
         label="Space Name"
         value={name}
         onChange={setName}
         placeholder="e.g. Marketing Team"
-        error={name.length === 0}
+        error={!!errors.find(([field]) => field === "name")}
       />
       <Forms.TextInput
         label="Purpose"
         value={mission}
         onChange={setMission}
         placeholder="e.g. Create product awareness and bring new leads"
-        error={mission.length === 0}
+        error={!!errors.find(([field]) => field === "mission")}
       />
 
       <div>
@@ -79,4 +83,18 @@ function Form() {
       </Forms.SubmitArea>
     </Forms.Form>
   );
+}
+
+function validate(name: string, mission: string) {
+  const errors: [string, string][] = [];
+
+  if (name.length === 0) {
+    errors.push(["name", "Name is required"]);
+  }
+
+  if (mission.length === 0) {
+    errors.push(["mission", "Mission is required"]);
+  }
+
+  return errors;
 }
