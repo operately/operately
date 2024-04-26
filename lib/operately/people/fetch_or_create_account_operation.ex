@@ -98,7 +98,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
       account_id: account.id,
       full_name: attrs.name,
       email: attrs.email,
-      avatar_url: attrs.image,
+      avatar_url: attrs[:image] || "",
       title: "Unknown Role"
     })
   end

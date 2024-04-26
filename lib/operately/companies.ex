@@ -16,6 +16,7 @@ defmodule Operately.Companies do
   end
 
   def get_company!(id), do: Repo.get!(Company, id)
+  def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
   def create_company(attrs \\ %{}) do
     Multi.new()
@@ -23,7 +24,7 @@ defmodule Operately.Companies do
     |> Multi.insert(:group, fn changes ->
       Operately.Groups.Group.changeset(%{
         company_id: changes[:company].id,
-        name: "Company Space",
+        name: "Company",
         mission: "Everyone in the company",
         icon: "IconBuildingEstate",
         color: "text-cyan-500"
