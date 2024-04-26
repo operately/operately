@@ -52,7 +52,7 @@ There is NO WARRANTY, to the extent permitted by law.
 Clone the repository to your local machine:
 
 ``` bash
-git clone git@github.com:/operately/operately
+git clone https://github.com/operately/operately.git
 ```
 
 Change to the project directory:
