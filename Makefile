@@ -134,10 +134,10 @@ test.watch: test.init
 	./devenv mix test.watch $(FILE)
 
 test.db.create:
-	./devenv mix ecto.create
+	./devenv bash -c "MIX_ENV=test mix ecto.create"
 
 test.db.reset:
-	./devenv mix ecto.reset
+	./devenv bash -c "MIX_ENV=test mix ecto.reset"
 
 test.assets.compile:
 	./devenv mix assets.build
