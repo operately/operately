@@ -40,24 +40,4 @@ defmodule OperatelyWeb.AccountOauthController do
     |> redirect(to: "/")
   end
 
-  #
-  # The following section is used for testing purposes only.
-  # It is not available in production.
-  #
-  # To use from Wallaby, visit the following path:
-  #   /accounts/auth/test_login?email=<account-email>
-  #
-  if Application.compile_env(:operately, :test_routes) do
-    def test_login(conn, params) do
-      account = People.get_account_by_email(params["email"])
-
-      if account do
-        AccountAuth.log_in_account(conn, account)
-      else
-        conn
-        |> put_flash(:error, "Authentication failed")
-        |> redirect(to: "/")
-      end
-    end
-  end
 end

@@ -18,10 +18,6 @@ defmodule Operately.PeopleTest do
       {:ok, %{person: person}}
     end
 
-    test "list_people/0 returns all people", ctx do
-      assert People.list_people() == [ctx.person]
-    end
-
     test "get_person!/1 returns the person with given id", ctx do
       assert People.get_person!(ctx.person.id) == ctx.person
     end
