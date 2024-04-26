@@ -14,6 +14,7 @@ up:
 	./devenv up
 
 setup:
+	./devenv mix local.hex --force --if-missing
 	$(MAKE) dev.setup
 	$(MAKE) test.setup
 
