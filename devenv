@@ -24,30 +24,37 @@
 #   devenv <command>   - Run a command in the running app container
 #
 
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  #
-  # On Linux, we want to pass in the user and group ids as environment variables
-  # to the container so that the user and group ids in the container are the same
-  # as the user and group ids on the host machine. This is done to avoid permission
-  # issues when creating files in the app container.
-  #
+case "$(uname -s)" in
+  Linux)
+    #
+    # On Linux, we want to pass in the user and group ids as environment variables
+    # to the container so that the user and group ids in the container are the same
+    # as the user and group ids on the host machine. This is done to avoid permission
+    # issues when creating files in the app container.
+    #
 
-  export GROUP_ID=$(id -g) 
-  export USER_ID=$(id -u) 
-elif [ "$(uname)" == "Darwin" ]; then
-  #
-  # On MacOS, the user and group ids are different than on Linux and can't be
-  # passed in as environment variables. Instead, we'll set the USER_ID and GROUP_ID
-  # environment variables to 1000, which is the default user and group id in the
-  # app container.
-  #
-  # This will on MacOS because Docker Desktop for Mac uses a file sharing system
-  # that doesn't require the user and group ids to be the same in the container
-  # as on the host machine.
-  
-  export GROUP_ID=1000
-  export USER_ID=1000
-fi
+    export GROUP_ID=$(id -g) 
+    export USER_ID=$(id -u) 
+    ;;
+  Darwin)
+    #
+    # On MacOS, the user and group ids are different than on Linux and can't be
+    # passed in as environment variables. Instead, we'll set the USER_ID and GROUP_ID
+    # environment variables to 1000, which is the default user and group id in the
+    # app container.
+    #
+    # This will on MacOS because Docker Desktop for Mac uses a file sharing system
+    # that doesn't require the user and group ids to be the same in the container
+    # as on the host machine.
+    
+    export GROUP_ID=1000
+    export USER_ID=1000
+    ;;
+  *)
+    echo "Unsupported OS"
+    exit 1
+    ;;
+esac
 
 FIRST_ARG=$1
 
