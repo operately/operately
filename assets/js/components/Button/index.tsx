@@ -33,7 +33,7 @@ const variants = {
 
   success: {
     base: "flex items-center transition-all duration-100",
-    color: "border-2 border-accent-1 text-content-accent text-accent-1",
+    color: "border-2 border-accent-1 text-accent-1",
     text: "font-semibold",
     border: "rounded",
     hover: "",
