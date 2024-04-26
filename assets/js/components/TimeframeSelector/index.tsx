@@ -122,7 +122,7 @@ function TimeframeSelectorContent({
         showYearPicker
         yearItemNumber={6}
         renderYearContent={renderContent}
-        renderCustomHeader={YearPickerHeader}
+        renderCustomHeader={YearsPickerHeader}
       />
     );
   }
@@ -181,6 +181,28 @@ function YearPickerHeader({ date, decreaseYear, increaseYear }) {
       />
 
       <div>{date.getFullYear()}</div>
+
+      <Icons.IconChevronRight
+        size={16}
+        onClick={increaseYear}
+        className="cursor-pointer text-content-dimmed hover:text-content"
+      />
+    </div>
+  );
+}
+
+function YearsPickerHeader({ date, decreaseYear, increaseYear, customHeaderCount }) {
+  return (
+    <div className="flex items-center w-full px-1 pb-1 gap-2 font-medium mb-2">
+      <Icons.IconChevronLeft
+        size={16}
+        onClick={decreaseYear}
+        className="cursor-pointer text-content-dimmed hover:text-content"
+      />
+
+      <div>
+        {date.getFullYear()} {customHeaderCount}
+      </div>
 
       <Icons.IconChevronRight
         size={16}
