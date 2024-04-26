@@ -7,6 +7,7 @@ MEDIA_DIR ?= $(PWD)/media
 SCREENSHOTS_DIR ?= $(PWD)/screenshots
 
 build:
+	@touch .env
 	./devenv build
 
 up:
