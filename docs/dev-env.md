@@ -6,11 +6,12 @@ This document describes how to set up a development environment for the Operatel
 
 - [Pre-requisites](#0-pre-requisites)
 - [Clone the Repository](#1-clone-the-repository)
-- [Set up the Development Environment](#2-set-up-the-development-environment)
-- [Start the Development Environment](#3-start-the-development-environment)
-- [Run the migrations](#4-run-the-migrations)
-- [Create a development user and company](#5-create-a-development-user-and-company)
-- [Start the Phoenix server](#6-start-the-phoenix-server)
+- [Build the development docker images](#2-build-the-development-docker-images)
+- [Start the development environment](#3-start-the-development-environment)
+- [Set up the development environment (install dependencies)](#4-set-up-the-development-environment-install-dependencies)
+- [Create the dev and test databases and run the migrations](#5-create-the-dev-and-test-databases-and-run-the-migrations)
+- [Create a development user and company](#6-create-a-development-user-and-company)
+- [Start the Phoenix server](#7-start-the-phoenix-server)
 
 ## 0. Pre-requisites
 
@@ -23,19 +24,27 @@ Make sure you have both installed on your machine.
 Test if you have Docker installed:
 
 ``` bash
-docker --version
+$ docker --version
+Docker version 24.0.0, build 24.0.0-6
 ```
 
-Test if your Docker version is comming with Docker Compose:
+Test if your Docker version has the `compose` plugin installed:
 
 ``` bash
-docker compose --version
+$ docker compose version
+Docker Compose version v2.20.0
 ```
 
 Test if you have Make installed:
 
 ``` bash
-make --version
+$ make --version
+GNU Make 4.3
+Built for aarch64-unknown-linux-gnu
+Copyright (C) 1988-2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
 ```
 
 ## 1. Clone the Repository
@@ -52,7 +61,26 @@ Change to the project directory:
 cd operately
 ```
 
-## 2. Set up the Development Environment
+## 2. Build the development docker images
+
+To build the development docker images, run the following command:
+
+``` bash
+make build
+```
+
+## 3. Start the development environment
+
+Operately uses Docker Compose to manage the development environment.
+Both the application and the database run in Docker containers.
+
+To start the development environment, run the following command:
+
+``` bash
+make up
+```
+
+## 4. Set up the development environment (install dependencies)
 
 To set up the development environment, run the following command:
 
@@ -62,18 +90,7 @@ make setup
 
 This command will build the Docker images and install the dependencies.
 
-## 3. Start the Development Environment
-
-Start your development environment with the following command:
-
-``` bash
-make up
-```
-
-This command will start the development environment, more specifically the
-Docker containers that run the application, database, and other services.
-
-## 4. Run the migrations
+## 5. Create the dev and test databases and run the migrations
 
 Run the migrations to create the database schema:
 
@@ -83,7 +100,7 @@ make test.db.create
 make migrate
 ```
 
-## 5. Create a development user and company
+## 6. Create a development user and company
 
 To create a development user and company, start an Elixir interactive shell:
 
@@ -110,7 +127,7 @@ password = "<YOUR_PASSWORD>" # min 12 characters
 When you run these commands, a new user and company will be created in the database.
 To close the Elixir shell, press `Ctrl+C` twice.
 
-## 6. Start the Phoenix server
+## 7. Start the Phoenix server
 
 To start the Phoenix server, run the following command:
 

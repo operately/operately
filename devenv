@@ -1,5 +1,29 @@
 #!/usr/bin/env bash
 
+#
+# A wrapper around the docker command to make it easier to run commands in 
+# the app container accross Linux and MacOS. On MacOS, the user and group
+# ids are different than on Linux, so we need to pass them in as environment
+# variables to the container. This script will set the USER_ID and GROUP_ID
+# environment variables to the current user and group ids.
+#
+# The USER_ID and GROUP_ID environment variables are used in the docker-compose.yml
+# file to set the user and group ids in the app container that is the same as the
+# current user and group ids on the host machine. This is done to avoid permission
+# issues when creating files in the app container.
+#
+
+#
+# Usage:
+#
+#   devenv build       - Build the app container
+#   devenv up          - Start the app container
+#   devenv stop        - Stop the app container
+#   devenv down        - Stop and remove the app container
+#   devenv shell       - Start a shell in the app container
+#   devenv <command>   - Run a command in the running app container
+#
+
 export GROUP_ID=$(id -g) 
 export USER_ID=$(id -u) 
 
