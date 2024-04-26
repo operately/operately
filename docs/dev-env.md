@@ -118,8 +118,10 @@ password = <Your Password>                        # e.g. "keyboardcat123!" (must
 company_name = <Your Company Name>                # e.g. "Operately"
 trusted_email_domains = [<ALLOWED EMAIL DOMAIN>]  # e.g. ["@localhost.dev"] (make sure to replace this with your email domain)
 
-{:ok, company} = Operately.Companies.create_company(%{name: company_name, trusted_email_domains: trusted_email_domains})
-{:ok, account} = Operately.People.create_account(%{name: full_name, email: email, password: password})
+Operately.Repo.transaction(fn ->
+  {:ok, company} = Operately.Companies.create_company(%{name: company_name, trusted_email_domains: trusted_email_domains})
+  {:ok, account} = Operately.People.create_account(company, %{name: full_name, email: email, password: password})
+end)
 ```
 
 When you run these commands, a new user and company will be created in the database.
