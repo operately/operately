@@ -1,24 +1,12 @@
 defmodule Operately.CompaniesFixtures do
-  @moduledoc """
-  This module defines test helpers for creating
-  entities via the `Operately.Companies` context.
-  """
-
-  @doc """
-  Generate a company.
-  """
   def company_fixture(attrs \\ %{}) do
-    {:ok, company} =
-      attrs
-      |> Enum.into(%{
-        mission: "some mission",
-        name: "some name",
-        trusted_email_domains: []
-      })
-      |> Operately.Companies.create_company()
+    attrs = attrs |> Enum.into(%{
+      mission: "some mission",
+      name: "some name",
+      trusted_email_domains: []
+    })
 
-    {:ok, res} = Operately.Companies.create_company_space(company)
-
-    res.company
+    {:ok, company} = Operately.Companies.create_company(attrs)
+    company
   end
 end

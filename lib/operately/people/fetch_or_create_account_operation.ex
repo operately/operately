@@ -5,21 +5,21 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   alias Operately.People.Person
   alias Operately.People.Account
 
-  def call(attrs = %{email: _email, name: _name, image: _image}) do
+  def call(company, attrs = %{email: _email, name: _name, image: _image}) do
     strategies = [
-      &find_existing_account/1,
-      &create_account_for_an_existing_person/1,
-      &create_new_account/1
+      &find_existing_account/2,
+      &create_account_for_an_existing_person/2,
+      &create_new_account/2
     ]
 
-    first_succesfull(strategies, attrs, on_not_found: {:error, "Not found"})
+    first_succesfull(strategies, company, attrs, on_not_found: {:error, "Not found"})
   end
 
   #
   # Strategies
   #
 
-  defp find_existing_account(%{email: email, image: image}) do
+  defp find_existing_account(_company, %{email: email, image: image}) do
     account = People.get_account_by_email(email)
 
     if account == nil do
@@ -35,8 +35,8 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
     end
   end
 
-  defp create_account_for_an_existing_person(attrs) do
-    person = People.get_person_by_email(attrs.email)
+  defp create_account_for_an_existing_person(company, attrs) do
+    person = People.get_person_by_email(company, attrs.email)
 
     cond do
       person == nil -> {:error, "Not found"}
@@ -53,9 +53,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
     end
   end
 
-  defp create_new_account(attrs) do
-    company = hd(Operately.Companies.list_companies())
-
+  defp create_new_account(company, attrs) do
     if Operately.Companies.is_email_allowed?(company, attrs.email) do
       Multi.new()
       |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: random_password()}))
@@ -71,14 +69,14 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   # Utility functions
   #
 
-  defp first_succesfull([strategy | rest], params, on_not_found: on_not_found) do
-    case strategy.(params) do
+  defp first_succesfull([strategy | rest], company, params, on_not_found: on_not_found) do
+    case strategy.(company, params) do
       {:ok, result} ->    {:ok, result}
-      {:error, _reason} -> first_succesfull(rest, params, on_not_found: on_not_found)
+      {:error, _reason} -> first_succesfull(rest, company, params, on_not_found: on_not_found)
     end
   end
 
-  defp first_succesfull([], _params, on_not_found: on_not_found) do
+  defp first_succesfull([], _company, _params, on_not_found: on_not_found) do
     on_not_found
   end
 

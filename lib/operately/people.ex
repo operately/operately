@@ -1,39 +1,31 @@
 defmodule Operately.People do
-  @moduledoc """
-  The People context.
-  """
-
   import Ecto.Query, warn: false
   alias Operately.Repo
 
-  alias Operately.People.Person
-
-  def list_people do
-    Repo.all(Person)
-  end
+  alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
     Repo.all(from p in Person, where: p.company_id == ^company_id)
   end
 
+  def get_account!(id), do: Repo.get!(Account, id)
   def get_person!(id), do: Repo.get!(Person, id)
 
-  def get_person_by_name!(name) do
-    Repo.one!(from p in Person, where: p.full_name == ^name)
+  def get_person_by_name!(company, name) do
+    Repo.one!(from p in Person, where: p.full_name == ^name and p.company_id == ^company.id)
   end
 
-  def get_person_by_email(email) do
-    Repo.one(from p in Person, where: p.email == ^email)
+  def get_person_by_email(company, email) do
+    Repo.one(from p in Person, where: p.email == ^email and p.company_id == ^company.id)
+  end
+
+  def get_account_by_email(email) when is_binary(email) do
+    Repo.one(from a in Account, where: a.email == ^email)
   end
 
   def get_account_by_email_and_password(email, password) when is_binary(email) and is_binary(password) do
     account = Repo.get_by(Operately.People.Account, email: email)
-
-    if Operately.People.Account.valid_password?(account, password) do 
-      account 
-    else
-      nil
-    end
+    if Operately.People.Account.valid_password?(account, password), do: account
   end
 
   def create_person(attrs \\ %{}) do
@@ -78,17 +70,8 @@ defmodule Operately.People do
 
   alias Operately.People.{Account, AccountToken, AccountNotifier}
 
-  def get_account_by_email(email) when is_binary(email) do
-    Repo.get_by(Account, email: email)
-  end
 
-  def get_account_by_email_and_password(email, password)
-      when is_binary(email) and is_binary(password) do
-    account = Repo.get_by(Account, email: email)
-    if Account.valid_password?(account, password), do: account
-  end
-
-  def get_account!(id), do: Repo.get!(Account, id)
+  # def get_account!(id), do: Repo.get!(Account, id)
 
   def register_account(attrs) do
     %Account{}
@@ -238,64 +221,8 @@ defmodule Operately.People do
     end
   end
 
-  def log_in_or_create_account(attrs) do
-    Operately.People.FetchOrCreateAccountOperation.call(attrs)
-  end
-
-  def fetch_or_create_account(attrs) do
-    restrict_entry!(attrs.email)
-
-    get_account_by_email(attrs.email)
-    |> case do
-      %Account{} = account -> 
-        {:ok, account}
-      _ -> create_account(attrs)
-    end
-    |> case do
-      {:ok, account} -> find_or_create_person_for_account(account, attrs)
-      {:error, changeset} -> {:error, changeset}
-    end
-  end
-
-  defp restrict_entry!(email) do
-    if Application.get_env(:operately, :restrict_entry) do
-      allowed = String.split(System.get_env("ALLOWED_EMAILS"), ",")
-
-      if email not in allowed do
-        raise "Not allowed"
-      end
-    end
-  end
-
-  defp create_account(attrs) do
-    %Account{}
-    |> Account.registration_changeset(attrs)
-    |> Repo.insert()
-  end
-
-  defp find_or_create_person_for_account(account, attrs) do
-    alias Operately.People.Person
-    alias Operately.Groups.Member
-    alias Ecto.Multi
-
-    account = Repo.preload(account, [:person])
-
-    if account.person do
-      {:ok, account}
-    else
-      company = Operately.Companies.get_company!(account.company_id)
-      company_space = Operately.Groups.get_group!(company.company_space_id)
-      person_attrs = Map.merge(attrs.person, %{account_id: account.id})
-
-      Multi.new()
-      |> Multi.insert(:person, Person.changeset(%Person{}, person_attrs))
-      |> Multi.insert(:membership, fn changes -> Member.changeset(%{group_id: company_space.id, person_id: changes.person.id}) end)
-      |> Repo.transaction()
-      |> case do
-        {:ok, _} -> {:ok, Repo.preload(account, [:person])}
-        e -> e
-      end
-    end
+  def find_or_create_account(company, attrs) do
+    Operately.People.FetchOrCreateAccountOperation.call(company, attrs)
   end
 
   def search_people(query), do: search_people(query, [])

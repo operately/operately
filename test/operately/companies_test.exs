@@ -29,7 +29,7 @@ defmodule Operately.CompaniesTest do
     end
 
     test "create_company/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Companies.create_company(@invalid_attrs)
+      assert {:error, :company, _, _} = Companies.create_company(@invalid_attrs)
     end
 
     test "update_company/2 with valid data updates the company" do

@@ -32,7 +32,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> UI.click(testid: "submit")
     |> UI.assert_text("People in Dunder Mifflin")
 
-    person = Operately.People.get_person_by_name!("Michael Scott")
+    person = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
 
     assert person != nil
     assert person.company_id == ctx.company.id
@@ -53,7 +53,7 @@ defmodule Operately.Features.CompanyAdminTest do
 
     :timer.sleep(200)
 
-    michael = Operately.People.get_person_by_name!("Michael Scott")
+    michael = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
     assert michael != nil
     assert michael.company_id == ctx.company.id
     assert michael.company_role == :admin
@@ -66,7 +66,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> UI.click(testid: "manage-company-administrators")
     |> UI.click(testid: "remove-michael-scott")
 
-    person = Operately.People.get_person_by_name!("Michael Scott")
+    person = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
 
     assert person != nil
     assert person.company_id == ctx.company.id

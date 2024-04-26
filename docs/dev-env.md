@@ -111,17 +111,15 @@ make dev.mix.console
 In the Elixir shell, run the following commands:
 
 ``` elixir
-alias Operately.People
-alias Operately.Companies
-alias Operately.Repo
+full_name = <Your Full Name>                      # e.g. "John Doe"
+email = <Your Email>                              # e.g. john@localhost.dev
+password = <Your Password>                        # e.g. "keyboardcat123!" (must be at least 12 characters long)
 
-name = "<YOUR_FULL_NAME>"
-email = "<YOUR_EMAIL>"
-password = "<YOUR_PASSWORD>" # min 12 characters
+company_name = <Your Company Name>                # e.g. "Operately"
+trusted_email_domains = [<ALLOWED EMAIL DOMAIN>]  # e.g. ["@localhost.dev"] (make sure to replace this with your email domain)
 
-{:ok, account} = Repo.insert(People.Account.registration_changeset(%{email: email, password: password}))
-{:ok, company} = Repo.insert(Companies.Company.changeset(%{name: "Acme Inc"}))
-{:ok, person} = Repo.insert(People.Person.changeset(%{account_id: account.id, company_id: company.id, full_name: name}))
+{:ok, company} = Operately.Companies.create_company(%{name: company_name, trusted_email_domains: trusted_email_domains})
+{:ok, account} = Operately.People.create_account(%{name: full_name, email: email, password: password})
 ```
 
 When you run these commands, a new user and company will be created in the database.

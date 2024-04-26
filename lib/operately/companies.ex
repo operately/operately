@@ -18,24 +18,22 @@ defmodule Operately.Companies do
   def get_company!(id), do: Repo.get!(Company, id)
 
   def create_company(attrs \\ %{}) do
-    %Company{}
-    |> Company.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def create_company_space(company) do
     Multi.new()
-    |> Multi.insert(:group, Operately.Groups.Group.changeset(%{
-      name: "Company Space",
-      mission: "Everyone in the company",
-      company_id: company.id,
-      icon: "IconBuildingEstate",
-      color: "text-cyan-500"
-    }))
-    |> Multi.update(:company, fn %{group: group} ->
+    |> Multi.insert(:company, Company.changeset(attrs))
+    |> Multi.insert(:group, fn changes ->
+      Operately.Groups.Group.changeset(%{
+        company_id: changes[:company].id,
+        name: "Company Space",
+        mission: "Everyone in the company",
+        icon: "IconBuildingEstate",
+        color: "text-cyan-500"
+      })
+    end)
+    |> Multi.update(:updated_company, fn %{company: company, group: group} ->
       Company.changeset(company, %{company_space_id: group.id})
     end)
     |> Repo.transaction()
+    |> Repo.extract_result(:updated_company)
   end
 
   def update_company(%Company{} = company, attrs) do
