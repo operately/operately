@@ -68,6 +68,12 @@
   font-weight: 600;
 }
 
+.react-datepicker__day--in-range,
+.react-datepicker__day--in-range:hover {
+  background-color: var(--color-accent-1) !important;
+  color: var(--color-white-1);
+}
+
 .react-datepicker__day--keyboard-selected {
   border-radius: 100%;
   background-color: var(--color-accent-1);
