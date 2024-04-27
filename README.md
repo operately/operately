@@ -49,3 +49,4 @@ Learn more about Operately:
 - [How to contribute to Operately](CONTRIBUTING.md)
 - [How to set up your development environment](docs/dev-env.md)
 - [Architecture Overview](docs/architecture.md)
+- [Pages, Routes and Data Loading](docs/pages-and-data-loading.md)
