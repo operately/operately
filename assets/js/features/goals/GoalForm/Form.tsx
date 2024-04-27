@@ -7,12 +7,13 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
+import * as Time from "@/utils/time";
 
 import { GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
-import { TimeframeSelector } from "@/components/TimeframeSelector";
+import { TimeframeSelector, Timeframe } from "@/components/TimeframeSelector";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -42,9 +43,15 @@ function FormMain({ form }: { form: FormState }) {
 }
 
 function TimeframeSection({ form }: { form: FormState }) {
+  const [timeframe, setTimeframe] = React.useState<Timeframe>({
+    startDate: Time.parse("2024-04-01"),
+    endDate: Time.parse("2024-06-30"),
+    type: "quarter",
+  });
+
   return (
     <div className="mt-8 flex">
-      <TimeframeSelector />
+      <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} />
     </div>
   );
 }

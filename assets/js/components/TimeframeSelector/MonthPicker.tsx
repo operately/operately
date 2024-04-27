@@ -2,13 +2,14 @@ import React from "react";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
+import { Timeframe, SetTimeframe } from "./timeframe";
 
-export function MonthPicker({ range, setRange }) {
+export function MonthPicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (
     <DatePicker
       inline
-      selected={range.startDate}
-      onChange={(date) => setRange(date, range.endDate)}
+      selected={timeframe.startDate}
+      onChange={(date) => setTimeframe({ ...timeframe, startDate: date })}
       calendarClassName="w-full"
       showMonthYearPicker
       renderCustomHeader={Header}

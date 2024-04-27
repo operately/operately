@@ -2,19 +2,19 @@ import React from "react";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Range, SetRange } from "./useRange";
+import { Timeframe, SetTimeframe } from "./timeframe";
 
-export function CustomRangePicker({ range, setRange }: { range: Range; setRange: SetRange }) {
+export function CustomRangePicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (
     <div className="flex items-start gap-6">
       <div className="flex flex-col items-start justify-start h-full">
         <div className="font-bold text-sm mb-1">Start Date</div>
         <DatePicker
           inline
-          selected={range.startDate}
-          onChange={(date) => setRange(date, range.endDate)}
-          startDate={range.startDate}
-          endDate={range.endDate}
+          selected={timeframe.startDate}
+          onChange={(date) => setTimeframe({ ...timeframe, startDate: date })}
+          startDate={timeframe.startDate}
+          endDate={timeframe.endDate}
           showFourColumnMonthYearPicker
           renderCustomHeader={Header}
         />
@@ -29,11 +29,11 @@ export function CustomRangePicker({ range, setRange }: { range: Range; setRange:
 
         <DatePicker
           inline
-          selected={range.endDate}
-          startDate={range.startDate}
-          endDate={range.endDate}
-          onChange={(date) => setRange(range.startDate, date)}
-          minDate={range.startDate}
+          selected={timeframe.endDate}
+          startDate={timeframe.startDate}
+          endDate={timeframe.endDate}
+          onChange={(date) => setTimeframe({ ...timeframe, endDate: date })}
+          minDate={timeframe.startDate}
           renderCustomHeader={Header}
           showFourColumnMonthYearPicker
         />

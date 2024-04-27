@@ -2,14 +2,14 @@ import * as React from "react";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Range, SetRange } from "./useRange";
+import { Timeframe, SetTimeframe } from "./timeframe";
 
-export function YearPicker({ range, setRange }: { range: Range; setRange: SetRange }) {
+export function YearPicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (
     <DatePicker
       inline
-      selected={range.startDate}
-      onChange={(date) => setRange(date, range.endDate)}
+      selected={timeframe.startDate}
+      onChange={(date) => setTimeframe({ ...timeframe, startDate: date })}
       calendarClassName="w-full"
       showYearPicker
       yearItemNumber={6}
