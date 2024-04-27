@@ -31,26 +31,28 @@ defmodule OperatelyWeb.Router do
 
     get "/accounts/log_in", AccountSessionController, :new
 
+    # 
+    # In development, we use the following route to log in as a user
+    # during development. The route is not available in production.
+    #
+    if Application.compile_env(:operately, :dev_routes) do
+      post "/accounts/log_in", AccountSessionController, :create
+    end
+
+    #
     # In feature tests, we use the following route to log in as a user
     # during feature tests. The route is not available in production.
     #
     # The route accepts one query parameter, `email`, which is the
     # email address of the user to log in as.
+    #
     if Application.compile_env(:operately, :test_routes) do
-      get "/accounts/auth/test_login", AccountOauthController, :test_login
-    end
-    if Application.compile_env(:operately, :dev_routes) do
-      get "/accounts/auth/dev_login", AccountOauthController, :dev_login
-      post "/accounts/log_in", AccountSessionController, :create
+      get "/accounts/auth/test_login", AccountTestSessionController, :test_login
     end
   end
 
   scope "/", OperatelyWeb do
     pipe_through [:browser, :require_authenticated_account]
-
-    # get "/accounts/settings", AccountSettingsController, :edit
-    # put "/accounts/settings", AccountSettingsController, :update
-    # get "/accounts/settings/confirm_email/:token", AccountSettingsController, :confirm_email
 
     get "/blobs/:id", BlobController, :get
   end
@@ -59,6 +61,10 @@ defmodule OperatelyWeb.Router do
     pipe_through [:browser]
 
     delete "/accounts/log_out", AccountSessionController, :delete
+
+    #
+    # Generated with mix phx.gen.auth
+    #
     # get "/accounts/confirm", AccountConfirmationController, :new
     # post "/accounts/confirm", AccountConfirmationController, :create
     # get "/accounts/confirm/:token", AccountConfirmationController, :edit
@@ -66,7 +72,6 @@ defmodule OperatelyWeb.Router do
 
     get "/accounts/auth/:provider", AccountOauthController, :request
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback
-
   end
 
   forward "/media", OperatelyLocalMediaStorage.Plug

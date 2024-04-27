@@ -102,30 +102,31 @@ make migrate
 
 ## 6. Create a development user and company
 
-To create a development user and company, start an Elixir interactive shell:
+First, create an account:
 
 ``` bash
-make dev.mix.console
+make dev.create.account EMAIL=<your-email> PASSWORD=<your-password>
 ```
 
-In the Elixir shell, run the following commands:
+Then, create a company:
 
-``` elixir
-alias Operately.People
-alias Operately.Companies
-alias Operately.Repo
-
-name = "<YOUR_FULL_NAME>"
-email = "<YOUR_EMAIL>"
-password = "<YOUR_PASSWORD>" # min 12 characters
-
-{:ok, account} = Repo.insert(People.Account.registration_changeset(%{email: email, password: password}))
-{:ok, company} = Repo.insert(Companies.Company.changeset(%{name: "Acme Inc"}))
-{:ok, person} = Repo.insert(People.Person.changeset(%{account_id: account.id, company_id: company.id, full_name: name}))
+``` bash
+make dev.create.company NAME=<your-company-name>
 ```
 
-When you run these commands, a new user and company will be created in the database.
-To close the Elixir shell, press `Ctrl+C` twice.
+Finally, add the account to the company:
+
+``` bash
+make dev.add.account.to.company ACCOUNT_EMAIL=<your-email> COMPANY_NAME=<your-company-name> NAME=<your-full-name> ROLE=<your-role-in-the-company>
+```
+
+Example:
+
+``` bash
+make dev.create.account EMAIL="john@localhost.dev" PASSWORD="keyboardcat123!!!"
+make dev.create.company NAME="Acme Inc."
+make dev.add.account.to.company ACCOUNT_EMAIL="john@localhost.dev" COMPANY_NAME="Acme Inc." NAME="John Doe" ROLE="Software Engineer"
+```
 
 ## 7. Start the Phoenix server
 

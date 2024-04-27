@@ -10,14 +10,6 @@ defmodule Operately.Support.Features.UI do
     Map.merge(ctx, state)
   end
 
-  def login(state) do
-    path = URI.encode("/accounts/auth/test_login?email=john@johnson.com&full_name=John Johnson")
-
-    execute(state, fn session ->
-      session |> Browser.visit(path)
-    end)
-  end
-
   def login_based_on_tag(state) do
     field = state[:login_as]
     if !field, do: raise "No :login_as tag found on the test"
