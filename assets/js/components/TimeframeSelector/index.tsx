@@ -19,7 +19,7 @@ interface TimeframeSelectorProps {
 }
 
 export function TimeframeSelector(props: TimeframeSelectorProps) {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -32,9 +32,9 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
 function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
   return (
     <Popover.Trigger asChild>
-      <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface">
-        <Icons.IconCalendar size={20} />
-        <span>{formatTimeframe(props.timeframe)}</span>
+      <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface truncate">
+        <Icons.IconCalendar size={18} className="shrink-0" />
+        <span className="truncate">{formatTimeframe(props.timeframe)}</span>
       </div>
     </Popover.Trigger>
   );

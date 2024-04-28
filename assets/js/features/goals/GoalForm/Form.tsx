@@ -7,13 +7,12 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
-import * as Time from "@/utils/time";
 
 import { GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
-import { TimeframeSelector, Timeframe } from "@/components/TimeframeSelector";
+import { TimeframeSelector } from "@/components/TimeframeSelector";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -37,21 +36,6 @@ function FormMain({ form }: { form: FormState }) {
       <Description form={form} />
       <ParentGoal form={form} />
       <TargetSection form={form} />
-      <TimeframeSection form={form} />
-    </div>
-  );
-}
-
-function TimeframeSection({ form }: { form: FormState }) {
-  const [timeframe, setTimeframe] = React.useState<Timeframe>({
-    startDate: Time.parse("2024-04-01"),
-    endDate: Time.parse("2024-06-30"),
-    type: "quarter",
-  });
-
-  return (
-    <div className="mt-8 flex">
-      <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} />
     </div>
   );
 }
@@ -98,18 +82,17 @@ function Description({ form }: { form: FormState }) {
 function FormFooter({ form }: { form: FormState }) {
   const bottomGridStyle = classnames({
     "grid grid-cols-1 sm:grid-cols-2 gap-4": true,
-    "lg:grid-cols-2": !form.config.allowSpaceSelection,
-    "lg:grid-cols-3": form.config.allowSpaceSelection,
+    "lg:grid-cols-3": !form.config.allowSpaceSelection,
+    "lg:grid-cols-4": form.config.allowSpaceSelection,
   });
 
   return (
     <Paper.DimmedSection>
       <div className={bottomGridStyle}>
-        {form.config.allowSpaceSelection && (
-          <div className="basis-1/4">
-            <SpaceSelector form={form} />
-          </div>
-        )}
+        <div>
+          <label className="font-semibold block mb-1">Timeframe</label>
+          <TimeframeSelector timeframe={form.fields.timeframe} setTimeframe={form.fields.setTimeframe} />
+        </div>
 
         <div>
           <ContributorSearch
@@ -130,6 +113,12 @@ function FormFooter({ form }: { form: FormState }) {
             error={form.errors.find((e) => e.field === "reviewer")}
           />
         </div>
+
+        {form.config.allowSpaceSelection && (
+          <div className="basis-1/4">
+            <SpaceSelector form={form} />
+          </div>
+        )}
       </div>
     </Paper.DimmedSection>
   );
