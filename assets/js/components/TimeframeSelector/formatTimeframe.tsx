@@ -14,10 +14,7 @@ function formatTimeframeMonth(timeframe: Timeframe) {
   if (!timeframe.startDate) return null;
   if (!timeframe.endDate) return null;
 
-  return `${timeframe.startDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  })} - ${timeframe.endDate.toLocaleString("default", { month: "long", year: "numeric" })}`;
+  return timeframe.startDate.toLocaleString("default", { month: "long", year: "numeric" });
 }
 
 function formatTimeframeQuarter(timeframe: Timeframe) {
