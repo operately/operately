@@ -9,7 +9,7 @@ export function MonthPicker({ timeframe, setTimeframe }: { timeframe: Timeframe;
     <DatePicker
       inline
       selected={timeframe.startDate}
-      onChange={(date) => setTimeframe({ ...timeframe, startDate: date })}
+      onChange={(date) => setTimeframe({ ...timeframe, startDate: date, endDate: endOfMonth(date) })}
       calendarClassName="w-full"
       showMonthYearPicker
       renderCustomHeader={Header}
@@ -30,4 +30,13 @@ function Header({ date, decreaseYear, increaseYear }) {
 
 function renderMonthContent(_monthIndex: number, _shortMonthText: string, fullMonthText: string) {
   return <div className="text-left px-2 py-2 flex items-center justify-between font-medium">{fullMonthText}</div>;
+}
+
+function endOfMonth(date: Date | null): Date | null {
+  if (!date) return null;
+
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  return new Date(year, month + 1, 0);
 }

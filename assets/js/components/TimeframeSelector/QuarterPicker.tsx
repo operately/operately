@@ -9,7 +9,7 @@ export function QuarterPicker({ timeframe, setTimeframe }: { timeframe: Timefram
     <DatePicker
       inline
       selected={timeframe.startDate}
-      onChange={(date) => setTimeframe({ ...timeframe, startDate: date })}
+      onChange={(date) => setTimeframe({ ...timeframe, startDate: date, endDate: endOfQuarter(date) })}
       calendarClassName="w-full"
       showQuarterYearPicker
       renderQuarterContent={renderQuarterContent}
@@ -46,4 +46,21 @@ function renderQuarterContent(quarter: string) {
       </span>
     </div>
   );
+}
+
+function endOfQuarter(date: Date | null): Date | null {
+  if (!date) return null;
+
+  const month = date.getMonth();
+  const year = date.getFullYear();
+
+  if (month >= 0 && month <= 2) {
+    return new Date(year, 2, 31);
+  } else if (month >= 3 && month <= 5) {
+    return new Date(year, 5, 30);
+  } else if (month >= 6 && month <= 8) {
+    return new Date(year, 8, 30);
+  } else {
+    return new Date(year, 11, 31);
+  }
 }

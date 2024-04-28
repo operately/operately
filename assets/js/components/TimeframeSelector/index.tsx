@@ -76,9 +76,9 @@ function TimeframeSelectorTypeSelector(props: { timeframe: Timeframe; setTimefra
   return (
     <SegmentedControl
       options={[
-        { label: "Month", value: "month" },
-        { label: "Quarter", value: "quarter" },
         { label: "Year", value: "year" },
+        { label: "Quarter", value: "quarter" },
+        { label: "Month", value: "month" },
         { label: "Custom", value: "days" },
       ]}
       value={props.timeframe.type}
