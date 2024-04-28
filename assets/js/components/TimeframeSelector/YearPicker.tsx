@@ -11,7 +11,7 @@ export function YearPicker({ timeframe, setTimeframe }: { timeframe: Timeframe; 
     <DatePicker
       inline
       selected={timeframe.startDate}
-      onChange={(date) => setTimeframe({ ...timeframe, startDate: date, endDate: endOfMonth(date) })}
+      onChange={(date) => setTimeframe({ ...timeframe, startDate: date, endDate: endOfYear(date) })}
       calendarClassName="w-full"
       showYearPicker
       yearItemNumber={YEAR_OPTION_COUNT}
@@ -41,11 +41,10 @@ function renderYearContent(year: number) {
   return <div className="text-left px-2 py-2 flex items-center justify-between font-medium">{year}</div>;
 }
 
-function endOfMonth(date: Date | null): Date | null {
+function endOfYear(date: Date | null) {
   if (!date) return null;
 
   const year = date.getFullYear();
-  const month = date.getMonth();
 
-  return new Date(year, month + 1, 0);
+  return new Date(year, 11, 31);
 }
