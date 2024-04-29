@@ -1,3 +1,5 @@
+import plurarize from "@/utils/plurarize";
+
 import { Node } from "./node";
 import { Goal } from "@/models/goals";
 import { Paths } from "@/routes/paths";
@@ -36,11 +38,11 @@ export class GoalNode extends Node {
     const projects = this.totalNestedProjects();
 
     if (subGoals > 0 && projects > 0) {
-      return pluralize(subGoals, "subgoal") + ", " + pluralize(projects, "project");
+      return `${plurarize(subGoals, "subgoal", "subgoals")} and ${plurarize(projects, "project", "projects")}`;
     } else if (subGoals > 0) {
-      return pluralize(subGoals, "subgoal");
+      return plurarize(subGoals, "subgoal", "subgoals");
     } else if (projects > 0) {
-      return pluralize(projects, "project");
+      return plurarize(projects, "project", "projects");
     } else {
       return "";
     }
@@ -63,8 +65,4 @@ export class GoalNode extends Node {
   totalNestedProjects(): number {
     return this.children.filter((n) => n.type === "project").length;
   }
-}
-
-function pluralize(count: number, word: string): string {
-  return count === 1 ? `${count} ${word}` : `${count} ${word}s`;
 }

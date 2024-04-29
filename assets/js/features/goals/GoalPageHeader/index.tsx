@@ -12,7 +12,7 @@ import { Paths } from "@/routes/paths";
 import FormattedTime from "@/components/FormattedTime";
 
 import classnames from "classnames";
-import plularize from "@/utils/plularize";
+import plurarize from "@/utils/plurarize";
 
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "discussions" | "about";
@@ -164,7 +164,7 @@ function TimeframeState({ goal }) {
       <span>
         &middot;{" "}
         <span className="text-accent-1">
-          Scheduled to start in {plularize(Timeframes.startsInDays(timeframe), "day", "days")}
+          Scheduled to start in {plurarize(Timeframes.startsInDays(timeframe), "day", "days")}
         </span>
       </span>
     );
@@ -174,14 +174,14 @@ function TimeframeState({ goal }) {
     return (
       <span>
         &middot;{" "}
-        <span className="text-red-500">Overdue by {plularize(Timeframes.overdueDays(timeframe), "day", "days")}</span>
+        <span className="text-red-500">Overdue by {plurarize(Timeframes.overdueDays(timeframe), "day", "days")}</span>
       </span>
     );
   } else {
     return (
       <span>
         &middot;{" "}
-        <span className="text-accent-1">{plularize(Timeframes.remainingDays(timeframe), "day", "days")} left</span>
+        <span className="text-accent-1">{plurarize(Timeframes.remainingDays(timeframe), "day", "days")} left</span>
       </span>
     );
   }
