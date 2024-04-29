@@ -8,12 +8,17 @@ query GetGoal(
   goal(id: $id) {
     id
     name
-    timeframe
     isArchived
     isClosed
     closedAt
 
     progressPercentage
+
+    timeframe {
+      startDate
+      endDate
+      type
+    }
 
     closedBy {
       id

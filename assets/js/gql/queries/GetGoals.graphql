@@ -14,9 +14,14 @@ query GetGoals(
     isArchived
     isClosed
 
-    timeframe
     parentGoalId
     progressPercentage
+
+    timeframe {
+      startDate
+      endDate
+      type
+    }
 
     space {
       id

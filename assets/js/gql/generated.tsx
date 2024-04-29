@@ -486,7 +486,7 @@ export type Company = {
   companySpaceId?: Maybe<Scalars['String']['output']>;
   enabledExperimentalFeatures?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   id: Scalars['ID']['output'];
-  mission: Scalars['String']['output'];
+  mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   people?: Maybe<Array<Maybe<Person>>>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
@@ -513,7 +513,7 @@ export type CreateGoalInput = {
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
   targets: Array<InputMaybe<CreateTargetInput>>;
-  timeframe: Scalars['String']['input'];
+  timeframe: TimeframeInput;
 };
 
 export type CreateGroupInput = {
@@ -628,7 +628,7 @@ export type EditGoalInput = {
   goalId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
-  timeframe: Scalars['String']['input'];
+  timeframe: TimeframeInput;
   updatedTargets: Array<InputMaybe<UpdateTargetInput>>;
 };
 
@@ -693,7 +693,7 @@ export type Goal = {
   reviewer?: Maybe<Person>;
   space: Group;
   targets?: Maybe<Array<Maybe<Target>>>;
-  timeframe: Scalars['String']['output'];
+  timeframe: Timeframe;
   updatedAt: Scalars['Date']['output'];
 };
 
@@ -1745,6 +1745,19 @@ export type Tenet = {
   objectives?: Maybe<Array<Maybe<Objective>>>;
 };
 
+export type Timeframe = {
+  __typename?: 'Timeframe';
+  endDate: Scalars['Date']['output'];
+  startDate: Scalars['Date']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type TimeframeInput = {
+  endDate: Scalars['Date']['input'];
+  startDate: Scalars['Date']['input'];
+  type: Scalars['String']['input'];
+};
+
 export type Update = {
   __typename?: 'Update';
   acknowledged: Scalars['Boolean']['output'];
@@ -1962,7 +1975,7 @@ export type GetGoalQueryVariables = Exact<{
 }>;
 
 
-export type GetGoalQuery = { __typename?: 'RootQueryType', goal: { __typename?: 'Goal', id: string, name: string, timeframe: string, isArchived: boolean, isClosed: boolean, closedAt?: any | null, progressPercentage: number, archivedAt?: any | null, description?: string | null, nextUpdateScheduledAt?: any | null, parentGoalId?: string | null, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, parentGoal?: { __typename?: 'Goal', id: string, name: string } | null, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string }, permissions: { __typename?: 'GoalPermissions', canEdit: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean, canClose: boolean, canArchive: boolean }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, unit: string, value: number } | null> | null, projects?: Array<{ __typename?: 'Project', id: string, name: string, status?: string | null, closedAt?: any | null, archivedAt?: any | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, responsibility?: string | null, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null> | null } | null> | null, lastCheckIn?: { __typename?: 'Update', id: string, insertedAt: any, acknowledged: boolean, acknowledgedAt?: any | null, commentsCount: number, author?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, content?: { __typename: 'UpdateContentGoalCheckIn', message: string } | { __typename: 'UpdateContentMessage' } | { __typename: 'UpdateContentProjectContributorAdded' } | { __typename: 'UpdateContentProjectContributorRemoved' } | { __typename: 'UpdateContentProjectCreated' } | { __typename: 'UpdateContentProjectDiscussion' } | { __typename: 'UpdateContentProjectEndTimeChanged' } | { __typename: 'UpdateContentProjectMilestoneCompleted' } | { __typename: 'UpdateContentProjectMilestoneCreated' } | { __typename: 'UpdateContentProjectMilestoneDeadlineChanged' } | { __typename: 'UpdateContentProjectMilestoneDeleted' } | { __typename: 'UpdateContentProjectStartTimeChanged' } | { __typename: 'UpdateContentReview' } | { __typename: 'UpdateContentStatusUpdate' } | null, acknowledgingPerson?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reactions?: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null } | null } };
+export type GetGoalQuery = { __typename?: 'RootQueryType', goal: { __typename?: 'Goal', id: string, name: string, isArchived: boolean, isClosed: boolean, closedAt?: any | null, progressPercentage: number, archivedAt?: any | null, description?: string | null, nextUpdateScheduledAt?: any | null, parentGoalId?: string | null, timeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, parentGoal?: { __typename?: 'Goal', id: string, name: string } | null, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string }, permissions: { __typename?: 'GoalPermissions', canEdit: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean, canClose: boolean, canArchive: boolean }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, unit: string, value: number } | null> | null, projects?: Array<{ __typename?: 'Project', id: string, name: string, status?: string | null, closedAt?: any | null, archivedAt?: any | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, responsibility?: string | null, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, deadlineAt?: any | null, status: string } | null> | null } | null> | null, lastCheckIn?: { __typename?: 'Update', id: string, insertedAt: any, acknowledged: boolean, acknowledgedAt?: any | null, commentsCount: number, author?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, content?: { __typename: 'UpdateContentGoalCheckIn', message: string } | { __typename: 'UpdateContentMessage' } | { __typename: 'UpdateContentProjectContributorAdded' } | { __typename: 'UpdateContentProjectContributorRemoved' } | { __typename: 'UpdateContentProjectCreated' } | { __typename: 'UpdateContentProjectDiscussion' } | { __typename: 'UpdateContentProjectEndTimeChanged' } | { __typename: 'UpdateContentProjectMilestoneCompleted' } | { __typename: 'UpdateContentProjectMilestoneCreated' } | { __typename: 'UpdateContentProjectMilestoneDeadlineChanged' } | { __typename: 'UpdateContentProjectMilestoneDeleted' } | { __typename: 'UpdateContentProjectStartTimeChanged' } | { __typename: 'UpdateContentReview' } | { __typename: 'UpdateContentStatusUpdate' } | null, acknowledgingPerson?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reactions?: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null } | null } };
 
 export type GetGoalsQueryVariables = Exact<{
   spaceId?: InputMaybe<Scalars['ID']['input']>;
@@ -1973,7 +1986,7 @@ export type GetGoalsQueryVariables = Exact<{
 }>;
 
 
-export type GetGoalsQuery = { __typename?: 'RootQueryType', goals?: Array<{ __typename?: 'Goal', id: string, name: string, insertedAt: any, updatedAt: any, isArchived: boolean, isClosed: boolean, timeframe: string, parentGoalId?: string | null, progressPercentage: number, space: { __typename?: 'Group', id: string, name: string, isCompanySpace: boolean }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, projects?: Array<{ __typename?: 'Project', id: string, name: string, status?: string | null, startedAt?: any | null, deadline?: any | null, closedAt?: any | null, space: { __typename?: 'Group', id: string, name: string }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, insertedAt: any, status: string, description: string, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, deadlineAt?: any | null, completedAt?: any | null } | null> | null } | null> | null, lastCheckIn?: { __typename?: 'Update', id: string, insertedAt: any, author?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, content?: { __typename: 'UpdateContentGoalCheckIn', message: string } | { __typename: 'UpdateContentMessage' } | { __typename: 'UpdateContentProjectContributorAdded' } | { __typename: 'UpdateContentProjectContributorRemoved' } | { __typename: 'UpdateContentProjectCreated' } | { __typename: 'UpdateContentProjectDiscussion' } | { __typename: 'UpdateContentProjectEndTimeChanged' } | { __typename: 'UpdateContentProjectMilestoneCompleted' } | { __typename: 'UpdateContentProjectMilestoneCreated' } | { __typename: 'UpdateContentProjectMilestoneDeadlineChanged' } | { __typename: 'UpdateContentProjectMilestoneDeleted' } | { __typename: 'UpdateContentProjectStartTimeChanged' } | { __typename: 'UpdateContentReview' } | { __typename: 'UpdateContentStatusUpdate' } | null } | null, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, value: number } | null> | null } | null> | null };
+export type GetGoalsQuery = { __typename?: 'RootQueryType', goals?: Array<{ __typename?: 'Goal', id: string, name: string, insertedAt: any, updatedAt: any, isArchived: boolean, isClosed: boolean, parentGoalId?: string | null, progressPercentage: number, timeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, space: { __typename?: 'Group', id: string, name: string, isCompanySpace: boolean }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, projects?: Array<{ __typename?: 'Project', id: string, name: string, status?: string | null, startedAt?: any | null, deadline?: any | null, closedAt?: any | null, space: { __typename?: 'Group', id: string, name: string }, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, insertedAt: any, status: string, description: string, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, deadlineAt?: any | null, completedAt?: any | null } | null> | null } | null> | null, lastCheckIn?: { __typename?: 'Update', id: string, insertedAt: any, author?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, content?: { __typename: 'UpdateContentGoalCheckIn', message: string } | { __typename: 'UpdateContentMessage' } | { __typename: 'UpdateContentProjectContributorAdded' } | { __typename: 'UpdateContentProjectContributorRemoved' } | { __typename: 'UpdateContentProjectCreated' } | { __typename: 'UpdateContentProjectDiscussion' } | { __typename: 'UpdateContentProjectEndTimeChanged' } | { __typename: 'UpdateContentProjectMilestoneCompleted' } | { __typename: 'UpdateContentProjectMilestoneCreated' } | { __typename: 'UpdateContentProjectMilestoneDeadlineChanged' } | { __typename: 'UpdateContentProjectMilestoneDeleted' } | { __typename: 'UpdateContentProjectStartTimeChanged' } | { __typename: 'UpdateContentReview' } | { __typename: 'UpdateContentStatusUpdate' } | null } | null, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, value: number } | null> | null } | null> | null };
 
 export type GetMeQueryVariables = Exact<{
   includeManager?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2077,11 +2090,15 @@ export const GetGoalDocument = gql`
   goal(id: $id) {
     id
     name
-    timeframe
     isArchived
     isClosed
     closedAt
     progressPercentage
+    timeframe {
+      startDate
+      endDate
+      type
+    }
     closedBy {
       id
       fullName
@@ -2242,9 +2259,13 @@ export const GetGoalsDocument = gql`
     updatedAt
     isArchived
     isClosed
-    timeframe
     parentGoalId
     progressPercentage
+    timeframe {
+      startDate
+      endDate
+      type
+    }
     space {
       id
       name

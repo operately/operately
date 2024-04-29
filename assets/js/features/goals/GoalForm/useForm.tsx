@@ -11,7 +11,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 
-import { Timeframe, SetTimeframe } from "@/components/TimeframeSelector/timeframe";
+import { Timeframe, SetTimeframe, serializeTimeframe } from "@/components/TimeframeSelector/timeframe";
 
 export interface FormState {
   config: FormConfig;
@@ -239,7 +239,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             spaceId: fields.space!.value,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
-            timeframe: JSON.stringify(fields.timeframe),
+            timeframe: serializeTimeframe(fields.timeframe),
             description: prepareDescriptionForSave(fields),
             parentGoalId: config.parentGoal?.id,
             targets: fields.targets
@@ -264,7 +264,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             name: fields.name,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
-            timeframe: JSON.stringify(fields.timeframe),
+            timeframe: serializeTimeframe(fields.timeframe),
             description: prepareDescriptionForSave(fields),
             addedTargets: fields.targets
               .filter((t) => t.name.trim() !== "")

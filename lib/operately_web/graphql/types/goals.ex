@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :next_update_scheduled_at, :date
     field :parent_goal_id, :id
     field :closed_at, :date
+    field :timeframe, non_null(:timeframe)
 
     json_field :description, :string
 
@@ -20,12 +21,6 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     assoc_field :targets, list_of(:target)
     assoc_field :projects, list_of(:project)
     assoc_field :parent_goal, :goal
-
-    field :timeframe, non_null(:string) do
-      resolve fn goal, _, _ ->
-        {:ok, goal.deprecated_timeframe}
-      end
-    end
 
     field :progress_percentage, non_null(:float) do
       resolve fn goal, _, _ ->
