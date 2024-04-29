@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
+import * as Timeframes from "@/utils/timeframes";
 
 import { match } from "ts-pattern";
 
@@ -8,14 +9,13 @@ import { MonthPicker } from "./MonthPicker";
 import { QuarterPicker } from "./QuarterPicker";
 import { YearPicker } from "./YearPicker";
 import { CustomRangePicker } from "./CustomRangePicker";
-import { Timeframe, TimeframeType, SetTimeframe } from "./timeframe";
-import { formatTimeframe } from "./formatTimeframe";
 import { SegmentedControl } from "./SegmentedControl";
+
 import classNames from "classnames";
 
 interface TimeframeSelectorProps {
-  timeframe: Timeframe;
-  setTimeframe: SetTimeframe;
+  timeframe: Timeframes.Timeframe;
+  setTimeframe: Timeframes.SetTimeframe;
 }
 
 export function TimeframeSelector(props: TimeframeSelectorProps) {
@@ -34,7 +34,7 @@ function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
     <Popover.Trigger asChild>
       <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface truncate">
         <Icons.IconCalendar size={18} className="shrink-0" />
-        <span className="truncate">{formatTimeframe(props.timeframe)}</span>
+        <span className="truncate">{Timeframes.format(props.timeframe)}</span>
       </div>
     </Popover.Trigger>
   );
@@ -59,12 +59,12 @@ function PopeverContent(props: TimeframeSelectorProps) {
   );
 }
 
-function TimeframeSelectorHeader(props: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
+function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
   return (
     <div className="flex items-center justify-between gap-10 w-full border-b border-stroke-base pb-3 mb-3">
       <div className="">
         <div className="font-bold shrink-0">Select Timeframe</div>
-        <div className="text-content-dimmed text-xs">{formatTimeframe(props.timeframe)}</div>
+        <div className="text-content-dimmed text-xs">{Timeframes.format(props.timeframe)}</div>
       </div>
 
       <TimeframeSelectorTypeSelector timeframe={props.timeframe} setTimeframe={props.setTimeframe} />
@@ -72,7 +72,7 @@ function TimeframeSelectorHeader(props: { timeframe: Timeframe; setTimeframe: Se
   );
 }
 
-function TimeframeSelectorTypeSelector(props: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
+function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
   return (
     <SegmentedControl
       options={[
@@ -82,12 +82,12 @@ function TimeframeSelectorTypeSelector(props: { timeframe: Timeframe; setTimefra
         { label: "Custom", value: "days" },
       ]}
       value={props.timeframe.type}
-      onChange={(value) => props.setTimeframe({ ...props.timeframe, type: value as TimeframeType })}
+      onChange={(value) => props.setTimeframe({ ...props.timeframe, type: value as Timeframes.TimeframeType })}
     />
   );
 }
 
-function TimeframeSelectorContent({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
+function TimeframeSelectorContent({ timeframe, setTimeframe }: TimeframeSelectorProps) {
   return match(timeframe.type)
     .with("month", () => <MonthPicker timeframe={timeframe} setTimeframe={setTimeframe} />)
     .with("quarter", () => <QuarterPicker timeframe={timeframe} setTimeframe={setTimeframe} />)

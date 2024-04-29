@@ -5,13 +5,12 @@ import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
 import * as Groups from "@/models/groups";
+import * as Timeframes from "@/utils/timeframes";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
-
-import { Timeframe, SetTimeframe, serializeTimeframe } from "@/components/TimeframeSelector/timeframe";
 
 export interface FormState {
   config: FormConfig;
@@ -36,7 +35,7 @@ interface Fields {
   parentGoal: Goals.Goal | null;
   champion: People.Person | null;
   reviewer: People.Person | null;
-  timeframe: Timeframe;
+  timeframe: Timeframes.Timeframe;
   targets: Target[];
   space: SpaceOption | null;
   spaceOptions: SpaceOption[];
@@ -46,7 +45,7 @@ interface Fields {
   setName: (name: string) => void;
   setChampion: (champion: People.Person | null) => void;
   setReviewer: (reviewer: People.Person | null) => void;
-  setTimeframe: SetTimeframe;
+  setTimeframe: Timeframes.SetTimeframe;
   addTarget: () => void;
   removeTarget: (id: string) => void;
   updateTarget: (id: string, field: any, value: any) => void;
@@ -88,11 +87,7 @@ export function useForm(config: FormConfig): FormState {
   const [name, setName] = React.useState<string>(config.goal?.name || "");
   const [champion, setChampion] = React.useState<People.Person | null>(config.goal?.champion || config.me);
   const [reviewer, setReviewer] = React.useState<People.Person | null>(config.goal?.reviewer || null);
-  const [timeframe, setTimeframe] = React.useState<Timeframe>({
-    startDate: Time.parse("2024-04-01"),
-    endDate: Time.parse("2024-06-30"),
-    type: "quarter",
-  });
+  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(Timeframes.currentQuarter());
   const [targets, addTarget, removeTarget, updateTarget] = useTargets(config);
   const [space, setSpace, spaceOptions] = useSpaces(config);
   const [parentGoal, setParentGoal] = React.useState<Goals.Goal | null>(config.parentGoal || null);
@@ -239,7 +234,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             spaceId: fields.space!.value,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
-            timeframe: serializeTimeframe(fields.timeframe),
+            timeframe: Timeframes.serialize(fields.timeframe),
             description: prepareDescriptionForSave(fields),
             parentGoalId: config.parentGoal?.id,
             targets: fields.targets
@@ -264,7 +259,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             name: fields.name,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
-            timeframe: serializeTimeframe(fields.timeframe),
+            timeframe: Timeframes.serialize(fields.timeframe),
             description: prepareDescriptionForSave(fields),
             addedTargets: fields.targets
               .filter((t) => t.name.trim() !== "")

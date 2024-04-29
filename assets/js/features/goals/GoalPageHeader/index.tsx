@@ -5,12 +5,14 @@ import * as Tabs from "@/components/Tabs";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
-import { Timeframe } from "@/utils/timeframe";
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
 
 import classnames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
+
+import { formatTimeframe } from "@/components/TimeframeSelector/formatTimeframe";
+import * as Timeframe from "@/components/TimeframeSelector/timeframe";
 
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "discussions" | "about";
@@ -138,9 +140,11 @@ function Options({ goal }) {
 }
 
 function TimeframeView({ goal }: { goal: Goals.Goal }) {
+  const timeframe = Timeframe.parseTimeframe(goal.timeframe);
+
   return (
     <div className="font-medium text-sm mt-1 text-content-dimmed">
-      Timeframe: {goal.timeframe} <TimeframeState goal={goal} />
+      Timeframe: {formatTimeframe(timeframe)} <TimeframeState goal={goal} />
     </div>
   );
 }
@@ -153,9 +157,7 @@ function TimeframeState({ goal }) {
       </span>
     );
   } else {
-    const timeframe = Timeframe.parse(goal.timeframe);
-
-    const isOverdue = timeframe.isOverdue();
+    const isOverdue = Timeframe.isOverdue(goal.timeframe);
     const remainingDays = timeframe.remainingDays();
     const overdueDays = timeframe.overdueDays();
 

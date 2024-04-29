@@ -2,7 +2,7 @@ import React from "react";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Timeframe, SetTimeframe } from "./timeframe";
+import { Timeframe, SetTimeframe } from "@/utils/timeframes";
 
 export function CustomRangePicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (
