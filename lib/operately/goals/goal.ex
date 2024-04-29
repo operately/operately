@@ -20,7 +20,7 @@ defmodule Operately.Goals.Goal do
 
     field :description, :map
 
-    embeds_one :timeframe, Operately.Goals.Timeframe
+    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :update
     field :deprecated_timeframe, :string
 
     field :closed_at, :utc_datetime
