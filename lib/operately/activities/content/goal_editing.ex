@@ -75,8 +75,11 @@ defmodule Operately.Activities.Content.GoalEditing do
     field :old_name, :string
     field :new_name, :string
 
-    field :old_timeframe, :string
-    field :new_timeframe, :string
+    field :old_timeframe, :string # deprecated, use previous_timeframe
+    field :new_timeframe, :string # deprecated, use current_timeframe
+
+    embeds_one :previous_timeframe, Operately.Goals.Timeframe
+    embeds_one :current_timeframe, Operately.Goals.Timeframe
 
     field :old_champion_id, :string
     field :new_champion_id, :string
@@ -91,11 +94,13 @@ defmodule Operately.Activities.Content.GoalEditing do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :goal_id, :old_name, :new_name, :old_timeframe, :new_timeframe, :old_champion_id, :new_champion_id, :old_reviewer_id, :new_reviewer_id])
+    |> cast(attrs, [:company_id, :goal_id, :old_name, :new_name, :old_champion_id, :new_champion_id, :old_reviewer_id, :new_reviewer_id] -- [:old_timeframe, :new_timeframe])
+    |> cast_embed(:previous_timeframe)
+    |> cast_embed(:current_timeframe)
     |> cast_embed(:added_targets)
     |> cast_embed(:updated_targets)
     |> cast_embed(:deleted_targets)
-    |> validate_required([:company_id, :goal_id, :old_name, :new_name, :old_timeframe, :new_timeframe, :old_champion_id, :new_champion_id, :old_reviewer_id, :new_reviewer_id])
+    |> validate_required([:company_id, :goal_id, :old_name, :new_name, :old_champion_id, :new_champion_id, :old_reviewer_id, :new_reviewer_id] -- [:old_timeframe, :new_timeframe])
   end
 
   def build(params) do
