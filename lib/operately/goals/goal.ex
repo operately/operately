@@ -16,10 +16,12 @@ defmodule Operately.Goals.Goal do
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
     field :name, :string
-    field :deprecated_timeframe, :string
     field :next_update_scheduled_at, :utc_datetime
 
     field :description, :map
+
+    embeds_one :timeframe, Operately.Goals.Timeframe
+    field :deprecated_timeframe, :string
 
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
