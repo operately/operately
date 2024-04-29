@@ -100,69 +100,37 @@ export function currentQuarter(): Timeframe {
   };
 }
 
-// import * as Time from "@/utils/time";
+//
+// Duration calculations
+//
 
-// const YEAR_REGEX = /^\d{4}$/;
+export function isStarted(timeframe: Timeframe): boolean {
+  return !!timeframe.startDate && Time.isPast(timeframe.startDate);
+}
 
-// const QUARTER_REGEX_TYPE_1 = /^Q[1-4] \d{4}$/;
-// const QUARTER_REGEX_TYPE_2 = /^\d{4}-Q[1-4]$/;
+export function isOverdue(timeframe: Timeframe): boolean {
+  if (!timeframe.endDate) return false;
 
-// const quarters = {
-//   Q1: { start: "01-01", end: "03-31" },
-//   Q2: { start: "04-01", end: "06-30" },
-//   Q3: { start: "07-01", end: "09-30" },
-//   Q4: { start: "10-01", end: "12-31" },
-// };
+  return !Time.isToday(timeframe.endDate) && Time.isPast(timeframe.endDate);
+}
 
-// export class Timeframe {
-//   static parse(timeframe: string): Timeframe {
-//     if (timeframe.match(YEAR_REGEX)) {
-//       return new Timeframe(Time.parse(`${timeframe}-01-01`)!, Time.parse(`${timeframe}-12-31`)!);
-//     }
+export function remainingDays(timeframe: Timeframe): number {
+  if (isOverdue(timeframe)) return 0;
+  if (!timeframe.endDate) return 0;
 
-//     if (timeframe.match(QUARTER_REGEX_TYPE_1)) {
-//       const quarter = quarters[timeframe.slice(0, 2)];
+  return Time.daysBetween(Time.today(), timeframe.endDate);
+}
 
-//       return new Timeframe(
-//         Time.parseISO(`${timeframe.slice(3)}-${quarter.start}`),
-//         Time.parseISO(`${timeframe.slice(3)}-${quarter.end}`),
-//       );
-//     }
+export function overdueDays(timeframe: Timeframe): number {
+  if (!isOverdue(timeframe)) return 0;
+  if (!timeframe.endDate) return 0;
 
-//     if (timeframe.match(QUARTER_REGEX_TYPE_2)) {
-//       const quarter = quarters[timeframe.slice(5)];
+  return Time.daysBetween(timeframe.endDate, Time.today());
+}
 
-//       return new Timeframe(
-//         Time.parseISO(`${timeframe.slice(0, 4)}-${quarter.start}`),
-//         Time.parseISO(`${timeframe.slice(0, 4)}-${quarter.end}`),
-//       );
-//     }
+export function startsInDays(timeframe: Timeframe): number {
+  if (isStarted(timeframe)) return 0;
+  if (!timeframe.startDate) return 0;
 
-//     throw new Error(`Invalid timeframe: ${timeframe}`);
-//   }
-
-//   constructor(
-//     public readonly start: Date,
-//     public readonly end: Date,
-//   ) {}
-
-//   isOverdue(): boolean {
-//     return !Time.isToday(this.end) && Time.isPast(this.end);
-//   }
-
-//   remainingDays(): number {
-//     if (this.isOverdue()) {
-//       return 0;
-//     }
-
-//     return Time.daysBetween(Time.today(), this.end);
-//   }
-
-//   overdueDays(): number {
-//     if (this.isOverdue()) {
-//       return Time.daysBetween(this.end, Time.today());
-//     }
-
-//     return 0;
-//   }
-// }
+  return Time.daysBetween(Time.today(), timeframe.startDate);
+}
