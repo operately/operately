@@ -16,7 +16,11 @@ defmodule Operately.Support.Features.ProjectSteps do
       name: name,
       champion_id: ctx.champion.id,
       reviewer_id: ctx.reviewer.id,
-      timeframe: "2023-Q4",
+      timeframe: %{
+        start_date: ~D[2021-01-01],
+        end_date: ~D[2021-12-31],
+        type: "year"
+      },
       targets: [
         %{
           name: "First response time",
