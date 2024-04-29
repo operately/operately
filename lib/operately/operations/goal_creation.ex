@@ -29,7 +29,7 @@ defmodule Operately.Operations.GoalCreation do
   end
 
   defp insert_activity(multi, creator) do
-    Activities.insert(multi, creator.id, :goal_created, fn changes ->
+    Activities.insert_sync(multi, creator.id, :goal_created, fn changes ->
       %{
         company_id: changes.goal.company_id,
         space_id: changes.goal.group_id,
@@ -38,7 +38,7 @@ defmodule Operately.Operations.GoalCreation do
         champion_id: changes.goal.champion_id,
         reviewer_id: changes.goal.reviewer_id,
         creator_id: changes.goal.creator_id,
-        timeframe: changes.goal.timeframe,
+        new_timeframe: Map.from_struct(changes.goal.timeframe),
       }
     end)
   end

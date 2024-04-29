@@ -50,6 +50,7 @@ defmodule Operately.Goals.Goal do
       :closed_at,
       :closed_by_id,
     ])
+    |> cast_embed(:timeframe)
     |> validate_required([
       :name, 
       :company_id, 

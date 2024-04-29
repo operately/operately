@@ -1,7 +1,10 @@
 defmodule Operately.Goals.Timeframe do
-  use Operately.Schema
+  use Ecto.Schema
+  import Ecto.Changeset
 
-  schema "timeframes" do
+  @derive {Jason.Encoder, only: [:type, :start_date, :end_date]}
+
+  embedded_schema do
     field :type, :string
     field :start_date, :date
     field :end_date, :date
