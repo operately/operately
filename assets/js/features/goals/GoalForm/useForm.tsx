@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Companies from "@/models/companies";
-import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
@@ -87,10 +86,10 @@ export function useForm(config: FormConfig): FormState {
   const [name, setName] = React.useState<string>(config.goal?.name || "");
   const [champion, setChampion] = React.useState<People.Person | null>(config.goal?.champion || config.me);
   const [reviewer, setReviewer] = React.useState<People.Person | null>(config.goal?.reviewer || null);
-  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(Timeframes.currentQuarter());
   const [targets, addTarget, removeTarget, updateTarget] = useTargets(config);
   const [space, setSpace, spaceOptions] = useSpaces(config);
   const [parentGoal, setParentGoal] = React.useState<Goals.Goal | null>(config.parentGoal || null);
+  const [timeframe, setTimeframe] = useTimeframe(config);
 
   const [hasDescription, setHasDescription] = React.useState<boolean>(false);
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
@@ -137,6 +136,16 @@ export function useForm(config: FormConfig): FormState {
     submit,
     cancel,
   };
+}
+
+function useTimeframe(config: FormConfig): [Timeframes.Timeframe, Timeframes.SetTimeframe] {
+  return React.useState<Timeframes.Timeframe>(() => {
+    if (config.mode === "edit") {
+      return Timeframes.parse(config.goal!.timeframe!);
+    } else {
+      return Timeframes.currentQuarter();
+    }
+  });
 }
 
 function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption | null) => void, SpaceOption[]] {
