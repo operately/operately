@@ -3,6 +3,7 @@ import { Goal } from "@/models/goals";
 import { Paths } from "@/routes/paths";
 
 import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
 
 export class GoalNode extends Node {
   public goal: Goal;
@@ -46,7 +47,10 @@ export class GoalNode extends Node {
   }
 
   compareTimeframe(b: GoalNode): number {
-    return Time.compareQuarters(this.goal.timeframe, b.goal.timeframe);
+    const timeframeA = Timeframes.parse(this.goal.timeframe);
+    const timeframeB = Timeframes.parse(b.goal.timeframe);
+
+    return Time.compareAsc(timeframeA.endDate, timeframeB.endDate);
   }
 
   totalNestedSubGoals(): number {
