@@ -16,7 +16,7 @@ defmodule Operately.Goals.Goal do
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
     field :name, :string
-    field :timeframe, :string
+    field :deprecated_timeframe, :string
     field :next_update_scheduled_at, :utc_datetime
 
     field :description, :map
@@ -41,7 +41,7 @@ defmodule Operately.Goals.Goal do
       :champion_id, 
       :reviewer_id, 
       :creator_id, 
-      :timeframe, 
+      :deprecated_timeframe,
       :description,
       :next_update_scheduled_at,
       :parent_goal_id,
@@ -55,7 +55,6 @@ defmodule Operately.Goals.Goal do
       :champion_id, 
       :reviewer_id, 
       :creator_id,
-      :timeframe,
     ])
   end
 end
