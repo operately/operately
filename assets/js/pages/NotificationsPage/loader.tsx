@@ -26,8 +26,19 @@ const query = gql`
             goalId
             oldName
             newName
-            oldTimeframe
-            newTimeframe
+
+            oldTimeframe {
+              startDate
+              endDate
+              type
+            }
+
+            newTimeframe {
+              startDate
+              endDate
+              type
+            }
+
             oldChampionId
             newChampionId
             oldReviewerId

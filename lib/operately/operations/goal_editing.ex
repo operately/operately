@@ -54,7 +54,7 @@ defmodule Operately.Operations.GoalEditing do
   end
 
   defp insert_activity(multi, author, goal, targets) do
-    Activities.insert(multi, author.id, :goal_editing, fn changes ->
+    Activities.insert_sync(multi, author.id, :goal_editing, fn changes ->
       %{
         company_id: goal.company_id,
         goal_id: changes.goal.id,
@@ -64,8 +64,8 @@ defmodule Operately.Operations.GoalEditing do
         new_champion_id: changes.goal.champion_id,
         old_reviewer_id: goal.reviewer_id,
         new_reviewer_id: changes.goal.reviewer_id,
-        old_timeframe: Map.from_struct(goal.timeframe),
-        new_timeframe: Map.from_struct(changes.goal.timeframe),
+        previous_timeframe: Map.from_struct(goal.timeframe),
+        current_timeframe: Map.from_struct(changes.goal.timeframe),
         added_targets: serialize_added_targets(changes),
         updated_targets: serialize_updated_targets(targets, changes),
         deleted_targets: serialize_deleted_targets(changes),

@@ -1,8 +1,8 @@
 import * as React from "react";
+import * as People from "@/models/people";
+import * as Timeframes from "@/utils/timeframes";
 
 import { Card } from "../NotificationCard";
-
-import * as People from "@/models/people";
 import { createPath } from "@/utils/paths";
 import { ActivityContentGoalEditing } from "@/gql";
 
@@ -30,9 +30,12 @@ export default function ({ notification }) {
 }
 
 function shortDesc(content: ActivityContentGoalEditing): string {
+  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
+  const newTimeframe = Timeframes.parse(content.newTimeframe);
+
   const changes = {
     name: content.oldName !== content.newName,
-    timeframe: content.oldTimeframe !== content.newTimeframe,
+    timeframe: !Timeframes.equalDates(oldTimeframe, newTimeframe),
     champion: content.oldChampionId !== content.newChampionId,
     reviewer: content.oldReviewerId !== content.newReviewerId,
     measurements: content.addedTargets.length + content.updatedTargets.length + content.deletedTargets.length > 0,

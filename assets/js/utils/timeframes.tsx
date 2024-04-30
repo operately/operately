@@ -93,9 +93,45 @@ export function currentQuarter(): Timeframe {
   const now = new Date();
   const quarter = Math.floor(now.getMonth() / 3);
 
+  if (quarter === 0) {
+    return firstQuarterOfYear(now.getFullYear());
+  } else if (quarter === 1) {
+    return secondQuarterOfYear(now.getFullYear());
+  } else if (quarter === 2) {
+    return thirdQuarterOfYear(now.getFullYear());
+  } else {
+    return fourthQuarterOfYear(now.getFullYear());
+  }
+}
+
+export function firstQuarterOfYear(year: number): Timeframe {
   return {
-    startDate: new Date(now.getFullYear(), quarter * 3, 1),
-    endDate: new Date(now.getFullYear(), quarter * 3 + 3, 0),
+    startDate: new Date(year, 0, 1),
+    endDate: new Date(year, 2, 31),
+    type: "quarter",
+  };
+}
+
+export function secondQuarterOfYear(year: number): Timeframe {
+  return {
+    startDate: new Date(year, 3, 1),
+    endDate: new Date(year, 5, 30),
+    type: "quarter",
+  };
+}
+
+export function thirdQuarterOfYear(year: number): Timeframe {
+  return {
+    startDate: new Date(year, 6, 1),
+    endDate: new Date(year, 8, 30),
+    type: "quarter",
+  };
+}
+
+export function fourthQuarterOfYear(year: number): Timeframe {
+  return {
+    startDate: new Date(year, 9, 1),
+    endDate: new Date(year, 11, 31),
     type: "quarter",
   };
 }
@@ -133,4 +169,15 @@ export function startsInDays(timeframe: Timeframe): number {
   if (!timeframe.startDate) return 0;
 
   return Time.daysBetween(Time.today(), timeframe.startDate);
+}
+
+//
+// Comparison functions
+//
+
+export function equalDates(a: Timeframe, b: Timeframe): boolean {
+  if (!a.startDate || !b.startDate) return false;
+  if (!a.endDate || !b.endDate) return false;
+
+  return Time.isSameDay(a.startDate, b.startDate) && Time.isSameDay(a.endDate, b.endDate);
 }

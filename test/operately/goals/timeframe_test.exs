@@ -61,4 +61,36 @@ defmodule Operately.Goals.TimeframeTest do
     assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2021-01-31]}).valid? == false
     assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2021-01-21]}).valid? == false
   end
+
+  test "convert_old_timeframe" do
+    assert Timeframe.convert_old_timeframe("2020") == %{
+      start_date: ~D[2020-01-01],
+      end_date: ~D[2020-12-31],
+      type: "year"
+    }
+
+    assert Timeframe.convert_old_timeframe("Q1 2021") == %{
+      start_date: ~D[2021-01-01],
+      end_date: ~D[2021-03-31],
+      type: "quarter"
+    }
+
+    assert Timeframe.convert_old_timeframe("Q2 2021") == %{
+      start_date: ~D[2021-04-01],
+      end_date: ~D[2021-06-30],
+      type: "quarter"
+    }
+
+    assert Timeframe.convert_old_timeframe("Q3 2021") == %{
+      start_date: ~D[2021-07-01],
+      end_date: ~D[2021-09-30],
+      type: "quarter"
+    }
+
+    assert Timeframe.convert_old_timeframe("Q4 2021") == %{
+      start_date: ~D[2021-10-01],
+      end_date: ~D[2021-12-31],
+      type: "quarter"
+    }
+  end
 end

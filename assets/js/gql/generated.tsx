@@ -128,11 +128,11 @@ export type ActivityContentGoalEditing = {
   newName: Scalars['String']['output'];
   newReviewer: Person;
   newReviewerId: Scalars['String']['output'];
-  newTimeframe: Scalars['String']['output'];
+  newTimeframe: Timeframe;
   oldChampionId: Scalars['String']['output'];
   oldName: Scalars['String']['output'];
   oldReviewerId: Scalars['String']['output'];
-  oldTimeframe: Scalars['String']['output'];
+  oldTimeframe: Timeframe;
   updatedTargets: Array<Maybe<GoalEditingUpdatedTarget>>;
 };
 

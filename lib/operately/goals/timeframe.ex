@@ -107,4 +107,47 @@ defmodule Operately.Goals.Timeframe do
       changeset
     end
   end
+
+  def convert_old_timeframe(old_timeframe) do
+    parts = String.split(old_timeframe, " ")
+
+    if Enum.count(parts) == 1 do
+      [year] = parts
+
+      %{
+        start_date: Date.from_iso8601!("#{year}-01-01"),
+        end_date: Date.from_iso8601!("#{year}-12-31"),
+        type: "year"
+      }
+    else
+      [quarter, year] = parts
+
+      [start_date, end_date] = case quarter do
+        "Q1" -> ["01-01", "03-31"]
+        "Q2" -> ["04-01", "06-30"]
+        "Q3" -> ["07-01", "09-30"]
+        "Q4" -> ["10-01", "12-31"]
+      end
+
+      %{
+        start_date: Date.from_iso8601!("#{year}-#{start_date}"),
+        end_date: Date.from_iso8601!("#{year}-#{end_date}"),
+        type: "quarter"
+      }
+    end
+  end
+
+  def parse_json!(json) when is_binary(json) do
+    parse_json!(Jason.decode!(json))
+  end
+
+  def parse_json!(map) do 
+    %{"start_date" => start_date, "end_date" => end_date, "type" => type} = map
+
+    %__MODULE__{
+      start_date: Date.from_iso8601!(start_date), 
+      end_date: Date.from_iso8601!(end_date), 
+      type: type
+    }
+  end
 end
