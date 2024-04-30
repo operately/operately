@@ -25,6 +25,9 @@ defmodule Operately.People.Person do
     field :theme, :string
     field :company_role, Ecto.Enum, values: [:admin, :member], default: :member
 
+    field :suspended, :boolean, default: false
+    field :suspended_at, :utc_datetime
+
     timestamps()
   end
 
