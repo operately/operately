@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Paper from "@/components/PaperContainer";
 
-import { Paths } from "@/routes/paths";
+import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -17,14 +17,11 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
-  const goalPath = Paths.goalPath(goal.id);
 
   return (
-    <Pages.Page title={["Edit", goal.name]}>
+    <Pages.Page title={["Edit Timeframe", goal.name]}>
       <Paper.Root size="medium">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={goalPath}>{goal.name}</Paper.NavItem>
-        </Paper.Navigation>
+        <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body minHeight="300px">
           <div className="text-content-accent text-2xl font-extrabold mb-8">Editing the Goal's Timeframe</div>

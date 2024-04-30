@@ -115,6 +115,10 @@ export class Paths {
     return createPath(["goals", goalId, "edit", "parent"]);
   }
 
+  static editGoalTimeframePath(goalId: string) {
+    return createPath(["goals", goalId, "edit"]);
+  }
+
   static editGoalPath(goalId: string) {
     return createPath(["goals", goalId, "edit"]);
   }

@@ -103,9 +103,18 @@ function Options({ goal }) {
       {goal.permissions.canEdit && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconEdit}
-          title="Edit Goal"
+          title="Edit Goal Definition"
           to={Paths.editGoalPath(goal.id)}
-          dataTestId="edit-goal"
+          dataTestId="edit-goal-definition"
+        />
+      )}
+
+      {goal.permissions.canEdit && !goal.isClosed && (
+        <PageOptions.Link
+          icon={Icons.IconEdit}
+          title="Edit Timeframe"
+          to={Paths.editGoalTimeframePath(goal.id)}
+          dataTestId="edit-goal-timeframe"
         />
       )}
 
