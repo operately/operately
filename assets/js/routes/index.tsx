@@ -59,6 +59,7 @@ const routes = createBrowserRouter([
       pageRoute("/goals/:id/about", pages.GoalAboutPage),
       pageRoute("/goals/:goalId/edit", pages.GoalEditPage),
       pageRoute("/goals/:goalId/edit/parent", pages.GoalEditParentPage),
+      pageRoute("/goals/:goalId/edit/timeframe", pages.GoalEditTimeframePage),
       pageRoute("/goals/:goalId/complete", pages.GoalClosingPage),
       pageRoute("/goals/:goalId/archive", pages.GoalArchivePage),
       pageRoute("/goals/:goalId/check-ins/new", pages.GoalNewCheckInPage),

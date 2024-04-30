@@ -26,6 +26,7 @@ import * as GoalClosingPage from "./GoalClosingPage";
 import * as GoalDiscussionsPage from "./GoalDiscussionsPage";
 import * as GoalEditPage from "./GoalEditPage";
 import * as GoalEditParentPage from "./GoalEditParentPage";
+import * as GoalEditTimeframePage from "./GoalEditTimeframePage";
 import * as GoalNewCheckInPage from "./GoalNewCheckInPage";
 import * as GoalPage from "./GoalPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
@@ -166,6 +167,10 @@ export default {
   GoalEditParentPage: {
     loader: GoalEditParentPage.loader,
     Page: GoalEditParentPage.Page
+  },
+  GoalEditTimeframePage: {
+    loader: GoalEditTimeframePage.loader,
+    Page: GoalEditTimeframePage.Page
   },
   GoalNewCheckInPage: {
     loader: GoalNewCheckInPage.loader,
