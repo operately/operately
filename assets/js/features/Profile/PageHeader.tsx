@@ -17,7 +17,10 @@ export function PageHeader(props: PageHeaderProps) {
       <div className="flex items-center gap-4">
         <Avatar person={props.person} size={72} />
         <div className="flex flex-col">
-          <div className="text-xl font-bold">{props.person.fullName}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-xl font-bold">{props.person.fullName}</div>
+            <SuspendedBadge person={props.person} />
+          </div>
           <div className="font-medium">{props.person.title}</div>
         </div>
       </div>
@@ -28,4 +31,16 @@ export function PageHeader(props: PageHeaderProps) {
       </Tabs.Root>
     </div>
   );
+}
+
+function SuspendedBadge({ person }: { person: Person }) {
+  if (person.suspended) {
+    return (
+      <span className="bg-surface-dimmed text-content-dimmed text-sm font-medium px-2 rounded-full border border-stroke-base">
+        Suspended Account
+      </span>
+    );
+  } else {
+    return null;
+  }
 }
