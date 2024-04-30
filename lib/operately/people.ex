@@ -5,7 +5,7 @@ defmodule Operately.People do
   alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
-    Repo.all(from p in Person, where: p.company_id == ^company_id)
+    Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
   end
 
   def get_account!(id), do: Repo.get!(Account, id)

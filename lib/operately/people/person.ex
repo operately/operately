@@ -51,7 +51,9 @@ defmodule Operately.People.Person do
       :notify_on_mention,
       :notify_about_assignments,
       :company_role,
-      :theme
+      :theme,
+      :suspended,
+      :suspended_at
     ])
     |> validate_required([:full_name, :company_id])
   end

@@ -52,7 +52,7 @@ defmodule Operately.Companies do
   end
 
   def list_admins(company_id) do
-    Repo.all(from p in Person, where: p.company_role == :admin and p.company_id == ^company_id)
+    Repo.all(from p in Person, where: p.company_role == :admin and p.company_id == ^company_id and not p.suspended)
   end
 
   def remove_admin(admin, person_id) do

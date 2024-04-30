@@ -33,6 +33,7 @@ defmodule Operately.Groups do
       from p in Person,
       where: p.id not in ^exclude_ids and p.id not in ^member_ids,
       where: ilike(p.full_name, ^"%#{string_query}%") or ilike(p.title, ^"%#{string_query}%"),
+      where: not p.suspended,
       limit: ^limit
     )
 
@@ -104,7 +105,7 @@ defmodule Operately.Groups do
     query = (
       from p in Person,
       join: m in Member, on: m.person_id == p.id,
-      where: m.group_id == ^group.id
+      where: m.group_id == ^group.id and not p.suspended
     )
 
     Repo.all(query)
@@ -113,7 +114,8 @@ defmodule Operately.Groups do
   def is_member?(group, person) do
     query = (
       from m in Member,
-      where: m.group_id == ^group.id and m.person_id == ^person.id,
+      join: p in Person, on: m.person_id == p.id,
+      where: m.group_id == ^group.id and m.person_id == ^person.id and not p.suspended,
       limit: 1
     )
 
@@ -181,7 +183,7 @@ defmodule Operately.Groups do
     query = (
       from p in Person,
       join: m in Member, on: m.person_id == p.id,
-      where: m.group_id == ^group_id,
+      where: m.group_id == ^group_id and false,
       limit: ^limit
     )
 
