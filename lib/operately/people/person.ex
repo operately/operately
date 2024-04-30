@@ -25,6 +25,9 @@ defmodule Operately.People.Person do
     field :theme, :string
     field :company_role, Ecto.Enum, values: [:admin, :member], default: :member
 
+    field :suspended, :boolean, default: false
+    field :suspended_at, :utc_datetime
+
     timestamps()
   end
 
@@ -48,7 +51,9 @@ defmodule Operately.People.Person do
       :notify_on_mention,
       :notify_about_assignments,
       :company_role,
-      :theme
+      :theme,
+      :suspended,
+      :suspended_at
     ])
     |> validate_required([:full_name, :company_id])
   end

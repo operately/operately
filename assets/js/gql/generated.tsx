@@ -855,6 +855,7 @@ export type Person = {
   peers?: Maybe<Array<Maybe<Person>>>;
   reports?: Maybe<Array<Maybe<Person>>>;
   sendDailySummary: Scalars['Boolean']['output'];
+  suspended: Scalars['Boolean']['output'];
   theme?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
 };
@@ -2008,7 +2009,7 @@ export type GetPersonQueryVariables = Exact<{
 }>;
 
 
-export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null } | null };
+export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, suspended: boolean, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null } | null };
 
 export type GetProjectQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2477,6 +2478,7 @@ export const GetPersonDocument = gql`
     title
     avatarUrl
     email
+    suspended
     manager @include(if: $includeManager) {
       id
       fullName

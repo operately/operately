@@ -10,6 +10,7 @@ query GetPerson(
     title
     avatarUrl
     email
+    suspended
 
     manager @include(if: $includeManager) {
       id

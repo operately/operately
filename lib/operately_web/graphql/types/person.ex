@@ -16,6 +16,8 @@ defmodule OperatelyWeb.Graphql.Types.Person do
     field :notify_on_mention, non_null(:boolean)
     field :notify_about_assignments, non_null(:boolean)
 
+    field :suspended, non_null(:boolean)
+
     delegate_field :company, :company, &Operately.Companies.get_company!/1
     delegate_field :manager, :person, &Operately.People.get_manager/1
     delegate_field :reports, list_of(:person), &Operately.People.get_reports/1
