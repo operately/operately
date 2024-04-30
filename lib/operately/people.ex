@@ -49,14 +49,14 @@ defmodule Operately.People do
   end
 
   def get_reports(%Person{} = person) do
-    Repo.all(from p in Person, where: p.manager_id == ^person.id)
+    Repo.all(from p in Person, where: p.manager_id == ^person.id and not p.suspended)
   end
 
   def get_peers(%Person{} = person) do
     if person.manager_id == nil do
-      Repo.all(from p in Person, where: is_nil(p.manager_id) and p.id != ^person.id)
+      Repo.all(from p in Person, where: is_nil(p.manager_id) and p.id != ^person.id and not p.suspended)
     else
-      Repo.all(from p in Person, where: p.manager_id == ^person.manager_id and p.id != ^person.id)
+      Repo.all(from p in Person, where: p.manager_id == ^person.manager_id and p.id != ^person.id and not p.suspended)
     end
   end
 
