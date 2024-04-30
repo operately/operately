@@ -1,10 +1,10 @@
 import { makeQueryFn } from "@/graphql/client";
-export { useEditGoalTimeframeMutation } from './useEditGoalTimeframeMutation';
 
 import { GetGoalsDocument, GetGoalsQueryVariables, GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
 import { Goal, Target } from "@/gql/generated";
 
 export type { Target, Goal } from "@/gql/generated";
+export { useEditGoalTimeframeMutation } from "@/gql/generated";
 
 export const getGoal = makeQueryFn(GetGoalDocument, "goal") as (v: GetGoalQueryVariables) => Promise<Goal>;
 export const getGoals = makeQueryFn(GetGoalsDocument, "goals") as (v: GetGoalsQueryVariables) => Promise<Goal[]>;

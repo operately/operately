@@ -16,6 +16,10 @@ defmodule Operately.Activities do
   end
 
   def insert(multi, author_id, action, callback) do
+    IO.puts """
+    [DEPRECATION] Operately.Activities.insert/4 is deprecated. Use Operately.Activities.insert_sync/4 instead.
+    """
+
     Ecto.Multi.run(multi, :activity_recording_job, fn _repo, changes ->
       job = Recorder.new(%{
         action: action,

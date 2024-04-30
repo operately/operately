@@ -52,7 +52,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -141,6 +141,12 @@ export type ActivityContentGoalReparent = {
   companyId: Scalars['String']['output'];
   newParentGoalId?: Maybe<Scalars['String']['output']>;
   oldParentGoalId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ActivityContentGoalTimeframeEditing = {
+  __typename?: 'ActivityContentGoalTimeframeEditing';
+  newTimeframe: Scalars['String']['output'];
+  oldTimeframe: Scalars['String']['output'];
 };
 
 export type ActivityContentGroupEdited = {
@@ -632,6 +638,11 @@ export type EditGoalInput = {
   updatedTargets: Array<InputMaybe<UpdateTargetInput>>;
 };
 
+export type EditGoalTimeframeInput = {
+  id: Scalars['String']['input'];
+  timeframe: TimeframeInput;
+};
+
 export type EditGroupInput = {
   id: Scalars['ID']['input'];
   mission: Scalars['String']['input'];
@@ -1043,6 +1054,7 @@ export type RootMutationType = {
   editComment?: Maybe<Comment>;
   editDiscussion?: Maybe<Discussion>;
   editGoal?: Maybe<Goal>;
+  editGoalTimeframe: Goal;
   editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
   editProjectCheckIn: ProjectCheckIn;
@@ -1273,6 +1285,11 @@ export type RootMutationTypeEditDiscussionArgs = {
 
 export type RootMutationTypeEditGoalArgs = {
   input: EditGoalInput;
+};
+
+
+export type RootMutationTypeEditGoalTimeframeArgs = {
+  input: EditGoalTimeframeInput;
 };
 
 
@@ -1966,6 +1983,13 @@ export type AddCompanyMemberMutationVariables = Exact<{
 
 export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Person', id: string, fullName: string, email?: string | null, title?: string | null } };
 
+export type EditGoalTimeframeMutationVariables = Exact<{
+  input: EditGoalTimeframeInput;
+}>;
+
+
+export type EditGoalTimeframeMutation = { __typename?: 'RootMutationType', editGoalTimeframe: { __typename?: 'Goal', id: string } };
+
 export type GetGoalQueryVariables = Exact<{
   id: Scalars['ID']['input'];
   includeTargets?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2085,6 +2109,39 @@ export function useAddCompanyMemberMutation(baseOptions?: Apollo.MutationHookOpt
 export type AddCompanyMemberMutationHookResult = ReturnType<typeof useAddCompanyMemberMutation>;
 export type AddCompanyMemberMutationResult = Apollo.MutationResult<AddCompanyMemberMutation>;
 export type AddCompanyMemberMutationOptions = Apollo.BaseMutationOptions<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>;
+export const EditGoalTimeframeDocument = gql`
+    mutation EditGoalTimeframe($input: EditGoalTimeframeInput!) {
+  editGoalTimeframe(input: $input) {
+    id
+  }
+}
+    `;
+export type EditGoalTimeframeMutationFn = Apollo.MutationFunction<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
+
+/**
+ * __useEditGoalTimeframeMutation__
+ *
+ * To run a mutation, you first call `useEditGoalTimeframeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditGoalTimeframeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editGoalTimeframeMutation, { data, loading, error }] = useEditGoalTimeframeMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditGoalTimeframeMutation(baseOptions?: Apollo.MutationHookOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>(EditGoalTimeframeDocument, options);
+      }
+export type EditGoalTimeframeMutationHookResult = ReturnType<typeof useEditGoalTimeframeMutation>;
+export type EditGoalTimeframeMutationResult = Apollo.MutationResult<EditGoalTimeframeMutation>;
+export type EditGoalTimeframeMutationOptions = Apollo.BaseMutationOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
 export const GetGoalDocument = gql`
     query GetGoal($id: ID!, $includeTargets: Boolean = false, $includeProjects: Boolean = false, $includeLastCheckIn: Boolean = false, $includeParentGoal: Boolean = false) {
   goal(id: $id) {

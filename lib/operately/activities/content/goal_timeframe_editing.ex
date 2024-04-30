@@ -2,14 +2,14 @@ defmodule Operately.Activities.Content.GoalTimeframeEditing do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :old_timeframe, :string
-  field :new_timeframe, :string
+    embeds_one :old_timeframe, Operately.Goals.Timeframe
+    embeds_one :new_timeframe, Operately.Goals.Timeframe
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> cast_embed(:old_timeframe)
+    |> cast_embed(:new_timeframe)
   end
 
   def build(params) do
