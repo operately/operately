@@ -1,4 +1,5 @@
 import { makeQueryFn } from "@/graphql/client";
+export { useEditGoalTimeframeMutation } from './useEditGoalTimeframeMutation';
 
 import { GetGoalsDocument, GetGoalsQueryVariables, GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
 import { Goal, Target } from "@/gql/generated";
