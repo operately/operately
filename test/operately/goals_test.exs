@@ -33,7 +33,11 @@ defmodule Operately.GoalsTest do
         space_id: ctx.group.id,
         champion_id: ctx.person.id,
         reviewer_id: ctx.person.id,
-        timeframe: "2023-Q1"
+        timeframe: %{
+          start_date: ~D[2020-01-01],
+          end_date: ~D[2020-12-31],
+          type: "year",
+        },
       }
 
       assert {:ok, %Goal{} = goal} = Goals.create_goal(ctx.person, valid_attrs)

@@ -16,10 +16,12 @@ defmodule Operately.Goals.Goal do
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
     field :name, :string
-    field :timeframe, :string
     field :next_update_scheduled_at, :utc_datetime
 
     field :description, :map
+
+    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :update
+    field :deprecated_timeframe, :string
 
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
@@ -41,13 +43,14 @@ defmodule Operately.Goals.Goal do
       :champion_id, 
       :reviewer_id, 
       :creator_id, 
-      :timeframe, 
+      :deprecated_timeframe,
       :description,
       :next_update_scheduled_at,
       :parent_goal_id,
       :closed_at,
       :closed_by_id,
     ])
+    |> cast_embed(:timeframe)
     |> validate_required([
       :name, 
       :company_id, 
@@ -55,7 +58,6 @@ defmodule Operately.Goals.Goal do
       :champion_id, 
       :reviewer_id, 
       :creator_id,
-      :timeframe,
     ])
   end
 end

@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :name, non_null(:string)
     field :champion_id, non_null(:id)
     field :reviewer_id, non_null(:id)
-    field :timeframe, non_null(:string)
+    field :timeframe, non_null(:timeframe_input)
     field :targets, non_null(list_of(:create_target_input))
     field :description, :string
     field :parent_goal_id, :id
@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :name, non_null(:string)
     field :champion_id, non_null(:id)
     field :reviewer_id, non_null(:id)
-    field :timeframe, non_null(:string)
+    field :timeframe, non_null(:timeframe_input)
     field :added_targets, non_null(list_of(:create_target_input))
     field :updated_targets, non_null(list_of(:update_target_input))
     field :description, :string

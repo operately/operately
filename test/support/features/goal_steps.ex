@@ -24,7 +24,11 @@ defmodule Operately.Support.Features.GoalSteps do
       name: "Improve support first response time",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
-      timeframe: "2023-Q4",
+      timeframe: %{
+        start_date: ~D[2023-01-01],
+        end_date: ~D[2023-12-31],
+        type: "year"
+      },
       targets: [
         %{
           name: "First response time",
@@ -53,7 +57,11 @@ defmodule Operately.Support.Features.GoalSteps do
       name: goal_params.name,
       champion_id: ctx.champion.id,
       reviewer_id: ctx.reviewer.id,
-      timeframe: "2023-Q4",
+      timeframe: %{
+        start_date: ~D[2023-01-01],
+        end_date: ~D[2023-12-31],
+        type: "year"
+      },
       targets: [
         %{
           name: goal_params.target_name,

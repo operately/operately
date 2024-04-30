@@ -7,11 +7,10 @@ defmodule OperatelyWeb.Graphql.Types.Goals do
     field :name, non_null(:string)
     field :inserted_at, non_null(:date)
     field :updated_at, non_null(:date)
-    field :timeframe, non_null(:string)
     field :next_update_scheduled_at, :date
     field :parent_goal_id, :id
-
     field :closed_at, :date
+    field :timeframe, non_null(:timeframe)
 
     json_field :description, :string
 

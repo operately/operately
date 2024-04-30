@@ -6,6 +6,7 @@ import * as Popover from "@radix-ui/react-popover";
 import * as Milestones from "@/models/milestones";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -161,15 +162,9 @@ function NodeTimeframe({ node }: { node: Node }) {
 }
 
 function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
-  let parts = goal.timeframe.split(" ");
+  const timeframe = Timeframes.parse(goal.timeframe);
 
-  if (parts.length > 1) {
-    if (Time.currentYear() === parseInt(parts[1]!)) {
-      parts = [parts[0]!];
-    }
-  }
-
-  return <div className="text-sm w-24">{parts[0]}</div>;
+  return <div className="text-sm w-24 truncate">{Timeframes.format(timeframe)}</div>;
 }
 
 function ProjectTimeframe({ project }: { project: Projects.Project }) {

@@ -4,13 +4,15 @@ import * as Goals from "@/models/goals";
 import * as Tabs from "@/components/Tabs";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Timeframes from "@/utils/timeframes";
 
-import { Timeframe } from "@/utils/timeframe";
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
 
-import classnames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
+
+import classnames from "classnames";
+import plurarize from "@/utils/plurarize";
 
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "discussions" | "about";
@@ -33,7 +35,7 @@ export function Header({ goal, activeTab }: HeaderProps) {
 
           <div className="gap-2 mt-1">
             <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
-            <TimeframeView goal={goal} />
+            <Timeframe goal={goal} />
           </div>
         </div>
 
@@ -137,10 +139,12 @@ function Options({ goal }) {
   );
 }
 
-function TimeframeView({ goal }: { goal: Goals.Goal }) {
+function Timeframe({ goal }: { goal: Goals.Goal }) {
+  const timeframe = Timeframes.parse(goal.timeframe);
+
   return (
     <div className="font-medium text-sm mt-1 text-content-dimmed">
-      Timeframe: {goal.timeframe} <TimeframeState goal={goal} />
+      Timeframe: {Timeframes.format(timeframe)} <TimeframeState goal={goal} />
     </div>
   );
 }
@@ -152,19 +156,32 @@ function TimeframeState({ goal }) {
         &middot; Closed on <FormattedTime time={goal.closedAt} format="long-date" />
       </span>
     );
-  } else {
-    const timeframe = Timeframe.parse(goal.timeframe);
+  }
 
-    const isOverdue = timeframe.isOverdue();
-    const remainingDays = timeframe.remainingDays();
-    const overdueDays = timeframe.overdueDays();
-
-    const remainingText = isOverdue ? `Overdue by ${overdueDays} days` : `${remainingDays} days left`;
-    const remainingColor = isOverdue ? "text-red-500" : "text-accent-1";
-
+  const timeframe = Timeframes.parse(goal.timeframe);
+  if (!Timeframes.isStarted(timeframe)) {
     return (
       <span>
-        &middot; <span className={remainingColor}>{remainingText}</span>
+        &middot;{" "}
+        <span className="text-accent-1">
+          Scheduled to start in {plurarize(Timeframes.startsInDays(timeframe), "day", "days")}
+        </span>
+      </span>
+    );
+  }
+
+  if (Timeframes.isOverdue(timeframe)) {
+    return (
+      <span>
+        &middot;{" "}
+        <span className="text-red-500">Overdue by {plurarize(Timeframes.overdueDays(timeframe), "day", "days")}</span>
+      </span>
+    );
+  } else {
+    return (
+      <span>
+        &middot;{" "}
+        <span className="text-accent-1">{plurarize(Timeframes.remainingDays(timeframe), "day", "days")} left</span>
       </span>
     );
   }

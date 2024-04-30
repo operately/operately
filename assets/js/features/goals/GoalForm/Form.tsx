@@ -12,6 +12,7 @@ import { GhostButton } from "@/components/Button";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
+import { TimeframeSelector } from "@/components/TimeframeSelector";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -23,8 +24,6 @@ export function Form({ form }: { form: FormState }) {
 }
 
 function FormMain({ form }: { form: FormState }) {
-  const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
-
   return (
     <div className="font-medium">
       <SectionHeader form={form} title={form.config.mode === "create" ? "Goal" : "Name"} />
@@ -36,7 +35,16 @@ function FormMain({ form }: { form: FormState }) {
 
       <Description form={form} />
       <ParentGoal form={form} />
+      <TargetSection form={form} />
+    </div>
+  );
+}
 
+function TargetSection({ form }: { form: FormState }) {
+  const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
+
+  return (
+    <>
       <SectionHeader form={form} title="Success Conditions" subtitle="How will you know that you succeded?" />
 
       {form.errors.find((e) => e.field === "targets") && (
@@ -50,7 +58,7 @@ function FormMain({ form }: { form: FormState }) {
         ))}
         <AddTarget form={form} />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -81,11 +89,10 @@ function FormFooter({ form }: { form: FormState }) {
   return (
     <Paper.DimmedSection>
       <div className={bottomGridStyle}>
-        {form.config.allowSpaceSelection && (
-          <div className="basis-1/4">
-            <SpaceSelector form={form} />
-          </div>
-        )}
+        <div>
+          <label className="font-semibold block mb-1">Timeframe</label>
+          <TimeframeSelector timeframe={form.fields.timeframe} setTimeframe={form.fields.setTimeframe} />
+        </div>
 
         <div>
           <ContributorSearch
@@ -107,9 +114,11 @@ function FormFooter({ form }: { form: FormState }) {
           />
         </div>
 
-        <div>
-          <TimeframeSelector form={form} />
-        </div>
+        {form.config.allowSpaceSelection && (
+          <div className="basis-1/4">
+            <SpaceSelector form={form} />
+          </div>
+        )}
       </div>
     </Paper.DimmedSection>
   );
@@ -151,18 +160,6 @@ function SpaceSelector({ form }: { form: FormState }) {
       defaultValue={null}
       error={hasError}
       data-test-id="space-selector"
-    />
-  );
-}
-
-function TimeframeSelector({ form }: { form: FormState }) {
-  return (
-    <Forms.SelectBox
-      label="Timeframe"
-      value={form.fields.timeframe}
-      onChange={form.fields.setTimeframe}
-      options={form.fields.timeframeOptions}
-      defaultValue={form.fields.timeframeOptions[0]}
     />
   );
 }

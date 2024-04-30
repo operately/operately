@@ -34,15 +34,23 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalEditing do
       end
     end
     
-    field :old_timeframe, non_null(:string) do
+    field :old_timeframe, non_null(:timeframe) do
       resolve fn activity, _, _ ->
-        {:ok, activity.content["old_timeframe"]}
+        if activity.content["previous_timeframe"] do
+          {:ok, Operately.Goals.Timeframe.parse_json!(activity.content["previous_timeframe"])}
+        else
+          {:ok, Operately.Goals.Timeframe.convert_old_timeframe(activity.content["old_timeframe"])}
+        end
       end
     end
     
-    field :new_timeframe, non_null(:string) do
+    field :new_timeframe, non_null(:timeframe) do
       resolve fn activity, _, _ ->
-        {:ok, activity.content["new_timeframe"]}
+        if activity.content["current_timeframe"] do
+          {:ok, Operately.Goals.Timeframe.parse_json!(activity.content["current_timeframe"])}
+        else
+          {:ok, Operately.Goals.Timeframe.convert_old_timeframe(activity.content["new_timeframe"])}
+        end
       end
     end
     

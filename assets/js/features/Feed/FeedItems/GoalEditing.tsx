@@ -1,17 +1,30 @@
 import * as React from "react";
 import * as People from "@/models/people";
+import * as Timeframes from "@/utils/timeframes";
 
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { FeedItem, Container } from "../FeedItem";
+import { ActivityContentGoalEditing } from "@/gql";
 
 export const GoalEditing: FeedItem = {
   typename: "ActivityContentGoalEditing",
   contentQuery: `
     newName
     oldName
-    newTimeframe
-    oldTimeframe
+
+    newTimeframe {
+      startDate
+      endDate
+      type
+    }
+
+    oldTimeframe {
+      startDate
+      endDate
+      type
+    }
+
     newChampionId
     oldChampionId
     newChampion {
@@ -80,31 +93,34 @@ function Content({ activity }) {
   );
 }
 
-function NewName({ content }) {
+function NewName({ content }: { content: ActivityContentGoalEditing }) {
   if (content.newName === content.oldName) return null;
 
   return <div>The name was changed to {content.newName}.</div>;
 }
 
-function Timeframe({ content }) {
-  if (content.oldTimeframe === content.newTimeframe) return null;
+function Timeframe({ content }: { content: ActivityContentGoalEditing }) {
+  const oldTimeframe = Timeframes.parse(content.newTimeframe);
+  const newTimeframe = Timeframes.parse(content.oldTimeframe);
 
-  return <div>The timeframe was changed to {content.newTimeframe}.</div>;
+  if (Timeframes.equalDates(oldTimeframe, newTimeframe)) return null;
+
+  return <div>The timeframe was changed to {Timeframes.format(newTimeframe)}.</div>;
 }
 
-function Champion({ content }) {
+function Champion({ content }: { content: ActivityContentGoalEditing }) {
   if (content.oldChampionId === content.newChampionId) return null;
 
   return <div>The champion was changed to {content.newChampion.fullName}.</div>;
 }
 
-function Reviewer({ content }) {
+function Reviewer({ content }: { content: ActivityContentGoalEditing }) {
   if (content.oldReviewerId === content.newReviewerId) return null;
 
   return <div>The reviewer was changed to {content.newReviewer.fullName}.</div>;
 }
 
-function AddedTargets({ content }) {
+function AddedTargets({ content }: { content: ActivityContentGoalEditing }) {
   if (!content.addedTargets) return null;
   if (content.addedTargets.length === 0) return null;
 
@@ -113,15 +129,15 @@ function AddedTargets({ content }) {
       The following measures were added:
       <ul>
         {content.addedTargets.map((target) => (
-          <li key={target.id}>- {target.name}</li>
+          <li key={target!.id}>- {target!.name}</li>
         ))}
       </ul>
     </div>
   );
 }
 
-function UpdatedTargets({ content }) {
-  const updated = content.updatedTargets.filter((t) => t.oldName !== t.newName);
+function UpdatedTargets({ content }: { content: ActivityContentGoalEditing }) {
+  const updated = content.updatedTargets.filter((t) => t!.oldName !== t!.newName);
 
   if (updated.length === 0) return null;
 
@@ -130,14 +146,14 @@ function UpdatedTargets({ content }) {
       The following measures were updated:
       <ul>
         {updated.map((target) => (
-          <li key={target.id}>- {target.newName}</li>
+          <li key={target!.id}>- {target!.newName}</li>
         ))}
       </ul>
     </div>
   );
 }
 
-function DeletedTargets({ content }) {
+function DeletedTargets({ content }: { content: ActivityContentGoalEditing }) {
   if (!content.deletedTargets) return null;
   if (content.deletedTargets.length === 0) return null;
 
@@ -146,7 +162,7 @@ function DeletedTargets({ content }) {
       The following measures were removed:
       <ul>
         {content.deletedTargets.map((target) => (
-          <li key={target.id}>- {target.name}</li>
+          <li key={target!.id}>- {target!.name}</li>
         ))}
       </ul>
     </div>

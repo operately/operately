@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as Companies from "@/models/companies";
-import * as Time from "@/utils/time";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
 import * as Groups from "@/models/groups";
+import * as Timeframes from "@/utils/timeframes";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -34,8 +34,7 @@ interface Fields {
   parentGoal: Goals.Goal | null;
   champion: People.Person | null;
   reviewer: People.Person | null;
-  timeframe: TimeframeOption;
-  timeframeOptions: TimeframeOption[];
+  timeframe: Timeframes.Timeframe;
   targets: Target[];
   space: SpaceOption | null;
   spaceOptions: SpaceOption[];
@@ -45,18 +44,13 @@ interface Fields {
   setName: (name: string) => void;
   setChampion: (champion: People.Person | null) => void;
   setReviewer: (reviewer: People.Person | null) => void;
-  setTimeframe: (timeframe: TimeframeOption) => void;
+  setTimeframe: Timeframes.SetTimeframe;
   addTarget: () => void;
   removeTarget: (id: string) => void;
   updateTarget: (id: string, field: any, value: any) => void;
   setSpace: (space: SpaceOption | null) => void;
   setHasDescription: (hasDescription: boolean) => void;
   setParentGoal: (goal: Goals.Goal | null) => void;
-}
-
-interface TimeframeOption {
-  value: string;
-  label: string;
 }
 
 interface SpaceOption {
@@ -92,10 +86,10 @@ export function useForm(config: FormConfig): FormState {
   const [name, setName] = React.useState<string>(config.goal?.name || "");
   const [champion, setChampion] = React.useState<People.Person | null>(config.goal?.champion || config.me);
   const [reviewer, setReviewer] = React.useState<People.Person | null>(config.goal?.reviewer || null);
-  const [timeframe, setTimeframe, timeframeOptions] = useTimeframe(config);
   const [targets, addTarget, removeTarget, updateTarget] = useTargets(config);
   const [space, setSpace, spaceOptions] = useSpaces(config);
   const [parentGoal, setParentGoal] = React.useState<Goals.Goal | null>(config.parentGoal || null);
+  const [timeframe, setTimeframe] = useTimeframe(config);
 
   const [hasDescription, setHasDescription] = React.useState<boolean>(false);
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
@@ -113,7 +107,6 @@ export function useForm(config: FormConfig): FormState {
     champion,
     reviewer,
     timeframe,
-    timeframeOptions,
     targets,
     space,
     spaceOptions,
@@ -145,23 +138,14 @@ export function useForm(config: FormConfig): FormState {
   };
 }
 
-function useTimeframe(config: FormConfig): [TimeframeOption, (timeframe: TimeframeOption) => void, TimeframeOption[]] {
-  let options: TimeframeOption[] = [
-    { value: Time.nQuartersFromNow(0), label: `${Time.nQuartersFromNow(0)}` },
-    { value: Time.nQuartersFromNow(1), label: `${Time.nQuartersFromNow(1)}` },
-    { value: Time.nQuartersFromNow(2), label: `${Time.nQuartersFromNow(2)}` },
-    { value: Time.nQuartersFromNow(3), label: `${Time.nQuartersFromNow(3)}` },
-    { value: Time.currentYear().toString(), label: `${Time.currentYear()}` },
-    { value: Time.nextYear().toString(), label: `${Time.nextYear()}` },
-  ];
-
-  if (config.mode === "edit") {
-    options = options.filter((o) => o.value !== config.goal!.timeframe);
-    options.unshift({ value: config.goal!.timeframe, label: config.goal!.timeframe });
-  }
-
-  const [timeframe, setTimeframe] = React.useState<TimeframeOption>(options[0]!);
-  return [timeframe, setTimeframe, options];
+function useTimeframe(config: FormConfig): [Timeframes.Timeframe, Timeframes.SetTimeframe] {
+  return React.useState<Timeframes.Timeframe>(() => {
+    if (config.mode === "edit") {
+      return Timeframes.parse(config.goal!.timeframe!);
+    } else {
+      return Timeframes.currentQuarter();
+    }
+  });
 }
 
 function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption | null) => void, SpaceOption[]] {
@@ -259,7 +243,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             spaceId: fields.space!.value,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
-            timeframe: fields.timeframe.value,
+            timeframe: Timeframes.serialize(fields.timeframe),
             description: prepareDescriptionForSave(fields),
             parentGoalId: config.parentGoal?.id,
             targets: fields.targets
@@ -284,7 +268,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             name: fields.name,
             championID: fields.champion!.id,
             reviewerID: fields.reviewer!.id,
-            timeframe: fields.timeframe.value,
+            timeframe: Timeframes.serialize(fields.timeframe),
             description: prepareDescriptionForSave(fields),
             addedTargets: fields.targets
               .filter((t) => t.name.trim() !== "")
@@ -325,7 +309,7 @@ function validateForm(fields: Fields, config: FormConfig): Error[] {
   if (fields.name.length === 0) errors.push({ field: "name", message: "Name is required" });
   if (fields.champion === null) errors.push({ field: "champion", message: "Champion is required" });
   if (fields.reviewer === null) errors.push({ field: "reviewer", message: "Reviewer is required" });
-  if (fields.timeframe.value === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
+  if (fields.timeframe === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
   if (fields.space === null && mode === "create") errors.push({ field: "space", message: "Space is required" });
 
   if (fields.parentGoal === null && !config.isCompanyWide && mode === "create") {
