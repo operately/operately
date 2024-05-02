@@ -132,7 +132,7 @@ function TimeframeInputs({ form }: { form: Form }) {
       </div>
 
       <div>
-        <p className="font-bold mb-1">Start Date</p>
+        <p className="font-bold mb-1">Due Date</p>
         <Datepicker
           date={form.timeframe.endDate!}
           setDate={(date) => form.setTimeframe({ ...form.timeframe, endDate: date, type: "days" })}
