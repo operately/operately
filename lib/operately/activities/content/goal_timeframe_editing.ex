@@ -8,6 +8,7 @@ defmodule Operately.Activities.Content.GoalTimeframeEditing do
 
   def changeset(attrs) do
     %__MODULE__{}
+    |> cast(attrs, [])
     |> cast_embed(:old_timeframe)
     |> cast_embed(:new_timeframe)
   end
