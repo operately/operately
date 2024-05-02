@@ -181,7 +181,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> Map.put(:edit_values, values)
     |> UI.click(testid: "goal-options")
-    |> UI.click(testid: "edit-goal")
+    |> UI.click(testid: "edit-goal-definition")
     |> UI.fill(testid: "goal-name", with: values.name)
     |> UI.select_person_in(id: "champion-search", name: values.new_champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: values.new_reviewer.full_name)
