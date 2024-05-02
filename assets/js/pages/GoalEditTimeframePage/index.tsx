@@ -251,7 +251,7 @@ function useForm({ goal }): Form {
   const peopleSearch = People.usePeopleSearch();
   const commentEditor = TipTapEditor.useEditor({
     peopleSearch: peopleSearch,
-    placeholder: "Write a comment to explain the change...",
+    placeholder: "Explain the reason for the change here...",
   });
 
   const [error, setError] = React.useState<{ message: string } | null>(null);
