@@ -72,13 +72,20 @@ function formatDays(timeframe: Timeframe) {
   if (!timeframe.startDate) return null;
   if (!timeframe.endDate) return null;
 
-  if (timeframe.startDate.getFullYear() !== timeframe.endDate.getFullYear()) {
-    const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
-    const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
+  if (timeframe.startDate.getFullYear() === timeframe.endDate.getFullYear()) {
+    if (Time.today().getFullYear() === timeframe.startDate.getFullYear()) {
+      const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric" });
+      const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric" });
 
-    return `${start} - ${end}`;
+      return `${start} - ${end}`;
+    } else {
+      const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric" });
+      const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
+
+      return `${start} - ${end}`;
+    }
   } else {
-    const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric" });
+    const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
     const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
 
     return `${start} - ${end}`;
@@ -171,6 +178,13 @@ export function startsInDays(timeframe: Timeframe): number {
   return Time.daysBetween(Time.today(), timeframe.startDate);
 }
 
+export function dayCount(timeframe: Timeframe): number {
+  if (!timeframe.startDate) return 0;
+  if (!timeframe.endDate) return 0;
+
+  return Time.daysBetween(timeframe.startDate, timeframe.endDate);
+}
+
 //
 // Comparison functions
 //
@@ -180,4 +194,17 @@ export function equalDates(a: Timeframe, b: Timeframe): boolean {
   if (!a.endDate || !b.endDate) return false;
 
   return Time.isSameDay(a.startDate, b.startDate) && Time.isSameDay(a.endDate, b.endDate);
+}
+
+export function compareDuration(a: Timeframe, b: Timeframe): number {
+  if (!a.startDate || !b.startDate) return 0;
+  if (!a.endDate || !b.endDate) return 0;
+
+  const aDuration = Time.daysBetween(a.startDate, a.endDate);
+  const bDuration = Time.daysBetween(b.startDate, b.endDate);
+
+  if (aDuration < bDuration) return 1;
+  if (aDuration > bDuration) return -1;
+
+  return 0;
 }

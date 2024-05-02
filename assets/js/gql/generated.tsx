@@ -145,8 +145,9 @@ export type ActivityContentGoalReparent = {
 
 export type ActivityContentGoalTimeframeEditing = {
   __typename?: 'ActivityContentGoalTimeframeEditing';
-  newTimeframe: Scalars['String']['output'];
-  oldTimeframe: Scalars['String']['output'];
+  goal: Goal;
+  newTimeframe: Timeframe;
+  oldTimeframe: Timeframe;
 };
 
 export type ActivityContentGroupEdited = {

@@ -1,14 +1,22 @@
-import React from "react";
-import type Page from "@/features/Feed/index";
+import * as React from "react";
+import * as Goals from "@/models/goals";
+
+import { Paths } from "@/routes/paths";
+import { Link } from "@/components/Link";
 
 interface GoalLinkProps {
   goal: Goals.Goal;
-  page: Page;
+  page: string;
 }
 
 export function GoalLink(props: GoalLinkProps) {
   if (props.page === "goal") {
-    return props.goal.name;
+    return "this goal";
+  } else {
+    return (
+      <>
+        the <Link to={Paths.goalPath(props.goal.id)}>{props.goal.name}</Link> goal
+      </>
+    );
   }
-  return <Link to={Paths.goalPath(props.goal.id)}>{props.goal.name}</Link>;
 }
