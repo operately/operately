@@ -162,7 +162,10 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_archived_feed_posted, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "completed the #{ctx.goal.name} goal"
+    })
   end
 
   step :edit_goal, ctx do
@@ -270,6 +273,13 @@ defmodule Operately.Support.Features.GoalSteps do
       author: ctx.champion,
       action: "edited the timeframe"
     })
+  end
+
+  step :assert_goal_timeframe_edited_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.champion, action: "edited the goal's timeframe"})
   end
 
   step :close_goal, ctx do

@@ -68,6 +68,7 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_timeframe_edited()
     |> Steps.assert_goal_timeframe_edited_feed_posted()
     |> Steps.assert_goal_timeframe_edited_email_sent()
+    |> Steps.assert_goal_timeframe_edited_notification_sent()
   end
   
 end
