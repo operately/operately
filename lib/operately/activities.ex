@@ -42,13 +42,25 @@ defmodule Operately.Activities do
         content: content
       })
     end)
+    |> dispatch_notification()
+  end
+
+  def dispatch_notification(multi) do
+    multi
     |> Ecto.Multi.run(:dispatch_notification, fn _repo, changes ->
       job = NotificationDispatcher.new(%{activity_id: changes.activity.id})
       Oban.insert(job)
     end)
   end
 
-  defp build_content(action, params) do
+  def build_content!(action, params) do
+    case build_content(action, params) do
+      {:ok, content} -> content
+      {:error, changeset} -> raise "Invalid content for #{action}: #{inspect(changeset)}"
+    end
+  end
+
+  def build_content(action, params) do
     module = find_module("Operately.Activities.Content", action)
     changeset = apply(module, :build, [params])
 
@@ -60,7 +72,11 @@ defmodule Operately.Activities do
     end
   end
 
-  defp find_module(base, action) do
+  defp find_module(base, action) when is_atom(action) do
+    find_module(base, Atom.to_string(action))
+  end
+
+  defp find_module(base, action) when is_binary(action) do
     full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
     String.to_existing_atom(full_module_name)
   end

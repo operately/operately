@@ -257,7 +257,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion, 
-      title: "extended the timeframe by 1 month",
+      title: "extended the timeframe",
       subtitle: "Extending the timeframe by 1 month to allow for more time to complete it."
     })
   end

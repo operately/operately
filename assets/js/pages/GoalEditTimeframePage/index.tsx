@@ -289,6 +289,7 @@ function useForm({ goal }): Form {
         input: {
           id: goal.id,
           timeframe: Timeframes.serialize(timeframe),
+          comment: JSON.stringify(commentEditor.editor.getJSON()),
         },
       },
     });

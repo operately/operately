@@ -39,6 +39,7 @@ export type Activity = {
   __typename?: 'Activity';
   actionType: Scalars['String']['output'];
   author: Person;
+  commentThread?: Maybe<CommentThread>;
   content: ActivityContent;
   eventData: ActivityDataUnion;
   id: Scalars['ID']['output'];
@@ -487,6 +488,12 @@ export type Comment = {
   reactions: Array<Maybe<Reaction>>;
 };
 
+export type CommentThread = {
+  __typename?: 'CommentThread';
+  id: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type Company = {
   __typename?: 'Company';
   admins?: Maybe<Array<Maybe<Person>>>;
@@ -640,6 +647,7 @@ export type EditGoalInput = {
 };
 
 export type EditGoalTimeframeInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   timeframe: TimeframeInput;
 };

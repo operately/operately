@@ -52,6 +52,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
   input_object :edit_goal_timeframe_input do
     field :id, non_null(:string)
     field :timeframe, non_null(:timeframe_input)
+    field :comment, :string
   end
 
   object :goal_mutations do

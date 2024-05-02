@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
-import * as Icons from "@tabler/icons-react";
 
 import { FeedItem, Container } from "../FeedItem";
 import { GoalLink } from "../shared/GoalLink";
+import RichContent from "@/components/RichContent";
 
 export const GoalTimeframeEditing: FeedItem = {
   typename: "ActivityContentGoalTimeframeEditing",
@@ -82,6 +82,12 @@ function Content({ activity }) {
         </div>
         {Timeframes.dayCount(oldTimeframe)} days
       </div>
+
+      {activity.commentThread && (
+        <div className="mt-2">
+          <RichContent jsonContent={activity.commentThread.message} />
+        </div>
+      )}
     </div>
   );
 }

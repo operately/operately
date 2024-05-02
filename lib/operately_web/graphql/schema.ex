@@ -58,6 +58,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentTaskUpdate
   import_types OperatelyWeb.Graphql.Types.Assignments
   import_types OperatelyWeb.Graphql.Types.Blobs
+  import_types OperatelyWeb.Graphql.Types.CommentThreads
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
   import_types OperatelyWeb.Graphql.Types.Dashboards
