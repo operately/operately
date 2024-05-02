@@ -5,14 +5,15 @@ import * as Paper from "@/components/PaperContainer";
 import * as Timeframes from "@/utils/timeframes";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
+import * as Time from "@/utils/time";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { TimeframeSelector } from "@/components/TimeframeSelector";
 import { FilledButton } from "@/components/Button";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
 import { DimmedLink } from "@/components/Link";
+import { Datepicker } from "@/components/Datepicker";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -38,16 +39,9 @@ export function Page() {
         <Paper.Body minHeight="300px">
           <Title />
           <Subtitle goal={goal} />
-
-          <div>
-            <p className="font-bold mb-1">Select new timeframe</p>
-            <TimeframeSelector timeframe={form.timeframe} setTimeframe={form.setTimeframe} />
-          </div>
-
+          <TimeframeInputs form={form} />
           <Comments form={form} />
-
           <WhoWillBeNotified goal={goal} me={me} />
-
           <Submit goal={goal} form={form} />
         </Paper.Body>
       </Paper.Root>
@@ -69,6 +63,101 @@ function Subtitle({ goal }: { goal: Goals.Goal }) {
   );
 }
 
+function TimeframeInputs({ form }: { form: Form }) {
+  const increaseByOneMonth = (date: Date) => {
+    if (Time.isLastDayOfMonth(date)) {
+      return new Date(date.getFullYear(), date.getMonth() + 2, 0);
+    } else if (Time.isFirstDayOfMonth(date)) {
+      return new Date(date.getFullYear(), date.getMonth() + 1, 1);
+    } else {
+      return Time.addDays(date, 30);
+    }
+  };
+
+  const decreaseByOneMonth = (date: Date) => {
+    if (Time.isLastDayOfMonth(date)) {
+      return new Date(date.getFullYear(), date.getMonth(), 0);
+    } else if (Time.isFirstDayOfMonth(date)) {
+      return new Date(date.getFullYear(), date.getMonth() - 1, 1);
+    } else {
+      return Time.addDays(date, -30);
+    }
+  };
+
+  const increaseStartByOneMonth = () => {
+    form.setTimeframe({
+      ...form.timeframe,
+      startDate: increaseByOneMonth(form.timeframe.startDate!),
+      type: "days",
+    });
+  };
+
+  const decreaseStartByOneMonth = () => {
+    form.setTimeframe({
+      ...form.timeframe,
+      startDate: decreaseByOneMonth(form.timeframe.startDate!),
+      type: "days",
+    });
+  };
+
+  const increaseEndByOneMonth = () => {
+    form.setTimeframe({
+      ...form.timeframe,
+      endDate: increaseByOneMonth(form.timeframe.endDate!),
+      type: "days",
+    });
+  };
+
+  const decreaseEndByOneMonth = () => {
+    form.setTimeframe({
+      ...form.timeframe,
+      endDate: decreaseByOneMonth(form.timeframe.endDate!),
+      type: "days",
+    });
+  };
+
+  return (
+    <div className="mt-8 grid grid-cols-2 gap-6">
+      <div>
+        <p className="font-bold mb-1">Start Date</p>
+        <Datepicker
+          date={form.timeframe.startDate!}
+          setDate={(date) => form.setTimeframe({ ...form.timeframe, startDate: date, type: "days" })}
+        />
+
+        <div className="mt-2 flex items-center gap-1.5">
+          <DimmedButton onClick={decreaseStartByOneMonth}>-1 month</DimmedButton>
+          <DimmedButton onClick={increaseStartByOneMonth}>+1 month</DimmedButton>
+        </div>
+      </div>
+
+      <div>
+        <p className="font-bold mb-1">Start Date</p>
+        <Datepicker
+          date={form.timeframe.endDate!}
+          setDate={(date) => form.setTimeframe({ ...form.timeframe, endDate: date, type: "days" })}
+        />
+
+        <div className="mt-2 flex items-center gap-1.5">
+          <DimmedButton onClick={decreaseEndByOneMonth}>-1 month</DimmedButton>
+          <DimmedButton onClick={increaseEndByOneMonth}>+1 month</DimmedButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DimmedButton({ onClick, children }) {
+  return (
+    <div
+      className="rounded-lg bg-surface-dimmed p-2 py-0.5 text-xs hover:bg-surface-highlight cursor-pointer"
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Comments({ form }: { form: Form }) {
   return (
     <div className="mt-8">
@@ -82,21 +171,31 @@ function Comments({ form }: { form: Form }) {
 
 function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
   return (
-    <div className="flex items-center gap-4 mt-6">
-      <FilledButton
-        type="primary"
-        onClick={form.submit}
-        loading={form.submitting}
-        size="base"
-        testId="submit-check-in"
-        bzzzOnClickFailure
-      >
-        Submit
-      </FilledButton>
+    <div className="mt-6">
+      <Error form={form} />
 
-      <DimmedLink to={Paths.goalPath(goal.id)}>Cancel</DimmedLink>
+      <div className="flex items-center gap-4">
+        <FilledButton
+          type="primary"
+          onClick={form.submit}
+          loading={form.submitting}
+          size="base"
+          testId="submit-check-in"
+          bzzzOnClickFailure
+        >
+          Submit
+        </FilledButton>
+
+        <DimmedLink to={Paths.goalPath(goal.id)}>Cancel</DimmedLink>
+      </div>
     </div>
   );
+}
+
+function Error({ form }: { form: Form }) {
+  if (!form.error) return null;
+
+  return <div className="mb-2 text-red-500 font-medium">{form.error.message}</div>;
 }
 
 function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
@@ -126,17 +225,23 @@ function Editor({ editor }: { editor: TipTapEditor.Editor }) {
   );
 }
 
+interface Error {
+  message: string;
+}
+
 interface Form {
-  submit: () => void;
+  submit: () => Promise<boolean>;
   submitting: boolean;
   timeframe: Timeframes.Timeframe;
   setTimeframe: (timeframe: Timeframes.Timeframe) => void;
 
   commentEditor: TipTapEditor.EditorState;
+  error: Error | null;
 }
 
 function useForm({ goal }): Form {
-  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(Timeframes.parse(goal.timeframe));
+  const originalTimeframe = Timeframes.parse(goal.timeframe);
+  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(originalTimeframe);
 
   const navigateToGoalPage = useNavigateTo(Paths.goalPath(goal.id));
   const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframeMutation({
@@ -149,7 +254,23 @@ function useForm({ goal }): Form {
     placeholder: "Write a comment to explain the change...",
   });
 
+  const [error, setError] = React.useState<{ message: string } | null>(null);
+
+  function validate() {
+    if (Timeframes.equalDates(timeframe, originalTimeframe)) {
+      return { message: "The timeframe has not changed" };
+    }
+
+    return null;
+  }
+
   async function submit() {
+    const error = validate();
+    if (error) {
+      setError(error);
+      return false;
+    }
+
     await editTimeframe({
       variables: {
         input: {
@@ -158,6 +279,8 @@ function useForm({ goal }): Form {
         },
       },
     });
+
+    return true;
   }
 
   return {
@@ -166,5 +289,6 @@ function useForm({ goal }): Form {
     timeframe,
     setTimeframe,
     commentEditor,
+    error,
   };
 }

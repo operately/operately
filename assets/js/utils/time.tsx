@@ -13,6 +13,18 @@ export function isThisWeek(date: Date) {
   return datefsn.isThisWeek(date);
 }
 
+export function isFirstDayOfMonth(date: Date) {
+  return date.getDate() === 1;
+}
+
+export function isLastDayOfMonth(date: Date) {
+  return date.getDate() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+export function addDays(date: Date, days: number) {
+  return datefsn.addDays(date, days);
+}
+
 export function daysFromNow(days: number) {
   return datefsn.addDays(today(), days);
 }

@@ -11,7 +11,7 @@ defmodule Operately.Operations.GoalTimeframeEditing do
     |> Activities.insert_sync(author.id, :goal_timeframe_editing, fn changes ->
       %{
         old_timeframe: Map.from_struct(goal.timeframe),
-        new_timeframe: Map.from_struct(changes.goal.changeset.changes.timeframe)
+        new_timeframe: Map.from_struct(changes.goal.timeframe)
       }
     end)
     |> Repo.transaction()
