@@ -139,19 +139,32 @@ function TimeframeInputs({ form }: { form: Form }) {
         />
 
         <div className="mt-2 flex items-center gap-1.5">
-          <DimmedButton onClick={decreaseEndByOneMonth}>-1 month</DimmedButton>
-          <DimmedButton onClick={increaseEndByOneMonth}>+1 month</DimmedButton>
+          <DimmedButton onClick={decreaseEndByOneMonth} testId="end-date-minus-1-month">
+            -1 month
+          </DimmedButton>
+          <DimmedButton onClick={increaseEndByOneMonth} testId="end-date-plus-1-month">
+            +1 month
+          </DimmedButton>
         </div>
       </div>
     </div>
   );
 }
 
-function DimmedButton({ onClick, children }) {
+function DimmedButton({
+  onClick,
+  children,
+  testId,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  testId?: string;
+}) {
   return (
     <div
       className="rounded-lg bg-surface-dimmed p-2 py-0.5 text-xs hover:bg-surface-highlight cursor-pointer"
       onClick={onClick}
+      data-test-id={testId}
     >
       {children}
     </div>
@@ -180,7 +193,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           onClick={form.submit}
           loading={form.submitting}
           size="base"
-          testId="submit-check-in"
+          testId="submit"
           bzzzOnClickFailure
         >
           Submit

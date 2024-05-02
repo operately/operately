@@ -234,6 +234,34 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx |> FeedSteps.assert_goal_edited(author: ctx.champion)
   end
 
+  step :edit_goal_timeframe, ctx do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "edit-goal-timeframe")
+    |> UI.click(testid: "end-date-plus-1-month")
+    |> UI.fill_rich_text("Extending the timeframe by 1 month to allow for more time to complete it.")
+    |> UI.click(testid: "submit")
+    |> UI.assert_page("/goals/#{ctx.goal.id}")
+  end
+
+  step :assert_goal_timeframe_edited, ctx do
+    original_timeframe = ctx.goal.timeframe
+    new_timeframe = Operately.Goals.get_goal!(ctx.goal.id).timeframe
+
+    assert Date.diff(new_timeframe.end_date, original_timeframe.end_date) > 1
+
+    ctx
+  end
+
+  step :assert_goal_timeframe_edited_feed_posted, ctx do
+    ctx
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion, 
+      title: "extended the timeframe by 1 month",
+      subtitle: "Extending the timeframe by 1 month to allow for more time to complete it."
+    })
+  end
+
   step :close_goal, ctx do
     ctx
     |> UI.click(testid: "goal-options")
