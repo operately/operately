@@ -7,11 +7,11 @@ defmodule Operately.Operations.GoalTimeframeEditing do
     goal = Operately.Goals.get_goal!(attrs.id)
 
     Multi.new()
-    |> Multi.update(:goal, Operately.Goals.Goal.changeset(%{timeframe: attrs.timeframe}))
+    |> Multi.update(:goal, Operately.Goals.Goal.changeset(goal, %{timeframe: attrs.timeframe}))
     |> Activities.insert_sync(author.id, :goal_timeframe_editing, fn changes ->
       %{
         old_timeframe: Map.from_struct(goal.timeframe),
-        new_timeframe: Map.from_struct(changes.changes.goal.changeset.changes.timeframe)
+        new_timeframe: Map.from_struct(changes.goal.changeset.changes.timeframe)
       }
     end)
     |> Repo.transaction()

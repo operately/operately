@@ -9,6 +9,10 @@ import * as People from "@/models/people";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { TimeframeSelector } from "@/components/TimeframeSelector";
 import { FilledButton } from "@/components/Button";
+import { InlinePeopleList } from "@/components/InlinePeopleList";
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import { Paths } from "@/routes/paths";
+import { DimmedLink } from "@/components/Link";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -23,15 +27,8 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const { goal } = Pages.useLoadedData<LoaderResult>();
-
-  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(Timeframes.parse(goal.timeframe));
-
-  const peopleSearch = People.usePeopleSearch();
-  const editor = TipTapEditor.useEditor({
-    peopleSearch: peopleSearch,
-    placeholder: "Write a comment to explain the change...",
-  });
+  const { goal, me } = Pages.useLoadedData<LoaderResult>();
+  const form = useForm({ goal });
 
   return (
     <Pages.Page title={["Edit Timeframe", goal.name]}>
@@ -39,40 +36,78 @@ export function Page() {
         <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body minHeight="300px">
-          <div className="text-content-accent text-2xl font-extrabold">Editing the Goal's Timeframe</div>
-          <div className="w-64 mb-8">
-            <div className="text-content-accent">Current timeframe: {Timeframes.format(timeframe)}</div>
-          </div>
+          <Title />
+          <Subtitle goal={goal} />
 
           <div>
             <p className="font-bold mb-1">Select new timeframe</p>
-            <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} />
+            <TimeframeSelector timeframe={form.timeframe} setTimeframe={form.setTimeframe} />
           </div>
 
-          <div className="mt-8">
-            <p className="font-bold mb-1">
-              Comment <span className="text-content-dimmed font-normal">(optional)</span>
-            </p>
-            <Editor editor={editor.editor} />
-          </div>
+          <Comments form={form} />
 
-          <div className="mt-8 font-medium">
-            <p className="font-bold">When you submit:</p>
-            <PeopleList goal={goal} me={me} />
-          </div>
+          <WhoWillBeNotified goal={goal} me={me} />
+
+          <Submit goal={goal} form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function PeopleList({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
+function Title() {
+  return <div className="text-content-accent text-2xl font-extrabold">Editing the Goal's Timeframe</div>;
+}
+
+function Subtitle({ goal }: { goal: Goals.Goal }) {
+  return (
+    <div className="mb-8">
+      <div className="text-content-accent">
+        Current timeframe: {Timeframes.format(Timeframes.parse(goal.timeframe))}
+      </div>
+    </div>
+  );
+}
+
+function Comments({ form }: { form: Form }) {
+  return (
+    <div className="mt-8">
+      <p className="font-bold mb-1">
+        Comment <span className="text-content-dimmed font-normal">(optional)</span>
+      </p>
+      <Editor editor={form.commentEditor.editor} />
+    </div>
+  );
+}
+
+function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
+  return (
+    <div className="flex items-center gap-4 mt-6">
+      <FilledButton
+        type="primary"
+        onClick={form.submit}
+        loading={form.submitting}
+        size="base"
+        testId="submit-check-in"
+        bzzzOnClickFailure
+      >
+        Submit
+      </FilledButton>
+
+      <DimmedLink to={Paths.goalPath(goal.id)}>Cancel</DimmedLink>
+    </div>
+  );
+}
+
+function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
   const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me.id);
 
   return (
-    <div className="flex flex-wrap gap-4">
-      {people.map((person) => (
-      ))}
+    <div className="mt-8 font-medium">
+      <p className="font-bold">When you submit:</p>
+      <div className="inline-flex gap-1 flex-wrap mt-1">
+        <InlinePeopleList people={people} /> will be notified.
+      </div>
     </div>
   );
 }
@@ -89,4 +124,47 @@ function Editor({ editor }: { editor: TipTapEditor.Editor }) {
       </TipTapEditor.Root>
     </div>
   );
+}
+
+interface Form {
+  submit: () => void;
+  submitting: boolean;
+  timeframe: Timeframes.Timeframe;
+  setTimeframe: (timeframe: Timeframes.Timeframe) => void;
+
+  commentEditor: TipTapEditor.EditorState;
+}
+
+function useForm({ goal }): Form {
+  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(Timeframes.parse(goal.timeframe));
+
+  const navigateToGoalPage = useNavigateTo(Paths.goalPath(goal.id));
+  const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframeMutation({
+    onCompleted: navigateToGoalPage,
+  });
+
+  const peopleSearch = People.usePeopleSearch();
+  const commentEditor = TipTapEditor.useEditor({
+    peopleSearch: peopleSearch,
+    placeholder: "Write a comment to explain the change...",
+  });
+
+  async function submit() {
+    await editTimeframe({
+      variables: {
+        input: {
+          id: goal.id,
+          timeframe: Timeframes.serialize(timeframe),
+        },
+      },
+    });
+  }
+
+  return {
+    submit,
+    submitting,
+    timeframe,
+    setTimeframe,
+    commentEditor,
+  };
 }
