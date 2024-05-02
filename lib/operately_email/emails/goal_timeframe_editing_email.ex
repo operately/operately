@@ -1,16 +1,27 @@
 defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
   import OperatelyEmail.Mailers.ActivityMailer
+  alias Operately.{Repo, Goals}
 
   def send(person, activity) do
-    raise "Email for GoalTimeframeEditing not implemented"
+    author = Repo.preload(activity, :author).author
+    company = Repo.preload(author, :company).company
+    goal = Goals.get_goal!(activity.content["goal_id"])
 
-    # author = Repo.preload(activity, :author).author
+    old_timeframe = Operately.Goals.Timeframe.parse_json!(activity.content["old_timeframe"])
+    new_timeframe = Operately.Goals.Timeframe.parse_json!(activity.content["new_timeframe"])
 
-    # company
-    # |> new()
-    # |> to(person)
-    # |> subject(who: author, action: "did something")
-    # |> assign(:author, author)
-    # |> render("goal_timeframe_editing")
+    message = Operately.Repo.preload(activity, :comment_thread).comment_thread.message
+
+    company
+    |> new()
+    |> from(author)
+    |> to(person)
+    |> subject(where: goal.name, who: author, action: "edited the timeframe")
+    |> assign(:author, author)
+    |> assign(:goal, goal)
+    |> assign(:old_timeframe, old_timeframe)
+    |> assign(:new_timeframe, new_timeframe)
+    |> assign(:message, message)
+    |> render("goal_timeframe_editing")
   end
 end

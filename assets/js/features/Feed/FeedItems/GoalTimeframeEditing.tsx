@@ -5,6 +5,7 @@ import * as Timeframes from "@/utils/timeframes";
 import { FeedItem, Container } from "../FeedItem";
 import { GoalLink } from "../shared/GoalLink";
 import RichContent from "@/components/RichContent";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export const GoalTimeframeEditing: FeedItem = {
   typename: "ActivityContentGoalTimeframeEditing",
@@ -83,7 +84,7 @@ function Content({ activity }) {
         {Timeframes.dayCount(oldTimeframe)} days
       </div>
 
-      {activity.commentThread && (
+      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
         <div className="mt-2">
           <RichContent jsonContent={activity.commentThread.message} />
         </div>

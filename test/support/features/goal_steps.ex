@@ -262,6 +262,16 @@ defmodule Operately.Support.Features.GoalSteps do
     })
   end
 
+  step :assert_goal_timeframe_edited_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "edited the timeframe"
+    })
+  end
+
   step :close_goal, ctx do
     ctx
     |> UI.click(testid: "goal-options")
