@@ -55,6 +55,15 @@ defmodule Operately.Operations.CommentAdding do
     end)
   end
 
+  def insert_activity(multi, creator, action = :comment_added, entity) do
+    Activities.insert_sync(multi, creator.id, action, fn changes ->
+      %{
+        company_id: creator.company_id,
+        comment_id: changes.comment.id
+      }
+    end)
+  end
+
   def find_entity(entity_id, entity_type) do
     case entity_type do
       "update" -> Operately.Updates.get_update!(entity_id)
@@ -67,5 +76,6 @@ defmodule Operately.Operations.CommentAdding do
   def find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
   def find_action(%Operately.Updates.Update{type: :goal_check_in}), do: :goal_check_in_commented
   def find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
+  def find_action(%Operately.Comments.CommentThread{}), do: :comment_added
   def find_action(e), do: raise "Unknown entity type #{inspect(e)}"
 end

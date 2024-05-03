@@ -2,6 +2,9 @@ defmodule Operately.Comments.CommentThread do
   use Operately.Schema
 
   schema "comment_threads" do
+    field :parent_id, :binary_id
+    field :parent_type, Ecto.Enum, values: [:activity]
+
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment_thread]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :comment_thread]
 
