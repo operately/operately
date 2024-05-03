@@ -164,7 +164,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "completed the #{ctx.goal.name} goal"
+      action: "archived the #{ctx.goal.name} goal"
     })
   end
 

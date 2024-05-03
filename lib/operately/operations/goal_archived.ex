@@ -6,7 +6,7 @@ defmodule Operately.Operations.GoalArchived do
   def run(creator, goal) do
     Multi.new()
     |> Multi.run(:goal, fn repo, _ -> repo.soft_delete(goal) end)
-    |> Activities.insert(creator.id, :goal_archived, fn _changes -> %{
+    |> Activities.insert_sync(creator.id, :goal_archived, fn _changes -> %{
       company_id: goal.company_id,
       space_id: goal.group_id,
       goal_id: goal.id,

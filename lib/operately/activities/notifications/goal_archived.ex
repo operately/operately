@@ -1,6 +1,6 @@
 defmodule Operately.Activities.Notifications.GoalArchived do
   def dispatch(activity) do
-    goal_id = activity.content.goal_id
+    goal_id = activity.content["goal_id"]
     goal = Operately.Goals.get_goal!(goal_id)
 
     notifications = [
