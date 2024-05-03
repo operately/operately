@@ -37,6 +37,11 @@ function constructQuery() {
           avatarUrl
         }
 
+        commentThread {
+          id
+          message
+        }
+
         content {
           __typename
 

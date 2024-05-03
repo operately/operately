@@ -3,10 +3,15 @@ defmodule Mix.Tasks.Operately.Gen.Mutation do
 
   @supported_types ~w(string integer float boolean)
 
-  #
-  # Usage example:
-  # mix operately.gen.mutation tasks edit_task_name TaskNameEditing id:string name:string
-  #
+  def run(["--help"]) do
+    IO.puts """
+    Usage: mix operately.gen.mutation <type> <mutation_name> <operation> <fields>
+
+    Examples:
+      mix operately.gen.mutation tasks edit_task_name TaskNameEditing id:string name:string
+    """
+  end
+
   def run([type, mutation_name, operation | fields]) do
     validate_type(type)
     validate_mutation_name(type, mutation_name)

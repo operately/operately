@@ -16,6 +16,7 @@ import GoalClosing from "./GoalClosing"
 import GoalCreated from "./GoalCreated"
 import GoalEditing from "./GoalEditing"
 import GoalReparent from "./GoalReparent"
+import GoalTimeframeEditing from "./GoalTimeframeEditing"
 import ProjectArchived from "./ProjectArchived"
 import ProjectCheckInAcknowledged from "./ProjectCheckInAcknowledged"
 import ProjectCheckInCommented from "./ProjectCheckInCommented"
@@ -85,6 +86,9 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     
     case "ActivityContentGoalReparent":
       return <GoalReparent notification={notification} />;
+    
+    case "ActivityContentGoalTimeframeEditing":
+      return <GoalTimeframeEditing notification={notification} />;
     
     case "ActivityContentProjectArchived":
       return <ProjectArchived notification={notification} />;

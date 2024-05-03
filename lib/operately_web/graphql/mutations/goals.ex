@@ -49,7 +49,23 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :goal_id, non_null(:string)
   end
 
+  input_object :edit_goal_timeframe_input do
+    field :id, non_null(:string)
+    field :timeframe, non_null(:timeframe_input)
+    field :comment, :string
+  end
+
   object :goal_mutations do
+    field :edit_goal_timeframe, non_null(:goal) do
+      arg :input, non_null(:edit_goal_timeframe_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+
+        Operately.Operations.GoalTimeframeEditing.run(author, input)
+      end
+    end
+
     field :close_goal, non_null(:goal) do
       arg :input, non_null(:close_goal_input)
 

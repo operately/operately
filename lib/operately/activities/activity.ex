@@ -6,6 +6,7 @@ defmodule Operately.Activities.Activity do
   @foreign_key_type :binary_id
   schema "activities" do
     belongs_to :author, Operately.People.Person
+    belongs_to :comment_thread, Operately.Comments.CommentThread
 
     field :action, :string
     field :content, :map
@@ -21,6 +22,6 @@ defmodule Operately.Activities.Activity do
   end
 
   def changeset(activity, attrs) do
-    activity |> cast(attrs, [:author_id, :action, :content])
+    activity |> cast(attrs, [:author_id, :action, :content, :comment_thread_id])
   end
 end

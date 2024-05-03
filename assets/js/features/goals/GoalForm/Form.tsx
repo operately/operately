@@ -82,17 +82,19 @@ function Description({ form }: { form: FormState }) {
 function FormFooter({ form }: { form: FormState }) {
   const bottomGridStyle = classnames({
     "grid grid-cols-1 sm:grid-cols-2 gap-4": true,
-    "lg:grid-cols-3": !form.config.allowSpaceSelection,
+    "lg:grid-cols-2": !form.config.allowSpaceSelection,
     "lg:grid-cols-4": form.config.allowSpaceSelection,
   });
 
   return (
     <Paper.DimmedSection>
       <div className={bottomGridStyle}>
-        <div>
-          <label className="font-semibold block mb-1">Timeframe</label>
-          <TimeframeSelector timeframe={form.fields.timeframe} setTimeframe={form.fields.setTimeframe} />
-        </div>
+        {form.config.mode === "create" && (
+          <div>
+            <label className="font-semibold block mb-1">Timeframe</label>
+            <TimeframeSelector timeframe={form.fields.timeframe} setTimeframe={form.fields.setTimeframe} />
+          </div>
+        )}
 
         <div>
           <ContributorSearch

@@ -1,0 +1,23 @@
+<%= title("#{short_name(@author)} edited the timeframe of the #{@goal.name} goal") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  Old timeframe: <%= Date.to_string(@old_timeframe.start_date) %> &rarr; <%= Date.to_string(@old_timeframe.end_date) %>
+<% end %>
+
+<%= row do %>
+  New timeframe: <%= Date.to_string(@new_timeframe.start_date) %> &rarr; <%= Date.to_string(@new_timeframe.end_date) %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= rich_text(@message) %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(OperatelyEmail.goal_url(@goal.id), "View Goal") %>
+<% end %>

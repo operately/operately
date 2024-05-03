@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Graphql.Types.Activities do
   use Absinthe.Schema.Notation
 
+  import OperatelyWeb.Graphql.TypeHelpers
+
   object :activity do
     field :id, non_null(:id)
     field :scope_type, non_null(:string)
@@ -11,11 +13,8 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
     field :inserted_at, non_null(:naive_datetime)
     field :updated_at, non_null(:naive_datetime)
 
-    field :author, non_null(:person) do
-      resolve fn activity, _, _ ->
-        {:ok, activity.author}
-      end
-    end
+    assoc_field :comment_thread, :comment_thread
+    assoc_field :author, non_null(:person)
 
     field :resource, :activity_resource_union do
       resolve fn activity, _, _ ->

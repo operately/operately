@@ -1,11 +1,10 @@
 import React from "react";
 
-import Avatar from "@/components/Avatar";
-
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 
 import { FormState } from "./useForm";
+import { InlinePeopleList } from "@/components/InlinePeopleList";
 
 export function NotificationSection({ form }: { form: FormState }) {
   const regularContributors = form.project.contributors!.filter(
@@ -29,7 +28,7 @@ function WhoWillNeedToAcknowledge({ reviewer }: { reviewer: People.Person }) {
 
   return (
     <div className="inline-flex gap-1 flex-wrap">
-      <PersonWithAvatarAndName person={reviewer} /> will be asked to acknowledge the check-in.
+      <InlinePeopleList people={[reviewer]} /> will be asked to acknowledge the check-in.
     </div>
   );
 }
@@ -42,55 +41,7 @@ function WhoWillBeNotified({ contributors }: { contributors: Projects.Project["c
 
   return (
     <div className="inline-flex flex-wrap">
-      <PeopleList people={people} />
-      &nbsp;will be notified.
+      <InlinePeopleList people={people} /> &nbsp;will be notified.
     </div>
   );
-}
-
-function PeopleList({ people }: { people: People.Person[] }): JSX.Element {
-  return (
-    <>
-      {people.map((p, index) => (
-        <React.Fragment key={p.id}>
-          <PersonWithAvatarAndName key={p.id} person={p} />
-          <PeopleListSeparator index={index} total={people.length} />
-        </React.Fragment>
-      ))}
-    </>
-  );
-}
-
-type PersonNameFormat = "first" | "short" | "full";
-
-function PersonWithAvatarAndName({ person, nameFormat }: { person: People.Person; nameFormat?: PersonNameFormat }) {
-  return (
-    <div className="flex items-center gap-1 shrink-0">
-      <Avatar person={person} size={18} />
-      {formatName(person, nameFormat || "first")}
-    </div>
-  );
-}
-
-function formatName(person: People.Person, nameFormat: "first" | "short" | "full"): string {
-  if (nameFormat === "first") return People.firstName(person);
-  if (nameFormat === "short") return People.shortName(person);
-  if (nameFormat === "full") return person.fullName;
-
-  throw new Error(`Invalid name format: ${nameFormat}`);
-}
-
-// Separate with commas and "and" for the last person, e.g. "Alice, Bob, and Charlie"
-function PeopleListSeparator({ index, total }: { index: number; total: number }) {
-  // If there's only one person, don't add a separator
-  if (total === 1) return null;
-
-  // Don't add a separator after the last person
-  if (index === total - 1) return null;
-
-  // Add " and " before the last person
-  if (index === total - 2) return <>&nbsp;and&nbsp;</>;
-
-  // Otherwise, use a comma between people, .e.g. "Alice, Bob, "
-  return <>,&nbsp;</>;
 }

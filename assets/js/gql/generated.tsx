@@ -39,6 +39,7 @@ export type Activity = {
   __typename?: 'Activity';
   actionType: Scalars['String']['output'];
   author: Person;
+  commentThread?: Maybe<CommentThread>;
   content: ActivityContent;
   eventData: ActivityDataUnion;
   id: Scalars['ID']['output'];
@@ -52,7 +53,7 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -141,6 +142,13 @@ export type ActivityContentGoalReparent = {
   companyId: Scalars['String']['output'];
   newParentGoalId?: Maybe<Scalars['String']['output']>;
   oldParentGoalId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ActivityContentGoalTimeframeEditing = {
+  __typename?: 'ActivityContentGoalTimeframeEditing';
+  goal: Goal;
+  newTimeframe: Timeframe;
+  oldTimeframe: Timeframe;
 };
 
 export type ActivityContentGroupEdited = {
@@ -480,6 +488,12 @@ export type Comment = {
   reactions: Array<Maybe<Reaction>>;
 };
 
+export type CommentThread = {
+  __typename?: 'CommentThread';
+  id: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type Company = {
   __typename?: 'Company';
   admins?: Maybe<Array<Maybe<Person>>>;
@@ -630,6 +644,12 @@ export type EditGoalInput = {
   reviewerId: Scalars['ID']['input'];
   timeframe: TimeframeInput;
   updatedTargets: Array<InputMaybe<UpdateTargetInput>>;
+};
+
+export type EditGoalTimeframeInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  timeframe: TimeframeInput;
 };
 
 export type EditGroupInput = {
@@ -1044,6 +1064,7 @@ export type RootMutationType = {
   editComment?: Maybe<Comment>;
   editDiscussion?: Maybe<Discussion>;
   editGoal?: Maybe<Goal>;
+  editGoalTimeframe: Goal;
   editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
   editProjectCheckIn: ProjectCheckIn;
@@ -1274,6 +1295,11 @@ export type RootMutationTypeEditDiscussionArgs = {
 
 export type RootMutationTypeEditGoalArgs = {
   input: EditGoalInput;
+};
+
+
+export type RootMutationTypeEditGoalTimeframeArgs = {
+  input: EditGoalTimeframeInput;
 };
 
 
@@ -1967,6 +1993,13 @@ export type AddCompanyMemberMutationVariables = Exact<{
 
 export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Person', id: string, fullName: string, email?: string | null, title?: string | null } };
 
+export type EditGoalTimeframeMutationVariables = Exact<{
+  input: EditGoalTimeframeInput;
+}>;
+
+
+export type EditGoalTimeframeMutation = { __typename?: 'RootMutationType', editGoalTimeframe: { __typename?: 'Goal', id: string } };
+
 export type GetGoalQueryVariables = Exact<{
   id: Scalars['ID']['input'];
   includeTargets?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2041,6 +2074,14 @@ export type GetProjectsQueryVariables = Exact<{
 
 export type GetProjectsQuery = { __typename?: 'RootQueryType', projects?: Array<{ __typename?: 'Project', id: string, name: string, private: boolean, insertedAt: any, updatedAt: any, startedAt?: any | null, closedAt?: any | null, deadline?: any | null, isArchived: boolean, isOutdated: boolean, status?: string | null, goal?: { __typename?: 'Goal', id: string, name: string } | null, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, space?: { __typename?: 'Group', id: string, name: string }, nextMilestone?: { __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, insertedAt?: any | null, deadlineAt?: any | null } | null> | null, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, status: string, description: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null } | null> | null };
 
+export type ListNotificationsQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']['input']>;
+  perPage?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type ListNotificationsQuery = { __typename?: 'RootQueryType', notifications?: Array<{ __typename?: 'Notification', id: string, read: boolean, activity: { __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, content: { __typename: 'ActivityContentDiscussionCommentSubmitted', discussionId: string, title: string, space: { __typename?: 'Group', id: string, name: string } } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting', title: string, discussionId: string, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string } } | { __typename: 'ActivityContentGoalArchived', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCheckIn', goal: { __typename?: 'Goal', id: string, name: string }, update: { __typename?: 'Update', id: string } } | { __typename: 'ActivityContentGoalCheckInAcknowledgement', goal: { __typename?: 'Goal', id: string, name: string }, update: { __typename?: 'Update', id: string } } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCreated', goal: { __typename?: 'Goal', id: string, name: string, myRole?: string | null } } | { __typename: 'ActivityContentGoalEditing', goalId: string, oldName: string, newName: string, oldChampionId: string, newChampionId: string, oldReviewerId: string, newReviewerId: string, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, addedTargets: Array<{ __typename?: 'Target', id: string } | null>, updatedTargets: Array<{ __typename?: 'GoalEditingUpdatedTarget', id: string } | null>, deletedTargets: Array<{ __typename?: 'Target', id: string } | null> } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCheckInAcknowledged', projectId: string, checkInId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCheckInCommented', projectId: string, checkInId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted', project: { __typename?: 'Project', id: string, name: string }, checkIn: { __typename?: 'ProjectCheckIn', id: string, insertedAt: any, status: string, description: string } } | { __typename: 'ActivityContentProjectClosed', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectContributorAddition', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCreated', project: { __typename?: 'Project', id: string, name: string, myRole?: string | null } } | { __typename: 'ActivityContentProjectDiscussionSubmitted', title: string, discussionId: string, projectId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectGoalConnection', goal: { __typename?: 'Goal', id: string, name: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectGoalDisconnection', goal: { __typename?: 'Goal', id: string, name: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectMilestoneCommented', commentAction: string, milestone: { __typename?: 'Milestone', id: string, title: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectMoved', project: { __typename?: 'Project', id: string, name: string }, oldSpace: { __typename?: 'Group', id: string, name: string }, newSpace: { __typename?: 'Group', id: string, name: string } } | { __typename: 'ActivityContentProjectPausing', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectReviewAcknowledged', projectId: string, reviewId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectReviewCommented', projectId: string, reviewId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectReviewRequestSubmitted', requestId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectReviewSubmitted', reviewId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectTimelineEdited', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } }> | null };
+
 export type SearchPeopleQueryVariables = Exact<{
   query: Scalars['String']['input'];
   ignoredIds?: InputMaybe<Array<Scalars['ID']['input']> | Scalars['ID']['input']>;
@@ -2086,6 +2127,39 @@ export function useAddCompanyMemberMutation(baseOptions?: Apollo.MutationHookOpt
 export type AddCompanyMemberMutationHookResult = ReturnType<typeof useAddCompanyMemberMutation>;
 export type AddCompanyMemberMutationResult = Apollo.MutationResult<AddCompanyMemberMutation>;
 export type AddCompanyMemberMutationOptions = Apollo.BaseMutationOptions<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>;
+export const EditGoalTimeframeDocument = gql`
+    mutation EditGoalTimeframe($input: EditGoalTimeframeInput!) {
+  editGoalTimeframe(input: $input) {
+    id
+  }
+}
+    `;
+export type EditGoalTimeframeMutationFn = Apollo.MutationFunction<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
+
+/**
+ * __useEditGoalTimeframeMutation__
+ *
+ * To run a mutation, you first call `useEditGoalTimeframeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditGoalTimeframeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editGoalTimeframeMutation, { data, loading, error }] = useEditGoalTimeframeMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditGoalTimeframeMutation(baseOptions?: Apollo.MutationHookOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>(EditGoalTimeframeDocument, options);
+      }
+export type EditGoalTimeframeMutationHookResult = ReturnType<typeof useEditGoalTimeframeMutation>;
+export type EditGoalTimeframeMutationResult = Apollo.MutationResult<EditGoalTimeframeMutation>;
+export type EditGoalTimeframeMutationOptions = Apollo.BaseMutationOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
 export const GetGoalDocument = gql`
     query GetGoal($id: ID!, $includeTargets: Boolean = false, $includeProjects: Boolean = false, $includeLastCheckIn: Boolean = false, $includeParentGoal: Boolean = false) {
   goal(id: $id) {
@@ -2783,6 +2857,295 @@ export function useGetProjectsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetProjectsQueryHookResult = ReturnType<typeof useGetProjectsQuery>;
 export type GetProjectsLazyQueryHookResult = ReturnType<typeof useGetProjectsLazyQuery>;
 export type GetProjectsQueryResult = Apollo.QueryResult<GetProjectsQuery, GetProjectsQueryVariables>;
+export const ListNotificationsDocument = gql`
+    query ListNotifications($page: Int, $perPage: Int) {
+  notifications(page: $page, perPage: $perPage) {
+    id
+    read
+    activity {
+      id
+      insertedAt
+      author {
+        id
+        fullName
+        avatarUrl
+      }
+      content {
+        __typename
+        ... on ActivityContentGoalEditing {
+          goalId
+          oldName
+          newName
+          oldTimeframe {
+            startDate
+            endDate
+            type
+          }
+          newTimeframe {
+            startDate
+            endDate
+            type
+          }
+          oldChampionId
+          newChampionId
+          oldReviewerId
+          newReviewerId
+          addedTargets {
+            id
+          }
+          updatedTargets {
+            id
+          }
+          deletedTargets {
+            id
+          }
+        }
+        ... on ActivityContentGoalTimeframeEditing {
+          goal {
+            id
+            name
+          }
+        }
+        ... on ActivityContentDiscussionPosting {
+          title
+          discussionId
+          space {
+            id
+            name
+            icon
+            color
+          }
+        }
+        ... on ActivityContentProjectContributorAddition {
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectGoalConnection {
+          goal {
+            id
+            name
+          }
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectGoalDisconnection {
+          goal {
+            id
+            name
+          }
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentGoalCreated {
+          goal {
+            id
+            name
+            myRole
+          }
+        }
+        ... on ActivityContentGoalClosing {
+          goal {
+            id
+            name
+          }
+        }
+        ... on ActivityContentGoalArchived {
+          goal {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectClosed {
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectMoved {
+          project {
+            id
+            name
+          }
+          oldSpace {
+            id
+            name
+          }
+          newSpace {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectTimelineEdited {
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectDiscussionSubmitted {
+          title
+          discussionId
+          projectId
+          project {
+            name
+          }
+        }
+        ... on ActivityContentDiscussionCommentSubmitted {
+          discussionId
+          title
+          space {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectCheckInSubmitted {
+          project {
+            id
+            name
+          }
+          checkIn {
+            id
+            insertedAt
+            status
+            description
+          }
+        }
+        ... on ActivityContentGoalCheckIn {
+          goal {
+            id
+            name
+          }
+          update {
+            id
+          }
+        }
+        ... on ActivityContentGoalCheckInAcknowledgement {
+          goal {
+            id
+            name
+          }
+          update {
+            id
+          }
+        }
+        ... on ActivityContentProjectCheckInAcknowledged {
+          projectId
+          checkInId
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectCheckInCommented {
+          projectId
+          checkInId
+          project {
+            name
+          }
+        }
+        ... on ActivityContentProjectCreated {
+          project {
+            id
+            name
+            myRole
+          }
+        }
+        ... on ActivityContentProjectArchived {
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectReviewSubmitted {
+          reviewId
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectReviewRequestSubmitted {
+          requestId
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectReviewAcknowledged {
+          projectId
+          reviewId
+          project {
+            name
+          }
+        }
+        ... on ActivityContentProjectReviewCommented {
+          projectId
+          reviewId
+          project {
+            name
+          }
+        }
+        ... on ActivityContentProjectPausing {
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectResuming {
+          project {
+            id
+            name
+          }
+        }
+        ... on ActivityContentProjectMilestoneCommented {
+          commentAction
+          milestone {
+            id
+            title
+          }
+          project {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useListNotificationsQuery__
+ *
+ * To run a query within a React component, call `useListNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListNotificationsQuery({
+ *   variables: {
+ *      page: // value for 'page'
+ *      perPage: // value for 'perPage'
+ *   },
+ * });
+ */
+export function useListNotificationsQuery(baseOptions?: Apollo.QueryHookOptions<ListNotificationsQuery, ListNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListNotificationsQuery, ListNotificationsQueryVariables>(ListNotificationsDocument, options);
+      }
+export function useListNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListNotificationsQuery, ListNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListNotificationsQuery, ListNotificationsQueryVariables>(ListNotificationsDocument, options);
+        }
+export type ListNotificationsQueryHookResult = ReturnType<typeof useListNotificationsQuery>;
+export type ListNotificationsLazyQueryHookResult = ReturnType<typeof useListNotificationsLazyQuery>;
+export type ListNotificationsQueryResult = Apollo.QueryResult<ListNotificationsQuery, ListNotificationsQueryVariables>;
 export const SearchPeopleDocument = gql`
     query SearchPeople($query: String!, $ignoredIds: [ID!]) {
   searchPeople(query: $query, ignoredIds: $ignoredIds) {

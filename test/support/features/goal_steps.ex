@@ -162,7 +162,10 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_archived_feed_posted, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_goal_archived_sent(author: ctx.champion, goal: ctx.goal)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "archived the #{ctx.goal.name} goal"
+    })
   end
 
   step :edit_goal, ctx do
@@ -178,7 +181,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> Map.put(:edit_values, values)
     |> UI.click(testid: "goal-options")
-    |> UI.click(testid: "edit-goal")
+    |> UI.click(testid: "edit-goal-definition")
     |> UI.fill(testid: "goal-name", with: values.name)
     |> UI.select_person_in(id: "champion-search", name: values.new_champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: values.new_reviewer.full_name)
@@ -232,6 +235,51 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_goal_edited_feed_posted, ctx do
     ctx |> FeedSteps.assert_goal_edited(author: ctx.champion)
+  end
+
+  step :edit_goal_timeframe, ctx do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "edit-goal-timeframe")
+    |> UI.click(testid: "end-date-plus-1-month")
+    |> UI.fill_rich_text("Extending the timeframe by 1 month to allow for more time to complete it.")
+    |> UI.click(testid: "submit")
+    |> UI.assert_page("/goals/#{ctx.goal.id}")
+  end
+
+  step :assert_goal_timeframe_edited, ctx do
+    original_timeframe = ctx.goal.timeframe
+    new_timeframe = Operately.Goals.get_goal!(ctx.goal.id).timeframe
+
+    assert Date.diff(new_timeframe.end_date, original_timeframe.end_date) > 1
+
+    ctx
+  end
+
+  step :assert_goal_timeframe_edited_feed_posted, ctx do
+    ctx
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion, 
+      title: "extended the timeframe",
+      subtitle: "Extending the timeframe by 1 month to allow for more time to complete it."
+    })
+  end
+
+  step :assert_goal_timeframe_edited_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "edited the timeframe"
+    })
+  end
+
+  step :assert_goal_timeframe_edited_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.champion, action: "edited the goal's timeframe"})
   end
 
   step :close_goal, ctx do
