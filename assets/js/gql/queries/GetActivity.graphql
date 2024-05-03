@@ -23,6 +23,29 @@ query GetActivity($id: ID!) {
           avatarUrl
         }
       }
+
+      comments {
+        id
+        content
+        insertedAt
+
+        author {
+          id
+          fullName
+          avatarUrl
+        }
+
+        reactions {
+          id
+          emoji
+
+          person {
+            id
+            fullName
+            avatarUrl
+          }
+        }
+      }
     }
 
     content {

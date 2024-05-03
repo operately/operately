@@ -6,16 +6,17 @@ import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import * as Timeframes from "@/utils/timeframes";
 
-import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { ActivityContentGoalTimeframeEditing } from "@/gql";
-
 import { match } from "ts-pattern";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
+
+import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
+import { ActivityContentGoalTimeframeEditing, CommentThread } from "@/gql";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -43,7 +44,10 @@ export function Page() {
         <Paper.Body>
           <Title activity={activity} content={title} />
           <Content activity={activity} />
-          <Reactions activity={activity} me={me} />
+
+          <Reactions commentThread={activity.commentThread!} me={me} />
+          <div className="border-t border-stroke-base mt-8" />
+          <Comments commentThread={activity.commentThread!} me={me} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -98,7 +102,7 @@ function GoalTimeframeEdit({ activity }: { activity: Activities.Activity }) {
       </div>
 
       {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-2">
+        <div className="mt-8 text-lg">
           <RichContent jsonContent={activity.commentThread.message} />
         </div>
       )}
@@ -114,11 +118,17 @@ function pageTitleContent(activity: Activities.Activity): string {
     });
 }
 
-function Reactions({ activity, me }: { activity: Activities.Activity; me: People.Person }) {
-  const commentThread = activity.commentThread!;
+function Reactions({ commentThread, me }: { commentThread: CommentThread; me: People.Person }) {
   const reactions = commentThread.reactions.map((r) => r!);
   const entity = { id: commentThread.id, type: "comment_thread" };
   const addReactionForm = useReactionsForm(entity, reactions, me);
 
   return <ReactionList size={24} form={addReactionForm} />;
+}
+
+function Comments({ commentThread, me }: { commentThread: CommentThread; me: People.Person }) {
+  const refresh = Pages.useRefresh();
+  const commentsForm = useForCommentThread(commentThread);
+
+  return <CommentSection form={commentsForm} me={me} refresh={refresh} />;
 }

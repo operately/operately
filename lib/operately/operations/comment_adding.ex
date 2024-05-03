@@ -59,6 +59,7 @@ defmodule Operately.Operations.CommentAdding do
     case entity_type do
       "update" -> Operately.Updates.get_update!(entity_id)
       "project_check_in" -> Operately.Projects.get_check_in!(entity_id)
+      "comment_thread" -> Operately.Comments.get_thread!(entity_id)
       _ -> raise "Unknown entity type: #{entity_type}"
     end
   end
