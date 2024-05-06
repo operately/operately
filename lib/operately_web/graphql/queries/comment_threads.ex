@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Graphql.Queries.CommentThreads do
       resolve fn _, args, _ ->
         if args.scope_type == "goal" do
           comment_thread_ids = ids_from_activities(args.scope_id)
+          
+          {:ok, comment_threads(comment_thread_ids)}
         else
           {:error, "Invalid scope type"}
         end
@@ -16,14 +18,20 @@ defmodule OperatelyWeb.Graphql.Queries.CommentThreads do
     end
   end
 
-  defp ids_from_activities(goal_id) do
-    import Ecto.Query
+  import Ecto.Query
 
-    query = from a in Operately.Activities.Activity
-    query = from a in query, where: fragment("a.content->>'goal_id' == ?", ^goal_id)
-    query = from a in query, where: not is_nil(a.comment_thread_id)
-    query = from a in query, select: a.action == "goal_timeframe_editing"
-    query = from a in query, select: a.comment_thread_id
+  defp comment_threads(ids) do
+    Operately.Repo.all(from ct in Operately.Comments.CommentThread, where: ct.id in ^ids, order_by: [desc: ct.inserted_at])
+  end
+
+  defp ids_from_activities(goal_id) do
+    query = (
+      from a in Operately.Activities.Activity,
+        where: fragment("? ->>'goal_id' = ?", a.content, ^goal_id),
+        where: not is_nil(a.comment_thread_id),
+        where: a.action == "goal_timeframe_editing",
+        select: a.comment_thread_id
+    )
     
     Operately.Repo.all(query)
   end
