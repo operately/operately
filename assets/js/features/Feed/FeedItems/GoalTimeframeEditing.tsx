@@ -60,7 +60,8 @@ function Title({ activity, content, page }) {
 
   return (
     <>
-      {People.shortName(activity.author)} {whatLink} for <GoalLink goal={content.goal} page={page} />
+      {People.shortName(activity.author)} {whatLink} for{" "}
+      <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
     </>
   );
 }
