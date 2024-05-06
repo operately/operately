@@ -4,8 +4,11 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { FeedItem, Container } from "../FeedItem";
 import { GoalLink } from "../shared/GoalLink";
-import RichContent from "@/components/RichContent";
+import { Paths } from "@/routes/paths";
+import { Link } from "@/components/Link";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+
+import RichContent from "@/components/RichContent";
 
 export const GoalTimeframeEditing: FeedItem = {
   typename: "ActivityContentGoalTimeframeEditing",
@@ -48,14 +51,17 @@ function Title({ activity, content, page }) {
   let what = "";
 
   if (Timeframes.compareDuration(oldTimeframe, newTimeframe) === 1) {
-    what = "extended the timeframe for";
+    what = "extended the timeframe";
   } else {
-    what = "shortened the timeframe for";
+    what = "shortened the timeframe";
   }
+
+  let whatLink = <Link to={Paths.goalActivityPath(content.goal.id, activity.id)}>{what}</Link>;
 
   return (
     <>
-      {People.shortName(activity.author)} {what} <GoalLink goal={content.goal} page={page} />
+      {People.shortName(activity.author)} {whatLink} for{" "}
+      <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
     </>
   );
 }

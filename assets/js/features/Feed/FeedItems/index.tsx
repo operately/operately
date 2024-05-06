@@ -5,6 +5,7 @@
 
 import { FeedItem } from "../FeedItem";
 
+import { CommentAdded } from "./CommentAdded"
 import { DiscussionCommentSubmitted } from "./DiscussionCommentSubmitted"
 import { DiscussionEditing } from "./DiscussionEditing"
 import { DiscussionPosting } from "./DiscussionPosting"
@@ -40,6 +41,7 @@ import { TaskStatusChange } from "./TaskStatusChange"
 import { TaskUpdate } from "./TaskUpdate"
 
 const FeedItems : FeedItem[] = [
+  CommentAdded,
   DiscussionCommentSubmitted,
   DiscussionEditing,
   DiscussionPosting,

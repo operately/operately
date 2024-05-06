@@ -53,7 +53,13 @@ export type Activity = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type ActivityContent = ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+export type ActivityContent = ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalEditing | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
+
+export type ActivityContentCommentAdded = {
+  __typename?: 'ActivityContentCommentAdded';
+  activity?: Maybe<Activity>;
+  comment: Comment;
+};
 
 export type ActivityContentDiscussionCommentSubmitted = {
   __typename?: 'ActivityContentDiscussionCommentSubmitted';
@@ -490,8 +496,10 @@ export type Comment = {
 
 export type CommentThread = {
   __typename?: 'CommentThread';
+  comments: Array<Maybe<Comment>>;
   id: Scalars['ID']['output'];
   message: Scalars['String']['output'];
+  reactions: Array<Maybe<Reaction>>;
 };
 
 export type Company = {
@@ -1529,6 +1537,7 @@ export type RootMutationTypeUpdateTaskStatusArgs = {
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   activities?: Maybe<Array<Maybe<Activity>>>;
+  activity: Activity;
   assignments: Assignments;
   comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
@@ -1571,6 +1580,11 @@ export type RootQueryType = {
 export type RootQueryTypeActivitiesArgs = {
   scopeId: Scalars['String']['input'];
   scopeType: Scalars['String']['input'];
+};
+
+
+export type RootQueryTypeActivityArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2000,6 +2014,13 @@ export type EditGoalTimeframeMutationVariables = Exact<{
 
 export type EditGoalTimeframeMutation = { __typename?: 'RootMutationType', editGoalTimeframe: { __typename?: 'Goal', id: string } };
 
+export type GetActivityQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetActivityQuery = { __typename?: 'RootQueryType', activity: { __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, commentThread?: { __typename?: 'CommentThread', id: string, message: string, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null>, comments: Array<{ __typename?: 'Comment', id: string, content: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null> } | null> } | null, content: { __typename: 'ActivityContentCommentAdded' } | { __typename: 'ActivityContentDiscussionCommentSubmitted' } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting' } | { __typename: 'ActivityContentGoalArchived' } | { __typename: 'ActivityContentGoalCheckIn' } | { __typename: 'ActivityContentGoalCheckInAcknowledgement' } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing' } | { __typename: 'ActivityContentGoalCreated' } | { __typename: 'ActivityContentGoalEditing' } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string }, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived' } | { __typename: 'ActivityContentProjectCheckInAcknowledged' } | { __typename: 'ActivityContentProjectCheckInCommented' } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted' } | { __typename: 'ActivityContentProjectClosed' } | { __typename: 'ActivityContentProjectContributorAddition' } | { __typename: 'ActivityContentProjectCreated' } | { __typename: 'ActivityContentProjectDiscussionSubmitted' } | { __typename: 'ActivityContentProjectGoalConnection' } | { __typename: 'ActivityContentProjectGoalDisconnection' } | { __typename: 'ActivityContentProjectMilestoneCommented' } | { __typename: 'ActivityContentProjectMoved' } | { __typename: 'ActivityContentProjectPausing' } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming' } | { __typename: 'ActivityContentProjectReviewAcknowledged' } | { __typename: 'ActivityContentProjectReviewCommented' } | { __typename: 'ActivityContentProjectReviewRequestSubmitted' } | { __typename: 'ActivityContentProjectReviewSubmitted' } | { __typename: 'ActivityContentProjectTimelineEdited' } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } };
+
 export type GetGoalQueryVariables = Exact<{
   id: Scalars['ID']['input'];
   includeTargets?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2080,7 +2101,7 @@ export type ListNotificationsQueryVariables = Exact<{
 }>;
 
 
-export type ListNotificationsQuery = { __typename?: 'RootQueryType', notifications?: Array<{ __typename?: 'Notification', id: string, read: boolean, activity: { __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, content: { __typename: 'ActivityContentDiscussionCommentSubmitted', discussionId: string, title: string, space: { __typename?: 'Group', id: string, name: string } } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting', title: string, discussionId: string, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string } } | { __typename: 'ActivityContentGoalArchived', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCheckIn', goal: { __typename?: 'Goal', id: string, name: string }, update: { __typename?: 'Update', id: string } } | { __typename: 'ActivityContentGoalCheckInAcknowledgement', goal: { __typename?: 'Goal', id: string, name: string }, update: { __typename?: 'Update', id: string } } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCreated', goal: { __typename?: 'Goal', id: string, name: string, myRole?: string | null } } | { __typename: 'ActivityContentGoalEditing', goalId: string, oldName: string, newName: string, oldChampionId: string, newChampionId: string, oldReviewerId: string, newReviewerId: string, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, addedTargets: Array<{ __typename?: 'Target', id: string } | null>, updatedTargets: Array<{ __typename?: 'GoalEditingUpdatedTarget', id: string } | null>, deletedTargets: Array<{ __typename?: 'Target', id: string } | null> } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCheckInAcknowledged', projectId: string, checkInId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCheckInCommented', projectId: string, checkInId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted', project: { __typename?: 'Project', id: string, name: string }, checkIn: { __typename?: 'ProjectCheckIn', id: string, insertedAt: any, status: string, description: string } } | { __typename: 'ActivityContentProjectClosed', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectContributorAddition', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCreated', project: { __typename?: 'Project', id: string, name: string, myRole?: string | null } } | { __typename: 'ActivityContentProjectDiscussionSubmitted', title: string, discussionId: string, projectId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectGoalConnection', goal: { __typename?: 'Goal', id: string, name: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectGoalDisconnection', goal: { __typename?: 'Goal', id: string, name: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectMilestoneCommented', commentAction: string, milestone: { __typename?: 'Milestone', id: string, title: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectMoved', project: { __typename?: 'Project', id: string, name: string }, oldSpace: { __typename?: 'Group', id: string, name: string }, newSpace: { __typename?: 'Group', id: string, name: string } } | { __typename: 'ActivityContentProjectPausing', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectReviewAcknowledged', projectId: string, reviewId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectReviewCommented', projectId: string, reviewId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectReviewRequestSubmitted', requestId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectReviewSubmitted', reviewId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectTimelineEdited', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } }> | null };
+export type ListNotificationsQuery = { __typename?: 'RootQueryType', notifications?: Array<{ __typename?: 'Notification', id: string, read: boolean, activity: { __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, content: { __typename: 'ActivityContentCommentAdded', activity?: { __typename?: 'Activity', id: string, content: { __typename: 'ActivityContentCommentAdded' } | { __typename: 'ActivityContentDiscussionCommentSubmitted' } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting' } | { __typename: 'ActivityContentGoalArchived' } | { __typename: 'ActivityContentGoalCheckIn' } | { __typename: 'ActivityContentGoalCheckInAcknowledgement' } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing' } | { __typename: 'ActivityContentGoalCreated' } | { __typename: 'ActivityContentGoalEditing' } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived' } | { __typename: 'ActivityContentProjectCheckInAcknowledged' } | { __typename: 'ActivityContentProjectCheckInCommented' } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted' } | { __typename: 'ActivityContentProjectClosed' } | { __typename: 'ActivityContentProjectContributorAddition' } | { __typename: 'ActivityContentProjectCreated' } | { __typename: 'ActivityContentProjectDiscussionSubmitted' } | { __typename: 'ActivityContentProjectGoalConnection' } | { __typename: 'ActivityContentProjectGoalDisconnection' } | { __typename: 'ActivityContentProjectMilestoneCommented' } | { __typename: 'ActivityContentProjectMoved' } | { __typename: 'ActivityContentProjectPausing' } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming' } | { __typename: 'ActivityContentProjectReviewAcknowledged' } | { __typename: 'ActivityContentProjectReviewCommented' } | { __typename: 'ActivityContentProjectReviewRequestSubmitted' } | { __typename: 'ActivityContentProjectReviewSubmitted' } | { __typename: 'ActivityContentProjectTimelineEdited' } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } | null } | { __typename: 'ActivityContentDiscussionCommentSubmitted', discussionId: string, title: string, space: { __typename?: 'Group', id: string, name: string } } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting', title: string, discussionId: string, space: { __typename?: 'Group', id: string, name: string, icon: string, color: string } } | { __typename: 'ActivityContentGoalArchived', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCheckIn', goal: { __typename?: 'Goal', id: string, name: string }, update: { __typename?: 'Update', id: string } } | { __typename: 'ActivityContentGoalCheckInAcknowledgement', goal: { __typename?: 'Goal', id: string, name: string }, update: { __typename?: 'Update', id: string } } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCreated', goal: { __typename?: 'Goal', id: string, name: string, myRole?: string | null } } | { __typename: 'ActivityContentGoalEditing', goalId: string, oldName: string, newName: string, oldChampionId: string, newChampionId: string, oldReviewerId: string, newReviewerId: string, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, addedTargets: Array<{ __typename?: 'Target', id: string } | null>, updatedTargets: Array<{ __typename?: 'GoalEditingUpdatedTarget', id: string } | null>, deletedTargets: Array<{ __typename?: 'Target', id: string } | null> } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCheckInAcknowledged', projectId: string, checkInId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCheckInCommented', projectId: string, checkInId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted', project: { __typename?: 'Project', id: string, name: string }, checkIn: { __typename?: 'ProjectCheckIn', id: string, insertedAt: any, status: string, description: string } } | { __typename: 'ActivityContentProjectClosed', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectContributorAddition', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectCreated', project: { __typename?: 'Project', id: string, name: string, myRole?: string | null } } | { __typename: 'ActivityContentProjectDiscussionSubmitted', title: string, discussionId: string, projectId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectGoalConnection', goal: { __typename?: 'Goal', id: string, name: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectGoalDisconnection', goal: { __typename?: 'Goal', id: string, name: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectMilestoneCommented', commentAction: string, milestone: { __typename?: 'Milestone', id: string, title: string }, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectMoved', project: { __typename?: 'Project', id: string, name: string }, oldSpace: { __typename?: 'Group', id: string, name: string }, newSpace: { __typename?: 'Group', id: string, name: string } } | { __typename: 'ActivityContentProjectPausing', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectReviewAcknowledged', projectId: string, reviewId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectReviewCommented', projectId: string, reviewId: string, project: { __typename?: 'Project', name: string } } | { __typename: 'ActivityContentProjectReviewRequestSubmitted', requestId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectReviewSubmitted', reviewId: string, project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentProjectTimelineEdited', project: { __typename?: 'Project', id: string, name: string } } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } }> | null };
 
 export type SearchPeopleQueryVariables = Exact<{
   query: Scalars['String']['input'];
@@ -2160,6 +2181,98 @@ export function useEditGoalTimeframeMutation(baseOptions?: Apollo.MutationHookOp
 export type EditGoalTimeframeMutationHookResult = ReturnType<typeof useEditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationResult = Apollo.MutationResult<EditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationOptions = Apollo.BaseMutationOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
+export const GetActivityDocument = gql`
+    query GetActivity($id: ID!) {
+  activity(id: $id) {
+    id
+    insertedAt
+    author {
+      id
+      fullName
+      avatarUrl
+    }
+    commentThread {
+      id
+      message
+      reactions {
+        id
+        emoji
+        person {
+          id
+          fullName
+          avatarUrl
+        }
+      }
+      comments {
+        id
+        content
+        insertedAt
+        author {
+          id
+          fullName
+          avatarUrl
+        }
+        reactions {
+          id
+          emoji
+          person {
+            id
+            fullName
+            avatarUrl
+          }
+        }
+      }
+    }
+    content {
+      __typename
+      ... on ActivityContentGoalTimeframeEditing {
+        goal {
+          id
+          name
+        }
+        oldTimeframe {
+          startDate
+          endDate
+          type
+        }
+        newTimeframe {
+          startDate
+          endDate
+          type
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetActivityQuery__
+ *
+ * To run a query within a React component, call `useGetActivityQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActivityQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActivityQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetActivityQuery(baseOptions: Apollo.QueryHookOptions<GetActivityQuery, GetActivityQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetActivityQuery, GetActivityQueryVariables>(GetActivityDocument, options);
+      }
+export function useGetActivityLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActivityQuery, GetActivityQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetActivityQuery, GetActivityQueryVariables>(GetActivityDocument, options);
+        }
+export type GetActivityQueryHookResult = ReturnType<typeof useGetActivityQuery>;
+export type GetActivityLazyQueryHookResult = ReturnType<typeof useGetActivityLazyQuery>;
+export type GetActivityQueryResult = Apollo.QueryResult<GetActivityQuery, GetActivityQueryVariables>;
 export const GetGoalDocument = gql`
     query GetGoal($id: ID!, $includeTargets: Boolean = false, $includeProjects: Boolean = false, $includeLastCheckIn: Boolean = false, $includeParentGoal: Boolean = false) {
   goal(id: $id) {
@@ -2872,6 +2985,20 @@ export const ListNotificationsDocument = gql`
       }
       content {
         __typename
+        ... on ActivityContentCommentAdded {
+          activity {
+            id
+            content {
+              __typename
+              ... on ActivityContentGoalTimeframeEditing {
+                goal {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
         ... on ActivityContentGoalEditing {
           goalId
           oldName

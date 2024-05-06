@@ -55,10 +55,44 @@ defmodule Operately.Operations.CommentAdding do
     end)
   end
 
+  def insert_activity(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
+    activity = Operately.Activities.get_activity!(entity.parent_id)
+
+    Activities.insert_sync(multi, creator.id, action, fn changes ->
+      fields = %{
+        company_id: creator.company_id,
+        comment_id: changes.comment.id,
+        comment_thread_id: entity.id,
+        activity_id: activity.id,
+      }
+
+      fields = if activity.content["goal_id"] do
+        Map.put(fields, :goal_id, activity.content["goal_id"])
+      else
+        fields
+      end
+
+      fields = if activity.content["project_id"] do
+        Map.put(fields, :project_id, activity.content["project_id"])
+      else
+        fields
+      end
+
+      fields = if activity.content["space_id"] do
+        Map.put(fields, :space_id, activity.content["space_id"])
+      else
+        fields
+      end
+
+      fields
+    end)
+  end
+
   def find_entity(entity_id, entity_type) do
     case entity_type do
       "update" -> Operately.Updates.get_update!(entity_id)
       "project_check_in" -> Operately.Projects.get_check_in!(entity_id)
+      "comment_thread" -> Operately.Comments.get_thread!(entity_id)
       _ -> raise "Unknown entity type: #{entity_type}"
     end
   end
@@ -66,5 +100,6 @@ defmodule Operately.Operations.CommentAdding do
   def find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
   def find_action(%Operately.Updates.Update{type: :goal_check_in}), do: :goal_check_in_commented
   def find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
+  def find_action(%Operately.Comments.CommentThread{}), do: :comment_added
   def find_action(e), do: raise "Unknown entity type #{inspect(e)}"
 end

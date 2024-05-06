@@ -7,15 +7,21 @@ import { Link } from "@/components/Link";
 interface GoalLinkProps {
   goal: Goals.Goal;
   page: string;
+  prefix?: string;
+  showOnGoalPage?: boolean;
 }
 
 export function GoalLink(props: GoalLinkProps) {
   if (props.page === "goal") {
-    return "this goal";
+    if (props.showOnGoalPage) {
+      return <>{props.prefix} this goal</>;
+    } else {
+      return null;
+    }
   } else {
     return (
       <>
-        the <Link to={Paths.goalPath(props.goal.id)}>{props.goal.name}</Link> goal
+        {props.prefix} the <Link to={Paths.goalPath(props.goal.id)}>{props.goal.name}</Link> goal
       </>
     );
   }

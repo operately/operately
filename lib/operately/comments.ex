@@ -2,8 +2,11 @@ defmodule Operately.Comments do
   import Ecto.Query, warn: false
   alias Operately.Repo
 
+  alias Operately.Comments.CommentThread
   alias Operately.Comments.MilestoneComment
   alias Operately.Comments.CreateMilestoneCommentOperation
+
+  def get_thread!(id), do: Repo.get!(CommentThread, id)
 
   def list_milestone_comments do
     Repo.all(MilestoneComment)

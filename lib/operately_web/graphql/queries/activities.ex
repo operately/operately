@@ -8,6 +8,14 @@ defmodule OperatelyWeb.Graphql.Queries.Activities do
   ]
 
   object :activity_queries do
+    field :activity, non_null(:activity) do
+      arg :id, non_null(:id)
+
+      resolve fn _, args, _ ->
+        {:ok, Operately.Activities.get_activity!(args.id)}
+      end
+    end
+
     field :activities, list_of(:activity) do
       arg :scope_type, non_null(:string)
       arg :scope_id, non_null(:string)

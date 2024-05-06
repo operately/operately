@@ -70,5 +70,16 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_timeframe_edited_email_sent()
     |> Steps.assert_goal_timeframe_edited_notification_sent()
   end
+
+  @tag login_as: :champion
+  feature "commenting on the goal's timeframe change", ctx do
+    ctx
+    |> Steps.visit_page()
+    |> Steps.edit_goal_timeframe()
+    |> Steps.comment_on_the_timeframe_change()
+    |> Steps.assert_comment_on_the_timeframe_change_feed_posted()
+    |> Steps.assert_comment_on_the_timeframe_change_email_sent()
+    |> Steps.assert_comment_on_the_timeframe_change_notification_sent()
+  end
   
 end

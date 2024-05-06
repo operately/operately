@@ -282,6 +282,43 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{author: ctx.champion, action: "edited the goal's timeframe"})
   end
 
+  step :comment_on_the_timeframe_change, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "goal-timeframe-editing")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("I think the timeframe extension is a good idea.")
+    |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_comment_on_the_timeframe_change_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on the goal timeframe change"
+    })
+  end
+
+  step :assert_comment_on_the_timeframe_change_feed_posted, ctx do
+    ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.reviewer,
+      title: "commented on the timeframe edit",
+      subtitle: "I think the timeframe extension is a good idea."
+    })
+  end
+
+  step :assert_comment_on_the_timeframe_change_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal's timeframe change"})
+  end
+
   step :close_goal, ctx do
     ctx
     |> UI.click(testid: "goal-options")
