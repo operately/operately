@@ -15,6 +15,23 @@ query ListNotifications($page: Int, $perPage: Int) {
       content {
         __typename
 
+        ... on ActivityContentCommentAdded {
+          activity {
+            id
+
+            content {
+              __typename
+
+              ... on ActivityContentGoalTimeframeEditing {
+                goal {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
+
         ... on ActivityContentGoalEditing {
           goalId
           oldName

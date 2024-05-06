@@ -298,15 +298,16 @@ defmodule Operately.Support.Features.GoalSteps do
       where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "commented on the timeframe change"
+      action: "commented on the goal timeframe change"
     })
   end
 
   step :assert_comment_on_the_timeframe_change_feed_posted, ctx do
     ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion, 
-      title: "commeted on the timeframe change",
+      author: ctx.reviewer,
+      title: "commented on the timeframe edit",
       subtitle: "I think the timeframe extension is a good idea."
     })
   end

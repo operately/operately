@@ -5,6 +5,7 @@
 
 import * as React from "react";
 
+import CommentAdded from "./CommentAdded"
 import DiscussionCommentSubmitted from "./DiscussionCommentSubmitted"
 import DiscussionEditing from "./DiscussionEditing"
 import DiscussionPosting from "./DiscussionPosting"
@@ -54,6 +55,9 @@ export default function NotificationItem({notification}) : JSX.Element | null {
   const activityType = notification.activity.content.__typename;
 
   switch (activityType) {
+    case "ActivityContentCommentAdded":
+      return <CommentAdded notification={notification} />;
+    
     case "ActivityContentDiscussionCommentSubmitted":
       return <DiscussionCommentSubmitted notification={notification} />;
     
