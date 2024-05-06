@@ -76,6 +76,7 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.visit_page()
     |> Steps.edit_goal_timeframe()
+    |> Steps.comment_on_the_timeframe_change()
     |> Steps.assert_comment_on_the_timeframe_change_email_sent()
     |> Steps.assert_comment_on_the_timeframe_change_feed_posted()
     |> Steps.assert_comment_on_the_timeframe_change_notification_sent()

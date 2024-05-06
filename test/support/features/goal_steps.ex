@@ -311,6 +311,13 @@ defmodule Operately.Support.Features.GoalSteps do
     })
   end
 
+  step :assert_comment_on_the_timeframe_change_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal's timeframe change"})
+  end
+
   step :close_goal, ctx do
     ctx
     |> UI.click(testid: "goal-options")
