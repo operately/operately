@@ -8,7 +8,7 @@ export default function ({ notification }) {
   const author = notification.activity.author;
   const content = notification.activity.content;
 
-  const path = Paths.goalPath(content.goal.id);
+  const path = Paths.goalActivityPath(content.goal.id, notification.activity.id);
 
   return (
     <Card
