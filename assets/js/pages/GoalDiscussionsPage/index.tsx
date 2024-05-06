@@ -15,6 +15,8 @@ import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
 import plurarize from "@/utils/plurarize";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { DivLink } from "@/components/Link";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -68,8 +70,15 @@ function ThreadList() {
 }
 
 function ThreadItem({ thread }) {
+  if (isContentEmpty(thread.message)) return null;
+
+  const path = Paths.goalActivityPath("1", "2");
+
   return (
-    <div className="flex items-start gap-3 border-t border-stroke-base py-4">
+    <DivLink
+      className="flex items-start gap-3 border-t border-stroke-base py-4 hover:bg-surface-highlight cursor-pointer"
+      to={path}
+    >
       <Avatar person={thread.author} size={32} />
 
       <div className="flex items-start justify-between gap-4 flex-1">
@@ -89,6 +98,6 @@ function ThreadItem({ thread }) {
           <FormattedTime time={thread.insertedAt} format="short-date" />
         </div>
       </div>
-    </div>
+    </DivLink>
   );
 }

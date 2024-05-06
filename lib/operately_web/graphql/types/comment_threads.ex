@@ -12,12 +12,14 @@ defmodule OperatelyWeb.Graphql.Types.CommentThreads do
 
     field :comments_count, non_null(:integer) do
       resolve fn comment_thread, _, _ ->
-        count = Operately.Repo.aggregate(Operately.Updates.Comment, :count, :id, where: [
-          entity_type: "comment_thread",
-          entity_id: comment_thread.id
-        ])
+        import Ecto.Query
 
-        {:ok, count}
+        query = (from  c in Operately.Updates.Comment,
+                  where: c.entity_type == :comment_thread,
+                  where: c.entity_id == ^comment_thread.id,
+                  select: count(c.id))
+
+        {:ok, Operately.Repo.one(query)}
       end
     end
 
