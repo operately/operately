@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as CommentThreads from "@/models/commentThreads";
+import * as Icons from "@tabler/icons-react";
 
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
@@ -13,7 +14,7 @@ import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import plurarize from "@/utils/plurarize";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -77,6 +78,10 @@ function ThreadItem({ thread }) {
 
           <div className="text-sm">
             <RichContent jsonContent={thread.message} />
+          </div>
+
+          <div className="flex items-center gap-1 text-xs leading-none text-content-dimmed mt-2">
+            <Icons.IconMessage size={12} /> {plurarize(thread.commentsCount, "comment", "comments")}
           </div>
         </div>
 
