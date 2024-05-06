@@ -12,6 +12,7 @@ export default function ({ notification }) {
 
   return (
     <Card
+      testId="goal-timeframe-editing"
       notification={notification}
       title={<>{People.firstName(author)} edited the goal's timeframe</>}
       author={author}
