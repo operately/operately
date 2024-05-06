@@ -11,8 +11,8 @@ defmodule Operately.Activities do
     Repo.get!(Activity, id)
   end
 
-  def list_activities(scope_type, scope_id) do
-    ListActivitiesOperation.run(scope_type, scope_id)
+  def list_activities(scope_type, scope_id, actions, with_non_empty_comments_thread) do
+    ListActivitiesOperation.run(scope_type, scope_id, actions, with_non_empty_comments_thread)
   end
 
   def insert(multi, author_id, action, callback) do

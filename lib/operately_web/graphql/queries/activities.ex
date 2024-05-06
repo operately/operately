@@ -1,12 +1,6 @@
 defmodule OperatelyWeb.Graphql.Queries.Activities do
   use Absinthe.Schema.Notation
 
-  @deprecated_actions [
-    "project_status_update_acknowledged",
-    "project_status_update_commented",
-    "project_status_update_edit",
-  ]
-
   object :activity_queries do
     field :activity, non_null(:activity) do
       arg :id, non_null(:id)
@@ -19,11 +13,20 @@ defmodule OperatelyWeb.Graphql.Queries.Activities do
     field :activities, list_of(:activity) do
       arg :scope_type, non_null(:string)
       arg :scope_id, non_null(:string)
+      arg :with_non_empty_comments_thread, :boolean
+      arg :actions, list_of(:string)
 
       resolve fn _, args, _ ->
-        activities = Operately.Activities.list_activities(args.scope_type, args.scope_id)
+        actions = args.actions || []
+
+        activities = Operately.Activities.list_activities(
+          args.scope_type, 
+          args.scope_id, 
+          actions,
+          args.with_non_empty_comments_thread
+        )
+
         activities = Operately.Repo.preload(activities, :author)
-        activities = Enum.filter(activities, fn activity -> activity.action not in @deprecated_actions end)
 
         {:ok, activities}
       end
