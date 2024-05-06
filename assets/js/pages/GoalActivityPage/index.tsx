@@ -5,6 +5,7 @@ import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import * as Timeframes from "@/utils/timeframes";
+import * as Icons from "@tabler/icons-react";
 
 import { match } from "ts-pattern";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
@@ -85,20 +86,20 @@ function GoalTimeframeEdit({ activity }: { activity: Activities.Activity }) {
 
   return (
     <div className="my-8">
-      <div className="flex items-center gap-1 font-medium">
-        <span className="w-10">New</span>
-        <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-base font-medium">
-          {Timeframes.format(newTimeframe)}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 font-medium">
+          <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-base font-medium">
+            {Timeframes.format(oldTimeframe)}
+          </div>
         </div>
-        {Timeframes.dayCount(newTimeframe)} days
-      </div>
 
-      <div className="flex items-center gap-1 mt-2 font-medium">
-        <span className="w-10">Old</span>
-        <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-base font-medium">
-          {Timeframes.format(oldTimeframe)}
+        <Icons.IconArrowRight size={16} />
+
+        <div className="flex items-center gap-1 font-medium">
+          <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-base font-medium">
+            {Timeframes.format(newTimeframe)}
+          </div>
         </div>
-        {Timeframes.dayCount(oldTimeframe)} days
       </div>
 
       {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
