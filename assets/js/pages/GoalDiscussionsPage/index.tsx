@@ -13,7 +13,6 @@ import { FilledButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import RichContent from "@/components/RichContent";
 
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";

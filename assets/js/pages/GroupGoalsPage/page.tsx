@@ -15,7 +15,7 @@ export function Page() {
     <Pages.Page title={group.name}>
       <Paper.Root fluid>
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation group={group} activeTab="goals" margins="-mx-12 -mt-10" />
+          <GroupPageNavigation group={group} activeTab="goals" />
           <Content />
         </Paper.Body>
       </Paper.Root>

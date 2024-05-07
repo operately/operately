@@ -4,20 +4,15 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
-import * as Timeframes from "@/utils/timeframes";
-import * as Icons from "@tabler/icons-react";
+import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 
 import { match } from "ts-pattern";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-
-import RichContent from "@/components/RichContent";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { ActivityContentGoalTimeframeEditing, CommentThread } from "@/gql";
+import { CommentThread } from "@/gql";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 
-import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
