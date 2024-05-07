@@ -18,9 +18,9 @@ function TargetItem({ target }: { target: Goals.Target }) {
   return (
     <div className="flex items-center justify-center gap-3 my-2.5 relative z-10 bg-surface -mx-1">
       <div className="flex-1 flex items-center gap-4 justify-center">
-        <div className="flex items-center gap-4 border rounded-lg border-stroke-base p-2 flex-1">
+        <div className="flex items-center gap-2 border rounded-lg border-stroke-base p-2 flex-1">
           <div className="rounded-lg p-1.5 -ml-0.5">
-            <Icons.IconRulerMeasure size={20} className="text-emerald-500" />
+            <Icons.IconArcheryArrow size={20} className="text-content-base rotate-90" />
           </div>
 
           <div className="font-medium flex-1">{target.name}</div>
@@ -51,7 +51,7 @@ function CurrentValue({ target }: { target: Goals.Target }) {
 
 function ProgressBar({ target }: { target: Goals.Target }) {
   return (
-    <div className="rounded h-3 bg-stroke-base relative overflow-hidden w-40">
+    <div className="rounded h-3 bg-stroke-base relative w-40 overflow-hidden">
       <div
         className="bg-emerald-500 absolute top-0 bottom-0 left-0"
         style={{ width: `${Goals.targetProgressPercentage(target)}%` }}
