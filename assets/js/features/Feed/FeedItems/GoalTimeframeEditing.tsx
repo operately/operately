@@ -1,14 +1,11 @@
 import * as React from "react";
-import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 
 import { FeedItem, Container } from "../FeedItem";
-import { GoalLink } from "../shared/GoalLink";
-import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import RichContent from "@/components/RichContent";
+import { FeedItemTitle } from "@/features/activities/GoalTimeframeEditing";
 
 export const GoalTimeframeEditing: FeedItem = {
   typename: "ActivityContentGoalTimeframeEditing",
@@ -35,7 +32,7 @@ export const GoalTimeframeEditing: FeedItem = {
   component: ({ activity, content, page }) => {
     return (
       <Container
-        title={<Title activity={activity} content={content} page={page} />}
+        title={<FeedItemTitle activity={activity} content={content} page={page} />}
         author={activity.author}
         time={activity.insertedAt}
         content={<Content activity={activity} />}
@@ -43,28 +40,6 @@ export const GoalTimeframeEditing: FeedItem = {
     );
   },
 };
-
-function Title({ activity, content, page }) {
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-  const newTimeframe = Timeframes.parse(content.newTimeframe);
-
-  let what = "";
-
-  if (Timeframes.compareDuration(oldTimeframe, newTimeframe) === 1) {
-    what = "extended the timeframe";
-  } else {
-    what = "shortened the timeframe";
-  }
-
-  let whatLink = <Link to={Paths.goalActivityPath(content.goal.id, activity.id)}>{what}</Link>;
-
-  return (
-    <>
-      {People.shortName(activity.author)} {whatLink} for{" "}
-      <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
-    </>
-  );
-}
 
 function Content({ activity }) {
   const content = activity.content;

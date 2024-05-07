@@ -10,14 +10,16 @@ import * as Icons from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
-import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { ActivityContentGoalTimeframeEditing, CommentThread } from "@/gql";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForCommentThread } from "@/features/CommentSection";
+
+import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -35,7 +37,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function Page() {
   const { goal, activity, me } = Pages.useLoadedData<LoaderResult>();
-  const title = pageTitleContent(activity);
+  const title = GoalTimeframeEditing.htmlTitle();
 
   return (
     <Pages.Page title={[title, goal.name]}>
@@ -43,8 +45,10 @@ export function Page() {
         <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body>
-          <Title activity={activity} content={title} />
-          <Content activity={activity} />
+          <Title activity={activity} />
+          <div className="my-8">
+            <Content activity={activity} />
+          </div>
 
           <Reactions commentThread={activity.commentThread!} me={me} />
           <div className="border-t border-stroke-base mt-8" />
@@ -55,12 +59,22 @@ export function Page() {
   );
 }
 
-function Title({ activity, content }) {
+function Content({ activity }: { activity: Activities.Activity }) {
+  return match(activity.content.__typename)
+    .with("ActivityContentGoalTimeframeEditing", () => <GoalTimeframeEditing.Content activity={activity} />)
+    .otherwise(() => {
+      throw new Error("Unknown activity type");
+    });
+}
+
+function Title({ activity }: { activity: Activities.Activity }) {
   return (
     <div className="flex items-center gap-3">
       <Avatar person={activity.author} size={50} />
       <div>
-        <div className="text-content-accent text-2xl font-bold leading-tight">{content}</div>
+        <div className="text-content-accent text-2xl font-bold leading-tight">
+          <GoalTimeframeEditing.Title activity={activity} />
+        </div>
         <div className="inline-flex items-center gap-1">
           <span>{activity.author.fullName}</span>
           on <FormattedTime time={activity.insertedAt} format="long-date" />
@@ -68,55 +82,6 @@ function Title({ activity, content }) {
       </div>
     </div>
   );
-}
-
-function Content({ activity }: { activity: Activities.Activity }) {
-  return match(activity.content.__typename)
-    .with("ActivityContentGoalTimeframeEditing", () => <GoalTimeframeEdit activity={activity} />)
-    .otherwise(() => {
-      throw new Error("Unknown activity type");
-    });
-}
-
-function GoalTimeframeEdit({ activity }: { activity: Activities.Activity }) {
-  const content = activity.content as ActivityContentGoalTimeframeEditing;
-
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-  const newTimeframe = Timeframes.parse(content.newTimeframe);
-
-  return (
-    <div className="my-8">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 font-medium">
-          <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-base font-medium">
-            {Timeframes.format(oldTimeframe)}
-          </div>
-        </div>
-
-        <Icons.IconArrowRight size={16} />
-
-        <div className="flex items-center gap-1 font-medium">
-          <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-base font-medium">
-            {Timeframes.format(newTimeframe)}
-          </div>
-        </div>
-      </div>
-
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-8 text-lg">
-          <RichContent jsonContent={activity.commentThread.message} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function pageTitleContent(activity: Activities.Activity): string {
-  return match(activity.content.__typename)
-    .with("ActivityContentGoalTimeframeEditing", () => "Edited the goal's timeframe")
-    .otherwise(() => {
-      throw new Error("Unknown activity type");
-    });
 }
 
 function Reactions({ commentThread, me }: { commentThread: CommentThread; me: People.Person }) {

@@ -2,8 +2,9 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as CommentThreads from "@/models/commentThreads";
+import * as Actvities from "@/models/activities";
 import * as Icons from "@tabler/icons-react";
+import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
@@ -15,20 +16,21 @@ import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 
 import plurarize from "@/utils/plurarize";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { DivLink } from "@/components/Link";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  threads: CommentThreads.CommentThread[];
+  activities: Actvities.Activity[];
 }
 
 export const loader = async function ({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({ id: params.goalId }),
-    threads: await CommentThreads.getCommentThreads({
+    goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }),
+    activities: await Actvities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,
+      actions: ["goal_timeframe_editing"],
     }),
   };
 };
@@ -44,60 +46,81 @@ export const Page = function () {
         <Paper.Body minHeight="none">
           <Header goal={goal} activeTab="discussions" />
 
-          <div className="flex items-start my-4">
-            <FilledButton size="xxs" linkTo={Paths.newGoalDiscussionPath(goal.id)}>
-              New Discussion
+          <div className="flex items-center my-6">
+            <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
+            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id)}>
+              Start a new discussion
             </FilledButton>
           </div>
 
-          <ThreadList />
+          <ActivityList />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 };
 
-function ThreadList() {
-  const { threads } = Pages.useLoadedData<LoaderResult>();
+function ActivityList() {
+  const { activities } = Pages.useLoadedData<LoaderResult>();
 
   return (
     <div>
-      {threads.map((thread) => (
-        <ThreadItem key={thread.id} thread={thread} />
+      {activities.map((activity) => (
+        <ActivityItem key={activity.id} activity={activity} />
       ))}
     </div>
   );
 }
 
-function ThreadItem({ thread }) {
-  if (isContentEmpty(thread.message)) return null;
+function ActivityItem({ activity }: { activity: Actvities.Activity }) {
+  const content = activity.content as Actvities.ActivityContentGoalTimeframeEditing;
+  const path = Paths.goalActivityPath(content.goal.id, activity.id);
+  const commentThread = activity.commentThread;
 
-  const path = Paths.goalActivityPath("1", "2");
+  if (!commentThread) return null;
+  if (isContentEmpty(commentThread.message)) return null;
 
   return (
-    <DivLink
-      className="flex items-start gap-3 border-t border-stroke-base py-4 hover:bg-surface-highlight cursor-pointer"
-      to={path}
-    >
-      <Avatar person={thread.author} size={32} />
-
-      <div className="flex items-start justify-between gap-4 flex-1">
-        <div className="flex flex-col gap-1">
-          <div className="text-content-accent font-bold leading-none test-sm">Goal timeframe edited</div>
-
-          <div className="text-sm">
-            <RichContent jsonContent={thread.message} />
-          </div>
-
-          <div className="flex items-center gap-1 text-xs leading-none text-content-dimmed mt-2">
-            <Icons.IconMessage size={12} /> {plurarize(thread.commentsCount, "comment", "comments")}
-          </div>
+    <div className="flex items-start border-t border-stroke-base py-6">
+      <div className="w-32">
+        <div className="text-sm font-medium">
+          <FormattedTime time={activity.insertedAt} format="long-date" />
         </div>
-
-        <div className="inline-flex items-center gap-1 text-xs leading-none text-content-dimmed">
-          <FormattedTime time={thread.insertedAt} format="short-date" />
+        <div className="text-xs text-content-dimmed">
+          <FormattedTime time={activity.insertedAt} format="relative" />
         </div>
       </div>
-    </DivLink>
+
+      <div className="flex items-start gap-3 ">
+        <Avatar person={activity.author} size={40} />
+
+        <div className="flex items-start justify-between gap-4 flex-1">
+          <div className="flex flex-col gap-1">
+            <div className="text-content-accent font-bold leading-none test-sm">
+              <GoalTimeframeEditing.Title activity={activity} />
+            </div>
+
+            <div className="mt-2">
+              <GoalTimeframeEditing.Content activity={activity} />
+            </div>
+
+            <div className="flex items-center gap-4 mt-4">
+              <FilledButton size="xxs" linkTo={path} type="secondary">
+                Discuss
+              </FilledButton>
+
+              {activity.commentThread!.commentsCount > 0 && (
+                <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
+                  <Icons.IconMessage size={14} />{" "}
+                  <DivLink to={path} className="hover:underline cursor-pointer">
+                    {plurarize(activity.commentThread!.commentsCount, "comment", "comments")}
+                  </DivLink>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -101,7 +101,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   # Queries
   import_types OperatelyWeb.Graphql.Queries.Activities
   import_types OperatelyWeb.Graphql.Queries.Assignments
-  import_types OperatelyWeb.Graphql.Queries.CommentThreads
   import_types OperatelyWeb.Graphql.Queries.Comments
   import_types OperatelyWeb.Graphql.Queries.Companies
   import_types OperatelyWeb.Graphql.Queries.Discussions
@@ -149,7 +148,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   query do
     import_fields :activity_queries
     import_fields :assignment_queries
-    import_fields :comment_thread_queries
     import_fields :comment_queries
     import_fields :company_queries
     import_fields :discussion_queries
