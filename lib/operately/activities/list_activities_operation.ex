@@ -3,9 +3,16 @@ defmodule Operately.Activities.ListActivitiesOperation do
   alias Operately.Repo
   alias Operately.Activities.Activity
 
-  def run(scope_type, scope_id) do
+  @deprecated_actions [
+    "project_status_update_acknowledged",
+    "project_status_update_commented",
+    "project_status_update_edit",
+  ]
+
+  def run(scope_type, scope_id, actions) do
     Activity
     |> scope_query(scope_type, scope_id)
+    |> actions_filter(actions)
     |> company_query()
     |> order_desc()
     |> Repo.all()
@@ -13,6 +20,14 @@ defmodule Operately.Activities.ListActivitiesOperation do
 
   def company_query(query) do
     from a in query, where: fragment("? ->> ? IS NOT NULL", a.content, "company_id")
+  end
+
+  def actions_filter(query, actions) do
+    if actions == [] do
+      from a in query, where: a.action not in ^@deprecated_actions
+    else
+      from a in query, where: a.action in ^actions and a.action not in ^@deprecated_actions
+    end
   end
 
   def scope_query(query, "person", scope_id) do

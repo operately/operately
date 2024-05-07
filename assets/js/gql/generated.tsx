@@ -496,8 +496,11 @@ export type Comment = {
 
 export type CommentThread = {
   __typename?: 'CommentThread';
+  author: Person;
   comments: Array<Maybe<Comment>>;
+  commentsCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
+  insertedAt: Scalars['Date']['output'];
   message: Scalars['String']['output'];
   reactions: Array<Maybe<Reaction>>;
 };
@@ -1578,6 +1581,7 @@ export type RootQueryType = {
 
 
 export type RootQueryTypeActivitiesArgs = {
+  actions?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   scopeId: Scalars['String']['input'];
   scopeType: Scalars['String']['input'];
 };
@@ -2014,6 +2018,15 @@ export type EditGoalTimeframeMutationVariables = Exact<{
 
 export type EditGoalTimeframeMutation = { __typename?: 'RootMutationType', editGoalTimeframe: { __typename?: 'Goal', id: string } };
 
+export type GetActivitiesQueryVariables = Exact<{
+  scopeType: Scalars['String']['input'];
+  scopeId: Scalars['String']['input'];
+  actions?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetActivitiesQuery = { __typename?: 'RootQueryType', activities?: Array<{ __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, commentThread?: { __typename?: 'CommentThread', id: string, message: string, commentsCount: number, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null>, comments: Array<{ __typename?: 'Comment', id: string, content: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null> } | null> } | null, content: { __typename: 'ActivityContentCommentAdded' } | { __typename: 'ActivityContentDiscussionCommentSubmitted' } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting' } | { __typename: 'ActivityContentGoalArchived' } | { __typename: 'ActivityContentGoalCheckIn' } | { __typename: 'ActivityContentGoalCheckInAcknowledgement' } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing' } | { __typename: 'ActivityContentGoalCreated' } | { __typename: 'ActivityContentGoalEditing' } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string }, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived' } | { __typename: 'ActivityContentProjectCheckInAcknowledged' } | { __typename: 'ActivityContentProjectCheckInCommented' } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted' } | { __typename: 'ActivityContentProjectClosed' } | { __typename: 'ActivityContentProjectContributorAddition' } | { __typename: 'ActivityContentProjectCreated' } | { __typename: 'ActivityContentProjectDiscussionSubmitted' } | { __typename: 'ActivityContentProjectGoalConnection' } | { __typename: 'ActivityContentProjectGoalDisconnection' } | { __typename: 'ActivityContentProjectMilestoneCommented' } | { __typename: 'ActivityContentProjectMoved' } | { __typename: 'ActivityContentProjectPausing' } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming' } | { __typename: 'ActivityContentProjectReviewAcknowledged' } | { __typename: 'ActivityContentProjectReviewCommented' } | { __typename: 'ActivityContentProjectReviewRequestSubmitted' } | { __typename: 'ActivityContentProjectReviewSubmitted' } | { __typename: 'ActivityContentProjectTimelineEdited' } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } | null> | null };
+
 export type GetActivityQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -2181,6 +2194,101 @@ export function useEditGoalTimeframeMutation(baseOptions?: Apollo.MutationHookOp
 export type EditGoalTimeframeMutationHookResult = ReturnType<typeof useEditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationResult = Apollo.MutationResult<EditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationOptions = Apollo.BaseMutationOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
+export const GetActivitiesDocument = gql`
+    query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!]) {
+  activities(scopeType: $scopeType, scopeId: $scopeId, actions: $actions) {
+    id
+    insertedAt
+    author {
+      id
+      fullName
+      avatarUrl
+    }
+    commentThread {
+      id
+      message
+      commentsCount
+      reactions {
+        id
+        emoji
+        person {
+          id
+          fullName
+          avatarUrl
+        }
+      }
+      comments {
+        id
+        content
+        insertedAt
+        author {
+          id
+          fullName
+          avatarUrl
+        }
+        reactions {
+          id
+          emoji
+          person {
+            id
+            fullName
+            avatarUrl
+          }
+        }
+      }
+    }
+    content {
+      __typename
+      ... on ActivityContentGoalTimeframeEditing {
+        goal {
+          id
+          name
+        }
+        oldTimeframe {
+          startDate
+          endDate
+          type
+        }
+        newTimeframe {
+          startDate
+          endDate
+          type
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetActivitiesQuery__
+ *
+ * To run a query within a React component, call `useGetActivitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActivitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActivitiesQuery({
+ *   variables: {
+ *      scopeType: // value for 'scopeType'
+ *      scopeId: // value for 'scopeId'
+ *      actions: // value for 'actions'
+ *   },
+ * });
+ */
+export function useGetActivitiesQuery(baseOptions: Apollo.QueryHookOptions<GetActivitiesQuery, GetActivitiesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetActivitiesQuery, GetActivitiesQueryVariables>(GetActivitiesDocument, options);
+      }
+export function useGetActivitiesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActivitiesQuery, GetActivitiesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetActivitiesQuery, GetActivitiesQueryVariables>(GetActivitiesDocument, options);
+        }
+export type GetActivitiesQueryHookResult = ReturnType<typeof useGetActivitiesQuery>;
+export type GetActivitiesLazyQueryHookResult = ReturnType<typeof useGetActivitiesLazyQuery>;
+export type GetActivitiesQueryResult = Apollo.QueryResult<GetActivitiesQuery, GetActivitiesQueryVariables>;
 export const GetActivityDocument = gql`
     query GetActivity($id: ID!) {
   activity(id: $id) {

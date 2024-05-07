@@ -7,21 +7,17 @@ import * as React from "react";
 
 import CommentAdded from "./CommentAdded"
 import DiscussionCommentSubmitted from "./DiscussionCommentSubmitted"
-import DiscussionEditing from "./DiscussionEditing"
 import DiscussionPosting from "./DiscussionPosting"
 import GoalArchived from "./GoalArchived"
 import GoalCheckIn from "./GoalCheckIn"
 import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
-import GoalCheckInEdit from "./GoalCheckInEdit"
 import GoalClosing from "./GoalClosing"
 import GoalCreated from "./GoalCreated"
 import GoalEditing from "./GoalEditing"
-import GoalReparent from "./GoalReparent"
 import GoalTimeframeEditing from "./GoalTimeframeEditing"
 import ProjectArchived from "./ProjectArchived"
 import ProjectCheckInAcknowledged from "./ProjectCheckInAcknowledged"
 import ProjectCheckInCommented from "./ProjectCheckInCommented"
-import ProjectCheckInEdit from "./ProjectCheckInEdit"
 import ProjectCheckInSubmitted from "./ProjectCheckInSubmitted"
 import ProjectClosed from "./ProjectClosed"
 import ProjectContributorAddition from "./ProjectContributorAddition"
@@ -39,17 +35,6 @@ import ProjectReviewCommented from "./ProjectReviewCommented"
 import ProjectReviewRequestSubmitted from "./ProjectReviewRequestSubmitted"
 import ProjectReviewSubmitted from "./ProjectReviewSubmitted"
 import ProjectTimelineEdited from "./ProjectTimelineEdited"
-import SpaceJoining from "./SpaceJoining"
-import TaskAdding from "./TaskAdding"
-import TaskAssigneeAssignment from "./TaskAssigneeAssignment"
-import TaskClosing from "./TaskClosing"
-import TaskDescriptionChange from "./TaskDescriptionChange"
-import TaskNameEditing from "./TaskNameEditing"
-import TaskPriorityChange from "./TaskPriorityChange"
-import TaskReopening from "./TaskReopening"
-import TaskSizeChange from "./TaskSizeChange"
-import TaskStatusChange from "./TaskStatusChange"
-import TaskUpdate from "./TaskUpdate"
 
 export default function NotificationItem({notification}) : JSX.Element | null {
   const activityType = notification.activity.content.__typename;
@@ -60,9 +45,6 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     
     case "ActivityContentDiscussionCommentSubmitted":
       return <DiscussionCommentSubmitted notification={notification} />;
-    
-    case "ActivityContentDiscussionEditing":
-      return <DiscussionEditing notification={notification} />;
     
     case "ActivityContentDiscussionPosting":
       return <DiscussionPosting notification={notification} />;
@@ -76,9 +58,6 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     case "ActivityContentGoalCheckInAcknowledgement":
       return <GoalCheckInAcknowledgement notification={notification} />;
     
-    case "ActivityContentGoalCheckInEdit":
-      return <GoalCheckInEdit notification={notification} />;
-    
     case "ActivityContentGoalClosing":
       return <GoalClosing notification={notification} />;
     
@@ -87,9 +66,6 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     
     case "ActivityContentGoalEditing":
       return <GoalEditing notification={notification} />;
-    
-    case "ActivityContentGoalReparent":
-      return <GoalReparent notification={notification} />;
     
     case "ActivityContentGoalTimeframeEditing":
       return <GoalTimeframeEditing notification={notification} />;
@@ -102,9 +78,6 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     
     case "ActivityContentProjectCheckInCommented":
       return <ProjectCheckInCommented notification={notification} />;
-    
-    case "ActivityContentProjectCheckInEdit":
-      return <ProjectCheckInEdit notification={notification} />;
     
     case "ActivityContentProjectCheckInSubmitted":
       return <ProjectCheckInSubmitted notification={notification} />;
@@ -156,39 +129,6 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     
     case "ActivityContentProjectTimelineEdited":
       return <ProjectTimelineEdited notification={notification} />;
-    
-    case "ActivityContentSpaceJoining":
-      return <SpaceJoining notification={notification} />;
-    
-    case "ActivityContentTaskAdding":
-      return <TaskAdding notification={notification} />;
-    
-    case "ActivityContentTaskAssigneeAssignment":
-      return <TaskAssigneeAssignment notification={notification} />;
-    
-    case "ActivityContentTaskClosing":
-      return <TaskClosing notification={notification} />;
-    
-    case "ActivityContentTaskDescriptionChange":
-      return <TaskDescriptionChange notification={notification} />;
-    
-    case "ActivityContentTaskNameEditing":
-      return <TaskNameEditing notification={notification} />;
-    
-    case "ActivityContentTaskPriorityChange":
-      return <TaskPriorityChange notification={notification} />;
-    
-    case "ActivityContentTaskReopening":
-      return <TaskReopening notification={notification} />;
-    
-    case "ActivityContentTaskSizeChange":
-      return <TaskSizeChange notification={notification} />;
-    
-    case "ActivityContentTaskStatusChange":
-      return <TaskStatusChange notification={notification} />;
-    
-    case "ActivityContentTaskUpdate":
-      return <TaskUpdate notification={notification} />;
     
     default:
       console.error("unhandled activity type, notification:", notification.id, "activity", notification.activity.id);
