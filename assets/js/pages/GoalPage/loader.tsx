@@ -1,8 +1,10 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
+import * as CommentThreads from "@/models/commentThreads";
 
 interface LoaderResult {
   goal: Goals.Goal;
+  threads: CommentThreads.CommentThread[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -13,6 +15,11 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeProjects: true,
       includeLastCheckIn: true,
       includeParentGoal: true,
+    }),
+
+    threads: await CommentThreads.getCommentThreads({
+      scopeType: "goal",
+      scopeId: params.id,
     }),
   };
 }

@@ -8,6 +8,7 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
+import { FilledButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -33,9 +34,17 @@ export function Header({ goal, activeTab }: HeaderProps) {
             <Icons.IconTarget size={24} className="text-red-500" />
           </div>
 
-          <div className="gap-2 mt-1">
-            <div className="font-bold text-3xl text-content-accent flex-1 leading-none mb-2">{goal.name}</div>
-            <Timeframe goal={goal} />
+          <div className="gap-2 mt-1 flex-1">
+            <div className="flex items-start gap-4 justify-between flex-1">
+              <div>
+                <div className="font-bold text-2xl text-content-accent flex-1 leading-none mb-2">{goal.name}</div>
+                <Timeframe goal={goal} />
+              </div>
+
+              <FilledButton type="primary" size="sm">
+                Update Progress
+              </FilledButton>
+            </div>
           </div>
         </div>
       </div>

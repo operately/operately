@@ -4,23 +4,23 @@ import * as Icons from "@tabler/icons-react";
 
 export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="mt-6 relative">
+    <div className="relative bg-surface-dimmed -mx-12 px-12 py-8 -mb-10">
       {goal.targets!.map((target) => (
         <TargetItem key={target!.id} target={target!} />
       ))}
 
-      <div className="w-0.5 bg-stroke-base absolute -top-12 left-4 bottom-8" />
+      <div className="w-0.5 bg-stroke-base absolute -top-11 left-16 bottom-12" />
     </div>
   );
 }
 
 function TargetItem({ target }: { target: Goals.Target }) {
   return (
-    <div className="flex items-center justify-center gap-3 my-2.5 relative z-10 bg-surface -mx-1">
+    <div className="flex items-center justify-center gap-3 my-2.5 relative z-10 bg-surface -mx-1 rounded-2xl">
       <div className="flex-1 flex items-center gap-4 justify-center">
-        <div className="flex items-center gap-2 border rounded-lg border-stroke-base p-2 flex-1">
+        <div className="flex items-center gap-2 border rounded-2xl border-stroke-base p-2 py-3 flex-1">
           <div className="rounded-lg p-1.5 -ml-0.5">
-            <Icons.IconArcheryArrow size={20} className="text-content-base rotate-90" />
+            <Icons.IconTimeline size={20} />
           </div>
 
           <div className="font-medium flex-1">{target.name}</div>
