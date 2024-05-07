@@ -6,6 +6,9 @@ defmodule OperatelyWeb.Graphql.Types.CommentThreads do
     field :id, non_null(:id)
     field :inserted_at, non_null(:date)
 
+    field :parent_type, non_null(:string)
+    field :parent_id, non_null(:id)
+
     json_field :message, non_null(:string)
     assoc_field :reactions, non_null(list_of(:reaction))
     assoc_field :comments, non_null(list_of(:comment))

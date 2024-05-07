@@ -500,8 +500,10 @@ export type CommentThread = {
   comments: Array<Maybe<Comment>>;
   commentsCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
-  insertedAt: Scalars['DateTime']['output'];
+  insertedAt: Scalars['Date']['output'];
   message: Scalars['String']['output'];
+  parentId: Scalars['ID']['output'];
+  parentType: Scalars['String']['output'];
   reactions: Array<Maybe<Reaction>>;
 };
 
@@ -2039,7 +2041,7 @@ export type GetCommentThreadsQueryVariables = Exact<{
 }>;
 
 
-export type GetCommentThreadsQuery = { __typename?: 'RootQueryType', commentThreads?: Array<{ __typename?: 'CommentThread', id: string, insertedAt: any, message: string, commentsCount: number, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null> | null };
+export type GetCommentThreadsQuery = { __typename?: 'RootQueryType', commentThreads?: Array<{ __typename?: 'CommentThread', id: string, insertedAt: any, message: string, commentsCount: number, parentType: string, parentId: string, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null> | null };
 
 export type GetGoalQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2305,6 +2307,8 @@ export const GetCommentThreadsDocument = gql`
       fullName
       avatarUrl
     }
+    parentType
+    parentId
   }
 }
     `;

@@ -4,29 +4,38 @@ import * as Icons from "@tabler/icons-react";
 
 export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="text-xs font-bold uppercase">SUCCESS CONDITIONS</div>
+    <div className="mt-6 relative">
+      {goal.targets!.map((target) => (
+        <TargetItem key={target!.id} target={target!} />
+      ))}
 
-      <div className="grid grid-cols-1 border-stroke-base border shadow-sm rounded">
-        {goal.targets!.map((target) => (
-          <TargetItem key={target!.id} target={target!} />
-        ))}
-      </div>
+      <div className="w-0.5 bg-stroke-base absolute -top-12 left-4 bottom-8" />
     </div>
   );
 }
 
 function TargetItem({ target }: { target: Goals.Target }) {
   return (
-    <div className="flex justify-between items-start rounded not-first:border-t border-stroke-base">
-      <div className="flex items-center gap-2 p-4 py-3">
-        <div className="font-semibold flex-1">{target.name}</div>
-      </div>
+    <div className="flex items-center justify-center gap-3 my-2.5 relative z-10 bg-surface -mx-1">
+      <div className="flex-1 flex items-center gap-4 justify-center">
+        <div className="flex items-center gap-4 border rounded-lg border-stroke-base p-2 flex-1">
+          <div className="rounded-lg p-1.5 -ml-0.5">
+            <Icons.IconRulerMeasure size={20} className="text-emerald-500" />
+          </div>
 
-      <div className="shrink-0 w-64 p-4 py-2 border-l border-stroke-base">
-        <CurrentValue target={target} />
-        <ProgressBar target={target} />
-        <Range target={target} />
+          <div className="font-medium flex-1">{target.name}</div>
+
+          <div className="flex items-center gap-8 w-80">
+            <div className="">
+              <ProgressBar target={target} />
+            </div>
+
+            <div className="w-1/2 flex flex-col gap-1.5">
+              <CurrentValue target={target} />
+              <Range target={target} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -34,18 +43,17 @@ function TargetItem({ target }: { target: Goals.Target }) {
 
 function CurrentValue({ target }: { target: Goals.Target }) {
   return (
-    <div className="flex items-baseline gap-1">
-      <div className="text-lg font-bold">{target.value}</div>
-      <div className="text-xs text-content-accent">{target.unit}</div>
+    <div className="font-semibold text-sm leading-none">
+      {target.value} {target.unit}
     </div>
   );
 }
 
 function ProgressBar({ target }: { target: Goals.Target }) {
   return (
-    <div className="h-2 bg-surface-outline rounded relative overflow-hidden">
+    <div className="rounded h-3 bg-stroke-base relative overflow-hidden w-40">
       <div
-        className="bg-accent-1 rounded absolute top-0 bottom-0 left-0"
+        className="bg-emerald-500 absolute top-0 bottom-0 left-0"
         style={{ width: `${Goals.targetProgressPercentage(target)}%` }}
       />
     </div>
@@ -54,8 +62,8 @@ function ProgressBar({ target }: { target: Goals.Target }) {
 
 function Range({ target }: { target: Goals.Target }) {
   return (
-    <div className="text-xs inline-flex gap-1 items-center text-content-dimmed">
-      Target: {target.value} <Icons.IconArrowRight size={12} /> {target.to}
+    <div className="text-xs inline-flex gap-1 items-center text-content-dimmed leading-none">
+      Target: {target.value} &rarr; {target.to}
     </div>
   );
 }

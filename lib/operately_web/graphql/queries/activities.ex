@@ -19,12 +19,7 @@ defmodule OperatelyWeb.Graphql.Queries.Activities do
       resolve fn _, args, _ ->
         actions = args.actions || []
 
-        activities = Operately.Activities.list_activities(
-          args.scope_type, 
-          args.scope_id, 
-          actions,
-          args.with_non_empty_comments_thread
-        )
+        activities = Operately.Activities.list_activities(args.scope_type, args.scope_id, actions)
 
         activities = Operately.Repo.preload(activities, :author)
 

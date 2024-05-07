@@ -10,5 +10,8 @@ query GetCommentThreads($scopeType: String!, $scopeId: String!) {
       fullName
       avatarUrl
     }
+
+    parentType
+    parentId
   }
 }
