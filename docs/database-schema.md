@@ -3,6 +3,9 @@
 Operately uses PostgreSQL in combination with Ecto to manage the database schema. 
 This document explains how to add new tables, modify the existing, and run migrations.
 
+- [Adding a new table](#adding-a-new-table)
+- [Modifying an existing table](#modifying-an-existing-table)
+
 ## Adding a new table
 
 In most cases, when introducing a new database table, what you really want is to 

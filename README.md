@@ -51,3 +51,4 @@ Learn more about Operately:
 - [Architecture Overview](docs/architecture.md)
 - [Pages, Routes and Data Loading](docs/pages-and-data-loading.md)
 - [Modifying the database schema](docs/database-schema.md)
+- [API](docs/api.md)
