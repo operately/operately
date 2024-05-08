@@ -8,11 +8,10 @@ In this document, we will explain how pages are structured, how data is loaded f
 pages are connected to routes.
 
 - [Pages](#pages)
+- [Creating new pages](#creating-new-pages)
 - [Data Loading](#data-loading)
 - [Routes](#routes)
-- [Creating a new page](#creating-a-new-page)
 - [Naming conventions](#naming-conventions)
-- [Code Generation](#code-generation)
 
 ## Pages
 
@@ -45,6 +44,29 @@ export function Page() {
   );
 }
 ```
+
+## Creating new pages
+
+To create a new page, run the following command:
+
+```bash
+make gen.page NAME=MyNewPage
+```
+
+This will create a new page module in the `assets/pages/MyNewPage` directory. The module will contain
+a `Page` component and a `loader` function. You can edit the `loader` function to load the data that
+the page needs, and edit the `Page` component to render the data.
+
+To add a route for the new page, edit the `assets/routes/index.tsx` file and add a new route that matches
+the path for the new page and renders the new page component.
+
+```tsx
+...
+  pageRoute("/my-new-page", MyNewPagePage),
+...
+```
+
+That's it! You can now visit the `/my-new-page` path in the browser and see the new page.
 
 ## Data Loading
 
@@ -100,23 +122,6 @@ pageRoute("/projects/:id", ProjectPage),
 The `pageRoute` function is a helper function that creates a route object that matches the given path
 and renders the given page component.
 
-## Creating a new page
-
-To create a new page, run the following command:
-
-```sh
-make gen.page NAME=MyNewPage
-```
-
-This will create a new page module in the `assets/pages/MyNewPage` directory. The module will contain
-a `Page` component and a `loader` function. You can edit the `loader` function to load the data that
-the page needs, and edit the `Page` component to render the data.
-
-To add a route for the new page, edit the `assets/routes/index.tsx` file and add a new route that matches
-the path for the new page and renders the new page component.
-
-That's it! Your new page is now ready to be used in the application.
-
 ## Naming conventions
 
 - Page modules should be named using `PascalCase` (e.g. `assets/pages/MyNewPage`).
@@ -129,11 +134,3 @@ The page name should resemble the route path, for example:
 - `/projects/:id/tasks/:taskId` -> `ProjectTaskPage`
 - `/projects/new` -> `ProjectsNewPage`
 - `/projects/:id/edit` -> `ProjectEditPage`
-
-## Code Generation
-
-The index page that exports all the pages is generated using the `make gen` command. This command
-scans the `assets/js/pages` directory for page modules and generates the `assets/js/pages/index.tsx`
-file that exports all the pages.
-
-To generator's code is located in the `lib/mix/tasks/operately.gen.page.ex` file.

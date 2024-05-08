@@ -7,56 +7,26 @@ defmodule Mix.Tasks.Operately.Gen.Page do
 
     File.mkdir_p("assets/js/pages/#{page_name}")
 
-    generate_loader(page_name)
-    generate_page(page_name)
-    generate_index(page_name)
+    generate(page_name)
   end
 
-  def generate_index(page_name) do
+  def generate(page_name) do
     generate_file("assets/js/pages/#{page_name}/index.tsx", fn _path ->
       """
-      export { loader } from "./loader";
-      export { Page } from "./page";
-      """
-    end)
-  end
-
-  def generate_loader(page_name) do
-    generate_file("assets/js/pages/#{page_name}/loader.tsx", fn _path ->
-      """
+      import * as React from "react";
       import * as Pages from "@/components/Pages";
+      import * as Paper from "@/components/PaperContainer";
 
       interface LoaderResult {
+        // TODO: Define what is loaded when you visit this page
       }
 
       export async function loader({params}) : Promise<LoaderResult> {
-        // TODO: Implement
-
-        return {}
+        return {} // TODO: Load data here
       }
 
-      export function useLoadedData() : LoaderResult {
-        return Pages.useLoadedData() as LoaderResult;
-      }
-
-      export function useRefresh() {
-        return Pages.useRefresh();
-      }
-      """
-    end)
-  end
-
-  def generate_page(page_name) do
-    generate_file("assets/js/pages/#{page_name}/page.tsx", fn _path ->
-      """
-      import * as React from "react";
-      import * as Paper from "@/components/PaperContainer";
-      import * as Pages from "@/components/Pages";
-
-      import { useLoadedData } from "./loader";
-      
       export function Page() {
-        const data = useLoadedData();
+        const data = Pages.useLoadedData<LoaderResult>();
 
         return (
           <Pages.Page title={"#{page_name}"}>
@@ -91,5 +61,4 @@ defmodule Mix.Tasks.Operately.Gen.Page do
       """
     end
   end
-
 end
