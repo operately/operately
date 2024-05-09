@@ -38,7 +38,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
 
           # Multi.new()
           # |> Multi.insert(:something, ...)
-          # |> Activities.insert(creator.id, :#{action_name}, fn changes ->
+          # |> Activities.insert_sync(creator.id, :#{action_name}, fn changes ->
           #   %{
       #{activity_fields}
           #   }

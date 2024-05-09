@@ -1,4 +1,4 @@
-defmodule Operately.Projects.ProjectCreation do
+defmodule Operately.Operations.ProjectCreation do
   alias Operately.Repo
   alias Operately.Projects
   alias Operately.Projects.Contributor
@@ -52,7 +52,10 @@ defmodule Operately.Projects.ProjectCreation do
     end)
     |> Multi.run(:creator_role, fn _repo, changes -> assign_creator_role(changes.project, params) end)
     |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
-    |> Activities.insert(params.creator_id, :project_created, fn changes -> %{project_id: changes.project.id} end)
+    |> Activities.insert_sync(params.creator_id, :project_created, fn changes -> %{
+      company_id: changes.project.company_id,
+      project_id: changes.project.id
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

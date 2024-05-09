@@ -13,11 +13,6 @@ defmodule Operately.Activities.Content.ProjectCreated do
   end
 
   def build(params) do
-    project = Operately.Projects.get_project!(params["project_id"])
-
-    changeset(%{
-      company_id: project.company_id, 
-      project_id: project.id
-    })
+    changeset(params)
   end
 end

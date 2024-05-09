@@ -33,7 +33,7 @@ defmodule Operately.Projects do
     Repo.all(from c in CheckIn, where: c.project_id == ^project_id, order_by: [desc: c.inserted_at])
   end
 
-  defdelegate create_project(params), to: Operately.Projects.ProjectCreation, as: :run
+  defdelegate create_project(params), to: Operately.Operations.ProjectCreation, as: :run
   defdelegate list_projects(person, filters), to: Operately.Projects.ListOperation, as: :run
 
   def update_project(%Project{} = project, attrs) do

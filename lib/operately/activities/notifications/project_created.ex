@@ -3,7 +3,7 @@ defmodule Operately.Activities.Notifications.ProjectCreated do
 
   def dispatch(activity) do
     author_id = activity.author_id
-    project_id = activity.content.project_id
+    project_id = activity.content["project_id"]
     people = Projects.list_notification_subscribers(project_id, exclude: author_id)
 
     notifications = Enum.map(people, fn person ->

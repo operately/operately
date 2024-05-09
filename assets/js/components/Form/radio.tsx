@@ -54,10 +54,16 @@ export function Radio(props: RadioProps) {
   );
 }
 
-export function RadioWithExplanation({ label, value, explanation, ...props }) {
+interface RadioWithExplanationProps extends RadioProps {
+  explanation: string;
+}
+
+export function RadioWithExplanation(props: RadioWithExplanationProps) {
+  const { label, value, explanation, ...rest } = props;
+
   return (
     <label className="flex items-start gap-2">
-      <InputElement value={value} {...props} />
+      <InputElement value={value} {...rest} data-test-id={props.testId} />
 
       <div className="flex flex-col">
         <div className="text-content-accent font-semibold leading-none">{label}</div>

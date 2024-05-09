@@ -41,7 +41,7 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_project/2 with valid data creates a project", ctx do
-      project_attrs = %Operately.Projects.ProjectCreation{
+      project_attrs = %Operately.Operations.ProjectCreation{
         name: "some name",
         company_id: ctx.company.id,
         group_id: ctx.group.id,
