@@ -41,7 +41,15 @@ function PageTitle() {
 }
 
 function Retrospective({ form }: { form: FormData }) {
-  return <Editor.StandardEditorForm editor={form.retrospectiveEditor.editor} />;
+  return (
+    <div className="mt-6">
+      <div className="font-bold mb-2">Retrospective notes:</div>
+
+      <div className="border border-surface-outline rounded overflow-hidden">
+        <Editor.StandardEditorForm editor={form.retrospectiveEditor.editor} />
+      </div>
+    </div>
+  );
 }
 
 function SuccessQuestion({ form }: { form: FormData }) {

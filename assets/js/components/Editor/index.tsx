@@ -161,7 +161,7 @@ export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element 
     <Root editor={editor}>
       <Toolbar editor={editor} noTopBorder />
 
-      <div className="text-content-accent relative px-4 rounded-t">
+      <div className="text-content-accent relative px-2 rounded-t">
         <EditorContent editor={editor} />
       </div>
     </Root>

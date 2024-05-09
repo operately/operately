@@ -1,7 +1,6 @@
 import * as Goals from "@/models/goals";
 import * as Forms from "@/components/Form";
 import * as Editor from "@/components/Editor";
-import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -18,17 +17,17 @@ export interface FormData {
 }
 
 export function useForm(goal: Goals.Goal): FormData {
+  const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id));
+
   const [success, setSuccess, successOptions] = Forms.useRadioGroupState([
     { label: "Yes", value: "yes", default: true },
     { label: "No", value: "no" },
   ]);
 
-  const navigateToGoal = useNavigateTo(`/goals/${goal.id}`);
-
   const [close] = Goals.useCloseGoalMutation({ onCompleted: navigateToGoal });
 
   const retrospectiveEditor = Editor.useEditor({
-    placeholder: "What went well? What could have gone better?",
+    placeholder: "What went well? What could've gone better?",
     className: "min-h-[250px] py-2 font-medium",
   });
 
@@ -38,6 +37,7 @@ export function useForm(goal: Goals.Goal): FormData {
         input: {
           goalId: goal.id,
           success: success,
+          retrospective: JSON.stringify(retrospectiveEditor.editor.getJSON()),
         },
       },
     });
