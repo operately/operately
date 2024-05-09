@@ -19,7 +19,7 @@ interface PeopleSearchProps {
   placeholder: string;
   alreadySelected?: string[];
   defaultValue?: Person;
-  value?: Person | undefined;
+  value?: Person | undefined | null;
   inputId?: string;
   showTitle?: boolean;
   error?: boolean;

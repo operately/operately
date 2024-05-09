@@ -72,8 +72,6 @@ function SuccessQuestion({ form }: { form: FormData }) {
   );
 }
 
-function Retrspective({ form }: { form: FormData }) {}
-
 function SubmitButton({ form }: { form: FormData }) {
   return (
     <FilledButton onClick={form.submit} testId="confirm-close-goal">
