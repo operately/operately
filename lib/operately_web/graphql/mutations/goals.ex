@@ -48,6 +48,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
   input_object :close_goal_input do
     field :goal_id, non_null(:string)
     field :success, non_null(:string)
+    field :retrospective, non_null(:string)
   end
 
   input_object :edit_goal_timeframe_input do
@@ -72,8 +73,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        retro = input.retrospective
 
-        Operately.Operations.GoalClosing.run(author, input.goal_id, input.success)
+        Operately.Operations.GoalClosing.run(author, input.goal_id, input.success, retro)
       end
     end
 

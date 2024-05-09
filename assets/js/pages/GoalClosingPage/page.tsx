@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
+import * as Editor from "@/components/Editor";
 
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
@@ -23,6 +24,7 @@ export function Page() {
         <Paper.Body minHeight="none">
           <PageTitle />
           <SuccessQuestion form={form} />
+          <Retrospective form={form} />
 
           <div className="flex items-center gap-6 mt-8">
             <SubmitButton form={form} />
@@ -36,6 +38,18 @@ export function Page() {
 
 function PageTitle() {
   return <div className="text-content-accent text-3xl font-extrabold">Close Goal</div>;
+}
+
+function Retrospective({ form }: { form: FormData }) {
+  return (
+    <div className="mt-6">
+      <div className="font-bold mb-2">Retrospective notes:</div>
+
+      <div className="border border-surface-outline rounded overflow-hidden">
+        <Editor.StandardEditorForm editor={form.retrospectiveEditor.editor} />
+      </div>
+    </div>
+  );
 }
 
 function SuccessQuestion({ form }: { form: FormData }) {
