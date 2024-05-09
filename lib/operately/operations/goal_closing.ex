@@ -38,6 +38,7 @@ defmodule Operately.Operations.GoalClosing do
         comment_thread_id: changes.thread.id
       }) 
     end)
+    |> Activities.dispatch_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
   end
