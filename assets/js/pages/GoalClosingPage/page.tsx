@@ -1,16 +1,17 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
+import * as Forms from "@/components/Form";
 
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { useForm, FormData } from "./useForm";
 
 export function Page() {
   const { goal } = useLoadedData();
+  const form = useForm(goal);
 
   return (
     <Pages.Page title={"Closing " + goal.name}>
@@ -20,14 +21,12 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body minHeight="none">
-          <div className="text-content-accent text-3xl font-extrabold">Mark this goal as complete?</div>
-          <div className="text-content text font-medium mt-2">
-            The goal will marked as complete and no longer be available for updates.
-          </div>
+          <PageTitle />
+          <SuccessQuestion form={form} />
 
           <div className="flex items-center gap-6 mt-8">
-            <SubmitButton goal={goal} />
-            <DimmedLink to={`/goals/${goal.id}`}>Cancel</DimmedLink>
+            <SubmitButton form={form} />
+            <DimmedLink to={form.cancelPath}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -35,21 +34,34 @@ export function Page() {
   );
 }
 
-function SubmitButton({ goal }) {
-  const navigateToGoal = useNavigateTo(`/goals/${goal.id}`);
+function PageTitle() {
+  return <div className="text-content-accent text-3xl font-extrabold">Close Goal</div>;
+}
 
-  const [close, { loading: loading }] = Goals.useCloseGoalMutation({
-    variables: {
-      input: {
-        goalId: goal.id,
-      },
-    },
-    onCompleted: () => navigateToGoal(),
-  });
-
+function SuccessQuestion({ form }: { form: FormData }) {
   return (
-    <FilledButton onClick={close} testId="confirm-close-goal" loading={loading}>
-      Mark as Complete
+    <div className="mt-6">
+      <div className="font-bold mb-2">Did you accomplish this goal?</div>
+
+      <Forms.RadioGroup defaultValue="yes" onChange={form.setSuccess} name="success">
+        {form.successOptions.map((option) => (
+          <Forms.Radio
+            key={option.value}
+            label={option.label}
+            value={option.value}
+            disabled={false}
+            testId={`success-${option.value}`}
+          />
+        ))}
+      </Forms.RadioGroup>
+    </div>
+  );
+}
+
+function SubmitButton({ form }: { form: FormData }) {
+  return (
+    <FilledButton onClick={form.submit} testId="confirm-close-goal">
+      Close Goal
     </FilledButton>
   );
 }

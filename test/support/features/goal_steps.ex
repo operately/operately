@@ -319,24 +319,26 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal's timeframe change"})
   end
 
-  step :close_goal, ctx do
+  step :close_goal, ctx, %{success: success} do
     ctx
     |> UI.click(testid: "goal-options")
-    |> UI.click(testid: "mark-as-complete")
-    |> UI.assert_text("Mark this goal as complete?")
+    |> UI.click(testid: "close-goal")
+    |> UI.assert_text("Close Goal")
+    |> UI.click(testid: "success-#{success}")
     |> UI.click(testid: "confirm-close-goal")
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end
 
-  step :assert_goal_closed, ctx do
+  step :assert_goal_closed, ctx, %{success: success} do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 
     assert goal.closed_at != nil
     assert goal.closed_by_id == ctx.champion.id
+    assert goal.success == success
 
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")
-    |> UI.assert_text("This goal was completed on")
+    |> UI.assert_text("This goal was closed on")
   end
 
   step :assert_goal_closed_email_sent, ctx do
@@ -345,18 +347,18 @@ defmodule Operately.Support.Features.GoalSteps do
       where: ctx.group.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "completed the #{ctx.goal.name} goal"
+      action: "closed the #{ctx.goal.name} goal"
     })
   end
 
   step :assert_goal_closed_feed_posted, ctx do
     ctx
     |> UI.visit("/goals/#{ctx.goal.id}")
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "completed this goal"})
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed this goal"})
     |> UI.visit("/spaces/#{ctx.group.id}")
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "completed the #{ctx.goal.name} goal"})
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the #{ctx.goal.name} goal"})
     |> UI.visit("/feed")
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "completed the #{ctx.goal.name} goal"})
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the #{ctx.goal.name} goal"})
   end
 
   step :assert_goal_closed_notification_sent, ctx do
@@ -365,7 +367,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "completed the #{ctx.goal.name} goal"
+      action: "closed the #{ctx.goal.name} goal"
     })
   end
 

@@ -42,7 +42,6 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
 
     field :members, list_of(non_null(:person)) do
       resolve fn group, _, _ ->
-        IO.inspect("Group members")
         people = Operately.Groups.list_members(group)
 
         {:ok, people}

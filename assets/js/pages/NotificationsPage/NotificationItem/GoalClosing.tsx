@@ -25,5 +25,5 @@ export default function ({ notification }) {
 }
 
 function title({ author, goal }) {
-  return People.firstName(author) + " completed the " + goal.name + " goal";
+  return People.firstName(author) + " closed the " + goal.name + " goal";
 }

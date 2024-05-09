@@ -147,9 +147,9 @@ function Form({ form }: { form: FormState }) {
                   label={"No, I'm just setting it up for someone else"}
                   value="no"
                   disabled={form.fields.visibility === "invite"}
-                  data-test-id="no-contributor"
+                  testId="no-contributor"
                 />
-                <Forms.Radio label="Yes, I'll contribute" value="yes" data-test-id="yes-contributor" />
+                <Forms.Radio label="Yes, I'll contribute" value="yes" testId="yes-contributor" />
               </div>
             </Forms.RadioGroup>
 
@@ -160,7 +160,7 @@ function Form({ form }: { form: FormState }) {
                   value={form.fields.creatorRole}
                   onChange={form.fields.setCreatorRole}
                   placeholder="e.g. Responsible for managing the project and coordinating tasks"
-                  data-test-id="creator-responsibility-input"
+                  testId="creator-responsibility-input"
                   error={!!form.errors.find((e) => e.field === "creatorRole")?.message}
                 />
               </div>
@@ -185,7 +185,7 @@ function Form({ form }: { form: FormState }) {
             label={"Invite-only"}
             explanation={"Only people you invite can see this project"}
             value="invite"
-            data-test-id="invite-only"
+            testId="invite-only"
           />
         </Forms.RadioGroupWithLabel>
       </Paper.DimmedSection>

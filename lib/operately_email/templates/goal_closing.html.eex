@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} completed the #{@goal.name} goal") %>
+<%= title("#{short_name(@author)} closed the #{@goal.name} goal") %>
 
 <%= spacer() %>
 

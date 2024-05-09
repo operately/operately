@@ -17,7 +17,7 @@ defmodule Operately.ProjectsFixtures do
       reviewer_id: attrs[:reviewer_id] || attrs[:creator_id]
     }, attrs)
 
-    attrs = struct!(Operately.Projects.ProjectCreation, attrs)
+    attrs = struct!(Operately.Operations.ProjectCreation, attrs)
 
     {:ok, project} = Operately.Projects.create_project(attrs)
 

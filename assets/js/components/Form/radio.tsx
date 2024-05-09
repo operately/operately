@@ -36,19 +36,34 @@ export function RadioGroupWithLabel({ label, name, defaultValue, onChange, child
   );
 }
 
-export function Radio({ label, value, disabled = false, ...props }) {
+interface RadioProps {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  testId?: string;
+}
+
+export function Radio(props: RadioProps) {
+  const { label, value, disabled, ...rest } = props;
+
   return (
     <label className="flex items-center gap-2">
-      <InputElement value={value} disabled={disabled} {...props} />
+      <InputElement value={value} disabled={disabled} {...rest} data-test-id={props.testId} />
       <span className={disabled ? "text-content-subtle" : "text-content-accent"}>{label}</span>
     </label>
   );
 }
 
-export function RadioWithExplanation({ label, value, explanation, ...props }) {
+interface RadioWithExplanationProps extends RadioProps {
+  explanation: string;
+}
+
+export function RadioWithExplanation(props: RadioWithExplanationProps) {
+  const { label, value, explanation, ...rest } = props;
+
   return (
     <label className="flex items-start gap-2">
-      <InputElement value={value} {...props} />
+      <InputElement value={value} {...rest} data-test-id={props.testId} />
 
       <div className="flex flex-col">
         <div className="text-content-accent font-semibold leading-none">{label}</div>
@@ -84,4 +99,20 @@ function InputElement({ value, ...props }) {
       {...props}
     />
   );
+}
+
+export interface RadioGroupOption {
+  label: string;
+  value: string;
+  default?: boolean;
+}
+
+export function useRadioGroupState(options: RadioGroupOption[]): [string, (value: string) => void, RadioGroupOption[]] {
+  if (options.length === 0) throw new Error("RadioGroup options must not be empty");
+
+  const defaultValue = options.find((option) => option.default)?.value ?? options[0]!.value;
+
+  const [value, setValue] = React.useState(defaultValue);
+
+  return [value, setValue, options];
 }

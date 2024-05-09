@@ -48,7 +48,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
-    params = %Operately.Projects.ProjectCreation{
+    params = %Operately.Operations.ProjectCreation{
       company_id: company.id,
       name: name,
       champion_id: champion.id,

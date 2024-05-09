@@ -81,7 +81,7 @@ function Banner({ goal }) {
   if (goal.isClosed) {
     return (
       <Paper.Banner>
-        This goal was completed on <FormattedTime time={goal.closedAt} format="long-date" />
+        This goal was closed on <FormattedTime time={goal.closedAt} format="long-date" />
       </Paper.Banner>
     );
   }
@@ -130,9 +130,9 @@ function Options({ goal }) {
       {goal.permissions.canClose && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
-          title="Mark as Complete"
+          title="Close Goal"
           to={Paths.closeGoalPath(goal.id)}
-          dataTestId="mark-as-complete"
+          dataTestId="close-goal"
         />
       )}
 

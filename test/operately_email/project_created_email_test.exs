@@ -14,7 +14,7 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
 
     group = group_fixture(champion, %{company_id: company.id})
 
-    project = Operately.Projects.create_project(%Operately.Projects.ProjectCreation{
+    project = Operately.Projects.create_project(%Operately.Operations.ProjectCreation{
       company_id: company.id,
       name: "Hello",
       creator_id: reviewer.id,

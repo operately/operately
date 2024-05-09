@@ -168,7 +168,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       resolve fn args, %{context: context} ->
         person = context.current_account.person
 
-        %Operately.Projects.ProjectCreation{
+        %Operately.Operations.ProjectCreation{
           name: args.input.name,
           champion_id: args.input.champion_id,
           reviewer_id: args.input.reviewer_id,
