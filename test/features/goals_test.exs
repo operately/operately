@@ -50,10 +50,12 @@ defmodule Operately.Features.GoalTest do
 
   @tag login_as: :champion
   feature "closing goal", ctx do
+    params = %{success: "yes", retrospective: "We did it!"}
+
     ctx
     |> Steps.visit_page()
-    |> Steps.close_goal(%{success: "yes"})
-    |> Steps.assert_goal_closed(%{success: "yes"})
+    |> Steps.close_goal(params)
+    |> Steps.assert_goal_closed(params)
     |> Steps.assert_goal_is_not_editable()
     |> Steps.assert_goal_closed_email_sent()
     |> Steps.assert_goal_closed_feed_posted()
@@ -62,10 +64,12 @@ defmodule Operately.Features.GoalTest do
 
   @tag login_as: :champion
   feature "closing goal and marking it as not accomplished", ctx do
+    params = %{success: "no", retrospective: "We didn't do it :("}
+
     ctx
     |> Steps.visit_page()
-    |> Steps.close_goal(%{success: "no"})
-    |> Steps.assert_goal_closed(%{success: "no"})
+    |> Steps.close_goal(params)
+    |> Steps.assert_goal_closed(params)
     |> Steps.assert_goal_is_not_editable()
     |> Steps.assert_goal_closed_email_sent()
     |> Steps.assert_goal_closed_feed_posted()

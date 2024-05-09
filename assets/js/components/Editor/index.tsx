@@ -1,6 +1,7 @@
 import React from "react";
 
 import * as TipTap from "@tiptap/react";
+import * as People from "@/models/people";
 
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -81,6 +82,8 @@ function useEditor(props: UseEditorProps): EditorState {
   const editable = props.editable === undefined ? true : props.editable;
   const autoFocus = props.autoFocus === undefined ? true : props.autoFocus;
 
+  const defaultPeopleSearch = People.usePeopleSearch();
+
   const editor = TipTap.useEditor({
     editable: editable,
     content: props.content,
@@ -115,7 +118,7 @@ function useEditor(props: UseEditorProps): EditorState {
       Mention.configure({
         suggestion: {
           render: () => new MentionPopup(),
-          items: props.peopleSearch,
+          items: props.peopleSearch || defaultPeopleSearch,
           allowedPrefixes: [",", "\\s"],
         },
         deleteTriggerWithBackspace: true,
@@ -158,7 +161,7 @@ export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element 
     <Root editor={editor}>
       <Toolbar editor={editor} noTopBorder />
 
-      <div className="text-content-accent text-lg relative px-4 rounded-t">
+      <div className="text-content-accent relative px-4 rounded-t">
         <EditorContent editor={editor} />
       </div>
     </Root>
