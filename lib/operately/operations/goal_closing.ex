@@ -4,9 +4,14 @@ defmodule Operately.Operations.GoalClosing do
   alias Operately.Goals
   alias Operately.Activities
 
-  def run(creator, goal_id) do
+  def run(creator, goal_id, success) do
     goal = Goals.get_goal!(goal_id)
-    changeset = Goals.Goal.changeset(goal, %{closed_at: DateTime.utc_now(), closed_by_id: creator.id})
+
+    changeset = Goals.Goal.changeset(goal, %{
+      closed_at: DateTime.utc_now(), 
+      closed_by_id: creator.id,
+      success: success
+    })
 
     Multi.new()
     |> Multi.update(:goal, changeset)
@@ -15,6 +20,7 @@ defmodule Operately.Operations.GoalClosing do
         company_id: creator.company_id,
         space_id: goal.group_id,
         goal_id: goal_id,
+        success: success
       }
     end)
     |> Repo.transaction()

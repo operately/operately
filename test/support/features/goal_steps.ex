@@ -322,8 +322,8 @@ defmodule Operately.Support.Features.GoalSteps do
   step :close_goal, ctx do
     ctx
     |> UI.click(testid: "goal-options")
-    |> UI.click(testid: "mark-as-complete")
-    |> UI.assert_text("Mark this goal as complete?")
+    |> UI.click(testid: "close-goal")
+    |> UI.assert_text("Close Goal")
     |> UI.click(testid: "confirm-close-goal")
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end

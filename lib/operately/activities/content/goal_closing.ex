@@ -5,6 +5,7 @@ defmodule Operately.Activities.Content.GoalClosing do
     field :company_id, :string
     field :space_id, :string
     field :goal_id, :string
+    field :success, :string
   end
 
   def changeset(attrs) do

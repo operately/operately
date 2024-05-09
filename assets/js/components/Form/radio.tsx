@@ -85,3 +85,19 @@ function InputElement({ value, ...props }) {
     />
   );
 }
+
+export interface RadioGroupOption {
+  label: string;
+  value: string;
+  default?: boolean;
+}
+
+export function useRadioGroupState(options: RadioGroupOption[]): [string, (value: string) => void, RadioGroupOption[]] {
+  if (options.length === 0) throw new Error("RadioGroup options must not be empty");
+
+  const defaultValue = options.find((option) => option.default)?.value ?? options[0]!.value;
+
+  const [value, setValue] = React.useState(defaultValue);
+
+  return [value, setValue, options];
+}

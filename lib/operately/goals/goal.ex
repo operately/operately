@@ -25,6 +25,7 @@ defmodule Operately.Goals.Goal do
 
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
+    field :success, :string
 
     timestamps()
     soft_delete()
@@ -49,6 +50,7 @@ defmodule Operately.Goals.Goal do
       :parent_goal_id,
       :closed_at,
       :closed_by_id,
+      :success,
     ])
     |> cast_embed(:timeframe)
     |> validate_required([

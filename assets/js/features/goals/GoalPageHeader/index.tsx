@@ -130,9 +130,9 @@ function Options({ goal }) {
       {goal.permissions.canClose && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
-          title="Mark as Complete"
+          title="Close Goal"
           to={Paths.closeGoalPath(goal.id)}
-          dataTestId="mark-as-complete"
+          dataTestId="close-goal"
         />
       )}
 
