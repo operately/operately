@@ -81,7 +81,7 @@ function Banner({ goal }) {
   if (goal.isClosed) {
     return (
       <Paper.Banner>
-        This goal was completed on <FormattedTime time={goal.closedAt} format="long-date" />
+        This goal was closed on <FormattedTime time={goal.closedAt} format="long-date" />
       </Paper.Banner>
     );
   }
