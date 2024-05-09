@@ -52,8 +52,20 @@ defmodule Operately.Features.GoalTest do
   feature "closing goal", ctx do
     ctx
     |> Steps.visit_page()
-    |> Steps.close_goal()
-    |> Steps.assert_goal_closed()
+    |> Steps.close_goal(%{success: "yes"})
+    |> Steps.assert_goal_closed(%{success: "yes"})
+    |> Steps.assert_goal_is_not_editable()
+    |> Steps.assert_goal_closed_email_sent()
+    |> Steps.assert_goal_closed_feed_posted()
+    |> Steps.assert_goal_closed_notification_sent()
+  end
+
+  @tag login_as: :champion
+  feature "closing goal and marking it as not accomplished", ctx do
+    ctx
+    |> Steps.visit_page()
+    |> Steps.close_goal(%{success: "no"})
+    |> Steps.assert_goal_closed(%{success: "no"})
     |> Steps.assert_goal_is_not_editable()
     |> Steps.assert_goal_closed_email_sent()
     |> Steps.assert_goal_closed_feed_posted()

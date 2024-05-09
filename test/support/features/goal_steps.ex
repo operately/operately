@@ -319,20 +319,22 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal's timeframe change"})
   end
 
-  step :close_goal, ctx do
+  step :close_goal, ctx, %{success: success} do
     ctx
     |> UI.click(testid: "goal-options")
     |> UI.click(testid: "close-goal")
     |> UI.assert_text("Close Goal")
+    |> UI.click(testid: "success-#{success}")
     |> UI.click(testid: "confirm-close-goal")
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end
 
-  step :assert_goal_closed, ctx do
+  step :assert_goal_closed, ctx, %{success: success} do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 
     assert goal.closed_at != nil
     assert goal.closed_by_id == ctx.champion.id
+    assert goal.success == success
 
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")

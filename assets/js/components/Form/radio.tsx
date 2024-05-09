@@ -36,10 +36,19 @@ export function RadioGroupWithLabel({ label, name, defaultValue, onChange, child
   );
 }
 
-export function Radio({ label, value, disabled = false, ...props }) {
+interface RadioProps {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  testId?: string;
+}
+
+export function Radio(props: RadioProps) {
+  const { label, value, disabled, ...rest } = props;
+
   return (
     <label className="flex items-center gap-2">
-      <InputElement value={value} disabled={disabled} {...props} />
+      <InputElement value={value} disabled={disabled} {...rest} data-test-id={props.testId} />
       <span className={disabled ? "text-content-subtle" : "text-content-accent"}>{label}</span>
     </label>
   );

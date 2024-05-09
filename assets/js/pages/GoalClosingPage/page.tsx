@@ -45,7 +45,13 @@ function SuccessQuestion({ form }: { form: FormData }) {
 
       <Forms.RadioGroup defaultValue="yes" onChange={form.setSuccess} name="success">
         {form.successOptions.map((option) => (
-          <Forms.Radio key={option.value} label={option.label} value={option.value} disabled={false} />
+          <Forms.Radio
+            key={option.value}
+            label={option.label}
+            value={option.value}
+            disabled={false}
+            testId={`success-${option.value}`}
+          />
         ))}
       </Forms.RadioGroup>
     </div>
