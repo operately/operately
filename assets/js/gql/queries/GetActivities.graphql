@@ -70,6 +70,15 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
           type
         }
       }
+
+      ... on ActivityContentGoalClosing {
+        success 
+
+        goal {
+          id
+          name
+        }
+      }
     }
   }
 }

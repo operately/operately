@@ -2,9 +2,8 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as Actvities from "@/models/activities";
+import * as Activities from "@/models/activities";
 import * as Icons from "@tabler/icons-react";
-import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
@@ -18,18 +17,20 @@ import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
+import { activityPagePath, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+
 interface LoaderResult {
   goal: Goals.Goal;
-  activities: Actvities.Activity[];
+  activities: Activities.Activity[];
 }
 
 export const loader = async function ({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }),
-    activities: await Actvities.getActivities({
+    activities: await Activities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,
-      actions: ["goal_timeframe_editing"],
+      actions: ["goal_timeframe_editing", "goal_closing"],
     }),
   };
 };
@@ -71,9 +72,8 @@ function ActivityList() {
   );
 }
 
-function ActivityItem({ activity }: { activity: Actvities.Activity }) {
-  const content = activity.content as Actvities.ActivityContentGoalTimeframeEditing;
-  const path = Paths.goalActivityPath(content.goal.id, activity.id);
+function ActivityItem({ activity }: { activity: Activities.Activity }) {
+  const path = activityPagePath(activity);
   const commentThread = activity.commentThread;
 
   if (!commentThread) return null;
@@ -96,11 +96,11 @@ function ActivityItem({ activity }: { activity: Actvities.Activity }) {
         <div className="flex items-start justify-between gap-4 flex-1">
           <div className="flex flex-col gap-1">
             <div className="text-content-accent font-bold leading-none test-sm">
-              <GoalTimeframeEditing.Title activity={activity} />
+              <ActivityPageTitle activity={activity} />
             </div>
 
             <div className="mt-2">
-              <GoalTimeframeEditing.Content activity={activity} />
+              <ActivityPageContent activity={activity} />
             </div>
 
             <div className="flex items-center gap-4 mt-4">

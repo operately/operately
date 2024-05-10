@@ -5,8 +5,7 @@ export { groupByDate } from "./groupByDate";
 
 export type { ActivityGroup } from "./groupByDate";
 export type { Activity } from "@/gql";
-
-export type { ActivityContentGoalTimeframeEditing } from "@/gql";
+export type { ActivityContentGoalTimeframeEditing, ActivityContentGoalClosing } from "@/gql";
 
 import {
   Activity,

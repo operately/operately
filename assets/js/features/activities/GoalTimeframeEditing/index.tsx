@@ -16,7 +16,7 @@ export function htmlTitle() {
   return `Goal timeframe ${extendedOrShortened}`;
 }
 
-export function Title({ activity }) {
+export function PageTitle({ activity }) {
   return (
     <>
       Timeframe {extendedOrShortened(activity)} by {days(activity)} days
@@ -24,7 +24,7 @@ export function Title({ activity }) {
   );
 }
 
-export function Content({ activity }: { activity: Activity }) {
+export function PageContent({ activity }: { activity: Activity }) {
   const content = activity.content as ActivityContentGoalTimeframeEditing;
 
   const oldTimeframe = Timeframes.parse(content.oldTimeframe);
