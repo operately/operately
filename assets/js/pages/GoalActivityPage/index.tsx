@@ -6,8 +6,6 @@ import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 
-import { match } from "ts-pattern";
-
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { CommentThread } from "@/gql";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
@@ -15,6 +13,8 @@ import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
+
+import { ActivityPageTitle, ActivityPageContent } from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -42,7 +42,7 @@ export function Page() {
         <Paper.Body>
           <Title activity={activity} />
           <div className="my-8">
-            <Content activity={activity} />
+            <ActivityPageContent activity={activity} />
           </div>
 
           <Reactions commentThread={activity.commentThread!} me={me} />
@@ -54,21 +54,13 @@ export function Page() {
   );
 }
 
-function Content({ activity }: { activity: Activities.Activity }) {
-  return match(activity.content.__typename)
-    .with("ActivityContentGoalTimeframeEditing", () => <GoalTimeframeEditing.Content activity={activity} />)
-    .otherwise(() => {
-      throw new Error("Unknown activity type");
-    });
-}
-
 function Title({ activity }: { activity: Activities.Activity }) {
   return (
     <div className="flex items-center gap-3">
       <Avatar person={activity.author} size={50} />
       <div>
         <div className="text-content-accent text-2xl font-bold leading-tight">
-          <GoalTimeframeEditing.Title activity={activity} />
+          <ActivityPageTitle activity={activity} />
         </div>
         <div className="inline-flex items-center gap-1">
           <span>{activity.author.fullName}</span>
