@@ -7,7 +7,7 @@ export function NumberListButton({ editor, iconSize }): JSX.Element {
   return (
     <ToolbarToggleButton
       onClick={() => editor.chain().focus().toggleOrderedList().run()}
-      isActive={editor.isActive("orderedList")}
+      isActive={editor?.isActive("orderedList")}
       title="Numbered List"
     >
       <Icons.IconListNumbers size={iconSize} />

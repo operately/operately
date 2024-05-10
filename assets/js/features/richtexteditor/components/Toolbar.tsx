@@ -21,8 +21,6 @@ interface Props {
 }
 
 export function Toolbar({ editor, noTopBorder }: Props): JSX.Element {
-  if (!editor) return <></>;
-
   const border = noTopBorder ? "border-b" : "border-y";
 
   return (

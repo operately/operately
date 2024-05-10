@@ -73,8 +73,8 @@ function EditComment({ me, comment, onCancel, form }) {
       <Avatar person={me} size="normal" />
       <div className="flex-1">
         <TipTapEditor.Root editor={editor}>
-          <div className="border border-surface-outline">
-            <TipTapEditor.Toolbar editor={editor} />
+          <div className="border border-surface-outline rounded-lg overflow-hidden">
+            <TipTapEditor.Toolbar editor={editor} noTopBorder />
             <TipTapEditor.EditorContent editor={editor} />
 
             <div className="flex justify-between items-center m-4">
@@ -221,8 +221,8 @@ function CommentBox({ refresh, me, form }) {
   const [active, _, activate, deactivate] = useBoolState(false);
 
   const onPost = () => {
-    deactivate();
     refresh();
+    setTimeout(() => deactivate(), 300);
   };
 
   if (active) {
@@ -248,8 +248,8 @@ function AddCommentNonActive({ onClick, me }) {
 function AddCommentActive({ onBlur, onPost, me, form }) {
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
-    peopleSearch: People.usePeopleSearch(),
-    className: "min-h-[200px] p-4",
+    className: "min-h-[200px] px-4 py-3",
+    autoFocus: true,
   });
 
   const handlePost = async () => {
@@ -260,13 +260,19 @@ function AddCommentActive({ onBlur, onPost, me, form }) {
     await onPost();
   };
 
+  React.useEffect(() => {
+    if (editor) {
+      editor.commands.focus();
+    }
+  }, [editor]);
+
   return (
     <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
       <Avatar person={me} size="normal" />
       <div className="flex-1">
         <TipTapEditor.Root editor={editor}>
-          <div className="border border-surface-outline">
-            <TipTapEditor.Toolbar editor={editor} />
+          <div className="border border-surface-outline rounded-lg overflow-hidden">
+            <TipTapEditor.Toolbar editor={editor} noTopBorder />
             <TipTapEditor.EditorContent editor={editor} />
 
             <div className="flex justify-between items-center m-4">

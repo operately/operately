@@ -19,7 +19,7 @@ export function LinkButton({ editor, iconSize }): JSX.Element {
   return (
     <ToolbarToggleButton
       onClick={toggleLink}
-      isActive={editor.isActive("link") || linkEditActive}
+      isActive={editor?.isActive("link") || linkEditActive}
       title="Add/Edit Links"
     >
       <Icons.IconLink size={iconSize} />
