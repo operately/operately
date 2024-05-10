@@ -7,6 +7,11 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
     space = Operately.Groups.get_group!(goal.group_id)
+    link = OperatelyEmail.goal_activity_url(goal.id, activity.id)
+    activity = Operately.Repo.preload(activity, :comment_thread)
+
+    success = activity.content["success"]
+    message = activity.comment_thread.message
 
     company
     |> new()
@@ -15,6 +20,9 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     |> subject(where: space.name, who: author, action: "closed the #{goal.name} goal")
     |> assign(:goal, goal)
     |> assign(:author, author)
+    |> assign(:link, link)
+    |> assign(:success, success)
+    |> assign(:message, message)
     |> render("goal_closing")
   end
 end

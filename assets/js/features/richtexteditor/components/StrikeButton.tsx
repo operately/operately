@@ -7,7 +7,7 @@ export function StrikeButton({ editor, iconSize }): JSX.Element {
   return (
     <ToolbarToggleButton
       onClick={() => editor.chain().focus().toggleStrike().run()}
-      isActive={editor.isActive("strike")}
+      isActive={editor?.isActive("strike")}
       title="Strikethrough"
     >
       <Icons.IconStrikethrough size={iconSize} />

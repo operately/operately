@@ -7,7 +7,7 @@ export function ItalicButton({ editor, iconSize }): JSX.Element {
   return (
     <ToolbarToggleButton
       onClick={() => editor.chain().focus().toggleItalic().run()}
-      isActive={editor.isActive("italic")}
+      isActive={editor?.isActive("italic")}
       title="Italic"
     >
       <Icons.IconItalic size={iconSize} />

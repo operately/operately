@@ -26,6 +26,15 @@ export const CommentAdded: FeedItem = {
             name
           }
         }
+
+        ... on ActivityContentGoalClosing {
+          goal {
+            id
+            name
+          }
+
+          success
+        }
       }
     }
   `,
@@ -50,7 +59,7 @@ function Title({ activity, page }) {
     const commentedActivity = activity.content.activity;
 
     switch (commentedActivity.content.__typename) {
-      case "ActivityContentGoalTimeframeEditing":
+      case "ActivityContentGoalTimeframeEditing": {
         const goal = commentedActivity.content.goal;
         const path = Paths.goalActivityPath(goal.id, commentedActivity.id);
 
@@ -60,6 +69,19 @@ function Title({ activity, page }) {
             <GoalLink goal={goal} page={page} prefix={"for"} />
           </>
         );
+      }
+
+      case "ActivityContentGoalClosing": {
+        const goal = commentedActivity.content.goal;
+        const path = Paths.goalActivityPath(goal.id, commentedActivity.id);
+
+        return (
+          <>
+            {People.shortName(activity.author)} commented on <Link to={path}>goal closing</Link>{" "}
+            <GoalLink goal={goal} page={page} prefix={"for"} />
+          </>
+        );
+      }
       default:
         throw new Error("Unknown activity type " + activity.content.activity.content.__typename);
     }

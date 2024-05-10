@@ -77,6 +77,17 @@ defmodule Operately.Features.GoalTest do
   end
 
   @tag login_as: :champion
+  feature "commenting on goal closing", ctx do
+    ctx
+    |> Steps.visit_page()
+    |> Steps.close_goal(%{success: "yes", retrospective: "We did it!"})
+    |> Steps.comment_on_the_goal_closed()
+    |> Steps.assert_comment_on_the_goal_closing_feed_posted()
+    |> Steps.assert_comment_on_the_goal_closing_email_sent()
+    |> Steps.assert_comment_on_the_goal_closing_notification_sent()
+  end
+
+  @tag login_as: :champion
   feature "editing the goal's timeframe", ctx do
     ctx
     |> Steps.visit_page()

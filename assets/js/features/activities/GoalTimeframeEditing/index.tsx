@@ -16,7 +16,7 @@ export function htmlTitle() {
   return `Goal timeframe ${extendedOrShortened}`;
 }
 
-export function Title({ activity }) {
+export function PageTitle({ activity }) {
   return (
     <>
       Timeframe {extendedOrShortened(activity)} by {days(activity)} days
@@ -24,7 +24,7 @@ export function Title({ activity }) {
   );
 }
 
-export function Content({ activity }: { activity: Activity }) {
+export function PageContent({ activity }: { activity: Activity }) {
   const content = activity.content as ActivityContentGoalTimeframeEditing;
 
   const oldTimeframe = Timeframes.parse(content.oldTimeframe);
@@ -65,6 +65,39 @@ export function FeedItemTitle({ activity, content, page }) {
       {People.shortName(activity.author)} <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link> for{" "}
       <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
     </>
+  );
+}
+
+export function FeedItemContent({ activity }: { activity: Activity }) {
+  const content = activity.content as ActivityContentGoalTimeframeEditing;
+
+  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
+  const newTimeframe = Timeframes.parse(content.newTimeframe);
+
+  return (
+    <div className="my-2">
+      <div className="flex items-center gap-1 text-sm">
+        <div className="flex items-center gap-1 font-medium">
+          <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
+            {Timeframes.format(oldTimeframe)}
+          </div>
+        </div>
+
+        <Icons.IconArrowRight size={14} />
+
+        <div className="flex items-center gap-1 font-medium">
+          <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
+            {Timeframes.format(newTimeframe)}
+          </div>
+        </div>
+      </div>
+
+      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+        <div className="mt-2">
+          <RichContent jsonContent={activity.commentThread.message} />
+        </div>
+      )}
+    </div>
   );
 }
 

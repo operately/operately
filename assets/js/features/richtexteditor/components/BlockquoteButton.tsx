@@ -7,7 +7,7 @@ export function BlockquoteButton({ editor, iconSize }): JSX.Element {
   return (
     <ToolbarToggleButton
       onClick={() => editor.chain().focus().toggleBlockquote().run()}
-      isActive={editor.isActive("blockquote")}
+      isActive={editor?.isActive("blockquote")}
       title="Quote"
     >
       <Icons.IconBlockquote size={iconSize} />

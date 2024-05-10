@@ -28,6 +28,13 @@ query ListNotifications($page: Int, $perPage: Int) {
                   name
                 }
               }
+
+              ... on ActivityContentGoalClosing {
+                goal {
+                  id
+                  name
+                }
+              }
             }
           }
         }
@@ -126,6 +133,8 @@ query ListNotifications($page: Int, $perPage: Int) {
             id
             name
           }
+
+          success
         }
 
         ... on ActivityContentGoalArchived {

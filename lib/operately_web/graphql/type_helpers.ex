@@ -44,4 +44,14 @@ defmodule OperatelyWeb.Graphql.TypeHelpers do
     end
   end
 
+  defmacro activity_content_field(field_name, field_type) do
+    quote do
+      field unquote(field_name), unquote(field_type) do
+        resolve fn activity, _, _ ->
+          {:ok, activity.content[Atom.to_string(unquote(field_name))]}
+        end
+      end
+    end
+  end
+
 end

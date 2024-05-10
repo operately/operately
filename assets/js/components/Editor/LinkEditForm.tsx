@@ -48,9 +48,9 @@ export function LinkEditForm({ editor }): JSX.Element {
     setLink(editor?.isActive("link") ? editor?.getAttributes("link").href : "");
 
     if (linkEditActive) {
-      editor.chain().setHighlight({ color: "var(--color-stale-selection)" }).run();
+      editor?.chain().setHighlight({ color: "var(--color-stale-selection)" }).run();
     } else {
-      editor.chain().unsetHighlight().run();
+      editor?.chain().unsetHighlight().run();
     }
   }, [editor, linkEditActive, isSelectionLink]);
 
