@@ -69,6 +69,15 @@ query GetActivity($id: ID!) {
           type
         }
       }
+
+      ... on ActivityContentGoalClosing {
+        success
+
+        goal {
+          id
+          name
+        }
+      }
     }
   }
 }

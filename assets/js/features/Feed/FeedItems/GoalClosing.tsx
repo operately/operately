@@ -3,6 +3,9 @@ import * as People from "@/models/people";
 
 import { FeedItem, Container } from "../FeedItem";
 import { GoalLink } from "../shared/GoalLink";
+import { Paths } from "@/routes/paths";
+import { Link } from "@/components/Link";
+import { FeedItemContent } from "@/features/activities/GoalClosing";
 
 export const GoalClosing: FeedItem = {
   typename: "ActivityContentGoalClosing",
@@ -11,6 +14,8 @@ export const GoalClosing: FeedItem = {
       id
       name
     }
+
+    success
   `,
   component: ({ activity, content, page }) => {
     return (
@@ -18,15 +23,19 @@ export const GoalClosing: FeedItem = {
         title={<Title activity={activity} page={page} content={content} />}
         author={activity.author}
         time={activity.insertedAt}
+        content={<FeedItemContent activity={activity} />}
       />
     );
   },
 };
 
 function Title({ activity, content, page }) {
+  const activityPath = Paths.goalActivityPath(content.goal.id, activity.id);
+  const activityLink = <Link to={activityPath}>closed</Link>;
+
   return (
     <>
-      {People.shortName(activity.author)} closed <GoalLink goal={content.goal} page={page} showOnGoalPage />
+      {People.shortName(activity.author)} {activityLink} <GoalLink goal={content.goal} page={page} showOnGoalPage />
     </>
   );
 }

@@ -319,6 +319,43 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal's timeframe change"})
   end
 
+  step :comment_on_the_goal_closed, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "goal-closing")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("I think we did a great job!")
+    |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_comment_on_the_goal_closing_feed_posted, ctx do
+    ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.reviewer,
+      title: "commented on goal closing",
+      subtitle: "I think we did a great job!"
+    })
+  end
+
+  step :assert_comment_on_the_goal_closing_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on goal closing"
+    })
+  end
+
+  step :assert_comment_on_the_goal_closing_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal closing"})
+  end
+
   step :close_goal, ctx, params do
     ctx
     |> UI.click(testid: "goal-options")

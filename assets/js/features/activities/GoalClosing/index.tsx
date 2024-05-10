@@ -4,7 +4,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { Activity, ActivityContentGoalClosing } from "@/models/activities";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import RichContent from "@/components/RichContent";
+import RichContent, { Summary } from "@/components/RichContent";
 
 export function PageTitle(_props: { activity: any }) {
   return <>Goal closed</>;
@@ -22,6 +22,24 @@ export function PageContent({ activity }: { activity: Activity }) {
       {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
         <div className="mt-4">
           <RichContent jsonContent={activity.commentThread.message} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function FeedItemContent({ activity }: { activity: Activity }) {
+  const content = activity.content as ActivityContentGoalClosing;
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 my-2">
+        {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
+      </div>
+
+      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+        <div className="mt-2">
+          <Summary jsonContent={activity.commentThread.message} characterCount={300} />
         </div>
       )}
     </div>

@@ -68,6 +68,39 @@ export function FeedItemTitle({ activity, content, page }) {
   );
 }
 
+export function FeedItemContent({ activity }: { activity: Activity }) {
+  const content = activity.content as ActivityContentGoalTimeframeEditing;
+
+  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
+  const newTimeframe = Timeframes.parse(content.newTimeframe);
+
+  return (
+    <div className="my-2">
+      <div className="flex items-center gap-1 text-sm">
+        <div className="flex items-center gap-1 font-medium">
+          <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
+            {Timeframes.format(oldTimeframe)}
+          </div>
+        </div>
+
+        <Icons.IconArrowRight size={14} />
+
+        <div className="flex items-center gap-1 font-medium">
+          <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
+            {Timeframes.format(newTimeframe)}
+          </div>
+        </div>
+      </div>
+
+      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+        <div className="mt-2">
+          <RichContent jsonContent={activity.commentThread.message} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function extendedOrShortened(activity: Activity) {
   const content = activity.content as ActivityContentGoalTimeframeEditing;
 

@@ -3,5 +3,21 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.goal_url(@goal.id), "View Goal") %>
+  <%= if @success == "yes" do %>
+    Marked as accomplished
+  <% else %>
+    Marked as not accomplished
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= rich_text(@message) %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@link, "Discuss") %>
 <% end %>
