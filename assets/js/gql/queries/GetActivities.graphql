@@ -79,6 +79,13 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
           name
         }
       }
+
+      ... on ActivityContentGoalCheckIn {
+        goal {
+          id
+          name
+        }
+      }
     }
   }
 }

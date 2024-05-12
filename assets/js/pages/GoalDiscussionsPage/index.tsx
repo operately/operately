@@ -30,7 +30,7 @@ export const loader = async function ({ params }): Promise<LoaderResult> {
     activities: await Activities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,
-      actions: ["goal_timeframe_editing", "goal_closing"],
+      actions: ["goal_timeframe_editing", "goal_closing", "goal_check_in"],
     }),
   };
 };
@@ -74,10 +74,10 @@ function ActivityList() {
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
   const path = activityPagePath(activity);
-  const commentThread = activity.commentThread;
+  // const commentThread = activity.commentThread;
 
-  if (!commentThread) return null;
-  if (isContentEmpty(commentThread.message)) return null;
+  // if (!commentThread) return null;
+  // if (isContentEmpty(commentThread.message)) return null;
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">

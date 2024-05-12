@@ -17,6 +17,10 @@ export function activityPagePath(activity: Activity) {
       const content = activity.content as ActivityContentGoalClosing;
       return Paths.goalActivityPath(content.goal.id, activity.id);
     })
+    .with("ActivityContentGoalCheckIn", () => {
+      const content = activity.content as ActivityContentGoalClosing;
+      return Paths.goalActivityPath(content.goal.id, activity.id);
+    })
     .otherwise(() => {
       throw new Error("Unknown activity type");
     });
@@ -30,6 +34,9 @@ export function ActivityPageTitle({ activity }: { activity: Activity }) {
     .with("ActivityContentGoalClosing", () => {
       return <GoalClosing.PageTitle activity={activity} />;
     })
+    .with("ActivityContentGoalCheckIn", () => {
+      return "hello";
+    })
     .otherwise(() => {
       throw new Error("Unknown activity type");
     });
@@ -42,6 +49,9 @@ export function ActivityPageContent({ activity }: { activity: Activity }) {
     })
     .with("ActivityContentGoalClosing", () => {
       return <GoalClosing.PageContent activity={activity} />;
+    })
+    .with("ActivityContentGoalCheckIn", () => {
+      return "hello";
     })
     .otherwise(() => {
       throw new Error("Unknown activity type");
