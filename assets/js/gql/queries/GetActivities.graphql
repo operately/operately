@@ -94,6 +94,24 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
           updatableId
           insertedAt
           commentsCount
+
+          content {
+            __typename
+
+            ... on UpdateContentGoalCheckIn {
+              message
+
+              targets {
+                id
+                name
+                value
+                previousValue
+                unit
+                from
+                to
+              }
+            }
+          }
         }
       }
     }

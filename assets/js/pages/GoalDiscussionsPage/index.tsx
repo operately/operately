@@ -91,16 +91,16 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
         </div>
       </div>
 
-      <div className="flex items-start gap-3 ">
+      <div className="flex items-start gap-3 flex-1">
         <Avatar person={activity.author} size={40} />
 
         <div className="flex items-start justify-between gap-4 flex-1">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full">
             <div className="text-content-accent font-bold leading-none test-sm">
               <ActivityPageTitle activity={activity} />
             </div>
 
-            <div className="mt-2">
+            <div className="w-full">
               <ActivityPageContent activity={activity} />
             </div>
 

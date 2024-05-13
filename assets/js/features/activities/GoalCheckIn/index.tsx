@@ -1,7 +1,10 @@
 import React from "react";
+import RichContent from "@/components/RichContent";
 
 import { Paths } from "@/routes/paths";
 import type { Activity, ActivityContentGoalCheckIn } from "@/models/activities";
+
+import { ConditionChanges } from "./ConditionChanges";
 
 export default {
   pagePath(activity: Activity): string {
@@ -17,16 +20,23 @@ export default {
     return <>Goal Check-In</>;
   },
 
-  PageContent(_props: { activity: Activity }) {
-    return "Hello";
+  PageContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalCheckIn;
+
+    return (
+      <div className="flex flex-col gap-4">
+        <RichContent jsonContent={content.update.message} />
+        <ConditionChanges update={content.update} />
+      </div>
+    );
   },
 
   FeedItemContent(_props: { activity: Activity }) {
-    return "Hello";
+    throw new Error("Not implemented");
   },
 
   FeedItemTitle(_props: { activity: Activity }) {
-    return "Hello";
+    throw new Error("Not implemented");
   },
 
   commentCount(activity: Activity): number {

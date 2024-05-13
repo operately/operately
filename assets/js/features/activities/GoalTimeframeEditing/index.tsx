@@ -37,7 +37,7 @@ export default {
     const newTimeframe = Timeframes.parse(content.newTimeframe);
 
     return (
-      <div>
+      <div className="mt-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 font-medium">
             <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
