@@ -25,7 +25,11 @@ export default {
     return "Hello";
   },
 
-  hasComments(activity: Activity): boolean {
+  commentCount(_activity: Activity): number {
+    return 0;
+  },
+
+  hasComments(_activity: Activity): boolean {
     return false;
   },
 };

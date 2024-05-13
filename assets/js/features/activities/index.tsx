@@ -10,6 +10,10 @@ export function activityHasComments(activity: Activity) {
   return handler(activity).hasComments(activity);
 }
 
+export function activityCommentCount(activity: Activity) {
+  return handler(activity).commentCount(activity);
+}
+
 export function ActivityPageTitle({ activity }: { activity: Activity }) {
   return React.createElement(handler(activity).PageTitle, { activity });
 }

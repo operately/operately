@@ -16,7 +16,13 @@ import Avatar from "@/components/Avatar";
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
 
-import { activityPagePath, activityHasComments, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+import {
+  activityPagePath,
+  activityHasComments,
+  activityCommentCount,
+  ActivityPageTitle,
+  ActivityPageContent,
+} from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -107,7 +113,7 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
                 <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
                   <Icons.IconMessage size={14} />{" "}
                   <DivLink to={path} className="hover:underline cursor-pointer">
-                    {plurarize(activity.commentThread!.commentsCount, "comment", "comments")}
+                    {plurarize(activityCommentCount(activity), "comment", "comments")}
                   </DivLink>
                 </div>
               )}

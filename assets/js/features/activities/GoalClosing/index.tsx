@@ -53,6 +53,10 @@ export default {
     );
   },
 
+  commentCount(activity: Activity): number {
+    return activity.commentThread?.commentsCount || 0;
+  },
+
   hasComments(activity: Activity): boolean {
     return !!activity.commentThread;
   },
