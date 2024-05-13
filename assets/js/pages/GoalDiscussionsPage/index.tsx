@@ -15,9 +15,8 @@ import Avatar from "@/components/Avatar";
 
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
-import { activityPagePath, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+import { activityPagePath, activityHasComments, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -74,10 +73,6 @@ function ActivityList() {
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
   const path = activityPagePath(activity);
-  // const commentThread = activity.commentThread;
-
-  // if (!commentThread) return null;
-  // if (isContentEmpty(commentThread.message)) return null;
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">
@@ -108,7 +103,7 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
                 Discuss
               </FilledButton>
 
-              {activity.commentThread!.commentsCount > 0 && (
+              {activityHasComments(activity) && (
                 <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
                   <Icons.IconMessage size={14} />{" "}
                   <DivLink to={path} className="hover:underline cursor-pointer">

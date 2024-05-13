@@ -1,58 +1,49 @@
 import * as React from "react";
-import { Paths } from "@/routes/paths";
 
-import type { Activity, ActivityContentGoalTimeframeEditing, ActivityContentGoalClosing } from "@/models/activities";
-import { match } from "ts-pattern";
-
-import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
-import * as GoalClosing from "@/features/activities/GoalClosing";
+import type { Activity } from "@/models/activities";
 
 export function activityPagePath(activity: Activity) {
-  return match(activity.content.__typename)
-    .with("ActivityContentGoalTimeframeEditing", () => {
-      const content = activity.content as ActivityContentGoalTimeframeEditing;
-      return Paths.goalActivityPath(content.goal.id, activity.id);
-    })
-    .with("ActivityContentGoalClosing", () => {
-      const content = activity.content as ActivityContentGoalClosing;
-      return Paths.goalActivityPath(content.goal.id, activity.id);
-    })
-    .with("ActivityContentGoalCheckIn", () => {
-      const content = activity.content as ActivityContentGoalClosing;
-      return Paths.goalActivityPath(content.goal.id, activity.id);
-    })
-    .otherwise(() => {
-      throw new Error("Unknown activity type");
-    });
+  return handler(activity).pagePath(activity);
+}
+
+export function activityHasComments(activity: Activity) {
+  return handler(activity).hasComments(activity);
 }
 
 export function ActivityPageTitle({ activity }: { activity: Activity }) {
-  return match(activity.content.__typename)
-    .with("ActivityContentGoalTimeframeEditing", () => {
-      return <GoalTimeframeEditing.PageTitle activity={activity} />;
-    })
-    .with("ActivityContentGoalClosing", () => {
-      return <GoalClosing.PageTitle activity={activity} />;
-    })
-    .with("ActivityContentGoalCheckIn", () => {
-      return "hello";
-    })
-    .otherwise(() => {
-      throw new Error("Unknown activity type");
-    });
+  return React.createElement(handler(activity).PageTitle, { activity });
 }
 
 export function ActivityPageContent({ activity }: { activity: Activity }) {
+  return React.createElement(handler(activity).PageContent, { activity });
+}
+
+export function FeedItemContent({ activity }: { activity: Activity }) {
+  return React.createElement(handler(activity).FeedItemContent, { activity });
+}
+
+export function FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
+  return React.createElement(handler(activity).FeedItemTitle, { activity, content, page });
+}
+
+//
+// Private API
+//
+// Implementing a strategy pattern to handle different types of activities.
+// Each activity type has its own module in the features/activities directory.
+//
+
+import { match } from "ts-pattern";
+
+import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
+import GoalClosing from "@/features/activities/GoalClosing";
+import GoalCheckIn from "@/features/activities/GoalCheckIn";
+
+function handler(activity: Activity) {
   return match(activity.content.__typename)
-    .with("ActivityContentGoalTimeframeEditing", () => {
-      return <GoalTimeframeEditing.PageContent activity={activity} />;
-    })
-    .with("ActivityContentGoalClosing", () => {
-      return <GoalClosing.PageContent activity={activity} />;
-    })
-    .with("ActivityContentGoalCheckIn", () => {
-      return "hello";
-    })
+    .with("ActivityContentGoalTimeframeEditing", () => GoalTimeframeEditing)
+    .with("ActivityContentGoalClosing", () => GoalClosing)
+    .with("ActivityContentGoalCheckIn", () => GoalCheckIn)
     .otherwise(() => {
       throw new Error("Unknown activity type");
     });

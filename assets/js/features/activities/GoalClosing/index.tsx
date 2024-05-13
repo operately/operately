@@ -5,46 +5,58 @@ import * as Icons from "@tabler/icons-react";
 import { Activity, ActivityContentGoalClosing } from "@/models/activities";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
+import { Paths } from "@/routes/paths";
 
-export function PageTitle(_props: { activity: any }) {
-  return <>Goal closed</>;
-}
+export default {
+  pagePath(activity: Activity): string {
+    const content = activity.content as ActivityContentGoalClosing;
+    return Paths.goalActivityPath(content.goal.id, activity.id);
+  },
 
-export function PageContent({ activity }: { activity: Activity }) {
-  const content = activity.content as ActivityContentGoalClosing;
+  PageTitle(_props: { activity: any }) {
+    return <>Goal closed</>;
+  },
 
-  return (
-    <div>
-      <div className="flex items-center gap-3">
-        {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
-      </div>
+  PageContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalClosing;
 
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-4">
-          <RichContent jsonContent={activity.commentThread.message} />
+    return (
+      <div>
+        <div className="flex items-center gap-3">
+          {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
         </div>
-      )}
-    </div>
-  );
-}
 
-export function FeedItemContent({ activity }: { activity: Activity }) {
-  const content = activity.content as ActivityContentGoalClosing;
-
-  return (
-    <div>
-      <div className="flex items-center gap-3 my-2">
-        {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <div className="mt-4">
+            <RichContent jsonContent={activity.commentThread.message} />
+          </div>
+        )}
       </div>
+    );
+  },
 
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-2">
-          <Summary jsonContent={activity.commentThread.message} characterCount={300} />
+  FeedItemContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalClosing;
+
+    return (
+      <div>
+        <div className="flex items-center gap-3 my-2">
+          {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
         </div>
-      )}
-    </div>
-  );
-}
+
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <div className="mt-2">
+            <Summary jsonContent={activity.commentThread.message} characterCount={300} />
+          </div>
+        )}
+      </div>
+    );
+  },
+
+  hasComments(activity: Activity): boolean {
+    return !!activity.commentThread;
+  },
+};
 
 function AcomplishedBadge() {
   return (

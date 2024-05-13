@@ -85,6 +85,10 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
           id
           name
         }
+
+        update {
+          id
+        }
       }
     }
   }
