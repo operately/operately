@@ -162,7 +162,7 @@ test.js.dead.code:
 	./devenv bash -c "cd assets && npm --no-update-notifier run knip"
 
 test.tsc.lint:
-	./devenv bash -c "scripts/tsc_lint.sh"
+	./devenv bash -c "cd assets && npx tsc --noEmit -p ."
 
 #
 # Building a docker image
