@@ -13,8 +13,8 @@ import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export default {
-  htmlTitle() {
-    return `Goal timeframe ${extendedOrShortened}`;
+  pageHtmlTitle(_activity: Activity) {
+    return `Goal timeframe change`;
   },
 
   pagePath(activity: Activity) {

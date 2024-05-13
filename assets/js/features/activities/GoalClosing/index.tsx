@@ -8,6 +8,10 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 export default {
+  pageHtmlTitle(_activity: Activity) {
+    return `Goal closed`;
+  },
+
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalClosing;
     return Paths.goalActivityPath(content.goal.id, activity.id);

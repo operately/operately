@@ -9,6 +9,10 @@ export default {
     return Paths.goalCheckInPath(content.goal.id, content.update.id);
   },
 
+  pageHtmlTitle(_activity: Activity): string {
+    return "Goal Check-In";
+  },
+
   PageTitle(_props: { activity: any }) {
     return <>Goal Check-In</>;
   },
@@ -25,11 +29,12 @@ export default {
     return "Hello";
   },
 
-  commentCount(_activity: Activity): number {
-    return 0;
+  commentCount(activity: Activity): number {
+    const content = activity.content as ActivityContentGoalCheckIn;
+    return content.update.commentsCount;
   },
 
   hasComments(_activity: Activity): boolean {
-    return false;
+    return true;
   },
 };

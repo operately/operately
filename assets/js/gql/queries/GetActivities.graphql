@@ -88,6 +88,12 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
 
         update {
           id
+          title
+          message
+          messageType
+          updatableId
+          insertedAt
+          commentsCount
         }
       }
     }

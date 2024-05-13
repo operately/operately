@@ -6,6 +6,10 @@ export function activityPagePath(activity: Activity) {
   return handler(activity).pagePath(activity);
 }
 
+export function activityPageHtmlTitle(activity: Activity) {
+  return handler(activity).pageHtmlTitle(activity);
+}
+
 export function activityHasComments(activity: Activity) {
   return handler(activity).hasComments(activity);
 }
