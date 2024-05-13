@@ -8,10 +8,10 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
+import { FilledButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 
-import classnames from "classnames";
 import plurarize from "@/utils/plurarize";
 
 interface HeaderProps {
@@ -28,13 +28,17 @@ export function Header({ goal, activeTab }: HeaderProps) {
       <div className="flex-1">
         <ParentGoal goal={goal.parentGoal} />
 
-        <div className={classnames("flex gap-3 items-start", "text-content-accent")}>
+        <div className="flex items-start text-content-accent gap-3">
           <div className="bg-red-500/10 p-1.5 rounded-lg">
             <Icons.IconTarget size={24} className="text-red-500" />
           </div>
 
-          <div className="gap-2 mt-1">
-            <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
+          <div className="gap-2 mt-1 w-full">
+            <div className="flex items-start gap-4 justify-between">
+              <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
+              <UpdateProgressButton goal={goal} />
+            </div>
+
             <Timeframe goal={goal} />
           </div>
         </div>
@@ -194,4 +198,19 @@ function TimeframeState({ goal }) {
       </span>
     );
   }
+}
+
+function UpdateProgressButton({ goal }) {
+  if (!goal.permissions.canCheckIn) return null;
+  if (goal.isClosed || goal.isArchived) return null;
+
+  const path = Paths.goalCheckInNewPath(goal.id);
+
+  return (
+    <div className="mt-1">
+      <FilledButton linkTo={path} testId="check-in-now" size="sm" type="primary">
+        Update Progress
+      </FilledButton>
+    </div>
+  );
 }
