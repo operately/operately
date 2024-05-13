@@ -7,7 +7,7 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 import { SuccessConditions } from "@/features/goals/SuccessConditions";
-import { LastCheckInAuthor, LastCheckInMessage } from "@/features/goals/GoalCheckIn";
+import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -37,7 +37,6 @@ export function Page() {
           <Header goal={goal} activeTab="status" />
 
           <div className="flex flex-col gap-8 mt-8">
-            <LastCheckInAuthor goal={goal} />
             <SuccessConditions goal={goal} />
             <LastCheckInMessage goal={goal} />
           </div>

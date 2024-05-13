@@ -16,6 +16,9 @@ import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Pages from "@/components/Pages";
 
+import plurarize from "@/utils/plurarize";
+import { DivLink } from "@/components/Link";
+
 export function LastCheckInMessage({ goal }) {
   const { data, loading } = People.useMe({});
   if (loading) return null;
@@ -24,24 +27,28 @@ export function LastCheckInMessage({ goal }) {
 
   const message = goal.lastCheckIn.content.message;
   const path = Paths.goalCheckInPath(goal.id, goal.lastCheckIn.id);
+  const author = goal.lastCheckIn.author;
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="text-xs font-bold uppercase">Last Update Message</div>
-
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1 border border-stroke-base p-4 py-3 shadow-sm rounded-lg w-full min-h-[180px]">
-          <RichContent jsonContent={message} />
+    <div className="flex items-start gap-4 border-t border-stroke-base pt-8">
+      <Avatar person={author} size={40} />
+      <div className="flex flex-col gap-1 -mt-1">
+        <div className="font-semibold">
+          Last progress update on <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
         </div>
 
-        <div className="flex items-center justify-between">
-          <LastMessageReactions goal={goal} me={data.me} />
-          <div className="flex items-center gap-3">
-            <LastMessageComments goal={goal} />
+        <div className="flex flex-col gap-3">
+          <div className="w-3/4">
+            <RichContent jsonContent={message} />
+          </div>
 
-            <FilledButton linkTo={path} size="xs" type="primary">
+          <div className="flex items-center gap-3">
+            <LastMessageReactions goal={goal} me={data.me} />
+            <FilledButton linkTo={path} size="xs" type="secondary">
               Discuss
             </FilledButton>
+
+            <LastMessageComments goal={goal} />
           </div>
         </div>
       </div>
@@ -52,13 +59,16 @@ export function LastCheckInMessage({ goal }) {
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  if (goal.lastCheckIn.commentsCount === 0) {
-    return <div className="text-sm text-content-dimmed">No comments</div>;
-  } else if (goal.lastCheckIn.commentsCount === 1) {
-    return <div className="text-sm text-content-dimmed">1 comment</div>;
-  } else {
-    return <div className="text-sm text-content-dimmed">{goal.lastCheckIn.commentsCount} comments</div>;
-  }
+  const path = Paths.goalCheckInPath(goal.id, goal.lastCheckIn.id);
+
+  return (
+    <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
+      <Icons.IconMessage size={14} />{" "}
+      <DivLink to={path} className="hover:underline cursor-pointer">
+        {plurarize(goal.lastCheckIn?.commentsCount, "comment", "comments")}
+      </DivLink>
+    </div>
+  );
 }
 
 function LastMessageReactions({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
