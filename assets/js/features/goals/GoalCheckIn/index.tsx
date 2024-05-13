@@ -30,7 +30,7 @@ export function LastCheckInMessage({ goal }) {
   const author = goal.lastCheckIn.author;
 
   return (
-    <div className="flex items-start gap-4 border-t border-stroke-base pt-8">
+    <div className="flex items-start gap-4">
       <Avatar person={author} size={40} />
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
