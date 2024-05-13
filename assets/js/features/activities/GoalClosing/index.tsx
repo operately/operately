@@ -1,13 +1,18 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalClosing } from "@/models/activities";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
-export default {
+import { Commentable, Feedable, Pageable } from "./../interfaces";
+import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { Link } from "@/components/Link";
+
+const GoalClosing: Commentable & Feedable & Pageable = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal closed`;
   },
@@ -57,6 +62,17 @@ export default {
     );
   },
 
+  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
+    const path = Paths.goalActivityPath(content.goal.id, activity.id);
+    const link = <Link to={path}>closed</Link>;
+
+    return (
+      <>
+        {People.shortName(activity.author)} {link} <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+      </>
+    );
+  },
+
   commentCount(activity: Activity): number {
     return activity.commentThread?.commentsCount || 0;
   },
@@ -65,6 +81,8 @@ export default {
     return !!activity.commentThread;
   },
 };
+
+export default GoalClosing;
 
 function AcomplishedBadge() {
   return (

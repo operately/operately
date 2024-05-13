@@ -23,7 +23,7 @@ export const GoalClosing: FeedItem = {
         title={<Title activity={activity} page={page} content={content} />}
         author={activity.author}
         time={activity.insertedAt}
-        content={<FeedItemContent activity={activity} />}
+        content={<FeedItemContent activity={activity} content={content} page={page} />}
       />
     );
   },

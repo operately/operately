@@ -11,8 +11,9 @@ import { Activity, ActivityContentGoalTimeframeEditing } from "@/gql";
 
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { Commentable, Feedable, Pageable } from "./../interfaces";
 
-export default {
+const GoalTimeframeEditing: Commentable & Feedable & Pageable = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal timeframe change`;
   },
@@ -115,6 +116,8 @@ export default {
     return !!activity.commentThread;
   },
 };
+
+export default GoalTimeframeEditing;
 
 function extendedOrShortened(activity: Activity) {
   const content = activity.content as ActivityContentGoalTimeframeEditing;

@@ -6,7 +6,9 @@ import type { Activity, ActivityContentGoalCheckIn } from "@/models/activities";
 
 import { ConditionChanges } from "./ConditionChanges";
 
-export default {
+import { Commentable, Feedable, Pageable } from "./../interfaces";
+
+const GoalCheckIn: Commentable & Feedable & Pageable = {
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalCheckIn;
     return Paths.goalCheckInPath(content.goal.id, content.update.id);
@@ -48,3 +50,5 @@ export default {
     return true;
   },
 };
+
+export default GoalCheckIn;

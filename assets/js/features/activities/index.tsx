@@ -26,8 +26,8 @@ export function ActivityPageContent({ activity }: { activity: Activity }) {
   return React.createElement(handler(activity).PageContent, { activity });
 }
 
-export function FeedItemContent({ activity }: { activity: Activity }) {
-  return React.createElement(handler(activity).FeedItemContent, { activity });
+export function FeedItemContent({ activity, content, page }: { activity: Activity; content: any; page: any }) {
+  return React.createElement(handler(activity).FeedItemContent, { activity, content, page });
 }
 
 export function FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {

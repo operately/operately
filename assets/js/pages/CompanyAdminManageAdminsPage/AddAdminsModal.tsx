@@ -76,7 +76,7 @@ function PeopleListItem({ selected, state }) {
 function SearchField({ onSelect, loader, placeholder, alreadySelected }) {
   const [selected, setSelected] = React.useState(null);
 
-  const onChange = (value: Person | null): void => {
+  const onChange = (value: Option | null): void => {
     onSelect(value);
     setSelected(null);
   };
