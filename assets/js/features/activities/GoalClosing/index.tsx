@@ -1,50 +1,88 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalClosing } from "@/models/activities";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
+import { Paths } from "@/routes/paths";
 
-export function PageTitle(_props: { activity: any }) {
-  return <>Goal closed</>;
-}
+import { Commentable, Feedable, Pageable } from "./../interfaces";
+import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { Link } from "@/components/Link";
 
-export function PageContent({ activity }: { activity: Activity }) {
-  const content = activity.content as ActivityContentGoalClosing;
+const GoalClosing: Commentable & Feedable & Pageable = {
+  pageHtmlTitle(_activity: Activity) {
+    return `Goal closed`;
+  },
 
-  return (
-    <div>
-      <div className="flex items-center gap-3">
-        {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
-      </div>
+  pagePath(activity: Activity): string {
+    const content = activity.content as ActivityContentGoalClosing;
+    return Paths.goalActivityPath(content.goal.id, activity.id);
+  },
 
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-4">
-          <RichContent jsonContent={activity.commentThread.message} />
+  PageTitle(_props: { activity: any }) {
+    return <>Goal closed</>;
+  },
+
+  PageContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalClosing;
+
+    return (
+      <div>
+        <div className="flex items-center gap-3">
+          {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
         </div>
-      )}
-    </div>
-  );
-}
 
-export function FeedItemContent({ activity }: { activity: Activity }) {
-  const content = activity.content as ActivityContentGoalClosing;
-
-  return (
-    <div>
-      <div className="flex items-center gap-3 my-2">
-        {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <div className="mt-4">
+            <RichContent jsonContent={activity.commentThread.message} />
+          </div>
+        )}
       </div>
+    );
+  },
 
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-2">
-          <Summary jsonContent={activity.commentThread.message} characterCount={300} />
+  FeedItemContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalClosing;
+
+    return (
+      <div>
+        <div className="flex items-center gap-3 my-2">
+          {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
         </div>
-      )}
-    </div>
-  );
-}
+
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <div className="mt-2">
+            <Summary jsonContent={activity.commentThread.message} characterCount={300} />
+          </div>
+        )}
+      </div>
+    );
+  },
+
+  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
+    const path = Paths.goalActivityPath(content.goal.id, activity.id);
+    const link = <Link to={path}>closed</Link>;
+
+    return (
+      <>
+        {People.shortName(activity.author)} {link} <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+      </>
+    );
+  },
+
+  commentCount(activity: Activity): number {
+    return activity.commentThread?.commentsCount || 0;
+  },
+
+  hasComments(activity: Activity): boolean {
+    return !!activity.commentThread;
+  },
+};
+
+export default GoalClosing;
 
 function AcomplishedBadge() {
   return (

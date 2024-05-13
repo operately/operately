@@ -79,6 +79,41 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
           name
         }
       }
+
+      ... on ActivityContentGoalCheckIn {
+        goal {
+          id
+          name
+        }
+
+        update {
+          id
+          title
+          message
+          messageType
+          updatableId
+          insertedAt
+          commentsCount
+
+          content {
+            __typename
+
+            ... on UpdateContentGoalCheckIn {
+              message
+
+              targets {
+                id
+                name
+                value
+                previousValue
+                unit
+                from
+                to
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

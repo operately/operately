@@ -4,7 +4,6 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
-import * as GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { CommentThread } from "@/gql";
@@ -14,7 +13,7 @@ import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
-import { ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+import { activityPageHtmlTitle, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -32,10 +31,9 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function Page() {
   const { goal, activity, me } = Pages.useLoadedData<LoaderResult>();
-  const title = GoalTimeframeEditing.htmlTitle();
 
   return (
-    <Pages.Page title={[title, goal.name]}>
+    <Pages.Page title={[activityPageHtmlTitle(activity), goal.name]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 

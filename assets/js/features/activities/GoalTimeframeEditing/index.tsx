@@ -11,95 +11,113 @@ import { Activity, ActivityContentGoalTimeframeEditing } from "@/gql";
 
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { Commentable, Feedable, Pageable } from "./../interfaces";
 
-export function htmlTitle() {
-  return `Goal timeframe ${extendedOrShortened}`;
-}
+const GoalTimeframeEditing: Commentable & Feedable & Pageable = {
+  pageHtmlTitle(_activity: Activity) {
+    return `Goal timeframe change`;
+  },
 
-export function PageTitle({ activity }) {
-  return (
-    <>
-      Timeframe {extendedOrShortened(activity)} by {days(activity)} days
-    </>
-  );
-}
+  pagePath(activity: Activity) {
+    const content = activity.content as ActivityContentGoalTimeframeEditing;
+    return Paths.goalActivityPath(content.goal.id, activity.id);
+  },
 
-export function PageContent({ activity }: { activity: Activity }) {
-  const content = activity.content as ActivityContentGoalTimeframeEditing;
+  PageTitle({ activity }) {
+    return (
+      <>
+        Timeframe {extendedOrShortened(activity)} by {days(activity)} days
+      </>
+    );
+  },
 
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-  const newTimeframe = Timeframes.parse(content.newTimeframe);
+  PageContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalTimeframeEditing;
 
-  return (
-    <div>
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 font-medium">
-          <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
-            {Timeframes.format(oldTimeframe)}
+    const oldTimeframe = Timeframes.parse(content.oldTimeframe);
+    const newTimeframe = Timeframes.parse(content.newTimeframe);
+
+    return (
+      <div className="mt-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 font-medium">
+            <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
+              {Timeframes.format(oldTimeframe)}
+            </div>
+          </div>
+
+          <Icons.IconArrowRight size={16} />
+
+          <div className="flex items-center gap-1 font-medium">
+            <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
+              {Timeframes.format(newTimeframe)}
+            </div>
           </div>
         </div>
 
-        <Icons.IconArrowRight size={16} />
-
-        <div className="flex items-center gap-1 font-medium">
-          <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
-            {Timeframes.format(newTimeframe)}
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <div className="mt-4">
+            <RichContent jsonContent={activity.commentThread.message} />
           </div>
-        </div>
+        )}
       </div>
+    );
+  },
 
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-4">
-          <RichContent jsonContent={activity.commentThread.message} />
-        </div>
-      )}
-    </div>
-  );
-}
+  FeedItemTitle({ activity, content, page }) {
+    const path = Paths.goalActivityPath(content.goal.id, activity.id);
 
-export function FeedItemTitle({ activity, content, page }) {
-  const path = Paths.goalActivityPath(content.goal.id, activity.id);
+    return (
+      <>
+        {People.shortName(activity.author)} <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link> for{" "}
+        <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+      </>
+    );
+  },
 
-  return (
-    <>
-      {People.shortName(activity.author)} <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link> for{" "}
-      <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
-    </>
-  );
-}
+  FeedItemContent({ activity }: { activity: Activity }) {
+    const content = activity.content as ActivityContentGoalTimeframeEditing;
 
-export function FeedItemContent({ activity }: { activity: Activity }) {
-  const content = activity.content as ActivityContentGoalTimeframeEditing;
+    const oldTimeframe = Timeframes.parse(content.oldTimeframe);
+    const newTimeframe = Timeframes.parse(content.newTimeframe);
 
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-  const newTimeframe = Timeframes.parse(content.newTimeframe);
+    return (
+      <div className="my-2">
+        <div className="flex items-center gap-1 text-sm">
+          <div className="flex items-center gap-1 font-medium">
+            <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
+              {Timeframes.format(oldTimeframe)}
+            </div>
+          </div>
 
-  return (
-    <div className="my-2">
-      <div className="flex items-center gap-1 text-sm">
-        <div className="flex items-center gap-1 font-medium">
-          <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
-            {Timeframes.format(oldTimeframe)}
+          <Icons.IconArrowRight size={14} />
+
+          <div className="flex items-center gap-1 font-medium">
+            <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
+              {Timeframes.format(newTimeframe)}
+            </div>
           </div>
         </div>
 
-        <Icons.IconArrowRight size={14} />
-
-        <div className="flex items-center gap-1 font-medium">
-          <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
-            {Timeframes.format(newTimeframe)}
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <div className="mt-2">
+            <RichContent jsonContent={activity.commentThread.message} />
           </div>
-        </div>
+        )}
       </div>
+    );
+  },
 
-      {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-        <div className="mt-2">
-          <RichContent jsonContent={activity.commentThread.message} />
-        </div>
-      )}
-    </div>
-  );
-}
+  commentCount(activity: Activity): number {
+    return activity.commentThread?.commentsCount || 0;
+  },
+
+  hasComments(activity: Activity): boolean {
+    return !!activity.commentThread;
+  },
+};
+
+export default GoalTimeframeEditing;
 
 function extendedOrShortened(activity: Activity) {
   const content = activity.content as ActivityContentGoalTimeframeEditing;

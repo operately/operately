@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { FeedItem, Container } from "../FeedItem";
-import { FeedItemTitle, FeedItemContent } from "@/features/activities/GoalTimeframeEditing";
+import { FeedItemTitle, FeedItemContent } from "@/features/activities";
 
 export const GoalTimeframeEditing: FeedItem = {
   typename: "ActivityContentGoalTimeframeEditing",
@@ -31,7 +31,7 @@ export const GoalTimeframeEditing: FeedItem = {
         title={<FeedItemTitle activity={activity} content={content} page={page} />}
         author={activity.author}
         time={activity.insertedAt}
-        content={<FeedItemContent activity={activity} />}
+        content={<FeedItemContent activity={activity} content={content} page={page} />}
       />
     );
   },

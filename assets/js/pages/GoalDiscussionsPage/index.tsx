@@ -15,9 +15,14 @@ import Avatar from "@/components/Avatar";
 
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
-import { activityPagePath, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+import {
+  activityPagePath,
+  activityHasComments,
+  activityCommentCount,
+  ActivityPageTitle,
+  ActivityPageContent,
+} from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -30,7 +35,7 @@ export const loader = async function ({ params }): Promise<LoaderResult> {
     activities: await Activities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,
-      actions: ["goal_timeframe_editing", "goal_closing"],
+      actions: ["goal_timeframe_editing", "goal_closing", "goal_check_in"],
     }),
   };
 };
@@ -74,10 +79,6 @@ function ActivityList() {
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
   const path = activityPagePath(activity);
-  const commentThread = activity.commentThread;
-
-  if (!commentThread) return null;
-  if (isContentEmpty(commentThread.message)) return null;
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">
@@ -90,16 +91,16 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
         </div>
       </div>
 
-      <div className="flex items-start gap-3 ">
+      <div className="flex items-start gap-3 flex-1">
         <Avatar person={activity.author} size={40} />
 
         <div className="flex items-start justify-between gap-4 flex-1">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full">
             <div className="text-content-accent font-bold leading-none test-sm">
               <ActivityPageTitle activity={activity} />
             </div>
 
-            <div className="mt-2">
+            <div className="w-full">
               <ActivityPageContent activity={activity} />
             </div>
 
@@ -108,11 +109,11 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
                 Discuss
               </FilledButton>
 
-              {activity.commentThread!.commentsCount > 0 && (
+              {activityHasComments(activity) && (
                 <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
                   <Icons.IconMessage size={14} />{" "}
                   <DivLink to={path} className="hover:underline cursor-pointer">
-                    {plurarize(activity.commentThread!.commentsCount, "comment", "comments")}
+                    {plurarize(activityCommentCount(activity), "comment", "comments")}
                   </DivLink>
                 </div>
               )}
