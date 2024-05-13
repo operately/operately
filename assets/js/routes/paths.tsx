@@ -95,6 +95,10 @@ export class Paths {
     return createPath(["goals", goalId, "check-ins", checkInId]);
   }
 
+  static goalCheckInNewPath(goalId: string) {
+    return createPath(["goals", goalId, "check-ins", "new"]);
+  }
+
   static goalDiscussionsPath(goalId: string) {
     return createPath(["goals", goalId, "discussions"]);
   }
