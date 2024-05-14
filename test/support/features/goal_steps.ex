@@ -410,6 +410,16 @@ defmodule Operately.Support.Features.GoalSteps do
     })
   end
 
+  step :assert_goal_reopened_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "reopened the #{ctx.goal.name} goal"
+    })
+  end
+
   step :assert_goal_closed_feed_posted, ctx do
     ctx
     |> UI.visit("/goals/#{ctx.goal.id}")
