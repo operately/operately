@@ -7,6 +7,7 @@ import * as Editor from "@/components/Editor";
 import { Paths } from "@/routes/paths";
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
+import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -55,20 +56,31 @@ interface FormState {
 }
 
 function useForm(goal: Goals.Goal): FormState {
+  const navigate = useNavigate();
+
   const messageEditor = Editor.useEditor({
     placeholder: "Write here...",
     className: "min-h-[200px] py-2 font-medium",
   });
 
-  const cancelPath = Paths.goalPath(goal.id);
+  const goalPath = Paths.goalPath(goal.id);
+
+  const [reopen] = Goals.useReopenGoalMutation({ onCompleted: () => navigate(goalPath) });
 
   const submit = async () => {
-    // Submit the form
+    await reopen({
+      variables: {
+        input: {
+          id: goal.id,
+          message: JSON.stringify(messageEditor.editor.getJSON()),
+        },
+      },
+    });
   };
 
   return {
     messageEditor,
-    cancelPath,
+    cancelPath: goalPath,
     submit,
   };
 }

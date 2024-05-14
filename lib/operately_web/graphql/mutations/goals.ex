@@ -68,9 +68,10 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
 
       resolve fn %{input: input}, %{context: context} ->
         author = context.current_account.person
+        goal_id = input.id
         message = input.message
 
-        Operately.Operations.GoalReopening.run(author, input, message)
+        Operately.Operations.GoalReopening.run(author, goal_id, message)
       end
     end
 
