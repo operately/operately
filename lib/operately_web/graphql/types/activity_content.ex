@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_goal_closing,
     :activity_content_goal_created,
     :activity_content_goal_editing,
+    :activity_content_goal_reopening,
     :activity_content_goal_reparent,
     :activity_content_goal_timeframe_editing,
     :activity_content_group_edited,

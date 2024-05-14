@@ -16,6 +16,7 @@ import { GoalCheckInEdit } from "./GoalCheckInEdit"
 import { GoalClosing } from "./GoalClosing"
 import { GoalCreated } from "./GoalCreated"
 import { GoalEditing } from "./GoalEditing"
+import { GoalReopening } from "./GoalReopening"
 import { GoalReparent } from "./GoalReparent"
 import { GoalTimeframeEditing } from "./GoalTimeframeEditing"
 import { ProjectArchived } from "./ProjectArchived"
@@ -52,6 +53,7 @@ const FeedItems : FeedItem[] = [
   GoalClosing,
   GoalCreated,
   GoalEditing,
+  GoalReopening,
   GoalReparent,
   GoalTimeframeEditing,
   ProjectArchived,
