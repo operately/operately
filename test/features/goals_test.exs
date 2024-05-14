@@ -96,7 +96,7 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_reopened()
     |> Steps.assert_goal_reopened_email_sent()
     |> Steps.assert_goal_reopened_feed_posted()
-    # |> Steps.assert_goal_reopened_notification_sent()
+    |> Steps.assert_goal_reopened_notification_sent()
   end
 
   @tag login_as: :champion

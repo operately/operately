@@ -420,6 +420,16 @@ defmodule Operately.Support.Features.GoalSteps do
     })
   end
 
+  step :assert_goal_reopened_feed_posted, ctx do
+    ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened this goal"})
+    |> UI.visit("/spaces/#{ctx.group.id}")
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
+    |> UI.visit("/feed")
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
+  end
+
   step :assert_goal_closed_feed_posted, ctx do
     ctx
     |> UI.visit("/goals/#{ctx.goal.id}")
@@ -437,6 +447,16 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "closed the #{ctx.goal.name} goal"
+    })
+  end
+
+  step :assert_goal_reopened_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "reopened the #{ctx.goal.name} goal"
     })
   end
 

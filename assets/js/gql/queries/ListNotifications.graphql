@@ -137,6 +137,13 @@ query ListNotifications($page: Int, $perPage: Int) {
           success
         }
 
+        ... on ActivityContentGoalReopening {
+          goal {
+            id
+            name
+          }
+        }
+
         ... on ActivityContentGoalArchived {
           goal {
             id
