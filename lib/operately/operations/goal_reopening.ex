@@ -2,6 +2,8 @@ defmodule Operately.Operations.GoalReopening do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.Goals
+  alias Operately.Comments.CommentThread
 
   @action :goal_reopening
 

@@ -1,26 +1,12 @@
 defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalReopening do
   use Absinthe.Schema.Notation
 
+  import OperatelyWeb.Graphql.TypeHelpers
+
   object :activity_content_goal_reopening do
-    field :company_id, non_null(:string) do
-      resolve fn activity, _, _ ->
-        {:ok, activity.content["company_id"]}
-      end
-    end
-    
-    
-    field :space_id, non_null(:string) do
-      resolve fn activity, _, _ ->
-        {:ok, activity.content["space_id"]}
-      end
-    end
-    
-    
-    field :goal_id, non_null(:string) do
-      resolve fn activity, _, _ ->
-        {:ok, activity.content["goal_id"]}
-      end
-    end
-    
+    activity_content_field :company_id, :string
+    activity_content_field :goal_id, :string
+    activity_content_field :message, :string
   end
+
 end
