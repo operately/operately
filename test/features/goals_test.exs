@@ -95,7 +95,7 @@ defmodule Operately.Features.GoalTest do
     |> Steps.reopen_goal(%{message: "It was too early to close it. Reopening."})
     |> Steps.assert_goal_reopened()
     |> Steps.assert_goal_reopened_email_sent()
-    # |> Steps.assert_goal_reopened_feed_posted()
+    |> Steps.assert_goal_reopened_feed_posted()
     # |> Steps.assert_goal_reopened_notification_sent()
   end
 

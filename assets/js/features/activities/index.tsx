@@ -45,12 +45,14 @@ import { match } from "ts-pattern";
 
 import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 import GoalClosing from "@/features/activities/GoalClosing";
+import GoalReopening from "@/features/activities/GoalReopening";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
 
 function handler(activity: Activity) {
   return match(activity.content.__typename)
     .with("ActivityContentGoalTimeframeEditing", () => GoalTimeframeEditing)
     .with("ActivityContentGoalClosing", () => GoalClosing)
+    .with("ActivityContentGoalReopening", () => GoalReopening)
     .with("ActivityContentGoalCheckIn", () => GoalCheckIn)
     .otherwise(() => {
       throw new Error("Unknown activity type");
