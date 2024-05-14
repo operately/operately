@@ -33,7 +33,7 @@ defmodule Operately.Support.Features.GoalSteps do
         %{
           name: "First response time",
           from: 30,
-          to: 15,
+         to: 15,
           unit: "minutes",
           index: 0
         },
@@ -362,17 +362,27 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "close-goal")
     |> UI.assert_text("Close Goal")
     |> UI.click(testid: "success-#{params.success}")
+    |> then(fn ctx ->
+      Enum.reduce(params.targets || [], ctx, fn {name, value}, ctx ->
+        ctx |> UI.fill(testid: testid(["target", name, "value"]), with: to_string(value))
+      end)
+    end)
     |> UI.fill_rich_text(params.retrospective)
     |> UI.click(testid: "confirm-close-goal")
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end
 
-  step :assert_goal_closed, ctx, %{success: success} do
+  step :assert_goal_closed, ctx, params do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
+    goal = Operately.Repo.preload(goal, [:targets])
 
     assert goal.closed_at != nil
     assert goal.closed_by_id == ctx.champion.id
-    assert goal.success == success
+    assert goal.success == params.success
+
+    Enum.each(params.targets || [], fn {name, value} ->
+      assert Enum.find(goal.targets, fn t -> t.name == name end).value == value
+    end)
 
     ctx 
     |> UI.assert_page("/goals/#{ctx.goal.id}")
@@ -523,5 +533,9 @@ defmodule Operately.Support.Features.GoalSteps do
       author: ctx.champion,
       action: "added the #{goal_name} goal"
     })
+  end
+
+  defp testid(parts) do
+    parts |> Enum.map(fn part -> String.replace(part, " ", "-") |> String.downcase() end) |> Enum.join("-")
   end
 end

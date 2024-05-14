@@ -88,6 +88,20 @@ defmodule Operately.Features.GoalTest do
   end
 
   @tag login_as: :champion
+  feature "closing a goal and adjusting the condition's values", ctx do
+    params = %{
+      success: "yes", 
+      retrospective: "We did it!", 
+      targets: %{"First response time" => 20, "Customer satisfaction" => 83}
+    }
+
+    ctx
+    |> Steps.visit_page()
+    |> Steps.close_goal(params)
+    |> Steps.assert_goal_closed(params)
+  end
+
+  @tag login_as: :champion
   feature "editing the goal's timeframe", ctx do
     ctx
     |> Steps.visit_page()
