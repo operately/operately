@@ -8,7 +8,8 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
-import { useForm, FormData } from "./useForm";
+import { useForm, FormState } from "./useForm";
+import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -24,6 +25,7 @@ export function Page() {
         <Paper.Body minHeight="none">
           <PageTitle />
           <SuccessQuestion form={form} />
+          <TargetInputs form={form} />
           <Retrospective form={form} />
 
           <div className="flex items-center gap-6 mt-8">
@@ -40,7 +42,7 @@ function PageTitle() {
   return <div className="text-content-accent text-3xl font-extrabold">Close Goal</div>;
 }
 
-function Retrospective({ form }: { form: FormData }) {
+function Retrospective({ form }: { form: FormState }) {
   return (
     <div className="mt-6">
       <div className="font-bold mb-2">Retrospective notes:</div>
@@ -52,7 +54,7 @@ function Retrospective({ form }: { form: FormData }) {
   );
 }
 
-function SuccessQuestion({ form }: { form: FormData }) {
+function SuccessQuestion({ form }: { form: FormState }) {
   return (
     <div className="mt-6">
       <div className="font-bold mb-2">Did you accomplish this goal?</div>
@@ -72,10 +74,45 @@ function SuccessQuestion({ form }: { form: FormData }) {
   );
 }
 
-function SubmitButton({ form }: { form: FormData }) {
+function SubmitButton({ form }: { form: FormState }) {
   return (
     <FilledButton onClick={form.submit} testId="confirm-close-goal">
       Close Goal
     </FilledButton>
+  );
+}
+
+function TargetInputs({ form }: { form: FormState }) {
+  return (
+    <div className="mt-6">
+      <div className="font-bold mb-2">Final Status of Success Conditions</div>
+      <div className="flex flex-col gap-4">
+        {form.targets.map((target, index) => {
+          return (
+            <div
+              className="flex items-center justify-between bg-surface-dimmed border border-stroke-base p-3 rounded"
+              key={index}
+            >
+              <div className="flex flex-col">
+                <div className="font-semibold text-content-accent">{target.name}</div>
+                <div className="text-content-dimmed text-sm">
+                  Target: {target.to} {target.unit}
+                </div>
+              </div>
+
+              <div className="">
+                <Forms.TextInputNoLabel
+                  id={target.id}
+                  testId={createTestId("target", target.name, "value")}
+                  value={target.value?.toString() || ""}
+                  onChange={(value: string) => form.updateTarget(target.id, value === "" ? null : Number(value))}
+                  error={!!form.errors.find((e) => e.field === target.id)}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
