@@ -367,6 +367,16 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end
 
+  step :reopen_goal, ctx, params do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "reopen-goal")
+    |> UI.assert_text("Reopening Goal")
+    |> UI.fill_rich_text(params.message)
+    |> UI.click(testid: "confirm-reopen-goal")
+    |> UI.assert_page("/goals/#{ctx.goal.id}")
+  end
+
   step :assert_goal_closed, ctx, %{success: success} do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 

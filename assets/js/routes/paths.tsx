@@ -115,6 +115,10 @@ export class Paths {
     return createPath(["goals", goalId, "complete"]);
   }
 
+  static reopenGoalPath(goalId: string) {
+    return createPath(["goals", goalId, "reopen"]);
+  }
+
   static archiveGoalPath(goalId: string) {
     return createPath(["goals", goalId, "archive"]);
   }

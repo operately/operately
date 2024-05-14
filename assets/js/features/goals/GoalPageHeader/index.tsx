@@ -140,6 +140,15 @@ function Options({ goal }) {
         />
       )}
 
+      {goal.permissions.canClose && goal.isClosed && (
+        <PageOptions.Link
+          icon={Icons.IconRotateDot}
+          title="Reopen Goal"
+          to={Paths.reopenGoalPath(goal.id)}
+          dataTestId="reopen-goal"
+        />
+      )}
+
       {goal.permissions.canArchive && !goal.isArchived && (
         <PageOptions.Link
           icon={Icons.IconTrash}
