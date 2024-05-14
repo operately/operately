@@ -389,6 +389,17 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text("This goal was closed on")
   end
 
+  step :assert_goal_reopened, ctx do
+    goal = Operately.Goals.get_goal!(ctx.goal.id)
+
+    refute goal.closed_at
+    refute goal.closed_by_id
+
+    ctx 
+    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.refute_text("This goal was closed on")
+  end
+
   step :assert_goal_closed_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
