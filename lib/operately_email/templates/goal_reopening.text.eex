@@ -1,1 +1,3 @@
-<%= raise "Text Email for GoalReopening not implemented" %>
+<%= short_name(@author) %> reopened the goal "<%= @goal.name %>".
+
+Link: <%= @link %>
