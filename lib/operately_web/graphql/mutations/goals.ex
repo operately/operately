@@ -57,7 +57,24 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :comment, :string
   end
 
+  input_object :reopen_goal_input do
+    field :id, non_null(:string)
+    field :message, non_null(:string)
+  end
+
   object :goal_mutations do
+    field :reopen_goal, non_null(:goal) do
+      arg :input, non_null(:reopen_goal_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        goal_id = input.id
+        message = input.message
+
+        Operately.Operations.GoalReopening.run(author, goal_id, message)
+      end
+    end
+
     field :edit_goal_timeframe, non_null(:goal) do
       arg :input, non_null(:edit_goal_timeframe_input)
 

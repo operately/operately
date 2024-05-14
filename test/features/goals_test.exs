@@ -88,6 +88,18 @@ defmodule Operately.Features.GoalTest do
   end
 
   @tag login_as: :champion
+  feature "re-opening a closed goal", ctx do
+    ctx
+    |> Steps.visit_page()
+    |> Steps.close_goal(%{success: "yes", retrospective: "We did it!"})
+    |> Steps.reopen_goal(%{message: "It was too early to close it. Reopening."})
+    |> Steps.assert_goal_reopened()
+    |> Steps.assert_goal_reopened_email_sent()
+    |> Steps.assert_goal_reopened_feed_posted()
+    |> Steps.assert_goal_reopened_notification_sent()
+  end
+
+  @tag login_as: :champion
   feature "editing the goal's timeframe", ctx do
     ctx
     |> Steps.visit_page()

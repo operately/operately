@@ -367,6 +367,16 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_page("/goals/#{ctx.goal.id}")
   end
 
+  step :reopen_goal, ctx, params do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "reopen-goal")
+    |> UI.assert_text("Reopening Goal")
+    |> UI.fill_rich_text(params.message)
+    |> UI.click(testid: "confirm-reopen-goal")
+    |> UI.assert_page("/goals/#{ctx.goal.id}")
+  end
+
   step :assert_goal_closed, ctx, %{success: success} do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 
@@ -379,6 +389,17 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text("This goal was closed on")
   end
 
+  step :assert_goal_reopened, ctx do
+    goal = Operately.Goals.get_goal!(ctx.goal.id)
+
+    refute goal.closed_at
+    refute goal.closed_by_id
+
+    ctx 
+    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.refute_text("This goal was closed on")
+  end
+
   step :assert_goal_closed_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
@@ -387,6 +408,26 @@ defmodule Operately.Support.Features.GoalSteps do
       author: ctx.champion,
       action: "closed the #{ctx.goal.name} goal"
     })
+  end
+
+  step :assert_goal_reopened_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.group.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "reopened the #{ctx.goal.name} goal"
+    })
+  end
+
+  step :assert_goal_reopened_feed_posted, ctx do
+    ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened this goal"})
+    |> UI.visit("/spaces/#{ctx.group.id}")
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
+    |> UI.visit("/feed")
+    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
   end
 
   step :assert_goal_closed_feed_posted, ctx do
@@ -406,6 +447,16 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "closed the #{ctx.goal.name} goal"
+    })
+  end
+
+  step :assert_goal_reopened_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "reopened the #{ctx.goal.name} goal"
     })
   end
 

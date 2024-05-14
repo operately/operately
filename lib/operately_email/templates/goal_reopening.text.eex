@@ -1,0 +1,3 @@
+<%= short_name(@author) %> reopened the goal "<%= @goal.name %>".
+
+Link: <%= @link %>

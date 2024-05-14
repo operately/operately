@@ -30,6 +30,7 @@ import * as GoalEditParentPage from "./GoalEditParentPage";
 import * as GoalEditTimeframePage from "./GoalEditTimeframePage";
 import * as GoalNewCheckInPage from "./GoalNewCheckInPage";
 import * as GoalPage from "./GoalPage";
+import * as GoalReopenPage from "./GoalReopenPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsPage from "./GoalsPage";
 import * as GroupAddPage from "./GroupAddPage";
@@ -184,6 +185,10 @@ export default {
   GoalPage: {
     loader: GoalPage.loader,
     Page: GoalPage.Page
+  },
+  GoalReopenPage: {
+    loader: GoalReopenPage.loader,
+    Page: GoalReopenPage.Page
   },
   GoalSubgoalsPage: {
     loader: GoalSubgoalsPage.loader,

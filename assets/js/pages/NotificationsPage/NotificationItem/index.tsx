@@ -14,6 +14,7 @@ import GoalCheckInAcknowledgement from "./GoalCheckInAcknowledgement"
 import GoalClosing from "./GoalClosing"
 import GoalCreated from "./GoalCreated"
 import GoalEditing from "./GoalEditing"
+import GoalReopening from "./GoalReopening"
 import GoalTimeframeEditing from "./GoalTimeframeEditing"
 import ProjectArchived from "./ProjectArchived"
 import ProjectCheckInAcknowledged from "./ProjectCheckInAcknowledged"
@@ -66,6 +67,9 @@ export default function NotificationItem({notification}) : JSX.Element | null {
     
     case "ActivityContentGoalEditing":
       return <GoalEditing notification={notification} />;
+    
+    case "ActivityContentGoalReopening":
+      return <GoalReopening notification={notification} />;
     
     case "ActivityContentGoalTimeframeEditing":
       return <GoalTimeframeEditing notification={notification} />;
