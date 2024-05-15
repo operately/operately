@@ -213,11 +213,11 @@ function UpdateProgressButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 
-  const path = Paths.goalCheckInNewPath(goal.id);
+  const path = Paths.goalProgressUpdateNewPath(goal.id);
 
   return (
     <div className="mt-1">
-      <FilledButton linkTo={path} testId="check-in-now" size="sm" type="primary">
+      <FilledButton linkTo={path} testId="update-progress-button" size="sm" type="primary">
         Update Progress
       </FilledButton>
     </div>

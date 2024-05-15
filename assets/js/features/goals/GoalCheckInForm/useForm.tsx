@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Validators } from "@/utils/validators";
+import { Paths } from "@/routes/paths";
 
 interface Error {
   field: string;
@@ -41,20 +42,20 @@ export function useForm(options: UseFormOptions): FormState {
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const editor = TipTapEditor.useEditor({
-    placeholder: `Write your updates here...`,
+    placeholder: `Write here...`,
     peopleSearch: People.usePeopleSearch(),
-    className: "min-h-[350px] py-2 font-medium",
+    className: "min-h-[250px] py-2 font-medium",
     content: options.checkIn && JSON.parse(options.checkIn.message),
   });
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);
 
   const [post, { loading: submittingPost }] = GoalCheckIns.usePostUpdate({
-    onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.createUpdate.id}`),
+    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.createUpdate.id)),
   });
 
   const [edit, { loading: submittingEdit }] = GoalCheckIns.useEditUpdate({
-    onCompleted: (data: any) => navigate(`/goals/${goal.id}/check-ins/${data.editUpdate.id}`),
+    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.editUpdate.id)),
   });
 
   const submit = async (): Promise<boolean> => {

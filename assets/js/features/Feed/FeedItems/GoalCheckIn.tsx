@@ -1,21 +1,37 @@
 import * as React from "react";
-import * as People from "@/models/people";
-import * as Time from "@/utils/time";
 
-import { Summary } from "@/components/RichContent";
-import { Link } from "@/components/Link";
 import { FeedItem, Container } from "../FeedItem";
-import { Paths } from "@/routes/paths";
-
-import FormattedTime from "@/components/FormattedTime";
+import { FeedItemTitle, FeedItemContent } from "@/features/activities";
 
 export const GoalCheckIn: FeedItem = {
   typename: "ActivityContentGoalCheckIn",
   contentQuery: `
     update {
       id
+      title
       message
+      messageType
+      updatableId
       insertedAt
+      commentsCount
+
+      content {
+        __typename
+
+        ... on UpdateContentGoalCheckIn {
+          message
+
+          targets {
+            id
+            name
+            value
+            previousValue
+            unit
+            from
+            to
+          }
+        }
+      }
     }
 
     goal {
@@ -25,31 +41,13 @@ export const GoalCheckIn: FeedItem = {
   `,
 
   component: ({ activity, content, page }) => {
-    const update = content.update;
-    const goal = content.goal;
-
-    const insertedAt = Time.parseISO(update.insertedAt);
-    const time = <FormattedTime time={insertedAt} format="long-date" />;
-
-    const path = Paths.goalCheckInPath(goal.id, update.id);
-    const link = <Link to={path}>Check-In on {time}</Link>;
-    const goalPath = Paths.goalPath(goal.id);
-
-    const title = (
-      <>
-        {People.shortName(activity.author)} submitted: {link}{" "}
-        <>
-          {page !== "goal" && (
-            <>
-              for the <Link to={goalPath}>{goal.name}</Link> goal
-            </>
-          )}{" "}
-        </>
-      </>
+    return (
+      <Container
+        title={<FeedItemTitle activity={activity} content={content} page={page} />}
+        author={activity.author}
+        time={activity.insertedAt}
+        content={<FeedItemContent activity={activity} content={content} page={page} />}
+      />
     );
-
-    const summary = <Summary jsonContent={update.message} characterCount={200} />;
-
-    return <Container title={title} author={activity.author} time={activity.insertedAt} content={summary} />;
   },
 };

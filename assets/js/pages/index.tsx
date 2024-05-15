@@ -20,16 +20,15 @@ import * as GoalAboutPage from "./GoalAboutPage";
 import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
 import * as GoalArchivePage from "./GoalArchivePage";
-import * as GoalCheckInEditPage from "./GoalCheckInEditPage";
-import * as GoalCheckInPage from "./GoalCheckInPage";
-import * as GoalCheckInsPage from "./GoalCheckInsPage";
 import * as GoalClosingPage from "./GoalClosingPage";
 import * as GoalDiscussionsPage from "./GoalDiscussionsPage";
 import * as GoalEditPage from "./GoalEditPage";
 import * as GoalEditParentPage from "./GoalEditParentPage";
 import * as GoalEditTimeframePage from "./GoalEditTimeframePage";
-import * as GoalNewCheckInPage from "./GoalNewCheckInPage";
 import * as GoalPage from "./GoalPage";
+import * as GoalProgressUpdateEditPage from "./GoalProgressUpdateEditPage";
+import * as GoalProgressUpdateNewPage from "./GoalProgressUpdateNewPage";
+import * as GoalProgressUpdatePage from "./GoalProgressUpdatePage";
 import * as GoalReopenPage from "./GoalReopenPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsPage from "./GoalsPage";
@@ -146,18 +145,6 @@ export default {
     loader: GoalArchivePage.loader,
     Page: GoalArchivePage.Page
   },
-  GoalCheckInEditPage: {
-    loader: GoalCheckInEditPage.loader,
-    Page: GoalCheckInEditPage.Page
-  },
-  GoalCheckInPage: {
-    loader: GoalCheckInPage.loader,
-    Page: GoalCheckInPage.Page
-  },
-  GoalCheckInsPage: {
-    loader: GoalCheckInsPage.loader,
-    Page: GoalCheckInsPage.Page
-  },
   GoalClosingPage: {
     loader: GoalClosingPage.loader,
     Page: GoalClosingPage.Page
@@ -178,13 +165,21 @@ export default {
     loader: GoalEditTimeframePage.loader,
     Page: GoalEditTimeframePage.Page
   },
-  GoalNewCheckInPage: {
-    loader: GoalNewCheckInPage.loader,
-    Page: GoalNewCheckInPage.Page
-  },
   GoalPage: {
     loader: GoalPage.loader,
     Page: GoalPage.Page
+  },
+  GoalProgressUpdateEditPage: {
+    loader: GoalProgressUpdateEditPage.loader,
+    Page: GoalProgressUpdateEditPage.Page
+  },
+  GoalProgressUpdateNewPage: {
+    loader: GoalProgressUpdateNewPage.loader,
+    Page: GoalProgressUpdateNewPage.Page
+  },
+  GoalProgressUpdatePage: {
+    loader: GoalProgressUpdatePage.loader,
+    Page: GoalProgressUpdatePage.Page
   },
   GoalReopenPage: {
     loader: GoalReopenPage.loader,

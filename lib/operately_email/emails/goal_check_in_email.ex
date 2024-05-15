@@ -12,7 +12,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "submitted a check-in")
+    |> subject(where: goal.name, who: author, action: "updated the progress")
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)

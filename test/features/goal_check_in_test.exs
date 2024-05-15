@@ -1,78 +1,44 @@
 defmodule Operately.Features.GoalCheckInTest do
   use Operately.FeatureCase
+  alias Operately.Support.Features.GoalCheckInSteps, as: Steps
 
-  alias Operately.Support.Features.GoalSteps
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
-  alias Operately.Support.Features.FeedSteps
-
-  setup ctx do
-    ctx = GoalSteps.create_goal(ctx)
-    ctx = UI.login_based_on_tag(ctx)
-
-    {:ok, ctx}
-  end
+  setup ctx, do: Steps.setup(ctx)
 
   @tag login_as: :champion
   feature "check-in on a goal", ctx do
+    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
+
     ctx
-    |> GoalSteps.visit_page()
-    |> GoalSteps.submit_check_in("Checking-in on my goal", target_values: [20, 80])
-    |> GoalSteps.assert_check_in_submitted("Checking-in on my goal", target_values: [20, 80])
-    |> GoalSteps.assert_check_in_visible_in_goal_feed()
-    |> GoalSteps.assert_check_in_email_sent_to_reviewer()
+    |> Steps.visit_page()
+    |> Steps.update_progress(params)
+    |> Steps.assert_progress_updated(params)
+    |> Steps.assert_progress_update_in_feed()
+    |> Steps.assert_progress_update_in_notifications()
   end
 
   @tag login_as: :champion
-  feature "acknowledging a check-in", ctx do
-    ctx
-    |> GoalSteps.visit_page()
-    |> UI.click(testid: "check-in-now")
-    |> UI.fill_rich_text("Checking-in on my goal")
-    |> UI.click(testid: "submit-check-in")
-    |> UI.assert_text("Check-In from")
+  feature "acknowledge a progress update", ctx do
+    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
 
     ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_goal_check_in_sent(author: ctx.champion)
-    |> UI.click(testid: "notification-check-in-submitted")
-    |> UI.click(testid: "acknowledge-check-in")
-    |> UI.assert_text("Acknowledged by #{ctx.reviewer.full_name}")
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.goal.name,
-      to: ctx.champion,
-      author: ctx.reviewer,
-      action: "acknowledged your check-in"
-    })
-
-    ctx
-    |> GoalSteps.visit_page()
-    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.reviewer)
-
-    ctx
-    |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.assert_goal_check_acknowledgement_sent(author: ctx.reviewer)
+    |> Steps.visit_page()
+    |> Steps.update_progress(params)
+    |> Steps.acknowledge_progress_update()
+    |> Steps.assert_acknowledge_email_sent()
+    |> Steps.assert_progress_update_acknowledged_in_feed()
+    |> Steps.assert_progress_update_acknowledged_in_notifications()
   end
 
   @tag login_as: :champion
-  feature "edit a submitted check-in", ctx do
-    ctx
-    |> GoalSteps.visit_page()
-    |> UI.click(testid: "check-in-now")
-    |> UI.fill_rich_text("Checking-in on my goal")
-    |> UI.click(testid: "submit-check-in")
-    |> UI.assert_text("Check-In from")
-    |> UI.assert_text("Checking-in on my goal")
+  feature "edit a submitted progress update", ctx do
+    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
+    edit_params = %{message: "This is an edited check-in.", target_values: [30, 70]}
 
     ctx
-    |> UI.click(testid: "options-button")
-    |> UI.click(testid: "edit-check-in")
-    |> UI.fill_rich_text("This is an edited check-in.")
-    |> UI.click(testid: "save-changes")
-    |> UI.assert_text("Check-In from")
-    |> UI.assert_text("This is an edited check-in.")
+    |> Steps.visit_page()
+    |> Steps.update_progress(params)
+    |> Steps.edit_progress_update(edit_params)
+    |> Steps.assert_progress_update_edited(edit_params)
   end
   
 end

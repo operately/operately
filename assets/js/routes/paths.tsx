@@ -91,12 +91,16 @@ export class Paths {
     return createPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
-  static goalCheckInPath(goalId: string, checkInId: string) {
-    return createPath(["goals", goalId, "check-ins", checkInId]);
+  static goalProgressUpdatePath(goalId: string, checkInId: string) {
+    return createPath(["goals", goalId, "progress-updates", checkInId]);
   }
 
-  static goalCheckInNewPath(goalId: string) {
-    return createPath(["goals", goalId, "check-ins", "new"]);
+  static goalProgressUpdateNewPath(goalId: string) {
+    return createPath(["goals", goalId, "progress-updates", "new"]);
+  }
+
+  static goalEditProgressUpdatePath(goalId: string, checkInId: string) {
+    return createPath(["goals", goalId, "progress-updates", checkInId, "edit"]);
   }
 
   static goalDiscussionsPath(goalId: string) {

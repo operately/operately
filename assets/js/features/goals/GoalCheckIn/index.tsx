@@ -26,7 +26,7 @@ export function LastCheckInMessage({ goal }) {
   if (!goal.lastCheckIn) return null;
 
   const message = goal.lastCheckIn.content.message;
-  const path = Paths.goalCheckInPath(goal.id, goal.lastCheckIn.id);
+  const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
   const author = goal.lastCheckIn.author;
 
   return (
@@ -34,13 +34,11 @@ export function LastCheckInMessage({ goal }) {
       <Avatar person={author} size={40} />
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
-          Last progress update on <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="w-3/4">
-            <RichContent jsonContent={message} />
-          </div>
+        <div className="flex flex-col gap-3 w-full">
+          <RichContent jsonContent={message} />
 
           <div className="flex items-center gap-3">
             <LastMessageReactions goal={goal} me={data.me} />
@@ -59,7 +57,7 @@ export function LastCheckInMessage({ goal }) {
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const path = Paths.goalCheckInPath(goal.id, goal.lastCheckIn.id);
+  const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
 
   return (
     <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">

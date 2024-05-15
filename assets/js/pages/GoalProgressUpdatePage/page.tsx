@@ -17,6 +17,7 @@ import { AckCTA } from "./AckCTA";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { goal, update, me } = useLoadedData();
@@ -26,7 +27,7 @@ export function Page() {
   const content = update.content as GoalCheckIns.GoalCheckInContent;
 
   return (
-    <Pages.Page title={["Check-In", goal.name]}>
+    <Pages.Page title={["Goal Progress Update", goal.name]}>
       <Paper.Root>
         <Navigation goal={goal} />
 
@@ -87,20 +88,17 @@ function Acknowledgement({ update }) {
 function Title({ update }) {
   return (
     <div className="text-content-accent text-2xl font-extrabold">
-      Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
+      Progress Update from <FormattedTime time={update.insertedAt} format="long-date" />
     </div>
   );
 }
 
 function Navigation({ goal }) {
   const goalPath = createPath("goals", goal.id);
-  const goalCheckInsPath = createPath("goals", goal.id, "check-ins");
 
   return (
     <Paper.Navigation>
       <Paper.NavItem linkTo={goalPath}>{goal.name}</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={goalCheckInsPath}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>
   );
 }
@@ -112,9 +110,9 @@ function Options() {
     <PageOptions.Root position="top-right" testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
-        title="Edit check-in"
-        to={`/goals/${goal.id}/check-ins/${update.id}/edit`}
-        dataTestId="edit-check-in"
+        title="Edit Update"
+        to={Paths.goalEditProgressUpdatePath(goal.id, update.id)}
+        dataTestId="edit-update"
       />
     </PageOptions.Root>
   );

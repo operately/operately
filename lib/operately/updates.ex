@@ -272,7 +272,7 @@ defmodule Operately.Updates do
 
     Multi.new()
     |> Multi.update(:update, changeset)
-    |> Activities.insert(author.id, action, fn _changes -> 
+    |> Activities.insert_sync(author.id, action, fn _changes -> 
       %{
         company_id: author.company_id,
         goal_id: update.updatable_id,
