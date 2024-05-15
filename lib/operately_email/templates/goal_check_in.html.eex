@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} submitted a check-in for the #{@goal.name} goal") %>
+<%= title("#{short_name(@author)} update the progress for the #{@goal.name} goal") %>
 
 <%= spacer() %>
 
@@ -9,5 +9,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.goal_check_in_url(@goal.id, @update.id), "View Check-In") %>
+  <%= cta_button(OperatelyEmail.goal_check_in_url(@goal.id, @update.id), "View Update") %>
 <% end %>

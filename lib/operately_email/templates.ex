@@ -55,7 +55,7 @@ defmodule OperatelyEmail.Templates do
     :project_check_in ->
       "- Check-In #{assignment.url}"
     :goal_check_in ->
-      "- Check-In #{assignment.url}"
+      "- Progress Update #{assignment.url}"
     :milestone ->
       "- Complete the #{assignment.name} milestone #{assignment.url}"
     end
