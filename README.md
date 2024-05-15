@@ -1,50 +1,51 @@
-We are hiring a software engineer. See our [careers page](https://careers.operately.com/).
+We are hiring a software engineer. See our [jobs page](https://operately.com/jobs/).
 
 <hr/> 
 
-<h4>
-  <a href="https://operately.semaphoreci.com/projects/operately">
-    <img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="Operately CI/CD Status" />
-  </a>
-</h4>
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/operately/operately/raw/main/docs/images/logo-black.svg">
+    <img alt="Operately logo" src="https://github.com/operately/operately/raw/main/docs/images/logo-white.svg" height="300px">
+  </picture>
+</div>
+
+<br><br>
+
+<h1 align="center">The Open-Source Startup Operating System</h1>
 
 <p align="center">
-  <img alt="Operately" src="/docs/images/logo-white.svg" height="300px"/>
+  Run your projects, goals, and processes like a high performance startup.
+  <br/>
+  <a href="https://operately.com"><strong>Learn more →</strong></a>
+  <br />
+  <br />
+  <a href="https://discord.gg/qn7aUCep">Discord</a>
+  ·
+  <a href="https://operately.com">Website</a>
+  ·
+  <a href="https://github.com/operately/operately/issues">Issues</a>
+  ·
+  <a href="https://twitter.com/operately">Twitter</a>
 </p>
 
-<h1>The missing startup operating system</h1>
-<p>Run your projects, goals, and processes like a high performance startup.</p>
 
-<h2>Why Operately?</h2>
+<p align="center">
+  <a href="https://github.com/operately/operately/blob/main/LICENSE"><img src="https://img.shields.io/github/license/operately/operately" alt="License"></a>
+  <a href="https://operately.semaphoreci.com/projects/operately"><img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="CI/CD Status" /></a>
+  <a href="https://github.com/operately/operately/pulse"><img src="https://img.shields.io/github/commit-activity/m/operately/operately" alt="GitHub commit activity"/></a>
+  <a href="https://discord.gg/qn7aUCep"><img src="https://img.shields.io/discord/1080898715268698152?label=discord" alt="Discord server" /></a>
+</p>
 
-Running your startup with project management tools and Notion documents? Must be a massive headache. 
-We’ve been there with [Semaphore](https://semaphoreci.com). Figuring out the right systems was tough 
-and implementing them, even tougher. Truth is, every startup needs the same systems to keep 
-people aligned and execute well.
+## About the project
 
-That’s why we’re building Operately: to give every startup the tools to become a high-performance 
+Every startup needs to align on goals, run projects, track KPIs, and standardize processes. However, figuring out the right systems that tie everything together is tough, and keeping them in order, even tougher.
+
+That’s why we’re building Operately: to give startups and SMBs the tools to become a high-performance 
 organization with 10x less effort.
 
-Learn more about Operately:
+This project is in alpha and may experience significant changes.
 
-<ul>
-  <li><a href="https://operately.com">Operately.com</a> — Read our masterplan and how Operately helps with company operations</li>
-  <li><a href="https://twitter.com/operately">Twitter</a> — Follow us on Twitter</li>
-  <li><a href="https://discord.gg/RWWMGwjM">Discord Server</a> — Chat with us about Operately</li>
-  <li><a href="https://blog.operately.com">Blog</a> — Subscribe to our blog</li>
-  <li><a href="https://operately.com/blueprint">The Blueprint</a> — Learn about Operately’s framework for company operations</li>
-  <li><a href="https://blog.operately.com">Careers</a> — See open positions (We are hiring!)</li>
-</ul>
-
-<h2>Features</h2>
-
-<p><strong>Projects</strong><br/>Standardize project management across groups with tailored system that comes pre-loaded with accountability and feedback loops.</p>
-<p><strong>Goals</strong><br/> Bridge your long-term vision with daily tasks and milestones. It’ll be clear if your ship is moving in the right direction and what distractions to avoid.</p>
-<p><strong>Playbook</strong><br/> No more dead letters. The playbook your team will build is made of actionable procedures connected to every role and reponsibility.</p>
-<p><strong>AI coach</strong><br/> Spend less time on internal training and feedback. It’s like every employee having a world-class mentor to help them continuously improve.</p>
-<p><strong>Compliance</strong><br/> Build the right habits from day one. All features are designed to give you the controls you need to meet SOC 2 and ISO 27001 requirements.</p>
-
-<h2>Development</h2>
+## Development
 
 - [How to contribute to Operately](CONTRIBUTING.md)
 - [How to set up your development environment](docs/dev-env.md)
