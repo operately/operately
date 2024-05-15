@@ -26,7 +26,7 @@ export function LastCheckInMessage({ goal }) {
   if (!goal.lastCheckIn) return null;
 
   const message = goal.lastCheckIn.content.message;
-  const path = Paths.goalCheckInPath(goal.id, goal.lastCheckIn.id);
+  const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
   const author = goal.lastCheckIn.author;
 
   return (
@@ -59,7 +59,7 @@ export function LastCheckInMessage({ goal }) {
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const path = Paths.goalCheckInPath(goal.id, goal.lastCheckIn.id);
+  const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
 
   return (
     <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">

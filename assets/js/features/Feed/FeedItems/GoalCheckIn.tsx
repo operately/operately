@@ -31,7 +31,7 @@ export const GoalCheckIn: FeedItem = {
     const insertedAt = Time.parseISO(update.insertedAt);
     const time = <FormattedTime time={insertedAt} format="long-date" />;
 
-    const path = Paths.goalCheckInPath(goal.id, update.id);
+    const path = Paths.goalProgressUpdatePath(goal.id, update.id);
     const link = <Link to={path}>Check-In on {time}</Link>;
     const goalPath = Paths.goalPath(goal.id);
 

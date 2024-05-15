@@ -16,8 +16,8 @@ defmodule OperatelyEmail do
   def project_milestone_url(project_id, milestone_id), do: app_url() <> "/projects/#{project_id}/milestones/#{milestone_id}"
   def project_retrospective_url(project_id), do: app_url() <> "/projects/#{project_id}/retrospective"
   def goal_url(goal_id), do: app_url() <> "/goals/#{goal_id}"
-  def goal_check_in_url(goal_id, check_in_id), do: app_url() <> "/goals/#{goal_id}/check-ins/#{check_in_id}"
-  def goal_new_check_in_url(goal_id), do: app_url() <> "/goals/#{goal_id}/check-ins/new"
+  def goal_check_in_url(goal_id, check_in_id), do: app_url() <> "/goals/#{goal_id}/progress-updates/#{check_in_id}"
+  def goal_new_check_in_url(goal_id), do: app_url() <> "/goals/#{goal_id}/progress-updates/new"
   def goal_activity_url(goal_id, activity_id), do: app_url() <> "/goals/#{goal_id}/activities/#{activity_id}"
   def discussion_url(space_id, discussion_id), do: app_url() <> "/spaces/#{space_id}/discussions/#{discussion_id}"
 end

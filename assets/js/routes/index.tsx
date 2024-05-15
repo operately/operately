@@ -63,10 +63,9 @@ const routes = createBrowserRouter([
       pageRoute("/goals/:goalId/complete", pages.GoalClosingPage),
       pageRoute("/goals/:goalId/reopen", pages.GoalReopenPage),
       pageRoute("/goals/:goalId/archive", pages.GoalArchivePage),
-      pageRoute("/goals/:goalId/check-ins/new", pages.GoalNewCheckInPage),
-      pageRoute("/goals/:goalId/check-ins", pages.GoalCheckInsPage),
-      pageRoute("/goals/:goalId/check-ins/:id", pages.GoalCheckInPage),
-      pageRoute("/goals/:goalId/check-ins/:id/edit", pages.GoalCheckInEditPage),
+      pageRoute("/goals/:goalId/progress-updates/new", pages.GoalProgressUpdateNewPage),
+      pageRoute("/goals/:goalId/progress-updates/:id", pages.GoalProgressUpdatePage),
+      pageRoute("/goals/:goalId/progress-updates/:id/edit", pages.GoalProgressUpdatePage),
       pageRoute("/goals/:goalId/discussions", pages.GoalDiscussionsPage),
       pageRoute("/goals/:goalId/activities/:id", pages.GoalActivityPage),
 

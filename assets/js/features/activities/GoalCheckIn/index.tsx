@@ -11,7 +11,7 @@ import { Commentable, Feedable, Pageable } from "./../interfaces";
 const GoalCheckIn: Commentable & Feedable & Pageable = {
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalCheckIn;
-    return Paths.goalCheckInPath(content.goal.id, content.update.id);
+    return Paths.goalProgressUpdatePath(content.goal.id, content.update.id);
   },
 
   pageHtmlTitle(_activity: Activity): string {

@@ -372,7 +372,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
             <FilledButton
               size="xs"
               type="secondary"
-              linkTo={Paths.goalCheckInPath(goal.id, goal.lastCheckIn!.id)}
+              linkTo={Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn!.id)}
               linkTarget="_blank"
             >
               Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
