@@ -34,13 +34,11 @@ export function LastCheckInMessage({ goal }) {
       <Avatar person={author} size={40} />
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
-          Last progress update on <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="w-3/4">
-            <RichContent jsonContent={message} />
-          </div>
+        <div className="flex flex-col gap-3 w-full">
+          <RichContent jsonContent={message} />
 
           <div className="flex items-center gap-3">
             <LastMessageReactions goal={goal} me={data.me} />

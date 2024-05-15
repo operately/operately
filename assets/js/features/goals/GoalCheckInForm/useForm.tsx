@@ -51,11 +51,11 @@ export function useForm(options: UseFormOptions): FormState {
   const [targets, { update: updateTarget }] = useTargetListState(goal);
 
   const [post, { loading: submittingPost }] = GoalCheckIns.usePostUpdate({
-    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.create.id)),
+    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.createUpdate.id)),
   });
 
   const [edit, { loading: submittingEdit }] = GoalCheckIns.useEditUpdate({
-    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.update.id)),
+    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.editUpdate.id)),
   });
 
   const submit = async (): Promise<boolean> => {

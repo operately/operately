@@ -8,6 +8,10 @@ import { ConditionChanges } from "./ConditionChanges";
 
 import { Commentable, Feedable, Pageable } from "./../interfaces";
 
+import * as People from "@/models/people";
+import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { Link } from "@/components/Link";
+
 const GoalCheckIn: Commentable & Feedable & Pageable = {
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalCheckIn;
@@ -15,30 +19,43 @@ const GoalCheckIn: Commentable & Feedable & Pageable = {
   },
 
   pageHtmlTitle(_activity: Activity): string {
-    return "Goal Check-In";
+    return "Progress Update";
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Goal Check-In</>;
+    return <>Progress Update</>;
   },
 
   PageContent({ activity }: { activity: Activity }) {
     const content = activity.content as ActivityContentGoalCheckIn;
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         <RichContent jsonContent={content.update.message} />
         <ConditionChanges update={content.update} />
       </div>
     );
   },
 
-  FeedItemContent(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  FeedItemContent({ content }: { activity: Activity; content: ActivityContentGoalCheckIn; page: string }) {
+    return (
+      <div className="flex flex-col">
+        <RichContent jsonContent={content.update.message} />
+        <ConditionChanges update={content.update} />
+      </div>
+    );
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  FeedItemTitle({ activity, page }) {
+    const content = activity.content as ActivityContentGoalCheckIn;
+    const path = Paths.goalProgressUpdatePath(content.goal.id, content.update.id);
+
+    return (
+      <>
+        {People.shortName(activity.author)} <Link to={path}>updated the progress</Link> for{" "}
+        <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+      </>
+    );
   },
 
   commentCount(activity: Activity): number {

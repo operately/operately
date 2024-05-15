@@ -7,6 +7,7 @@ import * as React from "react";
 import { FilledButton } from "@/components/Button";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
+import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -29,7 +30,7 @@ export function Page() {
   const form = useForm({ goal, mode: "create" });
 
   return (
-    <Pages.Page title={["Check-In", goal.name]}>
+    <Pages.Page title={["Goal Progress Update", goal.name]}>
       <Paper.Root>
         <Navigation goal={goal} />
 
@@ -46,7 +47,7 @@ export function Page() {
 function Navigation({ goal }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/goals/${goal.id}`}>{goal.name}</Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.goalPath(goal.id)}>{goal.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
