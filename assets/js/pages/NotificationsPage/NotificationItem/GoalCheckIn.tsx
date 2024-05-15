@@ -13,7 +13,7 @@ export default function ({ notification }) {
 
   return (
     <Card
-      testId="notification-check-in-submitted"
+      testId="notification-progress-update-submitted"
       notification={notification}
       title={People.firstName(author) + " updated the progress for " + goal.name}
       author={author}

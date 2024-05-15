@@ -40,7 +40,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   defp record_activity(multi, author, goal) do
     multi
-    |> Activities.insert(author.id, :goal_check_in_edit, fn changes -> %{
+    |> Activities.insert_sync(author.id, :goal_check_in_edit, fn changes -> %{
       company_id: goal.company_id,
       goal_id: goal.id,
       check_in_id: changes.update.id, 
