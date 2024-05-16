@@ -11,6 +11,8 @@ import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -26,12 +28,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function Page() {
   const { goal, me } = Pages.useLoadedData<LoaderResult>();
-
-  const [title, setTitle] = React.useState("");
-  const editor = TipTapEditor.useEditor({
-    placeholder: "Start a new discussion...",
-    className: "min-h-[350px] py-2 text-lg",
-  });
+  const form = useForm({ goal });
 
   return (
     <Pages.Page title={["New Discussion", goal.name]}>
@@ -39,10 +36,10 @@ export function Page() {
         <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body>
-          <FormTitleInput value={title} onChange={setTitle} error={false} testID="discussion-title" />
+          <FormTitleInput value={form.title} onChange={form.setTitle} error={false} testID="discussion-title" />
 
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-            <TipTapEditor.StandardEditorForm editor={editor.editor} />
+            <TipTapEditor.StandardEditorForm editor={form.editor.editor} />
           </div>
 
           <WhoWillBeNotified goal={goal} me={me} />
@@ -58,6 +55,58 @@ export function Page() {
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+type Error = { field: string; message: string };
+
+function useForm({ goal }: { goal: Goals.Goal }) {
+  const navigate = useNavigate();
+  const [title, setTitle] = React.useState("");
+
+  const editor = TipTapEditor.useEditor({
+    placeholder: "Start a new discussion...",
+    className: "min-h-[350px] py-2 text-lg",
+  });
+
+  const [errors, setErrors] = React.useState<Error[]>([]);
+  const [create] = Goals.useCreateGoalDiscussion({
+    onCompleted: (data) => navigate(Paths.goalActivityPath(goal.id, data.createGoalDiscussion.id)),
+  });
+
+  const submit = async () => {
+    const errors = validate(title, editor.editor);
+
+    if (errors.length) {
+      setErrors(errors);
+      return;
+    }
+
+    await create({
+      variables: {
+        input: {
+          goalId: goal.id,
+          title: title,
+          body: JSON.stringify(editor.editor.getJSON()),
+        },
+      },
+    });
+  };
+
+  return { title, setTitle, editor, submit, errors };
+}
+
+function validate(title: string, editor: TipTapEditor.Editor): Error[] {
+  const errors: Error[] = [];
+
+  if (!title) {
+    errors.push({ field: "title", message: "Title is required" });
+  }
+
+  if (isContentEmpty(editor.getJSON())) {
+    errors.push({ field: "body", message: "Body is required" });
+  }
+
+  return errors;
 }
 
 function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
