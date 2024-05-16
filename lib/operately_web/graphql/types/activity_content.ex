@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContent do
     :activity_content_goal_check_in_edit,
     :activity_content_goal_closing,
     :activity_content_goal_created,
+    :activity_content_goal_discussion_creation,
     :activity_content_goal_editing,
     :activity_content_goal_reopening,
     :activity_content_goal_reparent,

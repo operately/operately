@@ -1,4 +1,5 @@
 import { makeQueryFn } from "@/graphql/client";
+export { useCreateGoalDiscussionMutation } from './useCreateGoalDiscussionMutation';
 export { useReopenGoalMutation } from './useReopenGoalMutation';
 
 import { GetGoalsDocument, GetGoalsQueryVariables, GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
