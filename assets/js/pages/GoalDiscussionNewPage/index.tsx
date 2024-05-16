@@ -11,8 +11,9 @@ import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { useNavigate } from "react-router-dom";
+import { Validators } from "@/utils/validators";
+
+import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -36,16 +37,21 @@ export function Page() {
         <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body>
-          <FormTitleInput value={form.title} onChange={form.setTitle} error={false} testID="discussion-title" />
+          <FormTitleInput
+            value={form.fields.title}
+            onChange={form.fields.setTitle}
+            error={false}
+            testID="discussion-title"
+          />
 
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-            <TipTapEditor.StandardEditorForm editor={form.editor.editor} />
+            <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
           </div>
 
           <WhoWillBeNotified goal={goal} me={me} />
 
           <div className="flex items-center gap-4 mt-4">
-            <FilledButton testId="post-discussion" onClick={() => null}>
+            <FilledButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
               Post Discussion
             </FilledButton>
 
@@ -57,10 +63,13 @@ export function Page() {
   );
 }
 
-type Error = { field: string; message: string };
+type Fields = {
+  title: string;
+  setTitle: (title: string) => void;
+  editor: TipTapEditor.EditorState;
+};
 
 function useForm({ goal }: { goal: Goals.Goal }) {
-  const navigate = useNavigate();
   const [title, setTitle] = React.useState("");
 
   const editor = TipTapEditor.useEditor({
@@ -68,45 +77,28 @@ function useForm({ goal }: { goal: Goals.Goal }) {
     className: "min-h-[350px] py-2 text-lg",
   });
 
-  const [errors, setErrors] = React.useState<Error[]>([]);
-  const [create] = Goals.useCreateGoalDiscussion({
-    onCompleted: (data) => navigate(Paths.goalActivityPath(goal.id, data.createGoalDiscussion.id)),
-  });
-
-  const submit = async () => {
-    const errors = validate(title, editor.editor);
-
-    if (errors.length) {
-      setErrors(errors);
-      return;
-    }
-
-    await create({
-      variables: {
+  return useFormState<Fields>({
+    fields: {
+      title: title,
+      setTitle: setTitle,
+      editor: editor,
+    },
+    validations: [
+      formValidator("title", "Title is required", Validators.nonEmptyString),
+      formValidator("editor", "Body is required", Validators.nonEmptyRichText),
+    ],
+    action: useFormMutationAction({
+      mutationHook: Goals.useCreateGoalDiscussionMutation,
+      variables: (fields) => ({
         input: {
           goalId: goal.id,
-          title: title,
-          body: JSON.stringify(editor.editor.getJSON()),
+          title: fields.title,
+          message: JSON.stringify(fields.editor.editor.getJSON()),
         },
-      },
-    });
-  };
-
-  return { title, setTitle, editor, submit, errors };
-}
-
-function validate(title: string, editor: TipTapEditor.Editor): Error[] {
-  const errors: Error[] = [];
-
-  if (!title) {
-    errors.push({ field: "title", message: "Title is required" });
-  }
-
-  if (isContentEmpty(editor.getJSON())) {
-    errors.push({ field: "body", message: "Body is required" });
-  }
-
-  return errors;
+      }),
+      onCompleted: (data, navigate) => navigate(Paths.goalActivityPath(goal.id, data.createGoalDiscussion.id)),
+    }),
+  });
 }
 
 function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {

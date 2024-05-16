@@ -548,6 +548,12 @@ export type CreateCommentInput = {
   entityType: Scalars['String']['input'];
 };
 
+export type CreateGoalDiscussionInput = {
+  goalId: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type CreateGoalInput = {
   championId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -1084,6 +1090,7 @@ export type RootMutationType = {
   createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
+  createGoalDiscussion: Goal;
   createGroup?: Maybe<Group>;
   createKeyResult?: Maybe<KeyResult>;
   createKpi?: Maybe<Kpi>;
@@ -1257,6 +1264,11 @@ export type RootMutationTypeCreateCommentArgs = {
 
 export type RootMutationTypeCreateGoalArgs = {
   input: CreateGoalInput;
+};
+
+
+export type RootMutationTypeCreateGoalDiscussionArgs = {
+  input: CreateGoalDiscussionInput;
 };
 
 
@@ -2040,6 +2052,13 @@ export type AddCompanyMemberMutationVariables = Exact<{
 
 export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Person', id: string, fullName: string, email?: string | null, title?: string | null } };
 
+export type CreateGoalDiscussionMutationVariables = Exact<{
+  input: CreateGoalDiscussionInput;
+}>;
+
+
+export type CreateGoalDiscussionMutation = { __typename?: 'RootMutationType', createGoalDiscussion: { __typename?: 'Goal', id: string } };
+
 export type EditGoalTimeframeMutationVariables = Exact<{
   input: EditGoalTimeframeInput;
 }>;
@@ -2190,6 +2209,39 @@ export function useAddCompanyMemberMutation(baseOptions?: Apollo.MutationHookOpt
 export type AddCompanyMemberMutationHookResult = ReturnType<typeof useAddCompanyMemberMutation>;
 export type AddCompanyMemberMutationResult = Apollo.MutationResult<AddCompanyMemberMutation>;
 export type AddCompanyMemberMutationOptions = Apollo.BaseMutationOptions<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>;
+export const CreateGoalDiscussionDocument = gql`
+    mutation CreateGoalDiscussion($input: CreateGoalDiscussionInput!) {
+  createGoalDiscussion(input: $input) {
+    id
+  }
+}
+    `;
+export type CreateGoalDiscussionMutationFn = Apollo.MutationFunction<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>;
+
+/**
+ * __useCreateGoalDiscussionMutation__
+ *
+ * To run a mutation, you first call `useCreateGoalDiscussionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGoalDiscussionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGoalDiscussionMutation, { data, loading, error }] = useCreateGoalDiscussionMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateGoalDiscussionMutation(baseOptions?: Apollo.MutationHookOptions<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>(CreateGoalDiscussionDocument, options);
+      }
+export type CreateGoalDiscussionMutationHookResult = ReturnType<typeof useCreateGoalDiscussionMutation>;
+export type CreateGoalDiscussionMutationResult = Apollo.MutationResult<CreateGoalDiscussionMutation>;
+export type CreateGoalDiscussionMutationOptions = Apollo.BaseMutationOptions<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>;
 export const EditGoalTimeframeDocument = gql`
     mutation EditGoalTimeframe($input: EditGoalTimeframeInput!) {
   editGoalTimeframe(input: $input) {

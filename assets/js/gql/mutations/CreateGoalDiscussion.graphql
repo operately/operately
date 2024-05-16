@@ -1,0 +1,5 @@
+mutation CreateGoalDiscussion($input: CreateGoalDiscussionInput!) {
+  createGoalDiscussion(input: $input) {
+    id
+  }
+}
