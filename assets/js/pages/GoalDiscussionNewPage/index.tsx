@@ -63,7 +63,7 @@ export function Page() {
   );
 }
 
-type Fields = {
+type FormFields = {
   title: string;
   setTitle: (title: string) => void;
   editor: TipTapEditor.EditorState;
@@ -77,7 +77,7 @@ function useForm({ goal }: { goal: Goals.Goal }) {
     className: "min-h-[350px] py-2 text-lg",
   });
 
-  return useFormState<Fields>({
+  return useFormState<FormFields>({
     fields: {
       title: title,
       setTitle: setTitle,
