@@ -53,7 +53,7 @@ export const Page = function () {
 
           <div className="flex items-center my-6">
             <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
-            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id)}>
+            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id)} testId="start-discussion">
               Start a new discussion
             </FilledButton>
           </div>

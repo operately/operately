@@ -22,6 +22,12 @@ export function Page() {
         <Paper.Body>
           <Form form={form} />
         </Paper.Body>
+
+        <div className="flex justify-center items-center mt-8">
+          <FilledButton loading={form.submitting} testId="post-discussion" onClick={form.submit} size="lg">
+            {form.submitButtonLabel}
+          </FilledButton>
+        </div>
       </Paper.Root>
     </Pages.Page>
   );
