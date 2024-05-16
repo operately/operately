@@ -126,9 +126,9 @@ export type ActivityContentGoalCreated = {
 
 export type ActivityContentGoalDiscussionCreation = {
   __typename?: 'ActivityContentGoalDiscussionCreation';
-  companyId: Scalars['String']['output'];
-  goalId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
+  companyId?: Maybe<Scalars['String']['output']>;
+  goal: Goal;
+  goalId?: Maybe<Scalars['String']['output']>;
 };
 
 export type ActivityContentGoalEditing = {
@@ -521,6 +521,7 @@ export type CommentThread = {
   insertedAt: Scalars['Date']['output'];
   message: Scalars['String']['output'];
   reactions: Array<Maybe<Reaction>>;
+  title: Scalars['String']['output'];
 };
 
 export type Company = {
@@ -1090,7 +1091,7 @@ export type RootMutationType = {
   createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
-  createGoalDiscussion: Goal;
+  createGoalDiscussion: Activity;
   createGroup?: Maybe<Group>;
   createKeyResult?: Maybe<KeyResult>;
   createKpi?: Maybe<Kpi>;
@@ -2057,7 +2058,7 @@ export type CreateGoalDiscussionMutationVariables = Exact<{
 }>;
 
 
-export type CreateGoalDiscussionMutation = { __typename?: 'RootMutationType', createGoalDiscussion: { __typename?: 'Goal', id: string } };
+export type CreateGoalDiscussionMutation = { __typename?: 'RootMutationType', createGoalDiscussion: { __typename?: 'Activity', id: string } };
 
 export type EditGoalTimeframeMutationVariables = Exact<{
   input: EditGoalTimeframeInput;
@@ -2080,7 +2081,7 @@ export type GetActivityQueryVariables = Exact<{
 }>;
 
 
-export type GetActivityQuery = { __typename?: 'RootQueryType', activity: { __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, commentThread?: { __typename?: 'CommentThread', id: string, message: string, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null>, comments: Array<{ __typename?: 'Comment', id: string, content: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null> } | null> } | null, content: { __typename: 'ActivityContentCommentAdded' } | { __typename: 'ActivityContentDiscussionCommentSubmitted' } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting' } | { __typename: 'ActivityContentGoalArchived' } | { __typename: 'ActivityContentGoalCheckIn' } | { __typename: 'ActivityContentGoalCheckInAcknowledgement' } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing', success?: string | null, goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCreated' } | { __typename: 'ActivityContentGoalDiscussionCreation' } | { __typename: 'ActivityContentGoalEditing' } | { __typename: 'ActivityContentGoalReopening' } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string }, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived' } | { __typename: 'ActivityContentProjectCheckInAcknowledged' } | { __typename: 'ActivityContentProjectCheckInCommented' } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted' } | { __typename: 'ActivityContentProjectClosed' } | { __typename: 'ActivityContentProjectContributorAddition' } | { __typename: 'ActivityContentProjectCreated' } | { __typename: 'ActivityContentProjectDiscussionSubmitted' } | { __typename: 'ActivityContentProjectGoalConnection' } | { __typename: 'ActivityContentProjectGoalDisconnection' } | { __typename: 'ActivityContentProjectMilestoneCommented' } | { __typename: 'ActivityContentProjectMoved' } | { __typename: 'ActivityContentProjectPausing' } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming' } | { __typename: 'ActivityContentProjectReviewAcknowledged' } | { __typename: 'ActivityContentProjectReviewCommented' } | { __typename: 'ActivityContentProjectReviewRequestSubmitted' } | { __typename: 'ActivityContentProjectReviewSubmitted' } | { __typename: 'ActivityContentProjectTimelineEdited' } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } };
+export type GetActivityQuery = { __typename?: 'RootQueryType', activity: { __typename?: 'Activity', id: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, commentThread?: { __typename?: 'CommentThread', id: string, message: string, title: string, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null>, comments: Array<{ __typename?: 'Comment', id: string, content: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null }, reactions: Array<{ __typename?: 'Reaction', id: string, emoji: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null } } | null> } | null> } | null, content: { __typename: 'ActivityContentCommentAdded' } | { __typename: 'ActivityContentDiscussionCommentSubmitted' } | { __typename: 'ActivityContentDiscussionEditing' } | { __typename: 'ActivityContentDiscussionPosting' } | { __typename: 'ActivityContentGoalArchived' } | { __typename: 'ActivityContentGoalCheckIn' } | { __typename: 'ActivityContentGoalCheckInAcknowledgement' } | { __typename: 'ActivityContentGoalCheckInEdit' } | { __typename: 'ActivityContentGoalClosing', success?: string | null, goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalCreated' } | { __typename: 'ActivityContentGoalDiscussionCreation', goal: { __typename?: 'Goal', id: string, name: string } } | { __typename: 'ActivityContentGoalEditing' } | { __typename: 'ActivityContentGoalReopening' } | { __typename: 'ActivityContentGoalReparent' } | { __typename: 'ActivityContentGoalTimeframeEditing', goal: { __typename?: 'Goal', id: string, name: string }, oldTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string }, newTimeframe: { __typename?: 'Timeframe', startDate: any, endDate: any, type: string } } | { __typename: 'ActivityContentGroupEdited' } | { __typename: 'ActivityContentProjectArchived' } | { __typename: 'ActivityContentProjectCheckInAcknowledged' } | { __typename: 'ActivityContentProjectCheckInCommented' } | { __typename: 'ActivityContentProjectCheckInEdit' } | { __typename: 'ActivityContentProjectCheckInSubmitted' } | { __typename: 'ActivityContentProjectClosed' } | { __typename: 'ActivityContentProjectContributorAddition' } | { __typename: 'ActivityContentProjectCreated' } | { __typename: 'ActivityContentProjectDiscussionSubmitted' } | { __typename: 'ActivityContentProjectGoalConnection' } | { __typename: 'ActivityContentProjectGoalDisconnection' } | { __typename: 'ActivityContentProjectMilestoneCommented' } | { __typename: 'ActivityContentProjectMoved' } | { __typename: 'ActivityContentProjectPausing' } | { __typename: 'ActivityContentProjectRenamed' } | { __typename: 'ActivityContentProjectResuming' } | { __typename: 'ActivityContentProjectReviewAcknowledged' } | { __typename: 'ActivityContentProjectReviewCommented' } | { __typename: 'ActivityContentProjectReviewRequestSubmitted' } | { __typename: 'ActivityContentProjectReviewSubmitted' } | { __typename: 'ActivityContentProjectTimelineEdited' } | { __typename: 'ActivityContentSpaceJoining' } | { __typename: 'ActivityContentTaskAdding' } | { __typename: 'ActivityContentTaskAssigneeAssignment' } | { __typename: 'ActivityContentTaskClosing' } | { __typename: 'ActivityContentTaskDescriptionChange' } | { __typename: 'ActivityContentTaskNameEditing' } | { __typename: 'ActivityContentTaskPriorityChange' } | { __typename: 'ActivityContentTaskReopening' } | { __typename: 'ActivityContentTaskSizeChange' } | { __typename: 'ActivityContentTaskStatusChange' } | { __typename: 'ActivityContentTaskUpdate' } } };
 
 export type GetGoalQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2426,6 +2427,7 @@ export const GetActivityDocument = gql`
     commentThread {
       id
       message
+      title
       reactions {
         id
         emoji
@@ -2475,6 +2477,12 @@ export const GetActivityDocument = gql`
       }
       ... on ActivityContentGoalClosing {
         success
+        goal {
+          id
+          name
+        }
+      }
+      ... on ActivityContentGoalDiscussionCreation {
         goal {
           id
           name

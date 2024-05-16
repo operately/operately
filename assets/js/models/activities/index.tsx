@@ -9,6 +9,7 @@ export type {
   ActivityContentGoalTimeframeEditing,
   ActivityContentGoalClosing,
   ActivityContentGoalCheckIn,
+  ActivityContentGoalDiscussionCreation,
 } from "@/gql";
 
 import {

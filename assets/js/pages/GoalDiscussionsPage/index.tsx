@@ -35,7 +35,13 @@ export const loader = async function ({ params }): Promise<LoaderResult> {
     activities: await Activities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,
-      actions: ["goal_timeframe_editing", "goal_closing", "goal_check_in", "goal_reopening"],
+      actions: [
+        "goal_timeframe_editing",
+        "goal_closing",
+        "goal_check_in",
+        "goal_reopening",
+        "goal_discussion_creation",
+      ],
     }),
   };
 };

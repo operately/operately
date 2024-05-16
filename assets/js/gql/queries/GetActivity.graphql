@@ -12,6 +12,7 @@ query GetActivity($id: ID!) {
     commentThread {
       id
       message
+      title
 
       reactions {
         id
@@ -73,6 +74,13 @@ query GetActivity($id: ID!) {
       ... on ActivityContentGoalClosing {
         success
 
+        goal {
+          id
+          name
+        }
+      }
+
+      ... on ActivityContentGoalDiscussionCreation {
         goal {
           id
           name
