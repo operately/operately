@@ -102,9 +102,12 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
 
         <div className="flex items-start justify-between gap-4 flex-1">
           <div className="flex flex-col gap-1 w-full">
-            <div className="text-content-accent font-bold leading-none test-sm">
+            <DivLink
+              to={path}
+              className="text-content-accent font-bold leading-none test-sm hover:underline cursor-pointer"
+            >
               <ActivityPageTitle activity={activity} />
-            </div>
+            </DivLink>
 
             <div className="w-full">
               <ActivityPageContent activity={activity} />

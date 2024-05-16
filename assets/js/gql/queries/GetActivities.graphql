@@ -12,6 +12,7 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
     commentThread {
       id
       message
+      title
       commentsCount
 
       reactions {
@@ -81,6 +82,13 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
       }
 
       ... on ActivityContentGoalReopening {
+        goal {
+          id
+          name
+        }
+      }
+
+      ... on ActivityContentGoalDiscussionCreation {
         goal {
           id
           name

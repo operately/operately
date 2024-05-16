@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.GoalCheckInSteps do
+defmodule Operately.Support.Features.GoalDiscussionsSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
@@ -10,6 +10,7 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
+  import Ecto.Query
 
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
@@ -31,14 +32,25 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
 
   step :start_new_discussion, ctx, params do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}/disucssions")
-    |> UI.click(test_id: "start-discussion")
-    |> UI.fill(test_id: "discussion-title", with: params.title)
-    |> UI.fill_rich_text(with: params.message)
-    |> UI.click(test_id: "submit-discussion")
+    |> UI.visit("/goals/#{ctx.goal.id}/discussions")
+    |> UI.click(testid: "start-discussion")
+    |> UI.fill(testid: "discussion-title", with: params.title)
+    |> UI.fill_rich_text(params.message)
+    |> UI.click(testid: "post-discussion")
   end
 
   step :assert_discussion_submitted, ctx, params do
+    activity = Operately.Repo.one(from a in Operately.Activities.Activity, where: a.action == "goal_discussion_creation", limit: 1)
+
+    assert activity != nil
+    assert activity.author_id == ctx.champion.id
+
+    comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
+
+    assert comment_thread != nil
+    assert comment_thread.title == params.title
+
+    ctx
   end
 
   step :assert_discussion_submitted_email_sent, ctx do

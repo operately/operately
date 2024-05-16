@@ -27,7 +27,9 @@ defmodule Operately.Operations.GoalDiscussionCreation do
       has_title: true,
     }) end)
     |> Multi.update(:activity, fn changes ->
-      Activities.Activity.changeset(changes.activity_without_thread, %{comment_thread_id: changes.thread.id}) 
+      Activities.Activity.changeset(changes.activity_without_thread, %{
+        comment_thread_id: changes.thread.id
+      }) 
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:activity)

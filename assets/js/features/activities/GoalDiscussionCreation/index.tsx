@@ -29,9 +29,7 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable = {
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <div className="mt-4">
-            <RichContent jsonContent={activity.commentThread.message} />
-          </div>
+          <RichContent jsonContent={activity.commentThread.message} />
         )}
       </div>
     );
