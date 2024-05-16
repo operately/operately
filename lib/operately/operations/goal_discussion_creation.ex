@@ -31,6 +31,7 @@ defmodule Operately.Operations.GoalDiscussionCreation do
         comment_thread_id: changes.thread.id
       }) 
     end)
+    |> Activities.dispatch_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:activity)
   end
