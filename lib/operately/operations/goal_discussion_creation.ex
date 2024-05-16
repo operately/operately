@@ -23,6 +23,8 @@ defmodule Operately.Operations.GoalDiscussionCreation do
       parent_id: changes.activity_without_thread.id,
       parent_type: "activity",
       message: Jason.decode!(message),
+      title: title,
+      has_title: true,
     }) end)
     |> Multi.update(:activity, fn changes ->
       Activities.Activity.changeset(changes.activity_without_thread, %{comment_thread_id: changes.thread.id}) 
