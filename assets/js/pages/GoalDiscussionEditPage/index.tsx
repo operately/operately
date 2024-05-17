@@ -10,11 +10,9 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Validators } from "@/utils/validators";
 
 import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
-import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -49,14 +47,12 @@ export function Page() {
             <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
           </div>
 
-          <WhoWillBeNotified goal={goal} />
-
           <div className="flex items-center gap-4 mt-4">
             <FilledButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
               Save
             </FilledButton>
 
-            <DimmedLink to={Paths.goalDiscussionsPath(goal.id)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalActivityPath(goal.id, activity.id)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -91,29 +87,15 @@ function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Ac
       formValidator("editor", "Body is required", Validators.nonEmptyRichText),
     ],
     action: useFormMutationAction({
-      mutationHook: Goals.useCreateGoalDiscussionMutation,
+      mutationHook: Goals.useEditGoalDiscussionMutation,
       variables: (fields) => ({
         input: {
-          goalId: goal.id,
+          activityId: activity.id,
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
         },
       }),
-      onCompleted: (data, navigate) => navigate(Paths.goalActivityPath(goal.id, data.createGoalDiscussion.id)),
+      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id, activity.id)),
     }),
   });
-}
-
-function WhoWillBeNotified({ goal }: { goal: Goals.Goal }) {
-  const me = useMe();
-  const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me!.id);
-
-  return (
-    <div className="mt-10 font-medium">
-      <p className="font-bold">When you submit:</p>
-      <div className="inline-flex gap-1 flex-wrap mt-1">
-        <InlinePeopleList people={people} /> will be notified.
-      </div>
-    </div>
-  );
 }

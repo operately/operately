@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { FeedItem, Container } from "../FeedItem";
+import ActivityHandler from "@/features/activities";
 
 export const GoalTimeframeEditing: FeedItem = {
   typename: "ActivityContentGoalTimeframeEditing",

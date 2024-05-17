@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
-import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
@@ -14,21 +13,20 @@ import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Validators } from "@/utils/validators";
 
 import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }),
-    me: await People.getMe({}),
   };
 }
 
 export function Page() {
-  const { goal, me } = Pages.useLoadedData<LoaderResult>();
+  const { goal } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ goal });
 
   return (
@@ -48,7 +46,7 @@ export function Page() {
             <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
           </div>
 
-          <WhoWillBeNotified goal={goal} me={me} />
+          <WhoWillBeNotified goal={goal} />
 
           <div className="flex items-center gap-4 mt-4">
             <FilledButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
@@ -101,8 +99,9 @@ function useForm({ goal }: { goal: Goals.Goal }) {
   });
 }
 
-function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
-  const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me.id);
+function WhoWillBeNotified({ goal }: { goal: Goals.Goal }) {
+  const me = useMe();
+  const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me!.id);
 
   return (
     <div className="mt-10 font-medium">
