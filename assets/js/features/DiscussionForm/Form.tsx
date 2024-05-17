@@ -9,6 +9,7 @@ export function Form({ form }: { form: FormState }) {
   return (
     <>
       <FormTitleInput
+        testID="discussion-title"
         value={form.title}
         onChange={form.setTitle}
         error={!!form.errors.find((e) => e.field === "name")}
