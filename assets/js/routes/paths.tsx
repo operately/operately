@@ -103,16 +103,20 @@ export class Paths {
     return createPath(["goals", goalId, "progress-updates", checkInId, "edit"]);
   }
 
+  static newGoalDiscussionPath(goalId: string) {
+    return createPath(["goals", goalId, "discussions", "new"]);
+  }
+
   static goalDiscussionsPath(goalId: string) {
     return createPath(["goals", goalId, "discussions"]);
   }
 
-  static goalActivityPath(goalId: string, activityId: string) {
-    return createPath(["goals", goalId, "activities", activityId]);
+  static goalDiscussionEditPath(goalId: string, activityId: string) {
+    return createPath(["goals", goalId, "discussions", activityId, "edit"]);
   }
 
-  static newGoalDiscussionPath(goalId: string) {
-    return createPath(["goals", goalId, "discussions", "new"]);
+  static goalActivityPath(goalId: string, activityId: string) {
+    return createPath(["goals", goalId, "activities", activityId]);
   }
 
   static closeGoalPath(goalId: string) {

@@ -16,13 +16,7 @@ import Avatar from "@/components/Avatar";
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
 
-import {
-  activityPagePath,
-  activityHasComments,
-  activityCommentCount,
-  ActivityPageTitle,
-  ActivityPageContent,
-} from "@/features/activities";
+import ActivityHandler from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -84,7 +78,7 @@ function ActivityList() {
 }
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
-  const path = activityPagePath(activity);
+  const path = ActivityHandler.pagePath(activity);
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">
@@ -106,11 +100,11 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
               to={path}
               className="text-content-accent font-bold leading-none test-sm hover:underline cursor-pointer"
             >
-              <ActivityPageTitle activity={activity} />
+              <ActivityHandler.PageTitle activity={activity} />
             </DivLink>
 
             <div className="w-full">
-              <ActivityPageContent activity={activity} />
+              <ActivityHandler.PageContent activity={activity} />
             </div>
 
             <div className="flex items-center gap-4 mt-4">
@@ -118,11 +112,11 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
                 Discuss
               </FilledButton>
 
-              {activityHasComments(activity) && (
+              {ActivityHandler.hasComments(activity) && (
                 <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
                   <Icons.IconMessage size={14} />{" "}
                   <DivLink to={path} className="hover:underline cursor-pointer">
-                    {plurarize(activityCommentCount(activity), "comment", "comments")}
+                    {plurarize(ActivityHandler.commentCount(activity), "comment", "comments")}
                   </DivLink>
                 </div>
               )}

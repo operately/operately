@@ -83,9 +83,9 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :edit_discussion, ctx, params do
     ctx
-    |> UI.click(:testid, "options")
-    |> UI.click(:testid, "edit")
-    |> UI.fill(:testid, "discussion-title", with: params.title)
+    |> UI.click(testid: "options")
+    |> UI.click(testid: "edit")
+    |> UI.fill(testid: "discussion-title", with: params.title)
     |> UI.fill_rich_text(params.message)
   end
 

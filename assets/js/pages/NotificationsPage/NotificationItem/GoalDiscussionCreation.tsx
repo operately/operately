@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Card } from "../NotificationCard";
-import { activityPagePath, NotificationTitle } from "@/features/activities";
+import ActivityHandler from "@/features/activities";
 
 export default function ({ notification }) {
   const author = notification.activity.author;
@@ -11,9 +11,9 @@ export default function ({ notification }) {
     <Card
       testId="goal-discussion-creation"
       notification={notification}
-      title={<NotificationTitle activity={notification.activity} />}
+      title={<ActivityHandler.NotificationTitle activity={notification.activity} />}
       author={author}
-      link={activityPagePath(notification.activity)}
+      link={ActivityHandler.pagePath(notification.activity)}
       where={content.goal.name}
       who={notification.activity.author.fullName}
       when={notification.activity.insertedAt}

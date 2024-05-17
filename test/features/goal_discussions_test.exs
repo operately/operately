@@ -24,7 +24,7 @@ defmodule Operately.Features.GoalDiscussionsTest do
     ctx
     |> Steps.start_new_discussion(@discussion_params)
     |> Steps.assert_discussion_submitted(@discussion_params)
-    |> Steps.edit_discussion(@discussion_params, edits)
+    |> Steps.edit_discussion(edits)
     |> Steps.assert_discusssion_edited(edits)
   end
 

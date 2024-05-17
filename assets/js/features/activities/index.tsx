@@ -1,7 +1,7 @@
 import * as React from "react";
+import * as interfaces from "./interfaces";
 
 import type { Activity } from "@/models/activities";
-import { ActivityHandler } from "./interfaces";
 
 //
 // Public API
@@ -11,7 +11,7 @@ import { ActivityHandler } from "./interfaces";
 // appropriate activity handler based on the activity type.
 //
 
-const PublicApi: ActivityHandler = {
+const ActivityHandler: interfaces.ActivityHandler = {
   pagePath(activity: Activity) {
     return handler(activity).pagePath(activity);
   },
@@ -57,7 +57,7 @@ const PublicApi: ActivityHandler = {
   },
 };
 
-export default PublicApi;
+export default ActivityHandler;
 
 //
 // Private API
