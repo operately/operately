@@ -12,8 +12,7 @@ import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-
-import { activityPageHtmlTitle, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+import ActivityHandler from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -33,14 +32,15 @@ export function Page() {
   const { goal, activity, me } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={[activityPageHtmlTitle(activity), goal.name]}>
+    <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body>
+          <ActivityHandler.PageOptions activity={activity} />
           <Title activity={activity} />
           <div className="my-8">
-            <ActivityPageContent activity={activity} />
+            <ActivityHandler.PageContent activity={activity} />
           </div>
 
           <Reactions commentThread={activity.commentThread!} me={me} />
@@ -58,7 +58,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
       <Avatar person={activity.author} size={50} />
       <div>
         <div className="text-content-accent text-2xl font-bold leading-tight">
-          <ActivityPageTitle activity={activity} />
+          <ActivityHandler.PageTitle activity={activity} />
         </div>
         <div className="inline-flex items-center gap-1">
           <span>{activity.author.fullName}</span>

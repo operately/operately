@@ -3,31 +3,32 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
+import * as Activities from "@/models/activities";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Validators } from "@/utils/validators";
 
 import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
-import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
+  activity: Activities.Activity;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }),
+    activity: await Activities.getActivity({ id: params.id }),
   };
 }
 
 export function Page() {
-  const { goal } = Pages.useLoadedData<LoaderResult>();
-  const form = useForm({ goal });
+  const { goal, activity } = Pages.useLoadedData<LoaderResult>();
+  const form = useForm({ goal, activity: activity });
 
   return (
     <Pages.Page title={["New Discussion", goal.name]}>
@@ -46,14 +47,12 @@ export function Page() {
             <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
           </div>
 
-          <WhoWillBeNotified goal={goal} />
-
           <div className="flex items-center gap-4 mt-4">
-            <FilledButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
-              Post Discussion
+            <FilledButton testId="save" onClick={form.submit} loading={form.submitting}>
+              Save
             </FilledButton>
 
-            <DimmedLink to={Paths.goalDiscussionsPath(goal.id)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalActivityPath(goal.id, activity.id)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -67,12 +66,14 @@ type FormFields = {
   editor: TipTapEditor.EditorState;
 };
 
-function useForm({ goal }: { goal: Goals.Goal }) {
-  const [title, setTitle] = React.useState("");
+function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Activity }) {
+  const commentThread = activity.commentThread!;
+  const [title, setTitle] = React.useState(commentThread.title!);
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
+    content: JSON.parse(commentThread.message),
   });
 
   return useFormState<FormFields>({
@@ -86,29 +87,15 @@ function useForm({ goal }: { goal: Goals.Goal }) {
       formValidator("editor", "Body is required", Validators.nonEmptyRichText),
     ],
     action: useFormMutationAction({
-      mutationHook: Goals.useCreateGoalDiscussionMutation,
+      mutationHook: Goals.useEditGoalDiscussionMutation,
       variables: (fields) => ({
         input: {
-          goalId: goal.id,
+          activityId: activity.id,
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
         },
       }),
-      onCompleted: (data, navigate) => navigate(Paths.goalActivityPath(goal.id, data.createGoalDiscussion.id)),
+      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id, activity.id)),
     }),
   });
-}
-
-function WhoWillBeNotified({ goal }: { goal: Goals.Goal }) {
-  const me = useMe();
-  const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me!.id);
-
-  return (
-    <div className="mt-10 font-medium">
-      <p className="font-bold">When you submit:</p>
-      <div className="inline-flex gap-1 flex-wrap mt-1">
-        <InlinePeopleList people={people} /> will be notified.
-      </div>
-    </div>
-  );
 }

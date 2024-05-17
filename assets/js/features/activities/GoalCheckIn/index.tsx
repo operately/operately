@@ -5,14 +5,13 @@ import { Paths } from "@/routes/paths";
 import type { Activity, ActivityContentGoalCheckIn } from "@/models/activities";
 
 import { ConditionChanges } from "./ConditionChanges";
-
-import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
+import { ActivityHandler } from "../interfaces";
 
 import * as People from "@/models/people";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
-const GoalCheckIn: Commentable & Feedable & Pageable & Notifiable = {
+const GoalCheckIn: ActivityHandler = {
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalCheckIn;
     return Paths.goalProgressUpdatePath(content.goal.id, content.update.id);
@@ -35,6 +34,10 @@ const GoalCheckIn: Commentable & Feedable & Pageable & Notifiable = {
         <ConditionChanges update={content.update} />
       </div>
     );
+  },
+
+  PageOptions(_props: { activity: Activity }) {
+    return null;
   },
 
   FeedItemContent({ content }: { activity: Activity; content: ActivityContentGoalCheckIn; page: string }) {

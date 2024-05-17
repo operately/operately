@@ -1,46 +1,63 @@
 import * as React from "react";
+import * as interfaces from "./interfaces";
 
 import type { Activity } from "@/models/activities";
 
-export function activityPagePath(activity: Activity) {
-  return handler(activity).pagePath(activity);
-}
+//
+// Public API
+//
+// This is the API that the rest of the application uses to interact
+// with the activities feature. It's a facade that delegates to the
+// appropriate activity handler based on the activity type.
+//
 
-export function activityPageHtmlTitle(activity: Activity) {
-  return handler(activity).pageHtmlTitle(activity);
-}
+const ActivityHandler: interfaces.ActivityHandler = {
+  pagePath(activity: Activity) {
+    return handler(activity).pagePath(activity);
+  },
 
-export function activityHasComments(activity: Activity) {
-  return handler(activity).hasComments(activity);
-}
+  pageHtmlTitle(activity: Activity) {
+    return handler(activity).pageHtmlTitle(activity);
+  },
 
-export function activityCommentCount(activity: Activity) {
-  return handler(activity).commentCount(activity);
-}
+  hasComments(activity: Activity) {
+    return handler(activity).hasComments(activity);
+  },
 
-export function ActivityPageTitle({ activity }: { activity: Activity }) {
-  return React.createElement(handler(activity).PageTitle, { activity });
-}
+  commentCount(activity: Activity) {
+    return handler(activity).commentCount(activity);
+  },
 
-export function ActivityPageContent({ activity }: { activity: Activity }) {
-  return React.createElement(handler(activity).PageContent, { activity });
-}
+  PageTitle({ activity }: { activity: Activity }) {
+    return React.createElement(handler(activity).PageTitle, { activity });
+  },
 
-export function FeedItemContent({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-  return React.createElement(handler(activity).FeedItemContent, { activity, content, page });
-}
+  PageContent({ activity }: { activity: Activity }) {
+    return React.createElement(handler(activity).PageContent, { activity });
+  },
 
-export function FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-  return React.createElement(handler(activity).FeedItemTitle, { activity, content, page });
-}
+  PageOptions({ activity }: { activity: Activity }) {
+    return React.createElement(handler(activity).PageOptions, { activity });
+  },
 
-export function NotificationTitle({ activity }: { activity: Activity }) {
-  return React.createElement(handler(activity).NotificationTitle, { activity });
-}
+  FeedItemContent({ activity, content, page }: { activity: Activity; content: any; page: any }) {
+    return React.createElement(handler(activity).FeedItemContent, { activity, content, page });
+  },
 
-export function CommentNotificationTitle({ activity }: { activity: Activity }) {
-  return React.createElement(handler(activity).CommentNotificationTitle, { activity });
-}
+  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
+    return React.createElement(handler(activity).FeedItemTitle, { activity, content, page });
+  },
+
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return React.createElement(handler(activity).NotificationTitle, { activity });
+  },
+
+  CommentNotificationTitle({ activity }: { activity: Activity }) {
+    return React.createElement(handler(activity).CommentNotificationTitle, { activity });
+  },
+};
+
+export default ActivityHandler;
 
 //
 // Private API

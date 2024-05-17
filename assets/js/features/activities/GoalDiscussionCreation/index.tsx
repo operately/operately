@@ -1,17 +1,20 @@
 import React from "react";
 
 import * as People from "@/models/people";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Icons from "@tabler/icons-react";
 
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/models/activities";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
-import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
+import { ActivityHandler } from "../interfaces";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
+import { useMe } from "@/contexts/CurrentUserContext";
 
-const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
+const GoalDiscussionCreation: ActivityHandler = {
   pageHtmlTitle(activity: Activity) {
     return activity.commentThread!.title as string;
   },
@@ -32,6 +35,24 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
           <RichContent jsonContent={activity.commentThread.message} />
         )}
       </div>
+    );
+  },
+
+  PageOptions({ activity }: { activity: Activity }) {
+    const me = useMe();
+    const content = activity.content as ActivityContentGoalDiscussionCreation;
+
+    return (
+      <PageOptions.Root testId="options" position="top-right">
+        {activity.author.id === me?.id && (
+          <PageOptions.Link
+            icon={Icons.IconEdit}
+            title="Edit"
+            to={Paths.goalDiscussionEditPath(content.goal.id, activity.id)}
+            dataTestId="edit"
+          />
+        )}
+      </PageOptions.Root>
     );
   },
 

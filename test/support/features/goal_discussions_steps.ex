@@ -81,11 +81,24 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     })
   end
 
-  # step :edit_discussion, ctx, params do
-  # end
+  step :edit_discussion, ctx, params do
+    ctx
+    |> UI.click(testid: "options")
+    |> UI.click(testid: "edit")
+    |> UI.fill(testid: "discussion-title", with: params.title)
+    |> UI.fill_rich_text(params.message)
+    |> UI.click(testid: "save")
+    |> UI.sleep(100)
+  end
 
-  # step :assert_discusssion_edited, ctx, params do
-  # end
+  step :assert_discusssion_edited, ctx, params do
+    comment_thread = last_comment_thread()
+
+    assert String.contains?(comment_thread.title, params.title)
+    assert Jason.encode!(comment_thread.message) |> String.contains?(params.message)
+
+    ctx
+  end
 
   step :comment_on_discussion, ctx, message do
     ctx

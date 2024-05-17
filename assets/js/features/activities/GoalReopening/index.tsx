@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalClosing } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
+import { ActivityHandler } from "../interfaces";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
@@ -12,7 +12,7 @@ import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import RichContent, { Summary } from "@/components/RichContent";
 
-const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
+const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal reopened`;
   },
@@ -34,6 +34,10 @@ const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
         )}
       </div>
     );
+  },
+
+  PageOptions(_props: { activity: Activity }) {
+    return null;
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

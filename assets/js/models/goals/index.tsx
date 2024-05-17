@@ -4,7 +4,12 @@ import { GetGoalsDocument, GetGoalsQueryVariables, GetGoalDocument, GetGoalQuery
 import { Goal, Target } from "@/gql/generated";
 
 export type { Target, Goal } from "@/gql/generated";
-export { useEditGoalTimeframeMutation, useCreateGoalDiscussionMutation } from "@/gql/generated";
+
+export {
+  useEditGoalTimeframeMutation,
+  useCreateGoalDiscussionMutation,
+  useEditGoalDiscussionMutation,
+} from "@/gql/generated";
 
 export const getGoal = makeQueryFn(GetGoalDocument, "goal") as (v: GetGoalQueryVariables) => Promise<Goal>;
 export const getGoals = makeQueryFn(GetGoalsDocument, "goals") as (v: GetGoalsQueryVariables) => Promise<Goal[]>;

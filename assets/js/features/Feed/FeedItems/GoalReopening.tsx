@@ -5,7 +5,7 @@ import { FeedItem, Container } from "../FeedItem";
 import { GoalLink } from "../shared/GoalLink";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { FeedItemContent } from "@/features/activities";
+import ActivityHandler from "@/features/activities";
 
 export const GoalReopening: FeedItem = {
   typename: "ActivityContentGoalReopening",
@@ -23,7 +23,7 @@ export const GoalReopening: FeedItem = {
         title={<Title activity={activity} page={page} content={content} />}
         author={activity.author}
         time={activity.insertedAt}
-        content={<FeedItemContent activity={activity} content={content} page={page} />}
+        content={<ActivityHandler.FeedItemContent activity={activity} content={content} page={page} />}
       />
     );
   },
