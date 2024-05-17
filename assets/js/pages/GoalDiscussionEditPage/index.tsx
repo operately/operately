@@ -48,7 +48,7 @@ export function Page() {
           </div>
 
           <div className="flex items-center gap-4 mt-4">
-            <FilledButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
+            <FilledButton testId="save" onClick={form.submit} loading={form.submitting}>
               Save
             </FilledButton>
 
