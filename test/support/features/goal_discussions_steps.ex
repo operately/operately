@@ -40,26 +40,49 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_discussion_submitted, ctx, params do
-    activity = Operately.Repo.one(from a in Operately.Activities.Activity, where: a.action == "goal_discussion_creation", limit: 1)
+    {activity, comment_thread} = find_last()
 
     assert activity != nil
-    assert activity.author_id == ctx.champion.id
-
-    comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
-
     assert comment_thread != nil
+
+    assert activity.author_id == ctx.champion.id
     assert comment_thread.title == params.title
 
     ctx
   end
 
   step :assert_discussion_submitted_email_sent, ctx do
+    {_activity, comment_thread} = find_last()
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer, 
+      author: ctx.champion, 
+      action: "posted: #{comment_thread.title}"
+    })
   end
 
   step :assert_discussion_submitted_feed_posted, ctx do
+    {_activity, comment_thread} = find_last()
+
+    ctx
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion, 
+      title: "posted: #{comment_thread.title}",
+      subtitle: comment_thread.message,
+    })
   end
 
   step :assert_discussion_submitted_notification_sent, ctx do
+    {_activity, comment_thread} = find_last()
+
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "posted: #{comment_thread.title}",
+    })
   end
 
   step :edit_discussion, ctx, params do
@@ -81,6 +104,23 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_comment_submitted_notification_sent, ctx do
+  end
+
+  #
+  # Helper functions
+  #
+
+  defp find_last do
+    query = from a in Operately.Activities.Activity, 
+      where: a.action == "goal_discussion_creation", 
+      order_by: [desc: a.inserted_at],
+      preload: [:author],
+      limit: 1
+
+    activity = Operately.Repo.one(query)
+    comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
+
+    {activity, comment_thread}
   end
 
 end
