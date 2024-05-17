@@ -62,7 +62,26 @@ defmodule OperatelyWeb.Graphql.Mutations.Goals do
     field :message, non_null(:string)
   end
 
+  input_object :create_goal_discussion_input do
+    field :goal_id, non_null(:string)
+    field :title, non_null(:string)
+    field :message, non_null(:string)
+  end
+
   object :goal_mutations do
+    field :create_goal_discussion, non_null(:activity) do
+      arg :input, non_null(:create_goal_discussion_input)
+
+      resolve fn %{input: input}, %{context: context} ->
+        author = context.current_account.person
+        goal_id = input.goal_id
+        title = input.title
+        message = input.message
+
+        Operately.Operations.GoalDiscussionCreation.run(author, goal_id, title, message)
+      end
+    end
+
     field :reopen_goal, non_null(:goal) do
       arg :input, non_null(:reopen_goal_input)
 

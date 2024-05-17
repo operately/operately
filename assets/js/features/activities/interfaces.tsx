@@ -3,6 +3,8 @@ import type { Activity } from "@/models/activities";
 export interface Commentable {
   commentCount(activity: Activity): number;
   hasComments(activity: Activity): boolean;
+
+  CommentNotificationTitle(props: { activity: Activity }): JSX.Element;
 }
 
 export interface Feedable {
@@ -15,4 +17,9 @@ export interface Pageable {
   pageHtmlTitle(activity: Activity): string;
   PageTitle(props: { activity: Activity }): JSX.Element;
   PageContent(props: { activity: Activity }): JSX.Element;
+}
+
+export interface Notifiable {
+  pagePath(activity: Activity): string;
+  NotificationTitle(props: { activity: Activity }): JSX.Element;
 }

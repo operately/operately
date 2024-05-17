@@ -2,28 +2,27 @@ import React from "react";
 
 import * as People from "@/models/people";
 
-import { Activity, ActivityContentGoalClosing } from "@/models/activities";
+import { Activity, ActivityContentGoalDiscussionCreation } from "@/models/activities";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
+
 import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-
-import RichContent, { Summary } from "@/components/RichContent";
-
-const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
-  pageHtmlTitle(_activity: Activity) {
-    return `Goal reopened`;
+const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
+  pageHtmlTitle(activity: Activity) {
+    return activity.commentThread!.title as string;
   },
 
   pagePath(activity: Activity): string {
-    const content = activity.content as ActivityContentGoalClosing;
+    const content = activity.content as ActivityContentGoalDiscussionCreation;
     return Paths.goalActivityPath(content.goal.id, activity.id);
   },
 
-  PageTitle(_props: { activity: any }) {
-    return <>Goal reopened</>;
+  PageTitle({ activity }: { activity: Activity }) {
+    return <>{activity.commentThread!.title}</>;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -48,11 +47,12 @@ const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
 
   FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
     const path = Paths.goalActivityPath(content.goal.id, activity.id);
-    const link = <Link to={path}>reopened</Link>;
+    const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     return (
       <>
-        {People.shortName(activity.author)} {link} <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+        {People.shortName(activity.author)} posted {link}
+        <GoalLink goal={content.goal} page={page} showOnGoalPage={false} prefix=" on" />
       </>
     );
   },
@@ -65,13 +65,20 @@ const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const author = activity.author;
+    const title = activity.commentThread!.title;
+
+    return (
+      <>
+        {People.firstName(author)} posted: {title}
+      </>
+    );
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    return <>commented on the goal reopening</>;
+  CommentNotificationTitle({ activity }: { activity: Activity }) {
+    return <>commented on {activity.commentThread!.title}</>;
   },
 };
 
-export default GoalClosing;
+export default GoalDiscussionCreation;

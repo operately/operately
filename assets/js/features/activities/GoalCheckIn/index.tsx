@@ -6,13 +6,13 @@ import type { Activity, ActivityContentGoalCheckIn } from "@/models/activities";
 
 import { ConditionChanges } from "./ConditionChanges";
 
-import { Commentable, Feedable, Pageable } from "./../interfaces";
+import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
 
 import * as People from "@/models/people";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
-const GoalCheckIn: Commentable & Feedable & Pageable = {
+const GoalCheckIn: Commentable & Feedable & Pageable & Notifiable = {
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalCheckIn;
     return Paths.goalProgressUpdatePath(content.goal.id, content.update.id);
@@ -65,6 +65,14 @@ const GoalCheckIn: Commentable & Feedable & Pageable = {
 
   hasComments(_activity: Activity): boolean {
     return true;
+  },
+
+  NotificationTitle(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
+  },
+
+  CommentNotificationTitle(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
   },
 };
 

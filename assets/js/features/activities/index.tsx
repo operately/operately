@@ -34,6 +34,14 @@ export function FeedItemTitle({ activity, content, page }: { activity: Activity;
   return React.createElement(handler(activity).FeedItemTitle, { activity, content, page });
 }
 
+export function NotificationTitle({ activity }: { activity: Activity }) {
+  return React.createElement(handler(activity).NotificationTitle, { activity });
+}
+
+export function CommentNotificationTitle({ activity }: { activity: Activity }) {
+  return React.createElement(handler(activity).CommentNotificationTitle, { activity });
+}
+
 //
 // Private API
 //
@@ -47,6 +55,7 @@ import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalReopening from "@/features/activities/GoalReopening";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
+import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
 
 function handler(activity: Activity) {
   return match(activity.content.__typename)
@@ -54,6 +63,7 @@ function handler(activity: Activity) {
     .with("ActivityContentGoalClosing", () => GoalClosing)
     .with("ActivityContentGoalReopening", () => GoalReopening)
     .with("ActivityContentGoalCheckIn", () => GoalCheckIn)
+    .with("ActivityContentGoalDiscussionCreation", () => GoalDiscussionCreation)
     .otherwise(() => {
       throw new Error("Unknown activity type");
     });

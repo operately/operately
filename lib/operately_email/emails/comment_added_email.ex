@@ -45,6 +45,11 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
       activity.action == "goal_closing" ->
         "commented on goal closing"
 
+      activity.action == "goal_discussion_creation" ->
+        parent_comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
+
+        "commented on: #{parent_comment_thread.title}"
+
       true ->
         raise "Unsupported action"
     end
@@ -59,6 +64,9 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
         OperatelyEmail.goal_activity_url(activity.content["goal_id"], activity.id)
 
       activity.action == "goal_closing" ->
+        OperatelyEmail.goal_activity_url(activity.content["goal_id"], activity.id)
+
+      activity.action == "goal_discussion_creation" ->
         OperatelyEmail.goal_activity_url(activity.content["goal_id"], activity.id)
 
       true ->

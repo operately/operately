@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckInEdit
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalClosing
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCreated
+  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalDiscussionCreation
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalEditing
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalReopening
   import_types OperatelyWeb.Graphql.Types.ActivityContentGoalReparent

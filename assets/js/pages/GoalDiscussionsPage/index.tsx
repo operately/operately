@@ -35,7 +35,13 @@ export const loader = async function ({ params }): Promise<LoaderResult> {
     activities: await Activities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,
-      actions: ["goal_timeframe_editing", "goal_closing", "goal_check_in", "goal_reopening"],
+      actions: [
+        "goal_timeframe_editing",
+        "goal_closing",
+        "goal_check_in",
+        "goal_reopening",
+        "goal_discussion_creation",
+      ],
     }),
   };
 };
@@ -53,7 +59,7 @@ export const Page = function () {
 
           <div className="flex items-center my-6">
             <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
-            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id)}>
+            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id)} testId="start-discussion">
               Start a new discussion
             </FilledButton>
           </div>
@@ -96,9 +102,12 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
 
         <div className="flex items-start justify-between gap-4 flex-1">
           <div className="flex flex-col gap-1 w-full">
-            <div className="text-content-accent font-bold leading-none test-sm">
+            <DivLink
+              to={path}
+              className="text-content-accent font-bold leading-none test-sm hover:underline cursor-pointer"
+            >
               <ActivityPageTitle activity={activity} />
-            </div>
+            </DivLink>
 
             <div className="w-full">
               <ActivityPageContent activity={activity} />

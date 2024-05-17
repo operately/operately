@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Graphql.Types.UpdateContentGoalCheckIn do
       end
     end
 
-    field :from, non_null(:float) do
+    field :from, :float do
       resolve fn target, _, _ ->
         {:ok, target["from"]}
       end
@@ -60,7 +60,11 @@ defmodule OperatelyWeb.Graphql.Types.UpdateContentGoalCheckIn do
 
     field :targets, list_of(:update_content_goal_check_in_target) do
       resolve fn update, _, _ ->
-        {:ok, update.content["targets"] || []}
+        targets = 
+          (update.content["targets"] || []) 
+          |> Enum.filter(fn target -> target["id"] != nil && target["from"] != nil end)
+
+        {:ok, targets}
       end
     end 
   end

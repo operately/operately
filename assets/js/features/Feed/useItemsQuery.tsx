@@ -44,6 +44,7 @@ function constructQuery() {
         commentThread {
           id
           message
+          title
         }
 
         content {
