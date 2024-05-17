@@ -13,7 +13,12 @@ import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
-import { activityPageHtmlTitle, ActivityPageTitle, ActivityPageContent } from "@/features/activities";
+import {
+  activityPageHtmlTitle,
+  ActivityPageTitle,
+  ActivityPageContent,
+  ActivityPageOptions,
+} from "@/features/activities";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -38,6 +43,7 @@ export function Page() {
         <GoalSubpageNavigation goal={goal} />
 
         <Paper.Body>
+          <ActivityPageOptions activity={activity} />
           <Title activity={activity} />
           <div className="my-8">
             <ActivityPageContent activity={activity} />

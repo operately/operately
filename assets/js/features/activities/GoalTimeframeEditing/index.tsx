@@ -11,9 +11,9 @@ import { Activity, ActivityContentGoalTimeframeEditing } from "@/gql";
 
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
+import { ActivityHandler } from "../interfaces";
 
-const GoalTimeframeEditing: Commentable & Feedable & Pageable & Notifiable = {
+const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal timeframe change`;
   },
@@ -62,6 +62,10 @@ const GoalTimeframeEditing: Commentable & Feedable & Pageable & Notifiable = {
         )}
       </div>
     );
+  },
+
+  PageOptions(_props: { activity: Activity }) {
+    return null;
   },
 
   FeedItemTitle({ activity, content, page }) {

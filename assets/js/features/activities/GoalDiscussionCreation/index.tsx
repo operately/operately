@@ -7,11 +7,11 @@ import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
-import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
+import { ActivityHandler } from "../interfaces";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
-const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
+const GoalDiscussionCreation: ActivityHandler = {
   pageHtmlTitle(activity: Activity) {
     return activity.commentThread!.title as string;
   },
@@ -33,6 +33,10 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
         )}
       </div>
     );
+  },
+
+  PageOptions(_props: { activity: Activity }) {
+    return null;
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
