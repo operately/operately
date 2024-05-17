@@ -3,6 +3,8 @@ import type { Activity } from "@/models/activities";
 export interface Commentable {
   commentCount(activity: Activity): number;
   hasComments(activity: Activity): boolean;
+
+  CommentNotificationTitle(props: { activity: Activity }): JSX.Element;
 }
 
 export interface Feedable {

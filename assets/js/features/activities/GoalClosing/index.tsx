@@ -84,6 +84,10 @@ const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
   NotificationTitle(_props: { activity: Activity }) {
     return <>Goal closed</>;
   },
+
+  CommentNotificationTitle(_props: { activity: Activity }) {
+    return <>commented on the goal closing</>;
+  },
 };
 
 export default GoalClosing;

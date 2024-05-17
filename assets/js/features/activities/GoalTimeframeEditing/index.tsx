@@ -119,6 +119,10 @@ const GoalTimeframeEditing: Commentable & Feedable & Pageable & Notifiable = {
   NotificationTitle(_props: { activity: Activity }) {
     throw new Error("Not implemented");
   },
+
+  CommentNotificationTitle(_props: { activity: Activity }) {
+    return <>commented on the goal timeframe change</>;
+  },
 };
 
 export default GoalTimeframeEditing;

@@ -17,6 +17,10 @@ export const CommentAdded: FeedItem = {
     activity {
       id
 
+      commentThread {
+        title
+      }
+
       content {
         __typename
 
@@ -34,6 +38,13 @@ export const CommentAdded: FeedItem = {
           }
 
           success
+        }
+
+        ... on ActivityContentGoalDiscussionCreation {
+          goal {
+            id
+            name
+          }
         }
       }
     }
@@ -82,6 +93,20 @@ function Title({ activity, page }) {
           </>
         );
       }
+
+      case "ActivityContentGoalDiscussionCreation": {
+        const goal = commentedActivity.content.goal;
+        const title = commentedActivity.commentThread.title;
+        const path = Paths.goalActivityPath(goal.id, commentedActivity.id);
+
+        return (
+          <>
+            {People.shortName(activity.author)} commented on <Link to={path}>{title}</Link>{" "}
+            <GoalLink goal={goal} page={page} prefix={"on"} />
+          </>
+        );
+      }
+
       default:
         throw new Error("Unknown activity type " + activity.content.activity.content.__typename);
     }

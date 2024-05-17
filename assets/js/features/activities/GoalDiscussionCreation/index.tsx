@@ -75,6 +75,10 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
       </>
     );
   },
+
+  CommentNotificationTitle({ activity }: { activity: Activity }) {
+    return <>commented on {activity.commentThread!.title}</>;
+  },
 };
 
 export default GoalDiscussionCreation;

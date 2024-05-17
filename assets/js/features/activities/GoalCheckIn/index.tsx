@@ -70,6 +70,10 @@ const GoalCheckIn: Commentable & Feedable & Pageable & Notifiable = {
   NotificationTitle(_props: { activity: Activity }) {
     throw new Error("Not implemented");
   },
+
+  CommentNotificationTitle(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
+  },
 };
 
 export default GoalCheckIn;

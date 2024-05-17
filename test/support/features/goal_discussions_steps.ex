@@ -40,7 +40,8 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_discussion_submitted, ctx, params do
-    {activity, comment_thread} = find_last()
+    activity = last_activity()
+    comment_thread = last_comment_thread()
 
     assert activity != nil
     assert comment_thread != nil
@@ -52,76 +53,111 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_discussion_submitted_email_sent, ctx do
-    {_activity, comment_thread} = find_last()
-
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
       to: ctx.reviewer, 
       author: ctx.champion, 
-      action: "posted: #{comment_thread.title}"
+      action: "posted: #{last_comment_thread().title}",
     })
   end
 
   step :assert_discussion_submitted_feed_posted, ctx do
-    {_activity, comment_thread} = find_last()
-
     ctx
     |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion, 
-      title: "posted #{comment_thread.title}",
-      subtitle: comment_thread.message,
+      title: "posted #{last_comment_thread().title}",
+      subtitle: last_comment_thread().message,
     })
   end
 
   step :assert_discussion_submitted_notification_sent, ctx do
-    {_activity, comment_thread} = find_last()
-
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "posted: #{comment_thread.title}",
+      action: "posted: #{last_comment_thread().title}",
     })
   end
 
-  step :edit_discussion, ctx, params do
-  end
+  # step :edit_discussion, ctx, params do
+  # end
 
-  step :assert_discusssion_edited, ctx, params do
-  end
+  # step :assert_discusssion_edited, ctx, params do
+  # end
 
   step :comment_on_discussion, ctx, message do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "goal-discussion-creation")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "post-comment")
   end
 
   step :assert_comment_submitted, ctx, message do
+    comment = last_comment()
+
+    assert comment != nil
+    assert comment.author_id == ctx.reviewer.id
+    assert Jason.encode!(comment.content["message"]) |> String.contains?(message)
+
+    ctx
   end
 
   step :assert_comment_submitted_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on: #{last_comment_thread().title}",
+    })
   end
 
   step :assert_comment_submitted_feed_posted, ctx do
+    ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion, 
+      title: "commented on #{last_comment_thread().title}",
+      subtitle: last_comment_thread().message,
+    })
   end
 
   step :assert_comment_submitted_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "commented on #{last_comment_thread().title}",
+    })
   end
 
   #
   # Helper functions
   #
 
-  defp find_last do
+  defp last_activity do
     query = from a in Operately.Activities.Activity, 
       where: a.action == "goal_discussion_creation", 
       order_by: [desc: a.inserted_at],
       preload: [:author],
       limit: 1
 
-    activity = Operately.Repo.one(query)
-    comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
+    Operately.Repo.one(query)
+  end
 
-    {activity, comment_thread}
+  defp last_comment_thread do
+    activity = last_activity() 
+    Operately.Comments.get_thread!(activity.comment_thread_id)
+  end
+
+  defp last_comment do
+    comment_thread = last_comment_thread()
+    Operately.Updates.list_comments(comment_thread.id, :comment_thread) |> Enum.at(-1)
   end
 
 end

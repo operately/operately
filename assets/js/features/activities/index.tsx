@@ -38,6 +38,10 @@ export function NotificationTitle({ activity }: { activity: Activity }) {
   return React.createElement(handler(activity).NotificationTitle, { activity });
 }
 
+export function CommentNotificationTitle({ activity }: { activity: Activity }) {
+  return React.createElement(handler(activity).CommentNotificationTitle, { activity });
+}
+
 //
 // Private API
 //

@@ -10,6 +10,7 @@ export type {
   ActivityContentGoalClosing,
   ActivityContentGoalCheckIn,
   ActivityContentGoalDiscussionCreation,
+  ActivityContentCommentAdded,
 } from "@/gql";
 
 import {
