@@ -8,11 +8,11 @@ import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
-import { Commentable, Feedable, Pageable } from "./../interfaces";
+import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
-const GoalClosing: Commentable & Feedable & Pageable = {
+const GoalClosing: Commentable & Feedable & Pageable & Notifiable = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal closed`;
   },
@@ -79,6 +79,10 @@ const GoalClosing: Commentable & Feedable & Pageable = {
 
   hasComments(activity: Activity): boolean {
     return !!activity.commentThread;
+  },
+
+  NotificationTitle(_props: { activity: Activity }) {
+    return <>Goal closed</>;
   },
 };
 

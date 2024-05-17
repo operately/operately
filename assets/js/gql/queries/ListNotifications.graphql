@@ -12,6 +12,24 @@ query ListNotifications($page: Int, $perPage: Int) {
         avatarUrl
       }
 
+      commentThread {
+        id
+        message
+        title
+        commentsCount
+
+        reactions {
+          id
+          emoji
+
+          person {
+            id
+            fullName
+            avatarUrl
+          }
+        }
+      }
+
       content {
         __typename
 
@@ -317,6 +335,13 @@ query ListNotifications($page: Int, $perPage: Int) {
 
         ... on ActivityContentProjectResuming {
           project {
+            id
+            name
+          }
+        }
+
+        ... on ActivityContentGoalDiscussionCreation {
+          goal {
             id
             name
           }

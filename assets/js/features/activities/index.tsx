@@ -34,6 +34,10 @@ export function FeedItemTitle({ activity, content, page }: { activity: Activity;
   return React.createElement(handler(activity).FeedItemTitle, { activity, content, page });
 }
 
+export function NotificationTitle({ activity }: { activity: Activity }) {
+  return React.createElement(handler(activity).NotificationTitle, { activity });
+}
+
 //
 // Private API
 //

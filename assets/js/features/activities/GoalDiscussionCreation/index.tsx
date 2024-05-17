@@ -7,13 +7,13 @@ import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
-import { Commentable, Feedable, Pageable } from "./../interfaces";
+import { Commentable, Feedable, Pageable, Notifiable } from "./../interfaces";
 import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
-const GoalDiscussionCreation: Commentable & Feedable & Pageable = {
+const GoalDiscussionCreation: Commentable & Feedable & Pageable & Notifiable = {
   pageHtmlTitle(activity: Activity) {
-    return activity.commentThread!.title;
+    return activity.commentThread!.title as string;
   },
 
   pagePath(activity: Activity): string {
@@ -39,9 +39,7 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable = {
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <div className="mt-2">
-            <Summary jsonContent={activity.commentThread.message} characterCount={300} />
-          </div>
+          <Summary jsonContent={activity.commentThread.message} characterCount={300} />
         )}
       </div>
     );
@@ -53,8 +51,8 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable = {
 
     return (
       <>
-        {People.shortName(activity.author)} posted {link}{" "}
-        <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+        {People.shortName(activity.author)} posted {link}
+        <GoalLink goal={content.goal} page={page} showOnGoalPage={false} prefix=" on" />
       </>
     );
   },
@@ -65,6 +63,17 @@ const GoalDiscussionCreation: Commentable & Feedable & Pageable = {
 
   hasComments(activity: Activity): boolean {
     return !!activity.commentThread;
+  },
+
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const author = activity.author;
+    const title = activity.commentThread!.title;
+
+    return (
+      <>
+        {People.firstName(author)} posted: {title}
+      </>
+    );
   },
 };
 

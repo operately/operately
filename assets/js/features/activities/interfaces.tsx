@@ -16,3 +16,8 @@ export interface Pageable {
   PageTitle(props: { activity: Activity }): JSX.Element;
   PageContent(props: { activity: Activity }): JSX.Element;
 }
+
+export interface Notifiable {
+  pagePath(activity: Activity): string;
+  NotificationTitle(props: { activity: Activity }): JSX.Element;
+}

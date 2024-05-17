@@ -67,9 +67,10 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     {_activity, comment_thread} = find_last()
 
     ctx
+    |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion, 
-      title: "posted: #{comment_thread.title}",
+      title: "posted #{comment_thread.title}",
       subtitle: comment_thread.message,
     })
   end
