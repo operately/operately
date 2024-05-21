@@ -22,7 +22,6 @@ export function Page() {
           <div className="bg-surface-dimmed rounded-lg overflow-hidden divide-y divide-surface-outline border border-surface-outline">
             <ProfileLink />
             <AppearanceLink />
-            {/*<NotificationLink />*/}
           </div>
 
           <div className="bg-surface-dimmed rounded-lg overflow-hidden border border-surface-outline">
