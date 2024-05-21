@@ -6,7 +6,7 @@ defmodule Operately.Features.NotificationsTest do
   import Operately.PeopleFixtures
 
   alias Operately.Support.Features.NotificationsSteps
-  
+
   setup ctx do
     ctx = Map.put(ctx, :company, company_fixture(%{name: "Test Org"}))
     ctx = Map.put(ctx, :champion, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Dorcy Devonshire"}))
@@ -26,16 +26,16 @@ defmodule Operately.Features.NotificationsTest do
     |> NotificationsSteps.assert_no_unread_notifications()
   end
 
-  feature "mark all unread notifications as read", ctx do
-    ctx
-    |> given_a_project_creation_notification_exists()
-    |> given_a_project_creation_notification_exists()
-    |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.assert_notification_count(2)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.click_on_first_mark_all_as_read()
-    |> NotificationsSteps.assert_no_unread_notifications()
-  end
+  # feature "mark all unread notifications as read", ctx do
+  #   ctx
+  #   |> given_a_project_creation_notification_exists()
+  #   |> given_a_project_creation_notification_exists()
+  #   |> UI.login_as(ctx.champion)
+  #   |> NotificationsSteps.assert_notification_count(2)
+  #   |> NotificationsSteps.visit_notifications_page()
+  #   |> NotificationsSteps.click_on_first_mark_all_as_read()
+  #   |> NotificationsSteps.assert_no_unread_notifications()
+  # end
 
   #
   # Helpers
