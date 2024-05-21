@@ -135,6 +135,9 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_goal_connected, ctx, goal_name: goal_name do
+    ctx
+    |> UI.assert_text(goal_name, testid: "project-goal-link")
+
     project = Operately.Projects.get_project!(ctx.project.id)
     project = Operately.Repo.preload(project, :goal)
 
