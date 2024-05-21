@@ -390,6 +390,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.select_person_in(id: "people-search", name: name)
     |> UI.fill(testid: "contributor-responsibility-input", with: responsibility)
     |> UI.click(testid: "save-contributor")
+    |> UI.sleep(200)
   end
 
   step :assert_contributor_added, ctx, name: name, responsibility: responsibility do
