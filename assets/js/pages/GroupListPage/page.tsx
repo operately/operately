@@ -40,20 +40,6 @@ export function Page() {
               isMember: true,
             }}
           />
-
-          <SpaceCardLink
-            group={{
-              name: "Personal Space",
-              color: "text-green-500",
-              icon: "IconTrees",
-              id: "personal",
-              mission: "Your own private space in Operately",
-              privateSpace: true,
-              isCompanySpace: false,
-              isMember: true,
-            }}
-            comingSoon={true}
-          />
         </div>
 
         <div className="flex items-center justify-center mt-8 mb-8">
