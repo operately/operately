@@ -8,7 +8,6 @@ import MemberList from "./MemberList";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { FilledButton } from "@/components/Button";
 
@@ -40,7 +39,7 @@ export function Page() {
           </div>
 
           <JoinButton group={group} />
-          
+
           <Paper.DimmedSection>
             <div className="uppercase text-xs font-semibold mb-2">Activity</div>
             <SpaceActivity space={group} />
