@@ -6,20 +6,21 @@ defmodule Operately.Features.NotificationsTest do
   import Operately.PeopleFixtures
 
   alias Operately.Support.Features.NotificationsSteps
-  
+
   setup ctx do
     ctx = Map.put(ctx, :company, company_fixture(%{name: "Test Org"}))
     ctx = Map.put(ctx, :champion, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Dorcy Devonshire"}))
     ctx = Map.put(ctx, :reviewer, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John Reviewer"}))
     ctx = Map.put(ctx, :group, group_fixture(ctx.champion, %{company_id: ctx.company.id, name: "Designers"}))
 
-    UI.login_as(ctx, ctx.reviewer)
+    ctx = UI.login_as(ctx, ctx.reviewer)
+
+    {:ok, ctx}
   end
 
   feature "unread notifications count", ctx do
     ctx
     |> given_a_project_creation_notification_exists()
-    |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(1)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.click_on_first_notification()
@@ -36,10 +37,6 @@ defmodule Operately.Features.NotificationsTest do
     |> NotificationsSteps.click_on_first_mark_all_as_read()
     |> NotificationsSteps.assert_no_unread_notifications()
   end
-
-  #
-  # Helpers
-  #
 
   step :given_a_project_creation_notification_exists, ctx do
     ctx
