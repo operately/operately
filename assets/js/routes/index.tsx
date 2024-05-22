@@ -94,6 +94,8 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/contributors", pages.ProjectContributorsPage),
       pageRoute("/projects/:id", pages.ProjectPage),
 
+      pageRoute("/first-time-setup", pages.FirstTimeSetupPage),
+
       pageRoute("*", pages.NotFoundPage),
     ],
   },
