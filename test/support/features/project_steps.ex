@@ -135,6 +135,9 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_goal_connected, ctx, goal_name: goal_name do
+    ctx
+    |> UI.assert_text(goal_name, testid: "project-goal-link")
+
     project = Operately.Projects.get_project!(ctx.project.id)
     project = Operately.Repo.preload(project, :goal)
 
@@ -144,7 +147,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
-    ctx 
+    ctx
     |> UI.assert_page("/projects/#{ctx.project.id}")
     |> UI.assert_text(goal_name)
     |> UI.click(testid: "project-goal-link")
@@ -199,7 +202,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       to: ctx.reviewer,
       author: ctx.champion,
       action: "disconnected the project from the #{goal_name} goal",
-    })  
+    })
   end
 
   step :assert_goal_disconnected_notification_sent_to_reviewer, ctx do
@@ -235,7 +238,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> FeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: ctx.new_space)
   end
 
-  # 
+  #
   # Navigation between project pages
   #
 
@@ -278,7 +281,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :pause_project, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "pause-project-link")
     |> UI.click(testid: "pause-project-button")
@@ -317,7 +320,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :resume_project, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "resume-project-link")
     |> UI.click(testid: "resume-project-button")
@@ -376,7 +379,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :given_a_person_exists, ctx, name: name do
     person_fixture_with_account(%{
       full_name: name,
-      title: "Manager", 
+      title: "Manager",
       company_id: ctx.company.id
     })
 
@@ -394,6 +397,9 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_contributor_added, ctx, name: name, responsibility: responsibility do
+    ctx
+    |> UI.assert_text(name)
+
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
     contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
@@ -439,7 +445,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: contrib.person,
-      author: ctx.champion, 
+      author: ctx.champion,
       action: "added you as a contributor"
     })
   end
@@ -450,7 +456,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     {:ok, _} = Operately.Projects.create_contributor(%{
       person_id: contrib.id,
       role: "contributor",
-      project_id: ctx.project.id, 
+      project_id: ctx.project.id,
       responsibility: "Lead the backend implementation"
     })
 
