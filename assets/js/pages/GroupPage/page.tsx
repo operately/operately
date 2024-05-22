@@ -8,7 +8,6 @@ import MemberList from "./MemberList";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { GroupPageNavigation } from "@/components/GroupPageNavigation";
-import { ComingSoonBadge } from "@/components/ComingSoonBadge";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { FilledButton } from "@/components/Button";
 
@@ -40,44 +39,6 @@ export function Page() {
           </div>
 
           <JoinButton group={group} />
-
-          <div className="grid grid-cols-2 gap-8 my-8">
-            <div className="border border-stroke-base rounded p-8 py-4">
-              <div className="text-lg font-bold">Quick Actions</div>
-              <ComingSoonBadge />
-              <div className="mt-4 flex flex-col gap-2"></div>
-            </div>
-
-            <div className="border border-stroke-base rounded p-8 py-4">
-              <div className="text-lg font-bold">Points Of Contact</div>
-              <ComingSoonBadge />
-              <div className="mt-4 flex flex-col gap-2"></div>
-            </div>
-
-            <div className="border border-stroke-base rounded p-8 py-4">
-              <div className="text-lg font-bold">Goal Stats</div>
-              <ComingSoonBadge />
-              <div className="mt-4 flex flex-col gap-2"></div>
-            </div>
-
-            <div className="border border-stroke-base rounded p-8 py-4">
-              <div className="text-lg font-bold">Project Stats</div>
-              <ComingSoonBadge />
-              <div className="mt-4 flex flex-col gap-2"></div>
-            </div>
-
-            <div className="border border-stroke-base rounded p-8 py-4">
-              <div className="text-lg font-bold">KPI Stats</div>
-              <ComingSoonBadge />
-              <div className="mt-4 flex flex-col gap-2"></div>
-            </div>
-
-            <div className="border border-stroke-base rounded p-8 py-4">
-              <div className="text-lg font-bold">Latest Discussions</div>
-              <ComingSoonBadge />
-              <div className="mt-4 flex flex-col gap-2"></div>
-            </div>
-          </div>
 
           <Paper.DimmedSection>
             <div className="uppercase text-xs font-semibold mb-2">Activity</div>
