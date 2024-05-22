@@ -450,6 +450,15 @@ export type AddCompanyMemberInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AddFirstCompanyInput = {
+  companyName: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  fullName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  passwordConfirmation: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AddKeyResourceInput = {
   link: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
@@ -1089,6 +1098,7 @@ export type RootMutationType = {
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addCompanyMember: Person;
   addCompanyTrustedEmailDomain: Company;
+  addFirstCompany?: Maybe<Scalars['Boolean']['output']>;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -1192,6 +1202,11 @@ export type RootMutationTypeAddCompanyMemberArgs = {
 export type RootMutationTypeAddCompanyTrustedEmailDomainArgs = {
   companyId: Scalars['ID']['input'];
   domain: Scalars['String']['input'];
+};
+
+
+export type RootMutationTypeAddFirstCompanyArgs = {
+  input: AddFirstCompanyInput;
 };
 
 
