@@ -8,6 +8,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
     updateProfile(input: $input) {
       fullName
       title
+      timezone
     }
   }
   """
@@ -16,7 +17,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
     conn = graphql(ctx.conn, @update_profile, %{
       :input => %{
         :fullName => "John Doe",
-        :title => "CEO"
+        :title => "CEO",
+        :timezone => "Europe/Berlin"
       }
     })
 
@@ -24,12 +26,13 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
       "data" => %{
         "updateProfile" => %{
           "fullName" => "John Doe",
-          "title" => "CEO"
+          "title" => "CEO",
+          "timezone" => "Europe/Berlin"
         }
       }
     }
   end
-      
+
   defp graphql(conn, query, variables) do
     conn |> post("/api/gql", %{query: query, variables: variables})
   end

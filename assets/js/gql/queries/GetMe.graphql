@@ -4,6 +4,7 @@ query GetMe($includeManager: Boolean = false) {
     fullName
     avatarUrl
     title
+    timezone
 
     sendDailySummary
     notifyOnMention

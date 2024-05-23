@@ -17,6 +17,7 @@ defmodule Operately.People.Person do
     field :title, :string
     field :avatar_url, :string
     field :email, :string
+    field :timezone, :string
 
     field :send_daily_summary, :boolean
     field :notify_on_mention, :boolean
@@ -42,6 +43,7 @@ defmodule Operately.People.Person do
       :full_name,
       :title,
       :avatar_url,
+      :timezone,
       :email,
       :account_id,
       :company_id,
