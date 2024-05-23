@@ -90,7 +90,7 @@ function ProfileForm({ me }) {
         onChange={(option) => setTimezone(option)}
         options={timezones.map((tz) => ({
           value: tz,
-          label: tz,
+          label: tz.replace(/_/g, " "),
         }))}
         data-test-id="timezone-selector"
       />
