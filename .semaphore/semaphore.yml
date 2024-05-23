@@ -24,6 +24,7 @@ blocks:
             - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
             - cache store
             - cd assets && cache store && cd .. # cache node_packages
+            - ls screenshots
       jobs:
         - name: Unit Tests
           commands:
