@@ -26,7 +26,11 @@ function ProtectedRoutes() {
 }
 
 function PublicRoutes() {
-  return <Outlet />;
+  return (
+    <ApolloProvider client={client}>
+      <Outlet />
+    </ApolloProvider>
+  );
 }
 
 const routes = createBrowserRouter([
