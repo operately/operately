@@ -200,13 +200,31 @@ defmodule OperatelyWeb.AccountAuth do
   they use the application at all, here would be a good place.
   """
   def require_authenticated_account(conn, _opts) do
-    if conn.assigns[:current_account] do
-      conn
-    else
-      conn
-      |> maybe_store_return_to()
-      |> redirect(to: ~p"/accounts/log_in")
-      |> halt()
+    cond do
+      allow_unauthenticated_account?(conn) ->
+        conn
+      conn.assigns[:current_account] ->
+        conn
+      true ->
+        conn
+        |> maybe_store_return_to()
+        |> redirect(to: ~p"/accounts/log_in")
+        |> halt()
+    end
+  end
+
+  defp allow_unauthenticated_account?(conn) do
+    unauthenticated_paths = [
+      "/first-time-setup",
+    ]
+    unauthenticated_operations = [
+      "AddFirstCompany",
+    ]
+
+    cond do
+      conn.request_path in unauthenticated_paths -> true
+      conn.params["operationName"] in unauthenticated_operations -> true
+      true -> false
     end
   end
 

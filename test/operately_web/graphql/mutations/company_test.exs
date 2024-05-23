@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
   use OperatelyWeb.ConnCase
 
+  setup :register_and_log_in_account
 
   @add_first_company """
   mutation addFirstCompany($input: AddFirstCompanyInput!) {
@@ -25,10 +26,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
     res = json_response(conn, 200)
     assert Map.has_key?(res["data"]["addFirstCompany"], "id")
 
-    id = res["data"]["addFirstCompany"]["id"]
+    company = Operately.Companies.get_company_by_name("Acme Co.")
+    account = Operately.People.get_account_by_email_and_password("john@your-company.com", "Aa12345#&!123")
 
-    assert length(Operately.People.list_people(id)) == 1
-    assert length(Operately.Companies.list_companies()) == 1
+    assert length(Operately.People.list_people(company.id)) == 1
+    assert account != nil
   end
 
   defp graphql(conn, query, variables) do
