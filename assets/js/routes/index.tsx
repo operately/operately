@@ -1,17 +1,31 @@
 import React from "react";
-
 import pages from "@/pages";
 
-import { createBrowserRouter } from "react-router-dom";
+import { Outlet, createBrowserRouter } from "react-router-dom";
 import { pageRoute } from "./pageRoute";
 
 import ErrorPage from "./ErrorPage";
 import DefaultLayout from "@/layouts/DefaultLayout";
 
+import { CurrentUserProvider } from "@/contexts/CurrentUserContext";
+
+
+function ProtectedRoutes() {
+  return (
+    <CurrentUserProvider>
+      <DefaultLayout />
+    </CurrentUserProvider>
+  );
+}
+
+function PublicRoutes() {
+  return <Outlet />;
+}
+
 const routes = createBrowserRouter([
   {
     path: "/",
-    element: <DefaultLayout />,
+    element: <ProtectedRoutes />,
     errorElement: <ErrorPage />,
     children: [
       pageRoute("/", pages.GroupListPage),
@@ -94,9 +108,15 @@ const routes = createBrowserRouter([
       pageRoute("/projects/:projectID/contributors", pages.ProjectContributorsPage),
       pageRoute("/projects/:id", pages.ProjectPage),
 
-      pageRoute("/first-time-setup", pages.FirstTimeSetupPage),
-
       pageRoute("*", pages.NotFoundPage),
+    ],
+  },
+  {
+    path: "/",
+    element: <PublicRoutes />,
+    errorElement: <ErrorPage />,
+    children: [
+      pageRoute("/first-time-setup", pages.FirstTimeSetupPage),
     ],
   },
 ]);
