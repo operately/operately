@@ -3,8 +3,9 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
+
 import { Spacer } from "@/components/Spacer";
-import { FilledButton } from "@/components/Button";
+import { useForm } from "./useForm";
 
 
 export function Page() {
@@ -25,14 +26,20 @@ export function Page() {
 }
 
 function Form() {
+  const { fields, submit, submitting, errors } = useForm();
+
   return (
-    <Forms.Form isValid={true} onSubmit={()=>{}}>
+    <Forms.Form
+      isValid={true}
+      loading={submitting}
+      onSubmit={submit}
+    >
       <Forms.TextInput 
         label="Name of the company"
         placeholder="e.g. Acme Co."
-        onChange={()=>{}}
-        value=""
-        error={false}
+        onChange={fields.setCompanyName}
+        value={fields.companyName}
+        error={!!errors.find((e) => e.field === "companyName")?.message}
       />
 
       <Spacer />
@@ -40,34 +47,50 @@ function Form() {
       <Spacer />
 
       <Forms.TextInput 
-        label="Name"
+        label="Full name"
         placeholder="e.g. John Johnson"
-        onChange={()=>{}}
-        value=""
-        error={false}
+        onChange={fields.setFullName}
+        value={fields.fullName}
+        error={!!errors.find((e) => e.field === "fullName")?.message}
       />
+      
       <Forms.TextInput 
         label="Role in the company"
         placeholder="e.g. Founder"
-        onChange={()=>{}}
-        value=""
-        error={false}
+        onChange={fields.setRole}
+        value={fields.role}
+        error={!!errors.find((e) => e.field === "role")?.message}
+      />
+      <Forms.TextInput 
+        label="Email"
+        placeholder="e.g. john@your-company.com"
+        onChange={fields.setEmail}
+        value={fields.email}
+        error={!!errors.find((e) => e.field === "email")?.message}
       />
       <Forms.TextInput 
         label="Password"
-        onChange={()=>{}}
-        value=""
-        error={false}
+        onChange={fields.setPassword}
+        value={fields.password}
+        error={!!errors.find((e) => e.field === "password")?.message}
+        type="password"
       />
       <Forms.TextInput 
         label="Repeat password"
-        onChange={()=>{}}
-        value=""
-        error={false}
+        onChange={fields.setPasswordConfirmation}
+        value={fields.passwordConfirmation}
+        error={!!errors.find((e) => e.field === "passwordConfirmation")?.message}
+        type="password"
       />
 
+      {errors.map((e, idx) => (
+        <div key={idx} className="text-red-500 text-sm">{e.message}</div>
+      ))}
+
       <div className="flex items-center justify-center">
-        <FilledButton>Submit</FilledButton>
+        <Forms.SubmitButton>
+          Submit
+        </Forms.SubmitButton>
       </div>
     </Forms.Form>
   )
