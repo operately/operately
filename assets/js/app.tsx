@@ -12,8 +12,6 @@ import {
 
 import routes from "./routes";
 
-import { ApolloProvider } from "@apollo/client";
-import client from "./graphql/client";
 import "./i18n";
 
 if (window.appConfig.sentry.enabled) {
@@ -38,9 +36,7 @@ const rootElement: HTMLElement | null = document.getElementById("root");
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <RouterProvider router={routes} />
-    </ApolloProvider>
+    <RouterProvider router={routes} />
   </React.StrictMode>
 );
 

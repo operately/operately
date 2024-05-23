@@ -89,7 +89,8 @@ defmodule OperatelyWeb.Router do
   end
 
   scope "/", OperatelyWeb do
-    pipe_through [:browser, :require_authenticated_account]
+    # pipe_through [:browser, :require_authenticated_account]
+    pipe_through [:browser] # disable authentication for testing public pages in React Router
 
     get "/*page", PageController, :index
   end

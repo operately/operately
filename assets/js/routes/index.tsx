@@ -1,41 +1,35 @@
 import React from "react";
 
 import pages from "@/pages";
+import client from "@/graphql/client";
 
-import { createBrowserRouter } from "react-router-dom";
+import { Outlet, createBrowserRouter } from "react-router-dom";
 import { pageRoute } from "./pageRoute";
 
 import ErrorPage from "./ErrorPage";
 import DefaultLayout from "@/layouts/DefaultLayout";
 
+import { ApolloProvider } from "@apollo/client";
 import { ThemeProvider } from "@/theme";
 import { CurrentUserProvider } from "@/contexts/CurrentUserContext";
 
-function PublicRoutes() {
+function ProtectedRoutes() {
   return (
-    <ThemeProvider>
-      <DefaultLayout />
-    </ThemeProvider>
+    <ApolloProvider client={client}>
+      <CurrentUserProvider>
+        <ThemeProvider>
+          <DefaultLayout />
+        </ThemeProvider>
+      </CurrentUserProvider>
+    </ApolloProvider>
   );
 }
 
-function ProtectedRoutes() {
-  return (
-    <CurrentUserProvider>
-      <ThemeProvider>
-        <DefaultLayout />
-      </ThemeProvider>
-    </CurrentUserProvider>
-  );
+function PublicRoutes() {
+  return <Outlet />;
 }
 
 const routes = createBrowserRouter([
-  {
-    path: "/",
-    element: <PublicRoutes />,
-    errorElement: <ErrorPage />,
-    children: [pageRoute("/", pages.HelloPage)],
-  },
   {
     path: "/",
     element: <ProtectedRoutes />,
@@ -123,6 +117,12 @@ const routes = createBrowserRouter([
 
       pageRoute("*", pages.NotFoundPage),
     ],
+  },
+  {
+    path: "/",
+    element: <PublicRoutes />,
+    errorElement: <ErrorPage />,
+    children: [pageRoute("/public/hello", pages.HelloPage)],
   },
 ]);
 
