@@ -51,17 +51,24 @@ function ProfileForm({ me }) {
   const [title, setTitle] = React.useState(me.title);
   const [manager, setManager] = React.useState(me.manager);
   const [managerStatus, setManagerStatus] = React.useState(me.manager ? "select-from-list" : "no-manager");
-  const [timezone, setTimezone] = React.useState({ value: me.timezone, label: me.timezone});
-  const timezones = Intl.supportedValuesOf("timeZone")
+
+  const [timezone, setTimezone] = React.useState(() => {
+    if (me.timezone) {
+      return { value: me.timezone, label: me.timezone };
+    } else {
+      return null;
+    }
+  });
+
+  const timezones = Intl.supportedValuesOf("timeZone");
 
   const handleSubmit = () => {
-    const tz = timezone.value;
     update({
       variables: {
         input: {
           fullName: name,
           title: title,
-          timezone: tz,
+          timezone: timezone?.value,
           managerId: managerStatus === "select-from-list" ? manager?.id : null,
         },
       },
@@ -76,13 +83,14 @@ function ProfileForm({ me }) {
       <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" error={title.length === 0} />
 
       <Forms.SelectBox
-        label={`Actual timezone: ${me.timezone == null ? "Not set" : me.timezone}`}
+        label="Timezone"
+        placeholder="Select your timezone..."
         value={timezone}
         defaultValue={timezone}
         onChange={(option) => setTimezone(option)}
         options={timezones.map((tz) => ({
           value: tz,
-          label: tz,
+          label: tz.replace(/_/g, " "),
         }))}
         data-test-id="timezone-selector"
       />

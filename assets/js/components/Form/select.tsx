@@ -14,6 +14,7 @@ interface SelectBoxNoLabelProps {
   props?: any;
   defaultValue?: any;
   error?: boolean;
+  placeholder?: string;
 }
 
 interface SelectBoxProps extends SelectBoxNoLabelProps {
@@ -28,6 +29,7 @@ function SelectBoxNoLabel(props: SelectBoxNoLabelProps) {
   let selectProps = {
     unstyled: true,
     className: "flex-1",
+    placeholder: props.placeholder,
     classNames: selectBoxStyles(props.error),
     value: value,
     onChange: onChange,
