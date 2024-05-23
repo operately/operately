@@ -36,6 +36,7 @@ export function useProfileMutation(options = {}) {
         updateProfile(input: $input) {
           fullName
           title
+          timezone
         }
       }
     `,
