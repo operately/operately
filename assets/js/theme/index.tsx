@@ -11,13 +11,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { data, loading, error } = useMe({});
 
   if (loading) return null;
-  if (error) return null;
 
-  if (!data) {
-    return null;
+  if (!error) {
+    return <Context userTheme={data.me.theme}>{children}</Context>;
+  } else {
+    // If the user is not logged in, we don't need to wait for the theme
+    // to be loaded. We can just render the children with the system theme.
+
+    return <Context userTheme={"system"}>{children}</Context>;
   }
-
-  return <Context userTheme={data.me.theme}>{children}</Context>;
 }
 
 function Context({ userTheme, children }: { userTheme: string; children: React.ReactNode }) {

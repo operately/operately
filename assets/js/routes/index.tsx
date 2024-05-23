@@ -28,7 +28,9 @@ function ProtectedRoutes() {
 function PublicRoutes() {
   return (
     <ApolloProvider client={client}>
-      <Outlet />
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
     </ApolloProvider>
   );
 }
