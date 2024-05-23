@@ -8,10 +8,37 @@ import { pageRoute } from "./pageRoute";
 import ErrorPage from "./ErrorPage";
 import DefaultLayout from "@/layouts/DefaultLayout";
 
+import { ThemeProvider } from "@/theme";
+import { CurrentUserProvider } from "@/contexts/CurrentUserContext";
+
+function PublicRoutes() {
+  return (
+    <ThemeProvider>
+      <DefaultLayout />
+    </ThemeProvider>
+  );
+}
+
+function ProtectedRoutes() {
+  return (
+    <CurrentUserProvider>
+      <ThemeProvider>
+        <DefaultLayout />
+      </ThemeProvider>
+    </CurrentUserProvider>
+  );
+}
+
 const routes = createBrowserRouter([
   {
     path: "/",
-    element: <DefaultLayout />,
+    element: <PublicRoutes />,
+    errorElement: <ErrorPage />,
+    children: [pageRoute("/", pages.HelloPage)],
+  },
+  {
+    path: "/",
+    element: <ProtectedRoutes />,
     errorElement: <ErrorPage />,
     children: [
       pageRoute("/", pages.GroupListPage),

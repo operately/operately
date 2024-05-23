@@ -16,9 +16,6 @@ import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/client";
 import "./i18n";
 
-import { ThemeProvider } from "./theme";
-import { CurrentUserProvider } from "./contexts/CurrentUserContext";
-
 if (window.appConfig.sentry.enabled) {
   Sentry.init({
     dsn: window.appConfig.sentry.dsn,
@@ -42,11 +39,7 @@ const rootElement: HTMLElement | null = document.getElementById("root");
 const App: JSX.Element = (
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <CurrentUserProvider>
-        <ThemeProvider>
-          <RouterProvider router={routes} />
-        </ThemeProvider>
-      </CurrentUserProvider>
+      <RouterProvider router={routes} />
     </ApolloProvider>
   </React.StrictMode>
 );
