@@ -40,6 +40,7 @@ function Form() {
         onChange={fields.setCompanyName}
         value={fields.companyName}
         error={!!errors.find((e) => e.field === "companyName")?.message}
+        testId="company-name"
       />
 
       <Spacer />
@@ -52,6 +53,7 @@ function Form() {
         onChange={fields.setFullName}
         value={fields.fullName}
         error={!!errors.find((e) => e.field === "fullName")?.message}
+        testId="full-name"
       />
       
       <Forms.TextInput 
@@ -60,6 +62,7 @@ function Form() {
         onChange={fields.setRole}
         value={fields.role}
         error={!!errors.find((e) => e.field === "role")?.message}
+        testId="role"
       />
       <Forms.TextInput 
         label="Email"
@@ -67,6 +70,7 @@ function Form() {
         onChange={fields.setEmail}
         value={fields.email}
         error={!!errors.find((e) => e.field === "email")?.message}
+        testId="email"
       />
       <Forms.TextInput 
         label="Password"
@@ -74,6 +78,7 @@ function Form() {
         value={fields.password}
         error={!!errors.find((e) => e.field === "password")?.message}
         type="password"
+        testId="password"
       />
       <Forms.TextInput 
         label="Repeat password"
@@ -81,6 +86,7 @@ function Form() {
         value={fields.passwordConfirmation}
         error={!!errors.find((e) => e.field === "passwordConfirmation")?.message}
         type="password"
+        testId="password-confirmation"
       />
 
       {errors.map((e, idx) => (
@@ -88,7 +94,7 @@ function Form() {
       ))}
 
       <div className="flex items-center justify-center">
-        <Forms.SubmitButton>
+        <Forms.SubmitButton testId="submit-form">
           Submit
         </Forms.SubmitButton>
       </div>
