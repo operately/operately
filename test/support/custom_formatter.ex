@@ -42,14 +42,8 @@ defmodule CustomFormatter do
     {:noreply, state}
   end
 
-  defp display_test_started(%ExUnit.Test{name: name}, state) do
-    [type | rest] = String.split(Atom.to_string(name), " ")
-
-    case type do
-      "test" -> IO.write("\n  #{blue("Test")}: #{Enum.join(rest, " ")}")
-      "feature" -> IO.write("\n  #{blue("Feature")}: #{Enum.join(rest, " ")}")
-    end
-    
+  defp display_test_started(%ExUnit.Test{name: _} = test, state) do
+    IO.write("\n  #{blue(test_type(test))}: #{test_name(test)} (#{file_and_line(test)})")
     {:noreply, state}
   end
 
@@ -75,5 +69,30 @@ defmodule CustomFormatter do
   defp red(text), do: IO.ANSI.red() <> text <> IO.ANSI.reset()
   defp green(text), do: IO.ANSI.green() <> text <> IO.ANSI.reset()
   defp blue(text), do: IO.ANSI.blue() <> text <> IO.ANSI.reset()
+
+  defp file_and_line(test) do
+    {:ok, cwd} = File.cwd()
+
+    file = String.replace(test.tags.file, cwd <> "/", "")
+    line = Integer.to_string(test.tags.line)
+
+    "#{file}:#{line}"
+  end
+
+  defp test_type(test) do
+    test.name
+    |> Atom.to_string()
+    |> String.split(" ")
+    |> hd()
+    |> String.capitalize()
+  end
+
+  defp test_name(test) do
+    test.name
+    |> Atom.to_string()
+    |> String.split(" ")
+    |> tl()
+    |> Enum.join(" ")
+  end
 
 end
