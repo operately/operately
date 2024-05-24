@@ -44,6 +44,8 @@ defmodule Operately.Support.Features.UI do
       |> Browser.visit("/")
       |> Browser.set_cookie("_operately_key", "")
       |> Browser.visit(path)
+      |> Browser.visit("/")
+      |> Browser.assert_text("Company Space") # Ensure we are logged in and that the lobby is loaded
     end)
     |> Map.put(:last_login, person)
   end
