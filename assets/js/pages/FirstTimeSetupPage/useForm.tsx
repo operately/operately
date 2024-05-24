@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { useAddFirstCompanyMutation } from "@/models/companies";
+import { logIn } from "@/graphql/Me";
 
 
 export interface FormState {
@@ -62,13 +62,14 @@ export function useForm(): FormState {
 
 
 function useSubmit(fields: FormFields) {
-  const navigate = useNavigate();
-
   const [errors, setErrors] = useState<FormError[]>([]);
 
   const [add, { loading: submitting }] = useAddFirstCompanyMutation({
     onCompleted: () => {
-      navigate("/");
+      logIn(fields.email, fields.password)
+      .then(() => {
+        window.location.href = "/";
+      });
     }
   })
 
