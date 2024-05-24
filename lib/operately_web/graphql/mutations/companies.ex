@@ -77,7 +77,13 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
       arg :input, non_null(:add_first_company_input)
 
       resolve fn _, %{input: input}, _ ->
-        Operately.Operations.CompanyAdding.run(input)
+        allowed = Operately.Companies.count_companies() == 0
+
+        if allowed do
+          Operately.Operations.CompanyAdding.run(input)
+        else
+          {:error, nil}
+        end
       end
     end
   end
