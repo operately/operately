@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useAddFirstCompanyMutation } from "@/models/companies";
 import { logIn } from "@/graphql/Me";
+import { camelCaseToSpacedWords } from "@/utils/strings";
 
 
 export interface FormState {
@@ -110,7 +111,7 @@ function validate(fields: FormFields): FormError[] {
 
   for (let key in fields) {
     if(!fields[key]) {
-      const fieldName = parseCamelCase(key, { capitalizeFirst: true });
+      const fieldName = camelCaseToSpacedWords(key, { capitalizeFirst: true });
       result.push({ field: key, message: `${fieldName} is required` });
     }
   }
@@ -137,17 +138,6 @@ function validate(fields: FormFields): FormError[] {
   
   if (fields.password !== fields.passwordConfirmation) {
     result.push({ field: "password", message: "Passoword and password confirmation do not match" });
-  }
-
-  return result;
-}
-
-
-function parseCamelCase(input: string, options?: { capitalizeFirst?: boolean }) {
-  let result = input.replace(/([A-Z])/g, ' $1').toLowerCase();
-
-  if (options?.capitalizeFirst) {
-    result = result.charAt(0).toUpperCase() + result.slice(1);
   }
 
   return result;
