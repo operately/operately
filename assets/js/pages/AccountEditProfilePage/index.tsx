@@ -1,18 +1,14 @@
 import React from "react";
-
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-
 import { useProfileMutation } from "@/graphql/Me";
-
 import Avatar from "@/components/Avatar";
 import { useMe } from "@/models/people";
-
 import * as Forms from "@/components/Form";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import PeopleSearch from "@/components/PeopleSearch";
 
-export async function loader(): Promise<null> {
+export async function loader() {
   return null;
 }
 
@@ -46,10 +42,9 @@ export function Page() {
 }
 
 function ProfileForm({ me }) {
-  const goToAccount = useNavigateTo("/account");
-
+  const navigateToAccount = useNavigateTo("/account");
   const [update, { loading }] = useProfileMutation({
-    onCompleted: goToAccount,
+    onCompleted: navigateToAccount,
   });
 
   const [name, setName] = React.useState(me.fullName);
@@ -57,12 +52,23 @@ function ProfileForm({ me }) {
   const [manager, setManager] = React.useState(me.manager);
   const [managerStatus, setManagerStatus] = React.useState(me.manager ? "select-from-list" : "no-manager");
 
+  const [timezone, setTimezone] = React.useState(() => {
+    if (me.timezone) {
+      return { value: me.timezone, label: me.timezone };
+    } else {
+      return null;
+    }
+  });
+
+  const timezones = Intl.supportedValuesOf("timeZone");
+
   const handleSubmit = () => {
     update({
       variables: {
         input: {
           fullName: name,
           title: title,
+          timezone: timezone?.value,
           managerId: managerStatus === "select-from-list" ? manager?.id : null,
         },
       },
@@ -75,6 +81,19 @@ function ProfileForm({ me }) {
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
       <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" error={title.length === 0} />
+
+      <Forms.SelectBox
+        label="Timezone"
+        placeholder="Select your timezone..."
+        value={timezone}
+        defaultValue={timezone}
+        onChange={(option) => setTimezone(option)}
+        options={timezones.map((tz) => ({
+          value: tz,
+          label: tz.replace(/_/g, " "),
+        }))}
+        data-test-id="timezone-selector"
+      />
 
       <ManagerSearch
         manager={manager}
@@ -102,13 +121,13 @@ function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus })
           <Forms.Radio value="select-from-list" label="Select my manager from a list" />
         </Forms.RadioGroup>
 
-        {managerStatus !== "select-from-list" ? null : (
+        {managerStatus === "select-from-list" && (
           <div className="mt-2">
             <PeopleSearch
               onChange={(option) => setManager(option?.person)}
               defaultValue={manager}
               placeholder="Search for person..."
-              inputId={"manager-search"}
+              inputId="manager-search"
               loader={loader}
             />
           </div>
