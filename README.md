@@ -1,7 +1,3 @@
-We are hiring a software engineer. See our [jobs page](https://operately.com/jobs/).
-
-<hr/> 
-
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/operately/operately/raw/main/docs/images/logo-black.svg">

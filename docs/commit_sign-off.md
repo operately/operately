@@ -1,6 +1,6 @@
 # Developer's Certificate of Origin
 
-Any contributions to Operately must only contain code that can legally be contributed to Daytona, 
+Any contributions to Operately must only contain code that can legally be contributed to Operately, 
 and which the Operately project can distribute under its license.
 
 Prior to contributing to Operately please read the [Developer's Certificate of Origin](/docs/legal/developer_certificate_of_origin.txt)

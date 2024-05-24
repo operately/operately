@@ -22,7 +22,6 @@ export function Page() {
           <div className="bg-surface-dimmed rounded-lg overflow-hidden divide-y divide-surface-outline border border-surface-outline">
             <ProfileLink />
             <AppearanceLink />
-            <NotificationLink />
           </div>
 
           <div className="bg-surface-dimmed rounded-lg overflow-hidden border border-surface-outline">
@@ -41,17 +40,6 @@ function ProfileLink() {
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
     >
       <Icons.IconUserCircle size={24} /> Profile
-    </Link>
-  );
-}
-
-function NotificationLink() {
-  return (
-    <Link
-      to="/account/notifications"
-      className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
-    >
-      <Icons.IconBell size={24} /> Notifications
     </Link>
   );
 }
