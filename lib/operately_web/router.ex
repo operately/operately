@@ -53,13 +53,11 @@ defmodule OperatelyWeb.Router do
 
   scope "/", OperatelyWeb do
     pipe_through [:browser, :require_authenticated_account]
-
     get "/blobs/:id", BlobController, :get
   end
 
   scope "/", OperatelyWeb do
     pipe_through [:browser]
-
     delete "/accounts/log_out", AccountSessionController, :delete
 
     #
@@ -77,7 +75,7 @@ defmodule OperatelyWeb.Router do
   forward "/media", OperatelyLocalMediaStorage.Plug
 
   scope "/api" do
-    pipe_through [:api, :require_authenticated_account, :graphql]
+    pipe_through [:api, :graphql]
 
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Graphql.Schema
   end
@@ -89,7 +87,7 @@ defmodule OperatelyWeb.Router do
   end
 
   scope "/", OperatelyWeb do
-    pipe_through [:browser, :require_authenticated_account]
+    pipe_through [:browser]
 
     get "/*page", PageController, :index
   end
