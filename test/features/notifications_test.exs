@@ -21,6 +21,7 @@ defmodule Operately.Features.NotificationsTest do
   feature "unread notifications count", ctx do
     ctx
     |> given_a_project_creation_notification_exists()
+    |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(1)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.click_on_first_notification()
