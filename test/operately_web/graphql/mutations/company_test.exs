@@ -28,9 +28,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
 
     company = Operately.Companies.get_company_by_name("Acme Co.")
     account = Operately.People.get_account_by_email_and_password("john@your-company.com", "Aa12345#&!123")
+    group = Operately.Groups.get_group(company.company_space_id)
 
     assert length(Operately.People.list_people(company.id)) == 1
     assert account != nil
+    assert group != nil
   end
 
   defp graphql(conn, query, variables) do
