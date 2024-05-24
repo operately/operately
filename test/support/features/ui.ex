@@ -40,11 +40,9 @@ defmodule Operately.Support.Features.UI do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
     execute(state, fn session ->
-      session
-      |> Browser.visit("/")
-      |> Browser.set_cookie("_operately_key", "")
+      Wallaby.start_session()
+      |> Wallaby.Browser.resize_window(data.session, 1920, 2000)
       |> Browser.visit(path)
-      |> Browser.visit("/")
       |> Browser.assert_text("Company Space") # Ensure we are logged in and that the lobby is loaded
     end)
     |> Map.put(:last_login, person)
