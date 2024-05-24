@@ -33,7 +33,7 @@ defmodule CustomFormatter do
 
   defp display_module_started(mod, state) do
     name = String.replace(Atom.to_string(mod.name), "Elixir.", "")
-    IO.puts("\n#{yellow(name)}")
+    IO.puts("\n#{blue(name)}")
 
     {:noreply, state}
   end
@@ -46,8 +46,8 @@ defmodule CustomFormatter do
     [type | rest] = String.split(Atom.to_string(name), " ")
 
     case type do
-      "test" -> IO.write("\n  #{yellow("Test")}: #{Enum.join(rest, " ")}")
-      "feature" -> IO.write("\n  #{yellow("Feature")}: #{Enum.join(rest, " ")}")
+      "test" -> IO.write("\n  #{blue("Test")}: #{Enum.join(rest, " ")}")
+      "feature" -> IO.write("\n  #{blue("Feature")}: #{Enum.join(rest, " ")}")
     end
     
     {:noreply, state}
@@ -74,6 +74,6 @@ defmodule CustomFormatter do
 
   defp red(text), do: IO.ANSI.red() <> text <> IO.ANSI.reset()
   defp green(text), do: IO.ANSI.green() <> text <> IO.ANSI.reset()
-  defp yellow(text), do: IO.ANSI.yellow() <> text <> IO.ANSI.reset()
+  defp blue(text), do: IO.ANSI.blue() <> text <> IO.ANSI.reset()
 
 end
