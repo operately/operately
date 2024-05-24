@@ -221,9 +221,14 @@ defmodule OperatelyWeb.AccountAuth do
       "AddFirstCompany",
     ]
 
+    operation_name = case conn.params do
+      %Plug.Conn.Unfetched{} -> nil
+      params when is_map(params) -> params["operationName"]
+    end
+
     cond do
       conn.request_path in unauthenticated_paths -> true
-      conn.params["operationName"] in unauthenticated_operations -> true
+      operation_name in unauthenticated_operations -> true
       true -> false
     end
   end
