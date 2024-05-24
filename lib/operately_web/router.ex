@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Router do
     plug :put_root_layout, {OperatelyWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :redirect_if_account_not_setup
     plug :fetch_current_account
   end
 
@@ -31,7 +32,7 @@ defmodule OperatelyWeb.Router do
 
     get "/accounts/log_in", AccountSessionController, :new
 
-    # 
+    #
     # In development, we use the following route to log in as a user
     # during development. The route is not available in production.
     #
