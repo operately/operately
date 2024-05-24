@@ -241,4 +241,26 @@ defmodule OperatelyWeb.AccountAuth do
   defp maybe_store_return_to(conn), do: conn
 
   defp signed_in_path(_conn), do: ~p"/"
+
+  @doc """
+  Used to redirect users if they haven't set up their company and admin account.
+
+  If they haven't, it redirects to /first-time-setup.
+  If they have, but end up accessing /first-time-setup, it redirects them back to /.
+  """
+  def redirect_if_account_not_setup(conn, _opts) do
+    if length(Operately.Companies.list_companies()) == 0 do
+      conn
+      |> redirect(to: ~p"/first-time-setup")
+      |> halt()
+    else
+      if conn.request_path == "/first-time-setup" do
+        conn
+        |> redirect(to: signed_in_path(conn))
+        |> halt()
+      else
+        conn
+      end
+    end
+  end
 end
