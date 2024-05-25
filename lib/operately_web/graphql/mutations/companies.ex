@@ -7,6 +7,15 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
     field :title, :string
   end
 
+  input_object :add_first_company_input do
+    field :company_name, non_null(:string)
+    field :full_name, non_null(:string)
+    field :email, non_null(:string)
+    field :role, :string
+    field :password, non_null(:string)
+    field :password_confirmation, non_null(:string)
+  end
+
   object :company_mutations do
     field :remove_company_admin, :person do
       arg :person_id, non_null(:id)
@@ -61,6 +70,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
         company = Operately.Companies.get_company!(args.company_id)
 
         Operately.Companies.remove_trusted_email_domain(company, person, args.domain)
+      end
+    end
+
+    field :add_first_company, non_null(:company) do
+      arg :input, non_null(:add_first_company_input)
+
+      resolve fn _, %{input: input}, _ ->
+        Operately.Operations.CompanyAdding.run(input)
       end
     end
   end

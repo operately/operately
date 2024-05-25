@@ -2,8 +2,10 @@ defmodule OperatelyWeb.AccountSessionControllerTest do
   use OperatelyWeb.ConnCase, async: true
 
   import Operately.PeopleFixtures
+  import Operately.CompaniesFixtures
 
   setup do
+    company_fixture()
     %{account: account_fixture()}
   end
 
