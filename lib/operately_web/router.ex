@@ -10,7 +10,6 @@ defmodule OperatelyWeb.Router do
     plug :put_root_layout, {OperatelyWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :redirect_if_account_not_setup
     plug :fetch_current_account
   end
 
@@ -78,7 +77,7 @@ defmodule OperatelyWeb.Router do
   forward "/media", OperatelyLocalMediaStorage.Plug
 
   scope "/api" do
-    pipe_through [:api, :require_authenticated_account, :graphql]
+    pipe_through [:api, :graphql]
 
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Graphql.Schema
   end
@@ -90,9 +89,8 @@ defmodule OperatelyWeb.Router do
   end
 
   scope "/", OperatelyWeb do
-    pipe_through [:browser, :require_authenticated_account]
+    pipe_through [:browser]
 
     get "/*page", PageController, :index
   end
-
 end
