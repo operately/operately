@@ -11,7 +11,7 @@ defmodule Operately.Features.FirstTimeSetupTest do
     |> UI.assert_page("/first-time-setup")
 
     ctx
-    |> UI.visit("/accounts/log_in")
+    |> UI.visit("/people")
     |> UI.assert_page("/first-time-setup")
   end
 
