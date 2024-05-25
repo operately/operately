@@ -11,6 +11,10 @@ defmodule Operately.Companies do
     Repo.all(Company)
   end
 
+  def count_companies do
+    Repo.aggregate(Company, :count, :id)
+  end
+
   def list_tenets(id) do
     Repo.all(from t in Tenet, where: t.company_id == ^id)
   end
