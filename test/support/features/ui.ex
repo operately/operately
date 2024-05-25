@@ -39,11 +39,14 @@ defmodule Operately.Support.Features.UI do
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
-    execute(state, fn session ->
+    execute(state, fn _ ->
+      metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Operately.Repo, self())
+      {:ok, session} = Wallaby.start_session([metadata: metadata])
+
       session
-      |> Browser.visit("/")
-      |> Browser.set_cookie("_operately_key", "")
+      |> Wallaby.Browser.resize_window(1920, 2000)
       |> Browser.visit(path)
+      |> Browser.assert_text("Company Space") # Ensure we are logged in and that the lobby is loaded
     end)
     |> Map.put(:last_login, person)
   end

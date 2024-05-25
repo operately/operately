@@ -926,6 +926,7 @@ export type Person = {
   companyRole?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
+  timezone?: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   manager?: Maybe<Person>;
   managerId?: Maybe<Scalars['String']['output']>;
@@ -2052,6 +2053,7 @@ export type UpdateProfileInput = {
   fullName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTargetInput = {
@@ -2152,7 +2154,7 @@ export type GetMeQueryVariables = Exact<{
 }>;
 
 
-export type GetMeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, sendDailySummary: boolean, notifyOnMention: boolean, notifyAboutAssignments: boolean, theme?: string | null, companyRole?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null };
+export type GetMeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, sendDailySummary: boolean, notifyOnMention: boolean, notifyAboutAssignments: boolean, theme?: string | null, companyRole?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, timezone?: string | null} | null } | null };
 
 export type GetPeopleQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2167,7 +2169,7 @@ export type GetPersonQueryVariables = Exact<{
 }>;
 
 
-export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, suspended: boolean, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null } | null };
+export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, suspended: boolean, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, timezone?: string | null } | null> | null } | null };
 
 export type GetProjectQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2911,6 +2913,7 @@ export const GetMeDocument = gql`
     notifyAboutAssignments
     theme
     companyRole
+    timezone
     manager @include(if: $includeManager) {
       id
       fullName
@@ -2956,6 +2959,7 @@ export const GetPeopleDocument = gql`
     title
     avatarUrl
     managerId
+    timezone
   }
 }
     `;
@@ -2995,6 +2999,7 @@ export const GetPersonDocument = gql`
     avatarUrl
     email
     suspended
+    timezone
     manager @include(if: $includeManager) {
       id
       fullName
