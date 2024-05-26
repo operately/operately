@@ -23,5 +23,6 @@ defmodule Operately.Companies.Company do
     company
     |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features, :company_space_id])
     |> validate_required([:name])
+    |> validate_length(:name, min: 3)
   end
 end
