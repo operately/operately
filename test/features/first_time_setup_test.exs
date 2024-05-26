@@ -4,6 +4,14 @@ defmodule Operately.Features.FirstTimeSetupTest do
 
   alias Operately.Support.Features.UI
 
+  @company_info %{
+    :companyName => "Acme Co.",
+    :fullName => "John Doe",
+    :email => "john@your-company.com",
+    :role => "CEO",
+    :password => "Aa12345#&!123",
+    :passwordConfirmation => "Aa12345#&!123"
+  }
 
   feature "redirects to /first-time-setup", ctx do
     ctx
@@ -21,5 +29,23 @@ defmodule Operately.Features.FirstTimeSetupTest do
     ctx
     |> UI.visit("/first-time-setup")
     |> UI.assert_page("/accounts/log_in")
+  end
+
+  feature "create company and admin account", ctx do
+    ctx
+    |> UI.visit("/")
+    |> UI.assert_page("/first-time-setup")
+    |> UI.assert_text("Welcome to Operately!")
+    |> UI.fill(testid: "company-name", with: @company_info[:companyName])
+    |> UI.fill(testid: "full-name", with: @company_info[:fullName])
+    |> UI.fill(testid: "email", with: @company_info[:email])
+    |> UI.fill(testid: "role", with: @company_info[:role])
+    |> UI.fill(testid: "password", with: @company_info[:password])
+    |> UI.fill(testid: "password-confirmation", with: @company_info[:passwordConfirmation])
+    |> UI.click(testid: "submit-form")
+    |> UI.assert_page("/accounts/log_in")
+
+    assert Operately.Companies.count_companies() == 1
+    assert Operately.People.get_account_by_email(@company_info[:email]) != nil
   end
 end

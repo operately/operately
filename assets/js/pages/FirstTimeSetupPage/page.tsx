@@ -94,7 +94,7 @@ function Form() {
       ))}
 
       <div className="flex items-center justify-center">
-        <Forms.SubmitButton testId="submit-form">
+        <Forms.SubmitButton data-test-id="submit-form">
           Submit
         </Forms.SubmitButton>
       </div>

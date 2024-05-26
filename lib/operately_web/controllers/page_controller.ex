@@ -13,7 +13,11 @@ defmodule OperatelyWeb.PageController do
         true -> private_page(conn)
       end
     else
-      redirect_to_first_time_setup(conn)
+      if conn.request_path == "/first-time-setup" do
+        render(conn, :home)
+      else
+        redirect_to_first_time_setup(conn)
+      end
     end
   end
 
