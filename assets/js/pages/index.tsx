@@ -16,6 +16,7 @@ import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as FeedPage from "./FeedPage";
+import * as FirstTimeSetupPage from "./FirstTimeSetupPage";
 import * as GoalAboutPage from "./GoalAboutPage";
 import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
@@ -130,6 +131,10 @@ export default {
   FeedPage: {
     loader: FeedPage.loader,
     Page: FeedPage.Page
+  },
+  FirstTimeSetupPage: {
+    loader: FirstTimeSetupPage.loader,
+    Page: FirstTimeSetupPage.Page
   },
   GoalAboutPage: {
     loader: GoalAboutPage.loader,

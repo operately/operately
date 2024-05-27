@@ -450,6 +450,15 @@ export type AddCompanyMemberInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AddFirstCompanyInput = {
+  companyName: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  fullName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  passwordConfirmation: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AddKeyResourceInput = {
   link: Scalars['String']['input'];
   projectId: Scalars['ID']['input'];
@@ -917,7 +926,6 @@ export type Person = {
   companyRole?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
-  timezone?: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   manager?: Maybe<Person>;
   managerId?: Maybe<Scalars['String']['output']>;
@@ -928,6 +936,7 @@ export type Person = {
   sendDailySummary: Scalars['Boolean']['output'];
   suspended: Scalars['Boolean']['output'];
   theme?: Maybe<Scalars['String']['output']>;
+  timezone?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1090,6 +1099,7 @@ export type RootMutationType = {
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
   addCompanyMember: Person;
   addCompanyTrustedEmailDomain: Company;
+  addFirstCompany: Company;
   addGroupContact?: Maybe<Group>;
   addGroupMembers?: Maybe<Group>;
   addKeyResource: ProjectKeyResource;
@@ -1193,6 +1203,11 @@ export type RootMutationTypeAddCompanyMemberArgs = {
 export type RootMutationTypeAddCompanyTrustedEmailDomainArgs = {
   companyId: Scalars['ID']['input'];
   domain: Scalars['String']['input'];
+};
+
+
+export type RootMutationTypeAddFirstCompanyArgs = {
+  input: AddFirstCompanyInput;
 };
 
 
@@ -1311,6 +1326,7 @@ export type RootMutationTypeCreateObjectiveArgs = {
 
 export type RootMutationTypeCreateProfileArgs = {
   fullName: Scalars['String']['input'];
+  timezone: Scalars['String']['input'];
   title: Scalars['String']['input'];
 };
 
@@ -2037,8 +2053,8 @@ export type UpdateNotificationSettingsInput = {
 export type UpdateProfileInput = {
   fullName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['ID']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTargetInput = {
@@ -2139,7 +2155,7 @@ export type GetMeQueryVariables = Exact<{
 }>;
 
 
-export type GetMeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, sendDailySummary: boolean, notifyOnMention: boolean, notifyAboutAssignments: boolean, theme?: string | null, companyRole?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, timezone?: string | null} | null } | null };
+export type GetMeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, timezone?: string | null, sendDailySummary: boolean, notifyOnMention: boolean, notifyAboutAssignments: boolean, theme?: string | null, companyRole?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null };
 
 export type GetPeopleQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2154,7 +2170,7 @@ export type GetPersonQueryVariables = Exact<{
 }>;
 
 
-export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, suspended: boolean, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, timezone?: string | null } | null> | null } | null };
+export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, suspended: boolean, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null } | null };
 
 export type GetProjectQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2171,7 +2187,7 @@ export type GetProjectQueryVariables = Exact<{
 }>;
 
 
-export type GetProjectQuery = { __typename?: 'RootQueryType', project?: { __typename?: 'Project', id: string, name: string, description?: string | null, insertedAt: any, startedAt?: any | null, deadline?: any | null, nextCheckInScheduledAt?: any | null, isArchived: boolean, isOutdated: boolean, archivedAt?: any | null, private: boolean, status?: string | null, closedAt?: any | null, retrospective?: string | null, space?: { __typename?: 'Group', id: string, name: string, color: string, icon: string }, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, description: string, status: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, deadlineAt?: any | null, completedAt?: any | null, description?: string | null, insertedAt?: any | null } | null> | null, keyResources?: Array<{ __typename?: 'ProjectKeyResource', id: string, title: string, link: string, resourceType: string } | null> | null, permissions?: { __typename?: 'ProjectPermissions', canView: boolean, canCreateMilestone: boolean, canDeleteMilestone: boolean, canEditName: boolean, canEditMilestone: boolean, canEditDescription: boolean, canEditContributors: boolean, canEditTimeline: boolean, canEditResources: boolean, canEditGoal: boolean, canEditSpace: boolean, canPause: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean }, goal?: { __typename?: 'Goal', id: string, name: string, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, value: number } | null> | null, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null };
+export type GetProjectQuery = { __typename?: 'RootQueryType', project?: { __typename?: 'Project', id: string, name: string, description?: string | null, insertedAt: any, startedAt?: any | null, deadline?: any | null, nextCheckInScheduledAt?: any | null, isArchived: boolean, isOutdated: boolean, archivedAt?: any | null, private: boolean, status?: string | null, closedAt?: any | null, retrospective?: string | null, space?: { __typename?: 'Group', id: string, name: string, color: string, icon: string }, lastCheckIn?: { __typename?: 'ProjectCheckIn', id: string, description: string, status: string, insertedAt: any, author: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null, milestones?: Array<{ __typename?: 'Milestone', id: string, title: string, status: string, deadlineAt?: any | null, completedAt?: any | null, description?: string | null, insertedAt?: any | null } | null> | null, keyResources?: Array<{ __typename?: 'ProjectKeyResource', id: string, title: string, link: string, resourceType: string } | null> | null, permissions?: { __typename?: 'ProjectPermissions', canView: boolean, canCreateMilestone: boolean, canDeleteMilestone: boolean, canEditName: boolean, canEditMilestone: boolean, canEditDescription: boolean, canEditContributors: boolean, canEditTimeline: boolean, canEditResources: boolean, canEditGoal: boolean, canEditSpace: boolean, canPause: boolean, canCheckIn: boolean, canAcknowledgeCheckIn: boolean }, goal?: { __typename?: 'Goal', id: string, name: string, targets?: Array<{ __typename?: 'Target', id: string, name: string, from: number, to: number, value: number } | null> | null, champion?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null, reviewer?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null, contributors?: Array<{ __typename?: 'ProjectContributor', id: string, role: string, responsibility?: string | null, person: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } } | null> | null, closedBy?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null };
 
 export type GetProjectsQueryVariables = Exact<{
   filters?: InputMaybe<ProjectListFilters>;
@@ -2893,12 +2909,12 @@ export const GetMeDocument = gql`
     fullName
     avatarUrl
     title
+    timezone
     sendDailySummary
     notifyOnMention
     notifyAboutAssignments
     theme
     companyRole
-    timezone
     manager @include(if: $includeManager) {
       id
       fullName
@@ -2944,7 +2960,6 @@ export const GetPeopleDocument = gql`
     title
     avatarUrl
     managerId
-    timezone
   }
 }
     `;
@@ -2984,7 +2999,6 @@ export const GetPersonDocument = gql`
     avatarUrl
     email
     suspended
-    timezone
     manager @include(if: $includeManager) {
       id
       fullName
@@ -3135,6 +3149,7 @@ export const GetProjectDocument = gql`
     contributors @include(if: $includeContributors) {
       id
       role
+      responsibility
       person {
         id
         fullName

@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Router do
 
     get "/accounts/log_in", AccountSessionController, :new
 
-    # 
+    #
     # In development, we use the following route to log in as a user
     # during development. The route is not available in production.
     #
@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Router do
   forward "/media", OperatelyLocalMediaStorage.Plug
 
   scope "/api" do
-    pipe_through [:api, :require_authenticated_account, :graphql]
+    pipe_through [:api, :graphql]
 
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Graphql.Schema
   end
@@ -89,9 +89,8 @@ defmodule OperatelyWeb.Router do
   end
 
   scope "/", OperatelyWeb do
-    pipe_through [:browser, :require_authenticated_account]
+    pipe_through [:browser]
 
     get "/*page", PageController, :index
   end
-
 end
