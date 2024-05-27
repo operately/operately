@@ -2039,6 +2039,7 @@ export type UpdateProfileInput = {
   managerId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
+  
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
