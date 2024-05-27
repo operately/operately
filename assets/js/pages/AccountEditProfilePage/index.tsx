@@ -21,7 +21,6 @@ export function Page() {
   }
 
   const me = data.me;
-  console.log(me);
   
   return (
     <Paper.Root size="small">
@@ -98,7 +97,6 @@ function ProfileForm({ me }) {
       setUploadProgress(progress);
     });
     setAvatarUrl(url);
-    console.log(url);
   };
 
   const isValid = name.length > 0 && title.length > 0;
