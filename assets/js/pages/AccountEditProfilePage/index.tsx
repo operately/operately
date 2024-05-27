@@ -64,7 +64,6 @@ function ProfileForm({ me }) {
   const [manager, setManager] = useState(me.manager);
   const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [avatarFile, setAvatarFile] = useState<File | String>("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileUploader = new MultipartFileUploader();
 
@@ -96,6 +95,7 @@ function ProfileForm({ me }) {
     const url = await fileUploader.upload(file, (progress) => {
       setUploadProgress(progress);
     });
+    console.log(url);
     setAvatarUrl(url);
   };
 
@@ -111,7 +111,6 @@ function ProfileForm({ me }) {
               label="Upload a new profile picture"
               onChange={async (e) => {
                 const file = e.target.files[0];
-                setAvatarFile(file);
                 await handleFileUpload(file);
               }}
               error={false}
