@@ -37,6 +37,7 @@ export function useProfileMutation(options = {}) {
           fullName
           title
           timezone
+          avatarUrl
         }
       }
     `,
