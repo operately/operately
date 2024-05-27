@@ -19,7 +19,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
       :input => %{
         :fullName => "John Doe",
         :title => "CEO",
-        :timezone => "Europe/Berlin"
+        :timezone => "Europe/Berlin",
+        :avatarUrl => "/media/3ff2295a-09fa-44a7-8ac7-f7c120c163ba-21e4a757-1196-40a0-bb3f-360e565955aa"
       }
     })
 
@@ -29,7 +30,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
           "fullName" => "John Doe",
           "title" => "CEO",
           "timezone" => "Europe/Berlin",
-          "avatar_url" => "/blobs/c04b084b-e13b-4b07-b264-6173b5ec534c",
+          "avatar_url" => "/media/3ff2295a-09fa-44a7-8ac7-f7c120c163ba-21e4a757-1196-40a0-bb3f-360e565955aa",
         }
       }
     }
