@@ -399,6 +399,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_contributor_added, ctx, name: name, responsibility: responsibility do
     ctx
     |> UI.assert_text(name)
+    |> UI.assert_text(responsibility)
 
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
