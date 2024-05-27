@@ -125,6 +125,7 @@ query GetProject(
     contributors @include(if: $includeContributors) {
       id
       role
+      responsibility
 
       person {
         id

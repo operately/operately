@@ -29,6 +29,26 @@ export function logOut() {
   });
 }
 
+export function logIn(email: string, password: string) {
+  const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
+  
+  const headers = {
+    "x-csrf-token": csrfToken,
+    'Content-Type': 'application/json',
+  } as HeadersInit;
+  
+  const data = {
+    email,
+    password,
+  };
+
+  return fetch("/accounts/log_in", {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(data)
+  });
+}
+
 export function useProfileMutation(options = {}) {
   return useMutation(
     gql`
