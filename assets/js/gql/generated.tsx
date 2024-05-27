@@ -2055,6 +2055,7 @@ export type UpdateProfileInput = {
   managerId?: InputMaybe<Scalars['ID']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTargetInput = {
