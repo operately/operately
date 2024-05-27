@@ -9,7 +9,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
       fullName
       title
       timezone
-      avatarUrl
+      avatar_url
     }
   }
   """
@@ -29,7 +29,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
           "fullName" => "John Doe",
           "title" => "CEO",
           "timezone" => "Europe/Berlin",
-          "avatarUrl" => "/blobs/c04b084b-e13b-4b07-b264-6173b5ec534c"
+          "avatar_url" => "/blobs/c04b084b-e13b-4b07-b264-6173b5ec534c",
         }
       }
     }
