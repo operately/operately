@@ -9,6 +9,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
       fullName
       title
       timezone
+      avatar_url
     }
   }
   """
@@ -18,7 +19,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
       :input => %{
         :fullName => "John Doe",
         :title => "CEO",
-        :timezone => "Europe/Berlin"
+        :timezone => "Europe/Berlin",
+        :avatarUrl => "/media/3ff2295a-09fa-44a7-8ac7-f7c120c163ba-21e4a757-1196-40a0-bb3f-360e565955aa"
       }
     })
 
@@ -27,7 +29,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.PeopleTest do
         "updateProfile" => %{
           "fullName" => "John Doe",
           "title" => "CEO",
-          "timezone" => "Europe/Berlin"
+          "timezone" => "Europe/Berlin",
+          "avatar_url" => "/media/3ff2295a-09fa-44a7-8ac7-f7c120c163ba-21e4a757-1196-40a0-bb3f-360e565955aa",
         }
       }
     }
