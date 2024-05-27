@@ -95,7 +95,6 @@ function ProfileForm({ me }) {
     const url = await fileUploader.upload(file, (progress) => {
       setUploadProgress(progress);
     });
-    console.log(url);
     setAvatarUrl(url);
   };
 
