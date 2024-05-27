@@ -40,7 +40,7 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
       "data" => %{
         "projectContributorCandidates" => [
           %{
-            "avatarUrl" => ctx.person.avatarUrl,
+            "avatar_url" => ctx.person.avatarUrl,
             "fullName" => ctx.person.full_name,
             "id" => ctx.person.id,
             "title" => ctx.person.title
