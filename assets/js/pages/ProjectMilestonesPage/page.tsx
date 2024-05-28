@@ -60,7 +60,7 @@ function Dates({ project }) {
         <div className="text-sm font-bold">Start Date</div>
         {start && (
           <div className="text-content-accent">
-            <FormattedTime time={start} format="long-date" />
+            <FormattedTime timezone={""} time={start} format="long-date" />
           </div>
         )}
       </div>
@@ -69,7 +69,7 @@ function Dates({ project }) {
         <div className="text-sm font-bold">Due Date</div>
         {end ? (
           <div className="text-content-accent">
-            <FormattedTime time={end} format="long-date" />
+            <FormattedTime timezone={""} time={end} format="long-date" />
           </div>
         ) : (
           <div className="text-content-dimmed">No due date</div>
@@ -133,11 +133,11 @@ function PendingItem({ project, milestone }) {
       </div>
 
       <div className="shrink-0 text-sm ml-6">
-        Due Date: <FormattedTime time={milestone.deadlineAt} format="long-date" />
+        Due Date: <FormattedTime timezone={""} time={milestone.deadlineAt} format="long-date" />
         {milestone.completedAt && (
           <>
             {" "}
-            &middot; Completed on <FormattedTime time={milestone.completedAt} format="long-date" />
+            &middot; Completed on <FormattedTime timezone={""} time={milestone.completedAt} format="long-date" />
           </>
         )}
       </div>
@@ -161,11 +161,11 @@ function DoneItem({ project, milestone }) {
       </div>
 
       <div className="shrink-0 text-sm ml-6">
-        Due Date: <FormattedTime time={milestone.deadlineAt} format="long-date" />
+        Due Date: <FormattedTime timezone={""} time={milestone.deadlineAt} format="long-date" />
         {milestone.completedAt && (
           <>
             {" "}
-            &middot; Completed on <FormattedTime time={milestone.completedAt} format="long-date" />
+            &middot; Completed on <FormattedTime timezone={""} time={milestone.completedAt} format="long-date" />
           </>
         )}
       </div>

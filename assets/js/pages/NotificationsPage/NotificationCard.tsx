@@ -45,7 +45,7 @@ export function Card({ notification, author, title, link, where, when, who, test
           <TextSeparator />
           {who}
           <TextSeparator />
-          <FormattedTime time={when} format="long-date" />
+          <FormattedTime timezone={""} time={when} format="long-date" />
         </div>
       </div>
 

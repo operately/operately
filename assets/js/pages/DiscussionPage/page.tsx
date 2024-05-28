@@ -68,7 +68,7 @@ function Title({ discussion }) {
         </div>
         <TextSeparator />
         <span>
-          Posted on <FormattedTime time={discussion.insertedAt} format="short-date" />
+          Posted on <FormattedTime timezone={""} time={discussion.insertedAt} format="short-date" />
         </span>
       </div>
     </div>
