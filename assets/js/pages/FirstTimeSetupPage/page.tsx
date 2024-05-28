@@ -10,7 +10,7 @@ import { useForm } from "./useForm";
 
 export function Page() {
   return (
-    <Pages.Page title={"FirstTimeSetupPage"}>
+    <Pages.Page title="Welcome to Operately!">
       <Paper.Root>
         <Paper.Body>
           <div className="text-content-accent text-2xl font-extrabold">Welcome to Operately!</div>

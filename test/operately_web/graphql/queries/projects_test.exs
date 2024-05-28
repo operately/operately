@@ -36,10 +36,10 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
       "query" => "bob"
     })
 
-    assert json_response(conn, 200) == %{ 
+    assert json_response(conn, 200) == %{
       "data" => %{
         "projectContributorCandidates" => [
-          %{ 
+          %{
             "avatarUrl" => ctx.person.avatar_url,
             "fullName" => ctx.person.full_name,
             "id" => ctx.person.id,
@@ -49,7 +49,7 @@ defmodule MyAppWeb.GraphQL.Queries.ProjectsTest do
       }
     }
   end
-      
+
   defp graphql(conn, query, variables) do
     conn |> post("/api/gql", %{query: query, variables: variables})
   end

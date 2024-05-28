@@ -1,10 +1,10 @@
-import { FileUploader, MultipartFileUpoader } from "./FileUploader";
+import { FileUploader, MultipartFileUploader } from "./FileUploader";
 
 export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | FileList; pos: number; view: any }) {
   if (!view.editable) return false;
 
   Array.from(files).forEach(async (file) => {
-    handleUpload(file, view, pos, new MultipartFileUpoader());
+    handleUpload(file, view, pos, new MultipartFileUploader());
   });
 
   return true;
