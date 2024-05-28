@@ -32,7 +32,7 @@ export const ProjectCheckInCommented: FeedItem = {
     const project = content.project;
 
     const insertedAt = Time.parseISO(activity.insertedAt);
-    const time = <FormattedTime time={insertedAt} format="long-date" />;
+    const time = <FormattedTime timezone={""} time={insertedAt} format="long-date" />;
 
     const path = Paths.projectCheckInPath(project.id, content.checkIn.id);
     const link = <Link to={path}>Check-In on {time}</Link>;

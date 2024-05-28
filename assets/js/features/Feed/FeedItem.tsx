@@ -38,15 +38,15 @@ export function Container({ author, time, title, content }: ContainerProps) {
         <Title>{title}</Title>
         {content && <Content>{content}</Content>}
       </div>
-      <Time time={time} />
+      <Time time={time} author={author} />
     </div>
   );
 }
 
-function Time({ time }) {
+function Time({ time, author }) {
   return (
     <div className="shrink-0 text-xs text-content-dimmed w-16 text-right">
-      <FormattedTime time={time} format="time-only" />
+      <FormattedTime time={time} format="time-only" timezone={author.timezone} />
     </div>
   );
 }

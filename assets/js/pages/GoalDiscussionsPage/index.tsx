@@ -84,10 +84,10 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
     <div className="flex items-start border-t border-stroke-base py-6">
       <div className="w-32">
         <div className="text-sm font-medium">
-          <FormattedTime time={activity.insertedAt} format="long-date" />
+          <FormattedTime timezone={""} time={activity.insertedAt} format="long-date" />
         </div>
         <div className="text-xs text-content-dimmed">
-          <FormattedTime time={activity.insertedAt} format="relative" />
+          <FormattedTime timezone={""} time={activity.insertedAt} format="relative" />
         </div>
       </div>
 

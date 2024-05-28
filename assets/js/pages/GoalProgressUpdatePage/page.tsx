@@ -88,7 +88,7 @@ function Acknowledgement({ update }) {
 function Title({ update }) {
   return (
     <div className="text-content-accent text-2xl font-extrabold">
-      Progress Update from <FormattedTime time={update.insertedAt} format="long-date" />
+      Progress Update from <FormattedTime timezone={""} time={update.insertedAt} format="long-date" />
     </div>
   );
 }

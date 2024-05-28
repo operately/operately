@@ -28,7 +28,7 @@ export const GoalCheckInAcknowledgement: FeedItem = {
     const goal = content.goal;
 
     const insertedAt = Time.parseISO(update.insertedAt);
-    const time = <FormattedTime time={insertedAt} format="long-date" />;
+    const time = <FormattedTime timezone={""} time={insertedAt} format="long-date" />;
 
     const path = Paths.goalProgressUpdatePath(goal.id, update.id);
     const link = <Link to={path}>Progress Update from {time}</Link>;
