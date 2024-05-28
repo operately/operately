@@ -3,11 +3,13 @@ defmodule Operately.Operations.CompanyMemberAdding do
   alias Operately.Repo
   alias Operately.People.Account
   alias Operately.People.Person
+  alias Operately.Activities
 
   def run(admin, attrs) do
     Multi.new()
     |> insert_account(attrs)
     |> insert_person(admin, attrs)
+    |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:person)
   end
@@ -32,6 +34,18 @@ defmodule Operately.Operations.CompanyMemberAdding do
         email: attrs.email,
         title: attrs.title
       })
+    end)
+  end
+
+  def insert_activity(multi, admin) do
+    Activities.insert_sync(multi, admin.id, :company_member_added, fn changes ->
+      %{
+        company_id: admin.company_id,
+        # invitatition_id:
+        name: changes[:person].full_name,
+        email: changes[:person].email,
+        title: changes[:person].title,
+      }
     end)
   end
 
