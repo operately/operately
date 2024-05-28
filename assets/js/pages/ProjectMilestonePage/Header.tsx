@@ -28,7 +28,7 @@ function Display({ milestone, form }) {
       <div className="text-3xl font-extrabold text-content-accent text-center mt-4">{form.titleAndDeadline.title}</div>
 
       <div className="flex items-center text-lg mt-2 mb-4">
-        <FormattedTime timezone={""} time={form.titleAndDeadline.date} format="short-date-with-weekday" />
+        <FormattedTime time={form.titleAndDeadline.date} format="short-date-with-weekday" />
       </div>
 
       <Actions milestone={milestone} form={form} />

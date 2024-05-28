@@ -22,7 +22,7 @@ type Format =
 interface FormattedTimeProps {
   time: string | Date;
   format: Format;
-  timezone: string;
+  timezone?: string;
 }
 
 export default function FormattedTime(props: FormattedTimeProps): JSX.Element {

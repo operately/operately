@@ -78,7 +78,7 @@ function DiscussionListItem({ space, discussion }) {
           <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
           <div className="text-sm text-content-dimmed">·</div>
           <div className="text-sm text-content-dimmed">
-            <FormattedTime timezone={""} time={discussion.insertedAt} format="long-date" />
+            <FormattedTime time={discussion.insertedAt} format="long-date" />
           </div>
         </div>
       </div>

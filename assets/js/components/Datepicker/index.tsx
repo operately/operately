@@ -34,7 +34,7 @@ function DatepickerFormElement(props: DatepickerProps) {
     <Popover.Trigger asChild>
       <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface truncate">
         <Icons.IconCalendar size={18} className="shrink-0" />
-        <span className="truncate">{<FormattedTime timezone={""} time={props.date} format="long-date" />}</span>
+        <span className="truncate">{<FormattedTime time={props.date} format="long-date" />}</span>
       </div>
     </Popover.Trigger>
   );

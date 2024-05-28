@@ -49,7 +49,7 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
       <div className="flex items-start gap-2">
         <div className="w-1/5">
           <div className="text-sm text-content-accent font-bold">
-            <FormattedTime timezone={""} time={group.date} format="long-date" />
+            <FormattedTime time={group.date} format="long-date" />
           </div>
           <div className="text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
         </div>

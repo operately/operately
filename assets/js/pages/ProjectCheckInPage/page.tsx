@@ -69,7 +69,7 @@ function Title() {
   return (
     <div className="flex flex-col items-center">
       <div className="text-content-accent text-2xl font-extrabold">
-        Check-In from <FormattedTime timezone={""} time={checkIn.insertedAt} format="long-date" />
+        Check-In from <FormattedTime time={checkIn.insertedAt} format="long-date" />
       </div>
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">

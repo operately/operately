@@ -47,7 +47,7 @@ export function DateSelector(props: DateSelectorProps) {
           <Popover.Trigger asChild>
             <div className={className}>
               <Icons.IconCalendar size={20} />
-              <FormattedTime timezone={""} time={date} format="short-date-with-weekday" />
+              <FormattedTime time={date} format="short-date-with-weekday" />
             </div>
           </Popover.Trigger>
 

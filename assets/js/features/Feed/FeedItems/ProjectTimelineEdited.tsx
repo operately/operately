@@ -81,7 +81,7 @@ function Content({ activity }) {
 function NewStartDate({ content }: { content: Content }) {
   if (!content.startDateChanged) return null;
 
-  const date = <FormattedTime timezone={""} time={content.newStartDate!} format="long-date" />;
+  const date = <FormattedTime time={content.newStartDate!} format="long-date" />;
 
   return <div>The start date was set to {date}.</div>;
 }
@@ -89,7 +89,7 @@ function NewStartDate({ content }: { content: Content }) {
 function NewEndDate({ content }: { content: Content }) {
   if (!content.dueDateChanged) return null;
 
-  const date = <FormattedTime timezone={""} time={content.newDueDate!} format="long-date" />;
+  const date = <FormattedTime time={content.newDueDate!} format="long-date" />;
 
   return <div>The due date was set to {date}.</div>;
 }
@@ -160,7 +160,7 @@ function MilestoneLink({ projectId, milestone }: { projectId: string; milestone:
     <div className="font-medium">
       <Icons.IconFlag3Filled size={14} className="inline-block mr-1" />
       <Link to={path}>{title}</Link> <span className="">&middot;</span> Due date on{" "}
-      <FormattedTime timezone={""} time={milestone.deadlineAt} format="long-date" />
+      <FormattedTime time={milestone.deadlineAt} format="long-date" />
     </div>
   );
 }

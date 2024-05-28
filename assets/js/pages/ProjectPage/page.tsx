@@ -166,7 +166,7 @@ function LastCheckIn({ project }) {
             <Avatar person={author} size="tiny" />
             {People.shortName(author)} submitted:
             <Link to={path} testId="last-check-in-link">
-              Check-in <FormattedTime timezone={""} time={time} format="long-date" />
+              Check-in <FormattedTime time={time} format="long-date" />
             </Link>
           </div>
           <Summary jsonContent={description} characterCount={200} />
@@ -185,7 +185,7 @@ function LastCheckIn({ project }) {
           <div>
             <DimmedLabel>Next Check-In</DimmedLabel>
             <div className="text-sm font-medium">
-              Scheduled for <FormattedTime timezone={""} time={project.nextCheckInScheduledAt} format="relative-weekday-or-date" />
+              Scheduled for <FormattedTime time={project.nextCheckInScheduledAt} format="relative-weekday-or-date" />
             </div>
           </div>
         </div>
