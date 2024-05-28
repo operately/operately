@@ -7,6 +7,7 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
       id
       fullName
       avatarUrl
+      timezone
     }
 
     commentThread {
@@ -35,6 +36,7 @@ query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!])
           id
           fullName
           avatarUrl
+          timezone
         }
 
         reactions {

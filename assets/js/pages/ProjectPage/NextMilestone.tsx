@@ -90,7 +90,7 @@ function MilestoneLink({ project, milestone }) {
       </span>
 
       <span className="text-sm font-medium">
-        &middot; Due date on <FormattedTime time={deadline} format="short-date" />
+        &middot; Due date on <FormattedTime timezone={""} time={deadline} format="short-date" />
       </span>
     </div>
   );

@@ -39,7 +39,7 @@ export const ProjectCheckInSubmitted: FeedItem = {
 
 function Title({ author, project, checkIn, page }) {
   const checkInPath = Paths.projectCheckInPath(project.id, checkIn.id);
-  const time = <FormattedTime time={checkIn.insertedAt} format="long-date" />;
+  const time = <FormattedTime timezone={""} time={checkIn.insertedAt} format="long-date" />;
   const projectPath = Paths.projectPath(project.id);
 
   return (

@@ -111,7 +111,7 @@ function MilestoneCompleted({ comment }) {
 
           <div className="flex items-center justify-between gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
+              <FormattedTime timezone={""} time={comment.insertedAt} format="relative" />
             </span>
           </div>
         </div>
@@ -136,7 +136,7 @@ function MilestoneReopened({ comment }) {
 
           <div className="flex items-center justify-between gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
+              <FormattedTime timezone={""} time={comment.insertedAt} format="relative" />
             </span>
           </div>
         </div>
@@ -167,7 +167,7 @@ function ViewComment({ comment, onEdit, me }) {
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-content-dimmed text-sm">
-                <FormattedTime time={comment.insertedAt} format="relative" />
+                <FormattedTime timezone={""} time={comment.insertedAt} format="relative" />
               </span>
 
               {me.id === comment.author.id && (
@@ -209,7 +209,7 @@ function AckComment({ person, ackAt }) {
 
         <div className="flex items-center justify-between">
           <span className="text-content-dimmed text-sm">
-            <FormattedTime time={ackAt} format="relative" />
+            <FormattedTime timezone={""} time={ackAt} format="relative" />
           </span>
         </div>
       </div>

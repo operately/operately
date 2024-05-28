@@ -111,7 +111,7 @@ export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheck
               <div className="flex flex-col">
                 <span className="font-bold text-content-accent leading-snug">{author.fullName}</span>
                 <span className="text-content-dimmed text-sm leading-snug">
-                  <FormattedTime time={checkIn.insertedAt} format="long-date" />
+                  <FormattedTime timezone={""} time={checkIn.insertedAt} format="long-date" />
                 </span>
               </div>
             </div>

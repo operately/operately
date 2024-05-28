@@ -60,7 +60,7 @@ function ProjectStatusLine({ project }) {
   if (project.status === "closed") {
     return (
       <div className="mt-2 text-sm font-medium">
-        Closed on <FormattedTime time={project.closedAt} format="short-date" /> &middot;{" "}
+        Closed on <FormattedTime timezone={""} time={project.closedAt} format="short-date" /> &middot;{" "}
         <Link to={createPath("projects", project.id, "retrospective")}>Read the retrospective</Link>
       </div>
     );
@@ -104,7 +104,7 @@ function NextMilestone({ project }) {
     <div className="flex items-center gap-2">
       <MilestoneIcon milestone={project.nextMilestone} />
       <div className="flex-1 truncate pr-2 w-96">
-        <FormattedTime time={project.nextMilestone.deadlineAt} format="short-date" />: {project.nextMilestone.title}
+        <FormattedTime timezone={""} time={project.nextMilestone.deadlineAt} format="short-date" />: {project.nextMilestone.title}
       </div>
     </div>
   );

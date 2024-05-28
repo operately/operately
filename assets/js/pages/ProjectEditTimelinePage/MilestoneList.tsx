@@ -128,7 +128,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
           </div>
 
           <div className="text-sm">
-            Deadline: <FormattedTime time={Time.parse(milestone.deadlineAt)!} format="short-date" />
+            Deadline: <FormattedTime timezone={""} time={Time.parse(milestone.deadlineAt)!} format="short-date" />
           </div>
         </div>
 

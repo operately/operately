@@ -37,7 +37,7 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
         <div className={className} onClick={onLabelClick} data-test-id={testID}>
           {date ? (
             <span className="text-content-accent">
-              <FormattedTime time={date} format="short-date" />
+              <FormattedTime timezone={""} time={date} format="short-date" />
             </span>
           ) : (
             <span className="text-content-subtle">{placeholder}</span>

@@ -85,7 +85,7 @@ function Banner({ goal }) {
   if (goal.isClosed) {
     return (
       <Paper.Banner>
-        This goal was closed on <FormattedTime time={goal.closedAt} format="long-date" />
+        This goal was closed on <FormattedTime timezone={""} time={goal.closedAt} format="long-date" />
       </Paper.Banner>
     );
   }
@@ -93,7 +93,7 @@ function Banner({ goal }) {
   if (goal.isArchived) {
     return (
       <Paper.Banner>
-        This goal was archived on <FormattedTime time={goal.archivedAt} format="long-date" />
+        This goal was archived on <FormattedTime timezone={""} time={goal.archivedAt} format="long-date" />
       </Paper.Banner>
     );
   }
@@ -175,7 +175,7 @@ function TimeframeState({ goal }) {
   if (goal.isClosed) {
     return (
       <span>
-        &middot; Closed on <FormattedTime time={goal.closedAt} format="long-date" />
+        &middot; Closed on <FormattedTime timezone={""} time={goal.closedAt} format="long-date" />
       </span>
     );
   }
