@@ -29,7 +29,7 @@ function StartDate({ project }: { project: Projects.Project }) {
     <div>
       <DimmedLabel>Start Date</DimmedLabel>
       <div className="font-semibold">
-        <FormattedTime timezone={""} time={project.startedAt} format="short-date" />
+        <FormattedTime time={project.startedAt} format="short-date" />
       </div>
     </div>
   );
@@ -41,7 +41,7 @@ function EndDate({ project }: { project: Projects.Project }) {
       <DimmedLabel>Due Date</DimmedLabel>
       {project.deadline ? (
         <div className="font-semibold">
-          <FormattedTime timezone={""} time={project.deadline} format="short-date" />
+          <FormattedTime time={project.deadline} format="short-date" />
         </div>
       ) : (
         <div>

@@ -34,7 +34,7 @@ export function LastCheckInMessage({ goal }) {
       <Avatar person={author} size={40} />
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
-          Last progress update from <FormattedTime timezone={""} time={goal.lastCheckIn.insertedAt} format="short-date" />
+          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
         </div>
 
         <div className="flex flex-col gap-3 w-full">
@@ -91,7 +91,7 @@ export function LastCheckInAuthor({ goal }) {
 
       <div className="inline-flex items-center gap-1.5">
         <Avatar person={author} size={20} />
-        {People.firstName(author)} updated on <FormattedTime timezone={""} time={time} format="short-date" />
+        {People.firstName(author)} updated on <FormattedTime time={time} format="short-date" />
         <Acknowledgement goal={goal} />
       </div>
 
@@ -164,14 +164,14 @@ function NextCheckInScheduleMessage({ goal }) {
     return (
       <div className="text-sm mb-2">
         Operately is asking the champion to update the progress at least once per month. It was scheduled for{" "}
-        <FormattedTime timezone={""} time={goal.nextUpdateScheduledAt} format="long-date" />.
+        <FormattedTime time={goal.nextUpdateScheduledAt} format="long-date" />.
       </div>
     );
   } else {
     return (
       <div className="text-sm mb-2">
         Operately is asking the champion to update the progress at least once per month. Next update is scheduled for{" "}
-        <FormattedTime timezone={""} time={goal.nextUpdateScheduledAt} format="long-date" />.
+        <FormattedTime time={goal.nextUpdateScheduledAt} format="long-date" />.
       </div>
     );
   }

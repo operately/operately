@@ -43,7 +43,7 @@ function Title({ project, checkInId, insertedAt, author, page }) {
   return (
     <>
       {People.shortName(author)} acknowledged{" "}
-      <Link to={path}>Check-In on {<FormattedTime timezone={""} time={insertedAt} format="short-date" />}</Link>
+      <Link to={path}>Check-In on {<FormattedTime time={insertedAt} format="short-date" />}</Link>
       {page !== "goal" && (
         <>
           {" "}

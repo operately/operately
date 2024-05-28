@@ -175,7 +175,7 @@ function ProjectTimeframe({ project }: { project: Projects.Project }) {
 
   return (
     <div className="text-xs w-24 truncate">
-      <FormattedTime timezone={""} time={start} format="short-date" /> - <FormattedTime timezone={""} time={end} format="short-date" />
+      <FormattedTime time={start} format="short-date" /> - <FormattedTime time={end} format="short-date" />
     </div>
   );
 }
@@ -316,7 +316,7 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
             <Avatar person={project.lastCheckIn!.author} size={16} /> {project.lastCheckIn!.author.fullName} on{" "}
-            <FormattedTime timezone={""} time={project.lastCheckIn!.insertedAt} format="short-date" />
+            <FormattedTime time={project.lastCheckIn!.insertedAt} format="short-date" />
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
@@ -381,7 +381,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
             <Avatar person={goal.lastCheckIn!.author!} size={16} /> {goal.lastCheckIn!.author!.fullName} on{" "}
-            <FormattedTime timezone={""} time={goal.lastCheckIn!.insertedAt} format="short-date" />
+            <FormattedTime time={goal.lastCheckIn!.insertedAt} format="short-date" />
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
@@ -536,7 +536,7 @@ function PendingMilestones({ project, pending }: { project: Projects.Project; pe
             </div>
 
             <div className="shrink-0">
-              <FormattedTime timezone={""} time={milestone!.deadlineAt!} format="short-date" />
+              <FormattedTime time={milestone!.deadlineAt!} format="short-date" />
             </div>
           </div>
         ))}
@@ -563,7 +563,7 @@ function DoneMilestones({ project, done }: { project: Projects.Project; done: Mi
             </div>
 
             <div className="shrink-0">
-              Completed on <FormattedTime timezone={""} time={milestone!.completedAt!} format="short-date" />
+              Completed on <FormattedTime time={milestone!.completedAt!} format="short-date" />
             </div>
           </div>
         ))}

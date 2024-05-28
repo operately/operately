@@ -62,7 +62,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
         </div>
         <div className="inline-flex items-center gap-1">
           <span>{activity.author.fullName}</span>
-          on <FormattedTime timezone={""} time={activity.insertedAt} format="long-date" />
+          on <FormattedTime time={activity.insertedAt} format="long-date" />
         </div>
       </div>
     </div>
