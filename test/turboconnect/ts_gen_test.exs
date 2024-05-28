@@ -5,7 +5,7 @@ defmodule TurboConnect.TsGenTest do
     use TurboConnect.Specs
 
     object :user do
-      field :name, :string
+      field :full_name, :string
       field :address, :address
     end
 
@@ -16,15 +16,15 @@ defmodule TurboConnect.TsGenTest do
   end
 
   @ts_code """
-    export interface User {
-      name: string;
-      address: Address;
-    }
+  export interface Address {
+    street: string;
+    city: string;
+  }
 
-    export interface Address {
-      street: string;
-      city: string;
-    }
+  export interface User {
+    fullName: string;
+    address: Address;
+  }
   """
 
   test "generating TypeScript code" do
