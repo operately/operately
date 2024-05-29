@@ -7,11 +7,17 @@ defmodule TurboConnect.TsGenTest do
     object :user do
       field :full_name, :string
       field :address, :address
+      field :posts, list_of(:post)
     end
 
     object :address do
       field :street, :string
       field :city, :string
+    end
+
+    object :post do
+      field :title, :string
+      field :content, :string
     end
   end
 
@@ -21,9 +27,15 @@ defmodule TurboConnect.TsGenTest do
     city: string;
   }
 
+  export interface Post {
+    title: string;
+    content: string;
+  }
+
   export interface User {
     fullName: string;
     address: Address;
+    posts: Post[];
   }
   """
 

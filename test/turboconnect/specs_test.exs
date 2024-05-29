@@ -7,6 +7,7 @@ defmodule TurboConnect.SpecsTest do
     object :user do
       field :name, :string
       field :age, :integer
+      field :posts, list_of(:post)
     end
 
     object :post do
@@ -28,6 +29,11 @@ defmodule TurboConnect.SpecsTest do
             %{
               name: :age, 
               type: :integer, 
+              opts: []
+            },
+            %{
+              name: :posts, 
+              type: [:list, :post],
               opts: []
             }
           ]
