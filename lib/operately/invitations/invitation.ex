@@ -5,8 +5,10 @@ defmodule Operately.Invitations.Invitation do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "invitations" do
-    belongs_to :admin, Operately.People.Account
-    belongs_to :member, Operately.People.Account
+    belongs_to :admin, Operately.People.Person
+    belongs_to :member, Operately.People.Person
+
+    field :admin_name, :string
 
     timestamps()
   end
@@ -17,7 +19,7 @@ defmodule Operately.Invitations.Invitation do
 
   def changeset(invitation, attrs) do
     invitation
-    |> cast(attrs, [:admin_id, :member_id])
-    |> validate_required([:admin_id, :member_id])
+    |> cast(attrs, [:admin_id, :member_id, :admin_name])
+    |> validate_required([:admin_id, :member_id, :admin_name])
   end
 end
