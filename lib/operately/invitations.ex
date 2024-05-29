@@ -30,4 +30,28 @@ defmodule Operately.Invitations do
   def change_invitation(%Invitation{} = invitation, attrs \\ %{}) do
     Invitation.changeset(invitation, attrs)
   end
+
+
+  alias Operately.Invitations.InvitationToken
+
+  def list_invitation_tokens do
+    Repo.all(InvitationToken)
+  end
+
+  def get_invitation_token!(id), do: Repo.get!(InvitationToken, id)
+
+  def create_invitation_token(invitation_id) do
+    token = :crypto.strong_rand_bytes(60) |> Base.encode64 |> binary_part(0, 60)
+
+    %InvitationToken{}
+    |> InvitationToken.changeset(%{
+      token: token,
+      invitation_id: invitation_id,
+    })
+    |> Repo.insert()
+  end
+
+  def delete_invitation_token(%InvitationToken{} = invitation_token) do
+    Repo.delete(invitation_token)
+  end
 end
