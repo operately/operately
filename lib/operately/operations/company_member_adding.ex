@@ -3,12 +3,15 @@ defmodule Operately.Operations.CompanyMemberAdding do
   alias Operately.Repo
   alias Operately.People.Account
   alias Operately.People.Person
+  alias Operately.Invitations.Invitation
   alias Operately.Activities
+
 
   def run(admin, attrs) do
     Multi.new()
     |> insert_account(attrs)
     |> insert_person(admin, attrs)
+    |> insert_invitation(admin)
     |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:person)
@@ -37,11 +40,21 @@ defmodule Operately.Operations.CompanyMemberAdding do
     end)
   end
 
+  def insert_invitation(multi, admin) do
+    Multi.insert(multi, :invitation, fn changes ->
+      Invitation.changeset(%{
+        member_id: changes[:person].id,
+        admin_id: admin.id,
+        admin_name: admin.full_name,
+      })
+    end)
+  end
+
   def insert_activity(multi, admin) do
     Activities.insert_sync(multi, admin.id, :company_member_added, fn changes ->
       %{
         company_id: admin.company_id,
-        # invitatition_id:
+        invitatition_id: changes[:invitation].id,
         name: changes[:person].full_name,
         email: changes[:person].email,
         title: changes[:person].title,
