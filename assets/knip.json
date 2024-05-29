@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": ["js/app.tsx", "build.js", "codegen.ts"],
   "project": ["js/**/*.ts", "js/**/*.tsx"],
-  "ignore": ["js/gql/generated.tsx"],
+  "ignore": ["js/gql/generated.tsx", "js/api/index.tsx"],
   "ignoreDependencies": ["@types/jest"],
 
   "rules": {
