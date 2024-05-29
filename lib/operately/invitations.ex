@@ -40,6 +40,14 @@ defmodule Operately.Invitations do
 
   def get_invitation_token!(id), do: Repo.get!(InvitationToken, id)
 
+  def get_invitation_token_by_invitation(invitation_id) do
+    query = from token in InvitationToken,
+      where: token.invitation_id == ^invitation_id,
+      preload: [:invitation]
+
+    Repo.one(query)
+  end
+
   def create_invitation_token(invitation_id) do
     token = :crypto.strong_rand_bytes(60) |> Base.encode64 |> binary_part(0, 60)
 
