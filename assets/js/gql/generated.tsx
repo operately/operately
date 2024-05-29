@@ -1325,6 +1325,7 @@ export type RootMutationTypeCreateObjectiveArgs = {
 
 
 export type RootMutationTypeCreateProfileArgs = {
+  avatarUrl: Scalars['String']['input'];
   fullName: Scalars['String']['input'];
   timezone: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -2051,11 +2052,11 @@ export type UpdateNotificationSettingsInput = {
 };
 
 export type UpdateProfileInput = {
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['ID']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
-  avatarUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTargetInput = {
