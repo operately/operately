@@ -10,7 +10,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     |> insert_invitation_token()
     |> insert_activity(admin)
     |> Repo.transaction()
-    |> Repo.extract_result(:person)
+    |> Repo.extract_result(:invitation)
   end
 
   defp insert_account(multi, attrs) do

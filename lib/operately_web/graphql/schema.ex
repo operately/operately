@@ -70,6 +70,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.GoalPermissions
   import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups
+  import_types OperatelyWeb.Graphql.Types.Invitations
   import_types OperatelyWeb.Graphql.Types.KeyResults
   import_types OperatelyWeb.Graphql.Types.Kpis
   import_types OperatelyWeb.Graphql.Types.Milestones
