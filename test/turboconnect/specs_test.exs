@@ -14,6 +14,19 @@ defmodule TurboConnect.SpecsTest do
       field :title, :string
       field :content, :string
     end
+
+    object :event do
+      field :inserted_at, :datetime
+      field :content, one_of([:user_added_event, :user_removed_event])
+    end
+
+    object :user_added_event do
+      field :user_id, :integer
+    end
+
+    object :user_removed_event do
+      field :user_id, :integer
+    end
   end
 
   test "definining objects and their fields" do
@@ -48,6 +61,38 @@ defmodule TurboConnect.SpecsTest do
             %{
               name: :content, 
               type: :string, 
+              opts: []
+            }
+          ]
+        },
+        event: %{
+          fields: [
+            %{
+              name: :inserted_at, 
+              type: :datetime, 
+              opts: []
+            },
+            %{
+              name: :content, 
+              type: [:one_of, [:user_added_event, :user_removed_event]],
+              opts: []
+            }
+          ]
+        },
+        user_added_event: %{
+          fields: [
+            %{
+              name: :user_id, 
+              type: :integer, 
+              opts: []
+            }
+          ]
+        },
+        user_removed_event: %{
+          fields: [
+            %{
+              name: :user_id, 
+              type: :integer, 
               opts: []
             }
           ]

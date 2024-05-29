@@ -53,6 +53,10 @@ defmodule TurboConnect.Specs do
     {:list, type}
   end
 
+  def one_of(types) do
+    {:one_of, types}
+  end
+
   defmacro __before_compile__(_) do
     quote do
       def get_specs() do
@@ -141,6 +145,10 @@ defmodule TurboConnect.Specs do
 
     def encode_field(name, {:list, type}, opts) when is_atom(type) do
       %{name: name, type: [:list, type], opts: opts}
+    end
+
+    def encode_field(name, {:one_of, types}, opts) when is_list(types) do
+      %{name: name, type: [:one_of, types], opts: opts}
     end
 
     def encode_field(name, type, opts) when is_atom(type) do
