@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
       end
     end
 
-    field :add_company_member, non_null(:person) do
+    field :add_company_member, non_null(:invitation) do
       arg :input, non_null(:add_company_member_input)
 
       resolve fn _, args, %{context: context} ->
