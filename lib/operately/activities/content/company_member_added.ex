@@ -3,7 +3,7 @@ defmodule Operately.Activities.Content.CompanyMemberAdded do
 
   embedded_schema do
     field :company_id, :string
-    # field :invitatition_id, :string
+    field :invitatition_id, :string
     field :name, :string
     field :email, :string
     field :title, :string
