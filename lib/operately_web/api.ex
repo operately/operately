@@ -22,8 +22,8 @@ defmodule OperatelyWeb.Api do
     field :manager, :person
     field :theme, :string
 
-    # field :reports, list_of(:person)
-    # field :peers, list_of(:person)
+    field :reports, list_of(:person)
+    field :peers, list_of(:person)
   end
 
   object :company do
@@ -32,11 +32,11 @@ defmodule OperatelyWeb.Api do
     field :mission, :string
     field :company_space_id, :string
 
-    # field :trusted_email_domains, list_of(:string)
-    # field :enabled_experimental_features, list_of(:string)
+    field :trusted_email_domains, list_of(:string)
+    field :enabled_experimental_features, list_of(:string)
 
-    # field :admins, list_of(:person)
-    # field :people, list_of(:person)
+    field :admins, list_of(:person)
+    field :people, list_of(:person)
   end
 
 end

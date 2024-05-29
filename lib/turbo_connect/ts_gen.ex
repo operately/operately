@@ -28,6 +28,8 @@ defmodule TurboConnect.TsGen do
 
   def to_js_type(type) do
     case type do
+      [:list, type] -> "#{to_js_type(type)}[]"
+
       :string -> "string"
       :integer -> "number"
       :float -> "number"
@@ -35,6 +37,7 @@ defmodule TurboConnect.TsGen do
       :date -> "Date"
       :time -> "Date"
       :datetime -> "Date"
+
       _ -> Macro.camelize(Atom.to_string(type))
     end
   end

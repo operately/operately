@@ -49,6 +49,10 @@ defmodule TurboConnect.Specs do
     end
   end
 
+  def list_of(type) do
+    {:list, type}
+  end
+
   defmacro __before_compile__(_) do
     quote do
       def get_specs() do
@@ -128,10 +132,23 @@ defmodule TurboConnect.Specs do
       objects
       |> Enum.group_by(&elem(&1, 0))
       |> Enum.map(fn {object, fields} ->
-        object_fields = fields |> Enum.reverse() |> Enum.map(fn {_, name, type, opts} -> %{name: name, type: type, opts: opts} end)
+        object_fields = fields |> Enum.reverse() |> Enum.map(fn {_, name, type, opts} -> encode_field(name, type, opts) end)
+
         {object, %{fields: object_fields}}
       end)
       |> Enum.into(%{})
+    end
+
+    def encode_field(name, {:list, type}, opts) when is_atom(type) do
+      %{name: name, type: [:list, type], opts: opts}
+    end
+
+    def encode_field(name, type, opts) when is_atom(type) do
+      %{name: name, type: type, opts: opts}
+    end
+
+    def encode_field(_, _, _) do
+      raise "Invalid field type"
     end
 
     def raise_unknown_field_type(object_name, field_name, field_type) do

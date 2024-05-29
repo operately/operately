@@ -3,6 +3,10 @@ export interface Company {
   name: string;
   mission: string;
   companySpaceId: string;
+  trustedEmailDomains: string[];
+  enabledExperimentalFeatures: string[];
+  admins: Person[];
+  people: Person[];
 }
 
 export interface Person {
@@ -21,4 +25,6 @@ export interface Person {
   company: Company;
   manager: Person;
   theme: string;
+  reports: Person[];
+  peers: Person[];
 }
