@@ -5,44 +5,44 @@
 
 import { FeedItem } from "../FeedItem";
 
-import { CommentAdded } from "./CommentAdded";
-import { DiscussionCommentSubmitted } from "./DiscussionCommentSubmitted";
-import { DiscussionEditing } from "./DiscussionEditing";
-import { DiscussionPosting } from "./DiscussionPosting";
-import { GoalArchived } from "./GoalArchived";
-import { GoalCheckIn } from "./GoalCheckIn";
-import { GoalCheckInAcknowledgement } from "./GoalCheckInAcknowledgement";
-import { GoalCheckInEdit } from "./GoalCheckInEdit";
-import { GoalClosing } from "./GoalClosing";
-import { GoalCreated } from "./GoalCreated";
-import { GoalDiscussionCreation } from "./GoalDiscussionCreation";
-import { GoalEditing } from "./GoalEditing";
-import { GoalReopening } from "./GoalReopening";
-import { GoalReparent } from "./GoalReparent";
-import { GoalTimeframeEditing } from "./GoalTimeframeEditing";
-import { ProjectArchived } from "./ProjectArchived";
-import { ProjectCheckInAcknowledged } from "./ProjectCheckInAcknowledged";
-import { ProjectCheckInCommented } from "./ProjectCheckInCommented";
-import { ProjectCheckInEdit } from "./ProjectCheckInEdit";
-import { ProjectCheckInSubmitted } from "./ProjectCheckInSubmitted";
-import { ProjectClosed } from "./ProjectClosed";
-import { ProjectContributorAddition } from "./ProjectContributorAddition";
-import { ProjectCreated } from "./ProjectCreated";
-import { ProjectGoalConnection } from "./ProjectGoalConnection";
-import { ProjectGoalDisconnection } from "./ProjectGoalDisconnection";
-import { ProjectMilestoneCommented } from "./ProjectMilestoneCommented";
-import { ProjectMoved } from "./ProjectMoved";
-import { ProjectPausing } from "./ProjectPausing";
-import { ProjectRenamed } from "./ProjectRenamed";
-import { ProjectResuming } from "./ProjectResuming";
-import { ProjectTimelineEdited } from "./ProjectTimelineEdited";
-import { SpaceJoining } from "./SpaceJoining";
-import { TaskAdding } from "./TaskAdding";
-import { TaskDescriptionChange } from "./TaskDescriptionChange";
-import { TaskStatusChange } from "./TaskStatusChange";
-import { TaskUpdate } from "./TaskUpdate";
+import { CommentAdded } from "./CommentAdded"
+import { DiscussionCommentSubmitted } from "./DiscussionCommentSubmitted"
+import { DiscussionEditing } from "./DiscussionEditing"
+import { DiscussionPosting } from "./DiscussionPosting"
+import { GoalArchived } from "./GoalArchived"
+import { GoalCheckIn } from "./GoalCheckIn"
+import { GoalCheckInAcknowledgement } from "./GoalCheckInAcknowledgement"
+import { GoalCheckInEdit } from "./GoalCheckInEdit"
+import { GoalClosing } from "./GoalClosing"
+import { GoalCreated } from "./GoalCreated"
+import { GoalDiscussionCreation } from "./GoalDiscussionCreation"
+import { GoalEditing } from "./GoalEditing"
+import { GoalReopening } from "./GoalReopening"
+import { GoalReparent } from "./GoalReparent"
+import { GoalTimeframeEditing } from "./GoalTimeframeEditing"
+import { ProjectArchived } from "./ProjectArchived"
+import { ProjectCheckInAcknowledged } from "./ProjectCheckInAcknowledged"
+import { ProjectCheckInCommented } from "./ProjectCheckInCommented"
+import { ProjectCheckInEdit } from "./ProjectCheckInEdit"
+import { ProjectCheckInSubmitted } from "./ProjectCheckInSubmitted"
+import { ProjectClosed } from "./ProjectClosed"
+import { ProjectContributorAddition } from "./ProjectContributorAddition"
+import { ProjectCreated } from "./ProjectCreated"
+import { ProjectGoalConnection } from "./ProjectGoalConnection"
+import { ProjectGoalDisconnection } from "./ProjectGoalDisconnection"
+import { ProjectMilestoneCommented } from "./ProjectMilestoneCommented"
+import { ProjectMoved } from "./ProjectMoved"
+import { ProjectPausing } from "./ProjectPausing"
+import { ProjectRenamed } from "./ProjectRenamed"
+import { ProjectResuming } from "./ProjectResuming"
+import { ProjectTimelineEdited } from "./ProjectTimelineEdited"
+import { SpaceJoining } from "./SpaceJoining"
+import { TaskAdding } from "./TaskAdding"
+import { TaskDescriptionChange } from "./TaskDescriptionChange"
+import { TaskStatusChange } from "./TaskStatusChange"
+import { TaskUpdate } from "./TaskUpdate"
 
-const FeedItems: FeedItem[] = [
+const FeedItems : FeedItem[] = [
   CommentAdded,
   DiscussionCommentSubmitted,
   DiscussionEditing,
@@ -78,7 +78,7 @@ const FeedItems: FeedItem[] = [
   TaskAdding,
   TaskDescriptionChange,
   TaskStatusChange,
-  TaskUpdate,
+  TaskUpdate
 ];
 
 export default FeedItems;
