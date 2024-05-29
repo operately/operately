@@ -19,12 +19,30 @@ defmodule TurboConnect.TsGenTest do
       field :title, :string
       field :content, :string
     end
+
+    object :event do
+      field :inserted_at, :datetime
+      field :content, one_of([:user_added_event, :user_removed_event])
+    end
+
+    object :user_added_event do
+      field :user_id, :integer
+    end
+  
+    object :user_removed_event do
+      field :user_id, :integer
+    end
   end
 
   @ts_code """
   export interface Address {
     street: string;
     city: string;
+  }
+
+  export interface Event {
+    insertedAt: Date;
+    content: UserAddedEvent | UserRemovedEvent;
   }
 
   export interface Post {
@@ -36,6 +54,14 @@ defmodule TurboConnect.TsGenTest do
     fullName: string;
     address: Address;
     posts: Post[];
+  }
+
+  export interface UserAddedEvent {
+    userId: number;
+  }
+
+  export interface UserRemovedEvent {
+    userId: number;
   }
   """
 
