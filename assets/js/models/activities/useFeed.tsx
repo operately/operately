@@ -29,6 +29,7 @@ const query = gql`
         id
         fullName
         avatarUrl
+        timezone
       }
 
       content {
