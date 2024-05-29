@@ -46,7 +46,7 @@ defmodule TurboConnect.SpecsTest do
             },
             %{
               name: :posts, 
-              type: [:list, :post],
+              type: {:list, :post},
               opts: []
             }
           ]
@@ -74,7 +74,7 @@ defmodule TurboConnect.SpecsTest do
             },
             %{
               name: :content, 
-              type: [:one_of, [:user_added_event, :user_removed_event]],
+              type: {:one_of, [:user_added_event, :user_removed_event]},
               opts: []
             }
           ]

@@ -57,26 +57,29 @@ defmodule TurboConnect.Specs do
     {:one_of, types}
   end
 
+  def primitive_types() do
+    [
+      :string,
+      :integer,
+      :float,
+      :boolean,
+      :date,
+      :time,
+      :datetime,
+      :enum
+    ]
+  end
+
   defmacro __before_compile__(_) do
     quote do
       def get_specs() do
         alias TurboConnect.Specs.Utils
 
+        validate_specs()
+
         %{objects: Utils.definitions_to_map(@objects)}
       end
 
-      def primitive_types() do
-        [
-          :string,
-          :integer,
-          :float,
-          :boolean,
-          :date,
-          :time,
-          :datetime,
-          :enum
-        ]
-      end
 
       def validate_specs() do
         alias TurboConnect.Specs.Utils
@@ -86,10 +89,9 @@ defmodule TurboConnect.Specs do
 
         Enum.each(map, fn {object_name, object} ->
           Enum.each(object.fields, fn field ->
-            referenced_object = field.type
-
-            if field.type not in primitive_types() && field.type not in object_names do
-              Utils.raise_unknown_field_type(object_name, field.name, field.type)
+            case Utils.validate_field_type(object_names ++ primitive_types(), field.type) do
+              {:ok, _} -> :ok
+              {:error, type} -> Utils.raise_unknown_field_type(object_name, field.name, type)
             end
           end)
         end)
@@ -144,11 +146,11 @@ defmodule TurboConnect.Specs do
     end
 
     def encode_field(name, {:list, type}, opts) when is_atom(type) do
-      %{name: name, type: [:list, type], opts: opts}
+      %{name: name, type: {:list, type}, opts: opts}
     end
 
     def encode_field(name, {:one_of, types}, opts) when is_list(types) do
-      %{name: name, type: [:one_of, types], opts: opts}
+      %{name: name, type: {:one_of, types}, opts: opts}
     end
 
     def encode_field(name, type, opts) when is_atom(type) do
@@ -157,6 +159,32 @@ defmodule TurboConnect.Specs do
 
     def encode_field(_, _, _) do
       raise "Invalid field type"
+    end
+
+    def validate_field_type(known_types, {:list, type}) when is_atom(type) do 
+      validate_field_type(known_types, type)
+    end
+
+    def validate_field_type(known_types, {:one_of, types}) when is_list(types) do
+      unknown = Enum.find(types, fn type -> type not in known_types end)
+
+      if unknown do
+        {:error, unknown}
+      else
+        {:ok, types}
+      end
+    end
+
+    def validate_field_type(known_types, type) when is_atom(type) do
+      if type in known_types do
+        {:ok, type}
+      else
+        {:error, type}
+      end
+    end
+
+    def validate_field_type(_, type) do
+      {:error, type}
     end
 
     def raise_unknown_field_type(object_name, field_name, field_type) do

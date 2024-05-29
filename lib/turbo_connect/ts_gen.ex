@@ -28,8 +28,8 @@ defmodule TurboConnect.TsGen do
 
   def to_js_type(type) do
     case type do
-      [:list, type] -> "#{to_js_type(type)}[]"
-      [:one_of, types] -> types |> Enum.map(&to_js_type/1) |> Enum.join(" | ")
+      {:list, type} -> "#{to_js_type(type)}[]"
+      {:one_of, types} -> types |> Enum.map(&to_js_type/1) |> Enum.join(" | ")
 
       :string -> "string"
       :integer -> "number"
