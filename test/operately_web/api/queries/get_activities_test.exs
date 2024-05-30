@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     assert Enum.at(activities, 0).content.project_id == ctx.project.id
     assert Enum.at(activities, 0).content.project.name == ctx.project.name
     assert Enum.at(activities, 0).content.company.name == ctx.company.name
+    # assert Enum.at(activities, 0).content.project.champion.name == ctx.champion.name
   end
 
 end

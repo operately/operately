@@ -32,8 +32,8 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     end)
   end
 
-  def load_referenced(activities) do
-    loaded = Enum.flat_map(activities, fn activity ->
+  def referenced_resources(activities) do
+    Enum.flat_map(activities, fn activity ->
       Operately.Activities.find_module(activity.action).references()
       |> Enum.map(fn {_name, key, module, _field} ->
         {module, activity.content[key]}
@@ -42,14 +42,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     |> Enum.group_by(fn {module, _} -> module end)
     |> Enum.map(fn {module, grouped} ->
       ids = Enum.map(grouped, fn {_, id} -> id end)
-
       {module, ids}
     end)
-    |> Enum.map(fn {module, ids} ->
-      {module, Operately.Repo.all(from m in module, where: m.id in ^Enum.uniq(ids))}
-    end)
+  end
 
-    activities = Enum.map(activities, fn activity ->
+  def inject_referenced(activities, loaded) do
+    Enum.map(activities, fn activity ->
       content = activity.content
       refs = Operately.Activities.find_module(activity.action).references()
 
@@ -65,6 +63,18 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
 
       %{activity | content: Map.merge(content, ref_fields)}
     end)
+  end
+
+  def load_records(records) do
+    Enum.map(records, fn {module, ids} ->
+      {module, Operately.Repo.all(from m in module, where: m.id in ^Enum.uniq(ids))}
+    end)
+  end
+
+  def load_referenced(activities) do
+    referenced = referenced_resources(activities)
+    loaded = load_records(referenced)
+    activities = inject_referenced(activities, loaded)
 
     activities
   end
