@@ -39,13 +39,18 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
       end
     end
 
-    field :add_company_member, non_null(:person) do
+    field :add_company_member, non_null(:invitation) do
       arg :input, non_null(:add_company_member_input)
 
       resolve fn _, args, %{context: context} ->
         person = context.current_account.person
+        allowed = person.company_role == :admin
 
-        Operately.Companies.add_member(person, args.input)
+        if allowed do
+          Operately.Operations.CompanyMemberAdding.run(person, args.input)
+        else
+          {:error, "Only admins can add members"}
+        end
       end
     end
 
