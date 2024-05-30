@@ -14,8 +14,14 @@ defmodule Operately.Activities.Recorder do
     {:ok, content} = build_content(action, params)
 
     Multi.new()
-    |> Multi.insert(:activity, Activity.changeset(%{author_id: author_id, action: action, content: content }))
-    |> Multi.run(:notifications, fn _, changes -> schedule_notifications(changes.activity) end)
+    |> Multi.insert(:activity, Activity.changeset(%{
+      author_id: author_id, 
+      action: action, 
+      content: content 
+    }))
+    |> Multi.run(:notifications, fn _, changes -> 
+      schedule_notifications(changes.activity) 
+    end)
     |> Repo.transaction()
   rescue
     err -> Logger.error(Exception.format(:error, err, __STACKTRACE__))

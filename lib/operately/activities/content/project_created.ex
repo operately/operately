@@ -2,8 +2,8 @@ defmodule Operately.Activities.Content.ProjectCreated do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :project_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
   end
 
   def changeset(attrs) do
@@ -16,10 +16,10 @@ defmodule Operately.Activities.Content.ProjectCreated do
     changeset(params)
   end
 
-  def references do
-    [
-      {:company, :company_id, Operately.Companies.Company, :id},
-      {:project, :project_id, Operately.Projects.Project, :id}
-    ]
-  end
+  # def references do
+  #   [
+  #     {:company, :company_id, Operately.Companies.Company, :id},
+  #     {:project, :project_id, Operately.Projects.Project, :id}
+  #   ]
+  # end
 end
