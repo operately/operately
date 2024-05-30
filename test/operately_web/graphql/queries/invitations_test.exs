@@ -7,13 +7,22 @@ defmodule OperatelyWeb.Graphql.Queries.InvitationsTest do
   alias Operately.Invitations.InvitationToken
 
   @get_invitator """
-  query GetInvitator($token: String!) {
-    invitator(token: $token)
+  query GetInvitation($token: String!) {
+    invitation(token: $token) {
+      id
+      admin {
+        full_name
+      }
+      member {
+        email
+      }
+    }
   }
   """
 
-  test "query: invitator", ctx do
+  test "query: invitation", ctx do
     invitation = invitation_fixture()
+      |> Operately.Repo.preload([:admin, :member])
     token = InvitationToken.build_token()
 
     Invitations.create_invitation_token!(%{
@@ -21,12 +30,13 @@ defmodule OperatelyWeb.Graphql.Queries.InvitationsTest do
       token: token,
     })
 
-    conn = graphql(ctx.conn, @get_invitator, "GetInvitator", %{
+    conn = graphql(ctx.conn, @get_invitator, "GetInvitation", %{
       "token" => token,
     })
     res = json_response(conn, 200)
 
-    assert res["data"]["invitator"] == invitation.admin_name
+    assert res["data"]["invitation"]["admin"]["full_name"] == invitation.admin.full_name
+    assert res["data"]["invitation"]["member"]["email"] == invitation.member.email
   end
 
   defp graphql(conn, query, operation_name, variables) do
