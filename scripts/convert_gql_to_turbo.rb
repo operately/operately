@@ -55,12 +55,31 @@ def convert_type
   puts ""
 end
 
-def convert_types
+def convert_union
+  line = $lines[$index]
+  name = line.split(" ")[1]
+  types = line.split(" = ")[1].split("|").map(&:strip)
+
+  puts "  union :#{to_snake_case(name)}, types: ["
+  types.each.with_index do |type, index|
+    puts "    :#{to_snake_case(type)}" + (index == types.size - 1 ? "" : ",")
+  end
+  puts "  ]"
+  puts ""
+
+  $index += 1
+end
+
+def convert_spec
   while $index < $lines.size
     line = $lines[$index]
 
     if line.start_with?("type") && line.include?("{") && !line.include?("!") && !line.include?("Root")
       convert_type()
+    end
+
+    if line.include?("union")
+      convert_union()
     end
 
     $index += 1
@@ -70,5 +89,5 @@ end
 puts "defmodule OperatelyWeb.Api do"
 puts "  use TurboConnect.Specs"
 puts ""
-convert_types()
+convert_spec
 puts "end"
