@@ -7,6 +7,7 @@ defmodule Operately.Invitations.Invitation do
   schema "invitations" do
     belongs_to :admin, Operately.People.Person
     belongs_to :member, Operately.People.Person
+    has_one :invitation_token, Operately.Invitations.InvitationToken
 
     field :admin_name, :string
 
