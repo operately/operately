@@ -4,10 +4,26 @@ defmodule TurboConnect.TsGen do
   """
 
   def generate(specs) do
-    generate_interfaces(specs.objects) <> "\n"
+    interfaces = generate_object_interfaces(specs.objects)
+    unions = generate_union_types(specs.unions)
+
+    interfaces <> "\n\n" <> unions <> "\n"
   end
 
-  defp generate_interfaces(objects) do
+  defp generate_union_types(unions) do
+    unions
+    |> Enum.map(&generate_union_type/1)
+    |> Enum.join("\n")
+  end
+
+  defp generate_union_type({name, types}) do
+    types_code = Enum.map(types, &to_js_type/1)
+    types_code = Enum.join(types_code, " | ")
+
+    "export type #{to_js_type(name)} = #{types_code};"
+  end
+
+  defp generate_object_interfaces(objects) do
     objects
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map(&generate_object/1)

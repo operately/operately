@@ -20,6 +20,8 @@ defmodule TurboConnect.Specs do
       #
 
       Module.register_attribute(__MODULE__, :objects, accumulate: true)
+      Module.register_attribute(__MODULE__, :unions, accumulate: true)
+
       @before_compile unquote(__MODULE__)
     end
   end
@@ -53,8 +55,10 @@ defmodule TurboConnect.Specs do
     {:list, type}
   end
 
-  def one_of(types) do
-    {:one_of, types}
+  defmacro union(name, types: types) do
+    quote do
+      @unions {unquote(name), unquote(types)}
+    end
   end
 
   def primitive_types() do
@@ -77,19 +81,21 @@ defmodule TurboConnect.Specs do
 
         validate_specs()
 
-        %{objects: Utils.definitions_to_map(@objects)}
+        %{objects: Utils.definitions_to_map(@objects), unions: Enum.into(@unions, %{})}
       end
-
 
       def validate_specs() do
         alias TurboConnect.Specs.Utils
 
         map = Utils.definitions_to_map(@objects)
+
         object_names = Map.keys(map)
+        union_names = Map.keys(Enum.into(@unions, %{}))
+        known_types = primitive_types() ++ object_names ++ union_names
 
         Enum.each(map, fn {object_name, object} ->
           Enum.each(object.fields, fn field ->
-            case Utils.validate_field_type(object_names ++ primitive_types(), field.type) do
+            case Utils.validate_field_type(known_types, field.type) do
               {:ok, _} -> :ok
               {:error, type} -> Utils.raise_unknown_field_type(object_name, field.name, type)
             end

@@ -17,8 +17,10 @@ defmodule TurboConnect.SpecsTest do
 
     object :event do
       field :inserted_at, :datetime
-      field :content, one_of([:user_added_event, :user_removed_event])
+      field :content, :event_content
     end
+
+    union :event_content, types: [:user_added_event, :user_removed_event]
 
     object :user_added_event do
       field :user_id, :integer
@@ -31,6 +33,9 @@ defmodule TurboConnect.SpecsTest do
 
   test "definining objects and their fields" do
     assert TestSpec.get_specs() == %{
+      unions: %{
+        event_content: [:user_added_event, :user_removed_event]
+      },
       objects: %{
         user: %{
           fields: [
@@ -74,7 +79,7 @@ defmodule TurboConnect.SpecsTest do
             },
             %{
               name: :content, 
-              type: {:one_of, [:user_added_event, :user_removed_event]},
+              type: :event_content,
               opts: []
             }
           ]
@@ -117,6 +122,7 @@ defmodule TurboConnect.SpecsTest do
 
   test "referencing other objects" do
     assert TestSpec2.get_specs() == %{
+      unions: %{},
       objects: %{
         user: %{
           fields: [
