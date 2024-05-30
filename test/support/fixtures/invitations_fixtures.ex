@@ -2,6 +2,8 @@ defmodule Operately.InvitationsFixtures do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.Invitations.InvitationToken
+
   @doc """
   Generate an invitation.
   """
@@ -38,14 +40,23 @@ defmodule Operately.InvitationsFixtures do
   """
   def invitation_token_fixture() do
     invitation = invitation_fixture()
+    token = InvitationToken.build_token()
 
-    {:ok, invitation_token} = Operately.Invitations.create_invitation_token(invitation.id)
+    {:ok, invitation_token} = Operately.Invitations.create_invitation_token!(%{
+      invitation_id: invitation.id,
+      token: token,
+    })
 
     invitation_token
   end
 
   def invitation_token_fixture(invitation_id) do
-    {:ok, invitation_token} = Operately.Invitations.create_invitation_token(invitation_id)
+    token = InvitationToken.build_token()
+
+    {:ok, invitation_token} = Operately.Invitations.create_invitation_token!(%{
+      invitation_id: invitation_id,
+      token: token,
+    })
 
     invitation_token
   end

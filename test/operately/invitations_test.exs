@@ -49,8 +49,6 @@ defmodule Operately.InvitationsTest do
   end
 
   describe "invitation_tokens" do
-    @invalid_attrs %{invitation_id: nil}
-
     test "list_invitation_tokens/0 returns all invitation_tokens" do
       invitation_token = invitation_token_fixture()
       assert Invitations.list_invitation_tokens() == [invitation_token]
@@ -70,16 +68,36 @@ defmodule Operately.InvitationsTest do
       assert queried_token.id == invitation_token.id
     end
 
-    test "create_invitation_token/1 with valid data creates a invitation_token" do
+    test "create_invitation_token!/1 with valid data creates a invitation_token" do
       invitation = invitation_fixture()
+      token = InvitationToken.build_token()
 
-      assert {:ok, %InvitationToken{} = invitation_token} = Invitations.create_invitation_token(invitation.id)
+      assert {:ok, %InvitationToken{} = invitation_token} = Invitations.create_invitation_token!(%{
+        invitation_id: invitation.id,
+        token: token,
+      })
       assert invitation_token.invitation_id == invitation.id
-      assert byte_size(invitation_token.hashed_token) == 60
     end
 
-    test "create_invitation_token/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Invitations.create_invitation_token(@invalid_attrs)
+    test "create_invitation_token!/1 deletes previous invitation_token" do
+      invitation = invitation_fixture()
+      token = InvitationToken.build_token()
+
+      assert {:ok, %InvitationToken{} = first_token} = Invitations.create_invitation_token!(%{
+        invitation_id: invitation.id,
+        token: token,
+      })
+      queried_token = Invitations.get_invitation_token_by_invitation(invitation.id)
+      assert queried_token.id == first_token.id
+
+      assert {:ok, %InvitationToken{} = second_token} = Invitations.create_invitation_token!(%{
+        invitation_id: invitation.id,
+        token: token,
+      })
+      queried_token = Invitations.get_invitation_token_by_invitation(invitation.id)
+      assert queried_token.id == second_token.id
+
+      assert 1 == Operately.Repo.aggregate(InvitationToken, :count, :id)
     end
 
     test "delete_invitation_token/1 deletes the invitation_token" do
