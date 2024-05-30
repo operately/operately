@@ -42,4 +42,12 @@ defmodule Operately.Invitations.InvitationToken do
     valid_until = DateTime.add(DateTime.utc_now(), minutes * 60, :second) |> DateTime.truncate(:second)
     put_change(changeset, :valid_until, valid_until)
   end
+
+  def build_token(opts \\ []) do
+    length = Keyword.get(opts, :length, 32)
+
+    :crypto.strong_rand_bytes(length)
+    |> Base.url_encode64
+    |> binary_part(0, length)
+  end
 end
