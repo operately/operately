@@ -1,7 +1,28 @@
+import { redirect } from "react-router-dom";
+
+import * as Pages from "@/components/Pages";
+import * as Invitations from "@/models/invitations";
+import { Invitation } from "@/gql";
+
+
 interface LoaderResult {
-  // TODO: Define what is loaded when you visit this page
+  invitation: Invitation;
+  token:  string;
 }
 
-export async function loader() : Promise<LoaderResult> {
-  return {} // TODO: Load data here
+export async function loader({request}) : Promise<any> {
+  const url = new URL(request.url);
+  const token = url.searchParams.get('token');
+  
+  if (!token)return redirect("/");
+  
+  const invitation = await Invitations.getInvitation(token);
+  
+  if (!invitation)return redirect("/");
+  
+  return { invitation, token };
+}
+
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
 }
