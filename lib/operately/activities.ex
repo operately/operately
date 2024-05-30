@@ -77,11 +77,13 @@ defmodule Operately.Activities do
 
   def build_content(action, params) do
     module = find_module("Operately.Activities.Content", action)
-    changeset = apply(module, :build, [params])
+    changeset = module.changeset(params)
 
     if changeset.valid? do
+      fields = module.__schema__(:fields)
       content = Ecto.Changeset.apply_changes(changeset)
-      {:ok, content}
+
+      {:ok, Map.take(content, fields)}
     else
       {:error, changeset}
     end
