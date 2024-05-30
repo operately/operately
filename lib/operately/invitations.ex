@@ -41,17 +41,24 @@ defmodule Operately.Invitations do
   def get_invitation_token!(id), do: Repo.get!(InvitationToken, id)
 
   def get_invitation_token_by_invitation(invitation_id) do
-    query = from token in InvitationToken,
-      where: token.invitation_id == ^invitation_id,
-      preload: [:invitation]
-
-    Repo.one(query)
+    Repo.get_by(InvitationToken, invitation_id: invitation_id)
   end
 
-  def create_invitation_token(attrs) do
-    %InvitationToken{}
-    |> InvitationToken.changeset(attrs)
-    |> Repo.insert()
+  def create_invitation_token!(attrs) do
+    Repo.transaction(fn ->
+      invitation_id = attrs[:invitation_id]
+
+      existing_token = Repo.get_by(InvitationToken, invitation_id: invitation_id)
+
+      case existing_token do
+        nil -> :ok
+        %InvitationToken{} = token -> Repo.delete!(token)
+      end
+
+      %InvitationToken{}
+      |> InvitationToken.changeset(attrs)
+      |> Repo.insert!()
+    end)
   end
 
   def delete_invitation_token(%InvitationToken{} = invitation_token) do

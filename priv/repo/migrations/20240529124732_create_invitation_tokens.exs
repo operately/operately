@@ -11,6 +11,6 @@ defmodule Operately.Repo.Migrations.CreateInvitationTokens do
       timestamps()
     end
 
-    create index(:invitation_tokens, [:invitation_id])
+    create unique_index(:invitation_tokens, [:invitation_id])
   end
 end
