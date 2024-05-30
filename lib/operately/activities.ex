@@ -60,6 +60,21 @@ defmodule Operately.Activities do
     end
   end
 
+  def cast_content(activity) do
+    module = find_module("Operately.Activities.Content", activity.action)
+
+    if module do
+      schema = struct(module)
+      fields = module.__schema__(:fields)
+      changeset = Ecto.Changeset.cast(schema, activity.content, fields)
+      casted = Ecto.Changeset.apply_changes(changeset)
+
+      %{activity | content: casted}
+    else
+      %{activity | content: nil}
+    end
+  end
+
   def build_content(action, params) do
     module = find_module("Operately.Activities.Content", action)
     changeset = apply(module, :build, [params])

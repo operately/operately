@@ -16,6 +16,7 @@ defmodule Operately.Activities.ListActivitiesOperation do
     |> company_query()
     |> order_desc()
     |> Repo.all()
+    |> Enum.map(&Operately.Activities.cast_content/1)
   end
 
   def company_query(query) do
