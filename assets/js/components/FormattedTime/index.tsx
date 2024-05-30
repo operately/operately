@@ -33,8 +33,6 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
   }
 
   const options = { timeZone: props.timezone || "Europe/London" };
-  //Se a timezone for null ou undefined, ele vai usar a timezone de London
-  //const options = { timeZone: props.timezone || "America/Sao_Paulo" };
   
   switch (props.format) {
     case "relative-day":
