@@ -1638,6 +1638,7 @@ export type RootQueryType = {
   group?: Maybe<Group>;
   groups?: Maybe<Array<Maybe<Group>>>;
   homeDashboard: Dashboard;
+  invitator: Scalars['String']['output'];
   keyResource?: Maybe<ProjectKeyResource>;
   keyResults?: Maybe<Array<Maybe<KeyResult>>>;
   kpi?: Maybe<Kpi>;
@@ -1720,6 +1721,11 @@ export type RootQueryTypeGoalsArgs = {
 
 export type RootQueryTypeGroupArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeInvitatorArgs = {
+  token: Scalars['String']['input'];
 };
 
 
