@@ -1,0 +1,10 @@
+query GetInvitation($token: String!) {
+  invitation(token: $token) {
+    admin {
+      fullName
+    }
+    member {
+      email
+    }
+  }
+}
