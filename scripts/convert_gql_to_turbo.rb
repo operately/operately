@@ -87,7 +87,7 @@ def convert_spec
   end
 end
 
-puts "defmodule OperatelyWeb.Api do"
+puts "defmodule OperatelyWeb.Api.Types do"
 puts "  use TurboConnect.Specs"
 puts ""
 convert_spec

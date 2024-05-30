@@ -8,11 +8,18 @@ defmodule Operately.Activities.Content.ProjectCreated do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> cast(attrs, [:company_id, :project_id])
+    |> validate_required([:company_id, :project_id])
   end
 
   def build(params) do
     changeset(params)
+  end
+
+  def references do
+    [
+      {:company, :company_id, Operately.Companies.Company, :id},
+      {:project, :project_id, Operately.Projects.Project, :id}
+    ]
   end
 end

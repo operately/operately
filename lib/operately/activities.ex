@@ -72,6 +72,10 @@ defmodule Operately.Activities do
     end
   end
 
+  def find_module(action) do
+    find_module("Operately.Activities.Content", action)
+  end
+
   defp find_module(base, action) when is_atom(action) do
     find_module(base, Atom.to_string(action))
   end
