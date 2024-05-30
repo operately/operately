@@ -39,6 +39,7 @@ function constructQuery() {
           id
           fullName
           avatarUrl
+          timezone
         }
 
         commentThread {
