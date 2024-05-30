@@ -48,14 +48,9 @@ defmodule Operately.Invitations do
     Repo.one(query)
   end
 
-  def create_invitation_token(invitation_id) do
-    token = :crypto.strong_rand_bytes(60) |> Base.encode64 |> binary_part(0, 60)
-
+  def create_invitation_token(attrs) do
     %InvitationToken{}
-    |> InvitationToken.changeset(%{
-      token: token,
-      invitation_id: invitation_id,
-    })
+    |> InvitationToken.changeset(attrs)
     |> Repo.insert()
   end
 

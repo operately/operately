@@ -7,8 +7,14 @@ defmodule OperatelyWeb.Graphql.Types.Invitations do
 
     field :token, non_null(:string) do
       resolve fn invitation, _, _ ->
-        token = Operately.Invitations.get_invitation_token_by_invitation(invitation.id)
-        {:ok, token.hashed_token}
+        token = Operately.Invitations.InvitationToken.build_token()
+
+        Operately.Invitations.create_invitation_token(%{
+          token: token,
+          invitation_id: invitation.id,
+        })
+
+        {:ok, token}
       end
     end
   end

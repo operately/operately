@@ -7,14 +7,13 @@ defmodule Operately.Operations.CompanyMemberAdding do
     |> insert_account(attrs)
     |> insert_person(admin, attrs)
     |> insert_invitation(admin)
-    |> insert_invitation_token()
     |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:invitation)
   end
 
   defp insert_account(multi, attrs) do
-    password = get_random_string()
+    password = :crypto.strong_rand_bytes(64) |> Base.encode64 |> binary_part(0, 64)
 
     Multi.insert(multi, :account,
       Operately.People.Account.registration_changeset(%{email: attrs.email, password: password})
@@ -46,17 +45,6 @@ defmodule Operately.Operations.CompanyMemberAdding do
     end)
   end
 
-  defp insert_invitation_token(multi) do
-    token = get_random_string()
-
-    Multi.insert(multi, :invitation_token, fn changes ->
-      Operately.Invitations.InvitationToken.changeset(%{
-        token: token,
-        invitation_id: changes[:invitation].id,
-      })
-    end)
-  end
-
   defp insert_activity(multi, admin) do
     Operately.Activities.insert_sync(multi, admin.id, :company_member_added, fn changes ->
       %{
@@ -67,11 +55,5 @@ defmodule Operately.Operations.CompanyMemberAdding do
         title: changes[:person].title,
       }
     end)
-  end
-
-  defp get_random_string(length \\ 64) do
-    :crypto.strong_rand_bytes(length)
-    |> Base.encode64
-    |> binary_part(0, length)
   end
 end
