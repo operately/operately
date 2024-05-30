@@ -22,8 +22,10 @@ defmodule TurboConnect.TsGenTest do
 
     object :event do
       field :inserted_at, :datetime
-      field :content, one_of([:user_added_event, :user_removed_event])
+      field :content, :event_content
     end
+
+    union :event_content, types: [:user_added_event, :user_removed_event]
 
     object :user_added_event do
       field :user_id, :integer
@@ -42,7 +44,7 @@ defmodule TurboConnect.TsGenTest do
 
   export interface Event {
     insertedAt: Date;
-    content: UserAddedEvent | UserRemovedEvent;
+    content: EventContent;
   }
 
   export interface Post {
@@ -63,6 +65,8 @@ defmodule TurboConnect.TsGenTest do
   export interface UserRemovedEvent {
     userId: number;
   }
+
+  export type EventContent = UserAddedEvent | UserRemovedEvent;
   """
 
   test "generating TypeScript code" do
