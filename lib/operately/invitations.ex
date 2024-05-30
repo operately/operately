@@ -3,6 +3,7 @@ defmodule Operately.Invitations do
   alias Operately.Repo
 
   alias Operately.Invitations.Invitation
+  alias Operately.Invitations.InvitationToken
 
 
   def list_invitations do
@@ -10,6 +11,17 @@ defmodule Operately.Invitations do
   end
 
   def get_invitation!(id), do: Repo.get!(Invitation, id)
+
+  def get_invitation_by_token(token) do
+    hashed_token = InvitationToken.hash_token(token)
+
+    query = from t in InvitationToken,
+        join: i in assoc(t, :invitation),
+        where: t.hashed_token == ^hashed_token,
+        select: i
+
+    Repo.one(query)
+  end
 
   def create_invitation(attrs \\ %{}) do
     %Invitation{}
@@ -31,8 +43,6 @@ defmodule Operately.Invitations do
     Invitation.changeset(invitation, attrs)
   end
 
-
-  alias Operately.Invitations.InvitationToken
 
   def list_invitation_tokens do
     Repo.all(InvitationToken)
