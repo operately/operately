@@ -814,6 +814,13 @@ export type GroupContact = {
   value: Scalars['String']['output'];
 };
 
+export type Invitation = {
+  __typename?: 'Invitation';
+  adminName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  token: Scalars['String']['output'];
+};
+
 export type JoinSpaceInput = {
   spaceId: Scalars['String']['input'];
 };
@@ -1097,7 +1104,7 @@ export type RootMutationType = {
   acknowledge?: Maybe<Update>;
   acknowledgeProjectCheckIn: ProjectCheckIn;
   addCompanyAdmins?: Maybe<Scalars['Boolean']['output']>;
-  addCompanyMember: Person;
+  addCompanyMember: Invitation;
   addCompanyTrustedEmailDomain: Company;
   addFirstCompany: Company;
   addGroupContact?: Maybe<Group>;
@@ -1631,6 +1638,7 @@ export type RootQueryType = {
   group?: Maybe<Group>;
   groups?: Maybe<Array<Maybe<Group>>>;
   homeDashboard: Dashboard;
+  invitator: Scalars['String']['output'];
   keyResource?: Maybe<ProjectKeyResource>;
   keyResults?: Maybe<Array<Maybe<KeyResult>>>;
   kpi?: Maybe<Kpi>;
@@ -1713,6 +1721,11 @@ export type RootQueryTypeGoalsArgs = {
 
 export type RootQueryTypeGroupArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type RootQueryTypeInvitatorArgs = {
+  token: Scalars['String']['input'];
 };
 
 
@@ -2091,7 +2104,7 @@ export type AddCompanyMemberMutationVariables = Exact<{
 }>;
 
 
-export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Person', id: string, fullName: string, email?: string | null, title?: string | null } };
+export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Invitation', id: string, token: string } };
 
 export type CreateGoalDiscussionMutationVariables = Exact<{
   input: CreateGoalDiscussionInput;
@@ -2225,9 +2238,7 @@ export const AddCompanyMemberDocument = gql`
     mutation AddCompanyMember($input: AddCompanyMemberInput!) {
   addCompanyMember(input: $input) {
     id
-    fullName
-    email
-    title
+    token
   }
 }
     `;

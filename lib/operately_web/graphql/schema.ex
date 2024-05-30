@@ -70,6 +70,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.GoalPermissions
   import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups
+  import_types OperatelyWeb.Graphql.Types.Invitations
   import_types OperatelyWeb.Graphql.Types.KeyResults
   import_types OperatelyWeb.Graphql.Types.Kpis
   import_types OperatelyWeb.Graphql.Types.Milestones
@@ -109,6 +110,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Discussions
   import_types OperatelyWeb.Graphql.Queries.Goals
   import_types OperatelyWeb.Graphql.Queries.Groups
+  import_types OperatelyWeb.Graphql.Queries.Invitations
   import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.KeyResults
   import_types OperatelyWeb.Graphql.Queries.Kpis
@@ -156,6 +158,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :discussion_queries
     import_fields :goal_queries
     import_fields :group_queries
+    import_fields :invitation_queries
     import_fields :key_resource_queries
     import_fields :key_result_queries
     import_fields :kpi_queries
