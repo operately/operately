@@ -1,7 +1,8 @@
 defmodule OperatelyWeb.Graphql.Context do
   @public_operations [
     "AddFirstCompany",
-    "GetInvitator",
+    "GetInvitation",
+    "ChangePasswordFirstTime",
   ]
 
   def init(opts), do: opts

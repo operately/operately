@@ -126,6 +126,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Updates
 
   # Mutations
+  import_types OperatelyWeb.Graphql.Mutations.Accounts
   import_types OperatelyWeb.Graphql.Mutations.Blobs
   import_types OperatelyWeb.Graphql.Mutations.Comments
   import_types OperatelyWeb.Graphql.Mutations.Companies
@@ -175,6 +176,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   end
 
   mutation do
+    import_fields :account_mutations
     import_fields :blob_mutations
     import_fields :comment_mutations
     import_fields :company_mutations
