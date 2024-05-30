@@ -21,6 +21,7 @@ def convert_field_type(type)
          when "Float" then "float"
          when "Boolean" then "boolean"
          when "ID" then "string"
+         when "NaiveDateTime" then "datetime"
          else type
          end
 

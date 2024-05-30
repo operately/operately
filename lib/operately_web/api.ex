@@ -149,8 +149,8 @@ defmodule OperatelyWeb.Api do
     field :resource_id, :string
     field :resource_type, :string
     field :action_type, :string
-    field :inserted_at, :naive_date_time
-    field :updated_at, :naive_date_time
+    field :inserted_at, :datetime
+    field :updated_at, :datetime
     field :comment_thread, :comment_thread
     field :author, :person
     field :resource, :activity_resource_union
@@ -287,10 +287,10 @@ defmodule OperatelyWeb.Api do
   object :update do
     field :id, :string
     field :title, :string
-    field :inserted_at, :naive_date_time
-    field :updated_at, :naive_date_time
+    field :inserted_at, :datetime
+    field :updated_at, :datetime
     field :acknowledged, :boolean
-    field :acknowledged_at, :naive_date_time
+    field :acknowledged_at, :datetime
     field :updatable_id, :string
     field :project, :project
     field :acknowledging_person, :person
@@ -723,7 +723,7 @@ defmodule OperatelyWeb.Api do
 
   object :comment do
     field :id, :string
-    field :inserted_at, :naive_date_time
+    field :inserted_at, :datetime
     field :content, :string
     field :author, :person
     field :reactions, list_of(:reaction)
@@ -791,7 +791,7 @@ defmodule OperatelyWeb.Api do
     field :description, :string
     field :author, :person
     field :project, :project
-    field :acknowledged_at, :naive_date_time
+    field :acknowledged_at, :datetime
     field :acknowledged_by, :person
     field :reactions, list_of(:reaction)
   end
