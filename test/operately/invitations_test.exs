@@ -23,6 +23,19 @@ defmodule Operately.InvitationsTest do
       assert Invitations.get_invitation!(invitation.id) == invitation
     end
 
+    test "get_invitation_by_token!/1 returns the invitation" do
+      invitation = invitation_fixture()
+      token = InvitationToken.build_token()
+
+      Invitations.create_invitation_token!(%{
+        invitation_id: invitation.id,
+        token: token,
+      })
+      queried_invitation = Invitations.get_invitation_by_token(token)
+
+      assert queried_invitation == invitation
+    end
+
     test "create_invitation/1 with valid data creates a invitation" do
       company = company_fixture(%{name: "Test Company"})
       admin = person_fixture(%{email: "admin@test.com", company_role: :admin, company_id: company.id})

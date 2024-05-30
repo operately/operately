@@ -23,16 +23,16 @@ defmodule Operately.Invitations.InvitationToken do
     |> cast(attrs, [:token, :invitation_id])
     |> validate_required([:token, :invitation_id])
     |> validate_length(:token, min: 32, max: 72)
-    |> hash_token()
+    |> hash_and_put_token
     |> put_valid_until(opts)
   end
 
-  defp hash_token(changeset) do
+  defp hash_and_put_token(changeset) do
     token = get_change(changeset, :token)
 
     changeset
     |> validate_length(:token, max: 72, count: :bytes)
-    |> put_change(:hashed_token, Bcrypt.hash_pwd_salt(token))
+    |> put_change(:hashed_token, hash_token(token))
     |> delete_change(:token)
   end
 
@@ -49,5 +49,9 @@ defmodule Operately.Invitations.InvitationToken do
     :crypto.strong_rand_bytes(length)
     |> Base.url_encode64
     |> binary_part(0, length)
+  end
+
+  def hash_token(token) do
+    :crypto.hash(:sha256, token) |> Base.url_encode64()
   end
 end
