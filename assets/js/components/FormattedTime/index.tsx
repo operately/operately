@@ -22,6 +22,7 @@ type Format =
 interface FormattedTimeProps {
   time: string | Date;
   format: Format;
+  timezone?: string;
 }
 
 export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
@@ -31,6 +32,8 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
     return <>Invalid date</>;
   }
 
+  const options = { timeZone: props.timezone || "Europe/London" };
+  
   switch (props.format) {
     case "relative-day":
       return <RelativeDay time={parsedTime} />;
@@ -48,7 +51,7 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
       return (
         <>
           {parsedTime
-            .toLocaleTimeString("en-US", { timeStyle: "short", hour12: true })
+            .toLocaleTimeString("en-US", { timeStyle: "short", hour12: true, ...options })
             .replace(" AM", "am")
             .replace(" PM", "pm")}
         </>
