@@ -21,7 +21,6 @@ export function Page() {
   }
 
   const me = data.me;
-  
   return (
     <Paper.Root size="small">
       <Paper.Navigation>
@@ -63,7 +62,7 @@ function ProfileForm({ me }) {
   const [title, setTitle] = useState(me.title);
   const [manager, setManager] = useState(me.manager);
   const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ? me.avatarUrl : "");
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileUploader = new MultipartFileUploader();
 
@@ -102,20 +101,19 @@ function ProfileForm({ me }) {
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
-      
       <section className="flex w-full justify-center items-center">
-          <Avatar person={me} size="xxlarge" />
-          <div className="ml-4">
-            <FileInput
-              label="Upload a new profile picture"
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                await handleFileUpload(file);
-              }}
-              error={false}
-            />
-          </div>
-        </section>
+        <Avatar person={me} size="xxlarge" />
+        <div className="ml-4">
+          <FileInput
+            label="Upload a new profile picture"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              await handleFileUpload(file);
+            }}
+            error={false}
+          />
+        </div>
+      </section>
 
       <div className="progress-container">
         <div className="progress-bar" style={{ width: `${uploadProgress}%` }}></div>
