@@ -12,11 +12,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Accounts do
       arg :input, non_null(:change_password_input)
 
       resolve fn %{input: input}, _ ->
-        if valid_password_input(input) do
-          Operately.Operations.PasswordChanging.run(input)
-          {:ok, true}
-        else
-          {:error, false}
+        case valid_password_input(input) do
+          :ok ->
+            Operately.Operations.PasswordChanging.run(input)
+            {:ok, true}
+          {:error, reason} ->
+            {:error, reason}
         end
       end
     end
@@ -24,9 +25,12 @@ defmodule OperatelyWeb.Graphql.Mutations.Accounts do
 
   defp valid_password_input(input) do
     cond do
-      input.password != input.password_confirmation -> false
-      Operately.Invitations.get_invitation_by_token(input.token) == nil -> false
-      true -> true
+      input.password != input.password_confirmation ->
+        {:error, "Passwords don't match"}
+      Operately.Invitations.get_invitation_by_token(input.token) == nil ->
+        {:error, "Invalid token"}
+      true ->
+        :ok
     end
   end
 end
