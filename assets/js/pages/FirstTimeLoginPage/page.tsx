@@ -16,11 +16,11 @@ export function Page() {
     <Pages.Page title="Welcome to Operately!">
       <Paper.Root>
         <Paper.Body>    
-          <div className="text-content-accent text-2xl font-extrabold text-center">Welcome to Operately!</div>
+          <div className="text-content-accent text-2xl font-extrabold text-center">Welcome to Operately, {invitation.member.fullName}!</div>
         
           <Spacer size={8} />
 
-          <div className="text-content-accent">You were invited by {invitation.admin.fullName} to join ... .</div>
+          <div className="text-content-accent">You were invited by {invitation.admin.fullName} to join {invitation.admin.company!.name}.</div>
           <div className="text-content-accent">Please choose a password to activate your account.</div>
           
           <Spacer size={2} />
