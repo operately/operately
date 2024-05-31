@@ -21,7 +21,6 @@ export function Page() {
   }
 
   const me = data.me;
-
   return (
     <Paper.Root size="small">
       <Paper.Navigation>
@@ -108,7 +107,6 @@ function ProfileForm({ me }) {
           <FileInput
             label="Upload a new profile picture"
             onChange={async (e) => {
-              console.log("File" + e.target.files[0]);
               const file = e.target.files[0];
               await handleFileUpload(file);
             }}
