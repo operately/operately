@@ -52,6 +52,21 @@ defmodule OperatelyWeb.Graphql.Mutations.AccountsTest do
       assert res["data"]["changePasswordFirstTime"] == nil
       assert res["errors"] |> List.first() |> Map.get("message") == "Invalid token"
     end
+
+    test "change password successfully", ctx do
+      payload = %{
+        :input => %{
+          :token => ctx.token,
+          :password => "Aa12345#&!123",
+          :passwordConfirmation => "Aa12345#&!123"
+        }
+      }
+
+      conn = graphql(ctx.conn, @change_password_first_time, "ChangePasswordFirstTime", payload)
+      res = json_response(conn, 200)
+
+      assert res["data"]["changePasswordFirstTime"] == "Password successfully changed"
+    end
   end
 
   defp graphql(conn, query, operation_name, variables) do
