@@ -50,6 +50,51 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
     end
   end
 
+
+  @add_company_member """
+  mutation AddCompanyMember($input: AddCompanyMemberInput!) {
+    addCompanyMember(input: $input) {
+      id
+      token
+    }
+  }
+  """
+
+  @add_company_member_input %{
+    :input => %{
+      :fullName => "John Doe",
+      :email => "john@your-company.com",
+      :title => "Developer",
+    }
+  }
+
+  describe "mutation: AddCompanyMember" do
+    setup :register_and_log_in_account
+
+    test "member account can't invite other members", ctx do
+      conn = graphql(ctx.conn, @add_company_member, "AddCompanyMember", @add_company_member_input)
+      res = json_response(conn, 200)
+
+      assert res["data"] == nil
+      assert res["errors"] |> List.first() |> Map.get("message") == "Only admins can add members"
+    end
+
+    test "creates first-time-access token for new member", ctx do
+      account = Operately.PeopleFixtures.account_fixture()
+      Operately.PeopleFixtures.person_fixture(%{
+        account_id: account.id,
+        company_id: ctx.company.id,
+        company_role: :admin,
+      })
+      conn = log_in_account(ctx.conn, account)
+
+      conn = graphql(conn, @add_company_member, "AddCompanyMember", @add_company_member_input)
+      res = json_response(conn, 200)
+
+      assert Map.has_key?(res["data"]["addCompanyMember"], "token")
+    end
+  end
+
   defp graphql(conn, query, operation_name, variables) do
     payload = %{
       operationName: operation_name,
