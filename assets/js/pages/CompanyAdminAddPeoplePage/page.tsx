@@ -72,6 +72,13 @@ function PersonForm() {
         </div>
       </div>
 
+      {form.result &&
+        <div className="flex flex-col pt-2 pb-2">
+          Share this url with the new member:
+          <u className="text-sm">{form.result}</u>
+        </div>
+      }
+
       <div className="flex items-center justify-end gap-2 mt-8">
         <GhostButton linkTo={form.managePeoplePath} type="secondary">
           Discard

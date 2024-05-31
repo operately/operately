@@ -19,7 +19,12 @@ defmodule OperatelyWeb.Graphql.Types.Person do
 
     field :suspended, non_null(:boolean)
 
-    delegate_field :company, :company, &Operately.Companies.get_company!/1
+    field :company, non_null(:company) do
+      resolve fn person, _, _ ->
+        {:ok, Operately.Companies.get_company!(person.company_id)}
+      end
+    end
+
     delegate_field :manager, :person, &Operately.People.get_manager/1
     delegate_field :reports, list_of(:person), &Operately.People.get_reports/1
     delegate_field :peers, list_of(:person), &Operately.People.get_peers/1
