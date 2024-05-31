@@ -8,11 +8,16 @@ defmodule Operately.Activities do
   alias Operately.Activities.ListActivitiesOperation
 
   def get_activity!(id) do
-    Repo.get!(Activity, id)
+    Repo.get!(Activity, id) |> cast_content()
   end
 
   def list_activities(scope_type, scope_id, actions) do
     ListActivitiesOperation.run(scope_type, scope_id, actions)
+  end
+
+  def load_for_notifications(notifications) do
+    Repo.preload(notifications, [activity: [:author]]) 
+    |> Enum.map(fn n -> %{n | activity: cast_content(n.activity)} end)
   end
 
   def insert(multi, author_id, action, callback) do
