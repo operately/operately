@@ -9,8 +9,6 @@ defmodule Operately.Invitations.Invitation do
     belongs_to :member, Operately.People.Person
     has_one :invitation_token, Operately.Invitations.InvitationToken
 
-    field :admin_name, :string
-
     timestamps()
   end
 
@@ -20,7 +18,7 @@ defmodule Operately.Invitations.Invitation do
 
   def changeset(invitation, attrs) do
     invitation
-    |> cast(attrs, [:admin_id, :member_id, :admin_name])
-    |> validate_required([:admin_id, :member_id, :admin_name])
+    |> cast(attrs, [:admin_id, :member_id])
+    |> validate_required([:admin_id, :member_id])
   end
 end
