@@ -1,0 +1,1 @@
+export { useChangePasswordMutation } from "./useChangePasswordMutation";
