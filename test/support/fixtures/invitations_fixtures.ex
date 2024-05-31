@@ -25,7 +25,6 @@ defmodule Operately.InvitationsFixtures do
     {:ok, invitation} = Operately.Invitations.create_invitation(%{
       member_id: member.id,
       admin_id: admin.id,
-      admin_name: admin.full_name,
     })
 
     invitation
@@ -40,25 +39,19 @@ defmodule Operately.InvitationsFixtures do
   @doc """
   Generate an invitation_token.
   """
-  def invitation_token_fixture() do
+  def invitation_token_fixture(opts \\ []) do
     invitation = invitation_fixture()
-    token = InvitationToken.build_token()
 
-    {:ok, invitation_token} = Operately.Invitations.create_invitation_token!(%{
-      invitation_id: invitation.id,
-      token: token,
-    })
-
-    invitation_token
+    invitation_token_fixture(invitation.id, opts)
   end
 
-  def invitation_token_fixture(invitation_id) do
+  def invitation_token_fixture(invitation_id, opts) do
     token = InvitationToken.build_token()
 
     {:ok, invitation_token} = Operately.Invitations.create_invitation_token!(%{
       invitation_id: invitation_id,
       token: token,
-    })
+    }, opts)
 
     invitation_token
   end

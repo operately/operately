@@ -14,11 +14,11 @@ defmodule Operately.Invitations.InvitationToken do
     timestamps()
   end
 
-  def changeset(attrs) do
-    changeset(%__MODULE__{}, attrs)
+  def changeset(attrs, opts \\ []) do
+    changeset(%__MODULE__{}, attrs, opts)
   end
 
-  def changeset(invitation_token, attrs, opts \\ []) do
+  def changeset(invitation_token, attrs, opts) do
     invitation_token
     |> cast(attrs, [:token, :invitation_id])
     |> validate_required([:token, :invitation_id])

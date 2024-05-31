@@ -64,7 +64,7 @@ defmodule Operately.Invitations do
     Repo.get_by(InvitationToken, invitation_id: invitation_id)
   end
 
-  def create_invitation_token!(attrs) do
+  def create_invitation_token!(attrs, opts \\ []) do
     Repo.transaction(fn ->
       invitation_id = attrs[:invitation_id]
 
@@ -76,7 +76,7 @@ defmodule Operately.Invitations do
       end
 
       %InvitationToken{}
-      |> InvitationToken.changeset(attrs)
+      |> InvitationToken.changeset(attrs, opts)
       |> Repo.insert!()
     end)
   end

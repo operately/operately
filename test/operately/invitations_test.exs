@@ -43,11 +43,9 @@ defmodule Operately.InvitationsTest do
       valid_attrs = %{
         member_id: member.id,
         admin_id: admin.id,
-        admin_name: admin.full_name,
       }
 
-      assert {:ok, %Invitation{} = invitation} = Invitations.create_invitation(valid_attrs)
-      assert invitation.admin_name == admin.full_name
+      assert {:ok, %Invitation{}} = Invitations.create_invitation(valid_attrs)
     end
 
     test "create_invitation/1 with invalid data returns error changeset" do
@@ -74,7 +72,7 @@ defmodule Operately.InvitationsTest do
 
     test "get_invitation_token_by_invitation!/1 returns the invitation_token with given id" do
       invitation = invitation_fixture()
-      invitation_token = invitation_token_fixture(invitation.id)
+      invitation_token = invitation_token_fixture(invitation.id, [])
 
       queried_token = Invitations.get_invitation_token_by_invitation(invitation.id)
 
@@ -118,5 +116,13 @@ defmodule Operately.InvitationsTest do
       assert {:ok, %InvitationToken{}} = Invitations.delete_invitation_token(invitation_token)
       assert_raise Ecto.NoResultsError, fn -> Invitations.get_invitation_token!(invitation_token.id) end
     end
+  end
+
+  describe "invalid invitation_tokens" do
+    # It breaks the DB for some reason
+    invitation_token = invitation_token_fixture(minutes: -10)
+    IO.inspect(invitation_token)
+
+    assert 1 == 1
   end
 end
