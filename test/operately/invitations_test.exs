@@ -119,10 +119,26 @@ defmodule Operately.InvitationsTest do
   end
 
   describe "invalid invitation_tokens" do
-    # It breaks the DB for some reason
-    invitation_token = invitation_token_fixture(minutes: -10)
-    IO.inspect(invitation_token)
+    test "tokens already expired" do
+      invitation = invitation_fixture()
+      token = InvitationToken.build_token()
 
-    assert 1 == 1
+      Operately.Invitations.create_invitation_token!(%{
+        invitation_id: invitation.id,
+        token: token,
+      }, minutes: -1)
+
+      assert nil == Invitations.get_invitation_by_token(token)
+    end
+
+    test "valid_token_time?/2 returns correct value" do
+      token = invitation_token_fixture()
+
+      valid_time = DateTime.add(DateTime.utc_now(), -100, :minute)
+      invalid_time = DateTime.add(DateTime.utc_now(), 100, :minute)
+
+      assert InvitationToken.valid_token_time?(token, valid_time)
+      assert !InvitationToken.valid_token_time?(token, invalid_time)
+    end
   end
 end
