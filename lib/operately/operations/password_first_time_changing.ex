@@ -1,4 +1,4 @@
-defmodule Operately.Operations.PasswordChanging do
+defmodule Operately.Operations.PasswordFirstTimeChanging do
   alias Ecto.Multi
   alias Operately.Repo
 
