@@ -5,9 +5,6 @@ defmodule Operately.Features.GoalCreationTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
-  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.GoalSteps, as: Steps
 
   setup ctx do
@@ -47,7 +44,6 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_company_goal_added(@goal_params)
     |> Steps.assert_company_goal_created_email_sent(@goal_params.name)
   end
-
 
   @tag login_as: :champion
   feature "add subgoal to a company wide goal", ctx do

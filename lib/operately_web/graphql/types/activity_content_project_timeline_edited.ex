@@ -52,5 +52,6 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectTimelineEdited do
   end
 
   defp as_date(nil), do: nil
-  defp as_date(date), do: NaiveDateTime.from_iso8601!(date)
+  defp as_date(%DateTime{} = date), do: date
+  defp as_date(date) when is_binary(date), do: NaiveDateTime.from_iso8601!(date)
 end

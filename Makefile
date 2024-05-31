@@ -43,6 +43,7 @@ gen:
 	@./devenv mix operately.gen.notification.items.index
 	@./devenv mix operately.gen.feed.items.index
 	@./devenv mix operately.gen.page.index
+	@./devenv mix operately.gen.typescript.api
 
 gen.migration:
 	./devenv mix ecto.gen.migration $(NAME)

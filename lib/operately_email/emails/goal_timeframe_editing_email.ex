@@ -7,9 +7,6 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
 
-    old_timeframe = Operately.Goals.Timeframe.parse_json!(activity.content["old_timeframe"])
-    new_timeframe = Operately.Goals.Timeframe.parse_json!(activity.content["new_timeframe"])
-
     message = Operately.Repo.preload(activity, :comment_thread).comment_thread.message
     link = OperatelyEmail.goal_activity_url(goal.id, activity.id)
 
@@ -20,8 +17,8 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
     |> subject(where: goal.name, who: author, action: "edited the timeframe")
     |> assign(:author, author)
     |> assign(:goal, goal)
-    |> assign(:old_timeframe, old_timeframe)
-    |> assign(:new_timeframe, new_timeframe)
+    |> assign(:old_timeframe, activity.content.old_timeframe)
+    |> assign(:new_timeframe, activity.content.new_timeframe)
     |> assign(:message, message)
     |> assign(:link, link)
     |> render("goal_timeframe_editing")

@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalEditing do
     field :old_timeframe, non_null(:timeframe) do
       resolve fn activity, _, _ ->
         if activity.content["previous_timeframe"] do
-          {:ok, Operately.Goals.Timeframe.parse_json!(activity.content["previous_timeframe"])}
+          {:ok, activity.content["previous_timeframe"]}
         else
           {:ok, Operately.Goals.Timeframe.convert_old_timeframe(activity.content["old_timeframe"])}
         end
@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalEditing do
     field :new_timeframe, non_null(:timeframe) do
       resolve fn activity, _, _ ->
         if activity.content["current_timeframe"] do
-          {:ok, Operately.Goals.Timeframe.parse_json!(activity.content["current_timeframe"])}
+          {:ok, activity.content["current_timeframe"]}
         else
           {:ok, Operately.Goals.Timeframe.convert_old_timeframe(activity.content["new_timeframe"])}
         end
@@ -96,25 +96,19 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalEditing do
 
     field :added_targets, non_null(list_of(:target)) do
       resolve fn activity, _, _ ->
-        targets = activity.content["added_targets"] |> Enum.map(&atomize_keys/1)
-
-        {:ok, targets}
+        {:ok, activity.content["added_targets"]}
       end
     end
 
     field :updated_targets, non_null(list_of(:goal_editing_updated_target)) do
       resolve fn activity, _, _ ->
-        targets = activity.content["updated_targets"] |> Enum.map(&atomize_keys/1)
-
-        {:ok, targets}
+        {:ok, activity.content["updated_targets"]}
       end
     end
 
     field :deleted_targets, non_null(list_of(:target)) do
       resolve fn activity, _, _ ->
-        targets = activity.content["deleted_targets"] |> Enum.map(&atomize_keys/1)
-
-        {:ok, targets}
+        {:ok, activity.content["deleted_targets"]}
       end
     end
   end
@@ -123,14 +117,5 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalEditing do
     field :id, non_null(:string)
     field :old_name, non_null(:string)
     field :new_name, non_null(:string)
-  end
-
-  defp atomize_keys(map) do
-    map
-    |> Map.to_list()
-    |> Enum.map(fn {key, value} ->
-      {String.to_atom(key), value}
-    end)
-    |> Map.new()
   end
 end
