@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createPath } from "@/utils/paths";
-// import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useAddCompanyMemberMutation } from "@/gql";
 
 interface FormState {
@@ -27,7 +26,6 @@ export function useForm(): FormState {
   const [result, setResult] = React.useState("");
 
   const managePeoplePath = createPath("company", "admin", "managePeople");
-  // const gotoManagePeople = useNavigateTo(managePeoplePath);
 
   const [add] = useAddCompanyMemberMutation({
     onCompleted: (res) => {
@@ -36,8 +34,6 @@ export function useForm(): FormState {
       const queryString = "?token=" + res['addCompanyMember']['token'];
       
       setResult(url + route + queryString);
-      
-      // gotoManagePeople();
     },
   });
 
