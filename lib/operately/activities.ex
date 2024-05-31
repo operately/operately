@@ -8,11 +8,16 @@ defmodule Operately.Activities do
   alias Operately.Activities.ListActivitiesOperation
 
   def get_activity!(id) do
-    Repo.get!(Activity, id)
+    Repo.get!(Activity, id) |> cast_content()
   end
 
   def list_activities(scope_type, scope_id, actions) do
     ListActivitiesOperation.run(scope_type, scope_id, actions)
+  end
+
+  def load_for_notifications(notifications) do
+    Repo.preload(notifications, [activity: [:author]]) 
+    |> Enum.map(fn n -> %{n | activity: cast_content(n.activity)} end)
   end
 
   def insert(multi, author_id, action, callback) do
@@ -60,13 +65,28 @@ defmodule Operately.Activities do
     end
   end
 
+  def cast_content(activity) do
+    module = find_module("Operately.Activities.Content", activity.action)
+
+    if module do
+      changeset = module.cast_all_fields(activity.content)
+      casted = Ecto.Changeset.apply_changes(changeset)
+
+      %{activity | content: casted}
+    else
+      %{activity | content: nil}
+    end
+  end
+
   def build_content(action, params) do
     module = find_module("Operately.Activities.Content", action)
-    changeset = apply(module, :build, [params])
+    changeset = module.changeset(params)
 
     if changeset.valid? do
+      fields = module.__schema__(:fields)
       content = Ecto.Changeset.apply_changes(changeset)
-      {:ok, content}
+
+      {:ok, Map.take(content, fields)}
     else
       {:error, changeset}
     end

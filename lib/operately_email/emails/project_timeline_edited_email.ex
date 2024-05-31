@@ -34,9 +34,6 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
 
   defp calculate_duration(start_time, end_time) do
     if start_time && end_time do
-      {:ok, start_time, _} = DateTime.from_iso8601(start_time)
-      {:ok, end_time, _} = DateTime.from_iso8601(end_time)
-
       duration_in_days = Date.diff(end_time, start_time)
       duration_in_weeks = div(duration_in_days, 7)
 

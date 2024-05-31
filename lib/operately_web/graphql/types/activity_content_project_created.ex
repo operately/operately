@@ -10,11 +10,9 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentProjectCreated do
 
     field :project, non_null(:project) do
       resolve fn activity, _, _ ->
-        project_id = activity.content["project_id"]
+        content = Operately.Repo.preload(activity.content, :project)
 
-        project = Operately.Projects.get_project!(project_id)
-
-        {:ok, project}
+        {:ok, content.project}
       end
     end
   end
