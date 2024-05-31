@@ -10,14 +10,14 @@ defmodule OperatelyWeb.Graphql.Types.ActivityContentGoalTimeframeEditing do
 
     field :old_timeframe, non_null(:timeframe) do
       resolve fn activity, _, _ ->
-        {:ok, Operately.Goals.Timeframe.parse_json!(activity.content["old_timeframe"])}
+        {:ok, activity.content.old_timeframe}
       end
     end
     
     
     field :new_timeframe, non_null(:timeframe) do
       resolve fn activity, _, _ ->
-        {:ok, Operately.Goals.Timeframe.parse_json!(activity.content["new_timeframe"])}
+        {:ok, activity.content.new_timeframe}
       end
     end
     
