@@ -8,14 +8,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Accounts do
   end
 
   object :account_mutations do
-    field :change_password_first_time, :boolean do
+    field :change_password_first_time, :string do
       arg :input, non_null(:change_password_input)
 
       resolve fn %{input: input}, _ ->
         case valid_password_input(input) do
           :ok ->
             Operately.Operations.PasswordChanging.run(input)
-            {:ok, true}
+            {:ok, "Password successfully changed"}
           {:error, reason} ->
             {:error, reason}
         end
