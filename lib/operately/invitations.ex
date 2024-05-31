@@ -14,13 +14,23 @@ defmodule Operately.Invitations do
 
   def get_invitation_by_token(token) do
     hashed_token = InvitationToken.hash_token(token)
+    now = DateTime.utc_now()
 
     query = from t in InvitationToken,
-        join: i in assoc(t, :invitation),
-        where: t.hashed_token == ^hashed_token,
-        select: i
+      where: t.hashed_token == ^hashed_token,
+      preload: [:invitation],
+      select: t
 
-    Repo.one(query)
+    case Repo.one(query) do
+      nil ->
+        nil
+      token ->
+        if InvitationToken.valid_token_time?(token, now) do
+          token.invitation
+        else
+          nil
+        end
+    end
   end
 
   def create_invitation(attrs \\ %{}) do

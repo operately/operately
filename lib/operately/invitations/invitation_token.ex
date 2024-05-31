@@ -54,4 +54,8 @@ defmodule Operately.Invitations.InvitationToken do
   def hash_token(token) do
     :crypto.hash(:sha256, token) |> Base.url_encode64()
   end
+
+  def valid_token_time?(token, time_limit) do
+    DateTime.compare(time_limit, token.valid_until) == :lt
+  end
 end
