@@ -63,7 +63,7 @@ function ProfileForm({ me }) {
   const [title, setTitle] = useState(me.title);
   const [manager, setManager] = useState(me.manager);
   const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ? me.avatarUrl : "");
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileUploader = new MultipartFileUploader();
 
