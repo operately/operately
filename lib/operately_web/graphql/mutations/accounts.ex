@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Accounts do
       resolve fn %{input: input}, _ ->
         case valid_password_input(input) do
           {:ok, invitation} ->
-            Operately.Operations.PasswordChanging.run(input, invitation)
+            Operately.Operations.PasswordFirstTimeChanging.run(input, invitation)
             {:ok, "Password successfully changed"}
           {:error, reason} ->
             {:error, reason}
