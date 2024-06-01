@@ -25,12 +25,8 @@ defmodule Operately.InvitationsTest do
 
     test "get_invitation_by_token!/1 returns the invitation" do
       invitation = invitation_fixture()
-      token = InvitationToken.build_token()
+      token = invitation_token_fixture_unhashed(invitation.id)
 
-      Invitations.create_invitation_token!(%{
-        invitation_id: invitation.id,
-        token: token,
-      })
       queried_invitation = Invitations.get_invitation_by_token(token)
 
       assert queried_invitation == invitation

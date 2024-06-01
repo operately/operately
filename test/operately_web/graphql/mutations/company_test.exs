@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
   use OperatelyWeb.ConnCase
 
+  import Operately.PeopleFixtures
+
   @add_first_company """
   mutation AddFirstCompany($input: AddFirstCompanyInput!) {
     addFirstCompany(input: $input) {
@@ -80,8 +82,8 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
     end
 
     test "creates first-time-access token for new member", ctx do
-      account = Operately.PeopleFixtures.account_fixture()
-      Operately.PeopleFixtures.person_fixture(%{
+      account = account_fixture()
+      person_fixture(%{
         account_id: account.id,
         company_id: ctx.company.id,
         company_role: :admin,
