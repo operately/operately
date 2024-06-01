@@ -4,6 +4,8 @@ defmodule Operately.Features.CompanyAdminTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.Support.Features.InviteMemberSteps
+
   setup ctx do
     company = company_fixture(%{name: "Dunder Mifflin"})
 
@@ -30,7 +32,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> UI.fill(testid: "person-email", with: "m.scott@dmif.com")
     |> UI.fill(testid: "person-title", with: "Regional Manager")
     |> UI.click(testid: "submit")
-    |> UI.assert_text("People in Dunder Mifflin")
+    |> InviteMemberSteps.assert_member_invited()
 
     person = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
 
