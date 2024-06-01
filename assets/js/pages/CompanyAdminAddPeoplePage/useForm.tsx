@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createPath } from "@/utils/paths";
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useAddCompanyMemberMutation } from "@/gql";
 
 interface FormState {
@@ -13,6 +12,8 @@ interface FormState {
   title: string;
   setTitle: (value: string) => void;
 
+  result: string;
+
   managePeoplePath: string;
   submit: () => void;
   valid: boolean;
@@ -22,12 +23,18 @@ export function useForm(): FormState {
   const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [title, setTitle] = React.useState("");
+  const [result, setResult] = React.useState("");
 
   const managePeoplePath = createPath("company", "admin", "managePeople");
-  const gotoManagePeople = useNavigateTo(managePeoplePath);
 
   const [add] = useAddCompanyMemberMutation({
-    onCompleted: gotoManagePeople,
+    onCompleted: (res) => {
+      const url = `${window.location.protocol}//${window.location.host}`;
+      const route = "/first-time-login";
+      const queryString = "?token=" + res['addCompanyMember']['token'];
+      
+      setResult(url + route + queryString);
+    },
   });
 
   const submit = React.useCallback(async () => {
@@ -55,6 +62,8 @@ export function useForm(): FormState {
 
     title,
     setTitle,
+
+    result,
 
     managePeoplePath,
     submit,
