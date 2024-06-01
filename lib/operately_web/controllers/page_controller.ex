@@ -3,6 +3,7 @@ defmodule OperatelyWeb.PageController do
 
   @public_pages [
     "/accounts/log_in",
+    "/first-time-login",
   ]
 
   def index(conn, _params) do
