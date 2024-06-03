@@ -1,9 +1,6 @@
 defmodule Operately.Invitations.InvitationToken do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "invitation_tokens" do
     belongs_to :invitation, Operately.Invitations.Invitation
 
