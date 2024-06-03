@@ -2,10 +2,13 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { useLoadedData } from "./loader";
 import { GhostButton } from "@/components/Button";
+import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { TextInputNoLabel } from "@/components/Form";
+
+import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
+
 
 export function Page() {
   const { company } = useLoadedData();
@@ -72,12 +75,7 @@ function PersonForm() {
         </div>
       </div>
 
-      {form.result &&
-        <div className="flex flex-col pt-2 pb-2">
-          Share this url with the new member:
-          <u className="text-sm">{form.result}</u>
-        </div>
-      }
+      <ResultUrl url={form.result} />
 
       <div className="flex items-center justify-end gap-2 mt-8">
         <GhostButton linkTo={form.managePeoplePath} type="secondary">
@@ -90,6 +88,25 @@ function PersonForm() {
           </GhostButton>
         )}
       </div>
+    </div>
+  );
+}
+
+function ResultUrl({url}) {
+  if(!url) return <></>;
+
+  return (
+    <div className="flex justify-between gap-3 m-2 px-2 bg-stroke-base rounded text-sm">
+      <div className="flex flex-col pt-2 pb-2">
+        Share this url with the new member:
+        <u className="text-sm break-all">{url}</u>
+      </div>
+      <CopyToClipboard
+        text={url}
+        size={25}
+        padding={1}
+        containerClass="mt-1"
+      />
     </div>
   );
 }
