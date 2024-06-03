@@ -1,8 +1,6 @@
 mutation AddCompanyMember($input: AddCompanyMemberInput!) {
   addCompanyMember(input: $input) {
     id
-    fullName
-    email
-    title
+    token
   }
 }
