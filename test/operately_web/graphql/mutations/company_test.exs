@@ -36,6 +36,10 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1
       assert account != nil
       assert group != nil
+
+      account = Operately.Repo.preload(account, :person)
+
+      assert account.person.company_role == :admin
     end
 
     test "allows company and admin account creation only once", ctx do

@@ -45,7 +45,13 @@ defmodule Operately.Features.FirstTimeSetupTest do
     |> UI.click(testid: "submit-form")
     |> UI.assert_page("/accounts/log_in")
 
+    account = Operately.People.get_account_by_email_and_password(@company_info[:email], @company_info[:password])
+
     assert Operately.Companies.count_companies() == 1
-    assert Operately.People.get_account_by_email(@company_info[:email]) != nil
+    assert account != nil
+
+    account = Operately.Repo.preload(account, :person)
+
+    assert account.person.company_role == :admin
   end
 end
