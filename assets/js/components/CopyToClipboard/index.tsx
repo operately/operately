@@ -6,11 +6,12 @@ interface CopyToClipboardProps {
   text: string;
   size: number;
   padding?: number;
+  containerClass?: string;
   iconProps?: TablerIconsProps;
 }
 
 
-export function CopyToClipboard({ text, size, padding=2, iconProps }: CopyToClipboardProps) {
+export function CopyToClipboard({ text, size, padding=2, containerClass, iconProps }: CopyToClipboardProps) {
   const [copied, setCopied] = useState(false);
   
   const handleClick = () => {
@@ -28,7 +29,7 @@ export function CopyToClipboard({ text, size, padding=2, iconProps }: CopyToClip
   return (
     <div
       onClick={handleClick}
-      className={`relative cursor-pointer hover:bg-stroke-base transition-colors duration-300 ease-in-out rounded ${containerPadding}`}
+      className={`relative cursor-pointer hover:bg-stroke-base transition-colors duration-300 ease-in-out rounded ${containerPadding} ${containerClass}`}
       style={{
         width: containerSize,
         height: containerSize,
