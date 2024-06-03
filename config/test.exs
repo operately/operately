@@ -61,4 +61,18 @@ config :junit_formatter,
 config :operately, notification_email: "test@localhost"
 config :operately, :sandbox, Ecto.Adapters.SQL.Sandbox
 
+config :ex_aws,
+  s3: [
+    scheme: "http://",
+    host: "localhost",
+    port: 9090,
+    access_key_id: "test",
+    secret_access_key: "test"
+  ]
+
+config :ex_aws, :hackney_opts,
+  follow_redirect: true,
+  recv_timeout: 30_000,
+  connect_timeout: 30_000
+
 config :wallaby, otp_app: :operately

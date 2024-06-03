@@ -67,15 +67,24 @@ config :operately, :restrict_entry, true
 config :operately, Oban,
   repo: Operately.Repo,
   plugins: [
-    {Oban.Plugins.Pruner, max_age: 300},    
+    {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
        {"0 8 * * *", OperatelyEmail.Assignments.Cron}
      ]}
   ],
   queues: [
-    default: 10, 
+    default: 10,
     mailer: 10
+  ]
+
+config :ex_aws,
+  s3: [
+    scheme: "http://",
+    host: "localhost",
+    port: 9090,
+    access_key_id: "test",
+    secret_access_key: "test"
   ]
 
 config :operately, OperatelyEmail.Mailer,
