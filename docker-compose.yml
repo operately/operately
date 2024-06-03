@@ -59,7 +59,7 @@ services:
     container_name: pgweb
     restart: always
     image: sosedoff/pgweb
-    command: ["pgweb", "--bind=0.0.0.0"]
+    command: [ "pgweb", "--bind=0.0.0.0" ]
     ports:
       - "127.0.0.1:8081:8081"
     links:
@@ -70,6 +70,17 @@ services:
       - db
     profiles:
       - dev
+
+  s3mock:
+    image: adobe/s3mock:latest
+    environment:
+      - debug=true
+      - retainFilesOnExit=true
+      - root=containers3root
+    ports:
+      - 9090:9090
+    volumes:
+      - ./locals3root:/containers3root
 
 volumes:
   postgres-data:
