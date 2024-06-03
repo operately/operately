@@ -39,7 +39,8 @@ defmodule Operately.Operations.CompanyAdding do
           full_name: full_name,
           email: changes[:account].email,
           avatar_url: "",
-          title: role
+          title: role,
+          company_role: :admin,
         })
       end)
     end
