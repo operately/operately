@@ -61,4 +61,13 @@ config :junit_formatter,
 config :operately, notification_email: "test@localhost"
 config :operately, :sandbox, Ecto.Adapters.SQL.Sandbox
 
+config :ex_aws,
+  s3: [
+    scheme: "http://",
+    host: "localhost",
+    port: 9090,
+    access_key_id: "admin",
+    secret_access_key: "admin"
+  ]
+
 config :wallaby, otp_app: :operately
