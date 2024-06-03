@@ -117,6 +117,7 @@ const routes = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       pageRoute("/first-time-setup", pages.FirstTimeSetupPage),
+      pageRoute("/first-time-login", pages.FirstTimeLoginPage),
     ],
   },
 ]);
