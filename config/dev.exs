@@ -64,6 +64,16 @@ config :operately, OperatelyWeb.Endpoint,
     ]
   ]
 
+config :ex_aws,
+  s3: [
+    scheme: "http://",
+    host: "localhost",
+    port: 9090,
+    access_key_id: "admin",
+    secret_access_key: "admin"
+  ]
+
+
 # Enable dev routes for dashboard and mailbox
 config :operately, dev_routes: true
 
