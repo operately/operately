@@ -9,7 +9,7 @@ In Operately, there are five types of users:
 - **Public Visitor**: Anyone on the internet with access to public resources.
 
 To organize access to information to these Operately uses the combination of 
-visibility and access levels on resources.
+privacy and access levels on resources.
 
 Access Levels:
 
@@ -19,17 +19,21 @@ Access Levels:
 - **View Access**: The user can only view the resource and cannot edit, delete, or share it with others, or comment on it.
 - **No Access**: The user has no access to the resource.
 
-Visibility:
+Privacy:
 
 - **Public**: The resource is visible to everyone on the internet.
 - **Internal**: The resource is visible to members, admins, and owners of the organization.
-- **Space-wide**: The resource is visible to everyone in the space.
-- **Invite-Only**: You need to be explicitly invited to access the resource.
+- **Confidential**: The resource is visible to everyone in the space.
+- **Secret**: You need to be explicitly invited to access the resource.
 
 The rest of this document describes how these access levels and visibility settings are applied to 
 different resources in Operately.
 
-## Organization Settings
+- [Architecture](security/architecture.md)
+
+## Security Policies
+
+### Organization Settings
 
 Access to organization settings is controlled by the user's role in the organization:
 
@@ -38,7 +42,7 @@ Access to organization settings is controlled by the user's role in the organiza
 
 Other users, including members, outside collaborators, and public visitors, have `No-Access` to organization settings.
 
-## Spaces
+### Spaces
 
 Owners, admins, and members can create spaces in the organization. Once a space is created, 
 the owner can set the visibility of the space to `Public`, `Internal`, or `Invite-Only` and
@@ -53,7 +57,7 @@ Access levels for space members are granting:
 
 Joining the space without an invitation is possible for spaces with `Public` or `Internal` visibility.
 
-## Project Roles
+### Project Roles
 
 Access levels for project members are granting:
 
@@ -70,7 +74,7 @@ Depending on the role of the collaborator:
 
 Joining the project without an invitation is possible for `Public`, `Internal`, and `Space-Wide` projects.
 
-## Goal Roles
+### Goal Roles
 
 Access levels for goal members are granting:
 
