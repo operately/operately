@@ -54,6 +54,21 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
       end
     end
 
+    field :remove_company_member, :person do
+      arg :person_id, non_null(:id)
+
+      resolve fn _, args, %{context: context} ->
+        person = context.current_account.person
+        allowed = person.company_role == :admin
+
+        if allowed do
+          Operately.Operations.CompanyMemberRemoving.run(args.person_id)
+        else
+          {:error, "Only admins can remove members"}
+        end
+      end
+    end
+
     field :add_company_trusted_email_domain, non_null(:company) do
       arg :company_id, non_null(:id)
       arg :domain, non_null(:string)
