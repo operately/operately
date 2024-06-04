@@ -4,10 +4,10 @@ defmodule OperatelyWeb.Certification do
   """ 
 
   def directory_url do
-    case mode() do
-      :manual -> ""
-      :local -> {:internal, port: 4002}
-      :production -> "https://acme-v02.api.letsencrypt.org/directory"
+    if Application.get_env(:operately, :app_env) == :prod do
+      "https://acme-v02.api.letsencrypt.org/directory"
+    else
+      {:internal, port: 4003}
     end
   end
 
@@ -17,11 +17,7 @@ defmodule OperatelyWeb.Certification do
 
   def mode do 
     if System.get_env("CERT_AUTO_RENEW") == "yes" do
-      if Application.get_env(:operately, :app_env) == :prod do
-        :production
-      else
-        :local
-      end
+      :auto
     else
       :manual
     end
