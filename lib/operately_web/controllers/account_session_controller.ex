@@ -4,7 +4,9 @@ defmodule OperatelyWeb.AccountSessionController do
   alias OperatelyWeb.AccountAuth
 
   def new(conn, _params) do
-    render(conn, :new, error_message: nil, layout: false)
+    allow_google_login = Application.get_env(:operately, :allow_login_with_google)
+
+    render(conn, :new, error_message: nil, layout: false, allow_google_login: allow_google_login)
   end
 
   if Application.compile_env(:operately, :dev_routes) do

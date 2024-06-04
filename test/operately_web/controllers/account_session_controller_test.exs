@@ -11,6 +11,8 @@ defmodule OperatelyWeb.AccountSessionControllerTest do
 
   describe "GET /accounts/log_in" do
     test "renders log in page", %{conn: conn} do
+      Application.put_env(:operately, :allow_login_with_google, "yes")
+
       conn = get(conn, ~p"/accounts/log_in")
       response = html_response(conn, 200)
       assert response =~ "Sign in with Google"
