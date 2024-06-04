@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Certification do
 
   def directory_url do
     case mode() do
-      :manual -> nil
+      :manual -> ""
       :local -> {:internal, port: 4002}
       :production -> "https://acme-v02.api.letsencrypt.org/directory"
     end
