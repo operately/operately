@@ -17,6 +17,7 @@ services:
       - "127.0.0.1:4000:4000"
     depends_on:
       - db
+      - s3mock
     environment:
       - DB_HOST=db
       - DB_USERNAME=postgres
@@ -78,7 +79,7 @@ services:
       - retainFilesOnExit=true
       - root=containers3root
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./locals3root:/containers3root
 
