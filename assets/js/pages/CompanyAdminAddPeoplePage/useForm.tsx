@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useAddCompanyMemberMutation } from "@/gql";
-import { camelCaseToSpacedWords } from "@/utils/strings";
+import { camelCaseToSpacedWords, snakeCaseToSpacedWords } from "@/utils/strings";
 
 
 interface FormState {
@@ -71,15 +71,29 @@ function useSubmit(fields: FormFields) {
       return false;
     }
 
-    await add({
-      variables: {
-        input: {
-          fullName: fields.fullName,
-          email: fields.email,
-          title: fields.title,
+    try {
+      await add({
+        variables: {
+          input: {
+            fullName: fields.fullName,
+            email: fields.email,
+            title: fields.title,
+          },
         },
-      },
-    });
+      });
+    }
+    catch (e) {
+      const errors = e.graphQLErrors.map((error) => {
+        const name = snakeCaseToSpacedWords(error.field, { capitalizeFirst: true });
+
+        return {
+          field: error.field,
+          message: name + " " + error.message,
+        }
+      });
+
+      setErrors(errors);
+    }
 
     return true;
   }

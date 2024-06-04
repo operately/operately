@@ -3,13 +3,20 @@ defmodule Operately.Operations.CompanyMemberAdding do
   alias Operately.Repo
 
   def run(admin, attrs) do
-    Multi.new()
+    result = Multi.new()
     |> insert_account(attrs)
     |> insert_person(admin, attrs)
     |> insert_invitation(admin)
     |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:invitation)
+
+    case result do
+      {:ok, result} ->
+        {:ok, result}
+      {:error, _, changeset, _} ->
+        {:error, format_errors(changeset)}
+    end
   end
 
   defp insert_account(multi, attrs) do
@@ -53,6 +60,16 @@ defmodule Operately.Operations.CompanyMemberAdding do
         name: changes[:person].full_name,
         email: changes[:person].email,
         title: changes[:person].title,
+      }
+    end)
+  end
+
+  defp format_errors(changeset) do
+    changeset.errors
+    |> Enum.map(fn {field, {message, _opts}} ->
+      %{
+        field: field,
+        message: message,
       }
     end)
   end
