@@ -110,7 +110,9 @@ function validate(fields: FormFields): FormError[] {
   let result: FormError[] = [];
 
   for (let key in fields) {
-    if(!fields[key]) {
+    const field = fields[key];
+
+    if(typeof field === "string" && !field.trim()) {
       const fieldName = camelCaseToSpacedWords(key, { capitalizeFirst: true });
       result.push({ field: key, message: `${fieldName} is required` });
     }
