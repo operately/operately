@@ -7,6 +7,16 @@ export function camelCaseToSnakeCase(str: string): string {
     .toLowerCase();
 }
 
+export function snakeCaseToSpacedWords(str: string, options?: { capitalizeFirst?: boolean }): string {
+  let name = str.replace("_", " ");
+
+  if (options?.capitalizeFirst) {
+    name =  name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  return name;
+}
+
 export function camelCaseToSpacedWords(input: string, options?: { capitalizeFirst?: boolean }) {
   let result = input.replace(/([A-Z])/g, ' $1').toLowerCase();
 
