@@ -2,6 +2,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
   use OperatelyWeb.ConnCase
 
   import Operately.PeopleFixtures
+  import Operately.CompaniesFixtures
 
   @add_first_company """
   mutation AddFirstCompany($input: AddFirstCompanyInput!) {
@@ -98,6 +99,63 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       res = json_response(conn, 200)
 
       assert Map.has_key?(res["data"]["addCompanyMember"], "token")
+    end
+  end
+
+  describe "mutation: AddCompanyMember errors" do
+    setup ctx do
+      company = company_fixture()
+      account = account_fixture()
+      person_fixture(%{
+        account_id: account.id,
+        company_id: company.id,
+        company_role: :admin,
+      })
+
+      %{ conn: log_in_account(ctx.conn, account) }
+    end
+
+    test "email already taken", ctx do
+      conn = graphql(ctx.conn, @add_company_member, "AddCompanyMember", @add_company_member_input)
+      json_response(conn, 200)
+
+      conn = graphql(ctx.conn, @add_company_member, "AddCompanyMember", @add_company_member_input)
+      res = json_response(conn, 200)
+
+      assert res["errors"] |> List.first() |> Map.get("field") == "email"
+      assert res["errors"] |> List.first() |> Map.get("message") == "has already been taken"
+    end
+
+    test "email can't be blank", ctx do
+      input = %{
+        :input => %{
+          :fullName => "John Doe",
+          :email => "",
+          :title => "Developer",
+        }
+      }
+
+      conn = graphql(ctx.conn, @add_company_member, "AddCompanyMember", input)
+      res = json_response(conn, 200)
+
+      assert res["errors"] |> List.first() |> Map.get("field") == "email"
+      assert res["errors"] |> List.first() |> Map.get("message") == "can't be blank"
+    end
+
+    test "full_name can't be blank", ctx do
+      input = %{
+        :input => %{
+          :fullName => "",
+          :email => "john@your-company.com",
+          :title => "Developer",
+        }
+      }
+
+      conn = graphql(ctx.conn, @add_company_member, "AddCompanyMember", input)
+      res = json_response(conn, 200)
+
+      assert res["errors"] |> List.first() |> Map.get("field") == "full_name"
+      assert res["errors"] |> List.first() |> Map.get("message") == "can't be blank"
     end
   end
 

@@ -51,4 +51,24 @@ defmodule Operately.Features.InviteMemberTest do
     |> UI.assert_page("/")
     |> Steps.assert_password_changed(@new_member)
   end
+
+  feature "new member invitation errors", ctx do
+    person_fixture_with_account(%{company_id: ctx.company.id, full_name: @new_member[:fullName], email: @new_member[:email]})
+
+    name_missing = Map.put(@new_member, :fullName, " ")
+    email_missing = Map.put(@new_member, :email, " ")
+    title_missing = Map.put(@new_member, :title, " ")
+
+    ctx
+    |> Steps.navigate_to_invitation_page
+    |> Steps.invite_member(name_missing)
+    |> UI.assert_text("Full name is required")
+    |> Steps.invite_member(email_missing)
+    |> UI.assert_text("Email is required")
+    |> UI.assert_text("Email must have the @ sign and no spaces")
+    |> Steps.invite_member(title_missing)
+    |> UI.assert_text("Title is required")
+    |> Steps.invite_member(@new_member)
+    |> UI.assert_text("Email has already been taken")
+  end
 end
