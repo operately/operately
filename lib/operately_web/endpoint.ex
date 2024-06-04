@@ -83,6 +83,7 @@ defmodule OperatelyWeb.Endpoint do
     Cert.verify_config_presence()
 
     SiteEncrypt.configure(
+      mode: Cert.mode(),
       client: :native,
       domains: [Cert.domain()],
       emails: Cert.emails(),

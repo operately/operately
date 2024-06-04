@@ -5,16 +5,27 @@ defmodule OperatelyWeb.Certification do
 
   def directory_url do
     case mode() do
-      "local" -> {:internal, port: 4002}
-      "staging" -> "https://acme-staging-v02.api.letsencrypt.org/directory"
-      "production" -> "https://acme-v02.api.letsencrypt.org/directory"
+      :manual -> nil
+      :local -> {:internal, port: 4002}
+      :production -> "https://acme-v02.api.letsencrypt.org/directory"
     end
   end
 
   def domain, do: System.get_env("CERT_DOMAIN")
   def emails, do: System.get_env("CERT_EMAILS", "") |> String.split(",")
   def folder, do: System.get_env("CERT_DB_DIR")
-  def mode, do: System.get_env("CERT_MODE", "local")
+
+  def mode do 
+    if System.get_env("CERT_AUTO_RENEW") == "yes" do
+      if Application.get_env(:operately, :app_env) == :prod do
+        :production
+      else
+        :local
+      end
+    else
+      :manual
+    end
+  end
 
   def verify_config_presence do
     unless domain() do
