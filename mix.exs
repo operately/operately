@@ -70,7 +70,8 @@ defmodule Operately.MixProject do
       {:junit_formatter, "~> 3.1", only: [:test]},
       {:ex_aws, "~> 2.1"},
       {:ex_aws_s3, "~> 2.0"},
-      {:hackney, "~> 1.15"}
+      {:hackney, "~> 1.15"},
+      {:sweet_xml, "~> 0.7"}
     ]
   end
 
