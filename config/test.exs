@@ -62,12 +62,14 @@ config :operately, notification_email: "test@localhost"
 config :operately, :sandbox, Ecto.Adapters.SQL.Sandbox
 
 config :ex_aws,
+  access_key_id: "test",
+  secret_access_key: "test",
   s3: [
     scheme: "http://",
-    host: "localhost",
+    host: "s3mock",
     port: 9090,
-    access_key_id: "admin",
-    secret_access_key: "admin"
+    region: "local",
+    debug_requests: true
   ]
 
 config :wallaby, otp_app: :operately
