@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
         allowed = person.company_role == :admin
 
         if allowed do
-          Operately.Operations.CompanyMemberRemoving.run(args.person_id)
+          Operately.Operations.CompanyMemberRemoving.run(person, args.person_id)
         else
           {:error, "Only admins can remove members"}
         end
