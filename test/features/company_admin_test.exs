@@ -113,6 +113,7 @@ defmodule Operately.Features.CompanyAdminTest do
 
     assert person != nil
     assert person.suspended
+    assert person.suspended_at != nil
   end
 
   #

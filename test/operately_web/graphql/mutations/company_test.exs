@@ -174,9 +174,9 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
     company = company_fixture()
 
     admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
-    member = person_fixture_with_account(%{company_id: company.id})
+    member = person_fixture_with_account(%{company_id: company.id, full_name: "Unique Name"})
 
-    %{ admin: admin, member: member }
+    %{ admin: admin, member: member, company: company }
     end
 
     test "admin can remove members", ctx do
@@ -186,7 +186,13 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       conn = graphql(conn, @remove_company_member, "RemoveCompanyMember", %{ :personId => ctx.member.id })
       res = json_response(conn, 200)
 
+      person = Operately.People.get_person_by_name!(ctx.company, ctx.member.full_name)
+
       assert Map.has_key?(res["data"]["removeCompanyMember"], "id")
+
+      assert person != nil
+      assert person.suspended
+      assert person.suspended_at != nil
     end
 
     test "member can't remove members", ctx do

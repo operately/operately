@@ -13,7 +13,7 @@ defmodule Operately.Operations.CompanyMemberRemoving do
 
   defp suspend_person(multi, person_id) do
     changeset = People.get_person!(person_id)
-    |> People.Person.changeset(%{suspended: true})
+    |> People.Person.changeset(%{suspended: true, suspended_at: DateTime.utc_now()})
 
     Multi.update(multi, :person, changeset)
   end
