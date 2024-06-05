@@ -4,6 +4,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
 
+
   @add_first_company """
   mutation AddFirstCompany($input: AddFirstCompanyInput!) {
     addFirstCompany(input: $input) {
@@ -158,6 +159,53 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       assert res["errors"] |> List.first() |> Map.get("message") == "can't be blank"
     end
   end
+
+
+  @remove_company_member """
+  mutation RemoveCompanyMember($personId: ID!) {
+    removeCompanyMember(personId: $personId) {
+      id
+    }
+  }
+  """
+
+  describe "mutation: RemoveCompanyMember" do
+    setup do
+    company = company_fixture()
+
+    admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
+    member = person_fixture_with_account(%{company_id: company.id, full_name: "Unique Name"})
+
+    %{ admin: admin, member: member, company: company }
+    end
+
+    test "admin can remove members", ctx do
+      admin = Operately.Repo.preload(ctx.admin, [:account])
+      conn = log_in_account(ctx.conn, admin.account)
+
+      conn = graphql(conn, @remove_company_member, "RemoveCompanyMember", %{ :personId => ctx.member.id })
+      res = json_response(conn, 200)
+
+      person = Operately.People.get_person_by_name!(ctx.company, ctx.member.full_name)
+
+      assert Map.has_key?(res["data"]["removeCompanyMember"], "id")
+
+      assert person != nil
+      assert person.suspended
+      assert person.suspended_at != nil
+    end
+
+    test "member can't remove members", ctx do
+      member = Operately.Repo.preload(ctx.member, [:account])
+      conn = log_in_account(ctx.conn, member.account)
+
+      conn = graphql(conn, @remove_company_member, "RemoveCompanyMember", %{ :personId => ctx.member.id })
+      res = json_response(conn, 200)
+
+      assert res["errors"] |> List.first() |> Map.get("message") == "Only admins can remove members"
+    end
+  end
+
 
   defp graphql(conn, query, operation_name, variables) do
     payload = %{
