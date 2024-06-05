@@ -1,9 +1,12 @@
 import * as React from "react";
-import Avatar from "@/components/Avatar";
-import { Person } from "@/gql";
+import { useNavigate } from "react-router-dom";
+
 import { useLoadedData } from "./loader";
-import { GhostButton } from "@/components/Button";
 import { useRemoveMemberMutation } from "@/models/companies";
+import { Person } from "@/gql";
+import { GhostButton } from "@/components/Button";
+import Avatar from "@/components/Avatar";
+
 
 export function PeopleList() {
   const { company } = useLoadedData();
@@ -18,7 +21,12 @@ export function PeopleList() {
 }
 
 function PersonRow({ person }: { person: Person }) {
-  const [remove, { loading }] = useRemoveMemberMutation();
+  const navigate = useNavigate();
+  const [remove, { loading }] = useRemoveMemberMutation({
+    onCompleted: () => {
+      navigate(0);
+    }
+  });
 
   const handleRemoveMember = async () => {
     await remove({
