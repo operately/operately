@@ -5,6 +5,7 @@ export { useAddTrustedEmailDomainMutation } from "./useAddTrustedEmailMutation";
 export { useRemoveTrustedEmailDomainMutation } from "./useRemoveTrustedEmailMutation";
 export { useRemoveAdminMutation } from "./useRemoveAdminMutation";
 export { useAddAdminsMutation } from "./useAddAdminsMutation";
+export { useRemoveMemberMutation } from "./useRemoveMemberMutation";
 export { useAddFirstCompanyMutation } from "./useAddFirstCompanyMutation";
 
 import { Company } from "@/gql/generated";
