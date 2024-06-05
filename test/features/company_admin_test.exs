@@ -101,6 +101,20 @@ defmodule Operately.Features.CompanyAdminTest do
     assert company.trusted_email_domains == []
   end
 
+  feature "remove members from the company", ctx do
+    ctx
+    |> UI.click(testid: "add-remove-people-manually")
+    |> UI.assert_text("Dwight Schrute")
+    |> UI.click(testid: "remove-dwight-schrute")
+    |> UI.click(testid: "remove-member")
+    |> UI.refute_text("Dwight Schrute")
+
+    person = Operately.People.get_person_by_name!(ctx.company, "Dwight Schrute")
+
+    assert person != nil
+    assert person.suspended
+  end
+
   #
   # ======== Helper functions ========
   #

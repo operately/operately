@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useLoadedData } from "./loader";
 import { useRemoveMemberMutation } from "@/models/companies";
+import { createTestId } from "@/utils/testid";
 import { Person } from "@/gql";
 import { FilledButton, GhostButton } from "@/components/Button";
 import Modal from "@/components/Modal";
@@ -25,6 +26,7 @@ export function PeopleList() {
 
 function PersonRow({ person }: { person: Person }) {
   const [showRemoveMember, setShowRemoveMember] = useState(false);
+  const removeTestId = createTestId("remove", person.fullName);
   
   return (
     <>
@@ -42,7 +44,7 @@ function PersonRow({ person }: { person: Person }) {
             onClick={() => setShowRemoveMember(true)}
             size="xxs"
             type="secondary"
-            testId="remove-member"
+            testId={removeTestId}
           >
             Remove
           </GhostButton>
@@ -86,6 +88,7 @@ function RemoveMemberModal({isOpen, hideModal, person}: {isOpen: boolean, hideMo
           onClick={handleRemoveMember}
           type="primary"
           loading={loading}
+          testId="remove-member"
         >
           Remove Member
         </FilledButton>
