@@ -108,7 +108,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
     end
 
     # Retrieving :invitation automatically creates a new token
-    # so there is not need to create on manually
+    # so there is not need to create one manually
     field :new_invitation_token, non_null(:invitation) do
       arg :person_id, non_null(:id)
 
