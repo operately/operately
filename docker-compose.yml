@@ -13,6 +13,7 @@ services:
       - ./:/home/dev/app
       - ./media:/media
       - ./screenshots:/tmp/screenshots
+      - ./tmp/certs:/home/dev/certs
     ports:
       - "127.0.0.1:4000:4000"
     depends_on:
@@ -25,6 +26,8 @@ services:
       - NOTIFICATION_EMAIL=notifications@locahost.dev
       - OPERATELY_JS_SENTRY_ENABLED=false
       - OPERATELY_JS_SENTRY_DSN=not-set
+      - CERT_DOMAIN=localhost
+      - CERT_DB_DIR=/home/dev/certs
     env_file:
       - .env
     profiles:

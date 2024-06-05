@@ -62,6 +62,7 @@ defmodule Operately.MixProject do
 
       {:oban, "~> 2.14"},
       {:bamboo, "~> 2.3.0"},
+      {:site_encrypt, "~> 0.6.0"},
 
       # testing
       {:cabbage, "~> 0.3.6", only: :test},

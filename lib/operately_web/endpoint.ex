@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :operately
+  use SiteEncrypt.Phoenix.Endpoint, otp_app: :operately
   use Absinthe.Phoenix.Endpoint
 
   # Allow running wallaby tests in parallel
@@ -75,4 +75,20 @@ defmodule OperatelyWeb.Endpoint do
   end
 
   plug OperatelyWeb.Router
+
+  alias OperatelyWeb.Certification, as: Cert
+
+  @impl SiteEncrypt
+  def certification do
+    Cert.verify_config_presence()
+
+    SiteEncrypt.configure(
+      mode: Cert.mode(),
+      client: :native,
+      domains: [Cert.domain()],
+      emails: Cert.emails(),
+      db_folder: Cert.folder(),
+      directory_url: Cert.directory_url()
+    )
+  end
 end

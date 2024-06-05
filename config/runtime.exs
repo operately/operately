@@ -73,6 +73,9 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
+    https: [
+      port: 4001,
+    ],
     secret_key_base: secret_key_base
 
   config :operately, notification_email: System.get_env("NOTIFICATION_EMAIL")

@@ -5,6 +5,7 @@ SHELL := /bin/bash
 REPORTS_DIR ?= $(PWD)/testreports
 MEDIA_DIR ?= $(PWD)/media
 SCREENSHOTS_DIR ?= $(PWD)/screenshots
+CERTS_DIR ?= $(PWD)/tmp/certs
 
 build:
 	@touch .env
@@ -121,6 +122,7 @@ test.init:
 	@mkdir -p $(SCREENSHOTS_DIR)
 	@mkdir -p $(REPORTS_DIR)
 	@mkdir -p $(MEDIA_DIR)
+	@mkdir -p $(CERTS_DIR)
 
 test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
