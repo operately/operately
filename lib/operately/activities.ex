@@ -15,11 +15,6 @@ defmodule Operately.Activities do
     ListActivitiesOperation.run(scope_type, scope_id, actions)
   end
 
-  def load_for_notifications(notifications) do
-    Repo.preload(notifications, [activity: [:author]]) 
-    |> Enum.map(fn n -> %{n | activity: cast_content(n.activity)} end)
-  end
-
   def insert(multi, author_id, action, callback) do
     IO.puts """
     [DEPRECATION] Operately.Activities.insert/4 is deprecated. Use Operately.Activities.insert_sync/4 instead.

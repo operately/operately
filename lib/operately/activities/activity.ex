@@ -1,9 +1,12 @@
 defmodule Operately.Activities.Activity do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  @deprecated_actions [
+    "project_status_update_acknowledged",
+    "project_status_update_commented",
+    "project_status_update_edit",
+  ]
+
   schema "activities" do
     belongs_to :author, Operately.People.Person
     belongs_to :comment_thread, Operately.Comments.CommentThread
@@ -24,4 +27,6 @@ defmodule Operately.Activities.Activity do
   def changeset(activity, attrs) do
     activity |> cast(attrs, [:author_id, :action, :content, :comment_thread_id])
   end
+
+  def deprecated_actions, do: @deprecated_actions
 end
