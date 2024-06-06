@@ -13,16 +13,28 @@ defmodule OperatelyWeb.Graphql.Queries.Notifications do
       arg :per_page, :integer
 
       resolve fn args, %{context: context} ->
-        notifications = Operately.Notifications.list_notifications(
-          context.current_account.person,
-          page: args.page, 
-          per_page: args.per_page
-        )
-
-        notifications = Operately.Activities.load_for_notifications(notifications)
-
-        {:ok, notifications}
+        {:ok, list_notifications(context.current_account.person, args.page, args.per_page)}
       end
     end
+  end
+
+  def list_notifications(person, page, per_page) do
+    alias Operately.Notifications.Notification
+    alias Operately.Activities.Activity
+    import Ecto.Query, only: [from: 2]
+
+    offset = per_page * (page - 1)
+    limit = per_page
+
+    query = from n in Notification,
+      join: a in assoc(n, :activity),
+      where: a.action not in ^Activity.deprecated_actions(),
+      where: n.person_id == ^person.id,
+      order_by: [desc: n.inserted_at],
+      offset: ^offset,
+      limit: ^limit,
+      preload: [activity: [:author]]
+
+    Operately.Repo.all(query)
   end
 end
