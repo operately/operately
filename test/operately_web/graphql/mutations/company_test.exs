@@ -245,7 +245,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       conn = graphql(conn, @new_invitation_token, "NewInvitationToken", %{ :personId => ctx.member.id })
       res = json_response(conn, 200)
 
-      assert res["errors"] |> List.first() |> Map.get("message") == "Only admins can issue invitation tokens"
+      assert res["errors"] |> List.first() |> Map.get("message") == "Only admins can issue invitation tokens."
     end
 
     test "no invitation associated with member", ctx do
@@ -255,7 +255,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       conn = graphql(conn, @new_invitation_token, "NewInvitationToken", %{ :personId => ctx.admin.id })
       res = json_response(conn, 200)
 
-      assert res["errors"] |> List.first() |> Map.get("message") == "There is no invitation associated with this member"
+      assert res["errors"] |> List.first() |> Map.get("message") == "This member didn't join the company using an invitation token."
     end
   end
 

@@ -119,14 +119,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
         if allowed do
           case Operately.Invitations.get_invitation_by_member(args.person_id) do
             nil ->
-              {:error, "There is no invitation associated with this member"}
+              {:error, "This member didn't join the company using an invitation token."}
 
             invitation ->
               Operately.Operations.CompanyInvitationTokenCreation.run(admin, invitation)
               {:ok, invitation}
           end
         else
-          {:error, "Only admins can issue invitation tokens"}
+          {:error, "Only admins can issue invitation tokens."}
         end
       end
     end
