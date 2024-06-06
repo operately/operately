@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
   use OperatelyWeb.ConnCase
 
+  import Operately.Repo, only: [preload: 2, aggregate: 3]
+  import Operately.InvitationsFixtures
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
 
@@ -35,11 +37,11 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
       account = Operately.People.get_account_by_email_and_password("john@your-company.com", "Aa12345#&!123")
       group = Operately.Groups.get_group(company.company_space_id)
 
-      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1
+      assert aggregate(Operately.People.Person, :count, :id) == 1
       assert account != nil
       assert group != nil
 
-      account = Operately.Repo.preload(account, :person)
+      account = preload(account, :person)
 
       assert account.person.company_role == :admin
     end
@@ -180,7 +182,7 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
     end
 
     test "admin can remove members", ctx do
-      admin = Operately.Repo.preload(ctx.admin, [:account])
+      admin = preload(ctx.admin, [:account])
       conn = log_in_account(ctx.conn, admin.account)
 
       conn = graphql(conn, @remove_company_member, "RemoveCompanyMember", %{ :personId => ctx.member.id })
@@ -196,13 +198,64 @@ defmodule OperatelyWeb.GraphQL.Mutations.CompanyTest do
     end
 
     test "member can't remove members", ctx do
-      member = Operately.Repo.preload(ctx.member, [:account])
+      member = preload(ctx.member, [:account])
       conn = log_in_account(ctx.conn, member.account)
 
       conn = graphql(conn, @remove_company_member, "RemoveCompanyMember", %{ :personId => ctx.member.id })
       res = json_response(conn, 200)
 
       assert res["errors"] |> List.first() |> Map.get("message") == "Only admins can remove members"
+    end
+  end
+
+
+  @new_invitation_token """
+  mutation NewInvitationToken($personId: ID!) {
+    newInvitationToken(personId: $personId) {
+      token
+    }
+  }
+  """
+
+  describe "mutation: NewInvitationToken" do
+    setup do
+      company = company_fixture()
+
+      admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
+      member = person_fixture_with_account(%{company_id: company.id, full_name: "Unique Name"})
+      invitation_fixture(%{member_id: member.id, admin_id: admin.id})
+
+      %{ admin: admin, member: member }
+    end
+
+    test "admin can issue new invitation token", ctx do
+      admin = preload(ctx.admin, [:account])
+      conn = log_in_account(ctx.conn, admin.account)
+
+      conn = graphql(conn, @new_invitation_token, "NewInvitationToken", %{ :personId => ctx.member.id })
+      res = json_response(conn, 200)
+
+      assert Map.has_key?(res["data"]["newInvitationToken"], "token")
+    end
+
+    test "member can't issue new invitation token", ctx do
+      member = preload(ctx.member, [:account])
+      conn = log_in_account(ctx.conn, member.account)
+
+      conn = graphql(conn, @new_invitation_token, "NewInvitationToken", %{ :personId => ctx.member.id })
+      res = json_response(conn, 200)
+
+      assert res["errors"] |> List.first() |> Map.get("message") == "Only admins can issue invitation tokens."
+    end
+
+    test "no invitation associated with member", ctx do
+      admin = preload(ctx.admin, [:account])
+      conn = log_in_account(ctx.conn, admin.account)
+
+      conn = graphql(conn, @new_invitation_token, "NewInvitationToken", %{ :personId => ctx.admin.id })
+      res = json_response(conn, 200)
+
+      assert res["errors"] |> List.first() |> Map.get("message") == "This member didn't join the company using an invitation token."
     end
   end
 

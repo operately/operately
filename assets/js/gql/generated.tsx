@@ -939,7 +939,7 @@ export type PauseProjectInput = {
 export type Person = {
   __typename?: 'Person';
   avatarUrl?: Maybe<Scalars['String']['output']>;
-  company?: Maybe<Company>;
+  company: Company;
   companyRole?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
@@ -1161,12 +1161,14 @@ export type RootMutationType = {
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
+  newInvitationToken: Invitation;
   pauseProject: Project;
   pinProjectToHomePage: Scalars['Boolean']['output'];
   postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
   postProjectCheckIn: ProjectCheckIn;
   removeCompanyAdmin?: Maybe<Person>;
+  removeCompanyMember?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
   removeGroupMember?: Maybe<Group>;
   removeKeyResource: ProjectKeyResource;
@@ -1457,6 +1459,11 @@ export type RootMutationTypeMoveProjectToSpaceArgs = {
 };
 
 
+export type RootMutationTypeNewInvitationTokenArgs = {
+  personId: Scalars['ID']['input'];
+};
+
+
 export type RootMutationTypePauseProjectArgs = {
   input: PauseProjectInput;
 };
@@ -1483,6 +1490,11 @@ export type RootMutationTypePostProjectCheckInArgs = {
 
 
 export type RootMutationTypeRemoveCompanyAdminArgs = {
+  personId: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeRemoveCompanyMemberArgs = {
   personId: Scalars['ID']['input'];
 };
 
@@ -2143,6 +2155,13 @@ export type EditGoalTimeframeMutationVariables = Exact<{
 
 export type EditGoalTimeframeMutation = { __typename?: 'RootMutationType', editGoalTimeframe: { __typename?: 'Goal', id: string } };
 
+export type NewInvitationTokenMutationVariables = Exact<{
+  personId: Scalars['ID']['input'];
+}>;
+
+
+export type NewInvitationTokenMutation = { __typename?: 'RootMutationType', newInvitationToken: { __typename?: 'Invitation', id: string, token: string } };
+
 export type GetActivitiesQueryVariables = Exact<{
   scopeType: Scalars['String']['input'];
   scopeId: Scalars['String']['input'];
@@ -2186,7 +2205,7 @@ export type GetInvitationQueryVariables = Exact<{
 }>;
 
 
-export type GetInvitationQuery = { __typename?: 'RootQueryType', invitation: { __typename?: 'Invitation', admin: { __typename?: 'Person', fullName: string, company?: { __typename?: 'Company', name: string } | null }, member: { __typename?: 'Person', fullName: string, email?: string | null } } };
+export type GetInvitationQuery = { __typename?: 'RootQueryType', invitation: { __typename?: 'Invitation', admin: { __typename?: 'Person', fullName: string, company: { __typename?: 'Company', name: string } }, member: { __typename?: 'Person', fullName: string, email?: string | null } } };
 
 export type GetMeQueryVariables = Exact<{
   includeManager?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2390,6 +2409,40 @@ export function useEditGoalTimeframeMutation(baseOptions?: Apollo.MutationHookOp
 export type EditGoalTimeframeMutationHookResult = ReturnType<typeof useEditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationResult = Apollo.MutationResult<EditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationOptions = Apollo.BaseMutationOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
+export const NewInvitationTokenDocument = gql`
+    mutation NewInvitationToken($personId: ID!) {
+  newInvitationToken(personId: $personId) {
+    id
+    token
+  }
+}
+    `;
+export type NewInvitationTokenMutationFn = Apollo.MutationFunction<NewInvitationTokenMutation, NewInvitationTokenMutationVariables>;
+
+/**
+ * __useNewInvitationTokenMutation__
+ *
+ * To run a mutation, you first call `useNewInvitationTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useNewInvitationTokenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [newInvitationTokenMutation, { data, loading, error }] = useNewInvitationTokenMutation({
+ *   variables: {
+ *      personId: // value for 'personId'
+ *   },
+ * });
+ */
+export function useNewInvitationTokenMutation(baseOptions?: Apollo.MutationHookOptions<NewInvitationTokenMutation, NewInvitationTokenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<NewInvitationTokenMutation, NewInvitationTokenMutationVariables>(NewInvitationTokenDocument, options);
+      }
+export type NewInvitationTokenMutationHookResult = ReturnType<typeof useNewInvitationTokenMutation>;
+export type NewInvitationTokenMutationResult = Apollo.MutationResult<NewInvitationTokenMutation>;
+export type NewInvitationTokenMutationOptions = Apollo.BaseMutationOptions<NewInvitationTokenMutation, NewInvitationTokenMutationVariables>;
 export const GetActivitiesDocument = gql`
     query GetActivities($scopeType: String!, $scopeId: String!, $actions: [String!]) {
   activities(scopeType: $scopeType, scopeId: $scopeId, actions: $actions) {
