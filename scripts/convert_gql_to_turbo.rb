@@ -23,6 +23,7 @@ def convert_field_type(type)
          when "ID" then "string"
          when "NaiveDateTime" then "datetime"
          when "DateTime" then "datetime"
+         when "UtcDatetime" then "datetime"
          else type
          end
 

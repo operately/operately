@@ -475,6 +475,14 @@ export interface GroupContact {
   value: string;
 }
 
+export interface Invitation {
+  id: string;
+  adminName: string;
+  admin: Person;
+  member: Person;
+  token: string;
+}
+
 export interface KeyResult {
   id: string;
   name: string;
