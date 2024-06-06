@@ -63,9 +63,33 @@ defmodule CustomFormatter do
 
   defp display_test_finished(test = %ExUnit.Test{state: {:failed, failures}}, state) do
     IO.puts("\n\n    #{red("FAILED")}")
-    IO.puts(ExUnit.Formatter.format_test_failure(test, failures, 0, 80, &formatter(&1, &2, %{colors: colors()})))
+    IO.puts("\n\n    #{format_test_failures(failures)}")
 
     {:noreply, state}
+  end
+
+  defp format_test_failures(failures) do
+    IO.inspect(failures)
+    Enum.map_join(failures, "", fn failure ->
+      IO.inspect(elem(failure, 1))
+      format_test_failure(failure)
+    end)
+  end
+
+  defp format_test_failure({:error, %ExUnit.AssertionError{} = error, stacktrace}) do
+    red(ExUnit.Formatter.format_assertion_error(error)) 
+    <> "\n\n    "
+    <> Exception.format_stacktrace(stacktrace)
+  end
+
+  defp format_test_failure({:error, error, stacktrace}) do
+    red(inspect(error)) 
+    <> "\n\n    "
+    <> Exception.format_stacktrace(stacktrace)
+  end
+
+  defp format_test_failure(e) do
+    red(inspect(e))
   end
 
   defp red(text), do: IO.ANSI.red() <> text <> IO.ANSI.reset()
@@ -96,64 +120,5 @@ defmodule CustomFormatter do
     |> tl()
     |> Enum.join(" ")
   end
-
-  # Color styles
-
-  defp colorize(key, string, %{colors: colors}) do
-    if escape = colors[:enabled] && colors[key] do
-      [escape, string, :reset]
-      |> IO.ANSI.format_fragment(true)
-      |> IO.iodata_to_binary()
-    else
-      string
-    end
-  end
-
-  defp colorize_doc(escape, doc, %{colors: colors}) do
-    if colors[:enabled] do
-      Inspect.Algebra.color(doc, escape, %Inspect.Opts{syntax_colors: colors})
-    else
-      doc
-    end
-  end
-
-  @default_colors [
-    diff_delete: :red,
-    diff_delete_whitespace: IO.ANSI.color_background(2, 0, 0),
-    diff_insert: :green,
-    diff_insert_whitespace: IO.ANSI.color_background(0, 2, 0),
-
-    # CLI formatter
-    success: :green,
-    invalid: :yellow,
-    skipped: :yellow,
-    failure: :red,
-    error_info: :red,
-    extra_info: :cyan,
-    location_info: [:bright, :black]
-  ]
-
-  defp colors do
-    @default_colors |> Keyword.put_new(:enabled, IO.ANSI.enabled?())
-  end
-
-  defp formatter(:diff_enabled?, _, %{colors: colors}), do: colors[:enabled]
-  defp formatter(:diff_delete, doc, config), do: colorize_doc(:diff_delete, doc, config)
-  defp formatter(:diff_delete_whitespace, doc, config), do: colorize_doc(:diff_delete_whitespace, doc, config)
-  defp formatter(:diff_insert, doc, config), do: colorize_doc(:diff_insert, doc, config)
-  defp formatter(:diff_insert_whitespace, doc, config), do: colorize_doc(:diff_insert_whitespace, doc, config)
-
-  defp formatter(:blame_diff, msg, %{colors: colors} = config) do
-    if colors[:enabled] do
-      colorize(:diff_delete, msg, config)
-    else
-      "-" <> msg <> "-"
-    end
-  end
-
-  defp formatter(key, msg, config), do: colorize(key, msg, config)
-
-  defp pluralize(1, singular, _plural), do: singular
-  defp pluralize(_, _singular, plural), do: plural
 
 end
