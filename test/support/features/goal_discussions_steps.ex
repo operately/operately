@@ -40,6 +40,9 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_discussion_submitted, ctx, params do
+    ctx
+    |> UI.assert_text(params.title)
+
     activity = last_activity()
     comment_thread = last_comment_thread()
 
@@ -56,8 +59,8 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
+      to: ctx.reviewer,
+      author: ctx.champion,
       action: "posted: #{last_comment_thread().title}",
     })
   end
@@ -66,7 +69,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     ctx
     |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion, 
+      author: ctx.champion,
       title: "posted #{last_comment_thread().title}",
       subtitle: last_comment_thread().message,
     })
@@ -134,7 +137,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     ctx
     |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion, 
+      author: ctx.champion,
       title: "commented on #{last_comment_thread().title}",
       subtitle: last_comment_thread().message,
     })
@@ -154,8 +157,8 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   #
 
   defp last_activity do
-    query = from a in Operately.Activities.Activity, 
-      where: a.action == "goal_discussion_creation", 
+    query = from a in Operately.Activities.Activity,
+      where: a.action == "goal_discussion_creation",
       order_by: [desc: a.inserted_at],
       preload: [:author],
       limit: 1
@@ -164,7 +167,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   defp last_comment_thread do
-    activity = last_activity() 
+    activity = last_activity()
     Operately.Comments.get_thread!(activity.comment_thread_id)
   end
 
