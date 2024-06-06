@@ -21,6 +21,8 @@ defmodule OperatelyWeb.Graphql.Queries.Notifications do
   def list_notifications(person, page, per_page) do
     alias Operately.Notifications.Notification
     alias Operately.Activities.Activity
+    alias Operately.Activities
+
     import Ecto.Query, only: [from: 2]
 
     offset = per_page * (page - 1)
@@ -35,6 +37,8 @@ defmodule OperatelyWeb.Graphql.Queries.Notifications do
       limit: ^limit,
       preload: [activity: [:author]]
 
-    Operately.Repo.all(query)
+    query
+    |> Operately.Repo.all()
+    |> Enum.map(fn n -> %{n | activity: Activities.cast_content(n.activity)} end)
   end
 end
