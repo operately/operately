@@ -1,6 +1,12 @@
 defmodule Operately.Activities.Activity do
   use Operately.Schema
 
+  @deprecated_actions [
+    "project_status_update_acknowledged",
+    "project_status_update_commented",
+    "project_status_update_edit",
+  ]
+
   schema "activities" do
     belongs_to :author, Operately.People.Person
     belongs_to :comment_thread, Operately.Comments.CommentThread
@@ -21,4 +27,6 @@ defmodule Operately.Activities.Activity do
   def changeset(activity, attrs) do
     activity |> cast(attrs, [:author_id, :action, :content, :comment_thread_id])
   end
+
+  def deprecated_actions, do: @deprecated_actions
 end

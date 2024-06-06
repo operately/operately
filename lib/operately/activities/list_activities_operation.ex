@@ -3,12 +3,6 @@ defmodule Operately.Activities.ListActivitiesOperation do
   alias Operately.Repo
   alias Operately.Activities.Activity
 
-  @deprecated_actions [
-    "project_status_update_acknowledged",
-    "project_status_update_commented",
-    "project_status_update_edit",
-  ]
-
   def run(scope_type, scope_id, actions) do
     Activity
     |> scope_query(scope_type, scope_id)
@@ -25,9 +19,9 @@ defmodule Operately.Activities.ListActivitiesOperation do
 
   def actions_filter(query, actions) do
     if actions == [] do
-      from a in query, where: a.action not in ^@deprecated_actions
+      from a in query, where: a.action not in ^Activity.deprecated_actions()
     else
-      from a in query, where: a.action in ^actions and a.action not in ^@deprecated_actions
+      from a in query, where: a.action in ^actions and a.action not in ^Activity.deprecated_actions()
     end
   end
 
