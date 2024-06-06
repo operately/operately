@@ -58,11 +58,11 @@ export default function NewInvitationToken({ person }: { person: Person }) {
         type="secondary"
         testId={newTokenTestId}
       >
-        Invitation Token
+        New Invitation
       </GhostButton>
     
       <Modal
-        title="New Invitation Token"
+        title="New Invitation URL"
         isOpen={showToken}
         hideModal={handleHideModal}
         minHeight="120px"
