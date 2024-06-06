@@ -33,6 +33,19 @@ defmodule Operately.Invitations do
     end
   end
 
+  def get_invitation_by_member(member_id) when is_binary(member_id) do
+    query = from i in Operately.Invitations.Invitation,
+      where: i.member_id == ^member_id,
+      preload: [:member],
+      select: i
+
+    Repo.one(query)
+  end
+
+  def get_invitation_by_member(%Operately.People.Person{id: member_id}) do
+    get_invitation_by_member(member_id)
+  end
+
   def create_invitation(attrs \\ %{}) do
     %Invitation{}
     |> Invitation.changeset(attrs)

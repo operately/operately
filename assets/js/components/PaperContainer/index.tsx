@@ -68,9 +68,15 @@ export function Navigation({ children }) {
   );
 }
 
-export function NavItem({ linkTo, children }) {
+interface NavItemProps {
+  linkTo: string;
+  children: React.ReactNode;
+  testId?: string;
+}
+
+export function NavItem({ linkTo, children, testId }: NavItemProps) {
   return (
-    <Link to={linkTo}>
+    <Link to={linkTo} testId={testId}>
       <span className="flex items-center gap-1.5">{children}</span>
     </Link>
   );

@@ -106,5 +106,29 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
         end
       end
     end
+
+    # Retrieving :invitation automatically creates a new token
+    # so there is not need to create one manually
+    field :new_invitation_token, non_null(:invitation) do
+      arg :person_id, non_null(:id)
+
+      resolve fn _, args, %{context: context} ->
+        admin = context.current_account.person
+        allowed = admin.company_role == :admin
+
+        if allowed do
+          case Operately.Invitations.get_invitation_by_member(args.person_id) do
+            nil ->
+              {:error, "This member didn't join the company using an invitation token."}
+
+            invitation ->
+              Operately.Operations.CompanyInvitationTokenCreation.run(admin, invitation)
+              {:ok, invitation}
+          end
+        else
+          {:error, "Only admins can issue invitation tokens."}
+        end
+      end
+    end
   end
 end

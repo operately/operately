@@ -26,6 +26,12 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.click(testid: "submit-form")
   end
 
+  step :reissue_invitation_token, ctx, params do
+    ctx
+    |> UI.click(testid: params[:newTokenTestId])
+
+  end
+
   step :assert_member_invited, ctx do
     ctx
     |> UI.assert_text("Share this url with the new member:")

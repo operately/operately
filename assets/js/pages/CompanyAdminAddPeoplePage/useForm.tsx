@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useAddCompanyMemberMutation } from "@/gql";
 import { camelCaseToSpacedWords, snakeCaseToSpacedWords } from "@/utils/strings";
+import { createInvitationUrl } from "@/features/CompanyAdmin";
 
 
 interface FormState {
@@ -55,11 +56,9 @@ function useSubmit(fields: FormFields) {
   
   const [add, { loading: submitting }] = useAddCompanyMemberMutation({
     onCompleted: (res) => {
-      const url = `${window.location.protocol}//${window.location.host}`;
-      const route = "/first-time-login";
-      const queryString = "?token=" + res['addCompanyMember']['token'];
+      const url = createInvitationUrl(res['addCompanyMember']['token']);
       
-      setResult(url + route + queryString);
+      setResult(url);
     },
   });
 
