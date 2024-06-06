@@ -1,8 +1,8 @@
-defmodule TurboConnect.SpecsTest do
+defmodule TurboConnect.TypesTest do
   use ExUnit.Case
 
   defmodule TestSpec do
-    use TurboConnect.Specs
+    use TurboConnect.Types
 
     object :user do
       field :name, :string
@@ -107,7 +107,7 @@ defmodule TurboConnect.SpecsTest do
   end
 
   defmodule TestSpec2 do
-    use TurboConnect.Specs
+    use TurboConnect.Types
 
     object :user do
       field :name, :string
@@ -157,7 +157,7 @@ defmodule TurboConnect.SpecsTest do
   end
 
   defmodule TestSpec3 do
-    use TurboConnect.Specs
+    use TurboConnect.Types
 
     object :user do
       field :name, :string
@@ -168,7 +168,7 @@ defmodule TurboConnect.SpecsTest do
   test "referencing undefined object" do
     expected_message = "In object :user, the :address field has an unknown type :address"
 
-    assert_raise TurboConnect.Specs.UnknownFieldType, expected_message, fn -> TestSpec3.validate_specs() end
+    assert_raise TurboConnect.Types.UnknownFieldType, expected_message, fn -> TestSpec3.validate_specs() end
   end
 
 end

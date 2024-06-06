@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.Types do
-  use TurboConnect.Specs
+  use TurboConnect.Types
 
   object :activity_content_space_joining do
     field :company_id, :string
