@@ -52,7 +52,7 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.visit_company_goals_page()
     |> Steps.add_subgoal(%{parent_name: @parent_goal_params.name, goal_params: @goal_params})
     |> Steps.assert_subgoal_added(%{parent_name: @parent_goal_params.name, goal_params: @goal_params})
-    |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
+    |> Steps.assert_subgoal_created_email_sent(@goal_params.name <> "A")
   end
   
 end
