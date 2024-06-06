@@ -10,7 +10,7 @@ defmodule CustomFormatter do
   end
 
   def handle_cast({:suite_started, _}, state), do: {:noreply, state}
-  def handle_cast({:suite_finished, _}, state), do: display_suite_finished(state)
+  def handle_cast({:suite_finished, _}, state), do: {:noreply, state}
 
   # deprecated events
   def handle_cast({:case_started, _}, state), do: {:noreply, state}
@@ -59,11 +59,6 @@ defmodule CustomFormatter do
   defp display_test_finished(%ExUnit.Test{state: {:failed, _}}, state) do
     IO.puts("\n\n    #{red("FAILED")}")
     {:noreply, state}
-  end
-
-  defp display_suite_finished(state) do
-    IO.puts("")
-    {:stop, :normal, state}
   end
 
   defp red(text), do: IO.ANSI.red() <> text <> IO.ANSI.reset()
