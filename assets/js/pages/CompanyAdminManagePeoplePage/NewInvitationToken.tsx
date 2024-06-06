@@ -4,10 +4,13 @@ import { GhostButton } from "@/components/Button";
 import Modal from "@/components/Modal";
 import { InvitationUrl, createInvitationUrl } from "@/features/CompanyAdmin";
 import { Person, useNewInvitationTokenMutation } from "@/gql";
+import { createTestId } from "@/utils/testid";
 
 
 
 export default function NewInvitationToken({ person }: { person: Person }) {
+  const newTokenTestId = createTestId("new-token", person.fullName);
+
   const [showToken, setShowToken] = useState(false);
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
@@ -53,6 +56,7 @@ export default function NewInvitationToken({ person }: { person: Person }) {
         loading={loading}
         size="xxs"
         type="secondary"
+        testId={newTokenTestId}
       >
         Invitation Token
       </GhostButton>

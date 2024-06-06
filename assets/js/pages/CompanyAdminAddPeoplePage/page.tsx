@@ -20,8 +20,8 @@ export function Page() {
         <Paper.Navigation>
           <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
           <Paper.NavSeparator />
-          <Paper.NavItem linkTo="/company/admin/managePeople">Manage People</Paper.NavItem>
-        </Paper.Navigation>
+          <Paper.NavItem linkTo="/company/admin/managePeople" testId="manage-people-link">Manage People</Paper.NavItem>
+        </Paper.Navigation> 
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-2xl font-extrabold">Add a new Member</div>
