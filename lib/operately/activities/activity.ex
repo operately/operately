@@ -5,6 +5,7 @@ defmodule Operately.Activities.Activity do
     "project_status_update_acknowledged",
     "project_status_update_commented",
     "project_status_update_edit",
+    "project_status_update_submitted"
   ]
 
   schema "activities" do
