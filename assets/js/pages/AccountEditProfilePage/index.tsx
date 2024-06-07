@@ -121,9 +121,14 @@ function ProfileForm({ me }) {
   };
 
   async function uploadFile(file: File) {
-    const storageType = configStorageUsage.REACT_APP_STORAGE_TYPE;
-    console.log("Storage Type: ", storageType);
-    return storageType === "s3" ? await S3FileUploader(file) : await handleFileUpload(file);
+    // create a blob
+    const blob = 
+
+    if(blob.storageType === "s3") {
+      await S3FileUploader(file)
+    } else {
+      await handleFileUpload(file);
+    }
   }
 
   const isValid = name.length > 0 && title.length > 0;
