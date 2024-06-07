@@ -1,35 +1,60 @@
 import React from "react";
 import axios from "axios";
 
-export interface Discussion {
+export interface ProjectReviewRequest {
   id: string;
-  name: string;
   insertedAt: Date;
   updatedAt: Date;
+  status: string;
+  reviewId: string;
+  content: string;
   author: Person;
-  title: string;
-  body: string;
-  space: Group;
-  reactions: Reaction[];
-  comments: Comment[];
 }
 
-export interface ActivityContentGoalCheckInAcknowledgement {
+export interface ActivityContentGoalArchived {
   goal: Goal;
-  update: Update;
 }
 
-export interface Timeframe {
-  startDate: Date;
-  endDate: Date;
-  type: string;
-}
-
-export interface ActivityContentProjectCheckInSubmitted {
+export interface ActivityContentProjectCheckInCommented {
   projectId: string;
   checkInId: string;
   project: Project;
   checkIn: ProjectCheckIn;
+  comment: Comment;
+}
+
+export interface ProjectPermissions {
+  canView: boolean;
+  canCreateMilestone: boolean;
+  canDeleteMilestone: boolean;
+  canEditContributors: boolean;
+  canEditMilestone: boolean;
+  canEditDescription: boolean;
+  canEditTimeline: boolean;
+  canEditResources: boolean;
+  canEditGoal: boolean;
+  canEditName: boolean;
+  canEditSpace: boolean;
+  canPause: boolean;
+  canCheckIn: boolean;
+  canAcknowledgeCheckIn: boolean;
+}
+
+export interface Blob {
+  author: Person;
+  status: string;
+  filename: string;
+  url: string;
+  signedUploadUrl: string;
+}
+
+export interface ActivityContentDiscussionPosting {
+  companyId: string;
+  spaceId: string;
+  title: string;
+  discussionId: string;
+  space: Group;
+  discussion: Discussion;
 }
 
 export interface ActivityContentGoalClosing {
@@ -40,87 +65,47 @@ export interface ActivityContentGoalClosing {
   goal: Goal;
 }
 
-export interface Milestone {
-  id: string;
-  title: string;
-  status: string;
-  insertedAt: Date;
-  deadlineAt: Date;
-  completedAt: Date;
-  description: string;
-  comments: MilestoneComment[];
-  tasksKanbanState: string;
+export interface ActivityContentProjectRenamed {
+  project: Project;
+  oldName: string;
+  newName: string;
 }
 
-export interface ActivityContentTaskReopening {
+export interface KeyResult {
+  id: string;
+  name: string;
+  status: string;
+  updatedAt: Date;
+  stepsCompleted: number;
+  stepsTotal: number;
+  owner: Person;
+  group: Group;
+}
+
+export interface Kpi {
+  id: string;
+  name: string;
+  description: string;
+  unit: string;
+  target: number;
+  targetDirection: string;
+  metrics: KpiMetric[];
+}
+
+export interface ActivityContentSpaceJoining {
   companyId: string;
   spaceId: string;
-  taskId: string;
+  space: Group;
 }
 
-export interface ActivityContentGoalCheckIn {
+export interface ActivityContentGoalCheckInAcknowledgement {
   goal: Goal;
   update: Update;
 }
 
-export interface ActivityContentGoalDiscussionCreation {
-  companyId: string;
-  goalId: string;
-  goal: Goal;
-}
-
-export interface ActivityContentProjectReviewAcknowledged {
-  projectId: string;
-  reviewId: string;
-  project: Project;
-}
-
-export interface ActivityContentGroupEdited {
-  exampleField: string;
-}
-
-export interface MilestoneComment {
+export interface Dashboard {
   id: string;
-  action: string;
-  comment: Comment;
-}
-
-export interface KpiMetric {
-  date: Date;
-  value: number;
-}
-
-export interface UpdateContentGoalCheckInTarget {
-  id: string;
-  name: string;
-  value: number;
-  unit: string;
-  previousValue: number;
-  index: number;
-  from: number;
-  to: number;
-}
-
-export interface ActivityContentGoalCreated {
-  goal: Goal;
-}
-
-export interface Panel {
-  id: string;
-  type: string;
-  index: number;
-  linkedResource: PanelLinkedResource;
-}
-
-export interface ActivityContentGoalDiscussionEditing {
-  companyId: string;
-  spaceId: string;
-  goalId: string;
-  activityId: string;
-}
-
-export interface ActivityEventDataCommentPost {
-  updateId: string;
+  panels: Panel[];
 }
 
 export interface UpdateContentReview {
@@ -131,34 +116,27 @@ export interface UpdateContentReview {
   reviewRequestId: string;
 }
 
-export interface Invitation {
-  id: string;
-  adminName: string;
-  admin: Person;
-  member: Person;
-  token: string;
+export interface ActivityContentGoalCreated {
+  goal: Goal;
 }
 
-export interface ActivityContentTaskUpdate {
+export interface ActivityContentTaskStatusChange {
   companyId: string;
   taskId: string;
-  name: string;
+  status: string;
 }
 
-export interface UpdateContentProjectMilestoneCreated {
-  milestone: Milestone;
-}
-
-export interface UpdateContentProjectStartTimeChanged {
-  oldStartTime: string;
-  newStartTime: string;
-}
-
-export interface GroupContact {
-  id: string;
-  name: string;
-  type: string;
-  value: string;
+export interface ProjectHealth {
+  status: string;
+  statusComments: string;
+  schedule: string;
+  scheduleComments: string;
+  budget: string;
+  budgetComments: string;
+  team: string;
+  teamComments: string;
+  risks: string;
+  risksComments: string;
 }
 
 export interface Target {
@@ -171,6 +149,62 @@ export interface Target {
   value: number;
 }
 
+export interface ProjectCheckIn {
+  id: string;
+  status: string;
+  insertedAt: Date;
+  description: string;
+  author: Person;
+  project: Project;
+  acknowledgedAt: Date;
+  acknowledgedBy: Person;
+  reactions: Reaction[];
+}
+
+export interface Timeframe {
+  startDate: Date;
+  endDate: Date;
+  type: string;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  mission: string;
+  trustedEmailDomains: string[];
+  enabledExperimentalFeatures: string[];
+  companySpaceId: string;
+  tenets: Tenet[];
+  admins: Person[];
+  people: Person[];
+}
+
+export interface UpdateContentProjectStartTimeChanged {
+  oldStartTime: string;
+  newStartTime: string;
+}
+
+export interface UpdateContentProjectContributorRemoved {
+  contributor: Person;
+  contributorId: string;
+  contributorRole: string;
+}
+
+export interface ActivityContentTaskDescriptionChange {
+  companyId: string;
+  spaceId: string;
+  taskId: string;
+}
+
+export interface ActivityContentProjectClosed {
+  project: Project;
+}
+
+export interface ActivityContentCommentAdded {
+  comment: Comment;
+  activity: Activity;
+}
+
 export interface ActivityContentGoalReopening {
   companyId: string;
   goalId: string;
@@ -178,96 +212,22 @@ export interface ActivityContentGoalReopening {
   goal: Goal;
 }
 
-export interface ActivityContentTaskPriorityChange {
-  companyId: string;
-  spaceId: string;
-  taskId: string;
-  oldPriority: string;
-  newPriority: string;
-}
-
-export interface ActivityContentProjectPausing {
-  companyId: string;
-  projectId: string;
-  project: Project;
-}
-
-export interface ActivityContentProjectReviewCommented {
+export interface ActivityContentProjectReviewAcknowledged {
   projectId: string;
   reviewId: string;
   project: Project;
 }
 
-export interface CommentThread {
-  id: string;
-  insertedAt: Date;
-  title: string;
-  message: string;
-  reactions: Reaction[];
-  comments: Comment[];
-  commentsCount: number;
-  author: Person;
+export interface ActivityContentGoalReparent {
+  companyId: string;
+  oldParentGoalId: string;
+  newParentGoalId: string;
 }
 
 export interface UpdateContentProjectCreated {
   creatorRole: string;
   creator: Person;
   champion: Person;
-}
-
-export interface UpdateContentProjectDiscussion {
-  title: string;
-  body: string;
-}
-
-export interface Dashboard {
-  id: string;
-  panels: Panel[];
-}
-
-export interface Goal {
-  id: string;
-  name: string;
-  insertedAt: Date;
-  updatedAt: Date;
-  nextUpdateScheduledAt: Date;
-  parentGoalId: string;
-  closedAt: Date;
-  timeframe: Timeframe;
-  description: string;
-  champion: Person;
-  reviewer: Person;
-  closedBy: Person;
-  targets: Target[];
-  projects: Project[];
-  parentGoal: Goal;
-  progressPercentage: number;
-  lastCheckIn: Update;
-  permissions: GoalPermissions;
-  isArchived: boolean;
-  isClosed: boolean;
-  archivedAt: Date;
-  space: Group;
-  myRole: string;
-}
-
-export interface UpdateContentProjectMilestoneCompleted {
-  milestone: Milestone;
-}
-
-export interface UpdateContentStatusUpdate {
-  message: string;
-  oldHealth: string;
-  newHealth: string;
-  nextMilestoneId: string;
-  nextMilestoneTitle: string;
-  nextMilestoneDueDate: string;
-  phase: string;
-  phaseStart: string;
-  phaseEnd: string;
-  projectStartTime: string;
-  projectEndTime: string;
-  health: ProjectHealth;
 }
 
 export interface Update {
@@ -322,10 +282,19 @@ export interface Project {
   reviewer: Person;
 }
 
-export interface ActivityContentProjectRenamed {
+export interface UpdateContentProjectEndTimeChanged {
+  oldEndTime: string;
+  newEndTime: string;
+}
+
+export interface ActivityContentProjectTimelineEdited {
   project: Project;
-  oldName: string;
-  newName: string;
+  oldStartDate: Date;
+  newStartDate: Date;
+  oldEndDate: Date;
+  newEndDate: Date;
+  newMilestones: Milestone[];
+  updatedMilestones: Milestone[];
 }
 
 export interface ActivityContentDiscussionEditing {
@@ -334,33 +303,16 @@ export interface ActivityContentDiscussionEditing {
   discussionId: string;
 }
 
-export interface ActivityContentGoalArchived {
-  goal: Goal;
-}
-
-export interface ProjectCheckIn {
+export interface Milestone {
   id: string;
+  title: string;
   status: string;
   insertedAt: Date;
+  deadlineAt: Date;
+  completedAt: Date;
   description: string;
-  author: Person;
-  project: Project;
-  acknowledgedAt: Date;
-  acknowledgedBy: Person;
-  reactions: Reaction[];
-}
-
-export interface ProjectHealth {
-  status: string;
-  statusComments: string;
-  schedule: string;
-  scheduleComments: string;
-  budget: string;
-  budgetComments: string;
-  team: string;
-  teamComments: string;
-  risks: string;
-  risksComments: string;
+  comments: MilestoneComment[];
+  tasksKanbanState: string;
 }
 
 export interface Group {
@@ -376,154 +328,91 @@ export interface Group {
   pointsOfContact: GroupContact[];
 }
 
-export interface ActivityContentSpaceJoining {
-  companyId: string;
-  spaceId: string;
-  space: Group;
-}
-
-export interface UpdateContentProjectContributorAdded {
-  contributorId: string;
-  contributorRole: string;
-  contributor: Person;
-}
-
-export interface ActivityContentGoalCheckInEdit {
-  companyId: string;
-  goalId: string;
-  checkInId: string;
-}
-
-export interface Blob {
-  author: Person;
-  status: string;
-  filename: string;
-  url: string;
-  signedUploadUrl: string;
-}
-
-export interface ActivityContentTaskNameEditing {
-  companyId: string;
-  spaceId: string;
-  taskId: string;
-  oldName: string;
-  newName: string;
-}
-
-export interface ProjectReviewRequest {
-  id: string;
-  insertedAt: Date;
-  updatedAt: Date;
-  status: string;
-  reviewId: string;
-  content: string;
-  author: Person;
-}
-
-export interface ActivityContentProjectContributorAddition {
-  companyId: string;
-  projectId: string;
-  personId: string;
-  person: Person;
-  project: Project;
-}
-
-export interface ActivityContentGoalTimeframeEditing {
-  goal: Goal;
-  oldTimeframe: Timeframe;
-  newTimeframe: Timeframe;
-}
-
-export interface ActivityContentGoalEditing {
-  goal: Goal;
-  companyId: string;
-  goalId: string;
-  oldName: string;
-  newName: string;
-  oldTimeframe: Timeframe;
-  newTimeframe: Timeframe;
-  oldChampionId: string;
-  newChampionId: string;
-  oldReviewerId: string;
-  newReviewerId: string;
-  newChampion: Person;
-  newReviewer: Person;
-  addedTargets: Target[];
-  updatedTargets: GoalEditingUpdatedTarget[];
-  deletedTargets: Target[];
-}
-
-export interface ActivityContentProjectGoalDisconnection {
-  project: Project;
-  goal: Goal;
-}
-
-export interface ActivityEventDataProjectCreate {
-  champion: Person;
-}
-
-export interface ProjectContributor {
-  id: string;
-  responsibility: string;
-  role: string;
-  person: Person;
-}
-
-export interface Tenet {
-  id: string;
-  name: string;
-  description: string;
-  kpis: Kpi[];
-  company: Company;
-  objectives: Objective[];
-}
-
-export interface Task {
-  id: string;
-  name: string;
-  insertedAt: Date;
-  updatedAt: Date;
-  dueDate: Date;
-  size: string;
-  priority: string;
-  status: string;
+export interface UpdateContentProjectMilestoneCreated {
   milestone: Milestone;
-  project: Project;
-  description: string;
-  assignees: Person[];
-  creator: Person;
 }
 
-export interface ActivityContentProjectClosed {
-  project: Project;
-}
-
-export interface UpdateContentMessage {
+export interface UpdateContentGoalCheckIn {
   message: string;
+  targets: UpdateContentGoalCheckInTarget[];
 }
 
-export interface ActivityContentTaskStatusChange {
-  companyId: string;
-  taskId: string;
-  status: string;
+export interface Objective {
+  id: string;
+  name: string;
+  description: string;
+  owner: Person;
+  keyResults: KeyResult[];
+  group: Group;
+  activities: Activity[];
 }
 
-export interface ActivityContentDiscussionPosting {
+export interface UpdateContentStatusUpdate {
+  message: string;
+  oldHealth: string;
+  newHealth: string;
+  nextMilestoneId: string;
+  nextMilestoneTitle: string;
+  nextMilestoneDueDate: string;
+  phase: string;
+  phaseStart: string;
+  phaseEnd: string;
+  projectStartTime: string;
+  projectEndTime: string;
+  health: ProjectHealth;
+}
+
+export interface ActivityContentGoalCheckIn {
+  goal: Goal;
+  update: Update;
+}
+
+export interface Assignment {
+  type: string;
+  due: Date;
+  resource: AssignmentResource;
+}
+
+export interface UpdateContentProjectMilestoneDeadlineChanged {
+  oldDeadline: string;
+  newDeadline: string;
+  milestone: Milestone;
+}
+
+export interface Assignments {
+  assignments: Assignment[];
+}
+
+export interface ActivityContentProjectMoved {
+  project: Project;
+  oldSpace: Group;
+  newSpace: Group;
+}
+
+export interface KpiMetric {
+  date: Date;
+  value: number;
+}
+
+export interface ActivityContentTaskClosing {
   companyId: string;
   spaceId: string;
-  title: string;
-  discussionId: string;
-  space: Group;
-  discussion: Discussion;
+  taskId: string;
 }
 
-export interface ActivityEventDataMilestoneCreate {
-  title: string;
+export interface Invitation {
+  id: string;
+  adminName: string;
+  admin: Person;
+  member: Person;
+  token: string;
 }
 
-export interface ActivityContentProjectArchived {
+export interface ActivityContentProjectCheckInSubmitted {
   projectId: string;
+  checkInId: string;
   project: Project;
+  checkIn: ProjectCheckIn;
 }
 
 export interface ActivityContentTaskSizeChange {
@@ -534,39 +423,24 @@ export interface ActivityContentTaskSizeChange {
   newSize: string;
 }
 
-export interface Assignments {
-  assignments: Assignment[];
+export interface ActivityContentGoalDiscussionEditing {
+  companyId: string;
+  spaceId: string;
+  goalId: string;
+  activityId: string;
 }
 
-export interface ActivityContentProjectCheckInAcknowledged {
+export interface ActivityContentProjectDiscussionSubmitted {
   projectId: string;
-  checkInId: string;
-  project: Project;
-  checkIn: ProjectCheckIn;
-}
-
-export interface UpdateContentProjectMilestoneDeleted {
-  milestone: Milestone;
-}
-
-export interface ActivityContentProjectMilestoneCommented {
-  projectId: string;
-  project: Project;
-  milestone: Milestone;
-  commentAction: string;
-  comment: Comment;
-}
-
-export interface ActivityContentProjectReviewRequestSubmitted {
-  projectId: string;
-  requestId: string;
+  discussionId: string;
+  title: string;
   project: Project;
 }
 
-export interface UpdateContentProjectMilestoneDeadlineChanged {
-  oldDeadline: string;
-  newDeadline: string;
-  milestone: Milestone;
+export interface ActivityContentTaskUpdate {
+  companyId: string;
+  taskId: string;
+  name: string;
 }
 
 export interface Person {
@@ -589,123 +463,84 @@ export interface Person {
   theme: string;
 }
 
-export interface ActivityContentProjectGoalConnection {
+export interface ActivityContentProjectReviewSubmitted {
+  projectId: string;
+  reviewId: string;
   project: Project;
+}
+
+export interface Task {
+  id: string;
+  name: string;
+  insertedAt: Date;
+  updatedAt: Date;
+  dueDate: Date;
+  size: string;
+  priority: string;
+  status: string;
+  milestone: Milestone;
+  project: Project;
+  description: string;
+  assignees: Person[];
+  creator: Person;
+}
+
+export interface ActivityContentProjectCheckInEdit {
+  companyId: string;
+  projectId: string;
+  checkInId: string;
+}
+
+export interface ActivityContentGoalDiscussionCreation {
+  companyId: string;
+  goalId: string;
   goal: Goal;
 }
 
-export interface ActivityContentGoalReparent {
-  companyId: string;
-  oldParentGoalId: string;
-  newParentGoalId: string;
-}
-
-export interface Kpi {
+export interface UpdateContentGoalCheckInTarget {
   id: string;
   name: string;
-  description: string;
+  value: number;
   unit: string;
-  target: number;
-  targetDirection: string;
-  metrics: KpiMetric[];
+  previousValue: number;
+  index: number;
+  from: number;
+  to: number;
 }
 
-export interface ActivityContentTaskAssigneeAssignment {
-  companyId: string;
-  spaceId: string;
-  taskId: string;
-  personId: string;
+export interface ActivityEventDataCommentPost {
+  updateId: string;
 }
 
-export interface Objective {
-  id: string;
-  name: string;
-  description: string;
-  owner: Person;
-  keyResults: KeyResult[];
-  group: Group;
-  activities: Activity[];
+export interface ActivityContentGroupEdited {
+  exampleField: string;
 }
 
-export interface UpdateContentGoalCheckIn {
-  message: string;
-  targets: UpdateContentGoalCheckInTarget[];
+export interface ActivityContentGoalTimeframeEditing {
+  goal: Goal;
+  oldTimeframe: Timeframe;
+  newTimeframe: Timeframe;
 }
 
-export interface Notification {
-  id: string;
-  read: boolean;
-  readAt: Date;
-  activity: Activity;
-}
-
-export interface Comment {
+export interface CommentThread {
   id: string;
   insertedAt: Date;
-  content: string;
-  author: Person;
+  title: string;
+  message: string;
   reactions: Reaction[];
+  comments: Comment[];
+  commentsCount: number;
+  author: Person;
 }
 
-export interface ProjectKeyResource {
-  id: string;
-  title: string;
-  link: string;
-  resourceType: string;
-}
-
-export interface ActivityContentProjectResuming {
-  companyId: string;
+export interface ActivityContentProjectArchived {
   projectId: string;
   project: Project;
 }
 
-export interface ActivityContentProjectDiscussionSubmitted {
-  projectId: string;
-  discussionId: string;
-  title: string;
+export interface ActivityContentProjectGoalConnection {
   project: Project;
-}
-
-export interface GoalEditingUpdatedTarget {
-  id: string;
-  oldName: string;
-  newName: string;
-}
-
-export interface ActivityContentTaskAdding {
-  name: string;
-  taskId: string;
-  companyId: string;
-  spaceId: string;
-}
-
-export interface ActivityContentProjectMoved {
-  project: Project;
-  oldSpace: Group;
-  newSpace: Group;
-}
-
-export interface UpdateContentProjectEndTimeChanged {
-  oldEndTime: string;
-  newEndTime: string;
-}
-
-export interface ProjectPermissions {
-  canView: boolean;
-  canCreateMilestone: boolean;
-  canDeleteMilestone: boolean;
-  canEditContributors: boolean;
-  canEditMilestone: boolean;
-  canEditDescription: boolean;
-  canEditTimeline: boolean;
-  canEditResources: boolean;
-  canEditGoal: boolean;
-  canEditName: boolean;
-  canEditSpace: boolean;
-  canPause: boolean;
-  canCheckIn: boolean;
-  canAcknowledgeCheckIn: boolean;
+  goal: Goal;
 }
 
 export interface Activity {
@@ -725,90 +560,60 @@ export interface Activity {
   content: ActivityContent;
 }
 
-export interface ActivityContentCommentAdded {
-  comment: Comment;
+export interface UpdateContentProjectMilestoneCompleted {
+  milestone: Milestone;
+}
+
+export interface ActivityContentProjectCreated {
+  projectId: string;
+  project: Project;
+}
+
+export interface GoalEditingUpdatedTarget {
+  id: string;
+  oldName: string;
+  newName: string;
+}
+
+export interface ActivityContentTaskAdding {
+  name: string;
+  taskId: string;
+  companyId: string;
+  spaceId: string;
+}
+
+export interface Notification {
+  id: string;
+  read: boolean;
+  readAt: Date;
   activity: Activity;
 }
 
-export interface Assignment {
-  type: string;
-  due: Date;
-  resource: AssignmentResource;
-}
-
-export interface UpdateContentProjectContributorRemoved {
-  contributor: Person;
-  contributorId: string;
-  contributorRole: string;
-}
-
-export interface ActivityContentTaskDescriptionChange {
-  companyId: string;
-  spaceId: string;
-  taskId: string;
-}
-
-export interface ActivityContentProjectReviewSubmitted {
-  projectId: string;
-  reviewId: string;
-  project: Project;
-}
-
-export interface ActivityContentDiscussionCommentSubmitted {
-  spaceId: string;
-  discussionId: string;
-  title: string;
-  space: Group;
-}
-
-export interface Reaction {
+export interface MilestoneComment {
   id: string;
-  emoji: string;
-  reactionType: string;
-  person: Person;
-}
-
-export interface ActivityContentProjectCheckInEdit {
-  companyId: string;
-  projectId: string;
-  checkInId: string;
-}
-
-export interface ActivityContentProjectCheckInCommented {
-  projectId: string;
-  checkInId: string;
-  project: Project;
-  checkIn: ProjectCheckIn;
+  action: string;
   comment: Comment;
 }
 
-export interface KeyResult {
+export interface Comment {
   id: string;
-  name: string;
-  status: string;
-  updatedAt: Date;
-  stepsCompleted: number;
-  stepsTotal: number;
-  owner: Person;
-  group: Group;
+  insertedAt: Date;
+  content: string;
+  author: Person;
+  reactions: Reaction[];
 }
 
-export interface Company {
-  id: string;
-  name: string;
-  mission: string;
-  trustedEmailDomains: string[];
-  enabledExperimentalFeatures: string[];
-  companySpaceId: string;
-  tenets: Tenet[];
-  admins: Person[];
-  people: Person[];
-}
-
-export interface ActivityContentTaskClosing {
+export interface ActivityContentGoalCheckInEdit {
   companyId: string;
-  spaceId: string;
-  taskId: string;
+  goalId: string;
+  checkInId: string;
+}
+
+export interface ProjectContributor {
+  id: string;
+  responsibility: string;
+  role: string;
+  person: Person;
 }
 
 export interface GoalPermissions {
@@ -819,19 +624,214 @@ export interface GoalPermissions {
   canArchive: boolean;
 }
 
-export interface ActivityContentProjectCreated {
+export interface ActivityContentProjectPausing {
+  companyId: string;
   projectId: string;
   project: Project;
 }
 
-export interface ActivityContentProjectTimelineEdited {
+export interface Tenet {
+  id: string;
+  name: string;
+  description: string;
+  kpis: Kpi[];
+  company: Company;
+  objectives: Objective[];
+}
+
+export interface ActivityEventDataMilestoneCreate {
+  title: string;
+}
+
+export interface ActivityContentGoalEditing {
+  goal: Goal;
+  companyId: string;
+  goalId: string;
+  oldName: string;
+  newName: string;
+  oldTimeframe: Timeframe;
+  newTimeframe: Timeframe;
+  oldChampionId: string;
+  newChampionId: string;
+  oldReviewerId: string;
+  newReviewerId: string;
+  newChampion: Person;
+  newReviewer: Person;
+  addedTargets: Target[];
+  updatedTargets: GoalEditingUpdatedTarget[];
+  deletedTargets: Target[];
+}
+
+export interface Discussion {
+  id: string;
+  name: string;
+  insertedAt: Date;
+  updatedAt: Date;
+  author: Person;
+  title: string;
+  body: string;
+  space: Group;
+  reactions: Reaction[];
+  comments: Comment[];
+}
+
+export interface ActivityContentTaskNameEditing {
+  companyId: string;
+  spaceId: string;
+  taskId: string;
+  oldName: string;
+  newName: string;
+}
+
+export interface Panel {
+  id: string;
+  type: string;
+  index: number;
+  linkedResource: PanelLinkedResource;
+}
+
+export interface ActivityContentProjectMilestoneCommented {
+  projectId: string;
   project: Project;
-  oldStartDate: Date;
-  newStartDate: Date;
-  oldEndDate: Date;
-  newEndDate: Date;
-  newMilestones: Milestone[];
-  updatedMilestones: Milestone[];
+  milestone: Milestone;
+  commentAction: string;
+  comment: Comment;
+}
+
+export interface ActivityContentProjectGoalDisconnection {
+  project: Project;
+  goal: Goal;
+}
+
+export interface Reaction {
+  id: string;
+  emoji: string;
+  reactionType: string;
+  person: Person;
+}
+
+export interface ProjectKeyResource {
+  id: string;
+  title: string;
+  link: string;
+  resourceType: string;
+}
+
+export interface ActivityEventDataProjectCreate {
+  champion: Person;
+}
+
+export interface ActivityContentTaskReopening {
+  companyId: string;
+  spaceId: string;
+  taskId: string;
+}
+
+export interface ActivityContentTaskAssigneeAssignment {
+  companyId: string;
+  spaceId: string;
+  taskId: string;
+  personId: string;
+}
+
+export interface ActivityContentProjectReviewCommented {
+  projectId: string;
+  reviewId: string;
+  project: Project;
+}
+
+export interface UpdateContentProjectMilestoneDeleted {
+  milestone: Milestone;
+}
+
+export interface GroupContact {
+  id: string;
+  name: string;
+  type: string;
+  value: string;
+}
+
+export interface UpdateContentMessage {
+  message: string;
+}
+
+export interface ActivityContentTaskPriorityChange {
+  companyId: string;
+  spaceId: string;
+  taskId: string;
+  oldPriority: string;
+  newPriority: string;
+}
+
+export interface ActivityContentProjectCheckInAcknowledged {
+  projectId: string;
+  checkInId: string;
+  project: Project;
+  checkIn: ProjectCheckIn;
+}
+
+export interface UpdateContentProjectContributorAdded {
+  contributorId: string;
+  contributorRole: string;
+  contributor: Person;
+}
+
+export interface ActivityContentDiscussionCommentSubmitted {
+  spaceId: string;
+  discussionId: string;
+  title: string;
+  space: Group;
+}
+
+export interface ActivityContentProjectContributorAddition {
+  companyId: string;
+  projectId: string;
+  personId: string;
+  person: Person;
+  project: Project;
+}
+
+export interface Goal {
+  id: string;
+  name: string;
+  insertedAt: Date;
+  updatedAt: Date;
+  nextUpdateScheduledAt: Date;
+  parentGoalId: string;
+  closedAt: Date;
+  timeframe: Timeframe;
+  description: string;
+  champion: Person;
+  reviewer: Person;
+  closedBy: Person;
+  targets: Target[];
+  projects: Project[];
+  parentGoal: Goal;
+  progressPercentage: number;
+  lastCheckIn: Update;
+  permissions: GoalPermissions;
+  isArchived: boolean;
+  isClosed: boolean;
+  archivedAt: Date;
+  space: Group;
+  myRole: string;
+}
+
+export interface UpdateContentProjectDiscussion {
+  title: string;
+  body: string;
+}
+
+export interface ActivityContentProjectReviewRequestSubmitted {
+  projectId: string;
+  requestId: string;
+  project: Project;
+}
+
+export interface ActivityContentProjectResuming {
+  companyId: string;
+  projectId: string;
+  project: Project;
 }
 
 export type ActivityContent = ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalDiscussionCreation | ActivityContentGoalDiscussionEditing | ActivityContentGoalEditing | ActivityContentGoalReopening | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
@@ -863,4 +863,21 @@ export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResu
   return { data, loading, error };
 }
 
+export interface GetActivitiesInput {
+  scopeId: number;
+  scopeType: string;
+  paginationToken: string;
+}
 
+export interface GetActivitiesResult {
+  activities: Activity[];
+  paginationToken: string;
+}
+
+export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+  return axios.get('/api/get_activities', { params: input }).then(({ data }) => data);
+}
+
+export function useGetActivities(input: GetActivitiesInput) : UseQueryHookResult<GetActivitiesResult> {
+  return useQuery<GetActivitiesResult>(() => getActivities(input));
+}
