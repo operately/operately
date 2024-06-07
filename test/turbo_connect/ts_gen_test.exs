@@ -113,6 +113,23 @@ defmodule TurboConnect.TsGenTest do
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
 
+  type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null };
+
+  export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
+    const [data, setData] = React.useState<ResultT | null>(null);
+    const [loading, setLoading] = React.useState<boolean>(false);
+    const [error, setError] = React.useState<Error | null>(null);
+
+    React.useEffect(() => {
+      setLoading(true);
+      setError(null);
+
+      fn().then(setData).catch(setError).finally(() => setLoading(false));
+    }, [fn]);
+
+    return { data, loading, error };
+  }
+
   export interface GetUserInput {
     userId: number;
   }
@@ -125,8 +142,8 @@ defmodule TurboConnect.TsGenTest do
     return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
   }
 
-  export function useGetUser(input: GetUserInput) {
-    return useQuery('get_user', () => getUser(input));
+  export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
+    return useQuery<GetUserResult>(() => getUser(input));
   }
   """
 

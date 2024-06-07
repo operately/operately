@@ -11,6 +11,7 @@ defmodule TurboConnect.TsGen do
 
     #{convert_objects(api_module.__types__().objects)}
     #{convert_unions(api_module.__types__().unions)}
+    #{define_generic_use_query_hook()}
     #{convert_queries(api_module.__queries__())}
     """
   end
@@ -78,11 +79,33 @@ defmodule TurboConnect.TsGen do
 
   def query_hook({name, _}) do
     input_type = ts_type(name) <> "Input"
+    result_type = ts_type(name) <> "Result"
     fn_name = ts_function_name(name)
 
     """
-    export function use#{ts_type(name)}(input: #{input_type}) {
-      return useQuery('#{name}', () => #{fn_name}(input));
+    export function use#{ts_type(name)}(input: #{input_type}) : UseQueryHookResult<#{result_type}> {
+      return useQuery<#{result_type}>(() => #{fn_name}(input));
+    }
+    """
+  end
+
+  def define_generic_use_query_hook do
+    """
+    type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null };
+
+    export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
+      const [data, setData] = React.useState<ResultT | null>(null);
+      const [loading, setLoading] = React.useState<boolean>(false);
+      const [error, setError] = React.useState<Error | null>(null);
+
+      React.useEffect(() => {
+        setLoading(true);
+        setError(null);
+
+        fn().then(setData).catch(setError).finally(() => setLoading(false));
+      }, [fn]);
+
+      return { data, loading, error };
     }
     """
   end
