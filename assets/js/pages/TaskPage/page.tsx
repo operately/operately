@@ -14,6 +14,8 @@ import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
+import { truncateString } from "@/utils/strings";
+
 
 export function Page() {
   const { task } = useLoadedData();
@@ -48,9 +50,9 @@ export function Navigation({ task }: { task: Tasks.Task }) {
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={projectPath}>{task.project.name}</Paper.NavItem>
+      <Paper.NavItem linkTo={projectPath}>{truncateString(task.project.name, 40)}</Paper.NavItem>
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={milestonePath}>{task.milestone.title}</Paper.NavItem>
+      <Paper.NavItem linkTo={milestonePath}>{truncateString(task.milestone.title, 40)}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
