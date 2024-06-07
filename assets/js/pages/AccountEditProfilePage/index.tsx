@@ -8,6 +8,7 @@ import PeopleSearch from "@/components/PeopleSearch";
 import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
+import configStorageUsage from "@/contexts/storageType.local";
 
 export async function loader() {
   return null;
@@ -119,6 +120,12 @@ function ProfileForm({ me }) {
     setAvatarUrl(url);
   };
 
+  async function uploadFile(file: File) {
+    const storageType = configStorageUsage.REACT_APP_STORAGE_TYPE;
+    console.log("Storage Type: ", storageType);
+    return storageType === "s3" ? await S3FileUploader(file) : await handleFileUpload(file);
+  }
+
   const isValid = name.length > 0 && title.length > 0;
 
   return (
@@ -130,7 +137,7 @@ function ProfileForm({ me }) {
             label="Upload a new profile picture"
             onChange={async (e) => {
               const file = e.target.files[0];
-              await S3FileUploader(file);
+              await uploadFile(file);
             }}
             error={false}
           />
