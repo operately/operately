@@ -52,7 +52,7 @@ export function DateSelector(props: DateSelectorProps) {
           </Popover.Trigger>
 
           <Popover.Portal>
-            <Popover.Content className="outline-red-400 border border-surface-outline" align="start">
+            <Popover.Content className="bg-surface outline-red-400 border border-surface-outline" align="start">
               <DatePicker
                 inline
                 selected={date}
