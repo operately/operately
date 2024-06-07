@@ -1,4 +1,4 @@
-defmodule Operately.Access.AccessContext do
+defmodule Operately.Access.Context do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -9,8 +9,12 @@ defmodule Operately.Access.AccessContext do
     timestamps()
   end
 
-  def changeset(access_context, attrs) do
-    access_context
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
+  def changeset(context, attrs) do
+    context
     |> cast(attrs, [])
     |> validate_required([])
   end

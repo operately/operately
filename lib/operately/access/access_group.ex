@@ -1,4 +1,4 @@
-defmodule Operately.Access.AccessGroup do
+defmodule Operately.Access.Group do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -9,8 +9,12 @@ defmodule Operately.Access.AccessGroup do
     timestamps()
   end
 
-  def changeset(access_group, attrs) do
-    access_group
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
+  def changeset(group, attrs) do
+    group
     |> cast(attrs, [])
     |> validate_required([])
   end

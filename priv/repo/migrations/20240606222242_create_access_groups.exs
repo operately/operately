@@ -1,4 +1,4 @@
-defmodule Operately.Repo.Migrations.CreateAccessGroups do
+defmodule Operately.Repo.Migrations.CreateGroups do
   use Ecto.Migration
 
   def change do
