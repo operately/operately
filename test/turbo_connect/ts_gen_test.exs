@@ -36,13 +36,51 @@ defmodule TurboConnect.TsGenTest do
     end
   end
 
+  defmodule GetUserQuery do
+    use TurboConnect.Query
+
+    inputs do
+      field :user_id, :integer
+    end
+
+    outputs do
+      field :user, :user
+    end
+
+    def call(%{user_id: user_id}) do
+      user = %{
+        full_name: "John Doe",
+        address: %{
+          street: "123 Main St",
+          city: "Springfield"
+        },
+        posts: [
+          %{
+            title: "Post 1",
+            content: "Content 1"
+          },
+          %{
+            title: "Post 2",
+            content: "Content 2"
+          }
+        ]
+      }
+
+      {:ok, %{user: user}}
+    end
+  end
+
   defmodule ExampleApi do
     use TurboConnect.Api
 
     use_types ExampleTypes
+
+    query :get_user, GetUserQuery
   end
 
   @ts_code """
+  import axios from "axios";
+
   export interface Address {
     street: string;
     city: string;
@@ -73,6 +111,19 @@ defmodule TurboConnect.TsGenTest do
   }
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
+
+  export interface GetUserInput {
+    userId: number;
+  }
+
+  export interface GetUserResult {
+    user: User;
+  }
+
+  export async function getUser(input: GetUserInput): Promise<GetUserResult> {
+    return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
+  }
+
   """
 
   test "generating TypeScript code" do
