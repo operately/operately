@@ -11,6 +11,7 @@ defmodule TurboConnect.QueryTest do
     outputs do
       field :id, :string
       field :name, :string
+      field :hobbies, list_of(:string)
     end
 
     def call(inputs) do
@@ -21,15 +22,15 @@ defmodule TurboConnect.QueryTest do
   end
 
   test "defining a query with inputs and outputs" do
-    assert ExampleQuery.get_specs() == %{
-      inputs: [
-        {:id, :string, []}
-      ],
-      outputs: [
-        {:name, :string, []},
-        {:id, :string, []}
-      ]
-    }
+    assert ExampleQuery.__inputs__() == [
+      {:id, :string, []}
+    ]
+
+    assert ExampleQuery.__outputs__() == [
+      {:id, :string, []},
+      {:name, :string, []},
+      {:hobbies, {:list, :string}, []}
+    ]
   end
 
 end

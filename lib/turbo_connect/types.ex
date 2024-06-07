@@ -5,20 +5,6 @@ defmodule TurboConnect.Types do
       import TurboConnect.Types
       require TurboConnect.Types
 
-      # 
-      # We are hooking into the module attribute system to accumulate the objects
-      # that are defined in the module. 
-      #
-      # The @objects attribute will be a list of tuples, where each tuple contains
-      # the object name and a list of fields.
-      #
-      # The @current_object attribute is used to keep track of the current object
-      # that we are defining fields for.
-      #
-      # Finally, in the __before_compile__ macro, we define a function called get_specs/0
-      # that returns the list of objects that were defined in the module.
-      #
-
       Module.register_attribute(__MODULE__, :objects, accumulate: true)
       Module.register_attribute(__MODULE__, :unions, accumulate: true)
 
@@ -28,37 +14,30 @@ defmodule TurboConnect.Types do
 
   defmacro object(name, do: block) do
     quote do
-      @current_object unquote(name)
+      @scope unquote(name)
       unquote(block)
-      @current_object nil
+      @scope nil
     end
-  end
-
-  defmacro field(name, type, opts \\ []) do
-    quote do
-      object = @current_object
-
-      unless object do
-        raise "field/2 must be called inside an object block"
-      end
-
-      #
-      # Every time we call field/2, we add a new tuple to the list of objects
-      # The tuple contains the object name, the field name, the field type and the field options.
-      # e.g. {:user, :name, :string, []}
-      #
-      @objects {object, unquote(name), unquote(type), unquote(opts)}
-    end
-  end
-
-  def list_of(type) do
-    {:list, type}
   end
 
   defmacro union(name, types: types) do
     quote do
       @unions {unquote(name), unquote(types)}
     end
+  end
+
+  defmacro field(name, type, opts \\ []) do
+    quote do
+      unless @scope do
+        raise "field/2 must be called inside an object block"
+      end
+
+      @scope {@scope, unquote(name), unquote(type), unquote(opts)}
+    end
+  end
+
+  def list_of(type) do
+    {:list, type}
   end
 
   def primitive_types() do
