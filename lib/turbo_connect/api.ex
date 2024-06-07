@@ -38,8 +38,11 @@ defmodule TurboConnect.Api do
         end)
       end
 
-      def get_queries() do
-        @queries
+      def __queries__() do
+        Enum.map(@queries, fn {name, module} ->
+          {name, %{inputs: module.__inputs__(), outputs: module.__outputs__()}}
+        end)
+        |> Enum.into(%{})
       end
     end
   end
