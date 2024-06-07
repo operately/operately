@@ -26,3 +26,9 @@ export function camelCaseToSpacedWords(input: string, options?: { capitalizeFirs
 
   return result;
 }
+
+export function truncateString(str: string, limit: number, suffix: string = "...") {
+  if(str.length <= limit) return str;
+  
+  return str.slice(0, limit).trim() + suffix;
+}
