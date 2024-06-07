@@ -1,4 +1,4 @@
-defmodule Operately.Repo.Migrations.CreateBindings do
+defmodule Operately.Repo.Migrations.CreateAccessBindings do
   use Ecto.Migration
 
   def change do

@@ -1,4 +1,4 @@
-defmodule Operately.Repo.Migrations.CreateContexts do
+defmodule Operately.Repo.Migrations.CreateAccessContexts do
   use Ecto.Migration
 
   def change do
