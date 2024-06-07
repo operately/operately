@@ -79,6 +79,7 @@ defmodule TurboConnect.TsGenTest do
   end
 
   @ts_code """
+  import React from "react";
   import axios from "axios";
 
   export interface Address {
@@ -124,6 +125,9 @@ defmodule TurboConnect.TsGenTest do
     return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
   }
 
+  export function useGetUser(input: GetUserInput) {
+    return useQuery('get_user', () => getUser(input));
+  }
   """
 
   test "generating TypeScript code" do
