@@ -6,6 +6,7 @@ defmodule TurboConnect.Api do
       require TurboConnect.Api
 
       Module.register_attribute(__MODULE__, :typemodules, accumulate: true)
+      Module.register_attribute(__MODULE__, :queries, accumulate: true)
 
       @before_compile unquote(__MODULE__)
     end
@@ -17,17 +18,31 @@ defmodule TurboConnect.Api do
     end
   end
 
+  defmacro query(name, module) do
+    quote do
+      @queries {unquote(name), unquote(module)}
+    end
+  end
+
   defmacro __before_compile__(_) do
     quote do
-      def get_types() do
+      def __types__() do
         Enum.reduce(@typemodules, %{objects: %{}, unions: %{}}, fn module, acc ->
-          specs = apply(module, :get_specs, [])
+          objects = apply(module, :__objects__, [])
+          unions = apply(module, :__unions__, [])
 
-          objects = Map.merge(acc.objects, specs.objects)
-          unions = Map.merge(acc.unions, specs.unions)
+          objects = Map.merge(acc.objects, objects)
+          unions = Map.merge(acc.unions, unions)
 
           %{objects: objects, unions: unions}
         end)
+      end
+
+      def __queries__() do
+        Enum.map(@queries, fn {name, module} ->
+          {name, %{inputs: module.__inputs__(), outputs: module.__outputs__()}}
+        end)
+        |> Enum.into(%{})
       end
     end
   end

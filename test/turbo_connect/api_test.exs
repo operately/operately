@@ -13,31 +13,80 @@ defmodule TurboConnect.ApiTest do
       field :street, :string
       field :city, :string
     end
+
+    union :resource, types: [:user, :address]
+  end
+
+  defmodule ExampleQuery do
+    use TurboConnect.Query
+
+    inputs do
+      field :id, :id
+    end
+
+    outputs do
+      field :user, :user
+    end
+
+    def call(%{id: id}) do
+      res = %{
+        user: %{
+          full_name: "John Doe", 
+          address: %{
+            street: "123 Main St", 
+            city: "Anytown"
+          }
+        }
+      }
+      
+      {:ok, res}
+    end
   end
 
   defmodule ExampleApi do
     use TurboConnect.Api
 
     use_types ExampleTypes
+
+    query :all_users, ExampleQuery
   end
 
-  test "get_types" do
-    assert ExampleApi.get_types() == %{
+  test "__types__ returns the types defined in the module" do
+    assert ExampleApi.__types__() == %{
       objects: %{
         address: %{
           fields: [
-            %{name: :street, type: :string, opts: []},
-            %{name: :city, type: :string, opts: []}
+            {:street, :string, []},
+            {:city, :string, []}
           ]
         },
         user: %{
           fields: [
-            %{name: :full_name, type: :string, opts: []},
-            %{name: :address, type: :address, opts: []}
+            {:full_name, :string, []},
+            {:address, :address, []}
           ]
         }
       },
-      unions: %{}
+      unions: %{
+        resource: [:user, :address]
+      }
+    }
+  end
+
+  test "__queries__ returns the queries defined in the module" do
+    assert ExampleApi.__queries__() == %{
+      all_users: %{
+        inputs: %{
+          fields: [
+            {:id, :id, []}
+          ]
+        },
+        outputs: %{
+          fields: [
+            {:user, :user, []}
+          ]
+        }
+      }
     }
   end
 
