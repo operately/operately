@@ -1,0 +1,127 @@
+
+06:53:53.517 [info] Loading 137 CA(s) from :otp store
+
+06:53:53.598 id=1 [debug] handled request client -> server initialize in 53ms
+
+06:53:53.602 [debug] sent notification server -> client window/logMessage
+
+06:53:53.605 [debug] NextLS v0.22.8 has initialized!
+
+06:53:53.605 [debug] sent notification server -> client window/logMessage
+
+06:53:53.605 [debug] Log file located at /home/dev/code/operately/lib/operately_web/.elixir-tools/next-ls.log
+
+06:53:53.607 [debug] sent notification server -> client window/logMessage
+
+06:53:53.607 [info] [extension] Credo initializing with options %NextLS.InitOpts.Extensions.Credo{enable: true, cli_options: []}
+
+06:53:55.745 [debug] sent notification server -> client window/logMessage
+
+06:53:55.745 [debug] Booting runtimes...
+
+06:53:55.747 id=35 [debug] sent request server -> client window/workDoneProgress/create
+
+06:53:55.750 [debug] sent notification server -> client $/progress
+
+06:53:55.771 [debug] sent notification server -> client window/logMessage
+
+06:53:55.771 [info] Beginning DB migration...
+
+06:53:55.774 [debug] sent notification server -> client window/logMessage
+
+06:53:55.774 [info] Database is on the latest version: 7
+
+06:53:55.774 [debug] sent notification server -> client window/logMessage
+
+06:53:55.774 [info] Finished DB migration...
+
+06:53:55.774 [debug] sent notification server -> client window/logMessage
+
+06:53:55.774 [info] Booting runtime for operately.
+
+- elixir: /home/dev/.asdf/shims/elixir
+- zombie wrapper script: /home/dev/.local/share/.burrito/next_ls_erts-14.2.1_0.22.8/lib/next_ls-0.22.8/priv/cmd
+- working_dir: /home/dev/code/operately
+- command: /home/dev/.asdf/shims/elixir --no-halt --sname nextls-runtime-1717743235774272528 --cookie VSW5V6KTWVUXRC2CHACIXZJ3QA4RP7N55IDNZ4HV5O4DF66HTXBQ==== -S mix loadpaths --no-compile
+
+Environment: 
+
+LSP=nextls
+NEXTLS_PARENT_PID=g1h3H25leHQtbHMtMTcxNzc0MzIzMzUyNjM4NzAxMUBkZXYAAAEQAAAAAGZiroI=
+MIX_ENV=dev
+MIX_TARGET=host
+MIX_BUILD_ROOT=.elixir-tools/_build
+ROOTDIR=false
+BINDIR=false
+RELEASE_ROOT=false
+RELEASE_SYS_CONFIG=false
+PATH=/home/dev/.asdf/shims:/home/dev/.local/share/.burrito/next_ls_erts-14.2.1_0.22.8/bin:/home/dev/.asdf/shims:/home/dev/.asdf/bin:/usr/local/go/bin:/home/dev/go/bin:/home/dev/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/opt/istio-1.0.3/bin
+
+
+06:53:55.775 [debug] handled notification client -> server initialized in 2174ms
+
+06:53:55.777 [debug] handled notification client -> server textDocument/didOpen in 2ms
+
+06:53:55.781 [debug] handled notification client -> server textDocument/didChange in 3ms
+
+06:53:55.781 [debug] handled notification client -> server textDocument/didChange in 72µs
+
+06:53:55.781 [debug] handled notification client -> server textDocument/didChange in 67µs
+
+06:53:55.781 [debug] handled notification client -> server textDocument/didChange in 64µs
+
+06:53:55.781 [debug] handled notification client -> server textDocument/didChange in 72µs
+
+06:53:56.251 [debug] handled notification client -> server textDocument/didChange in 116µs
+
+06:53:56.400 [debug] handled notification client -> server textDocument/didChange in 122µs
+
+06:53:56.666 [debug] handled notification client -> server textDocument/didChange in 405µs
+
+06:53:56.781 [debug] sent notification server -> client window/logMessage
+
+06:53:56.781 [info] Connected to node nextls-runtime-1717743235774272528@dev
+
+06:53:57.006 [debug] handled notification client -> server textDocument/didChange in 120µs
+
+06:53:57.083 [debug] sent notification server -> client $/progress
+
+06:53:57.084 [debug] sent notification server -> client window/logMessage
+
+06:53:57.084 [debug] Runtime for folder operately is ready...
+
+06:53:57.085 id=114 [debug] sent request server -> client window/workDoneProgress/create
+
+06:53:57.086 [debug] sent notification server -> client $/progress
+
+06:53:57.248 [debug] handled notification client -> server textDocument/didChange in 128µs
+
+06:53:57.281 [debug] sent notification server -> client window/logMessage
+
+06:53:57.281 [info] Compiling 3 files (.ex)
+
+
+06:53:57.306 id=83 [debug] sent request server -> client window/workDoneProgress/create
+
+06:53:57.310 [debug] sent notification server -> client $/progress
+
+06:53:57.639 [debug] sent notification server -> client $/progress
+
+06:53:57.927 [debug] handled notification client -> server textDocument/didChange in 145µs
+
+06:53:58.056 id=99 [debug] sent request server -> client window/workDoneProgress/create
+
+06:53:58.057 [debug] sent notification server -> client $/progress
+
+06:53:58.194 [debug] sent notification server -> client $/progress
+
+06:53:59.460 [debug] sent notification server -> client window/logMessage
+
+06:53:59.460 [info] Generated operately app
+
+
+06:53:59.464 [debug] sent notification server -> client $/progress
+
+06:53:59.464 [debug] sent notification server -> client window/logMessage
+
+06:53:59.464 [info] Compiled operately!
