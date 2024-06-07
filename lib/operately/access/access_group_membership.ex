@@ -1,9 +1,6 @@
 defmodule Operately.Access.GroupMembership do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "access_group_memberships" do
     belongs_to :group, Operately.Access.Group
     belongs_to :person, Operately.People.Person
