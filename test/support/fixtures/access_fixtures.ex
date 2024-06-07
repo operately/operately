@@ -4,59 +4,41 @@ defmodule Operately.AccessFixtures do
   entities via the `Operately.Access` context.
   """
 
-  @doc """
-  Generate a access_context.
-  """
-  def access_context_fixture(attrs \\ %{}) do
-    {:ok, access_context} =
+  def context_fixture(attrs \\ %{}) do
+    {:ok, context} =
       attrs
-      |> Enum.into(%{
+      |> Enum.into(%{})
+      |> Operately.Access.create_context()
 
-      })
-      |> Operately.Access.create_access_context()
-
-    access_context
+    context
   end
 
-  @doc """
-  Generate a access_group.
-  """
-  def access_group_fixture(attrs \\ %{}) do
-    {:ok, access_group} =
+  def group_fixture(attrs \\ %{}) do
+    {:ok, group} =
       attrs
-      |> Enum.into(%{
+      |> Enum.into(%{})
+      |> Operately.Access.create_group()
 
-      })
-      |> Operately.Access.create_access_group()
-
-    access_group
+    group
   end
 
-  @doc """
-  Generate a access_binding.
-  """
-  def access_binding_fixture(attrs \\ %{}) do
-    {:ok, access_binding} =
+  def binding_fixture(attrs \\ %{}) do
+    {:ok, binding} =
       attrs
       |> Enum.into(%{
-        access_level: :full_access
+        access_level: 100,
       })
-      |> Operately.Access.create_access_binding()
+      |> Operately.Access.create_binding()
 
-    access_binding
+    binding
   end
 
-  @doc """
-  Generate a access_group_membership.
-  """
-  def access_group_membership_fixture(attrs \\ %{}) do
-    {:ok, access_group_membership} =
+  def group_membership_fixture(attrs \\ %{}) do
+    {:ok, group_membership} =
       attrs
-      |> Enum.into(%{
+      |> Enum.into(%{})
+      |> Operately.Access.create_group_membership()
 
-      })
-      |> Operately.Access.create_access_group_membership()
-
-    access_group_membership
+    group_membership
   end
 end
