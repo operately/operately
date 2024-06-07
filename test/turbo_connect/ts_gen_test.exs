@@ -46,6 +46,28 @@ defmodule TurboConnect.TsGenTest do
     outputs do
       field :user, :user
     end
+
+    def call(%{user_id: user_id}) do
+      user = %{
+        full_name: "John Doe",
+        address: %{
+          street: "123 Main St",
+          city: "Springfield"
+        },
+        posts: [
+          %{
+            title: "Post 1",
+            content: "Content 1"
+          },
+          %{
+            title: "Post 2",
+            content: "Content 2"
+          }
+        ]
+      }
+
+      {:ok, %{user: user}}
+    end
   end
 
   defmodule ExampleApi do
