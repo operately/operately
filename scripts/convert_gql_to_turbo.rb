@@ -23,6 +23,7 @@ def convert_field_type(type)
          when "ID" then "string"
          when "NaiveDateTime" then "datetime"
          when "DateTime" then "datetime"
+         when "UtcDatetime" then "datetime"
          else type
          end
 
@@ -87,8 +88,8 @@ def convert_spec
   end
 end
 
-puts "defmodule OperatelyWeb.Api do"
-puts "  use TurboConnect.Specs"
+puts "defmodule OperatelyWeb.Api.Types do"
+puts "  use TurboConnect.Types"
 puts ""
 convert_spec
 puts "end"

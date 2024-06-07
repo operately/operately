@@ -3,9 +3,10 @@ defmodule TurboConnect.TsGen do
   This module generates TypeScript code from the specs defined with TurboConnect.Specs.
   """
 
-  def generate(specs) do
-    interfaces = generate_object_interfaces(specs.objects)
-    unions = generate_union_types(specs.unions)
+  def generate(api_module) do
+    types = api_module.get_types()
+    interfaces = generate_object_interfaces(types.objects)
+    unions = generate_union_types(types.unions)
 
     interfaces <> "\n\n" <> unions <> "\n"
   end

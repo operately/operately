@@ -1,8 +1,8 @@
 defmodule TurboConnect.TsGenTest do
   use ExUnit.Case
 
-  defmodule TestSpec do
-    use TurboConnect.Specs
+  defmodule ExampleTypes do
+    use TurboConnect.Types
 
     object :user do
       field :full_name, :string
@@ -34,6 +34,12 @@ defmodule TurboConnect.TsGenTest do
     object :user_removed_event do
       field :user_id, :integer
     end
+  end
+
+  defmodule ExampleApi do
+    use TurboConnect.Api
+
+    use_types ExampleTypes
   end
 
   @ts_code """
@@ -70,9 +76,7 @@ defmodule TurboConnect.TsGenTest do
   """
 
   test "generating TypeScript code" do
-    spec = TestSpec.get_specs()
-
-    assert TurboConnect.TsGen.generate(spec) === @ts_code
+    assert TurboConnect.TsGen.generate(ExampleApi) === @ts_code
   end
 
 end

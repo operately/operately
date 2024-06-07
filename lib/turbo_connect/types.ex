@@ -1,9 +1,9 @@
-defmodule TurboConnect.Specs do
+defmodule TurboConnect.Types do
 
   defmacro __using__(_) do
     quote do
-      import TurboConnect.Specs
-      require TurboConnect.Specs
+      import TurboConnect.Types
+      require TurboConnect.Types
 
       # 
       # We are hooking into the module attribute system to accumulate the objects
@@ -77,7 +77,7 @@ defmodule TurboConnect.Specs do
   defmacro __before_compile__(_) do
     quote do
       def get_specs() do
-        alias TurboConnect.Specs.Utils
+        alias TurboConnect.Types.Utils
 
         validate_specs()
 
@@ -85,7 +85,7 @@ defmodule TurboConnect.Specs do
       end
 
       def validate_specs() do
-        alias TurboConnect.Specs.Utils
+        alias TurboConnect.Types.Utils
 
         map = Utils.definitions_to_map(@objects)
 
@@ -196,7 +196,7 @@ defmodule TurboConnect.Specs do
     def raise_unknown_field_type(object_name, field_name, field_type) do
       message = "In object :#{object_name}, the :#{field_name} field has an unknown type :#{field_type}"
 
-      raise TurboConnect.Specs.UnknownFieldType, message: message
+      raise TurboConnect.Types.UnknownFieldType, message: message
     end
   end
 end
