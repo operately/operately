@@ -3,50 +3,37 @@ defmodule TurboConnect.TsGen do
   This module generates TypeScript code from the specs defined with TurboConnect.Specs.
   """
 
+  @spec generate(module) :: String.t()
   def generate(api_module) do
-    types = api_module.get_types()
-    interfaces = generate_object_interfaces(types.objects)
-    unions = generate_union_types(types.unions)
+    %{objects: objects, unions: unions} = api_module.__types__()
 
-    interfaces <> "\n\n" <> unions <> "\n"
+    convert_objects(objects) <> "\n\n" <> convert_unions(unions) <> "\n"
   end
 
-  defp generate_union_types(unions) do
-    unions
-    |> Enum.map(&generate_union_type/1)
-    |> Enum.join("\n")
+  def convert_objects(objects), do: Enum.map_join(objects, "\n\n", &convert_object/1)
+  def convert_unions(unions), do: Enum.map_join(unions, "\n\n", &convert_union/1)
+  def convert_fields(fields), do: Enum.map_join(fields, "\n", &convert_field/1)
+
+  def convert_object({name, object}) do
+    "export interface #{ts_type(name)} {\n#{convert_fields(object.fields)}\n}"
   end
 
-  defp generate_union_type({name, types}) do
-    types_code = Enum.map(types, &to_js_type/1)
-    types_code = Enum.join(types_code, " | ")
-
-    "export type #{to_js_type(name)} = #{types_code};"
+  def convert_field({name, type, _opts}) do
+    "  #{ts_field_name(name)}: #{ts_type(type)};"
   end
 
-  defp generate_object_interfaces(objects) do
-    objects
-    |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map(&generate_object/1)
-    |> Enum.join("\n\n")
+  def ts_field_name(name) do
+    result = name |> Atom.to_string() |> Macro.camelize()
+    String.downcase(String.at(result, 0)) <> String.slice(result, 1..-1)
   end
 
-  defp generate_object({name, object}) do
-    fields = object.fields
-    fields_code = Enum.map(fields, &generate_field/1)
-    fields_code = Enum.join(fields_code, "\n") |> indent(2)
-
-    "export interface #{to_js_type(name)} {\n#{fields_code}\n}"
+  def convert_union({name, types}) do
+    "export type #{ts_type(name)} = #{Enum.map_join(types, " | ", &ts_type/1)};"
   end
 
-  defp generate_field(field) do
-    "#{ts_field_name(field.name)}: #{to_js_type(field.type)};"
-  end
-
-  def to_js_type(type) do
+  def ts_type(type) do
     case type do
-      {:list, type} -> "#{to_js_type(type)}[]"
-      {:one_of, types} -> types |> Enum.map(&to_js_type/1) |> Enum.join(" | ")
+      {:list, type} -> ts_type(type) <> "[]"
 
       :string -> "string"
       :integer -> "number"
@@ -60,18 +47,5 @@ defmodule TurboConnect.TsGen do
 
       _ -> raise ArgumentError, "Unknown type: #{inspect(type)}"
     end
-  end
-
-  def ts_field_name(name) do
-    result = name |> Atom.to_string() |> Macro.camelize()
-
-    String.downcase(String.at(result, 0)) <> String.slice(result, 1..-1)
-  end
-
-  def indent(str, n) do
-    str
-    |> String.split("\n")
-    |> Enum.map(&"#{String.duplicate(" ", n)}#{&1}")
-    |> Enum.join("\n")
   end
 end

@@ -3,7 +3,7 @@ defmodule TurboConnect.Fields do
   This module provides the `field/2` and `list_of/1` macros to be used for
   defining fields in objects, queries, and mutations.
 
-  The `field/2` macro expects the scope to be set before calling it.
+  The `field/2` macro expects the field_scope to be set before calling it.
   """
 
   defmacro __using__(_) do
@@ -18,11 +18,11 @@ defmodule TurboConnect.Fields do
 
   defmacro field(name, type, opts \\ []) do
     quote do
-      if is_nil(@scope) do
+      if is_nil(@field_scope) do
         raise "field/2 must be called inside an object, inputs or outputs block"
       end
 
-      @fields {@scope, unquote(name), unquote(type), unquote(opts)}
+      @fields {@field_scope, unquote(name), unquote(type), unquote(opts)}
     end
   end
 
@@ -58,21 +58,26 @@ defmodule TurboConnect.Fields do
     ]
   
     fields_to_map(fields) => %{
-      user: [
-        {:name, :string, []},
-        {:age, :integer, []},
-        {:hobbies, {:list, :string}, []}
-      ],
-      post: [
-        {:title, :string, []},
-        {:content, :string, []}
-      ]
+      user: %{
+        field: [
+          {:name, :string, []},
+          {:age, :integer, []},
+          {:hobbies, {:list, :string}, []}
+        ]
+      },
+      post: %{
+        field: [
+          {:title, :string, []},
+          {:content, :string, []}
+        ]
+      }
     }
   """
   def fields_to_map(fields) do
     fields
     |> Enum.reverse()
     |> Enum.group_by(&elem(&1, 0), &{elem(&1, 1), elem(&1, 2), elem(&1, 3)})
+    |> Enum.map(fn {scope, fields} -> {scope, %{fields: fields}} end)
     |> Enum.into(%{})
   end
 

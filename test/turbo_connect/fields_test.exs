@@ -4,27 +4,31 @@ defmodule TurboConnect.FieldsTest do
   defmodule Example do
     use TurboConnect.Fields
 
-    @scope :user
+    @field_scope :user
     field :name, :string
     field :age, :integer
     field :hobbies, list_of(:string)
 
-    @scope :post
+    @field_scope :post
     field :title, :string
     field :content, :string
   end
 
   test "defining fields" do
     assert Example.__fields__() == %{
-      user: [
-        {:name, :string, []},
-        {:age, :integer, []},
-        {:hobbies, {:list, :string}, []}
-      ],
-      post: [
-        {:title, :string, []},
-        {:content, :string, []}
-      ]
+      user: %{
+        fields: [
+          {:name, :string, []},
+          {:age, :integer, []},
+          {:hobbies, {:list, :string}, []}
+        ]
+      },
+      post: %{
+        fields: [
+          {:title, :string, []},
+          {:content, :string, []}
+        ]
+      }
     }
   end
 

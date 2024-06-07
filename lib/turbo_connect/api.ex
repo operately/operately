@@ -26,12 +26,13 @@ defmodule TurboConnect.Api do
 
   defmacro __before_compile__(_) do
     quote do
-      def get_types() do
+      def __types__() do
         Enum.reduce(@typemodules, %{objects: %{}, unions: %{}}, fn module, acc ->
-          specs = apply(module, :get_specs, [])
+          objects = apply(module, :__objects__, [])
+          unions = apply(module, :__unions__, [])
 
-          objects = Map.merge(acc.objects, specs.objects)
-          unions = Map.merge(acc.unions, specs.unions)
+          objects = Map.merge(acc.objects, objects)
+          unions = Map.merge(acc.unions, unions)
 
           %{objects: objects, unions: unions}
         end)

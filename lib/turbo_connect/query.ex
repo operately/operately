@@ -10,17 +10,17 @@ defmodule TurboConnect.Query do
 
   defmacro inputs(do: block) do
     quote do
-      @scope :inputs
+      @field_scope :inputs
       unquote(block)
-      @scope nil
+      @field_scope nil
     end
   end
 
   defmacro outputs(do: block) do
     quote do
-      @scope :outputs
+      @field_scope :outputs
       unquote(block)
-      @scope nil
+      @field_scope nil
     end
   end
 

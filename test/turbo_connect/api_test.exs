@@ -13,6 +13,8 @@ defmodule TurboConnect.ApiTest do
       field :street, :string
       field :city, :string
     end
+
+    union :resource, types: [:user, :address]
   end
 
   defmodule ExampleApi do
@@ -22,22 +24,24 @@ defmodule TurboConnect.ApiTest do
   end
 
   test "get_types" do
-    assert ExampleApi.get_types() == %{
+    assert ExampleApi.__types__() == %{
       objects: %{
         address: %{
           fields: [
-            %{name: :street, type: :string, opts: []},
-            %{name: :city, type: :string, opts: []}
+            {:street, :string, []},
+            {:city, :string, []}
           ]
         },
         user: %{
           fields: [
-            %{name: :full_name, type: :string, opts: []},
-            %{name: :address, type: :address, opts: []}
+            {:full_name, :string, []},
+            {:address, :address, []}
           ]
         }
       },
-      unions: %{}
+      unions: %{
+        resource: [:user, :address]
+      }
     }
   end
 
