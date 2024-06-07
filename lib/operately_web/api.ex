@@ -5,5 +5,5 @@ defmodule OperatelyWeb.Api do
 
   # middleware OperatelyWeb.Api.Middleware.Authenticate
 
-  # query :get_activities, OperatelyWeb.Api.Queries.GetActivities
+  query :get_activities, OperatelyWeb.Api.Queries.GetActivities
 end

@@ -6,6 +6,7 @@ defmodule TurboConnect.Api do
       require TurboConnect.Api
 
       Module.register_attribute(__MODULE__, :typemodules, accumulate: true)
+      Module.register_attribute(__MODULE__, :queries, accumulate: true)
 
       @before_compile unquote(__MODULE__)
     end
@@ -14,6 +15,12 @@ defmodule TurboConnect.Api do
   defmacro use_types(module) do
     quote do
       @typemodules unquote(module)
+    end
+  end
+
+  defmacro query(name, module) do
+    quote do
+      @queries {unquote(name), unquote(module)}
     end
   end
 
@@ -28,6 +35,10 @@ defmodule TurboConnect.Api do
 
           %{objects: objects, unions: unions}
         end)
+      end
+
+      def get_queries() do
+        @queries
       end
     end
   end
