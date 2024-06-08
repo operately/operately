@@ -61,15 +61,6 @@ defmodule OperatelyWeb.Router do
     pipe_through [:browser]
 
     delete "/accounts/log_out", AccountSessionController, :delete
-
-    #
-    # Generated with mix phx.gen.auth
-    #
-    # get "/accounts/confirm", AccountConfirmationController, :new
-    # post "/accounts/confirm", AccountConfirmationController, :create
-    # get "/accounts/confirm/:token", AccountConfirmationController, :edit
-    # post "/accounts/confirm/:token", AccountConfirmationController, :update
-
     get "/accounts/auth/:provider", AccountOauthController, :request
     get "/accounts/auth/:provider/callback", AccountOauthController, :callback
   end
@@ -80,6 +71,14 @@ defmodule OperatelyWeb.Router do
     pipe_through [:api, :graphql]
 
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Graphql.Schema
+  end
+
+  if Application.compile_env(:operately, :dev_routes) || Application.compile_env(:operately, :test_routes) do
+    scope "/api" do
+      pipe_through [:api]
+
+      forward "/v2", OperatelyWeb.Api
+    end
   end
 
   if Application.compile_env(:operately, :dev_routes) do
