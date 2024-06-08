@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Certification do
     case Application.get_env(:operately, :app_env) do
       :prod -> "https://acme-v02.api.letsencrypt.org/directory"
       :dev -> {:internal, port: 4003}
-      _ -> ""
+      :test -> {:internal, port: 4004}
     end
   end
 
