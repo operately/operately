@@ -4,10 +4,10 @@ defmodule OperatelyWeb.Certification do
   """ 
 
   def directory_url do
-    if Application.get_env(:operately, :app_env) == :prod do
-      "https://acme-v02.api.letsencrypt.org/directory"
-    else
-      {:internal, port: 4003}
+    case Application.get_env(:operately, :app_env) do
+      :prod -> "https://acme-v02.api.letsencrypt.org/directory"
+      :dev -> {:internal, port: 4003}
+      :test -> {:internal, port: 4004}
     end
   end
 
