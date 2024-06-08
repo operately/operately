@@ -1,5 +1,6 @@
 defmodule TurboConnect.ApiTest do
   use ExUnit.Case
+  use Plug.Test
 
   defmodule ExampleTypes do
     use TurboConnect.Types
@@ -28,7 +29,7 @@ defmodule TurboConnect.ApiTest do
       field :user, :user
     end
 
-    def call(%{id: id}) do
+    def call(_) do
       res = %{
         user: %{
           full_name: "John Doe", 
@@ -48,7 +49,7 @@ defmodule TurboConnect.ApiTest do
 
     use_types ExampleTypes
 
-    query :all_users, ExampleQuery
+    query :get_user, ExampleQuery
   end
 
   test "__types__ returns the types defined in the module" do
@@ -75,7 +76,8 @@ defmodule TurboConnect.ApiTest do
 
   test "__queries__ returns the queries defined in the module" do
     assert ExampleApi.__queries__() == %{
-      all_users: %{
+      get_user: %{
+        handler: ExampleQuery,
         inputs: %{
           fields: [
             {:id, :id, []}
@@ -88,6 +90,29 @@ defmodule TurboConnect.ApiTest do
         }
       }
     }
+  end
+
+  describe "routing" do
+    test "route queries to the correct handler" do
+      conn = conn(:get, "/get_user")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 200
+    end
+
+    test "return 404 for unknown queries" do
+      conn = conn(:get, "/unknown_query")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 404
+    end
+
+    test "return 400 for invalid queries" do
+      conn = conn(:get, "")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 400
+    end
   end
 
 end
