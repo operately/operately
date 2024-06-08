@@ -10,63 +10,10 @@ defmodule TurboConnect.Api do
 
       @before_compile unquote(__MODULE__)
 
-      import Plug.Conn
-      require Logger
+      use Plug.Builder
 
-      def init(opts) do
-        opts
-      end
-
-      def call(conn, opts) do
-        case conn.method do
-          "GET" -> get(conn, opts)
-          _ -> send_resp(conn, 405, "Method Not Allowed")
-        end
-      rescue
-        e -> handle_error(conn, e)
-      end
-
-      defp get(conn, opts) do
-        with {:ok, name} <- find_query_name(conn),
-             {:ok, query} <- find_query(name),
-             {:ok, result} <- query.handler.call(conn) do
-          send_resp(conn, 200, Jason.encode!(result))
-        else
-          e -> handle_error(conn, e)
-        end
-      end
-
-      defp find_query_name(conn) do
-        case conn.path_info do
-          [] -> {:error, 400, "Missing query name"}
-          [name] -> {:ok, String.to_existing_atom(name)}
-          _ -> {:error, 400, "Invalid query name"}
-        end
-      rescue
-        e -> {:error, 404, "Uknown query"}
-      end
-
-      defp find_query(name) do
-        case Map.get(__queries__(), name) do
-          nil -> {:error, 404, "Query not found"}
-          query -> {:ok, query}
-        end
-      end
-
-      defp handle_error(conn, {:error, 400, message}) do
-        Logger.info("HTTP 400: #{message}")
-        send_resp(conn, 400, "Bad Request")
-      end
-
-      defp handle_error(conn, {:error, 404, message}) do
-        Logger.info("HTTP 404: #{message}")
-        send_resp(conn, 404, "Not Found")
-      end
-
-      defp handle_error(conn, e) do
-        Logger.error("HTTP 500: #{inspect(e)}")
-        send_resp(conn, 500, "Internal Server Error")
-      end
+      plug TurboConnect.Plugs.Match, __MODULE__
+      plug TurboConnect.Plugs.Dispatch
     end
   end
 
