@@ -12,13 +12,24 @@ defmodule OperatelyWeb.Graphql.Mutations.Blobs do
       resolve fn args, %{context: context} ->
         person = context.current_account.person
 
-        Operately.Blobs.create_blob(%{
-          company_id: person.company_id,
-          author_id: person.id,
-          status: :pending,
-          filename: args.input.filename
-        })
-      end 
+        if System.get_env("OPERATELY_STORAGE_TYPE") == "s3" do
+          Operately.Blobs.create_blob(%{
+            company_id: person.company_id,
+            author_id: person.id,
+            status: :pending,
+            filename: args.input.filename,
+            storage_type: :s3
+          })
+        else
+          Operately.Blobs.create_blob(%{
+            company_id: person.company_id,
+            author_id: person.id,
+            status: :pending,
+            filename: args.input.filename,
+            storage_type: :local
+          })
+        end
+      end
     end
   end
 end

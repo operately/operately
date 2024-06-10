@@ -81,6 +81,10 @@ services:
       - debug=true
       - retainFilesOnExit=true
       - root=containers3root
+      - S3MOCK_CORS_ALLOWED_ORIGINS=*
+      - S3MOCK_CORS_ALLOWED_METHODS=GET,PUT,POST,DELETE
+      - S3MOCK_CORS_ALLOWED_HEADERS=Authorization,Content-Type
+      - initialBuckets=operately
     ports:
       - "9090:9090"
     volumes:

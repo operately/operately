@@ -10,6 +10,7 @@ const CREATE_BLOB_MUTATION = gql`
     createBlob(input: $input) {
       url
       signedUploadUrl
+      storageType
     }
   }
 `;
