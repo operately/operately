@@ -4,12 +4,15 @@ defmodule Mix.Tasks.Operately.Gen.Api.Query do
   def run([name]) do
     check_name(name)
     ensure_query_folder_exists()
+    ensure_query_test_folder_exists()
 
     file_name = "lib/operately_web/api/queries/#{name}.ex"
     module_name = "OperatelyWeb.Api.Queries.#{Macro.camelize(name)}"
+    test_file_name = "test/operately_web/api/queries/#{name}_test.exs"
 
     generate(file_name, module_name)
     register_query(name, module_name)
+    generate_test(test_file_name, module_name)
   end
 
   def generate(file_name, module_name) do
@@ -34,6 +37,16 @@ defmodule Mix.Tasks.Operately.Gen.Api.Query do
     end)
   end
 
+  def generate_test(file_name, module_name) do
+    generate_file(file_name, fn _path ->
+      """
+      defmodule #{module_name}Test do
+        use OperatelyWeb.ConnCase
+      end 
+      """
+    end)
+  end
+  
   def register_query(name, module_name) do
     file_path = "lib/operately_web/api.ex"
     register = "  query :#{name}, #{module_name}"
@@ -51,6 +64,10 @@ defmodule Mix.Tasks.Operately.Gen.Api.Query do
 
   defp ensure_query_folder_exists() do
     File.mkdir_p("lib/operately_web/api/queries")
+  end
+
+  defp ensure_query_test_folder_exists() do
+    File.mkdir_p("test/operately_web/api/queries")
   end
 
   defp check_name(name) do
