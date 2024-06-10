@@ -45,4 +45,8 @@ defmodule Operately.Blobs do
 
     "#{host}/media/#{path}?token=#{token}"
   end
+
+  def get_s3_signed_url(filename, storage_bucket) do
+    {:ok, signed_url} = ExAws.S3.presign_url(:put_object, storage_bucket, filename)
+  end
 end
