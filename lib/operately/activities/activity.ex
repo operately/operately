@@ -17,6 +17,8 @@ defmodule Operately.Activities.Activity do
     belongs_to :author, Operately.People.Person
     belongs_to :comment_thread, Operately.Comments.CommentThread
 
+    has_one :access_context, Operately.Access.Context, foreign_key: :activity_id
+
     field :action, :string
     field :content, :map
 
