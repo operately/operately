@@ -13,16 +13,17 @@ export const S3Upload = async (file) => {
       headers: {
         "Content-Type": file.type,
         "Access-Control-Allow-Origin": "*",
-      }
+      },
     };
-    const response = await axios.put(signedUploadUrl, file, config);
 
+    const response = await axios.put(signedUploadUrl, file, config);
     if (response.status === 200) {
       return signedUploadUrl;
     } else {
       throw new Error(`Upload failed with status ${response.status}`);
     }
   } catch (error) {
+    console.error(error);
     throw new Error("File upload failed");
   }
 };
