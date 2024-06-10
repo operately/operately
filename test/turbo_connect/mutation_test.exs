@@ -23,15 +23,14 @@ defmodule TurboConnect.MutationTest do
   test "defining a mutation with inputs and outputs" do
     assert ExampleMutation.__inputs__() == %{
       fields: [
-        {:id, :string, []}
+        {:name, :string, []},
+        {:age, :integer, []}
       ]
     }
 
     assert ExampleMutation.__outputs__() == %{
       fields: [
-        {:id, :string, []},
-        {:name, :string, []},
-        {:hobbies, {:list, :string}, []}
+        {:user, :user, []}
       ]
     }
   end
