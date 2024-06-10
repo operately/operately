@@ -1,21 +1,20 @@
+import { CreateBlob } from "@/graphql/Blobs";
 import axios from "axios";
 
 /**
  * @param {File} file
  * @returns {Promise<string>}
  */
-export const S3Upload = async (file: File): Promise<string> => {
-  const bucketUrl = "http://localhost:9090/avatars-bucket/";
-  const signedUploadUrl = `${bucketUrl}/${file.name}`;
-
+export const S3Upload = async (file) => {
   try {
-    const config : any = {
-        headers: {
-          "Content-Type": file.type,
-          "Access-Control-Allow-Origin": "*",
-        }
-      };
-
+    const { data } = await CreateBlob({ filename: file.name });
+    const signedUploadUrl = data.createBlob.signedUploadUrl;
+    const config = {
+      headers: {
+        "Content-Type": file.type,
+        "Access-Control-Allow-Origin": "*",
+      }
+    };
     const response = await axios.put(signedUploadUrl, file, config);
 
     if (response.status === 200) {
@@ -23,7 +22,7 @@ export const S3Upload = async (file: File): Promise<string> => {
     } else {
       throw new Error(`Upload failed with status ${response.status}`);
     }
-  } catch (error: any) {
+  } catch (error) {
     throw new Error("File upload failed");
   }
 };
