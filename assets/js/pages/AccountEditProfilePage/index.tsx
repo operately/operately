@@ -8,7 +8,7 @@ import PeopleSearch from "@/components/PeopleSearch";
 import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
-import configStorageUsage from "@/contexts/storageType.local";
+import { CreateBlob } from "@/graphql/Blobs";
 
 export async function loader() {
   return null;
@@ -121,13 +121,13 @@ function ProfileForm({ me }) {
   };
 
   async function uploadFile(file: File) {
-    // create a blob
-    const blob = 
+    const blob = await CreateBlob({ filename: file.name });
+    console.log(blob.data);
 
-    if(blob.storageType === "s3") {
-      await S3FileUploader(file)
-    } else {
+    if(blob.data.createBlob.storageType === "local") {
       await handleFileUpload(file);
+    } else {
+      await S3FileUploader(file);
     }
   }
 

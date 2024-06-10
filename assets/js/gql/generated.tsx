@@ -495,6 +495,7 @@ export type Blob = {
   signedUploadUrl: Scalars['String']['output'];
   status: Scalars['String']['output'];
   url: Scalars['String']['output'];
+  storageType: Scalars['String']['output'];
 };
 
 export type BlobInput = {
