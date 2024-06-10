@@ -39,7 +39,7 @@ defmodule Mix.Tasks.Operately.Gen.Api.Query do
     register = "  query :#{name}, #{module_name}"
     line = find_query_insertion_point()
 
-    inject_into_file(file_path, register, line)
+    inject_into_file(file_path, register, line + 1)
   end
 
   def find_query_insertion_point do
