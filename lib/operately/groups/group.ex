@@ -4,6 +4,8 @@ defmodule Operately.Groups.Group do
   schema "groups" do
     has_many :members, Operately.Groups.Member, foreign_key: :group_id
 
+    has_one :access_context, Operately.Access.Context, foreign_key: :group_id
+
     field :company_id, :binary_id
     field :name, :string
     field :mission, :string
