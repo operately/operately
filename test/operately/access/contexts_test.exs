@@ -77,12 +77,23 @@ defmodule Operately.AccessContextsTest do
       assert nil != Access.get_context_by_project!(project.id)
     end
 
+    test "create access_context for an activity", ctx do
+      attrs = %{activity_id: ctx.activity.id}
+
+      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+    end
+
     test "access_context cannot be attached to more than one entity", ctx do
       attrs = %{project_id: ctx.project.id, group_id: ctx.group.id}
-
       changeset = Context.changeset(%Context{}, attrs)
-      refute changeset.valid?
 
+      refute changeset.valid?
+      assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
+
+      attrs = %{activity_id: ctx.activity.id, group_id: ctx.group.id}
+      changeset = Context.changeset(%Context{}, attrs)
+
+      refute changeset.valid?
       assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
     end
   end
