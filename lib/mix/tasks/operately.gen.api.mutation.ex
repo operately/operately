@@ -59,14 +59,14 @@ defmodule Mix.Tasks.Operately.Gen.Api.Mutation do
     "lib/operately_web/api.ex"
     |> File.read!()
     |> String.split("\n")
-    |> Enum.find_index(fn line -> String.contains?(line, "mutation:") end)
+    |> Enum.find_index(fn line -> String.contains?(line, "mutation :") end)
   end
 
-  defp ensure_query_folder_exists() do
+  defp ensure_mutations_folder_exists() do
     File.mkdir_p("lib/operately_web/api/mutations")
   end
 
-  defp ensure_query_test_folder_exists() do
+  defp ensure_mutations_test_folder_exists() do
     File.mkdir_p("test/operately_web/api/mutations")
   end
 
