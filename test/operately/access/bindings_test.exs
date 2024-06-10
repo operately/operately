@@ -5,12 +5,20 @@ defmodule Operately.AccessBindingsTest do
   alias Operately.Access.Binding
 
   import Operately.AccessFixtures
+  import Operately.PeopleFixtures
+  import Operately.ProjectsFixtures
+  import Operately.CompaniesFixtures
 
   describe "access_bindings" do
     @invalid_attrs %{access_level: 11}
 
     setup do
-      context = context_fixture()
+      company = company_fixture()
+      creator = person_fixture_with_account(%{company_id: company.id})
+      group = Operately.GroupsFixtures.group_fixture(creator)
+      project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
+
+      context = context_fixture(%{project_id: project.id})
       group = group_fixture()
 
       {:ok, %{context: context, group: group}}
