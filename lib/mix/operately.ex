@@ -3,7 +3,7 @@ defmodule Mix.Operately do
 
   def generate_file(path, generator) do
     if File.exists?(path) do
-      IO.puts "#{IO.ANSI.green()}Aborting#{IO.ANSI.reset()} #{path} already exists"
+      IO.puts "#{IO.ANSI.red()}Aborting#{IO.ANSI.reset()} #{path} already exists"
       System.halt(1)
     else
       generate_file!(path, generator)
