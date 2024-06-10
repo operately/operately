@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Graphql.Types.Blobs do
     field :author, non_null(:person)
     field :status, non_null(:string)
     field :filename, non_null(:string)
+    field :storage_type, :string
 
     field :url, non_null(:string) do
       resolve fn blob, _, _ ->

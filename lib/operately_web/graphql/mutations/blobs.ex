@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Blobs do
       resolve fn args, %{context: context} ->
         person = context.current_account.person
 
-        if Application.get_env("OPERATELY_STORAGE_TYPE") == :s3 do
+        if System.get_env("REACT_APP_STORAGE_TYPE") == "s3" do
           Operately.Blobs.create_blob(%{
             company_id: person.company_id,
             author_id: person.id,
@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Blobs do
             storage_type: :local
           })
         end
-      end 
+      end
     end
   end
 end
