@@ -5,6 +5,8 @@ defmodule Operately.Companies.Company do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "companies" do
+    has_one :access_context, Operately.Access.Context, foreign_key: :company_id
+
     field :mission, :string
     field :name, :string
     field :trusted_email_domains, {:array, :string}
