@@ -67,7 +67,7 @@ defmodule TurboConnect.Plugs.Match do
   def resolve_mutation_handler(conn) do
     conn
     |> get_mutations()
-    |> Map.get(conn.turbo_connect.name)
+    |> Map.get(conn.assigns.turbo_req_name)
     |> case do
       nil -> err_mutation_not_found(conn)
       mutation -> assign(conn, :turbo_req_handler, mutation.handler)

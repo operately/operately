@@ -70,12 +70,30 @@ defmodule TurboConnect.TsGenTest do
     end
   end
 
+  defmodule CreateUserMutation do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :full_name, :string
+      field :address, :address
+    end
+
+    outputs do
+      field :user, :user
+    end
+
+    def call(_conn, _inputs) do
+      {:ok, nil}
+    end
+  end
+
   defmodule ExampleApi do
     use TurboConnect.Api
 
     use_types ExampleTypes
 
     query :get_user, GetUserQuery
+    mutation :create_user, CreateUserMutation
   end
 
   @ts_code """
@@ -145,6 +163,43 @@ defmodule TurboConnect.TsGenTest do
   export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
     return useQuery<GetUserResult>(() => getUser(input));
   }
+
+
+  type UseMutationHookResult<InputT, ResultT> = [() => Promise<ResultT>, { data: ResultT | null, loading: boolean, error: Error | null }];
+
+  export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<ResultT>) : UseMutationHookResult<InputT, ResultT> {
+    const [data, setData] = React.useState<ResultT | null>(null);
+    const [loading, setLoading] = React.useState<boolean>(false);
+    const [error, setError] = React.useState<Error | null>(null);
+
+    const execute = (input: InputT) => {
+      setLoading(true);
+      setError(null);
+
+      fn(input).then(setData).catch(setError).finally(() => setLoading(false));
+    };
+
+    return [execute, { data, loading, error }];
+  }
+
+  export interface CreateUserInput {
+    fullName: string;
+    address: Address;
+  }
+
+  export interface CreateUserResult {
+    user: User;
+  }
+
+  export function createUser(input: CreateUserInput): Promise<CreateUserResult> {
+    return axios.post('/api/create_user', input).then(({ data }) => data);
+  }
+
+  export function useCreateUser() : UseMutationHookResult<CreateUserInput, CreateUserResult> {
+    return useMutation<CreateUserInput, CreateUserResult>(createUser);
+  }
+
+
   """
 
   test "generating TypeScript code" do
