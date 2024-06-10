@@ -13,6 +13,8 @@ defmodule Operately.Projects.Project do
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
     has_many :check_ins, Operately.Projects.CheckIn, foreign_key: :project_id
 
+    has_one :access_context, Operately.Access.Context, foreign_key: :project_id
+
     field :description, :map
     field :name, :string
     field :private, :boolean, default: false
