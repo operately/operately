@@ -716,6 +716,7 @@ defmodule OperatelyWeb.Api.Types do
     field :filename, :string
     field :url, :string
     field :signed_upload_url, :string
+    field :storage_type, :string
   end
 
   union :activity_resource_union, types: [
