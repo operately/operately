@@ -8,8 +8,8 @@ defmodule Operately.Activities.Activity do
     "project_status_update_submitted",
     "project_review_submitted",
     "project_review_request_submitted",
-    "project_review_request_acknowledged",
-    "project_review_request_commented",
+    "project_review_acknowledged",
+    "project_review_commented",
   ]
 
   schema "activities" do
