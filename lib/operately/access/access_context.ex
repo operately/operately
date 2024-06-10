@@ -4,6 +4,7 @@ defmodule Operately.Access.Context do
   schema "access_contexts" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
+    belongs_to :activity, Operately.Activities.Activity, foreign_key: :activity_id
 
     timestamps()
   end
@@ -14,13 +15,13 @@ defmodule Operately.Access.Context do
 
   def changeset(context, attrs) do
     context
-    |> cast(attrs, [:project_id, :group_id])
+    |> cast(attrs, [:project_id, :group_id, :activity_id])
     |> validate_one_association
     |> validate_required([])
   end
 
   defp validate_one_association(changeset) do
-    fields = [:project_id, :group_id]
+    fields = [:project_id, :group_id, :activity_id]
     count = Enum.count(fields, fn field -> get_field(changeset, field) != nil end)
 
     if count == 1 do
