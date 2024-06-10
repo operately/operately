@@ -122,7 +122,6 @@ function ProfileForm({ me }) {
 
   async function uploadFile(file: File) {
     const blob = await CreateBlob({ filename: file.name });
-    console.log(blob.data);
 
     if(blob.data.createBlob.storageType === "local") {
       await handleFileUpload(file);
