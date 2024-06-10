@@ -6,6 +6,21 @@ defmodule OperatelyWeb.Api do
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount
 
   query :get_activities, OperatelyWeb.Api.Queries.GetActivities
+  query :get_comments, OperatelyWeb.Api.Queries.GetComments
+  query :get_tasks, OperatelyWeb.Api.Queries.GetTasks
+  query :get_task, OperatelyWeb.Api.Queries.GetTask
+  query :get_unread_notification_count, OperatelyWeb.Api.Queries.GetUnreadNotificationCount
+  query :get_goal_check_ins, OperatelyWeb.Api.Queries.GetGoalCheckIns
+  query :get_goal_check_in, OperatelyWeb.Api.Queries.GetGoalCheckIn
+  query :get_groups, OperatelyWeb.Api.Queries.GetGroups
+  query :get_group, OperatelyWeb.Api.Queries.GetGroup
+  query :get_company, OperatelyWeb.Api.Queries.GetCompany
+  query :get_milestone, OperatelyWeb.Api.Queries.GetMilestone
+  query :get_project_check_in, OperatelyWeb.Api.Queries.GetProjectCheckIn
+  query :get_discussions, OperatelyWeb.Api.Queries.GetDiscussions
+  query :get_discussion, OperatelyWeb.Api.Queries.GetDiscussion
+  query :get_key_resources, OperatelyWeb.Api.Queries.GetKeyResources
+  query :search_project_contributor_candidates, OperatelyWeb.Api.Queries.SearchProjectContributorCandidates
   query :search_people, OperatelyWeb.Api.Queries.SearchPeople
   query :get_notifications, OperatelyWeb.Api.Queries.GetNotifications
   query :get_projects, OperatelyWeb.Api.Queries.GetProjects
