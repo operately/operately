@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api do
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount
 
   query :get_activities, OperatelyWeb.Api.Queries.GetActivities
+  query :get_spaces, OperatelyWeb.Api.Queries.GetSpaces
   query :get_comments, OperatelyWeb.Api.Queries.GetComments
   query :get_tasks, OperatelyWeb.Api.Queries.GetTasks
   query :get_task, OperatelyWeb.Api.Queries.GetTask
