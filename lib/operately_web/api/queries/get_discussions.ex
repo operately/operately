@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetActivities do
+defmodule OperatelyWeb.Api.Queries.GetDiscussions do
   use TurboConnect.Query
 
   inputs do
