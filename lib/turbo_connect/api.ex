@@ -32,7 +32,7 @@ defmodule TurboConnect.Api do
 
   defmacro mutation(name, module) do
     quote do
-      @mutation {unquote(name), unquote(module)}
+      @mutations {unquote(name), unquote(module)}
     end
   end
 
