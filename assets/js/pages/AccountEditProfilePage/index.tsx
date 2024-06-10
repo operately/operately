@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import { useProfileMutation } from "@/graphql/Me";
-import Avatar from "@/components/Avatar";
 import * as Forms from "@/components/Form";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import PeopleSearch from "@/components/PeopleSearch";
 import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
+import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
+import { CreateBlob } from "@/graphql/Blobs";
 
 export async function loader() {
   return null;
@@ -21,7 +22,7 @@ export function Page() {
   }
 
   const me = data.me;
-  
+
   return (
     <Paper.Root size="small">
       <Paper.Navigation>
@@ -40,14 +41,25 @@ export function Page() {
 
 function FileInput({ label, onChange, error }) {
   const id = React.useMemo(() => Math.random().toString(36), []);
+  const className = useState(
+    "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
+  );
   return (
     <div>
       <label htmlFor={id} className="font-bold mb-1 block">
         {label}
       </label>
-
       <div className="flex-1">
-        <input id={id} type="file" onChange={onChange} className={error ? "border-red-500" : ""} accept="image/*" />
+        <input
+          className={error ? "border-red-500" : `${className}`}
+          id="formFileLg"
+          onChange={onChange}
+          type="file"
+          accept="image/*"
+        />
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
+          PNG, JPG and more.
+        </p>
       </div>
     </div>
   );
@@ -75,6 +87,16 @@ function ProfileForm({ me }) {
     }
   });
 
+  async function S3FileUploader(file: File) {
+    try {
+      const response = await S3Upload(file);
+      const url = response;
+      setAvatarUrl(url);
+    } catch (error) {
+      throw new Error(`File upload failed: ${error.message}`);
+    }
+  }
+
   const timezones = Intl.supportedValuesOf("timeZone");
 
   const handleSubmit = () => {
@@ -98,24 +120,33 @@ function ProfileForm({ me }) {
     setAvatarUrl(url);
   };
 
+  async function uploadFile(file: File) {
+    const blob = await CreateBlob({ filename: file.name });
+
+    if(blob.data.createBlob.storageType === "local") {
+      await handleFileUpload(file);
+    } else {
+      await S3FileUploader(file);
+    }
+  }
+
   const isValid = name.length > 0 && title.length > 0;
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
-      
-      <section className="flex w-full justify-center items-center">
-          <Avatar person={me} size="xxlarge" />
-          <div className="ml-4">
-            <FileInput
-              label="Upload a new profile picture"
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                await handleFileUpload(file);
-              }}
-              error={false}
-            />
-          </div>
-        </section>
+      <section className="flex flex-col w-full justify-center items-center text-center">
+        <img src={avatarUrl} alt="Profile Picture" className="rounded-full border-2 border-white w-32 h-32" />
+        <div className="ml-4">
+          <FileInput
+            label="Upload a new profile picture"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              await uploadFile(file);
+            }}
+            error={false}
+          />
+        </div>
+      </section>
 
       <div className="progress-container">
         <div className="progress-bar" style={{ width: `${uploadProgress}%` }}></div>

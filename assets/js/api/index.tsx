@@ -400,12 +400,16 @@ export interface ActivityContentTaskClosing {
   taskId: string;
 }
 
-export interface Invitation {
-  id: string;
-  adminName: string;
-  admin: Person;
-  member: Person;
-  token: string;
+export interface Blob {
+  author: Person;
+  status: string;
+  filename: string;
+  url: string;
+  signedUploadUrl: string;
+}
+
+export interface ActivityContentGoalArchived {
+  goal: Goal;
 }
 
 export interface ActivityContentProjectCheckInSubmitted {
