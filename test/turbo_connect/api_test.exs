@@ -44,12 +44,30 @@ defmodule TurboConnect.ApiTest do
     end
   end
 
+  defmodule ExampleMutation do
+    use TurboConnect.Query
+
+    inputs do
+      field :name, :string
+      field :email, :string
+    end
+
+    outputs do
+      field :user, :user
+    end
+
+    def call(_) do
+      {:ok, %{}}
+    end
+  end
+
   defmodule ExampleApi do
     use TurboConnect.Api
 
     use_types ExampleTypes
 
     query :get_user, ExampleQuery
+    mutation :create_user, ExampleMutation
   end
 
   test "__types__ returns the types defined in the module" do
@@ -92,7 +110,26 @@ defmodule TurboConnect.ApiTest do
     }
   end
 
-  describe "routing" do
+  test "__mutations__ returns the mutations defined in the module" do
+    assert ExampleApi.__mutations__() == %{
+      create_user: %{
+        handler: ExampleMutation,
+        inputs: %{
+          fields: [
+            {:name, :string, []},
+            {:email, :string, []}
+          ]
+        },
+        outputs: %{
+          fields: [
+            {:user, :user, []}
+          ]
+        }
+      }
+    }
+  end
+
+  describe "routing queries" do
     test "route queries to the correct handler" do
       conn = conn(:get, "/get_user")
       conn = ExampleApi.call(conn, [])
@@ -109,6 +146,29 @@ defmodule TurboConnect.ApiTest do
 
     test "return 400 for invalid queries" do
       conn = conn(:get, "")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 400
+    end
+  end
+
+  describe "routing mutations" do
+    test "route mutations to the correct handler" do
+      conn = conn(:post, "/create_user")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 200
+    end
+
+    test "return 404 for unknown mutations" do
+      conn = conn(:post, "/unknown_mutation")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 404
+    end
+
+    test "return 400 for invalid mutations" do
+      conn = conn(:post, "")
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 400
