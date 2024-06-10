@@ -4,9 +4,7 @@ defmodule TurboConnect.TsGen do
   """
 
   import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2]
-
-  alias TurboConnect.TsGen.Queries
-  alias TurboConnect.TsGen.Mutations
+  alias TurboConnect.TsGen.{Queries, Mutations}
 
   @spec generate(module) :: String.t()
   def generate(api_module) do
@@ -17,8 +15,9 @@ defmodule TurboConnect.TsGen do
     #{convert_objects(api_module.__types__().objects)}
     #{convert_unions(api_module.__types__().unions)}
     #{Queries.define_generic_use_query_hook()}
-    #{Queries.generate(api_module.__queries__())}
-    #{Mutations.generate(api_module.__mutations__())}
+    #{Queries.generate_queries(api_module.__queries__())}
+    #{Mutations.define_generic_use_mutation_hook()}
+    #{Mutations.generate_mutations(api_module.__mutations__())}
     """
   end
 

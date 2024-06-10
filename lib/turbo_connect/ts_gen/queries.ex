@@ -1,20 +1,20 @@
 defmodule TurboConnect.TsGen.Queries do
   import TurboConnect.TsGen.Typescript, only: [ts_type: 1, ts_interface: 2, ts_function_name: 1]
 
-  def generate(queries) when is_list(queries) do
-    Enum.map_join(queries, "\n", &generate/1)
+  def generate_queries(queries) do
+    Enum.map_join(queries, "\n", fn {name, query} -> generate_query(name, query) end)
   end
 
-  def generate({name, %{inputs: inputs, output: output}}) do
+  def generate_query(name, %{inputs: inputs, outputs: outputs}) do
     """
-    #{ts_interface(Atom.to_string(name) <> "_input", inputs)}
-    #{ts_interface(Atom.to_string(name) <> "_output", output)}
-
+    #{ts_interface(Atom.to_string(name) <> "_input", inputs.fields)}
+    #{ts_interface(Atom.to_string(name) <> "_result", outputs.fields)}
     #{query_fn(name)}
+    #{query_hook(name)}
     """
   end
 
-  def query_fn({name, _}) do
+  def query_fn(name) do
     fn_name = ts_function_name(name)
     input_type = ts_type(name) <> "Input"
     result_type = ts_type(name) <> "Result"
@@ -26,7 +26,7 @@ defmodule TurboConnect.TsGen.Queries do
     """
   end
 
-  def query_hook({name, _}) do
+  def query_hook(name) do
     input_type = ts_type(name) <> "Input"
     result_type = ts_type(name) <> "Result"
     fn_name = ts_function_name(name)

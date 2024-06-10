@@ -3,7 +3,7 @@ defmodule TurboConnect.TsGen.Typescript do
   def ts_interface(name, fields) do
     """
     export interface #{ts_type(name)} {
-    #{Fields.generate(fields)}
+    #{ts_interface_fields(fields)}
     }
     """
   end
@@ -24,6 +24,14 @@ defmodule TurboConnect.TsGen.Typescript do
     String.downcase(String.at(result, 0)) <> String.slice(result, 1..-1)
   end
 
+  def ts_interface_fields(fields) do
+    Enum.map_join(fields, "\n", fn {name, type, opts} -> ts_interface_field({name, type, opts}) end)
+  end
+
+  def ts_interface_field({name, type, _opts}) do
+    "  #{ts_field_name(name)}: #{ts_type(type)};"
+  end
+
   def ts_type(type) do
     case type do
       {:list, type} -> ts_type(type) <> "[]"
@@ -37,6 +45,7 @@ defmodule TurboConnect.TsGen.Typescript do
       :datetime -> "Date"
 
       type when is_atom(type) -> Macro.camelize(Atom.to_string(type))
+      type when is_binary(type) -> Macro.camelize(type)
 
       _ -> raise ArgumentError, "Unknown type: #{inspect(type)}"
     end
