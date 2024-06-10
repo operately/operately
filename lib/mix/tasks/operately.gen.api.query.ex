@@ -66,19 +66,19 @@ defmodule Mix.Tasks.Operately.Gen.Api.Query do
       """
     end
 
-    if String.contains?(name, ~r/[A-Z]/) do
+    if String.match?(name, ~r/[A-Z]/) do
       raise """
       Query name should be snake case. Good example: get_user, Bad example: GetUser
       """
     end
 
-    if String.contains?(name, ~r/^[0-9]/) do
+    if String.match?(name, ~r/^[0-9]/) do
       raise """
       Query name can't start with a number. Good example: get_user, Bad example: 1_get_user
       """
     end
 
-    if String.contains?(name, ~r/[a-z0-9_]/) do
+    if not String.match?(name, ~r/[a-z0-9_]/) do
       raise """
       Query name should be snake case and only contain characters a-z, 0-9, and '_'. Good example: get_user, Bad example: get_!_user
       """
