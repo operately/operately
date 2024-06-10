@@ -25,6 +25,15 @@ config :operately, :blob_token_secret_key, System.get_env("OPERATELY_BLOB_TOKEN_
 config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABLED") == "true"
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 
+config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE") || "local"
+config :operately, :storage_bucket, System.get_env("OPERATELY_STORAGE_BUCKET")
+config :operately, :storage_host, System.get_env("OPERATELY_STORAGE_HOST") || "s3.amazonaws.com"
+
+# Determines if the 'Sign in with Google' feature is enabled.
+# Set `ALLOW_LOGIN_WITH_GOOGLE` in the .env file to "yes"
+# to enable user sign-in with Google.
+config :operately, allow_login_with_google: System.get_env("ALLOW_LOGIN_WITH_GOOGLE", "no")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
