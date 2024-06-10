@@ -7,6 +7,7 @@ defmodule TurboConnect.Api do
 
       Module.register_attribute(__MODULE__, :typemodules, accumulate: true)
       Module.register_attribute(__MODULE__, :queries, accumulate: true)
+      Module.register_attribute(__MODULE__, :mutations, accumulate: true)
 
       @before_compile unquote(__MODULE__)
 
@@ -29,6 +30,12 @@ defmodule TurboConnect.Api do
     end
   end
 
+  defmacro mutation(name, module) do
+    quote do
+      @mutation {unquote(name), unquote(module)}
+    end
+  end
+
   defmacro __before_compile__(_) do
     quote do
       def __types__() do
@@ -45,6 +52,13 @@ defmodule TurboConnect.Api do
 
       def __queries__() do
         Enum.map(@queries, fn {name, module} ->
+          {name, %{inputs: module.__inputs__(), outputs: module.__outputs__(), handler: module}}
+        end)
+        |> Enum.into(%{})
+      end
+
+      def __mutations__() do
+        Enum.map(@mutations, fn {name, module} ->
           {name, %{inputs: module.__inputs__(), outputs: module.__outputs__(), handler: module}}
         end)
         |> Enum.into(%{})
