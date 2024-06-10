@@ -19,7 +19,7 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   end
 
   test "creates access_context for existing companies", ctx do
-    projects = Enum.map(1..3, fn _ ->
+    projects = Enum.map(1..5, fn _ ->
       project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
     end)
 
