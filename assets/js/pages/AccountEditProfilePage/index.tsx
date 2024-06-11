@@ -9,7 +9,8 @@ import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
 import { CreateBlob } from "@/graphql/Blobs";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
+import { FilledButton } from "@/components/Button";
 
 export async function loader() {
   return null;
@@ -50,16 +51,17 @@ function FileInput({ label, onChange, error }) {
         {label}
       </label>
       <div className="flex-1">
+        <FilledButton type="secondary" onClick={() => document.getElementById("formFileLg")?.click()}>
+          Upload Photo
+        </FilledButton>
         <input
           className={error ? "border-red-500" : `${className}`}
           id="formFileLg"
           onChange={onChange}
           type="file"
           accept="image/*"
+          style={{ display: "none" }}
         />
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-          PNG, JPG and more.
-        </p>
       </div>
     </div>
   );
@@ -97,9 +99,9 @@ function ProfileForm({ me }) {
     }
   }
 
-  const timezones = moment.tz.names().map(tz => ({
+  const timezones = moment.tz.names().map((tz) => ({
     value: tz,
-    label: formatTimezone(tz)
+    label: formatTimezone(tz),
   }));
 
   const handleSubmit = () => {
@@ -126,7 +128,7 @@ function ProfileForm({ me }) {
   async function uploadFile(file) {
     const blob = await CreateBlob({ filename: file.name });
 
-    if(blob.data.createBlob.storageType === "local") {
+    if (blob.data.createBlob.storageType === "local") {
       await handleFileUpload(file);
     } else {
       await S3FileUploader(file);
@@ -138,16 +140,19 @@ function ProfileForm({ me }) {
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
-        <img src={avatarUrl} alt="Profile Picture" className="rounded-full border-2 border-white w-32 h-32" />
+        <img src={avatarUrl} alt="Profile Picture" className="rounded-full mb-2 border-2 border-white w-32 h-32" />
         <div className="ml-4">
           <FileInput
-            label="Upload a new profile picture"
+            label=""
             onChange={async (e) => {
               const file = e.target.files[0];
               await uploadFile(file);
             }}
             error={false}
           />
+          <button className="text-green-700 mt-2 hover:text-green-500" type="button" onClick={() => setAvatarUrl("")}>
+            Remove Avatar and Use Initials
+          </button>
         </div>
       </section>
 
@@ -211,9 +216,9 @@ function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus })
 }
 
 function formatTimezone(timezone) {
-  if (!timezone) return '';
+  if (!timezone) return "";
 
-  const offset = moment.tz(timezone).format('Z');
-  const cities = timezone.split('/').slice(-1)[0].replace(/_/g, ' ');
+  const offset = moment.tz(timezone).format("Z");
+  const cities = timezone.split("/").slice(-1)[0].replace(/_/g, " ");
   return `(UTC${offset}) ${cities}`;
 }
