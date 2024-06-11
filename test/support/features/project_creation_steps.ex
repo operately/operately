@@ -21,11 +21,11 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
     ctx = Map.merge(ctx, %{
-      company: company, 
-      champion: champion, 
-      reviewer: reviewer, 
-      group: group, 
-      non_contributor: non_contributor, 
+      company: company,
+      champion: champion,
+      reviewer: reviewer,
+      group: group,
+      non_contributor: non_contributor,
       project_manager: project_manager
     })
 
@@ -84,6 +84,13 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
   end
 
+  step :assert_access_context_created, ctx, fields do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
+    assert nil != Operately.Access.get_context_by_project!(project.id)
+
+    ctx
+  end
+
   step :assert_project_created_email_sent, ctx, fields do
     people = who_should_be_notified(fields)
 
@@ -97,7 +104,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       })
     end)
   end
-  
+
   step :assert_project_created_notification_sent, ctx, fields do
     people = who_should_be_notified(fields)
 
@@ -105,7 +112,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       ctx
       |> UI.login_as(person)
       |> NotificationsSteps.assert_notification_exists(
-        author: fields.creator, 
+        author: fields.creator,
         subject: "#{Person.first_name(fields.creator)} created a new project and assigned you as the #{role}"
       )
     end)
