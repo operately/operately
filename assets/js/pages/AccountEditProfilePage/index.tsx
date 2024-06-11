@@ -30,7 +30,7 @@ export function Page() {
       </Paper.Navigation>
 
       <Paper.Body minHeight="300px">
-        <h1 className="text-2xl font-bold">Edit your profile information</h1>
+        
         <div className="mt-8 flex flex-col gap-8">
           <ProfileForm me={me} />
         </div>
