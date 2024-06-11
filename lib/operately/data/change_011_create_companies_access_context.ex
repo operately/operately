@@ -3,10 +3,12 @@ defmodule Operately.Data.Change012CreateCompaniesAccessContext do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Companies.Company
+  alias Operately.Access.Context
 
   def run do
     Repo.transaction(fn ->
-      companies = Repo.all(from c in Operately.Companies.Company, select: c.id)
+      companies = Repo.all(from c in Company, select: c.id)
 
       Enum.each(companies, fn company_id ->
         case create_company_access_contexts(company_id) do
@@ -18,6 +20,12 @@ defmodule Operately.Data.Change012CreateCompaniesAccessContext do
   end
 
   defp create_company_access_contexts(company_id) do
-    Access.create_context(%{company_id: company_id})
+    existing_context = Repo.one(from c in Context, where: c.company_id == ^company_id, select: c.id)
+
+    if existing_context do
+      :ok
+    else
+      Access.create_context(%{company_id: company_id})
+    end
   end
 end
