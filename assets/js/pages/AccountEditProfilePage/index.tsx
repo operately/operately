@@ -155,11 +155,11 @@ function ProfileForm({ me }) {
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
         {avatarUrl === null ? (
-          <img src={avatarUrl} alt="Profile Picture" className="rounded-full mb-2 border-2 border-white w-32 h-32" />
+          <img src={avatarUrl} className="rounded-full border-2 border-white w-32 h-32" />
         ) : (
           <Avatar person={me} size="xxlarge" />
         )}
-        <div className="ml-4">
+        <div className="ml-4 mt-2">
           <FileInput
             onChange={async (e) => {
               const file = e.target.files[0];
@@ -198,7 +198,9 @@ function ProfileForm({ me }) {
       />
 
       <Forms.SubmitArea>
-        <Forms.SubmitButton>Save Changes</Forms.SubmitButton>
+        <FilledButton type="primary" onClick={handleSubmit}>
+          Save Changes
+        </FilledButton>
       </Forms.SubmitArea>
     </Forms.Form>
   );
