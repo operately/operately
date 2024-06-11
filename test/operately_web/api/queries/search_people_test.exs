@@ -4,8 +4,26 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
 
+  describe "security" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
+    end
 
-  context "filtering" do
+    test "returns people only from the company", ctx do
+      ctx = register_and_log_in_account(ctx)
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+
+      other_company = company_fixture(name: "Other Company")
+      _person2 = person_fixture(company_id: other_company.id, full_name: "John Doe")
+
+      assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
+      assert res == %{people: [serialized(person1)]}
+    end
+  end
+
+  describe "search_people functionality" do
+    setup :register_and_log_in_account
+
     test "searches people by name", ctx do
       person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
       _person2 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe")
@@ -24,7 +42,6 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
       assert res == %{people: [serialized(person1), serialized(person2)]}
     end
 
-
     test "returns up to 10 matches", ctx do
       people = (1..15) |> Enum.map(fn index -> person_fixture(company_id: ctx.company.id, full_name: "John Doe #{index}") end)
 
@@ -40,17 +57,13 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
       assert {200, res} = query(ctx.conn, :search_people, query: "Smith", ignored_ids: [])
       assert res == %{people: [serialized(person2), serialized(person1), serialized(person3)]}
     end
-  end
 
-  context "security" do
-    test "returns people only from the company", ctx do
+    test "ignoring people by id", ctx do
       person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
 
-      other_company = company_fixture(name: "Other Company")
-      _person2 = person_fixture(company_id: other_company.id, full_name: "John Doe")
-
-      assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
-      assert res == %{people: [serialized(person1)]}
+      assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [person1.id])
+      assert res == %{people: [serialized(person2)]}
     end
   end
 
