@@ -11,14 +11,15 @@ defmodule TurboConnect.Plugs.Dispatch do
   def init(_), do: []
 
   def call(conn, _opts) do
-    with {:ok, result} <- conn.assigns.turbo_req_handler.call(conn) do
-      conn |> send_resp(200, Jason.encode!(result))
-    else
+    res = conn.assigns.turbo_req_handler.call(conn, conn.assigns.turbo_inputs)
+
+    case res do
+      {:ok, result} -> conn |> send_resp(200, Jason.encode!(result))
       {:error, body} -> conn |> send_resp(500, body)
     end
   rescue
     e -> 
-      Logger.error(Exception.format_stacktrace(e))
+      Logger.error("\nErorr while processing #{conn.assigns.turbo_req_name} \n" <> Exception.format(:error, e, __STACKTRACE__))
       send_resp(conn, 500, "Internal Server Error")
   end
 end
