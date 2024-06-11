@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useRef, useState } from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import { useProfileMutation } from "@/graphql/Me";
@@ -9,7 +9,8 @@ import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
 import { CreateBlob } from "@/graphql/Blobs";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
+import { FilledButton } from "@/components/Button";
 
 export async function loader() {
   return null;
@@ -39,27 +40,33 @@ export function Page() {
   );
 }
 
-function FileInput({ label, onChange, error }) {
-  const id = useMemo(() => Math.random().toString(36), []);
+function FileInput({ onChange, error }) {
   const className = useState(
     "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
   );
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div>
-      <label htmlFor={id} className="font-bold mb-1 block">
-        {label}
-      </label>
       <div className="flex-1">
+        <FilledButton type="secondary" onClick={handleClick}>
+          Upload Photo
+        </FilledButton>
         <input
+          ref={fileInputRef}
           className={error ? "border-red-500" : `${className}`}
-          id="formFileLg"
           onChange={onChange}
           type="file"
           accept="image/*"
+          style={{ display: "none" }}
         />
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-          PNG, JPG and more.
-        </p>
       </div>
     </div>
   );
@@ -97,9 +104,9 @@ function ProfileForm({ me }) {
     }
   }
 
-  const timezones = moment.tz.names().map(tz => ({
+  const timezones = moment.tz.names().map((tz) => ({
     value: tz,
-    label: formatTimezone(tz)
+    label: formatTimezone(tz),
   }));
 
   const handleSubmit = () => {
@@ -126,7 +133,7 @@ function ProfileForm({ me }) {
   async function uploadFile(file) {
     const blob = await CreateBlob({ filename: file.name });
 
-    if(blob.data.createBlob.storageType === "local") {
+    if (blob.data.createBlob.storageType === "local") {
       await handleFileUpload(file);
     } else {
       await S3FileUploader(file);
@@ -138,16 +145,18 @@ function ProfileForm({ me }) {
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
-        <img src={avatarUrl} alt="Profile Picture" className="rounded-full border-2 border-white w-32 h-32" />
+        <img src={avatarUrl} alt="Profile Picture" className="rounded-full mb-2 border-2 border-white w-32 h-32" />
         <div className="ml-4">
           <FileInput
-            label="Upload a new profile picture"
             onChange={async (e) => {
               const file = e.target.files[0];
               await uploadFile(file);
             }}
             error={false}
           />
+          <button type="button" onClick={() => setAvatarUrl(null)}>
+            Remove Avatar and Use Initials
+          </button>
         </div>
       </section>
 
@@ -211,9 +220,9 @@ function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus })
 }
 
 function formatTimezone(timezone) {
-  if (!timezone) return '';
+  if (!timezone) return "";
 
-  const offset = moment.tz(timezone).format('Z');
-  const cities = timezone.split('/').slice(-1)[0].replace(/_/g, ' ');
+  const offset = moment.tz(timezone).format("Z");
+  const cities = timezone.split("/").slice(-1)[0].replace(/_/g, " ");
   return `(UTC${offset}) ${cities}`;
 }
