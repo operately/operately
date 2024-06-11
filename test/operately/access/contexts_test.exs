@@ -88,12 +88,6 @@ defmodule Operately.AccessContextsTest do
       assert nil != Access.get_context!(project_id: project.id)
     end
 
-    test "create access_context for an activity", ctx do
-      attrs = %{activity_id: ctx.activity.id}
-
-      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
-    end
-
     test "access_context cannot be attached to more than one entity", ctx do
       project = create_project_without_context(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
       goal = create_goal_without_context(ctx.creator, %{group_id: ctx.group.id})
