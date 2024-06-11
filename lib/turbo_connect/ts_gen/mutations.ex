@@ -30,9 +30,19 @@ defmodule TurboConnect.TsGen.Mutations do
     end)
   end
 
+  def generate_default_functions(queries) do
+    Enum.map_join(queries, "\n", fn {name, _} -> 
+      Enum.join([
+        "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
+        "  return defaultApiClient.#{ts_function_name(name)}(input);",
+        "}"
+      ], "\n")
+    end)
+  end
+
   def generate_default_exports(mutations) do
     Enum.map_join(mutations, "\n", fn {name, _} -> 
-      "#{ts_function_name(name)}: (input: #{ts_type(name)}Input) => defaultApiClient.#{ts_function_name(name)}(input)" <> ",\n" <> "  use#{ts_type(name)},"
+      "  #{ts_function_name(name)},\n  use#{ts_type(name)},"
     end)
   end
 

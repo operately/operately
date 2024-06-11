@@ -14,7 +14,6 @@ defmodule TurboConnect.TsGen do
     #{Mutations.define_generic_use_mutation_hook()}
     #{generate_types(api_module)}
     #{generate_api_client_class(api_module)}
-    #{generate_hooks(api_module)}
     #{generate_default_exports(api_module)}
     """
   end
@@ -54,13 +53,6 @@ defmodule TurboConnect.TsGen do
     """
   end
 
-  def generate_hooks(api_module) do
-    """
-    #{Queries.generate_hooks(api_module.__queries__())}
-    #{Mutations.generate_hooks(api_module.__mutations__())}
-    """
-  end
-
   def convert_objects(objects) do
     Enum.map_join(objects, "\n", fn {name, object} -> ts_interface(name, object.fields) end)
   end
@@ -73,11 +65,16 @@ defmodule TurboConnect.TsGen do
     """
     const defaultApiClient = new ApiClient();
 
-    export default {
-      configureDefault: (config) => defaultApiClient.configure(config),
+    #{Queries.generate_default_functions(api_module.__queries__())}
+    #{Mutations.generate_default_functions(api_module.__mutations__())}
 
-      #{Queries.generate_default_exports(api_module.__queries__())}
-      #{Mutations.generate_default_exports(api_module.__mutations__())}
+    #{Queries.generate_hooks(api_module.__queries__())}
+    #{Mutations.generate_hooks(api_module.__mutations__())}
+    export default {
+      configureDefault: (config: ApiClientConfig) => defaultApiClient.configure(config),
+
+    #{Queries.generate_default_exports(api_module.__queries__())}
+    #{Mutations.generate_default_exports(api_module.__mutations__())}
     };
     """
   end
