@@ -14,7 +14,10 @@ defmodule TurboConnect.Plugs.Dispatch do
     res = conn.assigns.turbo_req_handler.call(conn, conn.assigns.turbo_inputs)
 
     case res do
-      {:ok, result} -> conn |> send_resp(200, Jason.encode!(result))
+      {:ok, result} -> 
+        conn 
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, Jason.encode!(result))
       {:error, body} -> conn |> send_resp(500, body)
     end
   rescue
