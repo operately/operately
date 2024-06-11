@@ -150,7 +150,7 @@ function ProfileForm({ me }) {
             }}
             error={false}
           />
-          <button className="text-green-700 mt-2 hover:text-green-500" type="button" onClick={() => setAvatarUrl("")}>
+          <button className="text-green-700 mt-2 hover:text-green-500" type="button" onClick={() => setAvatarUrl(null)}>
             Remove Avatar and Use Initials
           </button>
         </div>
