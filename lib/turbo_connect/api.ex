@@ -14,7 +14,7 @@ defmodule TurboConnect.Api do
       use Plug.Builder
 
       plug TurboConnect.Plugs.Match, __MODULE__
-      plug TurboConnect.Plugs.Dispatch
+      plug TurboConnect.Plugs.ParseInputs
     end
   end
 
@@ -38,6 +38,8 @@ defmodule TurboConnect.Api do
 
   defmacro __before_compile__(_) do
     quote do
+      plug TurboConnect.Plugs.Dispatch
+
       def __types__() do
         Enum.reduce(@typemodules, %{objects: %{}, unions: %{}}, fn module, acc ->
           objects = apply(module, :__objects__, [])
