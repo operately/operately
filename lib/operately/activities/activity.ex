@@ -16,7 +16,7 @@ defmodule Operately.Activities.Activity do
     belongs_to :author, Operately.People.Person
     belongs_to :comment_thread, Operately.Comments.CommentThread
 
-    has_one :access_context, Operately.Access.Context, foreign_key: :activity_id
+    belongs_to :context, Operately.Access.Context, foreign_key: :context_id
 
     field :action, :string
     field :content, :map
@@ -32,7 +32,7 @@ defmodule Operately.Activities.Activity do
   end
 
   def changeset(activity, attrs) do
-    activity |> cast(attrs, [:author_id, :action, :content, :comment_thread_id])
+    activity |> cast(attrs, [:author_id, :action, :content, :comment_thread_id, :context_id])
   end
 
   def deprecated_actions, do: @deprecated_actions
