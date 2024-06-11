@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api do
   mutation :acknowledge_project_check_in, OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn
   mutation :add_company_admins, OperatelyWeb.Api.Mutations.AddCompanyAdmins
   mutation :add_company_member, OperatelyWeb.Api.Mutations.AddCompanyMember
-  mutation :add_company_trusted_email_domain, OperatelyWeb.Api.Mutations.AssCompanyTrustedEmailDomain
+  mutation :add_company_trusted_email_domain, OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain
   mutation :add_first_company, OperatelyWeb.Api.Mutations.AddFirstCompany
   mutation :add_group_members, OperatelyWeb.Api.Mutations.AddGroupMembers
   mutation :add_key_resource, OperatelyWeb.Api.Mutations.AddKeyResource
