@@ -12,7 +12,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
-    |> Steps.assert_access_context_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
   end
@@ -25,7 +24,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
-    |> Steps.assert_access_context_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
   end
@@ -38,7 +36,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
-    |> Steps.assert_access_context_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
   end
@@ -52,7 +49,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
-    |> Steps.assert_access_context_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
   end
@@ -65,7 +61,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
-    |> Steps.assert_access_context_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
   end

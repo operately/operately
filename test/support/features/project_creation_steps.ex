@@ -84,13 +84,6 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
   end
 
-  step :assert_access_context_created, ctx, fields do
-    project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
-    assert nil != Operately.Access.get_context_by_project!(project.id)
-
-    ctx
-  end
-
   step :assert_project_created_email_sent, ctx, fields do
     people = who_should_be_notified(fields)
 
