@@ -81,6 +81,10 @@ config :operately, Oban,
 config :ex_aws,
   access_key_id: "test",
   secret_access_key: "test",
+  access_control_allow_origin: "*",
+  access_control_allow_headers: "Content-Type",
+  access_control_allow_methods: "GET, POST, PUT, DELETE",
+  expose_headers: "",
   s3: [
     scheme: "http://",
     host: "s3mock",
@@ -91,11 +95,6 @@ config :ex_aws,
 
 config :operately, OperatelyEmail.Mailer,
   adapter: Bamboo.LocalAdapter
-
-# Determines if the 'Sign in with Google' feature is enabled.
-# Set `ALLOW_LOGIN_WITH_GOOGLE` in the .env file to "yes"
-# to enable user sign-in with Google.
-config :operately, allow_login_with_google: System.get_env("ALLOW_LOGIN_WITH_GOOGLE", "no")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
