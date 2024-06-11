@@ -29,7 +29,7 @@ defmodule TurboConnect.ApiTest do
       field :user, :user
     end
 
-    def call(_) do
+    def call(_, _) do
       res = %{
         user: %{
           full_name: "John Doe", 
@@ -56,7 +56,7 @@ defmodule TurboConnect.ApiTest do
       field :user, :user
     end
 
-    def call(_) do
+    def call(_, _) do
       {:ok, %{}}
     end
   end
