@@ -4,17 +4,18 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Projects.Contributor
   alias Operately.Projects.Project
   alias Operately.Activities
+  alias Operately.Access.Context
   alias Ecto.Multi
 
   defstruct [
-    :company_id, 
-    :name, 
-    :champion_id, 
+    :company_id,
+    :name,
+    :champion_id,
     :reviewer_id,
-    :creator_id, 
-    :creator_role, 
+    :creator_id,
+    :creator_role,
     :creator_is_contributor,
-    :visibility, 
+    :visibility,
     :group_id,
     :goal_id
   ]
@@ -32,6 +33,11 @@ defmodule Operately.Operations.ProjectCreation do
         :started_at => DateTime.utc_now(),
         :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
         :health => :on_track,
+      })
+    end)
+    |> Multi.insert(:context, fn changes ->
+      Context.changeset(%{
+        project_id: changes.project.id,
       })
     end)
     |> Multi.insert(:champion, fn changes ->

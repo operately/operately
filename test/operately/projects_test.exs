@@ -52,6 +52,8 @@ defmodule Operately.ProjectsTest do
 
       assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
       assert project.name == "some name"
+
+      assert nil != Operately.Access.get_context_by_project!(project.id)
     end
 
     test "update_project/2 with valid data updates the project", ctx do
@@ -130,7 +132,7 @@ defmodule Operately.ProjectsTest do
     test "create_milestone/1 with valid data creates a milestone", ctx do
       valid_attrs = %{
         project_id: ctx.project.id,
-        deadline_at: ~N[2023-05-10 08:16:00], 
+        deadline_at: ~N[2023-05-10 08:16:00],
         title: "some title"
       }
 
@@ -223,7 +225,7 @@ defmodule Operately.ProjectsTest do
 
     setup ctx do
       document = document_fixture(%{
-        project_id: ctx.project.id, 
+        project_id: ctx.project.id,
         author_id: ctx.champion.id
       })
 
@@ -240,8 +242,8 @@ defmodule Operately.ProjectsTest do
 
     test "create_document/1 with valid data creates a document", ctx do
       valid_attrs = %{
-        content: %{}, 
-        title: "some title", 
+        content: %{},
+        title: "some title",
         author_id: ctx.champion.id,
         project_id: ctx.project.id
       }
