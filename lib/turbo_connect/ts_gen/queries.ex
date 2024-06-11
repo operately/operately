@@ -2,7 +2,9 @@ defmodule TurboConnect.TsGen.Queries do
   import TurboConnect.TsGen.Typescript, only: [ts_type: 1, ts_interface: 2, ts_function_name: 1]
 
   def generate_types(queries) do
-    Enum.map_join(queries, "\n\n", fn {name, %{inputs: inputs, outputs: outputs}} ->
+    queries 
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n\n", fn {name, %{inputs: inputs, outputs: outputs}} ->
       input = ts_interface(Atom.to_string(name) <> "_input", inputs.fields)
       output = ts_interface(Atom.to_string(name) <> "_result", outputs.fields)
 
@@ -11,7 +13,9 @@ defmodule TurboConnect.TsGen.Queries do
   end
 
   def generate_class_functions(queries) do
-    Enum.map_join(queries, "\n", fn {name, _query} -> 
+    queries 
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, _query} -> 
       fn_name = ts_function_name(name)
       input_type = ts_type(name) <> "Input"
       result_type = ts_type(name) <> "Result"
@@ -25,7 +29,9 @@ defmodule TurboConnect.TsGen.Queries do
   end
 
   def generate_hooks(queries) do
-    Enum.map_join(queries, "\n", fn {name, _query} -> 
+    queries 
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, _query} -> 
       input_type = ts_type(name) <> "Input"
       result_type = ts_type(name) <> "Result"
       fn_name = ts_function_name(name)
@@ -39,7 +45,9 @@ defmodule TurboConnect.TsGen.Queries do
   end
 
   def generate_default_functions(queries) do
-    Enum.map_join(queries, "\n", fn {name, _} -> 
+    queries 
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, _query} -> 
       Enum.join([
         "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
         "  return defaultApiClient.#{ts_function_name(name)}(input);",
@@ -49,7 +57,9 @@ defmodule TurboConnect.TsGen.Queries do
   end
 
   def generate_default_exports(queries) do
-    Enum.map_join(queries, "\n", fn {name, _} -> 
+    queries 
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, _query} -> 
       "  #{ts_function_name(name)},\n  use#{ts_type(name)},"
     end)
   end

@@ -54,11 +54,15 @@ defmodule TurboConnect.TsGen do
   end
 
   def convert_objects(objects) do
-    Enum.map_join(objects, "\n", fn {name, object} -> ts_interface(name, object.fields) end)
+    objects
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, object} -> ts_interface(name, object.fields) end)
   end
 
   def convert_unions(unions) do
-    Enum.map_join(unions, "\n", fn {name, types} -> ts_sum_type(name, types) end)
+    unions
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, types} -> ts_sum_type(name, types) end)
   end
 
   def generate_default_exports(api_module) do
