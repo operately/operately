@@ -1307,11 +1307,12 @@ export function useGetUnreadNotificationCount(input: GetUnreadNotificationCountI
 
 
 export interface SearchPeopleInput {
-
+  query: string;
+  ignoredIds: string[];
 }
 
 export interface SearchPeopleResult {
-
+  people: Person[];
 }
 
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
