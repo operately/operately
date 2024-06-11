@@ -8,11 +8,12 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def init(_), do: []
 
   def call(conn, _opts) do
+    conn = Plug.Conn.fetch_query_params(conn)
+
     inputs = conn.assigns.turbo_req_handler.__inputs__()
     types = conn.assigns.turbo_api.__types__()
     unions = types.unions
     strict_parsing = conn.assigns.turbo_req_type == :mutation
-
     specs = {inputs, types, unions}
 
     with {:ok, map} <- get_inputs_as_map(conn), {:ok, inputs} <- parse_inputs(specs, map, strict_parsing) do
@@ -24,8 +25,10 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   defp get_inputs_as_map(conn) do
     case conn.assigns.turbo_req_type do
-      :query -> {:ok, Jason.encode!(conn.query_params) |> Jason.decode!(keys: :atoms)}
-      :mutation -> {:ok, Jason.encode!(conn.query_params) |> Jason.decode!(keys: :atoms)}
+      :query -> 
+        {:ok, Jason.encode!(conn.query_params) |> Jason.decode!(keys: :atoms)}
+      :mutation -> 
+        {:ok, Jason.encode!(conn.query_params) |> Jason.decode!(keys: :atoms)}
     end
   rescue
     _ -> {:error, 400, "Could not parse inputs"}
