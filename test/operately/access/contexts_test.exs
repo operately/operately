@@ -15,8 +15,7 @@ defmodule Operately.AccessContextsTest do
       company = company_fixture()
       creator = person_fixture_with_account(%{company_id: company.id})
       group = group_fixture(creator)
-      project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
-      context = context_fixture(%{project_id: project.id})
+      context = context_fixture(%{group_id: group.id})
 
       {:ok, company: company, group: group, creator: creator, context: context}
     end
@@ -30,15 +29,15 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "create_context/1 with valid data creates a context", ctx do
-      another_project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
-      valid_attrs = %{project_id: another_project.id}
+      another_group = group_fixture(ctx.creator)
+      valid_attrs = %{group_id: another_group.id}
 
       assert {:ok, %Context{} = _context} = Access.create_context(valid_attrs)
     end
 
     test "update_context/2 with valid data updates the context", ctx do
-      another_project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
-      update_attrs = %{project_id: another_project.id}
+      another_group = group_fixture(ctx.creator)
+      update_attrs = %{group_id: another_group.id}
 
       assert {:ok, %Context{} = _context} = Access.update_context(ctx.context, update_attrs)
     end
@@ -63,7 +62,7 @@ defmodule Operately.AccessContextsTest do
       project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
       activity = activity_fixture(%{author_id: creator.id})
 
-      {:ok, company: company, group: group, project: project, activity: activity}
+      {:ok, company: company, group: group, project: project, activity: activity, creator: creator}
     end
 
     test "create access_context for a group", ctx do
@@ -73,9 +72,9 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "create access_context for a project", ctx do
-      attrs = %{project_id: ctx.project.id}
+      project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
 
-      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+      assert nil != Access.get_context_by_project!(project.id)
     end
 
     test "access_context cannot be attached to more than one entity", ctx do
