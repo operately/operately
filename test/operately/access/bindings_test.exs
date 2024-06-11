@@ -18,7 +18,7 @@ defmodule Operately.AccessBindingsTest do
       group = Operately.GroupsFixtures.group_fixture(creator)
       project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
 
-      context = context_fixture(%{project_id: project.id})
+      context = Access.get_context_by_project!(project.id)
       group = group_fixture()
 
       {:ok, %{context: context, group: group}}
