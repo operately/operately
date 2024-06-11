@@ -3,10 +3,12 @@ defmodule Operately.Data.Change009CreateProjectsAccessContext do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Projects.Project
+  alias Operately.Access.Context
 
   def run do
     Repo.transaction(fn ->
-      projects = Repo.all(from p in Operately.Projects.Project, select: p.id)
+      projects = Repo.all(from p in Project, select: p.id)
 
       Enum.each(projects, fn project_id ->
         case create_projects_access_contexts(project_id) do
@@ -18,6 +20,12 @@ defmodule Operately.Data.Change009CreateProjectsAccessContext do
   end
 
   defp create_projects_access_contexts(project_id) do
-    Access.create_context(%{project_id: project_id})
+    existing_context = Repo.one(from c in Context, where: c.project_id == ^project_id, select: c.id)
+
+    if existing_context do
+      :ok
+    else
+      Access.create_context(%{project_id: project_id})
+    end
   end
 end

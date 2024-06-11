@@ -4,8 +4,10 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
+  import Operately.ProjectsFixtures
 
   alias Operately.Repo
+  alias Operately.Access
   alias Operately.Access.Context
   alias Operately.Data.Change009CreateProjectsAccessContext
 
@@ -17,7 +19,7 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
     {:ok, company: company, creator: creator, group: group}
   end
 
-  test "creates access_context for existing companies", ctx do
+  test "creates access_context for existing projects", ctx do
     projects = Enum.map(1..5, fn _ ->
       {:ok, project} = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
       project
@@ -35,6 +37,17 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
       assert nil != context
       assert %Context{} = context
     end)
+  end
+
+  test "creates access_context successfully when a project already has access context", ctx do
+    project_with_context = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+    {:ok, project_without_context} = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+
+    assert nil != Access.get_context_by_project!(project_with_context.id)
+
+    Change009CreateProjectsAccessContext.run()
+
+    assert nil != Access.get_context_by_project!(project_without_context.id)
   end
 
   def create_project(attrs) do
