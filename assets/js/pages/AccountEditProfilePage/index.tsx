@@ -12,6 +12,7 @@ import { CreateBlob } from "@/graphql/Blobs";
 import moment from "moment-timezone";
 import { FilledButton } from "@/components/Button";
 import classnames from "classnames";
+import Avatar from "@/components/Avatar";
 
 export async function loader() {
   return null;
@@ -153,7 +154,11 @@ function ProfileForm({ me }) {
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
-        <img src={avatarUrl} alt="Profile Picture" className="rounded-full mb-2 border-2 border-white w-32 h-32" />
+        {avatarUrl === null ? (
+          <img src={avatarUrl} alt="Profile Picture" className="rounded-full mb-2 border-2 border-white w-32 h-32" />
+        ) : (
+          <Avatar person={me} size="xxlarge" />
+        )}
         <div className="ml-4">
           <FileInput
             onChange={async (e) => {
