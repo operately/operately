@@ -12,12 +12,17 @@ import {
 
 import routes from "./routes";
 
+import Api from "@/api";
+
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/client";
 import "./i18n";
 
 import { ThemeProvider } from "./theme";
 
+Api.configureDefault({
+  baseUrl: "/api/v2",
+});
 
 if (window.appConfig.sentry.enabled) {
   Sentry.init({

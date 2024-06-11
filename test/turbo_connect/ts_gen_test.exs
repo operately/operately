@@ -148,23 +148,6 @@ defmodule TurboConnect.TsGenTest do
     return { data, loading, error };
   }
 
-  export interface GetUserInput {
-    userId: number;
-  }
-
-  export interface GetUserResult {
-    user: User;
-  }
-
-  export async function getUser(input: GetUserInput): Promise<GetUserResult> {
-    return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
-  }
-
-  export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
-    return useQuery<GetUserResult>(() => getUser(input));
-  }
-
-
   type UseMutationHookResult<InputT, ResultT> = [() => Promise<ResultT>, { data: ResultT | null, loading: boolean, error: Error | null }];
 
   export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<ResultT>) : UseMutationHookResult<InputT, ResultT> {
@@ -182,6 +165,14 @@ defmodule TurboConnect.TsGenTest do
     return [execute, { data, loading, error }];
   }
 
+  export interface GetUserInput {
+    userId: number;
+  }
+
+  export interface GetUserResult {
+    user: User;
+  }
+
   export interface CreateUserInput {
     fullName: string;
     address: Address;
@@ -191,15 +182,41 @@ defmodule TurboConnect.TsGenTest do
     user: User;
   }
 
-  export function createUser(input: CreateUserInput): Promise<CreateUserResult> {
-    return axios.post('/api/create_user', input).then(({ data }) => data);
+  export class ApiClient {
+    basePath: string = "";
+
+    configure(config: { baseUrl: string }) {
+      this.basePath = config.baseUrl;
+    }
+
+    async getUser(input: GetUserInput): Promise<GetUserResult> {
+      return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
+    }
+
+    async createUser(input: CreateUserInput): Promise<CreateUserResult> {
+      return axios.post('/api/create_user', input).then(({ data }) => data);
+    }
+  }
+
+  export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
+    return useQuery<GetUserResult>(() => defaultApiClient.getUser(input));
   }
 
   export function useCreateUser() : UseMutationHookResult<CreateUserInput, CreateUserResult> {
-    return useMutation<CreateUserInput, CreateUserResult>(createUser);
+    return useMutation<CreateUserInput, CreateUserResult>((input) => defaultApiClient.createUser(input));
   }
 
+  const defaultApiClient = new ApiClient();
 
+  export default {
+    configureDefault: (config) => defaultApiClient.configure(config);
+
+    useGetUser,
+    useCreateUser
+
+    getUser: (input: GetUserInput) => defaultApiClient.getUser(input),
+    createUser: (input: CreateUserInput) => defaultApiClient.createUser(input)
+  };
   """
 
   test "generating TypeScript code" do
