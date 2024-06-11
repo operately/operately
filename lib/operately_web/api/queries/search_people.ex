@@ -19,12 +19,13 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   def call(conn, inputs) do
     Person
-    |> match_by_full_name_or_title(inputs.query)
+    |> match_by_full_name_or_title(inputs)
     |> limit_to_company(conn.assigns.current_account.person.company_id)
     |> ignore_ids(inputs.ignored_ids)
     |> order_asc_by_match_position(inputs)
     |> limit(@limit)
     |> Repo.all()
+    |> serialize()
     |> ok_tuple()
   end
 
@@ -33,7 +34,11 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   end
 
   defp order_asc_by_match_position(query, inputs) do
-    from p in query, order_by: [asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.full_name), asc: p.full_name]
+    from p in query, order_by: [
+      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.full_name), 
+      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.title),
+      asc: p.full_name
+    ]
   end
 
   defp ignore_ids(query, ignored_ids) do
@@ -46,5 +51,18 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   defp ok_tuple(value) do
     {:ok, value}
+  end
+
+  def serialize(people) when is_list(people) do
+    %{people: Enum.map(people, &serialize/1)}
+  end
+
+  def serialize(person) do
+    %{
+      id: person.id,
+      full_name: person.full_name,
+      title: person.title,
+      avatar_url: person.avatar_url
+    }
   end
 end
