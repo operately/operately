@@ -9,15 +9,55 @@ defmodule TurboConnect.TsGen do
   @spec generate(module) :: String.t()
   def generate(api_module) do
     """
+    #{generate_imports()}
+    #{Queries.define_generic_use_query_hook()}
+    #{Mutations.define_generic_use_mutation_hook()}
+    #{generate_types(api_module)}
+    #{generate_api_client_class(api_module)}
+    #{generate_hooks(api_module)}
+    #{generate_default_exports(api_module)}
+    """
+  end
+
+  def generate_imports() do
+    """
     import React from "react";
     import axios from "axios";
+    """
+  end
 
-    #{convert_objects(api_module.__types__().objects)}
-    #{convert_unions(api_module.__types__().unions)}
-    #{Queries.define_generic_use_query_hook()}
-    #{Queries.generate_queries(api_module.__queries__())}
-    #{Mutations.define_generic_use_mutation_hook()}
-    #{Mutations.generate_mutations(api_module.__mutations__())}
+  def generate_types(api_module) do
+    Enum.join([
+      convert_objects(api_module.__types__().objects),
+      convert_unions(api_module.__types__().unions),
+      Queries.generate_types(api_module.__queries__()),
+      Mutations.generate_types(api_module.__mutations__())
+    ], "\n")
+  end
+
+  def generate_api_client_class(api_module) do
+    """
+    interface ApiClientConfig {
+      basePath: string;
+    }
+
+    export class ApiClient {
+      private basePath: string;
+
+      configure(config: ApiClientConfig) {
+        this.basePath = config.basePath;
+      }
+
+    #{Queries.generate_class_functions(api_module.__queries__())}
+    #{Mutations.generate_class_functions(api_module.__mutations__())}
+    }
+    """
+  end
+
+  def generate_hooks(api_module) do
+    """
+    #{Queries.generate_hooks(api_module.__queries__())}
+    #{Mutations.generate_hooks(api_module.__mutations__())}
     """
   end
 
@@ -27,6 +67,19 @@ defmodule TurboConnect.TsGen do
 
   def convert_unions(unions) do
     Enum.map_join(unions, "\n", fn {name, types} -> ts_sum_type(name, types) end)
+  end
+
+  def generate_default_exports(api_module) do
+    """
+    const defaultApiClient = new ApiClient();
+
+    export default {
+      configureDefault: (config) => defaultApiClient.configure(config),
+
+      #{Queries.generate_default_exports(api_module.__queries__())}
+      #{Mutations.generate_default_exports(api_module.__mutations__())}
+    };
+    """
   end
 
 end

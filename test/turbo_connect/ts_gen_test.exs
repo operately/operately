@@ -96,10 +96,12 @@ defmodule TurboConnect.TsGenTest do
     mutation :create_user, CreateUserMutation
   end
 
-  @ts_code """
+  @ts_imports """
   import React from "react";
   import axios from "axios";
+  """
 
+  @ts_types """
   export interface Address {
     street: string;
     city: string;
@@ -131,40 +133,6 @@ defmodule TurboConnect.TsGenTest do
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
 
-  type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null };
-
-  export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
-    const [data, setData] = React.useState<ResultT | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const [error, setError] = React.useState<Error | null>(null);
-
-    React.useEffect(() => {
-      setLoading(true);
-      setError(null);
-
-      fn().then(setData).catch(setError).finally(() => setLoading(false));
-    }, [fn]);
-
-    return { data, loading, error };
-  }
-
-  type UseMutationHookResult<InputT, ResultT> = [() => Promise<ResultT>, { data: ResultT | null, loading: boolean, error: Error | null }];
-
-  export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<ResultT>) : UseMutationHookResult<InputT, ResultT> {
-    const [data, setData] = React.useState<ResultT | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const [error, setError] = React.useState<Error | null>(null);
-
-    const execute = (input: InputT) => {
-      setLoading(true);
-      setError(null);
-
-      fn(input).then(setData).catch(setError).finally(() => setLoading(false));
-    };
-
-    return [execute, { data, loading, error }];
-  }
-
   export interface GetUserInput {
     userId: number;
   }
@@ -181,23 +149,32 @@ defmodule TurboConnect.TsGenTest do
   export interface CreateUserResult {
     user: User;
   }
+  """
+
+  @ts_api_client """
+  interface ApiClientConfig {
+    basePath: string;
+  }
 
   export class ApiClient {
-    basePath: string = "";
+    private basePath: string;
 
-    configure(config: { baseUrl: string }) {
-      this.basePath = config.baseUrl;
+    configure(config: ApiClientConfig) {
+      this.basePath = config.basePath;
     }
 
     async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
+      return axios.get(this.basePath + "/get_user", { params: input }).then(({ data }) => data);
     }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
-      return axios.post('/api/create_user', input).then(({ data }) => data);
+      return axios.post(this.basePath + "/create_user", input).then(({ data }) => data);
     }
-  }
 
+  }
+  """
+
+  @ts_hooks """
   export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
     return useQuery<GetUserResult>(() => defaultApiClient.getUser(input));
   }
@@ -206,21 +183,37 @@ defmodule TurboConnect.TsGenTest do
     return useMutation<CreateUserInput, CreateUserResult>((input) => defaultApiClient.createUser(input));
   }
 
+  """
+
+  @ts_default """
   const defaultApiClient = new ApiClient();
 
   export default {
-    configureDefault: (config) => defaultApiClient.configure(config);
-
-    useGetUser,
-    useCreateUser
+    configureDefault: (config) => defaultApiClient.configure(config),
 
     getUser: (input: GetUserInput) => defaultApiClient.getUser(input),
-    createUser: (input: CreateUserInput) => defaultApiClient.createUser(input)
+    useGetUser,
+    createUser: (input: CreateUserInput) => defaultApiClient.createUser(input),
+    useCreateUser,
   };
   """
 
   test "generating TypeScript code" do
-    assert TurboConnect.TsGen.generate(ExampleApi) === @ts_code
+    assert TurboConnect.TsGen.generate_imports() === @ts_imports
+    assert TurboConnect.TsGen.generate_types(ExampleApi) === @ts_types
+    assert TurboConnect.TsGen.generate_api_client_class(ExampleApi) === @ts_api_client
+    assert TurboConnect.TsGen.generate_hooks(ExampleApi) === @ts_hooks
+    assert TurboConnect.TsGen.generate_default_exports(ExampleApi) === @ts_default
+
+    assert TurboConnect.TsGen.generate(ExampleApi) === """
+    #{@ts_imports}
+    #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
+    #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
+    #{@ts_types}
+    #{@ts_api_client}
+    #{@ts_hooks}
+    #{@ts_default}
+    """
   end
 
 end

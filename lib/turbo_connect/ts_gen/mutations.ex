@@ -1,33 +1,39 @@
 defmodule TurboConnect.TsGen.Mutations do
   import TurboConnect.TsGen.Typescript, only: [ts_type: 1, ts_interface: 2, ts_function_name: 1]
 
-  def generate_mutations(mutations) do
-    Enum.map_join(mutations, "\n", fn {name, mutation} -> generate({name, mutation}) end)
+  def generate_types(mutations) do
+    Enum.map_join(mutations, "\n", fn {name, %{inputs: inputs, outputs: outputs}} ->
+      input = ts_interface(Atom.to_string(name) <> "_input", inputs.fields)
+      output = ts_interface(Atom.to_string(name) <> "_result", outputs.fields)
+
+      input <> "\n" <> output
+    end)
   end
 
-  def generate({name, %{inputs: inputs, outputs: outputs}}) do
-    """
-    #{ts_interface(Atom.to_string(name) <> "_input", inputs.fields)}
-    #{ts_interface(Atom.to_string(name) <> "_result", outputs.fields)}
-    #{mutation_fn(name)}
-    #{mutation_hook(name)}
-    """
+  def generate_class_functions(mutations) do
+    Enum.map_join(mutations, "\n", fn {name, _} -> 
+      """
+        async #{ts_function_name(name)}(input: #{ts_type(name)}Input): Promise<#{ts_type(name)}Result> {
+          return axios.post(this.basePath + "/#{name}", input).then(({ data }) => data);
+        }
+      """
+    end)
   end
 
-  def mutation_fn(name) do
-    """
-    export function #{ts_function_name(name)}(input: #{ts_type(name)}Input): Promise<#{ts_type(name)}Result> {
-      return axios.post('/api/#{name}', input).then(({ data }) => data);
-    }
-    """
+  def generate_hooks(mutations) do
+    Enum.map_join(mutations, "\n", fn {name, _} -> 
+      """
+      export function use#{ts_type(name)}() : UseMutationHookResult<#{ts_type(name)}Input, #{ts_type(name)}Result> {
+        return useMutation<#{ts_type(name)}Input, #{ts_type(name)}Result>((input) => defaultApiClient.#{ts_function_name(name)}(input));
+      }
+      """
+    end)
   end
 
-  def mutation_hook(name) do
-    """
-    export function use#{ts_type(name)}() : UseMutationHookResult<#{ts_type(name)}Input, #{ts_type(name)}Result> {
-      return useMutation<#{ts_type(name)}Input, #{ts_type(name)}Result>(#{ts_function_name(name)});
-    }
-    """
+  def generate_default_exports(mutations) do
+    Enum.map_join(mutations, "\n", fn {name, _} -> 
+      "#{ts_function_name(name)}: (input: #{ts_type(name)}Input) => defaultApiClient.#{ts_function_name(name)}(input)" <> ",\n" <> "  use#{ts_type(name)},"
+    end)
   end
 
   def define_generic_use_mutation_hook do
