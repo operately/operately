@@ -164,11 +164,11 @@ defmodule TurboConnect.TsGenTest do
     }
 
     async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return axios.get(this.basePath + "/get_user", { params: input }).then(({ data }) => data);
+      return axios.get(this.basePath + "/get_user", { params: toSnake(input)}).then(({ data }) => toCamel(data));
     }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
-      return axios.post(this.basePath + "/create_user", input).then(({ data }) => data);
+      return axios.post(this.basePath + "/create_user", toSnake(input)).then(({ data }) => toCamel(data));
     }
 
   }
@@ -210,6 +210,8 @@ defmodule TurboConnect.TsGenTest do
 
     assert TurboConnect.TsGen.generate(ExampleApi) === """
     #{@ts_imports}
+    #{TurboConnect.TsGen.to_camel_case()}
+    #{TurboConnect.TsGen.to_snake_case()}
     #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
     #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
     #{@ts_types}

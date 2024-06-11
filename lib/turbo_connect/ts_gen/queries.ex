@@ -22,7 +22,7 @@ defmodule TurboConnect.TsGen.Queries do
 
       """
         async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return axios.get(this.basePath + "/#{name}", { params: input }).then(({ data }) => data);
+          return axios.get(this.basePath + "/#{name}", { params: toSnake(input)}).then(({ data }) => toCamel(data));
         }
       """
     end)

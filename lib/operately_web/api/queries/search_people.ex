@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
     Person
     |> match_by_full_name_or_title(inputs)
     |> limit_to_company(conn.assigns.current_account.person.company_id)
-    |> ignore_ids(inputs.ignored_ids)
+    |> ignore_ids(inputs[:ignored_ids] || [])
     |> order_asc_by_match_position(inputs)
     |> limit(@limit)
     |> Repo.all()

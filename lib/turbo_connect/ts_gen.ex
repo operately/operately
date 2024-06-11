@@ -10,6 +10,8 @@ defmodule TurboConnect.TsGen do
   def generate(api_module) do
     """
     #{generate_imports()}
+    #{to_camel_case()}
+    #{to_snake_case()}
     #{Queries.define_generic_use_query_hook()}
     #{Mutations.define_generic_use_mutation_hook()}
     #{generate_types(api_module)}
@@ -63,6 +65,64 @@ defmodule TurboConnect.TsGen do
     unions
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, types} -> ts_sum_type(name, types) end)
+  end
+
+  def to_camel_case do
+    """
+    function toCamel(o) {
+      var newO, origKey, newKey, value
+      if (o instanceof Array) {
+        return o.map(function(value) {
+            if (typeof value === "object") {
+              value = toCamel(value)
+            }
+            return value
+        })
+      } else {
+        newO = {}
+        for (origKey in o) {
+          if (o.hasOwnProperty(origKey)) {
+            newKey = origKey.replace(/_([a-z])/g, function(a, b) { return b.toUpperCase() })
+            value = o[origKey]
+            if (value instanceof Array || (value !== null && value.constructor === Object)) {
+              value = toCamel(value)
+            }
+            newO[newKey] = value
+          }
+        }
+      }
+      return newO
+    }
+    """
+  end
+
+  def to_snake_case do
+    """
+    function toSnake(o) {
+      var newO, origKey, newKey, value
+      if (o instanceof Array) {
+        return o.map(function(value) {
+            if (typeof value === "object") {
+              value = toSnake(value)
+            }
+            return value
+        })
+      } else {
+        newO = {}
+        for (origKey in o) {
+          if (o.hasOwnProperty(origKey)) {
+            newKey = origKey.replace(/([A-Z])/g, function(a) { return "_" + a.toLowerCase() })
+            value = o[origKey]
+            if (value instanceof Array || (value !== null && value.constructor === Object)) {
+              value = toSnake(value)
+            }
+            newO[newKey] = value
+          }
+        }
+      }
+      return newO
+    }
+    """
   end
 
   def generate_default_exports(api_module) do

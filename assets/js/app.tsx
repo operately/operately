@@ -21,7 +21,7 @@ import "./i18n";
 import { ThemeProvider } from "./theme";
 
 Api.configureDefault({
-  baseUrl: "/api/v2",
+  basePath: "/api/v2",
 });
 
 if (window.appConfig.sentry.enabled) {
