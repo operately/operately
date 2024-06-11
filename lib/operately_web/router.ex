@@ -73,12 +73,10 @@ defmodule OperatelyWeb.Router do
     forward "/gql", Absinthe.Plug, schema: OperatelyWeb.Graphql.Schema
   end
 
-  if Application.compile_env(:operately, :dev_routes) || Application.compile_env(:operately, :test_routes) do
-    scope "/api" do
-      pipe_through [:api]
+  scope "/api" do
+    pipe_through [:api]
 
-      forward "/v2", OperatelyWeb.Api
-    end
+    forward "/v2", OperatelyWeb.Api
   end
 
   if Application.compile_env(:operately, :dev_routes) do
