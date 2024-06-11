@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
     |> limit_to_company(conn.assigns.current_account.person.company_id)
     |> ignore_ids(inputs[:ignored_ids] || [])
     |> order_asc_by_match_position(inputs)
+    |> exclude_suspended()
     |> limit(@limit)
     |> Repo.all()
     |> serialize()
@@ -47,6 +48,10 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   defp limit_to_company(query, company_id) do
     from p in query, where: p.company_id == ^company_id
+  end
+
+  defp exclude_suspended(query) do
+    from p in query, where: p.suspended == false
   end
 
   defp ok_tuple(value) do

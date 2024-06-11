@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
     end
 
     test "returns up to 10 matches", ctx do
-      people = (1..15) |> Enum.map(fn index -> person_fixture(company_id: ctx.company.id, full_name: "John Doe #{index}") end)
+      (1..15) |> Enum.map(fn index -> person_fixture(company_id: ctx.company.id, full_name: "John Doe #{index}") end)
 
       assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
       assert length(res.people) == 10
@@ -64,6 +64,14 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
 
       assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [person1.id])
       assert res == %{people: [serialized(person2)]}
+    end
+
+    test "excludes suspended people", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      _person2 = person_fixture(company_id: ctx.company.id, full_name: "John Doe", suspended: true)
+
+      assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
+      assert res == %{people: [serialized(person1)]}
     end
   end
 
