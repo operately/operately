@@ -1,5 +1,5 @@
 import { makeQueryFn } from "@/graphql/client";
-import { useApolloClient } from "@apollo/client";
+import Api from "@/api";
 
 import {
   Person,
@@ -8,7 +8,6 @@ import {
   GetPersonQueryVariables,
   GetMeDocument,
   GetMeQueryVariables,
-  SearchPeopleDocument,
   useGetMeQuery,
 } from "@/gql/generated";
 
@@ -26,8 +25,6 @@ export function useMe(variables: GetMeQueryVariables): any {
 }
 
 export function usePeopleSearch() {
-  const client = useApolloClient();
-
   //
   // There are multiple components that use this hook. Some of them
   // pass in a string, others pass in an object with a query property.
@@ -48,15 +45,8 @@ export function usePeopleSearch() {
       ignoredIds = arg.ignoredIds || [];
     }
 
-    const res = await client.query({
-      query: SearchPeopleDocument,
-      variables: { query, ignoredIds },
-    });
-
-    if (!res.data) return [];
-    if (!res.data.searchPeople) return [];
-
-    return res.data.searchPeople as Person[];
+    const res = await Api.searchPeople({ query, ignoredIds });
+    return res.people as Person[];
   };
 }
 
