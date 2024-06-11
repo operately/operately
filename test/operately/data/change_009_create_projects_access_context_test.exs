@@ -4,7 +4,6 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
-  import Operately.ProjectsFixtures
 
   alias Operately.Repo
   alias Operately.Access.Context
@@ -20,7 +19,8 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
 
   test "creates access_context for existing companies", ctx do
     projects = Enum.map(1..5, fn _ ->
-      project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+      {:ok, project} = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+      project
     end)
 
     Enum.each(projects, fn project ->
@@ -30,7 +30,20 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
     Change009CreateProjectsAccessContext.run()
 
     Enum.each(projects, fn project ->
-      assert %Context{} = Repo.get_by(Context, project_id: project.id)
+      context = Repo.get_by(Context, project_id: project.id)
+
+      assert nil != context
+      assert %Context{} = context
     end)
+  end
+
+  def create_project(attrs) do
+    Operately.Projects.Project.changeset(%{
+      name: "some name",
+      company_id: attrs.company_id,
+      group_id: attrs.group_id,
+      creator_id: attrs.creator_id,
+    })
+    |> Repo.insert()
   end
 end
