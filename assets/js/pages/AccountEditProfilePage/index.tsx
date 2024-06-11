@@ -11,10 +11,18 @@ import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
 import { CreateBlob } from "@/graphql/Blobs";
 import moment from "moment-timezone";
 import { FilledButton } from "@/components/Button";
+import classnames from "classnames";
 
 export async function loader() {
   return null;
 }
+
+const dimmedClassName = classnames(
+  "text-content-dimmed hover:text-content-hover",
+  "underline underline-offset-2",
+  "cursor-pointer",
+  "transition-colors",
+);
 
 export function Page() {
   const { data } = useMe({ includeManager: true });
@@ -154,7 +162,7 @@ function ProfileForm({ me }) {
             }}
             error={false}
           />
-          <button type="button" onClick={() => setAvatarUrl(null)}>
+          <button className={dimmedClassName} type="button" onClick={() => setAvatarUrl(null)}>
             Remove Avatar and Use Initials
           </button>
         </div>
