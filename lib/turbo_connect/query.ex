@@ -26,8 +26,8 @@ defmodule TurboConnect.Query do
 
   defmacro __before_compile__(_) do
     quote do
-      def __inputs__(), do: __fields__()[:inputs]
-      def __outputs__(), do: __fields__()[:outputs]
+      def __inputs__(), do: __fields__()[:inputs] || %{fields: []}
+      def __outputs__(), do: __fields__()[:outputs] || %{fields: []}
     end
   end
 end
