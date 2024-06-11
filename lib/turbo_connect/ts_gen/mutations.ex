@@ -84,6 +84,8 @@ defmodule TurboConnect.TsGen.Mutations do
           setLoading(false);
         }
       };
+
+      return [execute, { data, loading, error }];
     }
     """
   end

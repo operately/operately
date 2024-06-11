@@ -60,7 +60,6 @@ defmodule TurboConnect.TsGen do
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, object} -> ts_interface(name, object.fields) end)
   end
-
   def convert_unions(unions) do
     unions
     |> Enum.sort_by(&elem(&1, 0))
@@ -69,8 +68,9 @@ defmodule TurboConnect.TsGen do
 
   def to_camel_case do
     """
-    function toCamel(o) {
-      var newO, origKey, newKey, value
+    function toCamel(o : any) {
+      var newO : any, origKey : any, newKey : any, value : any;
+
       if (o instanceof Array) {
         return o.map(function(value) {
             if (typeof value === "object") {
@@ -82,7 +82,7 @@ defmodule TurboConnect.TsGen do
         newO = {}
         for (origKey in o) {
           if (o.hasOwnProperty(origKey)) {
-            newKey = origKey.replace(/_([a-z])/g, function(a, b) { return b.toUpperCase() })
+            newKey = origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
             value = o[origKey]
             if (value instanceof Array || (value !== null && value.constructor === Object)) {
               value = toCamel(value)
@@ -98,8 +98,9 @@ defmodule TurboConnect.TsGen do
 
   def to_snake_case do
     """
-    function toSnake(o) {
-      var newO, origKey, newKey, value
+    function toSnake(o : any) {
+      var newO : any, origKey : any, newKey : any, value : any;
+
       if (o instanceof Array) {
         return o.map(function(value) {
             if (typeof value === "object") {
@@ -111,7 +112,7 @@ defmodule TurboConnect.TsGen do
         newO = {}
         for (origKey in o) {
           if (o.hasOwnProperty(origKey)) {
-            newKey = origKey.replace(/([A-Z])/g, function(a) { return "_" + a.toLowerCase() })
+            newKey = origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
             value = o[origKey]
             if (value instanceof Array || (value !== null && value.constructor === Object)) {
               value = toSnake(value)

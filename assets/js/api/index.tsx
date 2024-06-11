@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
 
-function toCamel(o) {
-  var newO, origKey, newKey, value
+function toCamel(o : any) {
+  var newO : any, origKey : any, newKey : any, value : any;
+
   if (o instanceof Array) {
     return o.map(function(value) {
         if (typeof value === "object") {
@@ -14,7 +15,7 @@ function toCamel(o) {
     newO = {}
     for (origKey in o) {
       if (o.hasOwnProperty(origKey)) {
-        newKey = origKey.replace(/_([a-z])/g, function(a, b) { return b.toUpperCase() })
+        newKey = origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
         value = o[origKey]
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
           value = toCamel(value)
@@ -26,8 +27,9 @@ function toCamel(o) {
   return newO
 }
 
-function toSnake(o) {
-  var newO, origKey, newKey, value
+function toSnake(o : any) {
+  var newO : any, origKey : any, newKey : any, value : any;
+
   if (o instanceof Array) {
     return o.map(function(value) {
         if (typeof value === "object") {
@@ -39,7 +41,7 @@ function toSnake(o) {
     newO = {}
     for (origKey in o) {
       if (o.hasOwnProperty(origKey)) {
-        newKey = origKey.replace(/([A-Z])/g, function(a) { return "_" + a.toLowerCase() })
+        newKey = origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
         value = o[origKey]
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
           value = toSnake(value)
@@ -94,6 +96,8 @@ export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<Resu
       setLoading(false);
     }
   };
+
+  return [execute, { data, loading, error }];
 }
 
 export interface Activity {
