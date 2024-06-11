@@ -5,6 +5,8 @@ defmodule Operately.Access.Context do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
 
+    has_many :activities, Operately.Activities.Activity, foreign_key: :context_id
+
     timestamps()
   end
 
@@ -26,7 +28,7 @@ defmodule Operately.Access.Context do
     if count == 1 do
       changeset
     else
-      add_error(changeset, :base, "Exactly one association (Project, Group, Activity, or Company) must be set.")
+      add_error(changeset, :base, "Exactly one association (Project, Group or Company) must be set.")
     end
   end
 end
