@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useRef, useState } from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import { useProfileMutation } from "@/graphql/Me";
@@ -40,23 +40,28 @@ export function Page() {
   );
 }
 
-function FileInput({ label, onChange, error }) {
-  const id = useMemo(() => Math.random().toString(36), []);
+function FileInput({ onChange, error }) {
   const className = useState(
     "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
   );
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div>
-      <label htmlFor={id} className="font-bold mb-1 block">
-        {label}
-      </label>
       <div className="flex-1">
-        <FilledButton type="secondary" onClick={() => document.getElementById("formFileLg")?.click()}>
+        <FilledButton type="secondary" onClick={handleClick}>
           Upload Photo
         </FilledButton>
         <input
+          ref={fileInputRef}
           className={error ? "border-red-500" : `${className}`}
-          id="formFileLg"
           onChange={onChange}
           type="file"
           accept="image/*"
@@ -143,14 +148,13 @@ function ProfileForm({ me }) {
         <img src={avatarUrl} alt="Profile Picture" className="rounded-full mb-2 border-2 border-white w-32 h-32" />
         <div className="ml-4">
           <FileInput
-            label=""
             onChange={async (e) => {
               const file = e.target.files[0];
               await uploadFile(file);
             }}
             error={false}
           />
-          <button className="text-green-700 mt-2 hover:text-green-500" type="button" onClick={() => setAvatarUrl(null)}>
+          <button type="button" onClick={() => setAvatarUrl(null)}>
             Remove Avatar and Use Initials
           </button>
         </div>
