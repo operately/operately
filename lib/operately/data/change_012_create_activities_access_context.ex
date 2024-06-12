@@ -1,0 +1,153 @@
+defmodule Operately.Data.Change011CreateActivitiesAccessContext do
+  import Ecto.Query, only: [from: 2, assoc: 2]
+
+  alias Operately.Repo
+  alias Operately.Activities
+  alias Operately.Activities.Activity
+
+  def run do
+    Repo.transaction(fn ->
+      Activity
+      |> Repo.all()
+      |> Enum.map(&Activities.cast_content/1)
+      |> assign_context()
+    end)
+  end
+
+  defp assign_context(activities) when is_list(activities) do
+    Enum.each(activities, &assign_context/1)
+  end
+
+  defp assign_context(activity) do
+    context = cond do
+      activity.action in @company_actions -> assign_company_context(activity)
+      activity.action in @space_actions -> assign_space_context(activity)
+      activity.action in @goal_actions -> assign_goal_context(activity)
+      activity.action in @project_actions -> assign_project_context(activity)
+      activity.action in @task_actions -> assign_task_project_context(activity)
+    end
+  end
+
+  # TODO
+  # :comment_added,
+  # :project_created,
+
+  @company_actions [
+    :password_first_time_changed,
+    :company_invitation_token_created,
+    :company_member_added,
+    :company_member_removed,
+  ]
+
+  @space_actions [
+    :space_joining,
+
+    :goal_archived,
+
+    :discussion_posting,
+    :discussion_editing,
+    :discussion_comment_submitted,
+
+    :task_assignee_assignment,
+    :task_description_change,
+    :task_name_editing,
+    :task_priority_change,
+    :task_reopening,
+    :task_size_change,
+
+    # exceptions
+    :group_edited,
+    :goal_reparent,
+  ]
+
+  @goal_actions [
+    :goal_check_in,
+    :goal_check_in_acknowledgement,
+    :goal_check_in_commented,
+    :goal_check_in_edit,
+    :goal_closing,
+    :goal_created,
+    :goal_discussion_creation,
+    :goal_discussion_editing,
+    :goal_editing,
+    :goal_reopening,
+    :goal_timeframe_editing,
+  ]
+
+  @project_actions [
+    :project_archived,
+    :project_check_in_acknowledged,
+    :project_check_in_commented,
+    :project_check_in_edit,
+    :project_check_in_submitted,
+    :project_closed,
+    :project_contributor_addition,
+    :project_discusssion_submitted,
+    :project_goal_connection,
+    :project_goal_disconnection,
+    :project_milestone_commented,
+    :project_moved,
+    :project_pausing,
+    :project_renamed,
+    :project_resuming,
+    :project_timeline_edited,
+  ]
+
+  @task_actions [
+    :task_adding,
+    :task_closing,
+    :task_status_change,
+    :task_update,
+  ]
+
+  defp assign_company_context(activity) do
+    Operately.Companies.get_company(activity.content.company_id)
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
+  end
+
+  defp assign_space_context(activity) do
+    case activity.action do
+      :group_edited ->
+        activity.content.group_id
+      :goal_reparent ->
+        activity.content.new_parent_goal_id
+      _ ->
+        activity.content.space_id
+    end
+    |> Operately.Groups.get_group()
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
+  end
+
+  defp assign_goal_context(activity) do
+    activity.content.goal_id
+    # todo
+  end
+
+  defp assign_project_context(activity) do
+    Operately.Projects.get_project!(activity.content.project_id)
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
+  end
+
+  defp assign_task_project_context(activity) do
+    query = from t in Operately.Tasks.Task,
+      join: m in assoc(t, :milestone),
+      join: p in assoc(m, :project),
+      preload: [project: {p, [access_context: p.access_context]}],
+      where: t.id == ^activity.content.task_id,
+      select: p
+
+    Repo.one(query)
+    |> update_activity(activity)
+  end
+
+  defp update_activity(parent, activity) do
+    context_id = parent.access_context.context.id
+
+    activity
+    |> Activity.changeset(%{context_id: context_id})
+    |> Repo.update()
+  end
+end
