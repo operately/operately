@@ -367,13 +367,15 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_project_renamed, ctx, new_name: new_name do
+    ctx
+    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.assert_text(new_name)
+
     project = Operately.Projects.get_project!(ctx.project.id)
 
     assert project.name == new_name
 
     ctx
-    |> UI.visit("/projects/#{ctx.project.id}")
-    |> UI.assert_text("New Name")
   end
 
   step :given_a_person_exists, ctx, name: name do
