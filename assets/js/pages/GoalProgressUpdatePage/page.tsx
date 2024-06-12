@@ -58,7 +58,7 @@ export function Page() {
 
           <AckCTA />
           <div className="border-t border-stroke-base mt-8" />
-          <CommentSection form={commentsForm} me={me} refresh={refresh} />
+          <CommentSection form={commentsForm} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

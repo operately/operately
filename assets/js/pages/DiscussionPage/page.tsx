@@ -43,7 +43,7 @@ export function Page() {
 
             <Spacer size={4} />
             <div className="border-t border-stroke-base mt-8" />
-            <CommentSection form={commentsForm} me={me} refresh={refresh} />
+            <CommentSection form={commentsForm} refresh={refresh} />
           </div>
         </Paper.Body>
       </Paper.Root>

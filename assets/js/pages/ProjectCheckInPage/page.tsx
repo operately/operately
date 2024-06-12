@@ -48,12 +48,11 @@ export function Page() {
 }
 
 function Comments() {
-  const me = useMe();
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
   const commentsForm = useForProjectCheckIn(checkIn);
 
-  return <CommentSection form={commentsForm} me={me} refresh={refresh} />;
+  return <CommentSection form={commentsForm} refresh={refresh} />;
 }
 
 function Reactions() {

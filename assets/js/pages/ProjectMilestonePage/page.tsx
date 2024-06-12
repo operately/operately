@@ -20,7 +20,7 @@ import Avatar from "@/components/Avatar";
 
 export function Page() {
   const refresh = useRefresh();
-  const { project, milestone, me } = useLoadedData();
+  const { project, milestone } = useLoadedData();
 
   const form = useFormState(project, milestone);
   const commentsForm = useForMilestone(milestone);
@@ -42,7 +42,7 @@ export function Page() {
           <TaskSection milestone={milestone} />
 
           <PageSection title="Comments &amp; Activity Feed" />
-          <CommentSection form={commentsForm} me={me} refresh={refresh} />
+          <CommentSection form={commentsForm} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

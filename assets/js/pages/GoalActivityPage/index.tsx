@@ -12,7 +12,6 @@ import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
-import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -76,9 +75,8 @@ function Reactions({ commentThread }: { commentThread: CommentThread }) {
 }
 
 function Comments({ commentThread }: { commentThread: CommentThread }) {
-  const me = useMe();
   const refresh = Pages.useRefresh();
   const commentsForm = useForCommentThread(commentThread);
 
-  return <CommentSection form={commentsForm} me={me} refresh={refresh} />;
+  return <CommentSection form={commentsForm} refresh={refresh} />;
 }
