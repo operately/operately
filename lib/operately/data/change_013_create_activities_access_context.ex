@@ -100,17 +100,21 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       true ->
         IO.puts("\n" <> activity.action)
         :ok
+        # raise "Activity not handled in the data migration #{activity.action}"
     end
   end
 
   defp assign_company_context(activity) do
-    Operately.Companies.get_company!(activity.content.company_id)
-    |> Repo.preload(:access_context)
+    from(c in Operately.Companies.Company,
+      where: c.id == ^activity.content.company_id,
+      preload: :access_context
+    )
+    |> Repo.one()
     |> update_activity(activity)
   end
 
   defp assign_space_context(activity) do
-    case activity.action do
+    space_id = case activity.action do
       "group_edited" ->
         activity.content.group_id
       "goal_reparent" ->
@@ -118,20 +122,30 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       _ ->
         activity.content.space_id
     end
-    |> Operately.Groups.get_group()
-    |> Repo.preload(:access_context)
+
+    from(g in Operately.Groups.Group,
+      where: g.id == ^space_id,
+      preload: :access_context
+    )
+    |> Repo.one()
     |> update_activity(activity)
   end
 
   defp assign_goal_context(activity) do
-    Operately.Goals.get_goal!(activity.content.goal_id)
-    |> Repo.preload(:access_context)
+    from(g in Operately.Goals.Goal,
+      where: g.id == ^activity.content.goal_id,
+      preload: :access_context
+    )
+    |> Repo.one()
     |> update_activity(activity)
   end
 
   defp assign_project_context(activity) do
-    Operately.Projects.get_project!(activity.content.project_id)
-    |> Repo.preload(:access_context)
+    from(p in Operately.Projects.Project,
+      where: p.id == ^activity.content.project_id,
+      preload: :access_context
+    )
+    |> Repo.one()
     |> update_activity(activity)
   end
 
