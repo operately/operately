@@ -1,4 +1,4 @@
-defmodule Operately.Data.Change012CreateActivitiesAccessContextTest do
+defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
@@ -9,7 +9,7 @@ defmodule Operately.Data.Change012CreateActivitiesAccessContextTest do
   import Operately.ProjectsFixtures
   import Operately.TasksFixtures
 
-  alias Operately.Data.Change012CreateActivitiesAccessContext
+  alias Operately.Data.Change013CreateActivitiesAccessContext
 
   setup do
     company = company_fixture()
@@ -186,7 +186,7 @@ defmodule Operately.Data.Change012CreateActivitiesAccessContextTest do
   end
 
   def assign_activity_context(activities) do
-    Change012CreateActivitiesAccessContext.run()
+    Change013CreateActivitiesAccessContext.run()
 
     Enum.map(activities, fn activity ->
       Repo.reload(activity)
