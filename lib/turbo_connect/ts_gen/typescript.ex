@@ -29,7 +29,7 @@ defmodule TurboConnect.TsGen.Typescript do
   end
 
   def ts_interface_field({name, type, _opts}) do
-    "  #{ts_field_name(name)}: #{ts_type(type)};"
+    "  #{ts_field_name(name)}?: #{ts_type(type)};"
   end
 
   def ts_type(type) do

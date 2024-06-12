@@ -103,51 +103,51 @@ defmodule TurboConnect.TsGenTest do
 
   @ts_types """
   export interface Address {
-    street: string;
-    city: string;
+    street?: string;
+    city?: string;
   }
 
   export interface Event {
-    insertedAt: Date;
-    content: EventContent;
+    insertedAt?: Date;
+    content?: EventContent;
   }
 
   export interface Post {
-    title: string;
-    content: string;
+    title?: string;
+    content?: string;
   }
 
   export interface User {
-    fullName: string;
-    address: Address;
-    posts: Post[];
+    fullName?: string;
+    address?: Address;
+    posts?: Post[];
   }
 
   export interface UserAddedEvent {
-    userId: number;
+    userId?: number;
   }
 
   export interface UserRemovedEvent {
-    userId: number;
+    userId?: number;
   }
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
 
   export interface GetUserInput {
-    userId: number;
+    userId?: number;
   }
 
   export interface GetUserResult {
-    user: User;
+    user?: User;
   }
 
   export interface CreateUserInput {
-    fullName: string;
-    address: Address;
+    fullName?: string;
+    address?: Address;
   }
 
   export interface CreateUserResult {
-    user: User;
+    user?: User;
   }
   """
 
