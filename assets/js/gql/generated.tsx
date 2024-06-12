@@ -1690,7 +1690,6 @@ export type RootQueryType = {
   tasks?: Maybe<Array<Maybe<Task>>>;
   tenet?: Maybe<Tenet>;
   tenets?: Maybe<Array<Maybe<Tenet>>>;
-  unreadNotificationsCount?: Maybe<Scalars['Int']['output']>;
   update: Update;
   updates: Array<Maybe<Update>>;
 };

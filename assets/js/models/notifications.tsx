@@ -1,11 +1,15 @@
-import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
+import React from "react";
+import Api from "@/api";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 
 export function useUnreadCount() {
-  const query = gql`
-    query UnreadCount {
-      unreadNotificationsCount
-    }
-  `;
+  const [unread, setUnread] = React.useState(0);
+
+  const fetch = () => {
+    Api.getUnreadNotificationCount({}).then((data) => {
+      setUnread(data.unread);
+    });
+  };
 
   const subscription = gql`
     subscription NotificationsChanged {
@@ -13,18 +17,10 @@ export function useUnreadCount() {
     }
   `;
 
-  const { data, loading, error, refetch } = useQuery(query, { fetchPolicy: "network-only" });
+  useSubscription(subscription, { onData: () => fetch() });
+  React.useEffect(() => fetch(), []);
 
-  useSubscription(subscription, { onData: () => refetch() });
-
-  if (loading) return 0;
-
-  if (error) {
-    console.error(error);
-    return 0;
-  }
-
-  return data.unreadNotificationsCount;
+  return unread;
 }
 
 export function useMarkAllNotificationsRead() {

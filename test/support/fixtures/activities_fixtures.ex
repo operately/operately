@@ -18,7 +18,7 @@ defmodule Operately.ActivitiesFixtures do
       }
     }
 
-    attrs = Map.merge(defaults, attrs)
+    attrs = Map.merge(defaults, Enum.into(attrs, %{}))
     changeset = Operately.Activities.Activity.changeset(%Operately.Activities.Activity{}, attrs)
 
     {:ok, activity} = Operately.Repo.insert(changeset)
