@@ -6,6 +6,8 @@ defmodule Operately.Access.Context do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
 
+    has_many :activities, Operately.Activities.Activity, foreign_key: :context_id
+
     timestamps()
   end
 
