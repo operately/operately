@@ -97,6 +97,9 @@ defmodule Operately.Data.Change012CreateActivitiesAccessContext do
       activity.action in @goal_actions -> assign_goal_context(activity)
       activity.action in @project_actions -> assign_project_context(activity)
       activity.action in @task_actions -> assign_task_project_context(activity)
+      true ->
+        IO.puts("\n" <> activity.action)
+        :ok
     end
   end
 
@@ -108,9 +111,9 @@ defmodule Operately.Data.Change012CreateActivitiesAccessContext do
 
   defp assign_space_context(activity) do
     case activity.action do
-      :group_edited ->
+      "group_edited" ->
         activity.content.group_id
-      :goal_reparent ->
+      "goal_reparent" ->
         activity.content.new_parent_goal_id
       _ ->
         activity.content.space_id
@@ -136,11 +139,11 @@ defmodule Operately.Data.Change012CreateActivitiesAccessContext do
       join: m in assoc(t, :milestone),
       join: p in assoc(m, :project),
       join: c in assoc(p, :access_context),
-      preload: [access_context: c],
       where: t.id == ^activity.content.task_id,
       select: p
 
     Repo.one(query)
+    |> Repo.preload(:access_context)
     |> update_activity(activity)
   end
 
