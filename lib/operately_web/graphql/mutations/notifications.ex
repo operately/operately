@@ -13,12 +13,5 @@ defmodule OperatelyWeb.Graphql.Mutations.Notifications do
         |> Notifications.mark_as_read()
       end
     end
-
-    field :mark_all_notifications_as_read, non_null(:boolean) do
-      resolve fn _, %{context: context} ->
-        person = context.current_account.person
-        Notifications.mark_all_as_read(person)
-      end
-    end
   end
 end
