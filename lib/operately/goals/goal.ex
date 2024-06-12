@@ -15,6 +15,8 @@ defmodule Operately.Goals.Goal do
     has_many :targets, Operately.Goals.Target
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
+    has_one :access_context, Operately.Access.Context, foreign_key: :goal_id
+
     field :name, :string
     field :next_update_scheduled_at, :utc_datetime
 
@@ -38,12 +40,12 @@ defmodule Operately.Goals.Goal do
   def changeset(goal, attrs) do
     goal
     |> cast(attrs, [
-      :name, 
-      :company_id, 
-      :group_id, 
-      :champion_id, 
-      :reviewer_id, 
-      :creator_id, 
+      :name,
+      :company_id,
+      :group_id,
+      :champion_id,
+      :reviewer_id,
+      :creator_id,
       :deprecated_timeframe,
       :description,
       :next_update_scheduled_at,
@@ -54,11 +56,11 @@ defmodule Operately.Goals.Goal do
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
-      :name, 
-      :company_id, 
-      :group_id, 
-      :champion_id, 
-      :reviewer_id, 
+      :name,
+      :company_id,
+      :group_id,
+      :champion_id,
+      :reviewer_id,
       :creator_id,
     ])
   end
