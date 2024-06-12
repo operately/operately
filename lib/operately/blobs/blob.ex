@@ -10,6 +10,7 @@ defmodule Operately.Blobs.Blob do
 
     field :filename, :string
     field :status, Ecto.Enum, values: [:pending, :uploaded, :deleted]
+    field :storage_type, Ecto.Enum, values: [:s3, :local]
 
     timestamps()
   end
@@ -17,7 +18,7 @@ defmodule Operately.Blobs.Blob do
   @doc false
   def changeset(blob, attrs) do
     blob
-    |> cast(attrs, [:filename, :author_id, :company_id, :status])
-    |> validate_required([:filename, :author_id, :status, :company_id])
+    |> cast(attrs, [:filename, :author_id, :company_id, :status, :storage_type])
+    |> validate_required([:filename, :author_id, :status, :company_id, :storage_type])
   end
 end
