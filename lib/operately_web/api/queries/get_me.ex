@@ -27,6 +27,8 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         id: me.id,
         full_name: me.full_name,
         email: me.email,
+        title: me.title,
+        avatar_url: me.avatar_url,
         timezone: me.timezone,
 
         send_daily_summary: me.send_daily_summary,
@@ -45,6 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
       id: manager.id,
       full_name: manager.full_name,
       email: manager.email,
+      title: manager.title,
       avatar_url: manager.avatar_url
     }
   end

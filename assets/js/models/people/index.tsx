@@ -1,5 +1,5 @@
 import { makeQueryFn } from "@/graphql/client";
-import Api from "@/api";
+import Api, { GetMeInput } from "@/api";
 
 import { Person, GetPeopleDocument, GetPersonDocument, GetPersonQueryVariables } from "@/gql/generated";
 
@@ -8,7 +8,11 @@ export { Person } from "@/gql/generated";
 export const getPeople = makeQueryFn(GetPeopleDocument, "people") as () => Promise<Person[]>;
 export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
 
-export const getMe = Api.getMe;
+export const getMe = async (input: GetMeInput) => {
+  const res = await Api.getMe(input);
+  return res.me as Person;
+};
+
 export const useMe = Api.useGetMe;
 
 export function usePeopleSearch() {

@@ -57,15 +57,14 @@ type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, err
 
 export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
   const [data, setData] = React.useState<ResultT | null>(null);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
 
   React.useEffect(() => {
-    setLoading(true);
     setError(null);
 
     fn().then(setData).catch(setError).finally(() => setLoading(false));
-  }, [fn]);
+  }, []);
 
   return { data, loading, error };
 }
