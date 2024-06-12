@@ -13,7 +13,7 @@ defmodule Operately.BlobsFixtures do
       |> Enum.into(%{
         filename: "some filename",
         status: :pending,
-        storage_type: :local  # Adiciona storage_type padrão
+        storage_type: :local
       })
       |> Operately.Blobs.create_blob()
 
