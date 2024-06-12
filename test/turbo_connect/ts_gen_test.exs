@@ -96,10 +96,12 @@ defmodule TurboConnect.TsGenTest do
     mutation :create_user, CreateUserMutation
   end
 
-  @ts_code """
+  @ts_imports """
   import React from "react";
   import axios from "axios";
+  """
 
+  @ts_types """
   export interface Address {
     street: string;
     city: string;
@@ -131,55 +133,12 @@ defmodule TurboConnect.TsGenTest do
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
 
-  type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null };
-
-  export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
-    const [data, setData] = React.useState<ResultT | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const [error, setError] = React.useState<Error | null>(null);
-
-    React.useEffect(() => {
-      setLoading(true);
-      setError(null);
-
-      fn().then(setData).catch(setError).finally(() => setLoading(false));
-    }, [fn]);
-
-    return { data, loading, error };
-  }
-
   export interface GetUserInput {
     userId: number;
   }
 
   export interface GetUserResult {
     user: User;
-  }
-
-  export async function getUser(input: GetUserInput): Promise<GetUserResult> {
-    return axios.get('/api/get_user', { params: input }).then(({ data }) => data);
-  }
-
-  export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
-    return useQuery<GetUserResult>(() => getUser(input));
-  }
-
-
-  type UseMutationHookResult<InputT, ResultT> = [() => Promise<ResultT>, { data: ResultT | null, loading: boolean, error: Error | null }];
-
-  export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<ResultT>) : UseMutationHookResult<InputT, ResultT> {
-    const [data, setData] = React.useState<ResultT | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const [error, setError] = React.useState<Error | null>(null);
-
-    const execute = (input: InputT) => {
-      setLoading(true);
-      setError(null);
-
-      fn(input).then(setData).catch(setError).finally(() => setLoading(false));
-    };
-
-    return [execute, { data, loading, error }];
   }
 
   export interface CreateUserInput {
@@ -190,20 +149,75 @@ defmodule TurboConnect.TsGenTest do
   export interface CreateUserResult {
     user: User;
   }
+  """
 
-  export function createUser(input: CreateUserInput): Promise<CreateUserResult> {
-    return axios.post('/api/create_user', input).then(({ data }) => data);
+  @ts_api_client """
+  interface ApiClientConfig {
+    basePath: string;
+  }
+
+  export class ApiClient {
+    private basePath: string;
+
+    configure(config: ApiClientConfig) {
+      this.basePath = config.basePath;
+    }
+
+    async getUser(input: GetUserInput): Promise<GetUserResult> {
+      return axios.get(this.basePath + "/get_user", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    }
+
+    async createUser(input: CreateUserInput): Promise<CreateUserResult> {
+      return axios.post(this.basePath + "/create_user", toSnake(input)).then(({ data }) => toCamel(data));
+    }
+
+  }
+  """
+
+  @ts_default """
+  const defaultApiClient = new ApiClient();
+
+  export async function getUser(input: GetUserInput) : Promise<GetUserResult> {
+    return defaultApiClient.getUser(input);
+  }
+  export async function createUser(input: CreateUserInput) : Promise<CreateUserResult> {
+    return defaultApiClient.createUser(input);
+  }
+
+  export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
+    return useQuery<GetUserResult>(() => defaultApiClient.getUser(input));
   }
 
   export function useCreateUser() : UseMutationHookResult<CreateUserInput, CreateUserResult> {
-    return useMutation<CreateUserInput, CreateUserResult>(createUser);
+    return useMutation<CreateUserInput, CreateUserResult>((input) => defaultApiClient.createUser(input));
   }
 
+  export default {
+    configureDefault: (config: ApiClientConfig) => defaultApiClient.configure(config),
 
+    getUser,
+    useGetUser,
+    createUser,
+    useCreateUser,
+  };
   """
 
   test "generating TypeScript code" do
-    assert TurboConnect.TsGen.generate(ExampleApi) === @ts_code
+    assert TurboConnect.TsGen.generate_imports() === @ts_imports
+    assert TurboConnect.TsGen.generate_types(ExampleApi) === @ts_types
+    assert TurboConnect.TsGen.generate_api_client_class(ExampleApi) === @ts_api_client
+    assert TurboConnect.TsGen.generate_default_exports(ExampleApi) === @ts_default
+
+    assert TurboConnect.TsGen.generate(ExampleApi) === """
+    #{@ts_imports}
+    #{TurboConnect.TsGen.to_camel_case()}
+    #{TurboConnect.TsGen.to_snake_case()}
+    #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
+    #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
+    #{@ts_types}
+    #{@ts_api_client}
+    #{@ts_default}
+    """
   end
 
 end
