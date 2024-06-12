@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         send_daily_summary: ctx.person.send_daily_summary,
         notify_on_mention: ctx.person.notify_on_mention,
         notify_about_assignments: ctx.person.notify_about_assignments,
+        companyRole: Atom.to_string(ctx.person.company_role),
         theme: "system",
         manager: nil,
       }
@@ -46,6 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         send_daily_summary: me.send_daily_summary,
         notify_on_mention: me.notify_on_mention,
         notify_about_assignments: me.notify_about_assignments,
+        companyRole: Atom.to_string(me.company_role),
         theme: "system",
         manager: %{
           id: manager.id,
@@ -70,6 +72,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         send_daily_summary: ctx.person.send_daily_summary,
         notify_on_mention: ctx.person.notify_on_mention,
         notify_about_assignments: ctx.person.notify_about_assignments,
+        companyRole: Atom.to_string(ctx.person.company_role),
         theme: "system",
         manager: nil
       }
