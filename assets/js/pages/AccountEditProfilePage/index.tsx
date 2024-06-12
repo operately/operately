@@ -12,7 +12,7 @@ import { CreateBlob } from "@/graphql/Blobs";
 import moment from "moment-timezone";
 import { FilledButton } from "@/components/Button";
 import classnames from "classnames";
-import Avatar from "@/components/Avatar";
+import { BackupAvatar, ImageAvatar } from "@/components/Avatar";
 
 export async function loader() {
   return null;
@@ -151,13 +151,17 @@ function ProfileForm({ me }) {
 
   const isValid = name.length > 0 && title.length > 0;
 
+  const handleRemoveAvatar = () => {
+    setAvatarUrl(null);
+  };
+
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
-        {avatarUrl === null ? (
-          <img src={avatarUrl} className="rounded-full w-24 h-24" />
+        {avatarUrl ? (
+          <ImageAvatar person={me} size="xxlarge" />
         ) : (
-          <Avatar person={me} size="xxlarge" />
+          <BackupAvatar person={me} size="xxlarge" />
         )}
         <div className="ml-4 mt-2">
           <FileInput
@@ -167,7 +171,7 @@ function ProfileForm({ me }) {
             }}
             error={false}
           />
-          <button className={dimmedClassName} type="button" onClick={() => setAvatarUrl(null)}>
+          <button className={dimmedClassName} type="button" onClick={handleRemoveAvatar}>
             Remove Avatar and Use Initials
           </button>
         </div>
@@ -205,6 +209,7 @@ function ProfileForm({ me }) {
     </Forms.Form>
   );
 }
+
 
 function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus }) {
   const loader = People.usePeopleSearch();
