@@ -155,7 +155,7 @@ function ProfileForm({ me }) {
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
         {avatarUrl === null ? (
-          <img src={avatarUrl} className="rounded-full border-2 border-white w-32 h-32" />
+          <img src={avatarUrl} className="rounded-full w-24 h-24" />
         ) : (
           <Avatar person={me} size="xxlarge" />
         )}
