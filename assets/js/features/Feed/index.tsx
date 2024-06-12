@@ -8,6 +8,7 @@ import FeedItems from "./FeedItems";
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { typename } from "@/features/activities";
 
 export type Page = "company" | "project" | "goal" | "space" | "profile";
 
@@ -21,20 +22,6 @@ export function Feed({ items, testId, page }: { items: Activities.Activity[]; te
       </div>
     </ErrorBoundary>
   );
-}
-
-function typename(activity: Activities.Activity) {
-  if (activity["action"]) {
-    let camel = activity["action"].replace(/_([a-z])/g, function (_a: string, b: string) {
-      return b.toUpperCase();
-    });
-
-    camel = camel.charAt(0).toUpperCase() + camel.slice(1);
-
-    return "ActivityContent" + camel;
-  } else {
-    return activity.content.__typename!;
-  }
 }
 
 function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page: string }) {
@@ -70,7 +57,7 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
 
         <div className="flex-1 flex flex-col gap-4">
           {activitiesWithKnownTypes.map((activity) => (
-            <ErrorBoundary key={activity.id} fallback={null}>
+            <ErrorBoundary key={activity.id} fallback={<div>{typename(activity)}</div>}>
               <ActivityItem key={activity.id} activity={activity} page={page} />
             </ErrorBoundary>
           ))}

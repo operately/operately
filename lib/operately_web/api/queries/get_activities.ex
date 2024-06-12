@@ -107,6 +107,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   def serialize(activity) do
     %{
       id: activity.id,
+      inserted_at: activity.inserted_at,
       action: activity.action,
       author: serialize_author(activity.author),
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread),
@@ -129,6 +130,25 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
       message: comment_thread.message,
       title: comment_thread.title,
     }
+  end
+
+  def serialize_content("goal_editing", content) do
+    alias Operately.Activities.Content.GoalEditing
+
+    %{}
+    |> serialize_project_on_content(content)
+    |> serialize_goal_on_content(content)
+    |> Map.merge(%{
+      new_name: content["new_name"],
+      old_name: content["old_name"],
+      new_timeframe: serialize_timeframe(GoalEditing.previous_timeframe(content)),
+      old_timeframe: serialize_timeframe(GoalEditing.current_timeframe(content)),
+      new_champion_id: content["new_champion_id"],
+      old_champion_id: content["old_champion_id"],
+      added_targets: serialize_added_targets(content["added_targets"]),
+      updated_targets: serialize_updated_targets(content["updated_targets"]),
+      deleted_targets: serialize_deleted_targets(content["deleted_targets"]),
+    })
   end
 
   def serialize_content(_action, content) do
@@ -165,5 +185,41 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
       id: goal.id,
       name: goal.name,
     }
+  end
+
+  def serialize_timeframe(timeframe) do
+    %{
+      start_date: timeframe["start_date"],
+      end_date: timeframe["end_date"],
+      type: timeframe["type"],
+    }
+  end
+
+  def serialize_added_targets(targets) do
+    Enum.map(targets, fn target ->
+      %{
+        id: target["id"],
+        name: target["name"],
+      }
+    end)
+  end
+
+  def serialize_updated_targets(targets) do
+    Enum.map(targets, fn target ->
+      %{
+        id: target["id"],
+        name: target["name"],
+        old_name: target["old_name"],
+      }
+    end)
+  end
+
+  def serialize_deleted_targets(targets) do
+    Enum.map(targets, fn target ->
+      %{
+        id: target["id"],
+        name: target["name"],
+      }
+    end)
   end
 end

@@ -75,7 +75,7 @@ import GoalCheckIn from "@/features/activities/GoalCheckIn";
 import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
 
 function handler(activity: Activity) {
-  return match(activity.content.__typename)
+  return match(typename(activity))
     .with("ActivityContentGoalTimeframeEditing", () => GoalTimeframeEditing)
     .with("ActivityContentGoalClosing", () => GoalClosing)
     .with("ActivityContentGoalReopening", () => GoalReopening)
@@ -84,4 +84,18 @@ function handler(activity: Activity) {
     .otherwise(() => {
       throw new Error("Unknown activity type");
     });
+}
+
+export function typename(activity: Activity): string {
+  if (activity["action"]) {
+    let camel = activity["action"].replace(/_([a-z])/g, function (_a: string, b: string) {
+      return b.toUpperCase();
+    });
+
+    camel = camel.charAt(0).toUpperCase() + camel.slice(1);
+
+    return "ActivityContent" + camel;
+  } else {
+    return activity.content.__typename!;
+  }
 }
