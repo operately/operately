@@ -124,8 +124,9 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   end
 
   defp assign_goal_context(activity) do
-    activity.content.goal_id
-    # todo
+    Operately.Goals.get_goal!(activity.content.goal_id)
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
   end
 
   defp assign_project_context(activity) do
