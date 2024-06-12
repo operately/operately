@@ -18,7 +18,7 @@ defmodule Operately.BlobsTest do
 
     import Operately.BlobsFixtures
 
-    @invalid_attrs %{filename: nil, status: nil}
+    @invalid_attrs %{filename: nil, status: nil, storage_type: nil}
 
     test "list_blobs/0 returns all blobs", ctx do
       blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id)
@@ -31,11 +31,12 @@ defmodule Operately.BlobsTest do
     end
 
     test "create_blob/1 with valid data creates a blob", ctx do
-      valid_attrs = %{filename: "some filename", status: :pending, company_id: ctx.company.id, author_id: ctx.person.id}
+      valid_attrs = %{filename: "some filename", status: :pending, company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :local}
 
       assert {:ok, %Blob{} = blob} = Blobs.create_blob(valid_attrs)
       assert blob.filename == "some filename"
       assert blob.status == :pending
+      assert blob.storage_type == :local
     end
 
     test "create_blob/1 with invalid data returns error changeset" do
@@ -44,11 +45,12 @@ defmodule Operately.BlobsTest do
 
     test "update_blob/2 with valid data updates the blob", ctx do
       blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id)
-      update_attrs = %{filename: "some updated filename", status: :uploaded}
+      update_attrs = %{filename: "some updated filename", status: :uploaded, storage_type: :local}
 
       assert {:ok, %Blob{} = blob} = Blobs.update_blob(blob, update_attrs)
       assert blob.filename == "some updated filename"
       assert blob.status == :uploaded
+      assert blob.storage_type == :local
     end
 
     test "update_blob/2 with invalid data returns error changeset", ctx do
