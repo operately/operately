@@ -1073,11 +1073,11 @@ export interface GetKeyResourcesResult {
 
 
 export interface GetMeInput {
-
+  includeManager: boolean;
 }
 
 export interface GetMeResult {
-
+  me: Person;
 }
 
 
