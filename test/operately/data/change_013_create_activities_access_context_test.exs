@@ -1,13 +1,14 @@
 defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
   use Operately.DataCase
 
-  import Operately.CompaniesFixtures
   import Operately.AccessFixtures, only: [context_fixture: 1]
+  import Operately.CompaniesFixtures
   import Operately.ActivitiesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
   import Operately.TasksFixtures
+  import Operately.GoalsFixtures
 
   alias Operately.Data.Change013CreateActivitiesAccessContext
 
@@ -105,8 +106,31 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
   end
 
   describe "creates access_context for goal activities" do
-    test "goal_check_in action" do
-      assert 1 == 1
+    setup ctx do
+      group = group_fixture(ctx.author)
+
+      goal = goal_fixture(ctx.author, %{space_id: group.id, targets: []})
+      context_fixture(%{goal_id: goal.id})
+      goal = Repo.preload(goal, :access_context)
+
+      Map.merge(ctx, %{goal: goal})
+    end
+
+    test "goal_check_in action", ctx do
+      attrs = %{
+        action: "goal_check_in",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          goal_id: ctx.goal.id,
+          update_id: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
     end
   end
 
