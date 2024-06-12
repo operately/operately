@@ -96,7 +96,7 @@ function initials(fullName: string): string {
   }
 }
 
-function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
+export function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass = classnames(
     "flex items-center justify-center",
     "text-dark-1",
@@ -128,7 +128,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 //
 // Fixed based on this issue: https://github.com/chakra-ui/chakra-ui/issues/5909.
 //
-function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
+export function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
   const baseClass = "rounded-full overflow-hidden bg-white shrink-0";
