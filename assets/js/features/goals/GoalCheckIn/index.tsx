@@ -20,9 +20,6 @@ import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
 
 export function LastCheckInMessage({ goal }) {
-  const { data, loading } = People.useMe({});
-  if (loading) return null;
-
   if (!goal.lastCheckIn) return null;
 
   const message = goal.lastCheckIn.content.message;
@@ -41,7 +38,7 @@ export function LastCheckInMessage({ goal }) {
           <RichContent jsonContent={message} />
 
           <div className="flex items-center gap-3">
-            <LastMessageReactions goal={goal} me={data.me} />
+            <LastMessageReactions goal={goal} />
             <FilledButton linkTo={path} size="xs" type="secondary">
               Discuss
             </FilledButton>
@@ -69,12 +66,12 @@ function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function LastMessageReactions({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
+function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
   const update = goal.lastCheckIn!;
   const reactions = update.reactions!.map((r) => r!);
   const entity = { id: update.id, type: "update" };
 
-  const addReactionForm = useReactionsForm(entity, reactions, me);
+  const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={20} form={addReactionForm} />;
 }

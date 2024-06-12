@@ -1,10 +1,8 @@
 import * as Pages from "@/components/Pages";
-import * as People from "@/models/people";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 
 interface LoaderResult {
   checkIn: ProjectCheckIns.ProjectCheckIn;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -14,7 +12,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeAuthor: true,
       includeReactions: true,
     }),
-    me: await People.getMe({}),
   };
 }
 

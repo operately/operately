@@ -1,12 +1,10 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
-import * as People from "@/models/people";
 
 interface LoaderResult {
   goal: Goals.Goal;
   update: GoalCheckIns.GoalCheckIn;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -16,7 +14,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeTargets: true,
     }),
     update: await GoalCheckIns.getCheckIn(params.id, {}),
-    me: await People.getMe({}),
   };
 }
 

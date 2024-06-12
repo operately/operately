@@ -100,837 +100,837 @@ export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<Resu
 }
 
 export interface Activity {
-  id?: string;
-  scopeType?: string;
-  scopeId?: string;
-  resourceId?: string;
-  resourceType?: string;
-  actionType?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  commentThread?: CommentThread;
-  author?: Person;
-  resource?: ActivityResourceUnion;
-  person?: Person;
-  eventData?: ActivityDataUnion;
-  content?: ActivityContent;
+  id?: string | null;
+  scopeType?: string | null;
+  scopeId?: string | null;
+  resourceId?: string | null;
+  resourceType?: string | null;
+  actionType?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  commentThread?: CommentThread | null;
+  author?: Person | null;
+  resource?: ActivityResourceUnion | null;
+  person?: Person | null;
+  eventData?: ActivityDataUnion | null;
+  content?: ActivityContent | null;
 }
 
 export interface ActivityContentCommentAdded {
-  comment?: Comment;
-  activity?: Activity;
+  comment?: Comment | null;
+  activity?: Activity | null;
 }
 
 export interface ActivityContentDiscussionCommentSubmitted {
-  spaceId?: string;
-  discussionId?: string;
-  title?: string;
-  space?: Group;
+  spaceId?: string | null;
+  discussionId?: string | null;
+  title?: string | null;
+  space?: Group | null;
 }
 
 export interface ActivityContentDiscussionEditing {
-  companyId?: string;
-  spaceId?: string;
-  discussionId?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  discussionId?: string | null;
 }
 
 export interface ActivityContentDiscussionPosting {
-  companyId?: string;
-  spaceId?: string;
-  title?: string;
-  discussionId?: string;
-  space?: Group;
-  discussion?: Discussion;
+  companyId?: string | null;
+  spaceId?: string | null;
+  title?: string | null;
+  discussionId?: string | null;
+  space?: Group | null;
+  discussion?: Discussion | null;
 }
 
 export interface ActivityContentGoalArchived {
-  goal?: Goal;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentGoalCheckIn {
-  goal?: Goal;
-  update?: Update;
+  goal?: Goal | null;
+  update?: Update | null;
 }
 
 export interface ActivityContentGoalCheckInAcknowledgement {
-  goal?: Goal;
-  update?: Update;
+  goal?: Goal | null;
+  update?: Update | null;
 }
 
 export interface ActivityContentGoalCheckInEdit {
-  companyId?: string;
-  goalId?: string;
-  checkInId?: string;
+  companyId?: string | null;
+  goalId?: string | null;
+  checkInId?: string | null;
 }
 
 export interface ActivityContentGoalClosing {
-  companyId?: string;
-  spaceId?: string;
-  goalId?: string;
-  success?: string;
-  goal?: Goal;
+  companyId?: string | null;
+  spaceId?: string | null;
+  goalId?: string | null;
+  success?: string | null;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentGoalCreated {
-  goal?: Goal;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentGoalDiscussionCreation {
-  companyId?: string;
-  goalId?: string;
-  goal?: Goal;
+  companyId?: string | null;
+  goalId?: string | null;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentGoalDiscussionEditing {
-  companyId?: string;
-  spaceId?: string;
-  goalId?: string;
-  activityId?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  goalId?: string | null;
+  activityId?: string | null;
 }
 
 export interface ActivityContentGoalEditing {
-  goal?: Goal;
-  companyId?: string;
-  goalId?: string;
-  oldName?: string;
-  newName?: string;
-  oldTimeframe?: Timeframe;
-  newTimeframe?: Timeframe;
-  oldChampionId?: string;
-  newChampionId?: string;
-  oldReviewerId?: string;
-  newReviewerId?: string;
-  newChampion?: Person;
-  newReviewer?: Person;
-  addedTargets?: Target[];
-  updatedTargets?: GoalEditingUpdatedTarget[];
-  deletedTargets?: Target[];
+  goal?: Goal | null;
+  companyId?: string | null;
+  goalId?: string | null;
+  oldName?: string | null;
+  newName?: string | null;
+  oldTimeframe?: Timeframe | null;
+  newTimeframe?: Timeframe | null;
+  oldChampionId?: string | null;
+  newChampionId?: string | null;
+  oldReviewerId?: string | null;
+  newReviewerId?: string | null;
+  newChampion?: Person | null;
+  newReviewer?: Person | null;
+  addedTargets?: Target[] | null;
+  updatedTargets?: GoalEditingUpdatedTarget[] | null;
+  deletedTargets?: Target[] | null;
 }
 
 export interface ActivityContentGoalReopening {
-  companyId?: string;
-  goalId?: string;
-  message?: string;
-  goal?: Goal;
+  companyId?: string | null;
+  goalId?: string | null;
+  message?: string | null;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentGoalReparent {
-  companyId?: string;
-  oldParentGoalId?: string;
-  newParentGoalId?: string;
+  companyId?: string | null;
+  oldParentGoalId?: string | null;
+  newParentGoalId?: string | null;
 }
 
 export interface ActivityContentGoalTimeframeEditing {
-  goal?: Goal;
-  oldTimeframe?: Timeframe;
-  newTimeframe?: Timeframe;
+  goal?: Goal | null;
+  oldTimeframe?: Timeframe | null;
+  newTimeframe?: Timeframe | null;
 }
 
 export interface ActivityContentGroupEdited {
-  exampleField?: string;
+  exampleField?: string | null;
 }
 
 export interface ActivityContentProjectArchived {
-  projectId?: string;
-  project?: Project;
+  projectId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectCheckInAcknowledged {
-  projectId?: string;
-  checkInId?: string;
-  project?: Project;
-  checkIn?: ProjectCheckIn;
+  projectId?: string | null;
+  checkInId?: string | null;
+  project?: Project | null;
+  checkIn?: ProjectCheckIn | null;
 }
 
 export interface ActivityContentProjectCheckInCommented {
-  projectId?: string;
-  checkInId?: string;
-  project?: Project;
-  checkIn?: ProjectCheckIn;
-  comment?: Comment;
+  projectId?: string | null;
+  checkInId?: string | null;
+  project?: Project | null;
+  checkIn?: ProjectCheckIn | null;
+  comment?: Comment | null;
 }
 
 export interface ActivityContentProjectCheckInEdit {
-  companyId?: string;
-  projectId?: string;
-  checkInId?: string;
+  companyId?: string | null;
+  projectId?: string | null;
+  checkInId?: string | null;
 }
 
 export interface ActivityContentProjectCheckInSubmitted {
-  projectId?: string;
-  checkInId?: string;
-  project?: Project;
-  checkIn?: ProjectCheckIn;
+  projectId?: string | null;
+  checkInId?: string | null;
+  project?: Project | null;
+  checkIn?: ProjectCheckIn | null;
 }
 
 export interface ActivityContentProjectClosed {
-  project?: Project;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectContributorAddition {
-  companyId?: string;
-  projectId?: string;
-  personId?: string;
-  person?: Person;
-  project?: Project;
+  companyId?: string | null;
+  projectId?: string | null;
+  personId?: string | null;
+  person?: Person | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectCreated {
-  projectId?: string;
-  project?: Project;
+  projectId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectDiscussionSubmitted {
-  projectId?: string;
-  discussionId?: string;
-  title?: string;
-  project?: Project;
+  projectId?: string | null;
+  discussionId?: string | null;
+  title?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectGoalConnection {
-  project?: Project;
-  goal?: Goal;
+  project?: Project | null;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentProjectGoalDisconnection {
-  project?: Project;
-  goal?: Goal;
+  project?: Project | null;
+  goal?: Goal | null;
 }
 
 export interface ActivityContentProjectMilestoneCommented {
-  projectId?: string;
-  project?: Project;
-  milestone?: Milestone;
-  commentAction?: string;
-  comment?: Comment;
+  projectId?: string | null;
+  project?: Project | null;
+  milestone?: Milestone | null;
+  commentAction?: string | null;
+  comment?: Comment | null;
 }
 
 export interface ActivityContentProjectMoved {
-  project?: Project;
-  oldSpace?: Group;
-  newSpace?: Group;
+  project?: Project | null;
+  oldSpace?: Group | null;
+  newSpace?: Group | null;
 }
 
 export interface ActivityContentProjectPausing {
-  companyId?: string;
-  projectId?: string;
-  project?: Project;
+  companyId?: string | null;
+  projectId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectRenamed {
-  project?: Project;
-  oldName?: string;
-  newName?: string;
+  project?: Project | null;
+  oldName?: string | null;
+  newName?: string | null;
 }
 
 export interface ActivityContentProjectResuming {
-  companyId?: string;
-  projectId?: string;
-  project?: Project;
+  companyId?: string | null;
+  projectId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectReviewAcknowledged {
-  projectId?: string;
-  reviewId?: string;
-  project?: Project;
+  projectId?: string | null;
+  reviewId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectReviewCommented {
-  projectId?: string;
-  reviewId?: string;
-  project?: Project;
+  projectId?: string | null;
+  reviewId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectReviewRequestSubmitted {
-  projectId?: string;
-  requestId?: string;
-  project?: Project;
+  projectId?: string | null;
+  requestId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectReviewSubmitted {
-  projectId?: string;
-  reviewId?: string;
-  project?: Project;
+  projectId?: string | null;
+  reviewId?: string | null;
+  project?: Project | null;
 }
 
 export interface ActivityContentProjectTimelineEdited {
-  project?: Project;
-  oldStartDate?: Date;
-  newStartDate?: Date;
-  oldEndDate?: Date;
-  newEndDate?: Date;
-  newMilestones?: Milestone[];
-  updatedMilestones?: Milestone[];
+  project?: Project | null;
+  oldStartDate?: Date | null;
+  newStartDate?: Date | null;
+  oldEndDate?: Date | null;
+  newEndDate?: Date | null;
+  newMilestones?: Milestone[] | null;
+  updatedMilestones?: Milestone[] | null;
 }
 
 export interface ActivityContentSpaceJoining {
-  companyId?: string;
-  spaceId?: string;
-  space?: Group;
+  companyId?: string | null;
+  spaceId?: string | null;
+  space?: Group | null;
 }
 
 export interface ActivityContentTaskAdding {
-  name?: string;
-  taskId?: string;
-  companyId?: string;
-  spaceId?: string;
+  name?: string | null;
+  taskId?: string | null;
+  companyId?: string | null;
+  spaceId?: string | null;
 }
 
 export interface ActivityContentTaskAssigneeAssignment {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
-  personId?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
+  personId?: string | null;
 }
 
 export interface ActivityContentTaskClosing {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
 }
 
 export interface ActivityContentTaskDescriptionChange {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
 }
 
 export interface ActivityContentTaskNameEditing {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
-  oldName?: string;
-  newName?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
+  oldName?: string | null;
+  newName?: string | null;
 }
 
 export interface ActivityContentTaskPriorityChange {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
-  oldPriority?: string;
-  newPriority?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
+  oldPriority?: string | null;
+  newPriority?: string | null;
 }
 
 export interface ActivityContentTaskReopening {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
 }
 
 export interface ActivityContentTaskSizeChange {
-  companyId?: string;
-  spaceId?: string;
-  taskId?: string;
-  oldSize?: string;
-  newSize?: string;
+  companyId?: string | null;
+  spaceId?: string | null;
+  taskId?: string | null;
+  oldSize?: string | null;
+  newSize?: string | null;
 }
 
 export interface ActivityContentTaskStatusChange {
-  companyId?: string;
-  taskId?: string;
-  status?: string;
+  companyId?: string | null;
+  taskId?: string | null;
+  status?: string | null;
 }
 
 export interface ActivityContentTaskUpdate {
-  companyId?: string;
-  taskId?: string;
-  name?: string;
+  companyId?: string | null;
+  taskId?: string | null;
+  name?: string | null;
 }
 
 export interface ActivityEventDataCommentPost {
-  updateId?: string;
+  updateId?: string | null;
 }
 
 export interface ActivityEventDataMilestoneCreate {
-  title?: string;
+  title?: string | null;
 }
 
 export interface ActivityEventDataProjectCreate {
-  champion?: Person;
+  champion?: Person | null;
 }
 
 export interface Assignment {
-  type?: string;
-  due?: Date;
-  resource?: AssignmentResource;
+  type?: string | null;
+  due?: Date | null;
+  resource?: AssignmentResource | null;
 }
 
 export interface Assignments {
-  assignments?: Assignment[];
+  assignments?: Assignment[] | null;
 }
 
 export interface Blob {
-  author?: Person;
-  status?: string;
-  filename?: string;
-  url?: string;
-  signedUploadUrl?: string;
-  storageType?: string;
+  author?: Person | null;
+  status?: string | null;
+  filename?: string | null;
+  url?: string | null;
+  signedUploadUrl?: string | null;
+  storageType?: string | null;
 }
 
 export interface Comment {
-  id?: string;
-  insertedAt?: Date;
-  content?: string;
-  author?: Person;
-  reactions?: Reaction[];
+  id?: string | null;
+  insertedAt?: Date | null;
+  content?: string | null;
+  author?: Person | null;
+  reactions?: Reaction[] | null;
 }
 
 export interface CommentThread {
-  id?: string;
-  insertedAt?: Date;
-  title?: string;
-  message?: string;
-  reactions?: Reaction[];
-  comments?: Comment[];
-  commentsCount?: number;
-  author?: Person;
+  id?: string | null;
+  insertedAt?: Date | null;
+  title?: string | null;
+  message?: string | null;
+  reactions?: Reaction[] | null;
+  comments?: Comment[] | null;
+  commentsCount?: number | null;
+  author?: Person | null;
 }
 
 export interface Company {
-  id?: string;
-  name?: string;
-  mission?: string;
-  trustedEmailDomains?: string[];
-  enabledExperimentalFeatures?: string[];
-  companySpaceId?: string;
-  tenets?: Tenet[];
-  admins?: Person[];
-  people?: Person[];
+  id?: string | null;
+  name?: string | null;
+  mission?: string | null;
+  trustedEmailDomains?: string[] | null;
+  enabledExperimentalFeatures?: string[] | null;
+  companySpaceId?: string | null;
+  tenets?: Tenet[] | null;
+  admins?: Person[] | null;
+  people?: Person[] | null;
 }
 
 export interface Dashboard {
-  id?: string;
-  panels?: Panel[];
+  id?: string | null;
+  panels?: Panel[] | null;
 }
 
 export interface Discussion {
-  id?: string;
-  name?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  author?: Person;
-  title?: string;
-  body?: string;
-  space?: Group;
-  reactions?: Reaction[];
-  comments?: Comment[];
+  id?: string | null;
+  name?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  author?: Person | null;
+  title?: string | null;
+  body?: string | null;
+  space?: Group | null;
+  reactions?: Reaction[] | null;
+  comments?: Comment[] | null;
 }
 
 export interface Goal {
-  id?: string;
-  name?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  nextUpdateScheduledAt?: Date;
-  parentGoalId?: string;
-  closedAt?: Date;
-  timeframe?: Timeframe;
-  description?: string;
-  champion?: Person;
-  reviewer?: Person;
-  closedBy?: Person;
-  targets?: Target[];
-  projects?: Project[];
-  parentGoal?: Goal;
-  progressPercentage?: number;
-  lastCheckIn?: Update;
-  permissions?: GoalPermissions;
-  isArchived?: boolean;
-  isClosed?: boolean;
-  archivedAt?: Date;
-  space?: Group;
-  myRole?: string;
+  id?: string | null;
+  name?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  nextUpdateScheduledAt?: Date | null;
+  parentGoalId?: string | null;
+  closedAt?: Date | null;
+  timeframe?: Timeframe | null;
+  description?: string | null;
+  champion?: Person | null;
+  reviewer?: Person | null;
+  closedBy?: Person | null;
+  targets?: Target[] | null;
+  projects?: Project[] | null;
+  parentGoal?: Goal | null;
+  progressPercentage?: number | null;
+  lastCheckIn?: Update | null;
+  permissions?: GoalPermissions | null;
+  isArchived?: boolean | null;
+  isClosed?: boolean | null;
+  archivedAt?: Date | null;
+  space?: Group | null;
+  myRole?: string | null;
 }
 
 export interface GoalEditingUpdatedTarget {
-  id?: string;
-  oldName?: string;
-  newName?: string;
+  id?: string | null;
+  oldName?: string | null;
+  newName?: string | null;
 }
 
 export interface GoalPermissions {
-  canEdit?: boolean;
-  canCheckIn?: boolean;
-  canAcknowledgeCheckIn?: boolean;
-  canClose?: boolean;
-  canArchive?: boolean;
+  canEdit?: boolean | null;
+  canCheckIn?: boolean | null;
+  canAcknowledgeCheckIn?: boolean | null;
+  canClose?: boolean | null;
+  canArchive?: boolean | null;
 }
 
 export interface Group {
-  id?: string;
-  name?: string;
-  mission?: string;
-  isMember?: boolean;
-  isCompanySpace?: boolean;
-  privateSpace?: boolean;
-  icon?: string;
-  color?: string;
-  members?: Person[];
-  pointsOfContact?: GroupContact[];
+  id?: string | null;
+  name?: string | null;
+  mission?: string | null;
+  isMember?: boolean | null;
+  isCompanySpace?: boolean | null;
+  privateSpace?: boolean | null;
+  icon?: string | null;
+  color?: string | null;
+  members?: Person[] | null;
+  pointsOfContact?: GroupContact[] | null;
 }
 
 export interface GroupContact {
-  id?: string;
-  name?: string;
-  type?: string;
-  value?: string;
+  id?: string | null;
+  name?: string | null;
+  type?: string | null;
+  value?: string | null;
 }
 
 export interface Invitation {
-  id?: string;
-  adminName?: string;
-  admin?: Person;
-  member?: Person;
-  token?: string;
+  id?: string | null;
+  adminName?: string | null;
+  admin?: Person | null;
+  member?: Person | null;
+  token?: string | null;
 }
 
 export interface KeyResult {
-  id?: string;
-  name?: string;
-  status?: string;
-  updatedAt?: Date;
-  stepsCompleted?: number;
-  stepsTotal?: number;
-  owner?: Person;
-  group?: Group;
+  id?: string | null;
+  name?: string | null;
+  status?: string | null;
+  updatedAt?: Date | null;
+  stepsCompleted?: number | null;
+  stepsTotal?: number | null;
+  owner?: Person | null;
+  group?: Group | null;
 }
 
 export interface Kpi {
-  id?: string;
-  name?: string;
-  description?: string;
-  unit?: string;
-  target?: number;
-  targetDirection?: string;
-  metrics?: KpiMetric[];
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  unit?: string | null;
+  target?: number | null;
+  targetDirection?: string | null;
+  metrics?: KpiMetric[] | null;
 }
 
 export interface KpiMetric {
-  date?: Date;
-  value?: number;
+  date?: Date | null;
+  value?: number | null;
 }
 
 export interface Milestone {
-  id?: string;
-  title?: string;
-  status?: string;
-  insertedAt?: Date;
-  deadlineAt?: Date;
-  completedAt?: Date;
-  description?: string;
-  comments?: MilestoneComment[];
-  tasksKanbanState?: string;
+  id?: string | null;
+  title?: string | null;
+  status?: string | null;
+  insertedAt?: Date | null;
+  deadlineAt?: Date | null;
+  completedAt?: Date | null;
+  description?: string | null;
+  comments?: MilestoneComment[] | null;
+  tasksKanbanState?: string | null;
 }
 
 export interface MilestoneComment {
-  id?: string;
-  action?: string;
-  comment?: Comment;
+  id?: string | null;
+  action?: string | null;
+  comment?: Comment | null;
 }
 
 export interface Notification {
-  id?: string;
-  read?: boolean;
-  readAt?: Date;
-  activity?: Activity;
+  id?: string | null;
+  read?: boolean | null;
+  readAt?: Date | null;
+  activity?: Activity | null;
 }
 
 export interface Objective {
-  id?: string;
-  name?: string;
-  description?: string;
-  owner?: Person;
-  keyResults?: KeyResult[];
-  group?: Group;
-  activities?: Activity[];
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  owner?: Person | null;
+  keyResults?: KeyResult[] | null;
+  group?: Group | null;
+  activities?: Activity[] | null;
 }
 
 export interface Panel {
-  id?: string;
-  type?: string;
-  index?: number;
-  linkedResource?: PanelLinkedResource;
+  id?: string | null;
+  type?: string | null;
+  index?: number | null;
+  linkedResource?: PanelLinkedResource | null;
 }
 
 export interface Person {
-  id?: string;
-  managerId?: string;
-  fullName?: string;
-  title?: string;
-  avatarUrl?: string;
-  timezone?: string;
-  companyRole?: string;
-  email?: string;
-  sendDailySummary?: boolean;
-  notifyOnMention?: boolean;
-  notifyAboutAssignments?: boolean;
-  suspended?: boolean;
-  company?: Company;
-  manager?: Person;
-  reports?: Person[];
-  peers?: Person[];
-  theme?: string;
+  id?: string | null;
+  managerId?: string | null;
+  fullName?: string | null;
+  title?: string | null;
+  avatarUrl?: string | null;
+  timezone?: string | null;
+  companyRole?: string | null;
+  email?: string | null;
+  sendDailySummary?: boolean | null;
+  notifyOnMention?: boolean | null;
+  notifyAboutAssignments?: boolean | null;
+  suspended?: boolean | null;
+  company?: Company | null;
+  manager?: Person | null;
+  reports?: Person[] | null;
+  peers?: Person[] | null;
+  theme?: string | null;
 }
 
 export interface Project {
-  id?: string;
-  name?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  startedAt?: Date;
-  deadline?: Date;
-  nextUpdateScheduledAt?: Date;
-  nextCheckInScheduledAt?: Date;
-  private?: boolean;
-  status?: string;
-  closedAt?: Date;
-  retrospective?: string;
-  description?: string;
-  goal?: Goal;
-  lastCheckIn?: ProjectCheckIn;
-  milestones?: Milestone[];
-  contributors?: ProjectContributor[];
-  keyResources?: ProjectKeyResource[];
-  closedBy?: Person;
-  isOutdated?: boolean;
-  spaceId?: string;
-  space?: Group;
-  myRole?: string;
-  permissions?: ProjectPermissions;
-  nextMilestone?: Milestone;
-  isPinned?: boolean;
-  isArchived?: boolean;
-  archivedAt?: Date;
-  champion?: Person;
-  reviewer?: Person;
+  id?: string | null;
+  name?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  startedAt?: Date | null;
+  deadline?: Date | null;
+  nextUpdateScheduledAt?: Date | null;
+  nextCheckInScheduledAt?: Date | null;
+  private?: boolean | null;
+  status?: string | null;
+  closedAt?: Date | null;
+  retrospective?: string | null;
+  description?: string | null;
+  goal?: Goal | null;
+  lastCheckIn?: ProjectCheckIn | null;
+  milestones?: Milestone[] | null;
+  contributors?: ProjectContributor[] | null;
+  keyResources?: ProjectKeyResource[] | null;
+  closedBy?: Person | null;
+  isOutdated?: boolean | null;
+  spaceId?: string | null;
+  space?: Group | null;
+  myRole?: string | null;
+  permissions?: ProjectPermissions | null;
+  nextMilestone?: Milestone | null;
+  isPinned?: boolean | null;
+  isArchived?: boolean | null;
+  archivedAt?: Date | null;
+  champion?: Person | null;
+  reviewer?: Person | null;
 }
 
 export interface ProjectCheckIn {
-  id?: string;
-  status?: string;
-  insertedAt?: Date;
-  description?: string;
-  author?: Person;
-  project?: Project;
-  acknowledgedAt?: Date;
-  acknowledgedBy?: Person;
-  reactions?: Reaction[];
+  id?: string | null;
+  status?: string | null;
+  insertedAt?: Date | null;
+  description?: string | null;
+  author?: Person | null;
+  project?: Project | null;
+  acknowledgedAt?: Date | null;
+  acknowledgedBy?: Person | null;
+  reactions?: Reaction[] | null;
 }
 
 export interface ProjectContributor {
-  id?: string;
-  responsibility?: string;
-  role?: string;
-  person?: Person;
+  id?: string | null;
+  responsibility?: string | null;
+  role?: string | null;
+  person?: Person | null;
 }
 
 export interface ProjectHealth {
-  status?: string;
-  statusComments?: string;
-  schedule?: string;
-  scheduleComments?: string;
-  budget?: string;
-  budgetComments?: string;
-  team?: string;
-  teamComments?: string;
-  risks?: string;
-  risksComments?: string;
+  status?: string | null;
+  statusComments?: string | null;
+  schedule?: string | null;
+  scheduleComments?: string | null;
+  budget?: string | null;
+  budgetComments?: string | null;
+  team?: string | null;
+  teamComments?: string | null;
+  risks?: string | null;
+  risksComments?: string | null;
 }
 
 export interface ProjectKeyResource {
-  id?: string;
-  title?: string;
-  link?: string;
-  resourceType?: string;
+  id?: string | null;
+  title?: string | null;
+  link?: string | null;
+  resourceType?: string | null;
 }
 
 export interface ProjectPermissions {
-  canView?: boolean;
-  canCreateMilestone?: boolean;
-  canDeleteMilestone?: boolean;
-  canEditContributors?: boolean;
-  canEditMilestone?: boolean;
-  canEditDescription?: boolean;
-  canEditTimeline?: boolean;
-  canEditResources?: boolean;
-  canEditGoal?: boolean;
-  canEditName?: boolean;
-  canEditSpace?: boolean;
-  canPause?: boolean;
-  canCheckIn?: boolean;
-  canAcknowledgeCheckIn?: boolean;
+  canView?: boolean | null;
+  canCreateMilestone?: boolean | null;
+  canDeleteMilestone?: boolean | null;
+  canEditContributors?: boolean | null;
+  canEditMilestone?: boolean | null;
+  canEditDescription?: boolean | null;
+  canEditTimeline?: boolean | null;
+  canEditResources?: boolean | null;
+  canEditGoal?: boolean | null;
+  canEditName?: boolean | null;
+  canEditSpace?: boolean | null;
+  canPause?: boolean | null;
+  canCheckIn?: boolean | null;
+  canAcknowledgeCheckIn?: boolean | null;
 }
 
 export interface ProjectReviewRequest {
-  id?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  status?: string;
-  reviewId?: string;
-  content?: string;
-  author?: Person;
+  id?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  status?: string | null;
+  reviewId?: string | null;
+  content?: string | null;
+  author?: Person | null;
 }
 
 export interface Reaction {
-  id?: string;
-  emoji?: string;
-  reactionType?: string;
-  person?: Person;
+  id?: string | null;
+  emoji?: string | null;
+  reactionType?: string | null;
+  person?: Person | null;
 }
 
 export interface Target {
-  id?: string;
-  index?: number;
-  name?: string;
-  from?: number;
-  to?: number;
-  unit?: string;
-  value?: number;
+  id?: string | null;
+  index?: number | null;
+  name?: string | null;
+  from?: number | null;
+  to?: number | null;
+  unit?: string | null;
+  value?: number | null;
 }
 
 export interface Task {
-  id?: string;
-  name?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  dueDate?: Date;
-  size?: string;
-  priority?: string;
-  status?: string;
-  milestone?: Milestone;
-  project?: Project;
-  description?: string;
-  assignees?: Person[];
-  creator?: Person;
+  id?: string | null;
+  name?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  dueDate?: Date | null;
+  size?: string | null;
+  priority?: string | null;
+  status?: string | null;
+  milestone?: Milestone | null;
+  project?: Project | null;
+  description?: string | null;
+  assignees?: Person[] | null;
+  creator?: Person | null;
 }
 
 export interface Tenet {
-  id?: string;
-  name?: string;
-  description?: string;
-  kpis?: Kpi[];
-  company?: Company;
-  objectives?: Objective[];
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  kpis?: Kpi[] | null;
+  company?: Company | null;
+  objectives?: Objective[] | null;
 }
 
 export interface Timeframe {
-  startDate?: Date;
-  endDate?: Date;
-  type?: string;
+  startDate?: Date | null;
+  endDate?: Date | null;
+  type?: string | null;
 }
 
 export interface Update {
-  id?: string;
-  title?: string;
-  insertedAt?: Date;
-  updatedAt?: Date;
-  acknowledged?: boolean;
-  acknowledgedAt?: Date;
-  updatableId?: string;
-  project?: Project;
-  acknowledgingPerson?: Person;
-  message?: string;
-  messageType?: string;
-  comments?: Comment[];
-  author?: Person;
-  reactions?: Reaction[];
-  content?: UpdateContent;
-  commentsCount?: number;
+  id?: string | null;
+  title?: string | null;
+  insertedAt?: Date | null;
+  updatedAt?: Date | null;
+  acknowledged?: boolean | null;
+  acknowledgedAt?: Date | null;
+  updatableId?: string | null;
+  project?: Project | null;
+  acknowledgingPerson?: Person | null;
+  message?: string | null;
+  messageType?: string | null;
+  comments?: Comment[] | null;
+  author?: Person | null;
+  reactions?: Reaction[] | null;
+  content?: UpdateContent | null;
+  commentsCount?: number | null;
 }
 
 export interface UpdateContentGoalCheckIn {
-  message?: string;
-  targets?: UpdateContentGoalCheckInTarget[];
+  message?: string | null;
+  targets?: UpdateContentGoalCheckInTarget[] | null;
 }
 
 export interface UpdateContentGoalCheckInTarget {
-  id?: string;
-  name?: string;
-  value?: number;
-  unit?: string;
-  previousValue?: number;
-  index?: number;
-  from?: number;
-  to?: number;
+  id?: string | null;
+  name?: string | null;
+  value?: number | null;
+  unit?: string | null;
+  previousValue?: number | null;
+  index?: number | null;
+  from?: number | null;
+  to?: number | null;
 }
 
 export interface UpdateContentMessage {
-  message?: string;
+  message?: string | null;
 }
 
 export interface UpdateContentProjectContributorAdded {
-  contributorId?: string;
-  contributorRole?: string;
-  contributor?: Person;
+  contributorId?: string | null;
+  contributorRole?: string | null;
+  contributor?: Person | null;
 }
 
 export interface UpdateContentProjectContributorRemoved {
-  contributor?: Person;
-  contributorId?: string;
-  contributorRole?: string;
+  contributor?: Person | null;
+  contributorId?: string | null;
+  contributorRole?: string | null;
 }
 
 export interface UpdateContentProjectCreated {
-  creatorRole?: string;
-  creator?: Person;
-  champion?: Person;
+  creatorRole?: string | null;
+  creator?: Person | null;
+  champion?: Person | null;
 }
 
 export interface UpdateContentProjectDiscussion {
-  title?: string;
-  body?: string;
+  title?: string | null;
+  body?: string | null;
 }
 
 export interface UpdateContentProjectEndTimeChanged {
-  oldEndTime?: string;
-  newEndTime?: string;
+  oldEndTime?: string | null;
+  newEndTime?: string | null;
 }
 
 export interface UpdateContentProjectMilestoneCompleted {
-  milestone?: Milestone;
+  milestone?: Milestone | null;
 }
 
 export interface UpdateContentProjectMilestoneCreated {
-  milestone?: Milestone;
+  milestone?: Milestone | null;
 }
 
 export interface UpdateContentProjectMilestoneDeadlineChanged {
-  oldDeadline?: string;
-  newDeadline?: string;
-  milestone?: Milestone;
+  oldDeadline?: string | null;
+  newDeadline?: string | null;
+  milestone?: Milestone | null;
 }
 
 export interface UpdateContentProjectMilestoneDeleted {
-  milestone?: Milestone;
+  milestone?: Milestone | null;
 }
 
 export interface UpdateContentProjectStartTimeChanged {
-  oldStartTime?: string;
-  newStartTime?: string;
+  oldStartTime?: string | null;
+  newStartTime?: string | null;
 }
 
 export interface UpdateContentReview {
-  survey?: string;
-  previousPhase?: string;
-  newPhase?: string;
-  reviewReason?: string;
-  reviewRequestId?: string;
+  survey?: string | null;
+  previousPhase?: string | null;
+  newPhase?: string | null;
+  reviewReason?: string | null;
+  reviewRequestId?: string | null;
 }
 
 export interface UpdateContentStatusUpdate {
-  message?: string;
-  oldHealth?: string;
-  newHealth?: string;
-  nextMilestoneId?: string;
-  nextMilestoneTitle?: string;
-  nextMilestoneDueDate?: string;
-  phase?: string;
-  phaseStart?: string;
-  phaseEnd?: string;
-  projectStartTime?: string;
-  projectEndTime?: string;
-  health?: ProjectHealth;
+  message?: string | null;
+  oldHealth?: string | null;
+  newHealth?: string | null;
+  nextMilestoneId?: string | null;
+  nextMilestoneTitle?: string | null;
+  nextMilestoneDueDate?: string | null;
+  phase?: string | null;
+  phaseStart?: string | null;
+  phaseEnd?: string | null;
+  projectStartTime?: string | null;
+  projectEndTime?: string | null;
+  health?: ProjectHealth | null;
 }
 
 export type ActivityContent = ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalDiscussionCreation | ActivityContentGoalDiscussionEditing | ActivityContentGoalEditing | ActivityContentGoalReopening | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
@@ -1072,11 +1072,11 @@ export interface GetKeyResourcesResult {
 
 
 export interface GetMeInput {
-  includeManager?: boolean;
+  includeManager?: boolean | null;
 }
 
 export interface GetMeResult {
-  me?: Person;
+  me?: Person | null;
 }
 
 
@@ -1180,12 +1180,12 @@ export interface GetUnreadNotificationCountResult {
 
 
 export interface SearchPeopleInput {
-  query?: string;
-  ignoredIds?: string[];
+  query?: string | null;
+  ignoredIds?: string[] | null;
 }
 
 export interface SearchPeopleResult {
-  people?: Person[];
+  people?: Person[] | null;
 }
 
 
