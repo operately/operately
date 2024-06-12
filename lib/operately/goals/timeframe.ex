@@ -4,6 +4,14 @@ defmodule Operately.Goals.Timeframe do
 
   @derive {Jason.Encoder, only: [:type, :start_date, :end_date]}
 
+  def fetch(term, key) when is_atom(key) do
+    {:ok, Map.get(term, key)}
+  end
+
+  def fetch(term, key) when is_binary(key) do
+    {:ok, Map.get(term, String.to_existing_atom(key))}
+  end
+
   embedded_schema do
     field :type, :string
     field :start_date, :date

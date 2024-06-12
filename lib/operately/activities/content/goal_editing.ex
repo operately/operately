@@ -108,6 +108,7 @@ defmodule Operately.Activities.Content.GoalEditing do
   end
 
   def previous_timeframe(content) do
+    IO.inspect(content)
     if content["previous_timeframe"] do
       content["previous_timeframe"]
     else
