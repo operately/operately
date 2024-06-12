@@ -18,9 +18,11 @@ import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
 import { Paths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const { goal, update, me } = useLoadedData();
+  const me = useMe();
+  const { goal, update } = useLoadedData();
   const refresh = useRefresh();
 
   const commentsForm = useForGoalCheckIn(update);
@@ -56,7 +58,7 @@ export function Page() {
 
           <AckCTA />
           <div className="border-t border-stroke-base mt-8" />
-          <CommentSection form={commentsForm} me={me} refresh={refresh} />
+          <CommentSection form={commentsForm} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -64,10 +66,10 @@ export function Page() {
 }
 
 function Reactions() {
-  const { update, me } = useLoadedData();
+  const { update } = useLoadedData();
   const reactions = update.reactions!.map((r) => r!);
   const entity = { id: update.id, type: "update" };
-  const addReactionForm = useReactionsForm(entity, reactions, me);
+  const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;
 }

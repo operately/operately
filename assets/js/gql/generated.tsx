@@ -2201,13 +2201,6 @@ export type GetInvitationQueryVariables = Exact<{
 
 export type GetInvitationQuery = { __typename?: 'RootQueryType', invitation: { __typename?: 'Invitation', admin: { __typename?: 'Person', fullName: string, company: { __typename?: 'Company', name: string } }, member: { __typename?: 'Person', fullName: string, email?: string | null } } };
 
-export type GetMeQueryVariables = Exact<{
-  includeManager?: InputMaybe<Scalars['Boolean']['input']>;
-}>;
-
-
-export type GetMeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null, timezone?: string | null, sendDailySummary: boolean, notifyOnMention: boolean, notifyAboutAssignments: boolean, theme?: string | null, companyRole?: string | null, manager?: { __typename?: 'Person', id: string, fullName: string, avatarUrl?: string | null, title?: string | null } | null } | null };
-
 export type GetPeopleQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3025,56 +3018,6 @@ export function useGetInvitationLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetInvitationQueryHookResult = ReturnType<typeof useGetInvitationQuery>;
 export type GetInvitationLazyQueryHookResult = ReturnType<typeof useGetInvitationLazyQuery>;
 export type GetInvitationQueryResult = Apollo.QueryResult<GetInvitationQuery, GetInvitationQueryVariables>;
-export const GetMeDocument = gql`
-    query GetMe($includeManager: Boolean = false) {
-  me {
-    id
-    fullName
-    avatarUrl
-    title
-    timezone
-    sendDailySummary
-    notifyOnMention
-    notifyAboutAssignments
-    theme
-    companyRole
-    manager @include(if: $includeManager) {
-      id
-      fullName
-      avatarUrl
-      title
-    }
-  }
-}
-    `;
-
-/**
- * __useGetMeQuery__
- *
- * To run a query within a React component, call `useGetMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMeQuery({
- *   variables: {
- *      includeManager: // value for 'includeManager'
- *   },
- * });
- */
-export function useGetMeQuery(baseOptions?: Apollo.QueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
-      }
-export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
-        }
-export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
-export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
-export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
 export const GetPeopleDocument = gql`
     query GetPeople {
   people {

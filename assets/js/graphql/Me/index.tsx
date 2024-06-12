@@ -1,7 +1,6 @@
 import { useMutation, gql } from "@apollo/client";
 
 import { Project } from "@/models/projects";
-import { GetMeDocument } from "@/gql";
 
 export interface Dashboard {
   id: string;
@@ -31,21 +30,21 @@ export function logOut() {
 
 export function logIn(email: string, password: string) {
   const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
-  
+
   const headers = {
     "x-csrf-token": csrfToken,
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   } as HeadersInit;
-  
+
   const data = {
     email,
     password,
   };
 
   return fetch("/accounts/log_in", {
-    method: 'POST',
+    method: "POST",
     headers: headers,
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 }
 
@@ -61,17 +60,7 @@ export function useProfileMutation(options = {}) {
         }
       }
     `,
-    {
-      refetchQueries: [
-        {
-          query: GetMeDocument,
-          variables: {
-            includeManager: true,
-          },
-        },
-      ],
-      ...options,
-    },
+    options,
   );
 }
 
@@ -86,17 +75,7 @@ export function useUpdateNotificationsSettings(options = {}) {
         }
       }
     `,
-    {
-      refetchQueries: [
-        {
-          query: GetMeDocument,
-          variables: {
-            includeManager: true,
-          },
-        },
-      ],
-      ...options,
-    },
+    options,
   );
 }
 

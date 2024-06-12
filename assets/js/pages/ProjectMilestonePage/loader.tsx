@@ -3,12 +3,10 @@ import client from "@/graphql/client";
 import * as Projects from "@/models/projects";
 import * as Milestones from "@/models/milestones";
 import * as Pages from "@/components/Pages";
-import * as People from "@/models/people";
 
 interface LoaderResult {
   project: Projects.Project;
   milestone: Milestones.Milestone;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -25,7 +23,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
     }),
     milestone: milestoneData.data.milestone,
-    me: await People.getMe({}),
   };
 }
 

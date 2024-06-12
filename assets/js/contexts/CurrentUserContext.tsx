@@ -22,8 +22,8 @@ export function CurrentUserProvider({ children }) {
   return <Context me={data.me}>{children}</Context>;
 }
 
-export function useMe() {
-  return React.useContext(CurrentUserContext).me;
+export function useMe(): People.Person {
+  return React.useContext(CurrentUserContext).me as People.Person;
 }
 
 function Context({ me, children }) {

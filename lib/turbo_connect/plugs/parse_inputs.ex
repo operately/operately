@@ -51,7 +51,18 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
+  #
+  # Parsing basic types
+  #
+
   def parse_input(:string, _types, _unions, value, _strict) when is_binary(value), do: {:ok, value}
+
+  def parse_input(:boolean, _types, _unions, value, true) when is_boolean(value), do: {:ok, value}
+  def parse_input(:boolean, _types, _unions, "true", false), do: {:ok, true}
+  def parse_input(:boolean, _types, _unions, "false", false), do: {:ok, false}
+
+  #
+  # Parsing lists
 
   def parse_input({:list, _type}, _types, _unions, "", false) do
     # query params for empty lists are parsed by Plug.Conn as an empty string
@@ -71,11 +82,15 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
+  #
+  # Error handling
+  #
+
   def parse_input(:integet, _types, _unions, _value, _strict), do: {:error, 422, "Integer parsing not implemented"}
   def parse_input(:float, _types, _unions, _value, _strict), do: {:error, 422, "Float parsing not implemented"}
-  def parse_input(:boolean, _types, _unions, _value, _strict), do: {:error, 422, "Boolean parsing not implemented"}
   def parse_input(:date, _types, _unions, _value, _strict), do: {:error, 422, "Date parsing not implemented"}
   def parse_input(:time, _types, _unions, _value, _string), do: {:error, 422, "Time parsing not implemented"}
   def parse_input(:datetime, _types, _unions, _value, _string), do: {:error, 422, "Datetime parsing not implemented"}
+
   def parse_input(type, _types, _unions, _value, _string), do: {:error, 422, "Type handler not implemented for #{inspect(type)}"}
 end

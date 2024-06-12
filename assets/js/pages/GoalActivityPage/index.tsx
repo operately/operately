@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
@@ -17,19 +16,17 @@ import ActivityHandler from "@/features/activities";
 interface LoaderResult {
   goal: Goals.Goal;
   activity: Activities.Activity;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({ id: params.goalId }),
     activity: await Activities.getActivity({ id: params.id }),
-    me: await People.getMe({}),
   };
 }
 
 export function Page() {
-  const { goal, activity, me } = Pages.useLoadedData<LoaderResult>();
+  const { goal, activity } = Pages.useLoadedData<LoaderResult>();
 
   return (
     <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name]}>
@@ -43,9 +40,9 @@ export function Page() {
             <ActivityHandler.PageContent activity={activity} />
           </div>
 
-          <Reactions commentThread={activity.commentThread!} me={me} />
+          <Reactions commentThread={activity.commentThread!} />
           <div className="border-t border-stroke-base mt-8" />
-          <Comments commentThread={activity.commentThread!} me={me} />
+          <Comments commentThread={activity.commentThread!} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -69,17 +66,17 @@ function Title({ activity }: { activity: Activities.Activity }) {
   );
 }
 
-function Reactions({ commentThread, me }: { commentThread: CommentThread; me: People.Person }) {
+function Reactions({ commentThread }: { commentThread: CommentThread }) {
   const reactions = commentThread.reactions.map((r) => r!);
   const entity = { id: commentThread.id, type: "comment_thread" };
-  const addReactionForm = useReactionsForm(entity, reactions, me);
+  const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;
 }
 
-function Comments({ commentThread, me }: { commentThread: CommentThread; me: People.Person }) {
+function Comments({ commentThread }: { commentThread: CommentThread }) {
   const refresh = Pages.useRefresh();
   const commentsForm = useForCommentThread(commentThread);
 
-  return <CommentSection form={commentsForm} me={me} refresh={refresh} />;
+  return <CommentSection form={commentsForm} refresh={refresh} />;
 }
