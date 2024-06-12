@@ -2,12 +2,6 @@ defmodule OperatelyWeb.Graphql.Queries.Notifications do
   use Absinthe.Schema.Notation
 
   object :notification_queries do
-    field :unread_notifications_count, :integer do
-      resolve fn _, %{context: %{current_account: current_account}} ->
-        {:ok, Operately.Notifications.unread_notifications_count(current_account.person)}
-      end
-    end
-
     field :notifications, list_of(non_null(:notification)) do
       arg :page, :integer
       arg :per_page, :integer

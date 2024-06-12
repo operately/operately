@@ -1175,7 +1175,7 @@ export interface GetUnreadNotificationCountInput {
 }
 
 export interface GetUnreadNotificationCountResult {
-
+  unread?: number | null;
 }
 
 
