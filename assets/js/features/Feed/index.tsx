@@ -23,19 +23,33 @@ export function Feed({ items, testId, page }: { items: Activities.Activity[]; te
   );
 }
 
+function typename(activity: Activities.Activity) {
+  if (activity["action"]) {
+    let camel = activity["action"].replace(/_([a-z])/g, function (_a: string, b: string) {
+      return b.toUpperCase();
+    });
+
+    camel = camel.charAt(0).toUpperCase() + camel.slice(1);
+
+    return "ActivityContent" + camel;
+  } else {
+    return activity.content.__typename!;
+  }
+}
+
 function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page: string }) {
   const activitiesWithKnownTypes = group.activities.filter((activity) => {
-    return FeedItems.some((item) => item.typename === activity.content.__typename);
+    return FeedItems.some((item) => item.typename === typename(activity));
   });
 
   const activitiesWithoutKnownTypes = group.activities.filter((activity) => {
-    return !FeedItems.some((item) => item.typename === activity.content.__typename);
+    return !FeedItems.some((item) => item.typename === typename(activity));
   });
 
   if (activitiesWithoutKnownTypes.length > 0) {
     console.log(
       `The following activities have no known types: ${activitiesWithoutKnownTypes
-        .map((activity) => activity.content.__typename)
+        .map((activity) => typename(activity))
         .join(", ")}`,
     );
   }
@@ -67,7 +81,7 @@ function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page:
 }
 
 function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
-  const item = FeedItems.find((item) => item.typename === activity.content.__typename);
+  const item = FeedItems.find((item) => item.typename === typename(activity));
 
   if (!item) {
     console.log(`No component found for feed item type: ${activity.content.__typename}`);

@@ -2,10 +2,23 @@ import { useQuery, gql } from "@apollo/client";
 import { camelCaseToSnakeCase } from "@/utils/strings";
 
 import FeedItems from "./FeedItems";
+import Api from "@/api";
 
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
 export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
+  if (scopeType === "company") {
+    return useApiQuery(scopeType, scopeId);
+  } else {
+    return useGqlQuery(scopeType, scopeId);
+  }
+}
+
+function useApiQuery(scopeType: ScopeType, scopeId: string) {
+  return Api.useGetActivities({ scopeType: scopeType, scopeId: scopeId });
+}
+
+function useGqlQuery(scopeType: ScopeType, scopeId: string) {
   const query = constructQuery();
 
   const actions = FeedItems.map((item) => item.typename.replace("ActivityContent", "")).map(camelCaseToSnakeCase);

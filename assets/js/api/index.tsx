@@ -946,11 +946,13 @@ export type PanelLinkedResource = Project;
 export type UpdateContent = UpdateContentProjectCreated | UpdateContentProjectStartTimeChanged | UpdateContentProjectEndTimeChanged | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentStatusUpdate | UpdateContentGoalCheckIn | UpdateContentReview | UpdateContentProjectDiscussion | UpdateContentMessage;
 
 export interface GetActivitiesInput {
-
+  scopeId?: Id | null;
+  scopeType?: string | null;
+  actions?: string[] | null;
 }
 
 export interface GetActivitiesResult {
-
+  activities?: Activity[] | null;
 }
 
 
