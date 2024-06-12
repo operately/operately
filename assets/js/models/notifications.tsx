@@ -7,7 +7,7 @@ export function useUnreadCount() {
 
   const fetch = () => {
     Api.getUnreadNotificationCount({}).then((data) => {
-      setUnread(data.unread);
+      setUnread(data.unread!);
     });
   };
 
