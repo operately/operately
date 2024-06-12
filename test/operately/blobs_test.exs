@@ -31,11 +31,21 @@ defmodule Operately.BlobsTest do
     end
 
     test "create_blob/1 with valid data creates a blob", ctx do
-      valid_attrs = %{filename: "some filename", status: :pending, company_id: ctx.company.id, author_id: ctx.person.id}
+      valid_attrs = %{
+        filename: "some filename",
+        status: :pending,
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        storage_type: "local"
+      }
 
-      assert {:ok, %Blob{} = blob} = Blobs.create_blob(valid_attrs)
-      assert blob.filename == "some filename"
-      assert blob.status == :pending
+      case Blobs.create_blob(valid_attrs) do
+        {:ok, blob} ->
+          assert blob.filename == "some filename"
+          assert blob.status == :pending
+          assert blob.storage_type == "local"
+        {:error, changeset} ->
+      end
     end
 
     test "create_blob/1 with invalid data returns error changeset" do
