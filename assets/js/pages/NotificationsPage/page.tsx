@@ -56,10 +56,10 @@ function UnreadNotifications() {
 
 function MarkAllReadButton() {
   const refresh = useRefresh();
-  const [markAllRead, { loading }] = Notifications.useMarkAllNotificationsRead();
+  const [markAllRead, { loading }] = Notifications.useMarkAllNotificationsAsRead();
 
   const onClick = React.useCallback(async () => {
-    await markAllRead();
+    await markAllRead({});
     refresh();
   }, [markAllRead]);
 
