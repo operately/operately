@@ -150,15 +150,13 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   end
 
   defp assign_task_project_context(activity) do
-    query = from t in Operately.Tasks.Task,
-      join: m in assoc(t, :milestone),
-      join: p in assoc(m, :project),
-      join: c in assoc(p, :access_context),
+    from(p in Operately.Projects.Project,
+      join: m in assoc(p, :milestones),
+      join: t in assoc(m, :tasks),
       where: t.id == ^activity.content.task_id,
-      select: p
-
-    Repo.one(query)
-    |> Repo.preload(:access_context)
+      preload: :access_context
+    )
+    |> Repo.one()
     |> update_activity(activity)
   end
 
