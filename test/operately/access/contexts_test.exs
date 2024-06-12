@@ -54,18 +54,20 @@ defmodule Operately.AccessContextsTest do
 
   describe "access_contexts relationships with projects, groups, activities and companies" do
     import Operately.ActivitiesFixtures
+    import Operately.GoalsFixtures
 
     setup do
       company = company_fixture()
       creator = person_fixture_with_account(%{company_id: company.id})
       group = group_fixture(creator)
+      goal = goal_fixture(creator, %{space_id: group.id, targets: []})
       project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
       activity = activity_fixture(%{author_id: creator.id})
 
-      {:ok, company: company, group: group, project: project, activity: activity, creator: creator}
+      {:ok, company: company, group: group, goal: goal, project: project, activity: activity, creator: creator}
     end
 
-    test "create access_context for an company", ctx do
+    test "create access_context for a company", ctx do
       attrs = %{company_id: ctx.company.id}
 
       assert {:ok, %Context{} = _context} = Access.create_context(attrs)
@@ -77,6 +79,12 @@ defmodule Operately.AccessContextsTest do
       assert {:ok, %Context{} = _context} = Access.create_context(attrs)
     end
 
+    test "create access_context for a goal", ctx do
+      attrs = %{goal_id: ctx.goal.id}
+
+      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+    end
+
     test "create access_context for a project", ctx do
       project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
 
@@ -84,14 +92,22 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "access_context cannot be attached to more than one entity", ctx do
+      # refutes project and group
       attrs = %{project_id: ctx.project.id, group_id: ctx.group.id}
-
       changeset = Context.changeset(%Context{}, attrs)
-      refute changeset.valid?
 
+      refute changeset.valid?
       assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
 
+      # refutes company and group
       attrs = %{company_id: ctx.company.id, group_id: ctx.group.id}
+      changeset = Context.changeset(%Context{}, attrs)
+
+      refute changeset.valid?
+      assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
+
+      # refutes goal and group
+      attrs = %{goal_id: ctx.goal.id, group_id: ctx.group.id}
       changeset = Context.changeset(%Context{}, attrs)
 
       refute changeset.valid?
