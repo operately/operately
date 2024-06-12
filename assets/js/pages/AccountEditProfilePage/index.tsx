@@ -118,7 +118,23 @@ function ProfileForm({ me }) {
     label: formatTimezone(tz),
   }));
 
+  const verifyFields = () => {
+    if (name.length === 0) {
+      return false;
+    }
+    if (title.length === 0) {
+      return false;
+    }
+    if (!timezone) {
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = () => {
+    if (!verifyFields()) {
+      return;
+    }
     update({
       variables: {
         input: {
@@ -158,11 +174,7 @@ function ProfileForm({ me }) {
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center">
-        {avatarUrl ? (
-          <ImageAvatar person={me} size="xxlarge" />
-        ) : (
-          <BackupAvatar person={me} size="xxlarge" />
-        )}
+        {avatarUrl ? <ImageAvatar person={me} size="xxlarge" /> : <BackupAvatar person={me} size="xxlarge" />}
         <div className="ml-4 mt-2">
           <FileInput
             onChange={async (e) => {
@@ -181,18 +193,28 @@ function ProfileForm({ me }) {
         <div className="progress-bar" style={{ width: `${uploadProgress}%` }}></div>
       </div>
 
-      <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
-      <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" error={title.length === 0} />
+      <div>
+        <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
+        {name.length === 0 && <div className="text-red-500">Name is required</div>}
+      </div>
 
-      <Forms.SelectBox
-        label="Timezone"
-        placeholder="Select your timezone..."
-        value={timezone}
-        defaultValue={timezone}
-        onChange={(option) => setTimezone(option)}
-        options={timezones}
-        data-test-id="timezone-selector"
-      />
+      <div>
+        <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" error={title.length === 0} />
+        {title.length === 0 && <div className="text-red-500">Role is required</div>}
+      </div>
+
+      <div>
+        <Forms.SelectBox
+          label={`Timezone`}
+          placeholder="Select your timezone..."
+          value={timezone}
+          defaultValue={timezone}
+          onChange={(option) => setTimezone(option)}
+          options={timezones}
+          data-test-id="timezone-selector"
+        />
+        {!timezone && <div className="text-red-500">Timezone is required</div>}
+      </div>
 
       <ManagerSearch
         manager={manager}
@@ -209,7 +231,6 @@ function ProfileForm({ me }) {
     </Forms.Form>
   );
 }
-
 
 function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus }) {
   const loader = People.usePeopleSearch();
