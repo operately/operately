@@ -1,4 +1,4 @@
-defmodule Operately.Data.Change012CreateCompaniesAccessContext do
+defmodule Operately.Data.Change011CreateCompaniesAccessContext do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
