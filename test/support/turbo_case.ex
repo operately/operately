@@ -31,7 +31,7 @@ defmodule OperatelyWeb.TurboCase do
       conn,
       OperatelyWeb.Endpoint,
       :get,
-      query_path(query_name),
+      request_path(query_name),
       inputs
     )
 
@@ -41,12 +41,27 @@ defmodule OperatelyWeb.TurboCase do
     end
   end
 
-  defp query_path(query_name) when is_atom(query_name) do
-    query_path(Atom.to_string(query_name))
+  def mutation(conn, mutation_name, inputs) do
+    conn = Phoenix.ConnTest.dispatch(
+      conn,
+      OperatelyWeb.Endpoint,
+      :post,
+      request_path(mutation_name),
+      inputs
+    )
+
+    case Jason.decode(conn.resp_body, keys: :atoms) do
+      {:ok, res} -> {conn.status, res}
+      _ -> {conn.status, conn.resp_body}
+    end
   end
 
-  defp query_path(query_name) when is_binary(query_name) do
-    "/api/v2/#{query_name}"
+  defp request_path(name) when is_atom(name) do
+    request_path(Atom.to_string(name))
+  end
+
+  defp request_path(name) when is_binary(name) do
+    "/api/v2/#{name}"
   end
   
 end

@@ -1,15 +1,9 @@
 defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsRead do
   use TurboConnect.Mutation
 
-  inputs do
-    # TODO: Define input fields
-  end
-
-  outputs do
-    # TODO: Define output fields
-  end
-
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, _inputs) do
+    me = conn.assigns.current_account.person
+    Operately.Notifications.mark_all_as_read(me)
+    {:ok, %{}}
   end
 end

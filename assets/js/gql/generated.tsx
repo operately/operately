@@ -1159,7 +1159,6 @@ export type RootMutationType = {
   editProjectTimeline: Project;
   editUpdate: Update;
   joinSpace: Group;
-  markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
   newInvitationToken: Invitation;
