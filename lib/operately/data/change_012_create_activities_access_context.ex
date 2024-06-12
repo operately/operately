@@ -1,4 +1,6 @@
 defmodule Operately.Data.Change011CreateActivitiesAccessContext do
+  import Ecto.Query, only: [from: 2, assoc: 2]
+
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Activities.Activity
@@ -12,38 +14,23 @@ defmodule Operately.Data.Change011CreateActivitiesAccessContext do
     end)
   end
 
-  def assign_context(activities) when is_list(activities) do
+  defp assign_context(activities) when is_list(activities) do
     Enum.each(activities, &assign_context/1)
   end
 
-  def assign_context(activity) do
+  defp assign_context(activity) do
     context = cond do
-      activity.action in @project_actions -> assign_project_context(activity)
+      activity.action in @company_actions -> assign_company_context(activity)
+      activity.action in @space_actions -> assign_space_context(activity)
       activity.action in @goal_actions -> assign_goal_context(activity)
+      activity.action in @project_actions -> assign_project_context(activity)
       activity.action in @task_actions -> assign_task_project_context(activity)
     end
   end
 
-  def assign_project_context(activity) do
-    project = Operately.Projects.get_project!(activity.content.project_id)
-    context = Repo.preload(project, :access_context).access_context
-
-    {:ok, _} = Repo.update(Activities.change_activity(activity, activity_context_id: context.id))
-  end
-
-  def assign_goal_context(activity) do
-
-  end
-
-  def assign_task_project_context(activity) do
-
-  end
-
   # TODO
   # :comment_added,
-  # :goal_reparent,
   # :project_created,
-
 
   @company_actions [
     :password_first_time_changed,
@@ -52,12 +39,10 @@ defmodule Operately.Data.Change011CreateActivitiesAccessContext do
     :company_member_removed,
   ]
 
-  @group_actions [
-    :group_edited,
-  ]
-
   @space_actions [
     :space_joining,
+
+    :goal_archived,
 
     :discussion_posting,
     :discussion_editing,
@@ -69,10 +54,13 @@ defmodule Operately.Data.Change011CreateActivitiesAccessContext do
     :task_priority_change,
     :task_reopening,
     :task_size_change,
+
+    # exceptions
+    :group_edited,
+    :goal_reparent,
   ]
 
   @goal_actions [
-    :goal_archived,
     :goal_check_in,
     :goal_check_in_acknowledgement,
     :goal_check_in_commented,
@@ -111,4 +99,55 @@ defmodule Operately.Data.Change011CreateActivitiesAccessContext do
     :task_status_change,
     :task_update,
   ]
+
+  defp assign_company_context(activity) do
+    Operately.Companies.get_company(activity.content.company_id)
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
+  end
+
+  defp assign_space_context(activity) do
+    case activity.action do
+      :group_edited ->
+        activity.content.group_id
+      :goal_reparent ->
+        activity.content.new_parent_goal_id
+      _ ->
+        activity.content.space_id
+    end
+    |> Operately.Groups.get_group()
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
+  end
+
+  defp assign_goal_context(activity) do
+    activity.content.goal_id
+    # todo
+  end
+
+  defp assign_project_context(activity) do
+    Operately.Projects.get_project!(activity.content.project_id)
+    |> Repo.preload(:access_context)
+    |> update_activity(activity)
+  end
+
+  defp assign_task_project_context(activity) do
+    query = from t in Operately.Tasks.Task,
+      join: m in assoc(t, :milestone),
+      join: p in assoc(m, :project),
+      preload: [project: {p, [access_context: p.access_context]}],
+      where: t.id == ^activity.content.task_id,
+      select: p
+
+    Repo.one(query)
+    |> update_activity(activity)
+  end
+
+  defp update_activity(parent, activity) do
+    context_id = parent.access_context.context.id
+
+    activity
+    |> Activity.changeset(%{context_id: context_id})
+    |> Repo.update()
+  end
 end
