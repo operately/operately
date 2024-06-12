@@ -13,10 +13,10 @@ import { FilledButton } from "@/components/Button";
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface CommentSectionProps {
   form: FormState;
-  me: People.Person;
   refresh: () => void;
 }
 
@@ -26,7 +26,7 @@ export function CommentSection(props: CommentSectionProps) {
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {
-            return <Comment key={index} comment={item.value} me={props.me} form={props.form} />;
+            return <Comment key={index} comment={item.value} form={props.form} />;
           } else if (item.type === "milestone-completed") {
             return <MilestoneCompleted key={index} comment={item.value} />;
           } else if (item.type === "milestone-reopened") {
@@ -36,23 +36,25 @@ export function CommentSection(props: CommentSectionProps) {
           }
         })}
 
-        <CommentBox refresh={props.refresh} me={props.me} form={props.form} />
+        <CommentBox refresh={props.refresh} form={props.form} />
       </div>
     </>
   );
 }
 
-function Comment({ me, comment, form }) {
+function Comment({ comment, form }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
-    return <EditComment me={me} comment={comment} onCancel={stopEditing} form={form} />;
+    return <EditComment comment={comment} onCancel={stopEditing} form={form} />;
   } else {
-    return <ViewComment comment={comment} onEdit={startEditing} me={me} />;
+    return <ViewComment comment={comment} onEdit={startEditing} />;
   }
 }
 
-function EditComment({ me, comment, onCancel, form }) {
+function EditComment({ comment, onCancel, form }) {
+  const me = useMe();
+
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
     peopleSearch: People.usePeopleSearch(),
@@ -145,9 +147,10 @@ function MilestoneReopened({ comment }) {
   );
 }
 
-function ViewComment({ comment, onEdit, me }) {
+function ViewComment({ comment, onEdit }) {
+  const me = useMe();
   const entity = { id: comment.id, type: "comment" };
-  const addReactionForm = useReactionsForm(entity, comment.reactions, me);
+  const addReactionForm = useReactionsForm(entity, comment.reactions);
   const testId = "comment-" + comment.id;
   const content = JSON.parse(comment.content)["message"];
 
@@ -217,7 +220,7 @@ function AckComment({ person, ackAt }) {
   );
 }
 
-function CommentBox({ refresh, me, form }) {
+function CommentBox({ refresh, form }) {
   const [active, _, activate, deactivate] = useBoolState(false);
 
   const onPost = () => {
@@ -226,13 +229,15 @@ function CommentBox({ refresh, me, form }) {
   };
 
   if (active) {
-    return <AddCommentActive onBlur={deactivate} onPost={onPost} me={me} form={form} />;
+    return <AddCommentActive onBlur={deactivate} onPost={onPost} form={form} />;
   } else {
-    return <AddCommentNonActive onClick={activate} me={me} />;
+    return <AddCommentNonActive onClick={activate} />;
   }
 }
 
-function AddCommentNonActive({ onClick, me }) {
+function AddCommentNonActive({ onClick }) {
+  const me = useMe();
+
   return (
     <div
       className="py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
@@ -245,7 +250,9 @@ function AddCommentNonActive({ onClick, me }) {
   );
 }
 
-function AddCommentActive({ onBlur, onPost, me, form }) {
+function AddCommentActive({ onBlur, onPost, form }) {
+  const me = useMe();
+
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
     className: "min-h-[200px] px-4 py-3",

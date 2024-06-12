@@ -19,6 +19,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 
 import { useLoadedData, useRefresh } from "./loader";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
   const { checkIn } = useLoadedData();
@@ -47,18 +48,18 @@ export function Page() {
 }
 
 function Comments() {
-  const { checkIn, me } = useLoadedData();
+  const { checkIn } = useLoadedData();
   const refresh = useRefresh();
   const commentsForm = useForProjectCheckIn(checkIn);
 
-  return <CommentSection form={commentsForm} me={me} refresh={refresh} />;
+  return <CommentSection form={commentsForm} refresh={refresh} />;
 }
 
 function Reactions() {
-  const { checkIn, me } = useLoadedData();
+  const { checkIn } = useLoadedData();
   const reactions = checkIn.reactions.map((r) => r!);
   const entity = { id: checkIn.id, type: "project_check_in" };
-  const form = useReactionsForm(entity, reactions, me);
+  const form = useReactionsForm(entity, reactions);
 
   return <ReactionList form={form} size={24} />;
 }
@@ -141,7 +142,8 @@ function DescriptionSection() {
 }
 
 function Options() {
-  const { checkIn, me } = useLoadedData();
+  const { checkIn } = useLoadedData();
+  const me = useMe();
 
   if (me.id !== checkIn.author.id) return null;
 

@@ -16,9 +16,11 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const { discussion, me } = useLoadedData();
+  const me = useMe();
+  const { discussion } = useLoadedData();
 
   const refresh = useRefresh();
   const commentsForm = useForDiscussion(discussion);
@@ -41,7 +43,7 @@ export function Page() {
 
             <Spacer size={4} />
             <div className="border-t border-stroke-base mt-8" />
-            <CommentSection form={commentsForm} me={me} refresh={refresh} />
+            <CommentSection form={commentsForm} refresh={refresh} />
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -50,10 +52,10 @@ export function Page() {
 }
 
 function Reactions() {
-  const { discussion, me } = useLoadedData();
+  const { discussion } = useLoadedData();
   const reactions = discussion.reactions!.map((r) => r!);
   const entity = { id: discussion.id, type: "update" };
-  const addReactionForm = useReactionsForm(entity, reactions, me);
+  const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;
 }

@@ -2,20 +2,16 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import Avatar from "@/components/Avatar";
-import { useMe } from "@/models/people";
 import { useUpdateNotificationsSettings } from "@/graphql/Me";
 import * as Forms from "@/components/Form";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export async function loader(): Promise<null> {
   return null;
 }
 
 export function Page() {
-  const { data } = useMe({});
-
-  if (!data) return null;
-
-  const me = data.me;
+  const me = useMe();
 
   return (
     <Paper.Root size="small">

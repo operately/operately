@@ -11,11 +11,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { data, loading, error } = useMe({});
 
   if (loading) return null;
-  
+
   if (!error) {
-    return <Context userTheme={data.me.theme}>{children}</Context>;
-  }
-  else {
+    return <Context userTheme={data!.me!.theme!}>{children}</Context>;
+  } else {
     return <Context userTheme={"system"}>{children}</Context>;
   }
 }

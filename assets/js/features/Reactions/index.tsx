@@ -7,6 +7,7 @@ import * as People from "@/models/people";
 import classNames from "classnames";
 
 import Avatar from "@/components/Avatar";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface ReactionsFormState {
   reactions: ReactionListItem[];
@@ -24,7 +25,8 @@ interface ReactionListItem {
   emoji: string;
 }
 
-export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[], me: People.Person): ReactionsFormState {
+export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[]): ReactionsFormState {
+  const me = useMe();
   const [add] = Reactions.useAddReaction();
 
   const [reactions, setReactions] = React.useState<ReactionListItem[]>(() => {
