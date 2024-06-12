@@ -65,6 +65,12 @@ defmodule Operately.AccessContextsTest do
       {:ok, company: company, group: group, project: project, activity: activity, creator: creator}
     end
 
+    test "create access_context for an company", ctx do
+      attrs = %{company_id: ctx.company.id}
+
+      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+    end
+
     test "create access_context for a group", ctx do
       attrs = %{group_id: ctx.group.id}
 
@@ -83,6 +89,12 @@ defmodule Operately.AccessContextsTest do
       changeset = Context.changeset(%Context{}, attrs)
       refute changeset.valid?
 
+      assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
+
+      attrs = %{company_id: ctx.company.id, group_id: ctx.group.id}
+      changeset = Context.changeset(%Context{}, attrs)
+
+      refute changeset.valid?
       assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
     end
   end
