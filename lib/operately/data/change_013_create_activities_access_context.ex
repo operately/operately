@@ -9,7 +9,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
 
   def run do
     Repo.transaction(fn ->
-      from(a in Activity, order_by: [asc: a.inserted_at])
+      from(a in Activity, where: is_nil(a.context_id), order_by: [asc: a.inserted_at])
       |> Repo.all()
       |> Enum.map(&Activities.cast_content/1)
       |> assign_context()
