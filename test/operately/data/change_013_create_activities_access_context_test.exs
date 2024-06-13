@@ -143,6 +143,22 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       Map.merge(ctx, %{project: project})
     end
 
+    test "project_created action", ctx do
+      attrs = %{
+        action: "project_created",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
     test "project_archived action", ctx do
       attrs = %{
         action: "project_archived",
