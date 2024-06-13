@@ -5,6 +5,7 @@ defmodule Operately.Groups do
   alias Operately.Groups.Group
   alias Operately.Groups.Member
   alias Operately.Groups.Contact
+  alias Operately.Access.Context
 
   alias Operately.People.Person
   alias Ecto.Multi
@@ -54,19 +55,7 @@ defmodule Operately.Groups do
     Repo.one(from g in Group, where: g.name == ^name)
   end
 
-  def create_group(creator, attrs \\ %{}) do
-    changeset = Group.changeset(Map.merge(attrs, %{
-      company_id: creator.company_id,
-    }))
-
-    Multi.new()
-    |> Multi.insert(:group, changeset)
-    |> Multi.insert(:creator, fn %{group: group} ->
-      Member.changeset(%{group_id: group.id, person_id: creator.id})
-    end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:group)
-  end
+  defdelegate create_group(creator, attrs \\ %{}), to: Operately.Operations.GroupCreation, as: :run
 
   def update_group(%Group{} = group, attrs) do
     group
@@ -97,6 +86,34 @@ defmodule Operately.Groups do
 
   def change_group(%Group{} = group, attrs \\ %{}) do
     Group.changeset(group, attrs)
+  end
+
+  def insert_group(multi, attrs) do
+    cond do
+      Map.has_key?(attrs, :company_id) ->
+        multi
+        |> Multi.insert(:group, Group.changeset(attrs))
+        |> insert_group_context
+
+      MapSet.member?(multi.names, :company) ->
+        multi
+        |> Multi.insert(:group, fn changes ->
+          Group.changeset(Map.merge(attrs, %{ company_id: changes[:company].id }))
+        end)
+        |> insert_group_context
+
+      true ->
+        raise "Include company_id in attrs or company in multi's operations"
+    end
+  end
+
+  defp insert_group_context(multi) do
+    multi
+    |> Multi.insert(:context, fn changes ->
+      Context.changeset(%{
+        group_id: changes.group.id,
+      })
+    end)
   end
 
   alias Operately.Groups.Member
