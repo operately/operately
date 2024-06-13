@@ -28,11 +28,7 @@ const SpaceJoining: ActivityHandler = {
     return null;
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
-  },
-
-  FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const spacePath = Paths.spacePath(content(activity).space!.id!);
 
     if (page === "space") {
@@ -49,6 +45,10 @@ const SpaceJoining: ActivityHandler = {
     }
 
     throw new Error("Unsupported page type: " + page);
+  },
+
+  FeedItemContent(_props: { activity: Activity; page: any }) {
+    return null;
   },
 
   commentCount(_activity: Activity): number {

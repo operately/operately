@@ -3,80 +3,89 @@ import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
-import * as Gql from "@/gql/generated";
 
 import FormattedTime from "@/components/FormattedTime";
 
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
-import { FeedItem, Container } from "../FeedItem";
+import type { Activity } from "@/models/activities";
+import type { ActivityContentProjectTimelineEdited } from "@/api";
+import type { ActivityHandler } from "../interfaces";
 
-export const ProjectTimelineEdited: FeedItem = {
-  typename: "ActivityContentProjectTimelineEdited",
+const ProjectTimelineEdited: ActivityHandler = {
+  pageHtmlTitle(_activity: Activity) {
+    throw new Error("Not implemented");
+  },
 
-  contentQuery: `
-    project {
-      id
-      name
-    }
-    oldStartDate
-    newStartDate
-    oldEndDate
-    newEndDate
-    newMilestones {
-      id
-      title
-      deadlineAt
-    }
-    updatedMilestones {
-      id
-      title
-      deadlineAt
-    }
-  `,
+  pagePath(_activity: Activity): string {
+    throw new Error("Not implemented");
+  },
 
-  component: ({ activity, content, page }) => {
+  PageTitle(_props: { activity: any }) {
+    throw new Error("Not implemented");
+  },
+
+  PageContent(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
+  },
+
+  PageOptions(_props: { activity: Activity }) {
+    return null;
+  },
+
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const projectPath = Paths.projectPath(content(activity).project!.id!);
+
     return (
-      <Container
-        title={<Title activity={activity} content={content} page={page} />}
-        author={activity.author}
-        time={activity.insertedAt}
-        content={<Content activity={activity} />}
-      />
+      <>
+        {People.shortName(activity.author!)} edited the timeline
+        {page !== "project" && (
+          <>
+            {" "}
+            on the <Link to={projectPath}>{content(activity).project!.name!}</Link> project
+          </>
+        )}
+      </>
     );
+  },
+
+  FeedItemContent({ activity }: { activity: Activity; page: string }) {
+    const content = prepareContent(activity.content as ActivityContentProjectTimelineEdited);
+
+    return (
+      <div className="flex-flex-col gap-1">
+        <NewStartDate content={content} />
+        <NewEndDate content={content} />
+        <DurationChange content={content} />
+        <AddedMilestones content={content} />
+        <UpdatedMilestones content={content} />
+      </div>
+    );
+  },
+
+  commentCount(_activity: Activity): number {
+    throw new Error("Not implemented");
+  },
+
+  hasComments(_activity: Activity): boolean {
+    throw new Error("Not implemented");
+  },
+
+  NotificationTitle(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
+  },
+
+  CommentNotificationTitle(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
   },
 };
 
-function Title({ activity, content, page }) {
-  const projectPath = Paths.projectPath(content.project.id);
-
-  return (
-    <>
-      {People.shortName(activity.author)} edited the timeline
-      {page !== "project" && (
-        <>
-          {" "}
-          on the <Link to={projectPath}>{content.project.name}</Link> project
-        </>
-      )}
-    </>
-  );
+function content(activity: Activity): ActivityContentProjectTimelineEdited {
+  return activity.content as ActivityContentProjectTimelineEdited;
 }
 
-function Content({ activity }) {
-  const content = prepareContent(activity.content);
-
-  return (
-    <div className="flex-flex-col gap-1">
-      <NewStartDate content={content} />
-      <NewEndDate content={content} />
-      <DurationChange content={content} />
-      <AddedMilestones content={content} />
-      <UpdatedMilestones content={content} />
-    </div>
-  );
-}
+export default ProjectTimelineEdited;
 
 function NewStartDate({ content }: { content: Content }) {
   if (!content.startDateChanged) return null;
@@ -188,7 +197,7 @@ interface Content {
   hasUpdatedMilestones: boolean;
 }
 
-function prepareContent(content: Gql.ActivityContentProjectTimelineEdited): Content {
+function prepareContent(content: ActivityContentProjectTimelineEdited): Content {
   const oldStartDate = Time.parseDate(content.oldStartDate);
   const newStartDate = Time.parseDate(content.newStartDate);
   const oldEndDate = Time.parseDate(content.oldEndDate);
@@ -200,7 +209,7 @@ function prepareContent(content: Gql.ActivityContentProjectTimelineEdited): Cont
   const updatedMilestones = (content.updatedMilestones || []).filter((m) => m !== null) as Milestones.Milestone[];
 
   return {
-    projectId: content.project.id,
+    projectId: content.project!.id!,
 
     oldStartDate: Time.parseDate(content.oldStartDate),
     newStartDate: Time.parseDate(content.newStartDate),
