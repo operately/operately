@@ -305,6 +305,30 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       |> assign_activity_context()
       |> assert_context_assigned(ctx.project.access_context.id)
     end
+
+    test "entity_type is nil", ctx do
+      comment = comment_fixture(ctx.author, %{})
+
+      attrs = %{
+        action: "comment_added",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          comment_id: comment.id,
+          comment_thread_id: "",
+          project_id: "",
+          space_id: "",
+          goal_id: "",
+          activity_id: "",
+        }
+      }
+
+      activity_fixture(attrs)
+
+      assert_raise RuntimeError, "Activity not handled in the data migration comment_added", fn ->
+        Change013CreateActivitiesAccessContext.run()
+      end
+    end
   end
 
   #
