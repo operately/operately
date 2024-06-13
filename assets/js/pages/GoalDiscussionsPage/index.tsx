@@ -84,15 +84,15 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
     <div className="flex items-start border-t border-stroke-base py-6">
       <div className="w-32">
         <div className="text-sm font-medium">
-          <FormattedTime time={activity.insertedAt} format="long-date" />
+          <FormattedTime time={activity.insertedAt!} format="long-date" />
         </div>
         <div className="text-xs text-content-dimmed">
-          <FormattedTime time={activity.insertedAt} format="relative" />
+          <FormattedTime time={activity.insertedAt!} format="relative" />
         </div>
       </div>
 
       <div className="flex items-start gap-3 flex-1">
-        <Avatar person={activity.author} size={40} />
+        <Avatar person={activity.author!} size={40} />
 
         <div className="flex items-start justify-between gap-4 flex-1">
           <div className="flex flex-col gap-1 w-full">

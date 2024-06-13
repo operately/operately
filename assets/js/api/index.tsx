@@ -957,11 +957,11 @@ export interface GetActivitiesResult {
 
 
 export interface GetActivityInput {
-
+  id?: string | null;
 }
 
 export interface GetActivityResult {
-
+  activity?: Activity | null;
 }
 
 

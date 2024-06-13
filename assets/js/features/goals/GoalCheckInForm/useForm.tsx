@@ -45,7 +45,7 @@ export function useForm(options: UseFormOptions): FormState {
     placeholder: `Write here...`,
     peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
-    content: options.checkIn && JSON.parse(options.checkIn.message),
+    content: options.checkIn && JSON.parse(options.checkIn!.message!),
   });
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);

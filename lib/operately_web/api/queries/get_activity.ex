@@ -2,11 +2,11 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   use TurboConnect.Query
 
   inputs do
-    # TODO: Define input fields
+    field :id, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :activity, :activity
   end
 
   def call(_conn, _inputs) do

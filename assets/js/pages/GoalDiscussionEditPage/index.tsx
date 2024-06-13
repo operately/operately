@@ -52,7 +52,7 @@ export function Page() {
               Save
             </FilledButton>
 
-            <DimmedLink to={Paths.goalActivityPath(goal.id, activity.id)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalActivityPath(goal.id, activity.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -73,7 +73,7 @@ function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Ac
   const editor = TipTapEditor.useEditor({
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
-    content: JSON.parse(commentThread.message),
+    content: JSON.parse(commentThread.message!),
   });
 
   return useFormState<FormFields>({
@@ -95,7 +95,7 @@ function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Ac
           message: JSON.stringify(fields.editor.editor.getJSON()),
         },
       }),
-      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id, activity.id)),
+      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id, activity.id!)),
     }),
   });
 }

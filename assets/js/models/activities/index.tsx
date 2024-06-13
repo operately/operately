@@ -1,7 +1,17 @@
-import type { Activity } from "@/api";
+import Api, { Activity, GetActivitiesInput, GetActivityInput } from "@/api";
 export type { Activity } from "@/api";
 
 import * as Time from "@/utils/time";
+
+export const getActivity = async (input: GetActivityInput) => {
+  const response = await Api.getActivity(input);
+  return response.activity!;
+};
+
+export const getActivities = async (input: GetActivitiesInput) => {
+  const response = await Api.getActivities(input);
+  return response.activities!;
+};
 
 export interface ActivityGroup {
   date: Date;

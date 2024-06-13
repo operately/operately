@@ -69,7 +69,7 @@ function LastMessageComments({ goal }: { goal: Goals.Goal }) {
 function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
   const update = goal.lastCheckIn!;
   const reactions = update.reactions!.map((r) => r!);
-  const entity = { id: update.id, type: "update" };
+  const entity = { id: update.id!, type: "update" };
 
   const addReactionForm = useReactionsForm(entity, reactions);
 

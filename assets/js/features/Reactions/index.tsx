@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Reactions from "@/models/reactions";
 import * as Popover from "@radix-ui/react-popover";
-import * as People from "@/models/people";
+import * as api from "@/api";
 
 import classNames from "classnames";
 
@@ -21,17 +21,17 @@ interface Entity {
 
 interface ReactionListItem {
   id: string;
-  person: People.Person;
+  person: Pick<api.Person, "id" | "fullName" | "avatarUrl">;
   emoji: string;
 }
 
-export function useReactionsForm(entity: Entity, initial: Reactions.Reaction[]): ReactionsFormState {
+export function useReactionsForm(entity: Entity, initial: api.Reaction[] | Reactions.Reaction[]): ReactionsFormState {
   const me = useMe();
   const [add] = Reactions.useAddReaction();
 
   const [reactions, setReactions] = React.useState<ReactionListItem[]>(() => {
-    return initial.map((reaction) => {
-      return { id: reaction.id, person: reaction.person, emoji: reaction.emoji };
+    return initial.map((reaction: api.Reaction | Reactions.Reaction) => {
+      return { id: reaction.id!, person: reaction.person!, emoji: reaction.emoji! };
     });
   });
 

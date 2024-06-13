@@ -4,7 +4,7 @@ import * as Comments from "@/models/comments";
 import { Item, ItemType } from "./form";
 
 export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
-  const entity = { id: update.id, type: "update" };
+  const entity = { id: update.id!, type: "update" };
   const { data, loading, error, refetch } = Comments.useComments({ entity });
 
   const [post, { loading: submittingPost }] = Comments.usePostComment();

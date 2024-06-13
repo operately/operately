@@ -67,8 +67,8 @@ export function Page() {
 
 function Reactions() {
   const { update } = useLoadedData();
-  const reactions = update.reactions!.map((r) => r!);
-  const entity = { id: update.id, type: "update" };
+  const reactions = update.reactions!.map((r: any) => r!);
+  const entity = { id: update.id!, type: "update" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;
@@ -113,7 +113,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit Update"
-        to={Paths.goalEditProgressUpdatePath(goal.id, update.id)}
+        to={Paths.goalEditProgressUpdatePath(goal.id, update.id!)}
         dataTestId="edit-update"
       />
     </PageOptions.Root>
