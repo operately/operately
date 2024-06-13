@@ -9,6 +9,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
   import Operately.ProjectsFixtures
   import Operately.TasksFixtures
   import Operately.GoalsFixtures
+  import Operately.CommentsFixtures
 
   alias Operately.Data.Change013CreateActivitiesAccessContext
 
@@ -22,7 +23,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
     {:ok, company: company, author: author}
   end
 
-  describe "creates access_context for company activities" do
+  describe "assigns access_context to company activities" do
     test "company_member_removed action", ctx do
       attrs = %{
         action: "company_member_removed",
@@ -42,7 +43,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
     end
   end
 
-  describe "creates access_context for space activities" do
+  describe "assigns access_context to space activities" do
     setup ctx do
       group = group_fixture(ctx.author)
       context_fixture(%{group_id: group.id})
@@ -105,7 +106,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
     end
   end
 
-  describe "creates access_context for goal activities" do
+  describe "assigns access_context to goal activities" do
     setup ctx do
       group = group_fixture(ctx.author)
 
@@ -134,7 +135,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
     end
   end
 
-  describe "creates access_context for project activities" do
+  describe "assigns access_context to project activities" do
     setup ctx do
       group = group_fixture(ctx.author)
       project = project_fixture(%{company_id: ctx.company.id, group_id: group.id, creator_id: ctx.author.id})
@@ -176,7 +177,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
     end
   end
 
-  describe "creates access_context for task activities" do
+  describe "assigns access_context to task activities" do
     setup ctx do
       group = group_fixture(ctx.author)
 
@@ -204,6 +205,104 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       create_activities(attrs)
       |> assert_no_context
       |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+  end
+
+  describe "assigns access_context to comment_added activity" do
+    setup ctx do
+      group = group_fixture(ctx.author)
+
+      project = project_fixture(%{company_id: ctx.company.id, group_id: group.id, creator_id: ctx.author.id})
+      project = Repo.preload(project, :access_context)
+
+      Map.merge(ctx, %{group: group, project: project})
+    end
+
+    test "entity_type is :project_check_in", ctx do
+      comment = comment_fixture(ctx.author, %{entity_id: ctx.project.id, entity_type: :project_check_in})
+
+      attrs = %{
+        action: "comment_added",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          comment_id: comment.id,
+          comment_thread_id: "",
+          project_id: "",
+          space_id: "",
+          goal_id: "",
+          activity_id: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context()
+      |> assign_activity_context()
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "entity_type is :update", ctx do
+      goal = goal_fixture(ctx.author, %{space_id: ctx.group.id, targets: []})
+      context_fixture(%{goal_id: goal.id})
+      goal = Repo.preload(goal, :access_context)
+
+      comment = comment_fixture(ctx.author, %{entity_id: goal.id, entity_type: :update})
+
+      attrs = %{
+        action: "comment_added",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          comment_id: comment.id,
+          comment_thread_id: "",
+          project_id: "",
+          space_id: "",
+          goal_id: "",
+          activity_id: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context()
+      |> assign_activity_context()
+      |> assert_context_assigned(goal.access_context.id)
+    end
+
+    test "entity_type is :comment_thread", ctx do
+      # First, create parent activity and comment thread
+      attrs = %{
+        action: "project_created",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          project_id: ctx.project.id,
+        }
+      }
+
+      parent_activity = activity_fixture(attrs)
+      thread = comment_thread_fixture(%{parent_id: parent_activity.id})
+
+      # Then, create comment with thread as entity
+      comment = comment_fixture(ctx.author, %{entity_id: thread.id, entity_type: :comment_thread})
+
+      attrs = %{
+        action: "comment_added",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          comment_id: comment.id,
+          comment_thread_id: "",
+          project_id: "",
+          space_id: "",
+          goal_id: "",
+          activity_id: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context()
+      |> assign_activity_context()
       |> assert_context_assigned(ctx.project.access_context.id)
     end
   end
