@@ -1,6 +1,8 @@
 defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   import Ecto.Query
 
+  require Logger
+
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Activities.Activity
@@ -13,6 +15,17 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       |> assign_context()
     end)
   end
+
+  @deprecated_actions [
+    "project_status_update_acknowledged",
+    "project_status_update_commented",
+    "project_status_update_edit",
+    "project_status_update_submitted",
+    "project_review_submitted",
+    "project_review_request_submitted",
+    "project_review_acknowledged",
+    "project_review_commented",
+  ]
 
   @company_actions [
     "company_member_removed",
@@ -89,6 +102,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
 
   defp assign_context(activity) do
     cond do
+      activity.action in @deprecated_actions -> :ok
       activity.action in @company_actions -> assign_company_context(activity)
       activity.action in @space_actions -> assign_space_context(activity)
       activity.action in @goal_actions -> assign_goal_context(activity, activity.content.goal_id)
@@ -96,6 +110,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       activity.action in @task_actions -> assign_task_project_context(activity)
       activity.action == "comment_added" -> assign_context_to_comment_added(activity)
       true ->
+        Logger.error("Unhandled activity: #{inspect(activity)}")
         raise "Activity not handled in the data migration #{activity.action}"
     end
   end
@@ -163,6 +178,10 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       :project_check_in -> assign_project_context(activity, comment.entity_id)
       :update -> assign_goal_context(activity, comment.entity_id)
       :comment_thread -> update_comment_thread_activity(activity, comment)
+      _ ->
+        Logger.error("Unhandled activity: #{inspect(activity)}")
+        Logger.error("Comment associated with activity: #{inspect(comment)}")
+        raise "Activity not handled in the data migration #{activity.action}"
     end
   end
 
