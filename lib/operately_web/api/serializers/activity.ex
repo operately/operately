@@ -331,7 +331,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_discussion(discussion) do
     %{
       id: discussion.id,
-      title: discussion.title,
+      title: discussion.content["title"],
+      body: discussion.content["body"],
     }
   end
 

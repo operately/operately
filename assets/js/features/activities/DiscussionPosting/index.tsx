@@ -7,7 +7,8 @@ import type { ActivityHandler } from "../interfaces";
 
 import { SpaceLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
-import { Link } from "react-router-dom";
+import { Link } from "@/components/Link";
+import { Summary } from "@/components/RichContent";
 
 const DiscussionPosting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -45,8 +46,8 @@ const DiscussionPosting: ActivityHandler = {
     );
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent({ activity }: { activity: Activity }) {
+    return <Summary jsonContent={content(activity).discussion!.body!} characterCount={200} />;
   },
 
   commentCount(_activity: Activity): number {

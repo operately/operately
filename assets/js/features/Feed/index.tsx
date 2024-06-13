@@ -75,7 +75,7 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
       </DivLink>
 
       <div className="flex-1">
-        <div className="text-sm w-full font-bold text-content-accent">{title}</div>;
+        <div className="text-sm w-full font-bold text-content-accent">{title}</div>
         {content && <div className="text-sm w-full mt-1">{content}</div>}
       </div>
 
