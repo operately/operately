@@ -7,12 +7,13 @@ import FeedItems from "./FeedItems";
 
 import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
+import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { typename } from "@/features/activities";
 
 export type Page = "company" | "project" | "goal" | "space" | "profile";
 
-export function Feed({ items, testId, page }: { items: Activities.Activity[]; testId?: string; page: Page }) {
+export function Feed({ items, testId, page }: { items: Activity[]; testId?: string; page: Page }) {
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
       <div className="w-full" data-test-id={testId}>

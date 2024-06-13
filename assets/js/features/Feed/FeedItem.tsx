@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Activities from "@/models/activities";
+import { Activity } from "@/api";
 import * as People from "@/models/people";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -14,7 +14,7 @@ import { Paths } from "@/routes/paths";
 export interface FeedItem {
   typename: string;
   contentQuery: string;
-  component: React.FC<{ activity: Activities.Activity; content: any; page: string }>;
+  component: React.FC<{ activity: Activity; content: any; page: string }>;
 }
 
 interface ContainerProps {

@@ -1,13 +1,14 @@
-import { Activity } from "@/gql/generated";
+import * as gql from "@/gql/generated";
+import * as api from "@/api";
 
 import * as Time from "@/utils/time";
 
 export interface ActivityGroup {
   date: Date;
-  activities: Activity[];
+  activities: (gql.Activity | api.Activity)[];
 }
 
-export function groupByDate(activities: Activity[]): ActivityGroup[] {
+export function groupByDate(activities: gql.Activity[] | api.Activity[]): ActivityGroup[] {
   const groups: ActivityGroup[] = [];
 
   let currentGroup: ActivityGroup | null = null;

@@ -28,5 +28,5 @@ function CompanyFeed() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data.activities} testId="company-feed" page="company" />;
+  return <Feed items={data!.activities!} testId="company-feed" page="company" />;
 }
