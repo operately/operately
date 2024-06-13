@@ -24,10 +24,13 @@ defmodule Operately.PeopleTest do
 
     test "create_person/1 with valid data creates a person", ctx do
       valid_attrs = %{
-        full_name: "some full_name", 
+        full_name: "some full_name",
         title: "some title",
-        company_id: ctx.person.company_id
+        company_id: ctx.person.company_id,
+        avatar_blob_id: Ecto.UUID.generate()
       }
+
+      IO.inspect(valid_attrs)
 
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
       assert person.full_name == "some full_name"
@@ -40,7 +43,7 @@ defmodule Operately.PeopleTest do
 
     test "update_person/2 with valid data updates the person", ctx do
       update_attrs = %{
-        full_name: "some updated full_name", 
+        full_name: "some updated full_name",
         title: "some updated title"
       }
 
@@ -52,6 +55,18 @@ defmodule Operately.PeopleTest do
     test "update_person/2 with invalid data returns error changeset", ctx do
       assert {:error, %Ecto.Changeset{}} = People.update_person(ctx.person, @invalid_attrs)
       assert ctx.person == People.get_person!(ctx.person.id)
+    end
+
+    test "update_person/3 with valid avatar_blob_id updates the person", ctx do
+      update_attrs = %{
+        full_name: "some updated full_name",
+        title: "some updated title",
+        avatar_blob_id: Ecto.UUID.generate()
+      }
+
+      assert {:ok, %Person{} = person} = People.update_person(ctx.person, update_attrs)
+      assert person.full_name == "some updated full_name"
+      assert person.title == "some updated title"
     end
 
     test "delete_person/1 deletes the person", ctx do
