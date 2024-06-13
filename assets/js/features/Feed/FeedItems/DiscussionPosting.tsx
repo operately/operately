@@ -7,7 +7,6 @@ import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 
 export const DiscussionPosting: FeedItem = {
-  typename: "ActivityContentDiscussionPosting",
   contentQuery: `
     space {
       id

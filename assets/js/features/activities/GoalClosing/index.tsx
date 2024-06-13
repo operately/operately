@@ -3,7 +3,8 @@ import React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
 
-import { Activity, ActivityContentGoalClosing } from "@/models/activities";
+import { Activity } from "@/models/activities";
+import { ActivityContentGoalClosing } from "@/api";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
@@ -19,7 +20,7 @@ const GoalClosing: ActivityHandler = {
 
   pagePath(activity: Activity): string {
     const content = activity.content as ActivityContentGoalClosing;
-    return Paths.goalActivityPath(content.goal.id, activity.id);
+    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -37,7 +38,7 @@ const GoalClosing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
-            <RichContent jsonContent={activity.commentThread.message} />
+            <RichContent jsonContent={activity.commentThread!.message!} />
           </div>
         )}
       </div>
@@ -66,13 +67,14 @@ const GoalClosing: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(content.goal.id, activity.id);
+  FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
+    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
     const link = <Link to={path}>closed</Link>;
 
     return (
       <>
-        {People.shortName(activity.author)} {link} <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
+        {People.shortName(activity.author!)} {link}{" "}
+        <GoalLink goal={content(activity).goal!} page={page} showOnGoalPage={true} />
       </>
     );
   },
@@ -95,6 +97,10 @@ const GoalClosing: ActivityHandler = {
 };
 
 export default GoalClosing;
+
+function content(activity: Activity): ActivityContentGoalClosing {
+  return activity.content as ActivityContentGoalClosing;
+}
 
 function AcomplishedBadge() {
   return (

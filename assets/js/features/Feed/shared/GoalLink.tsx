@@ -4,8 +4,10 @@ import * as Goals from "@/models/goals";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
+import * as api from "@/api";
+
 interface GoalLinkProps {
-  goal: Goals.Goal;
+  goal: Goals.Goal | api.Goal;
   page: string;
   prefix?: string;
   showOnGoalPage?: boolean;
@@ -21,7 +23,7 @@ export function GoalLink(props: GoalLinkProps) {
   } else {
     return (
       <>
-        {props.prefix} the <Link to={Paths.goalPath(props.goal.id)}>{props.goal.name}</Link> goal
+        {props.prefix} the <Link to={Paths.goalPath(props.goal!.id!)}>{props.goal!.name!}</Link> goal
       </>
     );
   }

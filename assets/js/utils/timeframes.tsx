@@ -1,6 +1,7 @@
 import { match } from "ts-pattern";
 
 import * as Gql from "@/gql";
+import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 //
@@ -21,7 +22,7 @@ export type SetTimeframe = (timeframe: Timeframe) => void;
 // Parsing and serializing the timeframe for GraphQL
 //
 
-export function parse(timeframe: Gql.Timeframe): Timeframe {
+export function parse(timeframe: Gql.Timeframe | api.Timeframe): Timeframe {
   return {
     startDate: Time.parseDate(timeframe.startDate),
     endDate: Time.parseDate(timeframe.endDate),

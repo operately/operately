@@ -2,8 +2,8 @@ import type { Activity } from "@/models/activities";
 
 export interface ActivityHandler {
   // Feed items
-  FeedItemContent(props: { activity: Activity; content: any; page: any }): JSX.Element;
-  FeedItemTitle(props: { activity: Activity; content: any; page: any }): JSX.Element;
+  FeedItemContent(props: { activity: Activity; page: any }): JSX.Element | null;
+  FeedItemTitle(props: { activity: Activity; page: any }): JSX.Element | null;
 
   // Activity page
   pagePath(activity: Activity): string;

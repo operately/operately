@@ -108,7 +108,7 @@ defmodule TurboConnect.TsGenTest do
   }
 
   export interface Event {
-    insertedAt?: Date | null;
+    insertedAt?: string | null;
     content?: EventContent | null;
   }
 

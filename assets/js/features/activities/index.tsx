@@ -40,12 +40,12 @@ const ActivityHandler: interfaces.ActivityHandler = {
     return React.createElement(handler(activity).PageOptions, { activity });
   },
 
-  FeedItemContent({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-    return React.createElement(handler(activity).FeedItemContent, { activity, content, page });
+  FeedItemContent({ activity, page }: { activity: Activity; page: any }) {
+    return React.createElement(handler(activity).FeedItemContent, { activity, page });
   },
 
-  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-    return React.createElement(handler(activity).FeedItemTitle, { activity, content, page });
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    return React.createElement(handler(activity).FeedItemTitle, { activity, page });
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
@@ -73,29 +73,17 @@ import GoalClosing from "@/features/activities/GoalClosing";
 import GoalReopening from "@/features/activities/GoalReopening";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
 import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
+import SpaceJoining from "@/features/activities/SpaceJoining";
 
 function handler(activity: Activity) {
-  return match(typename(activity))
-    .with("ActivityContentGoalTimeframeEditing", () => GoalTimeframeEditing)
-    .with("ActivityContentGoalClosing", () => GoalClosing)
-    .with("ActivityContentGoalReopening", () => GoalReopening)
-    .with("ActivityContentGoalCheckIn", () => GoalCheckIn)
-    .with("ActivityContentGoalDiscussionCreation", () => GoalDiscussionCreation)
+  return match(activity.action)
+    .with("goal_timeframe_editing", () => GoalTimeframeEditing)
+    .with("goal_closing", () => GoalClosing)
+    .with("goal_reopening", () => GoalReopening)
+    .with("goal_check_in", () => GoalCheckIn)
+    .with("goal_discussion_creation", () => GoalDiscussionCreation)
+    .with("space_joining", () => SpaceJoining)
     .otherwise(() => {
-      throw new Error("Unknown activity type");
+      throw new Error("Unknown activity action: " + activity.action);
     });
-}
-
-export function typename(activity: Activity): string {
-  if (activity["action"]) {
-    let camel = activity["action"].replace(/_([a-z])/g, function (_a: string, b: string) {
-      return b.toUpperCase();
-    });
-
-    camel = camel.charAt(0).toUpperCase() + camel.slice(1);
-
-    return "ActivityContent" + camel;
-  } else {
-    return activity.content.__typename!;
-  }
 }

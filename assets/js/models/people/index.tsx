@@ -4,6 +4,7 @@ import Api, { GetMeInput } from "@/api";
 import { Person, GetPeopleDocument, GetPersonDocument, GetPersonQueryVariables } from "@/gql/generated";
 
 export { Person } from "@/gql/generated";
+import * as api from "@/api";
 
 export const getPeople = makeQueryFn(GetPeopleDocument, "people") as () => Promise<Person[]>;
 export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
@@ -41,16 +42,16 @@ export function usePeopleSearch() {
   };
 }
 
-export function firstName(person: Pick<Person, "fullName">): string {
-  return person.fullName.split(" ")[0]!;
+export function firstName(person: Pick<Person | api.Person, "fullName">): string {
+  return person.fullName!.split(" ")[0]!;
 }
 
-export function shortName(person: Pick<Person, "fullName">): string {
+export function shortName(person: Pick<Person | api.Person, "fullName">): string {
   return firstName(person) + " " + lastNameInitial(person) + ".";
 }
 
-function lastNameInitial(person: Pick<Person, "fullName">): string {
-  return person.fullName.split(" ").slice(-1)[0]![0]!;
+function lastNameInitial(person: Pick<Person | api.Person, "fullName">): string {
+  return person.fullName!.split(" ").slice(-1)[0]![0]!;
 }
 
 export type NameFormat = "first" | "short" | "full";

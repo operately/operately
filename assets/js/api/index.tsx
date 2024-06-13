@@ -105,9 +105,9 @@ export interface Activity {
   scopeId?: string | null;
   resourceId?: string | null;
   resourceType?: string | null;
-  actionType?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
+  action?: string | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
   commentThread?: CommentThread | null;
   author?: Person | null;
   resource?: ActivityResourceUnion | null;
@@ -355,10 +355,10 @@ export interface ActivityContentProjectReviewSubmitted {
 
 export interface ActivityContentProjectTimelineEdited {
   project?: Project | null;
-  oldStartDate?: Date | null;
-  newStartDate?: Date | null;
-  oldEndDate?: Date | null;
-  newEndDate?: Date | null;
+  oldStartDate?: string | null;
+  newStartDate?: string | null;
+  oldEndDate?: string | null;
+  newEndDate?: string | null;
   newMilestones?: Milestone[] | null;
   updatedMilestones?: Milestone[] | null;
 }
@@ -451,7 +451,7 @@ export interface ActivityEventDataProjectCreate {
 
 export interface Assignment {
   type?: string | null;
-  due?: Date | null;
+  due?: string | null;
   resource?: AssignmentResource | null;
 }
 
@@ -470,7 +470,7 @@ export interface Blob {
 
 export interface Comment {
   id?: string | null;
-  insertedAt?: Date | null;
+  insertedAt?: string | null;
   content?: string | null;
   author?: Person | null;
   reactions?: Reaction[] | null;
@@ -478,7 +478,7 @@ export interface Comment {
 
 export interface CommentThread {
   id?: string | null;
-  insertedAt?: Date | null;
+  insertedAt?: string | null;
   title?: string | null;
   message?: string | null;
   reactions?: Reaction[] | null;
@@ -507,8 +507,8 @@ export interface Dashboard {
 export interface Discussion {
   id?: string | null;
   name?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
   author?: Person | null;
   title?: string | null;
   body?: string | null;
@@ -520,11 +520,11 @@ export interface Discussion {
 export interface Goal {
   id?: string | null;
   name?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
-  nextUpdateScheduledAt?: Date | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+  nextUpdateScheduledAt?: string | null;
   parentGoalId?: string | null;
-  closedAt?: Date | null;
+  closedAt?: string | null;
   timeframe?: Timeframe | null;
   description?: string | null;
   champion?: Person | null;
@@ -538,7 +538,7 @@ export interface Goal {
   permissions?: GoalPermissions | null;
   isArchived?: boolean | null;
   isClosed?: boolean | null;
-  archivedAt?: Date | null;
+  archivedAt?: string | null;
   space?: Group | null;
   myRole?: string | null;
 }
@@ -589,7 +589,7 @@ export interface KeyResult {
   id?: string | null;
   name?: string | null;
   status?: string | null;
-  updatedAt?: Date | null;
+  updatedAt?: string | null;
   stepsCompleted?: number | null;
   stepsTotal?: number | null;
   owner?: Person | null;
@@ -607,7 +607,7 @@ export interface Kpi {
 }
 
 export interface KpiMetric {
-  date?: Date | null;
+  date?: string | null;
   value?: number | null;
 }
 
@@ -615,9 +615,9 @@ export interface Milestone {
   id?: string | null;
   title?: string | null;
   status?: string | null;
-  insertedAt?: Date | null;
-  deadlineAt?: Date | null;
-  completedAt?: Date | null;
+  insertedAt?: string | null;
+  deadlineAt?: string | null;
+  completedAt?: string | null;
   description?: string | null;
   comments?: MilestoneComment[] | null;
   tasksKanbanState?: string | null;
@@ -632,7 +632,7 @@ export interface MilestoneComment {
 export interface Notification {
   id?: string | null;
   read?: boolean | null;
-  readAt?: Date | null;
+  readAt?: string | null;
   activity?: Activity | null;
 }
 
@@ -676,15 +676,15 @@ export interface Person {
 export interface Project {
   id?: string | null;
   name?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
-  startedAt?: Date | null;
-  deadline?: Date | null;
-  nextUpdateScheduledAt?: Date | null;
-  nextCheckInScheduledAt?: Date | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+  startedAt?: string | null;
+  deadline?: string | null;
+  nextUpdateScheduledAt?: string | null;
+  nextCheckInScheduledAt?: string | null;
   private?: boolean | null;
   status?: string | null;
-  closedAt?: Date | null;
+  closedAt?: string | null;
   retrospective?: string | null;
   description?: string | null;
   goal?: Goal | null;
@@ -701,7 +701,7 @@ export interface Project {
   nextMilestone?: Milestone | null;
   isPinned?: boolean | null;
   isArchived?: boolean | null;
-  archivedAt?: Date | null;
+  archivedAt?: string | null;
   champion?: Person | null;
   reviewer?: Person | null;
 }
@@ -709,11 +709,11 @@ export interface Project {
 export interface ProjectCheckIn {
   id?: string | null;
   status?: string | null;
-  insertedAt?: Date | null;
+  insertedAt?: string | null;
   description?: string | null;
   author?: Person | null;
   project?: Project | null;
-  acknowledgedAt?: Date | null;
+  acknowledgedAt?: string | null;
   acknowledgedBy?: Person | null;
   reactions?: Reaction[] | null;
 }
@@ -764,8 +764,8 @@ export interface ProjectPermissions {
 
 export interface ProjectReviewRequest {
   id?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
   status?: string | null;
   reviewId?: string | null;
   content?: string | null;
@@ -792,9 +792,9 @@ export interface Target {
 export interface Task {
   id?: string | null;
   name?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
-  dueDate?: Date | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+  dueDate?: string | null;
   size?: string | null;
   priority?: string | null;
   status?: string | null;
@@ -815,18 +815,18 @@ export interface Tenet {
 }
 
 export interface Timeframe {
-  startDate?: Date | null;
-  endDate?: Date | null;
+  startDate?: string | null;
+  endDate?: string | null;
   type?: string | null;
 }
 
 export interface Update {
   id?: string | null;
   title?: string | null;
-  insertedAt?: Date | null;
-  updatedAt?: Date | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
   acknowledged?: boolean | null;
-  acknowledgedAt?: Date | null;
+  acknowledgedAt?: string | null;
   updatableId?: string | null;
   project?: Project | null;
   acknowledgingPerson?: Person | null;
