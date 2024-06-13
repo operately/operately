@@ -68,20 +68,63 @@ export default ActivityHandler;
 
 import { match } from "ts-pattern";
 
-import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
-import GoalClosing from "@/features/activities/GoalClosing";
-import GoalReopening from "@/features/activities/GoalReopening";
+import CommentAdded from "@/features/activities/CommentAdded";
+import DiscussionPosting from "@/features/activities/DiscussionPosting";
+import GoalArchived from "@/features/activities/GoalArchived";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
+import GoalCheckInAcknowledged from "@/features/activities/GoalCheckInAcknowledged";
+import GoalClosing from "@/features/activities/GoalClosing";
+import GoalCreated from "@/features/activities/GoalCreated";
 import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
+import GoalEditing from "@/features/activities/GoalEditing";
+import GoalReopening from "@/features/activities/GoalReopening";
+import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
+import ProjectArchived from "@/features/activities/ProjectArchived";
+import ProjectCheckInAcknowledged from "@/features/activities/ProjectCheckInAcknowledged";
+import ProjectCheckInCommented from "@/features/activities/ProjectCheckInCommented";
+import ProjectCheckInSubmitted from "@/features/activities/ProjectCheckInSubmitted";
+import ProjectClosed from "@/features/activities/ProjectClosed";
+import ProjectContributorAddition from "@/features/activities/ProjectContributorAddition";
+import ProjectCreated from "@/features/activities/ProjectCreated";
+import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
+import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
+import ProjectMilestoneCommented from "@/features/activities/ProjectMilestoneCommented";
+import ProjectMoved from "@/features/activities/ProjectMoved";
+import ProjectPausing from "@/features/activities/ProjectPausing";
+import ProjectRenamed from "@/features/activities/ProjectRenamed";
+import ProjectResuming from "@/features/activities/ProjectResuming";
+import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 
 function handler(activity: Activity) {
   return match(activity.action)
-    .with("goal_timeframe_editing", () => GoalTimeframeEditing)
-    .with("goal_closing", () => GoalClosing)
-    .with("goal_reopening", () => GoalReopening)
+    .with("comment_added", () => CommentAdded)
+    .with("discussion_posting", () => DiscussionPosting)
+    .with("goal_archived", () => GoalArchived)
     .with("goal_check_in", () => GoalCheckIn)
+    .with("goal_check_in_acknowledged", () => GoalCheckInAcknowledged)
+    .with("goal_closing", () => GoalClosing)
+    .with("goal_created", () => GoalCreated)
     .with("goal_discussion_creation", () => GoalDiscussionCreation)
+    .with("goal_editing", () => GoalEditing)
+    .with("goal_reopening", () => GoalReopening)
+    .with("goal_timeframe_editing", () => GoalTimeframeEditing)
+    .with("project_archived", () => ProjectArchived)
+    .with("project_check_in_acknowledged", () => ProjectCheckInAcknowledged)
+    .with("project_check_in_commented", () => ProjectCheckInCommented)
+    .with("project_check_in_submitted", () => ProjectCheckInSubmitted)
+    .with("project_closed", () => ProjectClosed)
+    .with("project_contributor_addition", () => ProjectContributorAddition)
+    .with("project_created", () => ProjectCreated)
+    .with("project_goal_connection", () => ProjectGoalConnection)
+    .with("project_goal_disconnection", () => ProjectGoalDisconnection)
+    .with("project_milestone_commented", () => ProjectMilestoneCommented)
+    .with("project_moved", () => ProjectMoved)
+    .with("project_pausing", () => ProjectPausing)
+    .with("project_renamed", () => ProjectRenamed)
+    .with("project_resuming", () => ProjectResuming)
+    .with("project_resuming", () => ProjectResuming)
+    .with("project_timeline_edited", () => ProjectTimelineEdited)
     .with("space_joining", () => SpaceJoining)
     .otherwise(() => {
       throw new Error("Unknown activity action: " + activity.action);
