@@ -5,6 +5,8 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   alias Operately.Activities.Activity
   alias Operately.Projects.Project
   alias Operately.Goals.Goal
+  alias Operately.Groups.Group
+  alias Operately.Updates.Update
 
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
@@ -44,6 +46,8 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     |> Enum.map(&Operately.Activities.cast_content/1)
     |> preload_projects()
     |> preload_goals()
+    |> preload_spaces()
+    |> preload_discussions()
   end
 
   def limit_search_to_current_company(query, company_id) do
@@ -72,7 +76,11 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
 
   def preload_projects(activities) do
     project_ids = activities |> Enum.filter(fn a -> a.content["project_id"] end) |> Enum.map(fn a -> a.content["project_id"] end)
-    projects = Repo.all(from p in Project, where: p.id in ^project_ids) |> Enum.map(fn p -> {p.id, p} end) |> Map.new()
+
+    query = from p in Project, where: p.id in ^project_ids
+    opts = [include_deleted: true]
+
+    projects = Repo.all(query, opts) |> Enum.map(fn p -> {p.id, p} end) |> Map.new()
   
     Enum.map(activities, fn a ->
       if a.content["project_id"] do
@@ -85,11 +93,45 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
 
   def preload_goals(activities) do
     goal_ids = activities |> Enum.filter(fn a -> a.content["goal_id"] end) |> Enum.map(fn a -> a.content["goal_id"] end)
-    goals = Repo.all(from g in Goal, where: g.id in ^goal_ids) |> Enum.map(fn g -> {g.id, g} end) |> Map.new()
+
+    query = from g in Goal, where: g.id in ^goal_ids
+    opts = [include_deleted: true]
+
+    goals = Repo.all(query, opts) |> Enum.map(fn g -> {g.id, g} end) |> Map.new()
   
     Enum.map(activities, fn a ->
       if a.content["goal_id"] do
         put_in(a, [Access.key(:content), Access.key(:goal)], Map.get(goals, a.content["goal_id"]))
+      else
+        a
+      end
+    end)
+  end
+
+  def preload_spaces(activities) do
+    space_ids = activities |> Enum.filter(fn a -> a.content["space_id"] end) |> Enum.map(fn a -> a.content["space_id"] end)
+
+    query = from g in Group, where: g.id in ^space_ids
+    opts = [include_deleted: true]
+
+    spaces = Repo.all(query, opts) |> Enum.map(fn s -> {s.id, s} end) |> Map.new()
+  
+    Enum.map(activities, fn a ->
+      if a.content["space_id"] do
+        put_in(a, [Access.key(:content), Access.key(:space)], Map.get(spaces, a.content["space_id"]))
+      else
+        a
+      end
+    end)
+  end
+
+  def preload_discussions(activities) do
+    discussion_ids = activities |> Enum.filter(fn a -> a.content["discussion_id"] end) |> Enum.map(fn a -> a.content["discussion_id"] end)
+    discussions = Repo.all(from d in Update, where: d.id in ^discussion_ids) |> Enum.map(fn d -> {d.id, d} end) |> Map.new()
+  
+    Enum.map(activities, fn a ->
+      if a.content["discussion_id"] do
+        put_in(a, [Access.key(:content), Access.key(:discussion)], Map.get(discussions, a.content["discussion_id"]))
       else
         a
       end

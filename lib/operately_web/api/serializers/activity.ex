@@ -62,18 +62,21 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("discussion_posting", _content) do
-    raise "not implemented"
+  def serialize_content("discussion_posting", content) do
+    %{
+      space: serialize_space(content["space"]),
+      # discussion: serialize_discussion(content["discussion"])
+    }
   end
 
   def serialize_content("goal_archived", content) do
     %{
-      goal: serialize_goal(content["goal"])
+      goal: content["goal"] && serialize_goal(content["goal"])
     }
   end
 
   def serialize_content("goal_check_in", _content) do
-    raise "not implemented"
+    %{}
   end
 
   def serialize_content("goal_check_in_acknowledgement", _content) do
@@ -136,12 +139,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("goal_timeframe_editing", content) do
-    %{
-      goal: serialize_goal(content["goal"]),
-      new_timeframe: Timeframe.serialize(GoalEditing.previous_timeframe(content)),
-      old_timeframe: Timeframe.serialize(GoalEditing.current_timeframe(content))
-    }
+  def serialize_content("goal_timeframe_editing", _content) do
+    %{}
+    # %{
+    #   goal: serialize_goal(content["goal"]),
+    #   new_timeframe: Timeframe.serialize(GoalEditing.previous_timeframe(content)),
+    #   old_timeframe: Timeframe.serialize(GoalEditing.current_timeframe(content))
+    # }
   end
 
   def serialize_content("group_edited", _content) do
@@ -303,6 +307,20 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       id: goal.id,
       name: goal.name,
+    }
+  end
+
+  def serialize_space(space) do
+    %{
+      id: space.id,
+      name: space.name,
+    }
+  end
+
+  def serialize_discussion(discussion) do
+    %{
+      id: discussion.id,
+      title: discussion.title,
     }
   end
 
