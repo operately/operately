@@ -5,7 +5,7 @@ import * as People from "@/models/people";
 import { Activity, ActivityContentGoalClosing } from "@/api";
 import { Paths } from "@/routes/paths";
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";

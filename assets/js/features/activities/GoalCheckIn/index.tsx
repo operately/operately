@@ -9,7 +9,7 @@ import { ConditionChanges } from "./ConditionChanges";
 import { ActivityHandler } from "../interfaces";
 
 import * as People from "@/models/people";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
 
 const GoalCheckIn: ActivityHandler = {

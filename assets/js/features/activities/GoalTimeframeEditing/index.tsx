@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
 
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { GoalLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";

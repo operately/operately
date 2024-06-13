@@ -6,8 +6,8 @@ import * as Icons from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 
-import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
+import { ProjectLink } from "./../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectTimelineEdited } from "@/api";
@@ -35,17 +35,10 @@ const ProjectTimelineEdited: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const projectPath = Paths.projectPath(content(activity).project!.id!);
-
     return (
       <>
-        {People.shortName(activity.author!)} edited the timeline
-        {page !== "project" && (
-          <>
-            {" "}
-            on the <Link to={projectPath}>{content(activity).project!.name!}</Link> project
-          </>
-        )}
+        {People.shortName(activity.author!)} edited the timeline on the{" "}
+        <ProjectLink project={content(activity).project!} page={page} />
       </>
     );
   },

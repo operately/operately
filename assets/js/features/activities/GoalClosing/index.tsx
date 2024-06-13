@@ -10,7 +10,7 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
 
 const GoalClosing: ActivityHandler = {
@@ -19,7 +19,6 @@ const GoalClosing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    const content = activity.content as ActivityContentGoalClosing;
     return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
   },
 
@@ -28,12 +27,10 @@ const GoalClosing: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const content = activity.content as ActivityContentGoalClosing;
-
     return (
       <div>
         <div className="flex items-center gap-3">
-          {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
+          {content(activity).success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
         </div>
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (

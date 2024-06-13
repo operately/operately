@@ -1,8 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { ProjectLink } from "./../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectResuming } from "@/api";
@@ -30,18 +29,10 @@ const ProjectResuming: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const projectPath = Paths.projectPath(content(activity).project!.id!);
-
     return (
       <>
         {People.shortName(activity.author!)} resumed the{" "}
-        {page === "project" ? (
-          "project"
-        ) : (
-          <>
-            <Link to={projectPath}>{content(activity).project!.name!}</Link> project
-          </>
-        )}
+        <ProjectLink project={content(activity).project!} page={page} />
       </>
     );
   },

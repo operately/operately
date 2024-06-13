@@ -10,7 +10,7 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
 import { useMe } from "@/contexts/CurrentUserContext";
 

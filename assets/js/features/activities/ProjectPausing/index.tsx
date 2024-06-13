@@ -2,12 +2,12 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
-import type { ActivityContentProjectRenamed } from "@/api";
+import type { ActivityContentProjectPausing } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { ProjectLink } from "./../feedItemLinks";
 
-const ProjectRenamed: ActivityHandler = {
+const ProjectPausing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -31,18 +31,13 @@ const ProjectRenamed: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     return (
       <>
-        {People.shortName(activity.author!)} renamed the{" "}
-        <ProjectLink project={content(activity).project!} page={page} />
+        {People.shortName(activity.author!)} paused the <ProjectLink project={content(activity).project!} page={page} />
       </>
     );
   },
 
-  FeedItemContent({ activity }: { activity: Activity }) {
-    return (
-      <>
-        <span className="line-through">{content(activity).oldName}</span> → {content(activity).newName}
-      </>
-    );
+  FeedItemContent(_props: { activity: Activity; page: any }) {
+    return null;
   },
 
   commentCount(_activity: Activity): number {
@@ -62,8 +57,8 @@ const ProjectRenamed: ActivityHandler = {
   },
 };
 
-function content(activity: Activity): ActivityContentProjectRenamed {
-  return activity.content as ActivityContentProjectRenamed;
+function content(activity: Activity): ActivityContentProjectPausing {
+  return activity.content as ActivityContentProjectPausing;
 }
 
-export default ProjectRenamed;
+export default ProjectPausing;

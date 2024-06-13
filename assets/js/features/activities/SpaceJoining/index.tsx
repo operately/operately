@@ -2,10 +2,9 @@ import React from "react";
 
 import * as People from "@/models/people";
 
-import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
 import { Activity, ActivityContentSpaceJoining } from "@/api";
 import { ActivityHandler } from "../interfaces";
+import { SpaceLink } from "../feedItemLinks";
 
 const SpaceJoining: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,22 +28,11 @@ const SpaceJoining: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const spacePath = Paths.spacePath(content(activity).space!.id!);
-
-    if (page === "space") {
-      return <>{People.shortName(activity.author!)} joined this space</>;
-    }
-
-    if (page === "company" || "profile") {
-      return (
-        <>
-          {People.shortName(activity.author!)} joined the <Link to={spacePath}>{content(activity).space!.name!}</Link>{" "}
-          space
-        </>
-      );
-    }
-
-    throw new Error("Unsupported page type: " + page);
+    return (
+      <>
+        {People.shortName(activity.author!)} joined <SpaceLink space={content(activity).space!} page={page} />
+      </>
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
