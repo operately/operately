@@ -39,16 +39,6 @@ const GoalClosing: ActivityHandler = {
     return null;
   },
 
-  FeedItemContent({ activity }: { activity: Activity }) {
-    return (
-      <div>
-        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <Summary jsonContent={activity.commentThread.message} characterCount={300} />
-        )}
-      </div>
-    );
-  },
-
   FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
     const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
     const link = <Link to={path}>reopened</Link>;
@@ -58,6 +48,16 @@ const GoalClosing: ActivityHandler = {
         {People.shortName(activity.author!)} {link}{" "}
         <GoalLink goal={content(activity).goal!} page={page} showOnGoalPage={true} />
       </>
+    );
+  },
+
+  FeedItemContent({ activity }: { activity: Activity }) {
+    return (
+      <div>
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <Summary jsonContent={activity.commentThread.message} characterCount={300} />
+        )}
+      </div>
     );
   },
 
