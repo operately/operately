@@ -78,7 +78,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     "project_check_in_submitted",
     "project_closed",
     "project_contributor_addition",
-    "project_discusssion_submitted",
+    "project_discussion_submitted",
     "project_goal_connection",
     "project_goal_disconnection",
     "project_milestone_commented",
