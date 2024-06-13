@@ -7,6 +7,8 @@ defmodule Operately.Access.Context do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
 
+    has_many :activities, Operately.Activities.Activity, foreign_key: :context_id
+
     timestamps()
   end
 
