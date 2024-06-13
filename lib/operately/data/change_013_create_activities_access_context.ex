@@ -16,7 +16,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
 
   # TODO
   # :comment_added,
-  # :project_created,
 
   @company_actions [
     "company_member_removed",
@@ -61,6 +60,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   ]
 
   @project_actions [
+    "project_created",
     "project_archived",
     "project_check_in_acknowledged",
     "project_check_in_commented",
@@ -98,9 +98,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       activity.action in @project_actions -> assign_project_context(activity)
       activity.action in @task_actions -> assign_task_project_context(activity)
       true ->
-        IO.puts("\n" <> activity.action)
-        :ok
-        # raise "Activity not handled in the data migration #{activity.action}"
+        raise "Activity not handled in the data migration #{activity.action}"
     end
   end
 
