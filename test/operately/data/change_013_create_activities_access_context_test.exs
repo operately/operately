@@ -30,9 +30,51 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         author_id: ctx.author.id,
         content: %{
           company_id: ctx.company.id,
-          name: "",
-          email: "",
-          title: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.company.access_context.id)
+    end
+
+    test "password_first_time_changed action", ctx do
+      attrs = %{
+        action: "password_first_time_changed",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.company.access_context.id)
+    end
+
+    test "company_invitation_token_created action", ctx do
+      attrs = %{
+        action: "company_invitation_token_created",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.company.access_context.id)
+    end
+
+    test "company_member_added action", ctx do
+      attrs = %{
+        action: "company_member_added",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
         }
       }
 
@@ -52,17 +94,177 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       Map.merge(ctx, %{group: group})
     end
 
+    test "space_joining action", ctx do
+      attrs = %{
+        action: "space_joining",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "goal_archived action", ctx do
+      attrs = %{
+        action: "goal_archived",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "discussion_posting action", ctx do
+      attrs = %{
+        action: "discussion_posting",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "discussion_editing action", ctx do
+      attrs = %{
+        action: "discussion_editing",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "discussion_comment_submitted action", ctx do
+      attrs = %{
+        action: "discussion_comment_submitted",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "task_assignee_assignment action", ctx do
+      attrs = %{
+        action: "task_assignee_assignment",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "task_description_change action", ctx do
+      attrs = %{
+        action: "task_description_change",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "task_name_editing action", ctx do
+      attrs = %{
+        action: "task_name_editing",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "task_priority_change action", ctx do
+      attrs = %{
+        action: "task_priority_change",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "task_reopening action", ctx do
+      attrs = %{
+        action: "task_reopening",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
+    test "task_size_change action", ctx do
+      attrs = %{
+        action: "task_size_change",
+        author_id: ctx.author.id,
+        content: %{
+          space_id: ctx.group.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.group.access_context.id)
+    end
+
     test "group_edited action", ctx do
       attrs = %{
         action: "group_edited",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           group_id: ctx.group.id,
-          old_name: "",
-          old_mission: "",
-          new_name: "",
-          new_mission: "",
         }
       }
 
@@ -77,25 +279,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_reparent",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           new_parent_goal_id: ctx.group.id,
-          old_parent_goal_id: "",
-        }
-      }
-
-      create_activities(attrs)
-      |> assert_no_context
-      |> assign_activity_context
-      |> assert_context_assigned(ctx.group.access_context.id)
-    end
-
-    test "space_joining action", ctx do
-      attrs = %{
-        action: "space_joining",
-        author_id: ctx.author.id,
-        content: %{
-          company_id: ctx.company.id,
-          space_id: ctx.group.id,
         }
       }
 
@@ -122,9 +306,157 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_check_in",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           goal_id: ctx.goal.id,
-          update_id: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_check_in_acknowledgement action", ctx do
+      attrs = %{
+        action: "goal_check_in_acknowledgement",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_check_in_commented action", ctx do
+      attrs = %{
+        action: "goal_check_in_commented",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_check_in_edit action", ctx do
+      attrs = %{
+        action: "goal_check_in_edit",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_closing action", ctx do
+      attrs = %{
+        action: "goal_closing",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_created action", ctx do
+      attrs = %{
+        action: "goal_created",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_discussion_creation action", ctx do
+      attrs = %{
+        action: "goal_discussion_creation",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_discussion_editing action", ctx do
+      attrs = %{
+        action: "goal_discussion_editing",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_editing action", ctx do
+      attrs = %{
+        action: "goal_editing",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_reopening action", ctx do
+      attrs = %{
+        action: "goal_reopening",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
+    end
+
+    test "goal_timeframe_editing action", ctx do
+      attrs = %{
+        action: "goal_timeframe_editing",
+        author_id: ctx.author.id,
+        content: %{
+          goal_id: ctx.goal.id,
         }
       }
 
@@ -149,7 +481,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_created",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           project_id: ctx.project.id,
         }
       }
@@ -165,7 +496,231 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_archived",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_check_in_acknowledged action", ctx do
+      attrs = %{
+        action: "project_check_in_acknowledged",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_check_in_commented action", ctx do
+      attrs = %{
+        action: "project_check_in_commented",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_check_in_edit action", ctx do
+      attrs = %{
+        action: "project_check_in_edit",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_check_in_submitted action", ctx do
+      attrs = %{
+        action: "project_check_in_submitted",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_closed action", ctx do
+      attrs = %{
+        action: "project_closed",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_contributor_addition action", ctx do
+      attrs = %{
+        action: "project_contributor_addition",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_discussion_submitted action", ctx do
+      attrs = %{
+        action: "project_discussion_submitted",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_goal_connection action", ctx do
+      attrs = %{
+        action: "project_goal_connection",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_goal_disconnection action", ctx do
+      attrs = %{
+        action: "project_goal_disconnection",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_milestone_commented action", ctx do
+      attrs = %{
+        action: "project_milestone_commented",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_moved action", ctx do
+      attrs = %{
+        action: "project_moved",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_pausing action", ctx do
+      attrs = %{
+        action: "project_pausing",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_renamed action", ctx do
+      attrs = %{
+        action: "project_renamed",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_resuming action", ctx do
+      attrs = %{
+        action: "project_resuming",
+        author_id: ctx.author.id,
+        content: %{
+          project_id: ctx.project.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "project_timeline_edited action", ctx do
+      attrs = %{
+        action: "project_timeline_edited",
+        author_id: ctx.author.id,
+        content: %{
           project_id: ctx.project.id,
         }
       }
@@ -195,10 +750,52 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_adding",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           task_id: ctx.task.id,
-          milestone_id: "",
-          name: "",
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "task_closing action", ctx do
+      attrs = %{
+        action: "task_closing",
+        author_id: ctx.author.id,
+        content: %{
+          task_id: ctx.task.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "task_status_change action", ctx do
+      attrs = %{
+        action: "task_status_change",
+        author_id: ctx.author.id,
+        content: %{
+          task_id: ctx.task.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
+
+    test "task_update action", ctx do
+      attrs = %{
+        action: "task_update",
+        author_id: ctx.author.id,
+        content: %{
+          task_id: ctx.task.id,
         }
       }
 
@@ -226,19 +823,13 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           comment_id: comment.id,
-          comment_thread_id: "",
-          project_id: "",
-          space_id: "",
-          goal_id: "",
-          activity_id: "",
         }
       }
 
       create_activities(attrs)
-      |> assert_no_context()
-      |> assign_activity_context()
+      |> assert_no_context
+      |> assign_activity_context
       |> assert_context_assigned(ctx.project.access_context.id)
     end
 
@@ -253,13 +844,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           comment_id: comment.id,
-          comment_thread_id: "",
-          project_id: "",
-          space_id: "",
-          goal_id: "",
-          activity_id: "",
         }
       }
 
@@ -275,7 +860,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_created",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           project_id: ctx.project.id,
         }
       }
@@ -290,13 +874,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           comment_id: comment.id,
-          comment_thread_id: "",
-          project_id: "",
-          space_id: "",
-          goal_id: "",
-          activity_id: "",
         }
       }
 
@@ -313,13 +891,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
           comment_id: comment.id,
-          comment_thread_id: "",
-          project_id: "",
-          space_id: "",
-          goal_id: "",
-          activity_id: "",
         }
       }
 
