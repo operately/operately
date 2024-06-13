@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_comment_thread(comment_thread) do
     %{
       id: comment_thread.id,
-      message: comment_thread.message,
+      message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
     }
   end
@@ -65,13 +65,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("discussion_posting", content) do
     %{
       space: serialize_space(content["space"]),
-      # discussion: serialize_discussion(content["discussion"])
+      discussion: serialize_discussion(content["discussion"])
     }
   end
 
   def serialize_content("goal_archived", content) do
     %{
-      goal: content["goal"] && serialize_goal(content["goal"])
+      goal: serialize_goal(content["goal"])
     }
   end
 
@@ -139,13 +139,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("goal_timeframe_editing", _content) do
-    %{}
-    # %{
-    #   goal: serialize_goal(content["goal"]),
-    #   new_timeframe: Timeframe.serialize(GoalEditing.previous_timeframe(content)),
-    #   old_timeframe: Timeframe.serialize(GoalEditing.current_timeframe(content))
-    # }
+  def serialize_content("goal_timeframe_editing", content) do
+    %{
+      goal: serialize_goal(content["goal"]),
+      new_timeframe: Timeframe.serialize(content["new_timeframe"]),
+      old_timeframe: Timeframe.serialize(content["old_timeframe"])
+    }
   end
 
   def serialize_content("group_edited", _content) do
@@ -244,12 +243,22 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_timeline_edited", _content) do
-    raise "not implemented"
+  def serialize_content("project_timeline_edited", content) do
+    %{
+      project: serialize_project(content["project"]),
+      old_start_date: content["old_start_date"],
+      new_start_date: content["new_start_date"],
+      old_end_date: content["old_end_date"],
+      new_end_date: content["new_end_date"],
+      new_milestones: serialize_new_milestones(content["new_milestones"]),
+      updated_milestones: serialize_updated_milestones(content["updated_milestones"]),
+    }
   end
 
-  def serialize_content("space_joining", _content) do
-    raise "not implemented"
+  def serialize_content("space_joining", content) do
+    %{
+      space: serialize_space(content["space"])
+    }
   end
 
   def serialize_content("task_adding", _content) do
@@ -296,6 +305,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   # Utility serializers
   #
 
+  def serialize_project(nil), do: nil
   def serialize_project(project) do
     %{
       id: project.id,
@@ -303,6 +313,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_goal(nil), do: nil
   def serialize_goal(goal) do
     %{
       id: goal.id,
@@ -339,6 +350,20 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_deleted_targets(content) do
     Enum.map(content["deleted_targets"], fn target -> 
       %{id: target["id"], name: target["name"]} 
+    end)
+  end
+
+  def serialize_new_milestones(nil), do: []
+  def serialize_new_milestones(milestones) do
+    Enum.map(milestones, fn milestone -> 
+      %{id: milestone["milestone_id"], title: milestone["title"], deadline_at: milestone["due_date"]}
+    end)
+  end
+
+  def serialize_updated_milestones(nil), do: []
+  def serialize_updated_milestones(milestones) do
+    Enum.map(milestones, fn milestone -> 
+      %{id: milestone["milestone_id"], title: milestone["title"], deadline_at: milestone["due_date"]}
     end)
   end
 end

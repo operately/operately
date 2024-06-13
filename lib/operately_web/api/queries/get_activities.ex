@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     company_id = conn.assigns.current_account.person.company_id
     scope_id = inputs[:scope_id]
     scope_type = inputs[:scope_type]
-    actions = inputs[:actions]
+    actions = inputs[:actions] || []
     activities = load_activities(company_id, scope_type, scope_id, actions)
 
     {:ok, %{activities: OperatelyWeb.Api.Serializers.Activity.serialize(activities)}}
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     Activity
     |> limit_search_to_current_company(company_id)
     |> scope_query(scope_type, scope_id)
-    |> filter_by_action(actions || [])
+    |> filter_by_action(actions)
     |> order_desc()
     |> limit(100)
     |> preload([:comment_thread, :author])
@@ -70,7 +70,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     from a in query, where: a.action not in ^Activity.deprecated_actions()
   end
 
-  def finter_by_action(query, actions) do
+  def filter_by_action(query, actions) do
     from a in query, where: a.action in ^actions and a.action not in ^Activity.deprecated_actions()
   end
 

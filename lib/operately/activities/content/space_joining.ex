@@ -3,7 +3,7 @@ defmodule Operately.Activities.Content.SpaceJoining do
 
   embedded_schema do
     field :company_id, :string
-  field :space_id, :string
+    field :space_id, :string
   end
 
   def changeset(attrs) do
