@@ -2,8 +2,6 @@ defmodule Operately.Data.Change010CreateGroupsAccessContextTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-  import Operately.GroupsFixtures
 
   alias Operately.Repo
   alias Operately.Access.Context
@@ -11,14 +9,14 @@ defmodule Operately.Data.Change010CreateGroupsAccessContextTest do
 
   setup do
     company = company_fixture()
-    creator = person_fixture_with_account(%{company_id: company.id})
 
-    {:ok, creator: creator}
+    {:ok, company: company}
   end
 
   test "creates access_context for existing groups", ctx do
     groups = Enum.map(1..5, fn _ ->
-      group_fixture(ctx.creator)
+      {:ok, group} = create_group(ctx.company.id)
+      group
     end)
 
     Enum.each(groups, fn group ->
@@ -30,5 +28,16 @@ defmodule Operately.Data.Change010CreateGroupsAccessContextTest do
     Enum.each(groups, fn group ->
       assert %Context{} = Repo.get_by(Context, group_id: group.id)
     end)
+  end
+
+  def create_group(company_id) do
+    Operately.Groups.Group.changeset(%{
+      company_id: company_id,
+      name: "some name",
+      mission: "some mission",
+      icon: "some icon",
+      color: "come color",
+    })
+    |> Repo.insert()
   end
 end
