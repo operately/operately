@@ -3,10 +3,12 @@ defmodule Operately.Operations.GoalCreation do
   alias Operately.Repo
   alias Operately.Goals.{Goal, Target}
   alias Operately.Activities
+  alias Operately.Access.Context
 
   def run(creator, attrs) do
     Multi.new()
     |> insert_goal(creator, attrs)
+    |> insert_context()
     |> insert_targets(attrs[:targets] || [])
     |> insert_activity(creator)
     |> Repo.transaction()
@@ -26,6 +28,14 @@ defmodule Operately.Operations.GoalCreation do
       creator_id: creator.id,
       next_update_scheduled_at: Operately.Time.first_friday_from_today(),
     }))
+  end
+
+  defp insert_context(multi) do
+    Multi.insert(multi, :context, fn changes ->
+      Context.changeset(%{
+        goal_id: changes.goal.id,
+      })
+    end)
   end
 
   defp insert_activity(multi, creator) do

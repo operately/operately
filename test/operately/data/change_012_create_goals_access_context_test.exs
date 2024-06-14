@@ -7,6 +7,7 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
   import Operately.GoalsFixtures
 
   alias Operately.Repo
+  alias Operately.Access
   alias Operately.Access.Context
   alias Operately.Data.Change012CreateGoalsAccessContext
 
@@ -15,12 +16,12 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
     person = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(person)
 
-    {:ok, person: person, group: group}
+    {:ok, company: company, person: person, group: group}
   end
 
   test "creates access_context for existing goals", ctx do
     goals = Enum.map(1..5, fn _ ->
-      goal_fixture(ctx.person, %{space_id: ctx.group.id, targets: []})
+      create_goal(ctx.company.id, ctx.group.id, ctx.person.id)
     end)
 
     Enum.each(goals, fn goal ->
@@ -32,5 +33,30 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
     Enum.each(goals, fn goal ->
       assert %Context{} = Repo.get_by(Context, goal_id: goal.id)
     end)
+  end
+
+  test "creates access_context successfully when a goal already has access context", ctx do
+    goal_with_context = goal_fixture(ctx.person, %{space_id: ctx.group.id, targets: []})
+    goal_without_context = create_goal(ctx.company.id, ctx.group.id, ctx.person.id)
+
+    assert nil != Access.get_context!(goal_id: goal_with_context.id)
+
+    Change012CreateGoalsAccessContext.run()
+
+    assert nil != Access.get_context!(goal_id: goal_without_context.id)
+  end
+
+  def create_goal(company_id, group_id, person_id) do
+    {:ok, goal} = Operately.Goals.Goal.changeset(%{
+      company_id: company_id,
+      name: "some name",
+      group_id: group_id,
+      champion_id: person_id,
+      reviewer_id: person_id,
+      creator_id: person_id,
+    })
+    |> Repo.insert()
+
+    goal
   end
 end
