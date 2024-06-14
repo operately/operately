@@ -3,10 +3,12 @@ defmodule Operately.Data.Change010CreateGroupsAccessContext do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Groups.Group
+  alias Operately.Access.Context
 
   def run do
     Repo.transaction(fn ->
-      groups = Repo.all(from g in Operately.Groups.Group, select: g.id)
+      groups = Repo.all(from g in Group, select: g.id)
 
       Enum.each(groups, fn group_id ->
         case create_group_access_contexts(group_id) do
@@ -18,6 +20,12 @@ defmodule Operately.Data.Change010CreateGroupsAccessContext do
   end
 
   defp create_group_access_contexts(group_id) do
-    Access.create_context(%{group_id: group_id})
+    existing_context = Repo.one(from c in Context, where: c.group_id == ^group_id, select: c.id)
+
+    if existing_context do
+      :ok
+    else
+      Access.create_context(%{group_id: group_id})
+    end
   end
 end
