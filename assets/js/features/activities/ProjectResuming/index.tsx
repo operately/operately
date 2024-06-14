@@ -1,7 +1,4 @@
-import * as React from "react";
-import * as People from "@/models/people";
-
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectResuming } from "@/api";
@@ -29,12 +26,11 @@ const ProjectResuming: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} resumed the{" "}
-        <ProjectLink project={content(activity).project!} page={page} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "resumed the project");
+    } else {
+      return feedTitle(activity, "resumed the", projectLink(content(activity).project!), "project");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

@@ -1,77 +1,39 @@
 import * as React from "react";
-import * as Goals from "@/models/goals";
+import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { Project } from "@/api";
 
 import * as api from "@/api";
 
-interface ProjectLinkProps {
-  project: Project;
-  page: string;
-  prefix?: string;
-  showOnProjectPage?: boolean;
-}
+export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element)[]) => {
+  return (
+    <>
+      {People.shortName(activity.author!)}{" "}
+      {rest.map((part, i) => (
+        <React.Fragment key={i}>{part} </React.Fragment>
+      ))}
+    </>
+  );
+};
 
-export function ProjectLink(props: ProjectLinkProps) {
-  if (props.page === "project") {
-    if (props.showOnProjectPage) {
-      return <>{props.prefix} this project</>;
-    } else {
-      return null;
-    }
-  } else {
-    return (
-      <>
-        {props.prefix} the <Link to={Paths.projectPath(props.project!.id!)}>{props.project!.name!}</Link> project
-      </>
-    );
-  }
-}
+export const projectLink = (project: api.Project) => {
+  const path = Paths.projectPath(project!.id!);
+  const name = project!.name!;
 
-interface GoalLinkProps {
-  goal: Goals.Goal | api.Goal;
-  page: string;
-  prefix?: string;
-  showOnGoalPage?: boolean;
-}
+  return <Link to={path}>{name}</Link>;
+};
 
-export function GoalLink(props: GoalLinkProps) {
-  if (props.page === "goal") {
-    if (props.showOnGoalPage) {
-      return <>{props.prefix} this goal</>;
-    } else {
-      return null;
-    }
-  } else {
-    return (
-      <>
-        {props.prefix} the <Link to={Paths.goalPath(props.goal!.id!)}>{props.goal!.name!}</Link> goal
-      </>
-    );
-  }
-}
+export const goalLink = (goal: api.Goal) => {
+  const path = Paths.goalPath(goal!.id!);
+  const name = goal!.name!;
 
-interface SpaceLinkProps {
-  space: api.Group;
-  page: string;
-  prefix?: string;
-  showOnSpacePage?: boolean;
-}
+  return <Link to={path}>{name}</Link>;
+};
 
-export function SpaceLink(props: SpaceLinkProps) {
-  if (props.page === "space") {
-    if (props.showOnSpacePage) {
-      return <>{props.prefix} this space</>;
-    } else {
-      return null;
-    }
-  } else {
-    return (
-      <>
-        {props.prefix} the <Link to={Paths.spacePath(props.space!.id!)}>{props.space!.name!}</Link> space
-      </>
-    );
-  }
-}
+export const spaceLink = (space: api.Group) => {
+  const path = Paths.spacePath(space!.id!);
+  const name = space!.name!;
+
+  return <Link to={path}>{name}</Link>;
+};

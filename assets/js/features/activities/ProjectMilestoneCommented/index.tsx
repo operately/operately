@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectMilestoneCommented } from "@/api";
@@ -7,7 +6,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
-import { ProjectLink } from "../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -33,13 +32,21 @@ const ProjectMilestoneCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const path = `/projects/${content(activity).projectId!}/milestones/${content(activity).milestone!.id!}`;
     const link = <Link to={path}>{content(activity).milestone!.title!}</Link>;
+    const what = didWhat(content(activity).commentAction!);
 
-    return (
-      <>
-        {People.shortName(activity.author!)} {didWhat(content(activity).commentAction!)}: {link}
-        <ProjectLink project={content(activity).project!} page={page} prefix="in" showOnProjectPage={false} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, what, "the", link, "milestone");
+    } else {
+      return feedTitle(
+        activity,
+        what,
+        "the",
+        link,
+        "milestone in the",
+        projectLink(content(activity).project!),
+        "project",
+      );
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

@@ -1,11 +1,10 @@
 import * as React from "react";
-import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectMoved } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
@@ -31,11 +30,11 @@ const ProjectMoved: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} moved the <ProjectLink project={content(activity).project!} page={page} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "moved the project");
+    } else {
+      return feedTitle(activity, "moved the", projectLink(content(activity).project!), "project");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

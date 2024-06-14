@@ -1,11 +1,10 @@
-import * as React from "react";
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectContributorAddition } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "./../feedItemLinks";
 
 const ProjectContributorAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,12 +28,14 @@ const ProjectContributorAddition: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} added {People.shortName(content(activity).person!)} to{" "}
-        <ProjectLink project={content(activity).project!} page={page} />
-      </>
-    );
+    const person = People.shortName(content(activity).person!);
+    const project = projectLink(content(activity).project!);
+
+    if (page === "project") {
+      return feedTitle(activity, "added", person, "to the project");
+    } else {
+      return feedTitle(activity, "added", person, "to the", project, "project");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

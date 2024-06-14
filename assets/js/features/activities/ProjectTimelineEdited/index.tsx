@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
@@ -7,7 +6,7 @@ import * as Icons from "@tabler/icons-react";
 import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectTimelineEdited } from "@/api";
@@ -35,12 +34,11 @@ const ProjectTimelineEdited: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} edited the timeline on the{" "}
-        <ProjectLink project={content(activity).project!} page={page} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "edited the timeline on the project");
+    } else {
+      return feedTitle(activity, "edited the timeline on the", projectLink(content(activity).project!), "project");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: string }) {

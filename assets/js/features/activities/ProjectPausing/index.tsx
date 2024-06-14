@@ -1,11 +1,8 @@
-import * as React from "react";
-import * as People from "@/models/people";
-
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectPausing } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectPausing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,11 +26,11 @@ const ProjectPausing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} paused the <ProjectLink project={content(activity).project!} page={page} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "paused the project");
+    } else {
+      return feedTitle(activity, "paused the", projectLink(content(activity).project!), "project");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectRenamed } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectRenamed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,12 +29,11 @@ const ProjectRenamed: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} renamed the{" "}
-        <ProjectLink project={content(activity).project!} page={page} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "renamed the project");
+    } else {
+      return feedTitle(activity, "renamed the", projectLink(content(activity).project!), "project");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

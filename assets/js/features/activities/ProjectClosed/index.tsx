@@ -1,11 +1,10 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectClosed } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { ProjectLink } from "./../feedItemLinks";
+import { projectLink, feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
@@ -31,14 +30,16 @@ const ProjectClosed: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const retroLink = <Link to={Paths.projectRetrospectivePath(content(activity).project!.id!)}>retrospective</Link>;
+    const retroId = content(activity).project!.id!;
+    const retroPath = Paths.projectRetrospectivePath(retroId!);
+    const retroLink = <Link to={retroPath}>retrospective</Link>;
+    const project = projectLink(content(activity).project!);
 
-    return (
-      <>
-        {People.shortName(activity.author!)} closed <ProjectLink project={content(activity).project!} page={page} /> and
-        submitted a {retroLink}
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "closed the project and submitted a", retroLink);
+    } else {
+      return feedTitle(activity, "closed the", project, "project and submitted a", retroLink);
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

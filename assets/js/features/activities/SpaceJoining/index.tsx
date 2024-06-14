@@ -1,10 +1,6 @@
-import React from "react";
-
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentSpaceJoining } from "@/api";
 import { ActivityHandler } from "../interfaces";
-import { SpaceLink } from "../feedItemLinks";
+import { feedTitle, spaceLink } from "../feedItemLinks";
 
 const SpaceJoining: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,11 +24,11 @@ const SpaceJoining: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} joined <SpaceLink space={content(activity).space!} page={page} />
-      </>
-    );
+    if (page === "space") {
+      return feedTitle(activity, "joined the space");
+    } else {
+      return feedTitle(activity, "joined the", spaceLink(content(activity).space!), "space");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

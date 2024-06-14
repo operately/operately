@@ -1,11 +1,8 @@
-import * as React from "react";
-import * as People from "@/models/people";
-
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectGoalDisconnection } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { GoalLink, ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink, goalLink } from "../feedItemLinks";
 
 const ProjectGoalDisconnection: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,13 +26,16 @@ const ProjectGoalDisconnection: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} disconnected{" "}
-        <ProjectLink project={content(activity).project!} page={page} /> from{" "}
-        <GoalLink goal={content(activity).goal!} page={page} />
-      </>
-    );
+    const goal = goalLink(content(activity).goal!);
+    const project = projectLink(content(activity).project!);
+
+    if (page === "project") {
+      return feedTitle(activity, "disconnected the project from the", goal, "goal");
+    } else if (page === "goal") {
+      return feedTitle(activity, "disconnected the", project, "project from the goal");
+    } else {
+      return feedTitle(activity, "disconnected the", project, "project from the", goal, "goal");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
