@@ -81,9 +81,9 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "create access_context for a goal", ctx do
-      attrs = %{goal_id: ctx.goal.id}
+      goal = goal_fixture(ctx.creator, %{space_id: ctx.group.id, targets: []})
 
-      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+      assert nil != Access.get_context!(goal_id: goal.id)
     end
 
     test "create access_context for a project", ctx do
