@@ -4,6 +4,7 @@ defmodule Operately.Blobs.Blob do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+
   schema "blobs" do
     belongs_to :company, Operately.Companies.Company
     belongs_to :author, Operately.People.Person
@@ -19,6 +20,6 @@ defmodule Operately.Blobs.Blob do
   def changeset(blob, attrs) do
     blob
     |> cast(attrs, [:filename, :author_id, :company_id, :status, :storage_type])
-    |> validate_required([:filename, :author_id, :status, :company_id, :storage_type])
+    |> validate_required([:filename, :author_id, :company_id, :status, :storage_type])
   end
 end
