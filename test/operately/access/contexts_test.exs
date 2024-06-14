@@ -1,10 +1,10 @@
 defmodule Operately.AccessContextsTest do
   use Operately.DataCase
 
+  alias Operately.Repo
   alias Operately.Access
   alias Operately.Access.Context
 
-  import Operately.AccessFixtures, only: [context_fixture: 1]
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
@@ -14,14 +14,20 @@ defmodule Operately.AccessContextsTest do
     setup do
       company = company_fixture()
       creator = person_fixture_with_account(%{company_id: company.id})
+
       group = group_fixture(creator)
-      context = context_fixture(%{group_id: group.id})
+      context = Repo.preload(group, :access_context).access_context
 
       {:ok, company: company, group: group, creator: creator, context: context}
     end
 
     test "list_contexts/0 returns all contexts", ctx do
-      assert Access.list_contexts() == [ctx.context]
+      contexts = Access.list_contexts()
+
+      assert length(contexts) == 2
+      assert Enum.any?(contexts, fn context ->
+        context == ctx.context
+      end)
     end
 
     test "get_context!/1 returns the context with given id", ctx do
@@ -29,14 +35,14 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "create_context/1 with valid data creates a context", ctx do
-      another_group = group_fixture(ctx.creator)
+      another_group = create_group_without_context(ctx.company.id)
       valid_attrs = %{group_id: another_group.id}
 
       assert {:ok, %Context{} = _context} = Access.create_context(valid_attrs)
     end
 
     test "update_context/2 with valid data updates the context", ctx do
-      another_group = group_fixture(ctx.creator)
+      another_group = create_group_without_context(ctx.company.id)
       update_attrs = %{group_id: another_group.id}
 
       assert {:ok, %Context{} = _context} = Access.update_context(ctx.context, update_attrs)
@@ -74,9 +80,9 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "create access_context for a group", ctx do
-      attrs = %{group_id: ctx.group.id}
+      group = group_fixture(ctx.creator)
 
-      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+      assert nil != Access.get_context!(group_id: group.id)
     end
 
     test "create access_context for a goal", ctx do
@@ -113,5 +119,21 @@ defmodule Operately.AccessContextsTest do
       refute changeset.valid?
       assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
     end
+  end
+
+  #
+  # Helpers
+  #
+
+  def create_group_without_context(company_id) do
+    {:ok, group} = Operately.Groups.Group.changeset(%{
+      company_id: company_id,
+      name: "some name",
+      mission: "some mission",
+      icon: "some icon",
+      color: "come color",
+    })
+    |> Repo.insert()
+    group
   end
 end
