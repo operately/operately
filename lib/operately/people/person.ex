@@ -29,11 +29,9 @@ defmodule Operately.People.Person do
     field :suspended, :boolean, default: false
     field :suspended_at, :utc_datetime
 
-    timestamps()
-  end
+    field :avatar_blob_id, :binary_id
 
-  def changeset(attrs) do
-    changeset(%__MODULE__{}, attrs)
+    timestamps()
   end
 
   @doc false
@@ -55,9 +53,11 @@ defmodule Operately.People.Person do
       :company_role,
       :theme,
       :suspended,
-      :suspended_at
+      :suspended_at,
+      :avatar_blob_id
     ])
     |> validate_required([:full_name, :company_id])
+    |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
   end
 
   def short_name(person) do
