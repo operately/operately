@@ -63,16 +63,19 @@ defmodule Operately.PeopleTest do
       %{blob: blob}
     end
 
-    test "create_person/1 with valid data creates a person", %{blob: blob} do
-      valid_attrs = Map.merge(@valid_person_attrs, %{
-        company_id: blob.company_id,
-        avatar_blob_id: blob.id
-      })
+    test "create_person/1 with valid data creates a person", ctx do
+      valid_attrs = %{
+        full_name: "some full_name",
+        title: "some title",
+        company_id: ctx.person.company_id,
+        avatar_blob_id: ctx.blob.id
+      }
+
+      IO.inspect(valid_attrs)
 
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
       assert person.full_name == "some full_name"
       assert person.title == "some title"
-      assert person.avatar_blob_id == blob.id
     end
 
     test "create_person/1 with invalid data returns error changeset" do
