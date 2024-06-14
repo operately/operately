@@ -1,5 +1,5 @@
 defmodule Operately.PeopleTest do
-  use Operately.DataCase, async: true
+  use Operately.DataCase
 
   alias Operately.People
   alias Operately.People.Person
