@@ -8,7 +8,13 @@ defmodule Operately.Access do
     Repo.all(Context)
   end
 
-  def get_context!(id), do: Repo.get!(Context, id)
+  def get_context!(id) when is_binary(id) do
+    Repo.get!(Context, id)
+  end
+
+  def get_context!(attrs) when is_list(attrs) do
+    Repo.get_by!(Context, attrs)
+  end
 
   def get_context_by_project!(project_id) do
     Repo.get_by!(Context, project_id: project_id)
