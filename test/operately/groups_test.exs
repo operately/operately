@@ -61,12 +61,6 @@ defmodule Operately.GroupsTest do
       assert ctx.group == Groups.get_group!(ctx.group.id)
     end
 
-    test "delete_group/1 deletes the group", ctx do
-      Groups.remove_member(ctx.group, ctx.creator.id)
-      assert {:ok, %Group{}} = Groups.delete_group(ctx.group)
-      assert_raise Ecto.NoResultsError, fn -> Groups.get_group!(ctx.group.id) end
-    end
-
     test "change_group/1 returns a group changeset", ctx do
       assert %Ecto.Changeset{} = Groups.change_group(ctx.group)
     end

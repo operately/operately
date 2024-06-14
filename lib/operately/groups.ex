@@ -80,10 +80,6 @@ defmodule Operately.Groups do
     |> Repo.extract_result(:group)
   end
 
-  def delete_group(%Group{} = group) do
-    Repo.delete(group)
-  end
-
   def change_group(%Group{} = group, attrs \\ %{}) do
     Group.changeset(group, attrs)
   end
