@@ -4,7 +4,7 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.Companies.Company
   alias Operately.People.Account
   alias Operately.People.Person
-  alias Operately.Groups.Group
+  alias Operately.Groups
 
   def run(attrs) do
     Multi.new()
@@ -17,31 +17,31 @@ defmodule Operately.Operations.CompanyAdding do
   end
 
   def insert_group(multi) do
-    Multi.insert(multi, :group, fn changes ->
-      Group.changeset(%{
-        company_id: changes[:company].id,
-        name: "Company",
-        mission: "Everyone in the company",
-        icon: "IconBuildingEstate",
-        color: "text-cyan-500"
-        })
-      end)
-      |> Multi.update(:updated_company, fn %{company: company, group: group} ->
-        Company.changeset(company, %{company_space_id: group.id})
-      end)
-    end
+    attrs = %{
+      name: "Company",
+      mission: "Everyone in the company",
+      icon: "IconBuildingEstate",
+      color: "text-cyan-500"
+    }
 
-    def insert_person(multi, full_name, role) do
-      Multi.insert(multi, :person, fn changes ->
-        Person.changeset(%{
-          company_id: changes[:company].id,
-          account_id: changes[:account].id,
-          full_name: full_name,
-          email: changes[:account].email,
-          avatar_url: "",
-          title: role,
-          company_role: :admin,
-        })
-      end)
-    end
+    multi
+    |> Groups.insert_group(attrs)
+    |> Multi.update(:updated_company, fn %{company: company, group: group} ->
+      Company.changeset(company, %{company_space_id: group.id})
+    end)
+  end
+
+  def insert_person(multi, full_name, role) do
+    Multi.insert(multi, :person, fn changes ->
+      Person.changeset(%{
+        company_id: changes[:company].id,
+        account_id: changes[:account].id,
+        full_name: full_name,
+        email: changes[:account].email,
+        avatar_url: "",
+        title: role,
+        company_role: :admin,
+      })
+    end)
+  end
 end
