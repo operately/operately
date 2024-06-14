@@ -6,7 +6,10 @@ defmodule Operately.CompaniesFixtures do
       trusted_email_domains: []
     })
 
-    {:ok, company} = Operately.Companies.create_company(attrs)
+    {:ok, company} =
+      Operately.Companies.Company.changeset(attrs)
+      |> Operately.Repo.insert()
+
     company
   end
 end
