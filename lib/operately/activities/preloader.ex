@@ -15,6 +15,8 @@ defmodule Operately.Activities.Preloader do
 
   def preload(activities, schema) do
     references = Enum.flat_map(activities, fn a -> references(a, schema) end)
+    IO.inspect(references)
+
     ids = Enum.map(references, &elem(&1, 3)) |> Enum.uniq()
 
     query = from r in schema, where: r.id in ^ids
@@ -49,11 +51,12 @@ defmodule Operately.Activities.Preloader do
   #
   defp references(activity, schema) do
     activity.content
+    |> Map.from_struct()
     |> Enum.reduce([], fn {k, v}, acc ->
       case v do
-        %Ecto.Association.NotLoaded{__owner__: owner_schema} ->
-          if owner_schema == schema do
-            [{activity.id, k, schema, "#{k}_id"} | acc]
+        %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
+          if owner_schema.__schema__(:association, field).queryable === schema do
+            [{activity.id, k, schema, Map.get(activity.content, String.to_existing_atom("#{k}_id"))} | acc]
           else
             acc
           end
@@ -69,13 +72,17 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp inject(activity, references, records) do
-    Enum.map(activity.content, fn {k, v} ->
+    keys = Map.keys(Map.from_struct(activity.content))
+
+    content = Enum.reduce(keys, activity.content, fn k, acc ->
       case find_ref(references, activity.id, k) do
-        nil -> {k, v}
-        {_, _, _, id} -> {k, Map.get(records, v[id])}
+        nil -> acc
+        {_, _, _, id} -> 
+          Map.put(acc, k, Map.get(records, id))
       end
-    end) 
-    |> Enum.into(%{})
+    end)
+
+    %{activity | content: content}
   end
 
   defp find_ref(references, activity_id, field) do
