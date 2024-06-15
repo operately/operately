@@ -253,12 +253,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("project_timeline_edited", content) do
     %{
       project: serialize_project(content["project"]),
-      old_start_date: content["old_start_date"],
-      new_start_date: content["new_start_date"],
-      old_end_date: content["old_end_date"],
-      new_end_date: content["new_end_date"],
+      old_start_date: serialize_date(content["old_start_date"]),
+      new_start_date: serialize_date(content["new_start_date"]),
+      old_end_date: serialize_date(content["old_end_date"]),
+      new_end_date: serialize_date(content["new_end_date"]),
       new_milestones: serialize_new_milestones(content["new_milestones"]),
-      updated_milestones: serialize_updated_milestones(content["updated_milestones"]),
+      updated_milestones: serialize_updated_milestones(content["milestone_updates"])
     }
   end
 
@@ -364,14 +364,22 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_new_milestones(nil), do: []
   def serialize_new_milestones(milestones) do
     Enum.map(milestones, fn milestone -> 
-      %{id: milestone["milestone_id"], title: milestone["title"], deadline_at: milestone["due_date"]}
+      %{id: 
+        milestone["milestone_id"], 
+        title: milestone["title"], 
+        deadline_at: serialize_date(milestone["due_date"])
+      }
     end)
   end
 
   def serialize_updated_milestones(nil), do: []
   def serialize_updated_milestones(milestones) do
     Enum.map(milestones, fn milestone -> 
-      %{id: milestone["milestone_id"], title: milestone["title"], deadline_at: milestone["due_date"]}
+      %{
+        id: milestone["milestone_id"], 
+        title: milestone["title"], 
+        deadline_at: serialize_date(milestone["new_due_date"])
+      }
     end)
   end
 
@@ -382,5 +390,10 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       avatar_url: person.avatar_url,
       title: person.title
     }
+  end
+
+  defp serialize_date(nil), do: nil
+  defp serialize_date(date) do
+    date |> DateTime.to_date()
   end
 end

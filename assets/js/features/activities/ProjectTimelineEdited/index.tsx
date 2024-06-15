@@ -35,7 +35,7 @@ const ProjectTimelineEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     if (page === "project") {
-      return feedTitle(activity, "edited the timeline on the project");
+      return feedTitle(activity, "edited the timeline");
     } else {
       return feedTitle(activity, "edited the timeline on the", projectLink(content(activity).project!), "project");
     }

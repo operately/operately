@@ -5,7 +5,7 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     use Operately.Activities.Content
 
     embedded_schema do
-      belongs_to :milestone, Operately.Projects.Milestone
+      field :milestone_id, :string
 
       field :old_title, :string
       field :new_title, :string
@@ -38,8 +38,8 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
   end
 
   embedded_schema do
-    field :company_id, :string
-    field :project_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
 
     field :old_start_date, :utc_datetime
     field :new_start_date, :utc_datetime
