@@ -187,8 +187,11 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_contributor_addition", _content) do
-    raise "not implemented"
+  def serialize_content("project_contributor_addition", content) do
+    %{
+      person: serialize_person(content["person"]),
+      project: serialize_project(content["project"])
+    }
   end
 
   def serialize_content("project_created", content) do
@@ -366,5 +369,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     Enum.map(milestones, fn milestone -> 
       %{id: milestone["milestone_id"], title: milestone["title"], deadline_at: milestone["due_date"]}
     end)
+  end
+
+  defp serialize_person(person) do
+    %{
+      id: person.id,
+      full_name: person.full_name,
+      avatar_url: person.avatar_url,
+      title: person.title
+    }
   end
 end

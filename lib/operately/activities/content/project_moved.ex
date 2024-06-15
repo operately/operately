@@ -2,10 +2,10 @@ defmodule Operately.Activities.Content.ProjectMoved do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :project_id, :string
-    field :old_space_id, :string
-    field :new_space_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
+    belongs_to :old_space, Operately.Groups.Group
+    belongs_to :new_space, Operately.Groups.Group
   end
 
   def changeset(attrs) do

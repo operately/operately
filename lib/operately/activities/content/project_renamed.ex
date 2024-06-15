@@ -15,13 +15,6 @@ defmodule Operately.Activities.Content.ProjectRenamed do
   end
 
   def build(params) do
-    project = Operately.Projects.get_project!(params["project_id"])
-
-    changeset(%{
-      company_id: project.company_id,
-      project_id: params["project_id"],
-      old_name: params["old_name"],
-      new_name: params["new_name"]
-    })
+    changeset(params)
   end
 end

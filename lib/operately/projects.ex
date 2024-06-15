@@ -53,7 +53,12 @@ defmodule Operately.Projects do
   def rename_project(author, project, new_name) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{name: new_name}))
-    |> Activities.insert(author.id, :project_renamed, fn changes -> %{project_id: project.id, old_name: project.name, new_name: changes.project.name} end)
+    |> Activities.insert_sync(author.id, :project_renamed, fn changes -> %{
+      company_id: project.company_id,
+      project_id: project.id, 
+      old_name: project.name, 
+      new_name: changes.project.name
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
