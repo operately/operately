@@ -15,7 +15,6 @@ defmodule Operately.Activities.Preloader do
 
   def preload(activities, schema) do
     references = Enum.flat_map(activities, fn a -> references(a, schema) end)
-    IO.inspect(references)
 
     ids = Enum.map(references, &elem(&1, 3)) |> Enum.uniq()
 

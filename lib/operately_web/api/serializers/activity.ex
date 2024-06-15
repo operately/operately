@@ -222,8 +222,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     raise "not implemented"
   end
 
-  def serialize_content("project_moved", _content) do
-    raise "not implemented"
+  def serialize_content("project_moved", content) do
+    %{
+      project: serialize_project(content["project"]),
+      old_space: serialize_space(content["old_space"]),
+      new_space: serialize_space(content["new_space"])
+    }
   end
 
   def serialize_content("project_pausing", content) do

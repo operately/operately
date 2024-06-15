@@ -6,6 +6,7 @@ defmodule Operately.Activities.Content do
 
       @primary_key false
       @derive Jason.Encoder
+      @foreign_key_type :string
 
       def fetch(term, key) when is_atom(key) do
         {:ok, Map.get(term, key)}

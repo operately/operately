@@ -1,6 +1,6 @@
 defmodule Operately.Activities.Notifications.ProjectContributorAddition do
   def dispatch(activity) do
-    person_id = activity.content.person_id
+    person_id = activity.content["person_id"]
 
     notifications = [
       %{

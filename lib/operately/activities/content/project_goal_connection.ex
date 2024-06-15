@@ -4,7 +4,7 @@ defmodule Operately.Activities.Content.ProjectGoalConnection do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :project, Operately.Projects.Project
-    belongs_to :goal, Operately.Projects.Goal
+    belongs_to :goal, Operately.Goals.Goal
   end
 
   def changeset(attrs) do
