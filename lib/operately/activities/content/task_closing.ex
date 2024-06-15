@@ -2,8 +2,8 @@ defmodule Operately.Activities.Content.TaskClosing do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :task_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :task, Operately.Tasks.Task
   end
 
   def changeset(attrs) do

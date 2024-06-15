@@ -2,9 +2,10 @@ defmodule Operately.Activities.Content.ProjectDiscussionSubmitted do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :binary_id
-    field :project_id, :binary_id
-    field :discussion_id, :binary_id
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
+    belongs_to :discussion, Operately.Updates.Update
+
     field :title, :string
   end
 

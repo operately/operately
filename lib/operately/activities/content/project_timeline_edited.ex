@@ -5,7 +5,7 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     use Operately.Activities.Content
 
     embedded_schema do
-      field :milestone_id, :string
+      belongs_to :milestone, Operately.Projects.Milestone
 
       field :old_title, :string
       field :new_title, :string

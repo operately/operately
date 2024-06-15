@@ -2,8 +2,9 @@ defmodule Operately.Activities.Content.ProjectRenamed do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :project_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
+
     field :old_name, :string
     field :new_name, :string
   end

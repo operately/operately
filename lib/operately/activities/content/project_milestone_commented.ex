@@ -2,10 +2,11 @@ defmodule Operately.Activities.Content.ProjectMilestoneCommented do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :project_id, :string
-    field :milestone_id, :string
-    field :comment_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
+    belongs_to :milestone, Operately.Projects.Milestone
+    belongs_to :comment, Operately.Updates.Comment
+    
     field :comment_action, :string
   end
 

@@ -2,8 +2,8 @@ defmodule Operately.Activities.Content.SpaceJoining do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :space_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
   end
 
   def changeset(attrs) do

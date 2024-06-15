@@ -2,8 +2,9 @@ defmodule Operately.Activities.Content.GroupEdited do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :group_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :group, Operately.Groups.Group
+
     field :old_name, :string
     field :old_mission, :string
     field :new_name, :string

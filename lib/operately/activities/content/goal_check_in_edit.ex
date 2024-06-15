@@ -2,9 +2,9 @@ defmodule Operately.Activities.Content.GoalCheckInEdit do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :goal_id, :string
-    field :check_in_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :goal, Operately.Goals.Goal
+    belongs_to :check_in, Operately.Goals.GoalCheckIn
   end
 
   def changeset(attrs) do

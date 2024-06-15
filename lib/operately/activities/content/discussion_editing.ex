@@ -2,9 +2,9 @@ defmodule Operately.Activities.Content.DiscussionEditing do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :space_id, :string
-    field :discussion_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
+    belongs_to :discussion, Operately.Updates.Update
   end
 
   def changeset(attrs) do

@@ -2,9 +2,9 @@ defmodule Operately.Activities.Content.GoalReparent do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :old_parent_goal_id, :string
-    field :new_parent_goal_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :old_parent_goal, Operately.Goals.Goal
+    belongs_to :new_parent_goal, Operately.Goals.Goal
   end
 
   def changeset(attrs) do

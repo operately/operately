@@ -2,10 +2,10 @@ defmodule Operately.Activities.Content.DiscussionCommentSubmitted do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :binary_id
-    field :space_id, :binary_id
-    field :discussion_id, :binary_id
-    field :comment_id, :binary_id
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
+    belongs_to :discussion, Operately.Updates.Update
+    belongs_to :comment, Operately.Updates.Comment
   end
 
   def changeset(attrs) do
