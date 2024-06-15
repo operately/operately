@@ -8,9 +8,8 @@ import type { ActivityContentGoalCheckIn } from "@/api";
 import { ConditionChanges } from "./ConditionChanges";
 import { ActivityHandler } from "../interfaces";
 
-import * as People from "@/models/people";
-import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(activity: Activity): string {
@@ -49,13 +48,13 @@ const GoalCheckIn: ActivityHandler = {
 
   FeedItemTitle({ activity, page }) {
     const path = Paths.goalProgressUpdatePath(content(activity).goal!.id!, content(activity).update!.id!);
+    const link = <Link to={path}>updated the progress</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author!)} <Link to={path}>updated the progress</Link> for{" "}
-        <GoalLink goal={content(activity).goal!} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, link);
+    } else {
+      return feedTitle(activity, link, "in the", goalLink(content(activity).goal!));
+    }
   },
 
   commentCount(activity: Activity): number {

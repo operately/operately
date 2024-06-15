@@ -1,11 +1,8 @@
-import * as React from "react";
-import * as People from "@/models/people";
-
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalArchived } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { GoalLink } from "./../feedItemLinks";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalArchived: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,11 +26,11 @@ const GoalArchived: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} archived <GoalLink goal={content(activity).goal!} page={page} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, "archived this goal");
+    } else {
+      return feedTitle(activity, "archived the", goalLink(content(activity).goal!), "goal");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

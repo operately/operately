@@ -1,12 +1,11 @@
 import * as React from "react";
-import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalEditing } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { GoalLink } from "./../feedItemLinks";
+import { goalLink, feedTitle } from "../feedItemLinks";
 
 const GoalEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,11 +29,11 @@ const GoalEditing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} edited <GoalLink goal={content(activity).goal!} page={page} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, "edited the goal");
+    } else {
+      return feedTitle(activity, "edited the", goalLink(content(activity).goal!), "goal");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

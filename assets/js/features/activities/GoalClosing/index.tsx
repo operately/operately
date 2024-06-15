@@ -1,16 +1,15 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
-import * as People from "@/models/people";
 
 import { Activity } from "@/models/activities";
 import { ActivityContentGoalClosing } from "@/api";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "./../feedItemLinks";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { feedTitle, goalLink } from "../feedItemLinks";
 import { Link } from "@/components/Link";
 
 const GoalClosing: ActivityHandler = {
@@ -68,12 +67,11 @@ const GoalClosing: ActivityHandler = {
     const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
     const link = <Link to={path}>closed</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author!)} {link}{" "}
-        <GoalLink goal={content(activity).goal!} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, link, "the goal");
+    } else {
+      return feedTitle(activity, link, "the", goalLink(content(activity).goal!), "goal");
+    }
   },
 
   commentCount(activity: Activity): number {

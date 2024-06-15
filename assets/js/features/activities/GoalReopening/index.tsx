@@ -1,14 +1,12 @@
 import React from "react";
 
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentGoalClosing } from "@/api";
 import { Paths } from "@/routes/paths";
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { goalLink, feedTitle } from "../feedItemLinks";
 
 import RichContent, { Summary } from "@/components/RichContent";
 
@@ -43,12 +41,11 @@ const GoalClosing: ActivityHandler = {
     const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
     const link = <Link to={path}>reopened</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author!)} {link}{" "}
-        <GoalLink goal={content(activity).goal!} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, link, "the goal");
+    } else {
+      return feedTitle(activity, link, "the", goalLink(content(activity).goal!), "goal");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

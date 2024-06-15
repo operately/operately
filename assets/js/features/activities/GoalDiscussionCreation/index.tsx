@@ -10,9 +10,9 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "./../feedItemLinks";
 import { Link } from "@/components/Link";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { feedTitle, goalLink } from "./../feedItemLinks";
 
 const GoalDiscussionCreation: ActivityHandler = {
   pageHtmlTitle(activity: Activity) {
@@ -64,16 +64,15 @@ const GoalDiscussionCreation: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(content.goal.id, activity.id!);
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author!)} posted {link}
-        <GoalLink goal={content.goal} page={page} showOnGoalPage={false} prefix=" on" />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, "posted ", link);
+    } else {
+      return feedTitle(activity, "posted ", link, " on the ", goalLink(content(activity).goal!), " goal");
+    }
   },
 
   commentCount(activity: Activity): number {

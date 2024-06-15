@@ -1,14 +1,13 @@
 import * as React from "react";
-import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentDiscussionPosting } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { SpaceLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
+import { feedTitle, spaceLink } from "./../feedItemLinks";
 
 const DiscussionPosting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -38,12 +37,11 @@ const DiscussionPosting: ActivityHandler = {
     const path = Paths.discussionPath(space.id!, discussion.id!);
     const link = <Link to={path}>{discussion.title!}</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author!)} posted {link}{" "}
-        <SpaceLink space={content(activity).space!} page={page} showOnSpacePage={false} />
-      </>
-    );
+    if (page === "space") {
+      return feedTitle(activity, "posted", link);
+    } else {
+      return feedTitle(activity, "posted", link, "in the", spaceLink(content(activity).space!));
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

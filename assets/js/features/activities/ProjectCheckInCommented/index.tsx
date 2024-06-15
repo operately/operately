@@ -1,11 +1,10 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { ProjectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
@@ -34,17 +33,15 @@ const ProjectCheckInCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const project = content(activity).project!;
     const checkIn = content(activity).checkIn!;
-    const author = activity.author!;
 
     const checkInPath = Paths.projectCheckInPath(project.id!, checkIn.id!);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
-    return (
-      <>
-        {People.shortName(author)} commented on {checkInLink} in{" "}
-        <ProjectLink project={project} page={page} showOnProjectPage={false} />
-      </>
-    );
+    if (page === "project") {
+      return feedTitle(activity, "commented on ", checkInLink);
+    } else {
+      return feedTitle(activity, "commented on ", checkInLink, " in the ", projectLink(project), "project");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

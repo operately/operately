@@ -1,14 +1,13 @@
 import * as React from "react";
-import * as People from "@/models/people";
 
 import type { ActivityHandler } from "../interfaces";
 import type { Activity, ActivityContentCommentAdded, ActivityContentGoalTimeframeEditing } from "@/api";
 
 import { match } from "ts-pattern";
-import { GoalLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "react-router-dom";
 import { Summary } from "@/components/RichContent";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const CommentAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -39,37 +38,37 @@ const CommentAdded: ActivityHandler = {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
+        const activityLink = <Link to={path}>goal timeframe editing</Link>;
 
-        return (
-          <>
-            {People.shortName(activity.author!)} commented on the <Link to={path}>timeframe edit</Link>{" "}
-            <GoalLink goal={goal} page={page} prefix={"for"} />
-          </>
-        );
+        if (page === "goal") {
+          return feedTitle(activity, "commented on the", activityLink);
+        } else {
+          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+        }
       })
       .with("goal_closing", () => {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
+        const activityLink = <Link to={path}>goal closing</Link>;
 
-        return (
-          <>
-            {People.shortName(activity.author!)} commented on the <Link to={path}>goal closing</Link>{" "}
-            <GoalLink goal={goal} page={page} />
-          </>
-        );
+        if (page === "goal") {
+          return feedTitle(activity, "commented on the", activityLink);
+        } else {
+          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+        }
       })
       .with("goal_discussion_creation", () => {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
+        const activityLink = <Link to={path}>discussion creation</Link>;
 
-        return (
-          <>
-            {People.shortName(activity.author!)} commented on the <Link to={path}>discussion creation</Link>{" "}
-            <GoalLink goal={goal} page={page} />
-          </>
-        );
+        if (page === "goal") {
+          return feedTitle(activity, "commented on the", activityLink);
+        } else {
+          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+        }
       })
       .otherwise(() => {
         throw new Error("Not implemented");

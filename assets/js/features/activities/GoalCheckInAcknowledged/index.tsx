@@ -1,11 +1,10 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentGoalCheckInAcknowledgement } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { GoalLink } from "./../feedItemLinks";
+import { feedTitle, goalLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
@@ -33,16 +32,15 @@ const GoalCheckInAcknowledged: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const goal = content(activity).goal!;
     const update = content(activity).update!;
-    const author = activity.author!;
 
     const path = Paths.goalProgressUpdatePath(goal.id!, update.id!);
     const link = <Link to={path}>Progress Update</Link>;
 
-    return (
-      <>
-        {People.shortName(author)} acknowledged: {link} in <GoalLink goal={goal} page={page} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, "acknowledged the", link);
+    } else {
+      return feedTitle(activity, "acknowledged the", link, "in the", goalLink(goal), "goal");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

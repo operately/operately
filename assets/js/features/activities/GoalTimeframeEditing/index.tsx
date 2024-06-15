@@ -1,10 +1,9 @@
 import React from "react";
 
-import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
 
-import { GoalLink } from "./../feedItemLinks";
+import { goalLink, feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
@@ -67,13 +66,13 @@ export const GoalTimeframeEditing: ActivityHandler = {
 
   FeedItemTitle({ activity, page }) {
     const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author!)} <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link> for{" "}
-        <GoalLink goal={content(activity).goal!} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, activityLink);
+    } else {
+      return feedTitle(activity, activityLink, " on the", goalLink(content(activity).goal!));
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

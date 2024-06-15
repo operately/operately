@@ -1,11 +1,8 @@
-import * as React from "react";
-import * as People from "@/models/people";
-
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { GoalLink } from "./../feedItemLinks";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,11 +26,11 @@ const GoalCreated: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return (
-      <>
-        {People.shortName(activity.author!)} added <GoalLink goal={content(activity).goal!} page={page} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, "added this goal");
+    } else {
+      return feedTitle(activity, "added the", goalLink(content(activity).goal!), "goal");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
