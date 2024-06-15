@@ -71,7 +71,8 @@ defmodule Operately.Features.GroupsTest do
     |> UI.login_as(person)
     |> UI.visit("/spaces/#{group.id}")
     |> UI.click(testid: "join-space-button")
-    |> UI.assert_text("Mati A. joined this space")
+    |> UI.visit("/spaces/#{group.id}")
+    |> UI.assert_text("Mati A. joined the space")
 
     members = Operately.Groups.list_members(group)
     assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil

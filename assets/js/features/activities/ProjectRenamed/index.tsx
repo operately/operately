@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectRenamed } from "@/api";
