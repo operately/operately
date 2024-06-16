@@ -28,16 +28,9 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
       where: a.id == ^id, 
       preload: [:author, comment_thread: [comments: :author, reactions: :author]]
 
-    record = query |> Repo.one() |> Activities.cast_content()
-
-    [record]
-    |> Preloader.preload(:project)
-    |> Preloader.preload(:goal)
-    |> Preloader.preload(:group)
-    |> Preloader.preload(:update)
-    |> Preloader.preload(:person)
-    |> Preloader.preload(:project_check_in)
-    |> Preloader.preload(:activity)
-    |> hd()
+    query 
+    |> Repo.one() 
+    |> Activities.cast_content() 
+    |> Preloader.preload()
   end
 end

@@ -41,12 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     |> preload([:comment_thread, :author])
     |> Repo.all()
     |> Enum.map(&Operately.Activities.cast_content/1)
-    |> Preloader.preload(:project)
-    |> Preloader.preload(:goal)
-    |> Preloader.preload(:group)
-    |> Preloader.preload(:update)
-    |> Preloader.preload(:person)
-    |> Preloader.preload(:project_check_in)
+    |> Preloader.preload()
   end
 
   def limit_search_to_current_company(query, company_id) do

@@ -5,6 +5,7 @@ query ListNotifications($page: Int, $perPage: Int) {
     activity {
       id
       insertedAt
+      action
 
       author {
         id

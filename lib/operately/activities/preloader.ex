@@ -6,14 +6,22 @@ defmodule Operately.Activities.Preloader do
   import Ecto.Query, only: [from: 2]
   
   alias Operately.Repo
+  alias Operately.Activities.Activity
 
-  def preload(activities, :update), do: preload(activities, Operately.Updates.Update)
-  def preload(activities, :person), do: preload(activities, Operately.People.Person)
-  def preload(activities, :project), do: preload(activities, Operately.Projects.Project)
-  def preload(activities, :goal), do: preload(activities, Operately.Goals.Goal)
-  def preload(activities, :group), do: preload(activities, Operately.Groups.Group)
-  def preload(activities, :project_check_in), do: preload(activities, Operately.Projects.CheckIn)
-  def preload(activities, :activity), do: preload(activities, Operately.Activities.Activity)
+  def preload(activities) when is_list(activities) do
+    activities
+    |> preload(Operately.Updates.Update)
+    |> preload(Operately.People.Person)
+    |> preload(Operately.Goals.Goal)
+    |> preload(Operately.Groups.Group)
+    |> preload(Operately.Projects.Project)
+    |> preload(Operately.Projects.CheckIn)
+    |> preload_sub_activities()
+  end
+
+  def preload(activity = %Activity{}) do
+    [activity] |> preload() |> hd()
+  end
 
   def preload(activities, schema) do
     references = Enum.flat_map(activities, fn a -> references(a, schema) end)
@@ -88,5 +96,37 @@ defmodule Operately.Activities.Preloader do
 
   defp find_ref(references, activity_id, field) do
     Enum.find(references, fn {id, f, _, _} -> id == activity_id and f == field end)
+  end
+
+  defp preload_sub_activities(activities) do
+    activities
+    |> preload(Operately.Activities.Activity)
+    |> map_fields(fn _k, v ->
+      case v do
+        %Activity{} -> 
+          v
+          |> Operately.Activities.cast_content()
+          |> Operately.Repo.preload([:author, comment_thread: [comments: :author, reactions: :author]])
+          |> preload()
+        _ -> v
+      end
+    end)
+  end
+
+  #
+  # Helper that goes through a list of activities and maps the fields
+  # of the content using the given function.
+  #
+  defp map_fields(activities, fun) do
+    Enum.map(activities, fn a -> 
+      keys = Map.keys(Map.from_struct(a.content))
+
+      content = Enum.reduce(keys, a.content, fn k, acc ->
+        mapped = fun.(k, Map.get(a.content, k))
+        Map.put(acc, k, mapped)
+      end)
+
+      %{a | content: content}
+    end)
   end
 end

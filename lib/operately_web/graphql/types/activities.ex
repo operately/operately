@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Graphql.Types.Activities do
     field :resource_id, non_null(:id)
     field :resource_type, non_null(:string)
     field :action_type, non_null(:string)
+    field :action, non_null(:string)
     field :inserted_at, non_null(:utc_datetime) do
       resolve &resolve_inserted_at/3
     end
