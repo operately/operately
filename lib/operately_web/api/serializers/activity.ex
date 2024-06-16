@@ -3,16 +3,18 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   alias Operately.Activities.Content.GoalEditing
 
   def serialize(activities) when is_list(activities) do
-    Enum.map(activities, &serialize/1)
+    Enum.map(activities, fn activity ->
+      serialize(activity, [comment_thread: :minimal])
+    end)
   end
 
-  def serialize(activity) do
+  def serialize(activity, [comment_thread: comment_thread]) do
     %{
       id: activity.id,
       inserted_at: activity.inserted_at,
       action: activity.action,
       author: serialize_author(activity.author),
-      comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread),
+      comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
       content: serialize_content(activity.action, activity.content),
     }
   end
@@ -26,11 +28,41 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_comment_thread(comment_thread) do
+  def serialize_comment_thread(comment_thread, :minimal) do
     %{
       id: comment_thread.id,
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
+    }
+  end
+
+  def serialize_comment_thread(comment_thread, :full) do
+    %{
+      id: comment_thread.id,
+      message: Jason.encode!(comment_thread.message),
+      title: comment_thread.title,
+      reactions: Enum.map(comment_thread.reactions, fn r ->
+        %{
+          id: r.id,
+          emoji: r.emoji,
+          person: serialize_person(r.person)
+        }
+      end),
+      comments: Enum.map(comment_thread.comments, fn c ->
+        %{
+          id: c.id,
+          content: Jason.encode!(c.content),
+          inserted_at: c.inserted_at,
+          author: serialize_person(c.author),
+          reactions: Enum.map(c.reactions, fn r ->
+            %{
+              id: r.id,
+              emoji: r.emoji,
+              person: serialize_person(r.person)
+            }
+          end)
+        }
+      end),
     }
   end
 
