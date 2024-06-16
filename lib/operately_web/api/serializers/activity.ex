@@ -75,12 +75,18 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("goal_check_in", _content) do
-    %{}
+  def serialize_content("goal_check_in", content) do
+    %{
+      goal: serialize_goal(content["goal"]),
+      update: serialize_goal_check_in_update(content["update"])
+    }
   end
 
-  def serialize_content("goal_check_in_acknowledgement", _content) do
-    %{}
+  def serialize_content("goal_check_in_acknowledgement", content) do
+    %{
+      goal: serialize_goal(content["goal"]),
+      update: serialize_goal_check_in_update(content["update"])
+    }
   end
 
   def serialize_content("goal_check_in_commented", _content) do
@@ -402,6 +408,34 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       full_name: person.full_name,
       avatar_url: person.avatar_url,
       title: person.title
+    }
+  end
+
+  defp serialize_goal_check_in_update(update) do
+    %{
+      id: update.id,
+      title: update.title,
+      message: Jason.encode!(update.content["message"]),
+      message_type: update.type || "status_update",
+      updatable_id: update.updatable_id,
+      updatable_type: update.updatable_type,
+      inserted_at: update.inserted_at,
+      comments_count: Operately.Updates.count_comments(update.id, :update),
+      content: %{
+        "__typename" => "UpdateContentGoalCheckIn",
+
+        targets: Enum.map(update.content["targets"], fn target ->
+          %{
+            id: target["id"],
+            name: target["name"],
+            value: target["value"],
+            previous_value: target["previous_value"],
+            unit: target["unit"],
+            from: target["from"],
+            to: target["to"]
+          }
+        end)
+      }
     }
   end
 

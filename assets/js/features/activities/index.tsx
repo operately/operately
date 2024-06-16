@@ -72,7 +72,7 @@ import CommentAdded from "@/features/activities/CommentAdded";
 import DiscussionPosting from "@/features/activities/DiscussionPosting";
 import GoalArchived from "@/features/activities/GoalArchived";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
-import GoalCheckInAcknowledged from "@/features/activities/GoalCheckInAcknowledged";
+import GoalCheckInAcknowledgement from "@/features/activities/GoalCheckInAcknowledgement";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
@@ -102,7 +102,7 @@ function handler(activity: Activity) {
     .with("discussion_posting", () => DiscussionPosting)
     .with("goal_archived", () => GoalArchived)
     .with("goal_check_in", () => GoalCheckIn)
-    .with("goal_check_in_acknowledged", () => GoalCheckInAcknowledged)
+    .with("goal_check_in_acknowledgement", () => GoalCheckInAcknowledgement)
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
     .with("goal_discussion_creation", () => GoalDiscussionCreation)

@@ -8,7 +8,7 @@ import { feedTitle, goalLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 
-const GoalCheckInAcknowledged: ActivityHandler = {
+const GoalCheckInAcknowledgement: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -68,4 +68,4 @@ function content(activity: Activity): ActivityContentGoalCheckInAcknowledgement 
   return activity.content as ActivityContentGoalCheckInAcknowledgement;
 }
 
-export default GoalCheckInAcknowledged;
+export default GoalCheckInAcknowledgement;
