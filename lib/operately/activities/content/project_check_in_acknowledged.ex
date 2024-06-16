@@ -4,7 +4,7 @@ defmodule Operately.Activities.Content.ProjectCheckInAcknowledged do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :project, Operately.Projects.Project
-    belongs_to :check_in, Operately.CheckIns.CheckIn
+    belongs_to :check_in, Operately.Projects.CheckIn
   end
 
   def changeset(attrs) do

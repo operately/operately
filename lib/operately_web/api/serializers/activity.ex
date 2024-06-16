@@ -165,7 +165,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       project_id: content["project_id"],
       check_in_id: content["check_in_id"],
-      project: serialize_project(content["project"])
+      project: serialize_project(content["project"]),
+      check_in: serialize_check_in(content["check_in"])
     }
   end
 
@@ -177,8 +178,11 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("project_check_in_submitted", _content) do
-    raise "not implemented"
+  def serialize_content("project_check_in_submitted", content) do
+    %{
+      project: serialize_project(content["project"]),
+      check_in: serialize_check_in(content["check_in"])
+    }
   end
 
   def serialize_content("project_closed", content) do
@@ -381,6 +385,15 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
         deadline_at: serialize_date(milestone["new_due_date"])
       }
     end)
+  end
+
+  def serialize_check_in(check_in) do
+    %{
+      id: check_in.id,
+      inserted_at: check_in.inserted_at,
+      status: check_in.status,
+      description: check_in.description
+    }
   end
 
   defp serialize_person(person) do

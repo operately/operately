@@ -46,6 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     |> Preloader.preload(:group)
     |> Preloader.preload(:update)
     |> Preloader.preload(:person)
+    |> Preloader.preload(:project_check_in)
   end
 
   def limit_search_to_current_company(query, company_id) do
