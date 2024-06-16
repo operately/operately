@@ -161,6 +161,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       old_timeframe: Timeframe.serialize(GoalEditing.current_timeframe(content)),
       new_champion_id: content["new_champion_id"],
       old_champion_id: content["old_champion_id"],
+      new_champion: serialize_person(content["new_champion"]),
+      old_champion: serialize_person(content["old_champion"]),
+      old_reviewer_id: content["old_reviewer_id"],
+      new_reviewer_id: content["new_reviewer_id"],
+      old_reviewer: serialize_person(content["old_reviewer"]),
+      new_reviewer: serialize_person(content["new_reviewer"]),
       added_targets: serialize_added_targets(content),
       updated_targets: serialize_updated_targets(content),
       deleted_targets: serialize_deleted_targets(content)
@@ -434,6 +440,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  defp serialize_person(nil), do: nil
   defp serialize_person(person) do
     %{
       id: person.id,

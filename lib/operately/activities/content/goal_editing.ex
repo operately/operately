@@ -69,8 +69,8 @@ defmodule Operately.Activities.Content.GoalEditing do
   end
 
   embedded_schema do
-    field :company_id, :string
-    field :goal_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :goal, Operately.Goals.Goal
 
     field :old_name, :string
     field :new_name, :string
@@ -81,11 +81,11 @@ defmodule Operately.Activities.Content.GoalEditing do
     embeds_one :previous_timeframe, Operately.Goals.Timeframe
     embeds_one :current_timeframe, Operately.Goals.Timeframe
 
-    field :old_champion_id, :string
-    field :new_champion_id, :string
+    belongs_to :old_champion, Operately.People.Person
+    belongs_to :new_champion, Operately.People.Person
 
-    field :old_reviewer_id, :string
-    field :new_reviewer_id, :string
+    belongs_to :old_reviewer, Operately.People.Person
+    belongs_to :new_reviewer, Operately.People.Person
 
     embeds_many :added_targets, AddedTarget
     embeds_many :updated_targets, UpdatedTarget
