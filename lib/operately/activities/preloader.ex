@@ -13,6 +13,7 @@ defmodule Operately.Activities.Preloader do
   def preload(activities, :goal), do: preload(activities, Operately.Goals.Goal)
   def preload(activities, :group), do: preload(activities, Operately.Groups.Group)
   def preload(activities, :project_check_in), do: preload(activities, Operately.Projects.CheckIn)
+  def preload(activities, :activity), do: preload(activities, Operately.Activities.Activity)
 
   def preload(activities, schema) do
     references = Enum.flat_map(activities, fn a -> references(a, schema) end)

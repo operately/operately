@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
     |> Preloader.preload(:update)
     |> Preloader.preload(:person)
     |> Preloader.preload(:project_check_in)
+    |> Preloader.preload(:activity)
     |> hd()
   end
 end
