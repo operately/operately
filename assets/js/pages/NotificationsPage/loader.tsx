@@ -4,7 +4,7 @@ import * as Api from "@/api";
 import { gql, useSubscription } from "@apollo/client";
 
 interface LoaderResult {
-  notifications: Notification[];
+  notifications: Api.Notification[];
 }
 
 export async function loader(): Promise<LoaderResult> {
@@ -14,7 +14,7 @@ export async function loader(): Promise<LoaderResult> {
   });
 
   return {
-    notifications: data.notifications as Notification[],
+    notifications: data.notifications as Api.Notification[],
   };
 }
 

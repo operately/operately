@@ -30,7 +30,7 @@ function UnreadNotifications() {
 
   const { notifications } = useLoadedData();
 
-  const unread = notifications.filter((n) => !n.read);
+  const unread = notifications.filter((n) => !n.read!);
 
   return (
     <div className="pt-2" style={{ minHeight: "200px" }}>
