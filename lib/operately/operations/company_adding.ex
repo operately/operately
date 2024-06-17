@@ -15,7 +15,7 @@ defmodule Operately.Operations.CompanyAdding do
     |> insert_account(attrs, opts)
     |> insert_person(attrs, opts)
     |> Repo.transaction()
-    |> Repo.extract_result(:company)
+    |> Repo.extract_result(:updated_company)
   end
 
   defp insert_company(multi, attrs) do

@@ -2,14 +2,11 @@ defmodule Operately.CompaniesFixtures do
   def company_fixture(attrs \\ %{}) do
     attrs = attrs |> Enum.into(%{
       mission: "some mission",
-      name: "some name",
+      company_name: "some name",
       trusted_email_domains: []
     })
 
-    {:ok, company} =
-      Operately.Companies.Company.changeset(attrs)
-      |> Operately.Repo.insert()
-
+    {:ok, company} = Operately.Companies.create_company(attrs)
     company
   end
 end
