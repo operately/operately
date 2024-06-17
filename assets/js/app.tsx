@@ -18,7 +18,10 @@ import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/client";
 import "./i18n";
 
+import { setupTestErrorLogger } from "@/utils/errorLogger";
 import { ThemeProvider } from "./theme";
+
+setupTestErrorLogger();
 
 Api.configureDefault({ basePath: "/api/v2" });
 

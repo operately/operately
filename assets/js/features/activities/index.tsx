@@ -52,8 +52,8 @@ const ActivityHandler: interfaces.ActivityHandler = {
     return React.createElement(handler(activity).NotificationTitle, { activity });
   },
 
-  CommentNotificationTitle({ activity }: { activity: Activity }) {
-    return React.createElement(handler(activity).CommentNotificationTitle, { activity });
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return React.createElement(handler(activity).NotificationLocation, { activity });
   },
 };
 
