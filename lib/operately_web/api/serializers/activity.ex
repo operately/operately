@@ -467,6 +467,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   defp serialize_goal_check_in_update(update) do
+    IO.inspect(update)
     %{
       id: update.id,
       title: update.title,
@@ -479,7 +480,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       content: %{
         "__typename" => "UpdateContentGoalCheckIn",
 
-        targets: Enum.map(update.content["targets"], fn target ->
+        targets: update.content["targets"] && Enum.map(update.content["targets"], fn target ->
           %{
             id: target["id"],
             name: target["name"],

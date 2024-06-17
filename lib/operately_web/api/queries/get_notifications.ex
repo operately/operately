@@ -23,6 +23,12 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
     page = inputs[:page] || 1
     per_page = inputs[:per_page] || @default_per_page
 
+    notifications = load(page, per_page, me)
+
+    {:ok, %{notifications: serialize(notifications)}}
+  end
+
+  def load(page, per_page, me) do
     offset = per_page * (page - 1)
     limit = per_page
 
@@ -33,11 +39,9 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
       order_by: [desc: n.inserted_at],
       offset: ^offset,
       limit: ^limit,
-      preload: [activity: [:author]]
+      preload: [activity: [:author, :comment_thread]]
 
-    notifications = query |> Operately.Repo.all() |> load_data_for_activities()
-
-    {:ok, %{notifications: notifications}}
+    query |> Operately.Repo.all() |> load_data_for_activities()
   end
 
   def load_data_for_activities(notifications) do
@@ -52,5 +56,19 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
 
       %{notification | activity: activity}
     end)
+  end
+
+  def serialize(notifications) when is_list(notifications) do
+    Enum.map(notifications, fn n -> serialize(n) end)
+  end
+
+  def serialize(notification = %Notification{}) do
+    %{
+      id: notification.id,
+      inserted_at: notification.inserted_at,
+      read: notification.read,
+      read_at: notification.read_at,
+      activity: OperatelyWeb.Api.Serializers.Activity.serialize(notification.activity, [comment_thread: :minimal])
+    }
   end
 end
