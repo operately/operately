@@ -1,13 +1,37 @@
 import * as React from "react";
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Notifications from "@/models/notifications";
+import * as People from "@/models/people";
+import * as Api from "@/api";
 
-import { useLoadedData, useSubscribeToChanges, useRefresh } from "./loader";
 import { useDocumentTitle } from "@/layouts/header";
-
-import NotificationItem from "./NotificationItem";
 import { GhostButton } from "@/components/Button";
+
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
+import ActivityHandler from "@/features/activities";
+
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import { TextSeparator } from "@/components/TextSeparator";
+
+import { gql, useMutation, useSubscription } from "@apollo/client";
+
+interface LoaderResult {
+  notifications: Api.Notification[];
+}
+
+export async function loader(): Promise<LoaderResult> {
+  const data = await Api.getNotifications({
+    page: 1,
+    perPage: 100,
+  });
+
+  return {
+    notifications: data.notifications as Api.Notification[],
+  };
+}
 
 export function Page() {
   useDocumentTitle("Notifications");
@@ -28,7 +52,7 @@ export function Page() {
 function UnreadNotifications() {
   useSubscribeToChanges();
 
-  const { notifications } = useLoadedData();
+  const { notifications } = Pages.useLoadedData<LoaderResult>();
 
   const unread = notifications.filter((n) => !n.read!);
 
@@ -55,7 +79,7 @@ function UnreadNotifications() {
 }
 
 function MarkAllReadButton() {
-  const refresh = useRefresh();
+  const refresh = Pages.useRefresh();
   const [markAllRead, { loading }] = Notifications.useMarkAllNotificationsAsRead();
 
   const onClick = React.useCallback(async () => {
@@ -71,7 +95,7 @@ function MarkAllReadButton() {
 }
 
 function PreviousNotifications() {
-  const { notifications } = useLoadedData();
+  const { notifications } = Pages.useLoadedData<LoaderResult>();
 
   const previouslyRead = notifications.filter((n) => n.read);
 
@@ -83,4 +107,80 @@ function PreviousNotifications() {
       ))}
     </Paper.DimmedSection>
   );
+}
+
+function NotificationItem({ notification }: any) {
+  const author = notification.activity.author;
+  const testId = "notification-item" + "-" + notification.activity.action;
+
+  const goToActivity = useNavigateTo(ActivityHandler.pagePath(notification.activity));
+  const [mark] = useMarkAsRead();
+  const refresh = Pages.useRefresh();
+
+  const clickHandler = React.useCallback(async () => {
+    await mark({ variables: { id: notification.id } });
+    goToActivity();
+  }, []);
+
+  const closeHandler = React.useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    await mark({ variables: { id: notification.id } });
+
+    refresh();
+  }, []);
+
+  return (
+    <div
+      className="flex items-center gap-3 hover:bg-surface-highlight rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
+      onClick={clickHandler}
+      data-test-id={testId}
+    >
+      <div className="shrink-0">
+        <Avatar person={author} size="small" />
+      </div>
+
+      <div className="flex-1">
+        <div className="text-content-accent font-semibold">
+          {People.firstName(author)} <ActivityHandler.NotificationTitle activity={notification.activity} />
+        </div>
+
+        <div className="text-content-dimmed font-medium text-sm leading-snug">
+          <ActivityHandler.NotificationLocation activity={notification.activity} />
+          <TextSeparator />
+          {author.fullName}
+          <TextSeparator />
+          <FormattedTime time={notification.activity.insertedAt} format="long-date" />
+        </div>
+      </div>
+
+      {notification.read ? null : (
+        <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1" onClick={closeHandler}>
+          <Icons.IconX size={16} className="hover:text-content-accent" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function useMarkAsRead() {
+  return useMutation(gql`
+    mutation MarkNotificationAsRead($id: ID!) {
+      markNotificationAsRead(id: $id) {
+        id
+      }
+    }
+  `);
+}
+
+export function useSubscribeToChanges() {
+  const refresh = Pages.useRefresh();
+
+  const subscription = gql`
+    subscription NotificationsChanged {
+      onUnreadNotificationCountChanged
+    }
+  `;
+
+  useSubscription(subscription, { onData: refresh });
 }
