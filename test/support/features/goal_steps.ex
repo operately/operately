@@ -271,7 +271,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.reviewer,
-      title: "commented on the timeframe edit",
+      title: "commented on the timeframe change",
       subtitle: "I think the timeframe extension is a good idea."
     })
   end

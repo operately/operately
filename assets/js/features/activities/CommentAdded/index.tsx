@@ -38,7 +38,7 @@ const CommentAdded: ActivityHandler = {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
-        const activityLink = <Link to={path}>goal timeframe editing</Link>;
+        const activityLink = <Link to={path}>timeframe change</Link>;
 
         if (page === "goal") {
           return feedTitle(activity, "commented on the", activityLink);
