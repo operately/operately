@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         email: ctx.person.email,
         title: ctx.person.title,
         avatar_url: ctx.person.avatar_url,
+        avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: ctx.person.timezone,
         send_daily_summary: ctx.person.send_daily_summary,
         notify_on_mention: ctx.person.notify_on_mention,
@@ -43,6 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         email: me.email,
         title: ctx.person.title,
         avatar_url: ctx.person.avatar_url,
+        avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: me.timezone,
         send_daily_summary: me.send_daily_summary,
         notify_on_mention: me.notify_on_mention,
@@ -68,6 +70,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         email: ctx.person.email,
         title: ctx.person.title,
         avatar_url: ctx.person.avatar_url,
+        avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: ctx.person.timezone,
         send_daily_summary: ctx.person.send_daily_summary,
         notify_on_mention: ctx.person.notify_on_mention,
@@ -78,4 +81,4 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
       }
     end
   end
-end 
+end
