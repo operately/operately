@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
 
   def call(_conn, inputs) do
     activity = load(inputs[:id])
+    IO.inspect(activity)
     serialized = OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
 
     {:ok, %{activity: serialized}}
@@ -26,7 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   def load(id) do
     query = from a in Activity, 
       where: a.id == ^id, 
-      preload: [:author, comment_thread: [comments: :author, reactions: :person]]
+      preload: [:author, comment_thread: [comments: [:author, reactions: :person], reactions: :person]]
 
     query 
     |> Repo.one() 

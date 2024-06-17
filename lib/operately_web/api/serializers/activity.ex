@@ -70,8 +70,11 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   # Serializers for each action
   #
 
-  def serialize_content("comment_added", _content) do
-    %{}
+  def serialize_content("comment_added", content) do
+    %{
+      comment: serialize_comment(content["comment"]),
+      activity: serialize_sub_activity(content["activity"])
+    }
   end
 
   def serialize_content("company_invitation_token_created", _content) do
@@ -268,9 +271,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_milestone_commented", content) do
     %{
-      comment: %{
-        content: Jason.encode!(content["comment"].content),
-      },
+      comment: serialize_comment(content["comment"]),
       comment_action: content["comment_action"],
       milestone: %{
         id: content["milestone"].id,
@@ -492,5 +493,26 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   defp serialize_date(nil), do: nil
   defp serialize_date(date) do
     date |> DateTime.to_date()
+  end
+
+  defp serialize_sub_activity(activity) do
+    IO.inspect(activity)
+    %{
+      id: activity.id,
+      comment_thread: activity.comment_thread && %{
+        id: activity.comment_thread.id,
+        title: activity.comment_thread.title
+      },
+      content: serialize_content(activity.action, activity.content),
+    }
+  end
+
+  defp serialize_comment(nil), do: nil
+  defp serialize_comment(comment) do
+    %{
+      id: comment.id,
+      content: Jason.encode!(comment.content),
+      inserted_at: comment.inserted_at,
+    }
   end
 end
