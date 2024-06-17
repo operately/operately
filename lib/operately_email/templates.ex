@@ -41,13 +41,13 @@ defmodule OperatelyEmail.Templates do
   end
 
   def rich_text(content) do
-    opts = [domain: OperatelyWeb.Endpoint.url()]
-
     if System.get_env("OPERATELY_STORAGE_TYPE") === "s3" do
       opts = [storage_type: :s3, bucket: System.get_env("OPERATELY_S3_BUCKET")]
+      {:safe, Prosemirror2Html.convert(content, opts)}
+    else
+      opts = [domain: OperatelyWeb.Endpoint.url()]
+      {:safe, Prosemirror2Html.convert(content, opts)}
     end
-
-    {:safe, Prosemirror2Html.convert(content, opts)}
   end
 
   def assignments_to_text(assignments) do
