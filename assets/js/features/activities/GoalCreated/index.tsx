@@ -1,9 +1,12 @@
+import * as People from "@/models/people";
+
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
+import { match } from "ts-pattern";
 
 const GoalCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -47,22 +50,18 @@ const GoalCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    const myRole = content(activity).myRole!;
-    var result = People.firstName(author) + " added a new goal and";
+    const myRole = content(activity).goal!.myRole!;
+    const person = People.firstName(activity.author!);
+    const role = match(myRole)
+      .with("champion", () => "the champion")
+      .with("reviewer", () => "the reviewer")
+      .otherwise(() => "a contributor");
 
-    switch (myRole) {
-      case "champion":
-        result += " assigned you as the champion";
-        break;
-      case "reviewer":
-        result += " assigned you as the reviewer";
-        break;
-      default:
-        result += " assigned you as a contributor";
-        break;
-    }
+    return person + " added a new goal and assigned you as " + role;
+  },
 
-    return result;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return goalLink(content(activity).goal!);
   },
 };
 

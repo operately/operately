@@ -29,6 +29,8 @@ defmodule Operately.Goals.Goal do
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
     field :success, :string
 
+    field :my_role, :string, virtual: true
+
     timestamps()
     soft_delete()
   end

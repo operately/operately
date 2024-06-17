@@ -41,7 +41,10 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
       limit: ^limit,
       preload: [activity: [:author, :comment_thread]]
 
-    query |> Operately.Repo.all() |> load_data_for_activities()
+    query 
+    |> Operately.Repo.all() 
+    |> load_data_for_activities()
+    |> inject_my_role_into_goals(me)
   end
 
   def load_data_for_activities(notifications) do
@@ -58,6 +61,13 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
     end)
   end
 
+  def inject_my_role_into_goals(notifications, me) do
+    goals = notifications |> find_all(Operately.Goals.Goal)
+    goals_with_roles = goals |> Enum.map(fn g -> Map.put(g, :my_role, Operately.Goals.get_role(g, me)) end)
+
+    inject(notifications, Operately.Goals.Goal, goals_with_roles)
+  end
+
   def serialize(notifications) when is_list(notifications) do
     Enum.map(notifications, fn n -> serialize(n) end)
   end
@@ -71,4 +81,40 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
       activity: OperatelyWeb.Api.Serializers.Activity.serialize(notification.activity, [comment_thread: :minimal])
     }
   end
+
+  #
+  # Deeply find all records of a given type in a nested structure and replace them with a new value
+  #
+
+  def find_all(records, type) when is_list(records) do
+    Enum.map(records, fn record -> find_all(record, type) end) |> List.flatten() |> Enum.filter(& &1)
+  end
+
+  def find_all(record, type) when is_struct(record) do
+    if record.__struct__ == type do
+      record
+    else
+      Map.keys(Map.from_struct(record)) |> Enum.map(fn k -> find_all(Map.get(record, k), type) end)
+    end
+  end
+
+  def find_all(_, _), do: nil
+
+  def inject(records, type, data) when is_list(records) do
+    Enum.map(records, fn record -> inject(record, type, data) end)
+  end
+
+  def inject(record, type, data) when is_struct(record) do
+    if record.__struct__ == type do
+      Enum.find(data, fn d -> d.id == record.id end)
+    else
+      keys = record |> Map.from_struct() |> Map.keys() 
+
+      Enum.reduce(keys, record, fn k, acc -> 
+        Map.put(acc, k, inject(Map.get(record, k), type, data))
+      end)
+    end
+  end
+
+  def inject(record, _, _), do: record
 end

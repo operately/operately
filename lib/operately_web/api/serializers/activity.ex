@@ -389,6 +389,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       id: goal.id,
       name: goal.name,
+      my_role: goal.my_role,
     }
   end
 
