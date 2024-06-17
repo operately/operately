@@ -7,7 +7,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def click_on_first_notification(ctx) do
-    UI.click(ctx, testid: "notification-card")
+    UI.click(ctx, testid: "notification-item-project_created")
   end
 
   def click_on_first_mark_all_as_read(ctx) do

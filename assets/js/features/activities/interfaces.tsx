@@ -13,8 +13,8 @@ export interface ActivityHandler {
   PageOptions(props: { activity: Activity }): JSX.Element | null;
 
   // Notifications
-  NotificationTitle(props: { activity: Activity }): JSX.Element;
-  NotificationLocation(props: { activity: Activity }): JSX.Element;
+  NotificationTitle(props: { activity: Activity }): JSX.Element | string;
+  NotificationLocation(props: { activity: Activity }): JSX.Element | string | null;
 
   // CommentNotificationTitle(props: { activity: Activity }): JSX.Element;
 

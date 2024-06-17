@@ -142,7 +142,7 @@ function NotificationItem({ notification }: any) {
 
       <div className="flex-1">
         <div className="text-content-accent font-semibold">
-          {People.firstName(author)} <ActivityHandler.NotificationTitle activity={notification.activity} />
+          <ActivityHandler.NotificationTitle activity={notification.activity} />
         </div>
 
         <div className="text-content-dimmed font-medium text-sm leading-snug">
