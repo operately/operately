@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
     field :manager_id, :id
     field :timezone, :string
     field :avatar_url, :string
+    field :avatar_blob_id, :id
   end
 
   input_object :update_notification_settings_input do
@@ -25,6 +26,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
       arg :title, non_null(:string)
       arg :timezone, non_null(:string)
       arg :avatar_url, non_null(:string)
+      arg :avatar_blob_id, :id
 
       resolve fn _, args, _ ->
         Operately.People.create_person(args)
@@ -41,6 +43,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
           full_name: args.input.full_name,
           title: args.input.title,
           timezone: args.input.timezone,
+          blob_id: args.input.avatar_blob_id,
           avatar_url: args.input.avatar_url,
           manager_id: args.input[:manager_id]
         })
