@@ -163,12 +163,20 @@ defmodule TurboConnect.TsGenTest do
       this.basePath = config.basePath;
     }
 
+    getBasePath() {
+      if (!this.basePath) {
+        throw new Error("ApiClient is not configured");
+      }
+
+      return this.basePath;
+    }
+
     async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return axios.get(this.basePath + "/get_user", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+      return axios.get(this.getBasePath() + "/get_user", { params: toSnake(input)}).then(({ data }) => toCamel(data));
     }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
-      return axios.post(this.basePath + "/create_user", toSnake(input)).then(({ data }) => toCamel(data));
+      return axios.post(this.getBasePath() + "/create_user", toSnake(input)).then(({ data }) => toCamel(data));
     }
 
   }
