@@ -12,7 +12,7 @@ defmodule Operately.AccessContextsTest do
 
   describe "access_contexts" do
     setup do
-      company = company_fixture()
+      company = create_company_without_context()
       creator = person_fixture_with_account(%{company_id: company.id})
 
       group = group_fixture(creator)
@@ -68,10 +68,10 @@ defmodule Operately.AccessContextsTest do
       {:ok, company: company, group: group, goal: goal, project: project, activity: activity, creator: creator}
     end
 
-    test "create access_context for a company", ctx do
-      attrs = %{company_id: ctx.company.id}
+    test "create access_context for a company" do
+      company = company_fixture()
 
-      assert {:ok, %Context{} = _context} = Access.create_context(attrs)
+      assert nil != Access.get_context!(company_id: company.id)
     end
 
     test "create access_context for a group", ctx do
@@ -120,7 +120,18 @@ defmodule Operately.AccessContextsTest do
   # Helpers
   #
 
-  def create_group_without_context(company_id) do
+  defp create_company_without_context do
+    {:ok, company} = Operately.Companies.Company.changeset(%{
+      mission: "some mission",
+      name: "some name",
+      trusted_email_domains: []
+    })
+    |> Repo.insert()
+
+    company
+  end
+
+  defp create_group_without_context(company_id) do
     {:ok, group} = Operately.Groups.Group.changeset(%{
       company_id: company_id,
       name: "some name",

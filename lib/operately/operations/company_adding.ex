@@ -19,8 +19,13 @@ defmodule Operately.Operations.CompanyAdding do
   end
 
   defp insert_company(multi, attrs) do
+    attrs = Map.merge(%{
+      trusted_email_domains: [],
+    }, attrs)
+
     Multi.insert(multi, :company, Company.changeset(%{
       name: attrs.company_name,
+      trusted_email_domains: attrs.trusted_email_domains,
     }))
   end
 
