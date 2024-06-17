@@ -3,7 +3,7 @@ defmodule Operately.Activities.Notifications.ProjectClosed do
 
   def dispatch(activity) do
     author_id = activity.author_id
-    project_id = activity.content.project_id
+    project_id = activity.content["project_id"]
     project = Projects.get_project!(project_id)
     people = Projects.list_notification_subscribers(project_id, exclude: author_id)
 

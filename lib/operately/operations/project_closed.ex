@@ -14,7 +14,7 @@ defmodule Operately.Operations.ProjectClosed do
 
     Multi.new()
     |> Multi.update(:project, change)
-    |> Activities.insert(author.id, :project_closed, fn _changes -> %{
+    |> Activities.insert_sync(author.id, :project_closed, fn _changes -> %{
       company_id: project.company_id,
       project_id: project.id
     } end)
