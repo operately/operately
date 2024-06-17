@@ -297,7 +297,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "paused the project",
+      action: "paused the #{ctx.project.name} project",
     })
   end
 
@@ -336,7 +336,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "resumed the project",
+      action: "resumed the #{ctx.project.name} project",
     })
   end
 
