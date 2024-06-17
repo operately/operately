@@ -6,6 +6,7 @@ defmodule Operately.Companies do
   alias Operately.Companies.Company
   alias Operately.Tenets.Tenet
   alias Operately.People.Person
+  alias Operately.Groups
 
   def list_companies do
     Repo.all(Company)
@@ -23,17 +24,16 @@ defmodule Operately.Companies do
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
   def create_company(attrs \\ %{}) do
+    group_attrs = %{
+      name: "Company",
+      mission: "Everyone in the company",
+      icon: "IconBuildingEstate",
+      color: "text-cyan-500"
+    }
+
     Multi.new()
     |> Multi.insert(:company, Company.changeset(attrs))
-    |> Multi.insert(:group, fn changes ->
-      Operately.Groups.Group.changeset(%{
-        company_id: changes[:company].id,
-        name: "Company",
-        mission: "Everyone in the company",
-        icon: "IconBuildingEstate",
-        color: "text-cyan-500"
-      })
-    end)
+    |> Groups.insert_group(group_attrs)
     |> Multi.update(:updated_company, fn %{company: company, group: group} ->
       Company.changeset(company, %{company_space_id: group.id})
     end)
