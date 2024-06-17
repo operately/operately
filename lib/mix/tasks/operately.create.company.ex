@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Operately.Create.Company do
     Application.ensure_started(Operately.Repo, [])
 
     validate_name(name)
-    {:ok, _} = Operately.Companies.create_company(%{name: name})
+    {:ok, _} = Operately.Companies.create_company(%{company_name: name})
 
     IO.puts("Company created successfully")
   end
