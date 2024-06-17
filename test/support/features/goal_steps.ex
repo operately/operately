@@ -298,7 +298,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.reviewer,
-      title: "commented on goal closing",
+      title: "commented on the goal closing",
       subtitle: "I think we did a great job!"
     })
   end
