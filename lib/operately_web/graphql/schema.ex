@@ -115,7 +115,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.KeyResults
   import_types OperatelyWeb.Graphql.Queries.Kpis
   import_types OperatelyWeb.Graphql.Queries.Milestones
-  import_types OperatelyWeb.Graphql.Queries.Notifications
   import_types OperatelyWeb.Graphql.Queries.Objectives
   import_types OperatelyWeb.Graphql.Queries.People
   import_types OperatelyWeb.Graphql.Queries.ProjectCheckIns
@@ -164,7 +163,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :key_result_queries
     import_fields :kpi_queries
     import_fields :milestone_queries
-    import_fields :notification_queries
     import_fields :objective_queries
     import_fields :person_queries
     import_fields :project_check_in_queries

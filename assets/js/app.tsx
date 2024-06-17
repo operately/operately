@@ -10,7 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import routes from "./routes";
+import { createAppRoutes } from "./routes";
 
 import Api from "@/api";
 
@@ -20,9 +20,7 @@ import "./i18n";
 
 import { ThemeProvider } from "./theme";
 
-Api.configureDefault({
-  basePath: "/api/v2",
-});
+Api.configureDefault({ basePath: "/api/v2" });
 
 if (window.appConfig.sentry.enabled) {
   Sentry.init({
@@ -43,6 +41,7 @@ if (window.appConfig.sentry.enabled) {
 }
 
 const rootElement: HTMLElement | null = document.getElementById("root");
+const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>

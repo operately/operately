@@ -1674,7 +1674,6 @@ export type RootQueryType = {
   kpis?: Maybe<Array<Maybe<Kpi>>>;
   me?: Maybe<Person>;
   milestone?: Maybe<Milestone>;
-  notifications?: Maybe<Array<Notification>>;
   objective?: Maybe<Objective>;
   objectives?: Maybe<Array<Maybe<Objective>>>;
   people?: Maybe<Array<Maybe<Person>>>;
@@ -1773,12 +1772,6 @@ export type RootQueryTypeKpiArgs = {
 
 export type RootQueryTypeMilestoneArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeNotificationsArgs = {
-  page?: InputMaybe<Scalars['Int']['input']>;
-  perPage?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

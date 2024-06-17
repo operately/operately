@@ -18,7 +18,7 @@ defmodule TurboConnect.TsGen.Mutations do
     |> Enum.map_join("\n", fn {name, _mutation} ->
       """
         async #{ts_function_name(name)}(input: #{ts_type(name)}Input): Promise<#{ts_type(name)}Result> {
-          return axios.post(this.basePath + "/#{name}", toSnake(input)).then(({ data }) => toCamel(data));
+          return axios.post(this.getBasePath() + "/#{name}", toSnake(input)).then(({ data }) => toCamel(data));
         }
       """
     end)

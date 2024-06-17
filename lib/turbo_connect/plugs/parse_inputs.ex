@@ -61,6 +61,14 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def parse_input(:boolean, _types, _unions, "true", false), do: {:ok, true}
   def parse_input(:boolean, _types, _unions, "false", false), do: {:ok, false}
 
+  def parse_input(:integer, _types, _unions, value, true) when is_integer(value), do: {:ok, value}
+  def parse_input(:integer, _types, _unions, value, false) do
+    case Integer.parse(value) do
+      {int, ""} -> {:ok, int}
+      _ -> {:error, 422, "Invalid integer: #{value}"}
+    end
+  end
+
   #
   # Parsing lists
 
@@ -86,7 +94,6 @@ defmodule TurboConnect.Plugs.ParseInputs do
   # Error handling
   #
 
-  def parse_input(:integet, _types, _unions, _value, _strict), do: {:error, 422, "Integer parsing not implemented"}
   def parse_input(:float, _types, _unions, _value, _strict), do: {:error, 422, "Float parsing not implemented"}
   def parse_input(:date, _types, _unions, _value, _strict), do: {:error, 422, "Date parsing not implemented"}
   def parse_input(:time, _types, _unions, _value, _string), do: {:error, 422, "Time parsing not implemented"}
