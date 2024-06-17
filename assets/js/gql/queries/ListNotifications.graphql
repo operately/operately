@@ -37,6 +37,7 @@ query ListNotifications($page: Int, $perPage: Int) {
         ... on ActivityContentCommentAdded {
           activity {
             id
+            action
 
             commentThread {
               id

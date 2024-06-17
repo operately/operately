@@ -39,9 +39,6 @@ export function useHeaderForm(fields: Fields): HeaderFormState {
 
     const idList = assignedPeople!.map((person) => person.id);
 
-    console.log("idList", idList);
-    console.log("name", name);
-
     await update({
       variables: {
         input: {

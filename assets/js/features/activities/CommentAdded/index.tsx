@@ -5,7 +5,7 @@ import type { Activity, ActivityContentCommentAdded, ActivityContentGoalTimefram
 
 import { match } from "ts-pattern";
 import { Paths } from "@/routes/paths";
-import { Link } from "react-router-dom";
+import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
@@ -62,7 +62,7 @@ const CommentAdded: ActivityHandler = {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
-        const activityLink = <Link to={path}>discussion creation</Link>;
+        const activityLink = <Link to={path}>{commentedActivity.commentThread!.title}</Link>;
 
         if (page === "goal") {
           return feedTitle(activity, "commented on the", activityLink);
@@ -71,7 +71,7 @@ const CommentAdded: ActivityHandler = {
         }
       })
       .otherwise(() => {
-        throw new Error("Not implemented");
+        throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
   },
 

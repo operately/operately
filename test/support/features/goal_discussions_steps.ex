@@ -138,7 +138,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.visit("/goals/#{ctx.goal.id}")
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
-      title: "commented on #{last_comment_thread().title}",
+      title: "commented on the #{last_comment_thread().title}",
       subtitle: last_comment_thread().message,
     })
   end

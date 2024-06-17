@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
 
   def call(_conn, inputs) do
     activity = load(inputs[:id])
-    IO.inspect(activity)
     serialized = OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
 
     {:ok, %{activity: serialized}}
