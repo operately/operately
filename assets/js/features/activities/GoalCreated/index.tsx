@@ -3,14 +3,15 @@ import type { ActivityContentGoalCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, goalLink } from "../feedItemLinks";
+import { Paths } from "@/routes/paths";
 
 const GoalCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -45,12 +46,23 @@ const GoalCreated: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
-  },
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const myRole = content(activity).myRole!;
+    var result = People.firstName(author) + " added a new goal and";
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+    switch (myRole) {
+      case "champion":
+        result += " assigned you as the champion";
+        break;
+      case "reviewer":
+        result += " assigned you as the reviewer";
+        break;
+      default:
+        result += " assigned you as a contributor";
+        break;
+    }
+
+    return result;
   },
 };
 

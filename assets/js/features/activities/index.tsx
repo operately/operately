@@ -128,6 +128,8 @@ import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 
 function handler(activity: Activity) {
+  console.log(activity.action);
+
   return match(activity.action)
     .with("comment_added", () => CommentAdded)
     .with("discussion_posting", () => DiscussionPosting)

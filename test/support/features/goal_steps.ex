@@ -410,7 +410,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "closed the #{ctx.goal.name} goal"
+      action: "closed the goal"
     })
   end
 

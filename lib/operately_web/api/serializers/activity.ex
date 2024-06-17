@@ -467,7 +467,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   defp serialize_goal_check_in_update(update) do
-    IO.inspect(update)
     %{
       id: update.id,
       title: update.title,
