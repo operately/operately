@@ -5,8 +5,8 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.Activities
   alias Operately.Activities.Activity
+  alias Operately.Access.Context
 
   @deprecated_actions [
     "project_status_update_acknowledged",
@@ -113,13 +113,12 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_company_context(company_id) do
-    company = from(c in Operately.Companies.Company,
+    from(ac in Context,
+      join: c in assoc(ac, :company),
       where: c.id == ^company_id,
-      preload: :access_context
+      select: ac.id
     )
     |> Repo.one()
-
-    company.access_context.id
   end
 
   defp fetch_space_context(activity) do
@@ -132,45 +131,41 @@ defmodule Operately.Activities.ContextAutoAssigner do
         activity.content.space_id
     end
 
-    space = from(g in Operately.Groups.Group,
+    from(c in Context,
+      join: g in assoc(c, :group),
       where: g.id == ^space_id,
-      preload: :access_context
+      select: c.id
     )
     |> Repo.one()
-
-    space.access_context.id
   end
 
   defp fetch_goal_context(goal_id) do
-    goal = from(g in Operately.Goals.Goal,
+    from(c in Context,
+      join: g in assoc(c, :goal),
       where: g.id == ^goal_id,
-      preload: :access_context
+      select: c.id
     )
     |> Repo.one()
-
-    goal.access_context.id
   end
 
   defp fetch_project_context(project_id) do
-    project = from(p in Operately.Projects.Project,
+    from(c in Context,
+      join: p in assoc(c, :project),
       where: p.id == ^project_id,
-      preload: :access_context
+      select: c.id
     )
     |> Repo.one()
-
-    project.access_context.id
   end
 
   defp fetch_task_project_context(task_id) do
-    project = from(p in Operately.Projects.Project,
+    from(c in Context,
+      join: p in assoc(c, :project),
       join: m in assoc(p, :milestones),
       join: t in assoc(m, :tasks),
       where: t.id == ^task_id,
-      preload: :access_context
+      select: c.id
     )
     |> Repo.one()
-
-    project.access_context.id
   end
 
   defp fetch_comment_added_context(activity) do
@@ -188,13 +183,12 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_comment_thread_context(comment) do
-    activity = from(a in Activity,
+    from(a in Activity,
       join: t in Operately.Comments.CommentThread,
       on: a.id == t.parent_id,
-      where: t.id == ^comment.entity_id
+      where: t.id == ^comment.entity_id,
+      select: a.context_id
     )
     |> Repo.one()
-
-    activity.context_id
   end
 end

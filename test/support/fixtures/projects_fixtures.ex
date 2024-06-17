@@ -99,4 +99,20 @@ defmodule Operately.ProjectsFixtures do
 
     phase_history
   end
+
+  @doc """
+  Generate a check_in_fixture.
+  """
+  def check_in_fixture(attrs) do
+    {:ok, check_in} =
+      attrs
+      |> Enum.into(%{
+        status: "on_track",
+        description: %{},
+      })
+      |> Operately.Projects.CheckIn.changeset()
+      |> Operately.Repo.insert()
+
+    check_in
+  end
 end
