@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Companies do
         allowed = Operately.Companies.count_companies() == 0
 
         if allowed do
-          Operately.Operations.CompanyAdding.run(input)
+          Operately.Operations.CompanyAdding.run(input, create_admin: true)
         else
           {:error, nil}
         end
