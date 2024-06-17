@@ -2,7 +2,8 @@ defmodule Operately.Activities.Content.CompanyMemberRemoved do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
+    belongs_to :company, Operately.Companies.Company
+
     field :name, :string
     field :email, :string
     field :title, :string

@@ -2,19 +2,18 @@ import React from "react";
 import RichContent from "@/components/RichContent";
 
 import { Paths } from "@/routes/paths";
-import type { Activity, ActivityContentGoalCheckIn } from "@/models/activities";
+import type { Activity } from "@/models/activities";
+import type { ActivityContentGoalCheckIn } from "@/api";
 
 import { ConditionChanges } from "./ConditionChanges";
 import { ActivityHandler } from "../interfaces";
 
-import * as People from "@/models/people";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(activity: Activity): string {
-    const content = activity.content as ActivityContentGoalCheckIn;
-    return Paths.goalProgressUpdatePath(content.goal.id, content.update.id);
+    return Paths.goalProgressUpdatePath(content(activity).goal!.id!, content(activity).update!.id!);
   },
 
   pageHtmlTitle(_activity: Activity): string {
@@ -26,12 +25,10 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const content = activity.content as ActivityContentGoalCheckIn;
-
     return (
       <div className="flex flex-col">
-        <RichContent jsonContent={content.update.message} />
-        <ConditionChanges update={content.update} />
+        <RichContent jsonContent={content(activity).update!.message!} />
+        <ConditionChanges update={content(activity).update!} />
       </div>
     );
   },
@@ -40,30 +37,28 @@ const GoalCheckIn: ActivityHandler = {
     return null;
   },
 
-  FeedItemContent({ content }: { activity: Activity; content: ActivityContentGoalCheckIn; page: string }) {
+  FeedItemContent({ activity }: { activity: Activity; page: string }) {
     return (
       <div className="flex flex-col">
-        <RichContent jsonContent={content.update.message} />
-        <ConditionChanges update={content.update} />
+        <RichContent jsonContent={content(activity).update!.message!} />
+        <ConditionChanges update={content(activity).update!} />
       </div>
     );
   },
 
   FeedItemTitle({ activity, page }) {
-    const content = activity.content as ActivityContentGoalCheckIn;
-    const path = Paths.goalProgressUpdatePath(content.goal.id, content.update.id);
+    const path = Paths.goalProgressUpdatePath(content(activity).goal!.id!, content(activity).update!.id!);
+    const link = <Link to={path}>updated the progress</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author)} <Link to={path}>updated the progress</Link> for{" "}
-        <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, link);
+    } else {
+      return feedTitle(activity, link, "in the", goalLink(content(activity).goal!));
+    }
   },
 
   commentCount(activity: Activity): number {
-    const content = activity.content as ActivityContentGoalCheckIn;
-    return content.update.commentsCount;
+    return content(activity).update!.commentsCount!;
   },
 
   hasComments(_activity: Activity): boolean {
@@ -78,5 +73,9 @@ const GoalCheckIn: ActivityHandler = {
     throw new Error("Not implemented");
   },
 };
+
+function content(activity: Activity): ActivityContentGoalCheckIn {
+  return activity.content as ActivityContentGoalCheckIn;
+}
 
 export default GoalCheckIn;

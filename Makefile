@@ -42,7 +42,6 @@ gen:
 	@./devenv mix operately.gen.elixir.graphql.schema
 	@./devenv mix operately.gen.typescript.graphql.schema
 	@./devenv mix operately.gen.notification.items.index
-	@./devenv mix operately.gen.feed.items.index
 	@./devenv mix operately.gen.page.index
 	@./devenv mix operately.gen.typescript.api
 

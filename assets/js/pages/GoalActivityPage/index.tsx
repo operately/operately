@@ -4,8 +4,8 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
 
+import { CommentThread } from "@/api";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { CommentThread } from "@/gql";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 
@@ -52,14 +52,14 @@ export function Page() {
 function Title({ activity }: { activity: Activities.Activity }) {
   return (
     <div className="flex items-center gap-3">
-      <Avatar person={activity.author} size={50} />
+      <Avatar person={activity.author!} size={50} />
       <div>
         <div className="text-content-accent text-2xl font-bold leading-tight">
           <ActivityHandler.PageTitle activity={activity} />
         </div>
         <div className="inline-flex items-center gap-1">
-          <span>{activity.author.fullName}</span>
-          on <FormattedTime time={activity.insertedAt} format="long-date" />
+          <span>{activity.author!.fullName!}</span>
+          on <FormattedTime time={activity.insertedAt!} format="long-date" />
         </div>
       </div>
     </div>
@@ -67,8 +67,8 @@ function Title({ activity }: { activity: Activities.Activity }) {
 }
 
 function Reactions({ commentThread }: { commentThread: CommentThread }) {
-  const reactions = commentThread.reactions.map((r) => r!);
-  const entity = { id: commentThread.id, type: "comment_thread" };
+  const reactions = commentThread.reactions!.map((r) => r!);
+  const entity = { id: commentThread.id!, type: "comment_thread" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;

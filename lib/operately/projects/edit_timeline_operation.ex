@@ -52,7 +52,7 @@ defmodule Operately.Projects.EditTimelineOperation do
 
   defp record_activity(multi, author, project, attrs) do
     multi
-    |> Activities.insert(author.id, :project_timeline_edited, fn changes -> 
+    |> Activities.insert_sync(author.id, :project_timeline_edited, fn changes -> 
       %{
         company_id: project.company_id,
         project_id: project.id,

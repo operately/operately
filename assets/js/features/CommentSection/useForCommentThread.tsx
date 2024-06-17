@@ -1,13 +1,14 @@
 import * as Comments from "@/models/comments";
+import * as Time from "@/utils/time";
 
 import { ItemType, FormState } from "./form";
-import { CommentThread } from "@/gql";
+import { CommentThread } from "@/api";
 
 export function useForCommentThread(thread: CommentThread): FormState {
   const items = thread.comments!.map((c) => {
     return {
       type: "comment" as ItemType,
-      insertedAt: c!.insertedAt,
+      insertedAt: Time.parse(c!.insertedAt)!,
       value: c,
     };
   });

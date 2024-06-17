@@ -10,7 +10,7 @@ defmodule Operately.Operations.ProjectGoalConnection do
 
     Multi.new()
     |> Multi.update(:project, project_changeset)
-    |> Activities.insert(person.id, :project_goal_connection, fn _ -> %{
+    |> Activities.insert_sync(person.id, :project_goal_connection, fn _ -> %{
       company_id: person.company_id,
       project_id: project.id,
       goal_id: goal.id

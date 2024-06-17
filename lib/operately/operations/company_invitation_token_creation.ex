@@ -12,7 +12,7 @@ defmodule Operately.Operations.CompanyInvitationTokenCreation do
     Operately.Activities.insert_sync(multi, admin.id, :company_invitation_token_created, fn _ ->
       %{
         company_id: admin.company_id,
-        invitatition_id: invitation.id,
+        invitation_id: invitation.id,
         name: invitation.member.full_name,
         email: invitation.member.email,
         title: invitation.member.title,

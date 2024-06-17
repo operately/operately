@@ -2,12 +2,13 @@ defmodule Operately.Activities.Content.GoalCreated do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :creator_id, :string
-    field :champion_id, :string
-    field :reviewer_id, :string
-    field :space_id, :string
-    field :goal_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :creator, Operately.People.Person
+    belongs_to :champion, Operately.People.Person
+    belongs_to :reviewer, Operately.People.Person
+    belongs_to :space, Operately.Groups.Group
+    belongs_to :goal, Operately.Goals.Goal
+
     field :goal_name, :string
 
     field :timeframe, :string # deprecated, use new_timeframe instead

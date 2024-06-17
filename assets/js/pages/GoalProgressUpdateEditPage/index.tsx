@@ -72,5 +72,5 @@ function SubmitButton({ form }) {
 }
 
 function CancelLink({ goal, checkin }: { goal: Goals.Goal; checkin: GoalCheckIns.GoalCheckIn }) {
-  return <DimmedLink to={Paths.goalProgressUpdatePath(goal.id, checkin.id)}>Cancel</DimmedLink>;
+  return <DimmedLink to={Paths.goalProgressUpdatePath(goal.id, checkin.id!)}>Cancel</DimmedLink>;
 }

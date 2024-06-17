@@ -2,10 +2,10 @@ defmodule Operately.Activities.Content.ProjectCheckInCommented do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :project_id, :string
-    field :check_in_id, :string
-    field :comment_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :project, Operately.Projects.Project
+    belongs_to :check_in, Operately.Projects.CheckIn
+    belongs_to :comment, Operately.Updates.Comment
   end
 
   def changeset(attrs) do

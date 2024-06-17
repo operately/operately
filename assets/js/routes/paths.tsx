@@ -150,6 +150,10 @@ export class Paths {
   static profileGoalsPath(personId: string) {
     return createPath(["people", personId, "goals"]);
   }
+
+  static projectMilestoneUrl(projectId: string, milestoneId: string) {
+    return createPath(["projects", projectId, "milestones", milestoneId]);
+  }
 }
 
 function createPath(elements: string[]) {

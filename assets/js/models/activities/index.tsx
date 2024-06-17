@@ -1,30 +1,42 @@
-import { makeQueryFn } from "@/graphql/client";
+import Api, { Activity, GetActivitiesInput, GetActivityInput } from "@/api";
+export type { Activity } from "@/api";
 
-export { useFeed } from "./useFeed";
-export { groupByDate } from "./groupByDate";
+import * as Time from "@/utils/time";
 
-export type { ActivityGroup } from "./groupByDate";
-export type { Activity } from "@/gql";
-export type {
-  ActivityContentGoalTimeframeEditing,
-  ActivityContentGoalClosing,
-  ActivityContentGoalCheckIn,
-  ActivityContentGoalDiscussionCreation,
-  ActivityContentCommentAdded,
-} from "@/gql";
+export const getActivity = async (input: GetActivityInput) => {
+  const response = await Api.getActivity(input);
+  return response.activity!;
+};
 
-import {
-  Activity,
-  GetActivitiesDocument,
-  GetActivitiesQueryVariables,
-  GetActivityDocument,
-  GetActivityQueryVariables,
-} from "@/gql";
+export const getActivities = async (input: GetActivitiesInput) => {
+  const response = await Api.getActivities(input);
+  return response.activities!;
+};
 
-export const getActivity = makeQueryFn(GetActivityDocument, "activity") as (
-  v: GetActivityQueryVariables,
-) => Promise<Activity>;
+export interface ActivityGroup {
+  date: Date;
+  activities: Activity[];
+}
 
-export const getActivities = makeQueryFn(GetActivitiesDocument, "activities") as (
-  v: GetActivitiesQueryVariables,
-) => Promise<Activity[]>;
+export function groupByDate(activities: Activity[]): ActivityGroup[] {
+  const groups: ActivityGroup[] = [];
+
+  let currentGroup: ActivityGroup | null = null;
+
+  for (const activity of activities) {
+    const date = Time.parseISO(activity.insertedAt!);
+
+    if (currentGroup === null || !Time.isSameDay(currentGroup.date, date)) {
+      currentGroup = {
+        date,
+        activities: [],
+      };
+
+      groups.push(currentGroup);
+    }
+
+    currentGroup.activities.push(activity);
+  }
+
+  return groups;
+}

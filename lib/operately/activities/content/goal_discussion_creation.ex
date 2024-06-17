@@ -2,9 +2,9 @@ defmodule Operately.Activities.Content.GoalDiscussionCreation do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-  field :space_id, :string
-  field :goal_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
+    belongs_to :goal, Operately.Goals.Goal
   end
 
   def changeset(attrs) do

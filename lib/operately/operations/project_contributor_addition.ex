@@ -8,7 +8,7 @@ defmodule Operately.Operations.ProjectContributorAddition do
 
     Multi.new()
     |> Multi.insert(:contributor, changeset)
-    |> Activities.insert(author.id, :project_contributor_addition, fn %{contributor: contributor} ->
+    |> Activities.insert_sync(author.id, :project_contributor_addition, fn %{contributor: contributor} ->
       %{
         company_id: author.company_id,
         project_id: contributor.project_id,

@@ -9,7 +9,7 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={"FeedPage"}>
+    <Pages.Page title={"The Feed"}>
       <Paper.Root size="large">
         <Paper.Body>
           <div className="text-content-accent text-4xl font-extrabold">The Feed</div>
@@ -28,5 +28,5 @@ function CompanyFeed() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data.activities} testId="company-feed" page="company" />;
+  return <Feed items={data!.activities!} testId="company-feed" page="company" />;
 }

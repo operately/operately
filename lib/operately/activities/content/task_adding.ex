@@ -2,9 +2,10 @@ defmodule Operately.Activities.Content.TaskAdding do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :milestone_id, :string
-    field :task_id, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :milestone, Operately.Projects.Milestone
+    belongs_to :task, Operately.Tasks.Task
+
     field :name, :string
   end
 

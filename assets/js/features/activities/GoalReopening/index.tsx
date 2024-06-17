@@ -1,14 +1,12 @@
 import React from "react";
 
-import * as People from "@/models/people";
-
-import { Activity, ActivityContentGoalClosing } from "@/models/activities";
+import { Activity, ActivityContentGoalClosing } from "@/api";
 import { Paths } from "@/routes/paths";
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
 import { Link } from "@/components/Link";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { goalLink, feedTitle } from "../feedItemLinks";
 
 import RichContent, { Summary } from "@/components/RichContent";
 
@@ -18,8 +16,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    const content = activity.content as ActivityContentGoalClosing;
-    return Paths.goalActivityPath(content.goal.id, activity.id);
+    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -30,7 +27,7 @@ const GoalClosing: ActivityHandler = {
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <RichContent jsonContent={activity.commentThread.message} />
+          <RichContent jsonContent={activity.commentThread!.message!} />
         )}
       </div>
     );
@@ -40,6 +37,17 @@ const GoalClosing: ActivityHandler = {
     return null;
   },
 
+  FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
+    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    const link = <Link to={path}>reopened</Link>;
+
+    if (page === "goal") {
+      return feedTitle(activity, link, "the goal");
+    } else {
+      return feedTitle(activity, link, "the", goalLink(content(activity).goal!), "goal");
+    }
+  },
+
   FeedItemContent({ activity }: { activity: Activity }) {
     return (
       <div>
@@ -47,17 +55,6 @@ const GoalClosing: ActivityHandler = {
           <Summary jsonContent={activity.commentThread.message} characterCount={300} />
         )}
       </div>
-    );
-  },
-
-  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(content.goal.id, activity.id);
-    const link = <Link to={path}>reopened</Link>;
-
-    return (
-      <>
-        {People.shortName(activity.author)} {link} <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
-      </>
     );
   },
 
@@ -77,5 +74,9 @@ const GoalClosing: ActivityHandler = {
     return <>commented on the goal reopening</>;
   },
 };
+
+function content(activity: Activity): ActivityContentGoalClosing {
+  return activity.content as ActivityContentGoalClosing;
+}
 
 export default GoalClosing;

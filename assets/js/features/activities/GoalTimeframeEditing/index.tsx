@@ -1,26 +1,24 @@
 import React from "react";
 
-import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
 
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { goalLink, feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { Activity, ActivityContentGoalTimeframeEditing } from "@/gql";
+import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { ActivityHandler } from "../interfaces";
 
-const GoalTimeframeEditing: ActivityHandler = {
+export const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal timeframe change`;
   },
 
   pagePath(activity: Activity) {
-    const content = activity.content as ActivityContentGoalTimeframeEditing;
-    return Paths.goalActivityPath(content.goal.id, activity.id);
+    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
   },
 
   PageTitle({ activity }) {
@@ -32,10 +30,8 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const content = activity.content as ActivityContentGoalTimeframeEditing;
-
-    const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-    const newTimeframe = Timeframes.parse(content.newTimeframe);
+    const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
+    const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
 
     return (
       <div className="mt-2">
@@ -57,7 +53,7 @@ const GoalTimeframeEditing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
-            <RichContent jsonContent={activity.commentThread.message} />
+            <RichContent jsonContent={activity.commentThread!.message!} />
           </div>
         )}
       </div>
@@ -68,22 +64,20 @@ const GoalTimeframeEditing: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, content, page }) {
-    const path = Paths.goalActivityPath(content.goal.id, activity.id);
+  FeedItemTitle({ activity, page }) {
+    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author)} <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link> for{" "}
-        <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, activityLink);
+    } else {
+      return feedTitle(activity, activityLink, " on the", goalLink(content(activity).goal!));
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const content = activity.content as ActivityContentGoalTimeframeEditing;
-
-    const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-    const newTimeframe = Timeframes.parse(content.newTimeframe);
+    const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
+    const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
 
     return (
       <div className="my-2">
@@ -105,7 +99,7 @@ const GoalTimeframeEditing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-2">
-            <RichContent jsonContent={activity.commentThread.message} />
+            <RichContent jsonContent={activity.commentThread!.message!} />
           </div>
         )}
       </div>
@@ -131,11 +125,13 @@ const GoalTimeframeEditing: ActivityHandler = {
 
 export default GoalTimeframeEditing;
 
-function extendedOrShortened(activity: Activity) {
-  const content = activity.content as ActivityContentGoalTimeframeEditing;
+function content(activity: Activity): ActivityContentGoalTimeframeEditing {
+  return activity.content as ActivityContentGoalTimeframeEditing;
+}
 
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-  const newTimeframe = Timeframes.parse(content.newTimeframe);
+function extendedOrShortened(activity: Activity) {
+  const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
+  const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
 
   if (Timeframes.compareDuration(oldTimeframe, newTimeframe) === 1) {
     return "extended";
@@ -145,10 +141,8 @@ function extendedOrShortened(activity: Activity) {
 }
 
 function days(activity: Activity) {
-  const content = activity.content as ActivityContentGoalTimeframeEditing;
-
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe);
-  const newTimeframe = Timeframes.parse(content.newTimeframe);
+  const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
+  const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
 
   const diff = Timeframes.dayCount(newTimeframe) - Timeframes.dayCount(oldTimeframe);
   return Math.abs(diff);

@@ -1,15 +1,15 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
-import * as People from "@/models/people";
 
-import { Activity, ActivityContentGoalClosing } from "@/models/activities";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { Activity } from "@/models/activities";
+import { ActivityContentGoalClosing } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
-import { GoalLink } from "@/features/Feed/shared/GoalLink";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { feedTitle, goalLink } from "../feedItemLinks";
 import { Link } from "@/components/Link";
 
 const GoalClosing: ActivityHandler = {
@@ -18,8 +18,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    const content = activity.content as ActivityContentGoalClosing;
-    return Paths.goalActivityPath(content.goal.id, activity.id);
+    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -27,17 +26,15 @@ const GoalClosing: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const content = activity.content as ActivityContentGoalClosing;
-
     return (
       <div>
         <div className="flex items-center gap-3">
-          {content.success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
+          {content(activity).success === "yes" ? <AcomplishedBadge /> : <FailedBadge />}
         </div>
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
-            <RichContent jsonContent={activity.commentThread.message} />
+            <RichContent jsonContent={activity.commentThread!.message!} />
           </div>
         )}
       </div>
@@ -66,15 +63,15 @@ const GoalClosing: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, content, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(content.goal.id, activity.id);
+  FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
+    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
     const link = <Link to={path}>closed</Link>;
 
-    return (
-      <>
-        {People.shortName(activity.author)} {link} <GoalLink goal={content.goal} page={page} showOnGoalPage={true} />
-      </>
-    );
+    if (page === "goal") {
+      return feedTitle(activity, link, "the goal");
+    } else {
+      return feedTitle(activity, link, "the", goalLink(content(activity).goal!), "goal");
+    }
   },
 
   commentCount(activity: Activity): number {
@@ -95,6 +92,10 @@ const GoalClosing: ActivityHandler = {
 };
 
 export default GoalClosing;
+
+function content(activity: Activity): ActivityContentGoalClosing {
+  return activity.content as ActivityContentGoalClosing;
+}
 
 function AcomplishedBadge() {
   return (

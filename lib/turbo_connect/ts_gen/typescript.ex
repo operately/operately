@@ -40,9 +40,9 @@ defmodule TurboConnect.TsGen.Typescript do
       :integer -> "number"
       :float -> "number"
       :boolean -> "boolean"
-      :date -> "Date"
-      :time -> "Date"
-      :datetime -> "Date"
+      :date -> "string"
+      :time -> "string"
+      :datetime -> "string"
 
       type when is_atom(type) -> Macro.camelize(Atom.to_string(type))
       type when is_binary(type) -> Macro.camelize(type)

@@ -45,7 +45,12 @@ defmodule Operately.Projects do
   def move_project_to_space(author, project, space_id) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{group_id: space_id}))
-    |> Activities.insert(author.id, :project_moved, fn _ -> %{company_id: project.company_id, project_id: project.id, old_space_id: project.group_id, new_space_id: space_id} end)
+    |> Activities.insert_sync(author.id, :project_moved, fn _ -> %{
+      company_id: project.company_id, 
+      project_id: project.id, 
+      old_space_id: project.group_id, 
+      new_space_id: space_id
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -53,7 +58,12 @@ defmodule Operately.Projects do
   def rename_project(author, project, new_name) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{name: new_name}))
-    |> Activities.insert(author.id, :project_renamed, fn changes -> %{project_id: project.id, old_name: project.name, new_name: changes.project.name} end)
+    |> Activities.insert_sync(author.id, :project_renamed, fn changes -> %{
+      company_id: project.company_id,
+      project_id: project.id, 
+      old_name: project.name, 
+      new_name: changes.project.name
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -61,7 +71,10 @@ defmodule Operately.Projects do
   def archive_project(author, %Project{} = project) do
     Multi.new()
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
-    |> Activities.insert(author.id, :project_archived, fn changes -> %{project_id: changes.project.id} end)
+    |> Activities.insert_sync(author.id, :project_archived, fn changes -> %{
+      company_id: project.company_id,
+      project_id: changes.project.id
+    } end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

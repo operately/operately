@@ -2,11 +2,12 @@ defmodule Operately.Activities.Content.TaskNameEditing do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-  field :space_id, :string
-  field :task_id, :string
-  field :old_name, :string
-  field :new_name, :string
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
+    belongs_to :task, Operately.Tasks.Task
+
+    field :old_name, :string
+    field :new_name, :string
   end
 
   def changeset(attrs) do

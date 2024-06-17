@@ -29,7 +29,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
     |> UI.visit("/projects/#{ctx.project.id}")
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el
-      |> UI.assert_text(Person.first_name(ctx.champion) <> " commented on: " <> ctx.milestone.title)
+      |> UI.assert_text(Person.short_name(ctx.champion) <> " commented on the " <> ctx.milestone.title <> " milestone")
       |> UI.assert_text(comment)
     end)
   end

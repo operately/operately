@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.Types do
     field :scope_id, :string
     field :resource_id, :string
     field :resource_type, :string
-    field :action_type, :string
+    field :action, :string
     field :inserted_at, :datetime
     field :updated_at, :datetime
     field :comment_thread, :comment_thread

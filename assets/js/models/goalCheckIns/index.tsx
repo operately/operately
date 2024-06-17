@@ -4,7 +4,9 @@ import { gql, useMutation } from "@apollo/client";
 import * as Time from "@/utils/time";
 import { Update, UpdateContentGoalCheckIn } from "@/gql";
 
-type GoalCheckIn = Update;
+import * as api from "@/api";
+
+type GoalCheckIn = Update | api.Update;
 type GoalCheckInContent = UpdateContentGoalCheckIn;
 
 export type { GoalCheckIn, GoalCheckInContent };

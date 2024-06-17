@@ -51,17 +51,12 @@ export function Page() {
 }
 
 function SpaceActivity({ space }) {
-  const { loadedAt } = useLoadedData();
-  const { data, loading, error, refetch } = useItemsQuery("space", space.id);
-
-  React.useEffect(() => {
-    refetch();
-  }, [loadedAt]);
+  const { data, loading, error } = useItemsQuery("space", space.id);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data.activities} testId="space-feed" page="space" />;
+  return <Feed items={data!.activities!} testId="space-feed" page="space" />;
 }
 
 function JoinButton({ group }) {
