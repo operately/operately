@@ -105,8 +105,9 @@ defmodule Operately.Activities.Preloader do
       case v do
         %Activity{} -> 
           v
+          |> IO.inspect(label: "Preloading sub activities")
           |> Operately.Activities.cast_content()
-          |> Operately.Repo.preload([:author, comment_thread: [comments: :author, reactions: :author]])
+          |> Operately.Repo.preload([:author, comment_thread: [comments: :author, reactions: :person]])
           |> preload()
         _ -> v
       end

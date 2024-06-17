@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   def load(id) do
     query = from a in Activity, 
       where: a.id == ^id, 
-      preload: [:author, comment_thread: [comments: :author, reactions: :author]]
+      preload: [:author, comment_thread: [comments: :author, reactions: :person]]
 
     query 
     |> Repo.one() 
