@@ -1,12 +1,10 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
   alias Operately.Repo
-  alias Ecto.Multi
 
   alias Operately.Companies.Company
   alias Operately.Tenets.Tenet
   alias Operately.People.Person
-  alias Operately.Groups
 
   def list_companies do
     Repo.all(Company)
@@ -23,23 +21,7 @@ defmodule Operately.Companies do
   def get_company!(id), do: Repo.get!(Company, id)
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
-  def create_company(attrs \\ %{}) do
-    group_attrs = %{
-      name: "Company",
-      mission: "Everyone in the company",
-      icon: "IconBuildingEstate",
-      color: "text-cyan-500"
-    }
-
-    Multi.new()
-    |> Multi.insert(:company, Company.changeset(attrs))
-    |> Groups.insert_group(group_attrs)
-    |> Multi.update(:updated_company, fn %{company: company, group: group} ->
-      Company.changeset(company, %{company_space_id: group.id})
-    end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:updated_company)
-  end
+  defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run
 
   def update_company(%Company{} = company, attrs) do
     company

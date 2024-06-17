@@ -22,12 +22,7 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "list_contexts/0 returns all contexts", ctx do
-      contexts = Access.list_contexts()
-
-      assert length(contexts) == 2
-      assert Enum.any?(contexts, fn context ->
-        context == ctx.context
-      end)
+      assert Access.list_contexts() == [ctx.context]
     end
 
     test "get_context!/1 returns the context with given id", ctx do

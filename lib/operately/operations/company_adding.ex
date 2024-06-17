@@ -5,18 +5,34 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.People.Account
   alias Operately.People.Person
   alias Operately.Groups
+  alias Operately.Access.Context
 
-  def run(attrs) do
+  def run(attrs, opts \\ []) do
     Multi.new()
-    |> Multi.insert(:company, Company.changeset(%{name: attrs.company_name}))
+    |> insert_company(attrs)
+    |> insert_context()
     |> insert_group()
-    |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: attrs.password}))
-    |> insert_person(attrs.full_name, attrs.role)
+    |> insert_account(attrs, opts)
+    |> insert_person(attrs, opts)
     |> Repo.transaction()
     |> Repo.extract_result(:company)
   end
 
-  def insert_group(multi) do
+  defp insert_company(multi, attrs) do
+    Multi.insert(multi, :company, Company.changeset(%{
+      name: attrs.company_name,
+    }))
+  end
+
+  defp insert_context(multi) do
+    Multi.insert(multi, :company_context, fn changes ->
+      Context.changeset(%{
+        company_id: changes.company.id,
+      })
+    end)
+  end
+
+  defp insert_group(multi) do
     attrs = %{
       name: "Company",
       mission: "Everyone in the company",
@@ -31,17 +47,34 @@ defmodule Operately.Operations.CompanyAdding do
     end)
   end
 
-  def insert_person(multi, full_name, role) do
-    Multi.insert(multi, :person, fn changes ->
-      Person.changeset(%{
-        company_id: changes[:company].id,
-        account_id: changes[:account].id,
-        full_name: full_name,
-        email: changes[:account].email,
-        avatar_url: "",
-        title: role,
-        company_role: :admin,
-      })
-    end)
+  defp insert_account(multi, attrs, opts) do
+    create_admin = Keyword.get(opts, :create_admin, false)
+
+    if create_admin do
+      changeset = Account.registration_changeset(%{email: attrs.email, password: attrs.password})
+      Multi.insert(multi, :account, changeset)
+    else
+      multi
+    end
+  end
+
+  defp insert_person(multi, attrs, opts) do
+    create_admin = Keyword.get(opts, :create_admin, false)
+
+    if create_admin do
+      Multi.insert(multi, :person, fn changes ->
+        Person.changeset(%{
+          company_id: changes[:company].id,
+          account_id: changes[:account].id,
+          full_name: attrs.full_name,
+          email: changes[:account].email,
+          avatar_url: "",
+          title: attrs.role,
+          company_role: :admin,
+        })
+      end)
+    else
+      multi
+    end
   end
 end
