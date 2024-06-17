@@ -9,7 +9,7 @@ import { Paths } from "@/routes/paths";
 
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";
-import ActivityHandler from "@/features/activities";
+import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
 import FormattedTime from "@/components/FormattedTime";
 import Api from "@/api";
 
@@ -21,7 +21,7 @@ export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
   return Api.useGetActivities({
     scopeType: scopeType,
     scopeId: scopeId,
-    actions: [],
+    actions: DISPLAYED_IN_FEED,
   });
 }
 

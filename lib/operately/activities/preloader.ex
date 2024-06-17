@@ -16,6 +16,8 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.Groups.Group)
     |> preload(Operately.Projects.Project)
     |> preload(Operately.Projects.CheckIn)
+    |> preload(Operately.Projects.Milestone)
+    |> preload(Operately.Updates.Comment)
     |> preload_sub_activities()
   end
 

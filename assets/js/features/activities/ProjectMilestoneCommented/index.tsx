@@ -7,6 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 import { feedTitle, projectLink } from "../feedItemLinks";
+import { Paths } from "@/routes/paths";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,22 +31,16 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const path = `/projects/${content(activity).projectId!}/milestones/${content(activity).milestone!.id!}`;
-    const link = <Link to={path}>{content(activity).milestone!.title!}</Link>;
+    const project = content(activity).project!;
+    const milestone = content(activity).milestone!;
+    const path = Paths.projectMilestoneUrl(project.id!, milestone.id!);
+    const link = <Link to={path}>{milestone!.title!}</Link>;
     const what = didWhat(content(activity).commentAction!);
 
     if (page === "project") {
       return feedTitle(activity, what, "the", link, "milestone");
     } else {
-      return feedTitle(
-        activity,
-        what,
-        "the",
-        link,
-        "milestone in the",
-        projectLink(content(activity).project!),
-        "project",
-      );
+      return feedTitle(activity, what, "the", link, "milestone in the", projectLink(project), "project");
     }
   },
 

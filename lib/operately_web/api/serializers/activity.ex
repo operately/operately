@@ -266,8 +266,19 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_milestone_commented", _content) do
-    raise "not implemented"
+  def serialize_content("project_milestone_commented", content) do
+    %{
+      comment: %{
+        content: Jason.encode!(content["comment"].content),
+      },
+      comment_action: content["comment_action"],
+      milestone: %{
+        id: content["milestone"].id,
+        title: content["milestone"].title,
+      },
+      project: serialize_project(content["project"]),
+      project_id: content["project_id"],
+    }
   end
 
   def serialize_content("project_moved", content) do

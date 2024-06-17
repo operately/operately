@@ -59,6 +59,37 @@ const ActivityHandler: interfaces.ActivityHandler = {
 
 export default ActivityHandler;
 
+export const DISPLAYED_IN_FEED = [
+  "comment_added",
+  "discussion_posting",
+  "goal_archived",
+  "goal_check_in",
+  "goal_check_in_acknowledgement",
+  "goal_closing",
+  "goal_created",
+  "goal_discussion_creation",
+  "goal_editing",
+  "goal_reopening",
+  "goal_timeframe_editing",
+  "project_archived",
+  "project_check_in_acknowledged",
+  "project_check_in_commented",
+  "project_check_in_submitted",
+  "project_closed",
+  "project_contributor_addition",
+  "project_created",
+  "project_goal_connection",
+  "project_goal_disconnection",
+  "project_milestone_commented",
+  "project_moved",
+  "project_pausing",
+  "project_renamed",
+  "project_resuming",
+  "project_resuming",
+  "project_timeline_edited",
+  "space_joining",
+];
+
 //
 // Private API
 //
