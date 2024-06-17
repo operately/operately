@@ -217,8 +217,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_check_in_commented", _content) do
-    raise "not implemented"
+  def serialize_content("project_check_in_commented", content) do
+    %{
+      project: serialize_project(content["project"]),
+      check_in: serialize_check_in(content["check_in"]),
+      comment: serialize_comment(content["comment"])
+    }
   end
 
   def serialize_content("project_check_in_edit", _content) do
