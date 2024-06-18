@@ -71,8 +71,6 @@ defmodule Operately.PeopleTest do
         avatar_blob_id: ctx.blob.id
       }
 
-      IO.inspect(valid_attrs)
-
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
       assert person.full_name == "some full_name"
       assert person.title == "some title"
