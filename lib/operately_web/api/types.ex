@@ -555,8 +555,9 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_discussion_comment_submitted do
     field :space_id, :string
     field :discussion_id, :string
-    field :title, :string
+    field :discussion, :discussion
     field :space, :group
+    field :title, :string
   end
 
   object :update_content_project_created do

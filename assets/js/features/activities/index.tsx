@@ -101,6 +101,7 @@ import { match } from "ts-pattern";
 
 import CommentAdded from "@/features/activities/CommentAdded";
 import DiscussionPosting from "@/features/activities/DiscussionPosting";
+import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentSubmitted";
 import GoalArchived from "@/features/activities/GoalArchived";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
 import GoalCheckInAcknowledgement from "@/features/activities/GoalCheckInAcknowledgement";
@@ -131,6 +132,7 @@ function handler(activity: Activity) {
   return match(activity.action)
     .with("comment_added", () => CommentAdded)
     .with("discussion_posting", () => DiscussionPosting)
+    .with("discussion_comment_submitted", () => DiscussionCommentSubmitted)
     .with("goal_archived", () => GoalArchived)
     .with("goal_check_in", () => GoalCheckIn)
     .with("goal_check_in_acknowledgement", () => GoalCheckInAcknowledgement)

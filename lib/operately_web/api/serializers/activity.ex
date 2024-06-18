@@ -89,8 +89,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("discussion_comment_submitted", _content) do
-    %{}
+  def serialize_content("discussion_comment_submitted", content) do
+    %{
+      space: serialize_space(content["space"]),
+      discussion: serialize_discussion(content["discussion"]),
+      space_id: content["space_id"],
+      discussion_id: content["discussion_id"],
+      title: content["title"]
+    }
   end
 
   def serialize_content("discussion_editing", _content) do

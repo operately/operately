@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentDiscussionPosting } from "@/api";
@@ -15,7 +16,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+    return Paths.discussionPath(content(_activity).space!.id!, content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -56,12 +57,12 @@ const DiscussionPosting: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " posted: " + content(activity).discussion!.title!;
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).space!.name!;
   },
 };
 

@@ -124,8 +124,9 @@ export interface ActivityContentCommentAdded {
 export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
-  title?: string | null;
+  discussion?: Discussion | null;
   space?: Group | null;
+  title?: string | null;
 }
 
 export interface ActivityContentDiscussionEditing {
