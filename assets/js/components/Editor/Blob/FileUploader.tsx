@@ -5,11 +5,11 @@ import { CreateBlob } from "@/graphql/Blobs";
 type ProgressCallback = (number: number) => any;
 
 export interface FileUploader {
-  upload: (file: File, progressCallback: ProgressCallback) => Promise<string>;
+  upload: (file: File, progressCallback: ProgressCallback) => Promise<{ id: string, url: string }>;
 }
 
 export class MultipartFileUploader implements FileUploader {
-  async upload(file: File, progressCallback: ProgressCallback): Promise<string> {
+  async upload(file: File, progressCallback: ProgressCallback): Promise<{ id: string, url: string }> {
     try {
       const blob = await CreateBlob({ filename: file.name });
 
@@ -21,7 +21,10 @@ export class MultipartFileUploader implements FileUploader {
 
       await this.uploadFile(file, signedUploadUrl, progressCallback);
 
-      return blob.data.createBlob.url;
+      return {
+        id: blob.data.createBlob.id,
+        url: blob.data.createBlob.url
+      };
     } catch (error) {
       console.error("Error during file upload:", error);
       throw new Error(`File upload failed: ${error.message}`);

@@ -461,6 +461,7 @@ export interface Assignments {
 }
 
 export interface Blob {
+  id?: string | null;
   author?: Person | null;
   status?: string | null;
   filename?: string | null;

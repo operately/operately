@@ -2,10 +2,11 @@ defmodule Operately.PeopleTest do
   use Operately.DataCase
 
   alias Operately.People
+  alias Operately.People.Person
+  alias Operately.Blobs.Blob
+  alias Operately.Companies.Company
 
   describe "people" do
-    alias Operately.People.Person
-
     import Operately.PeopleFixtures
     import Operately.CompaniesFixtures
 
@@ -22,11 +23,52 @@ defmodule Operately.PeopleTest do
       assert People.get_person!(ctx.person.id) == ctx.person
     end
 
+    @valid_company_attrs %{
+      name: "some company"
+    }
+
+    @valid_person_attrs %{
+      full_name: "some full_name",
+      title: "some title",
+      suspended: false
+    }
+
+    @valid_blob_attrs %{
+      filename: "some_file.png",
+      status: :uploaded,
+      storage_type: :s3
+    }
+
+    setup do
+      {:ok, company} =
+        %Company{}
+        |> Company.changeset(@valid_company_attrs)
+        |> Repo.insert()
+
+      valid_person_attrs = Map.put(@valid_person_attrs, :company_id, company.id)
+      {:ok, person} =
+        %Person{}
+        |> Person.changeset(valid_person_attrs)
+        |> Repo.insert()
+
+      valid_blob_attrs = Map.merge(@valid_blob_attrs, %{
+        author_id: person.id,
+        company_id: company.id
+      })
+      {:ok, blob} =
+        %Blob{}
+        |> Blob.changeset(valid_blob_attrs)
+        |> Repo.insert()
+
+      %{blob: blob}
+    end
+
     test "create_person/1 with valid data creates a person", ctx do
       valid_attrs = %{
-        full_name: "some full_name", 
+        full_name: "some full_name",
         title: "some title",
-        company_id: ctx.person.company_id
+        company_id: ctx.person.company_id,
+        avatar_blob_id: ctx.blob.id
       }
 
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
@@ -40,7 +82,7 @@ defmodule Operately.PeopleTest do
 
     test "update_person/2 with valid data updates the person", ctx do
       update_attrs = %{
-        full_name: "some updated full_name", 
+        full_name: "some updated full_name",
         title: "some updated title"
       }
 
@@ -52,6 +94,19 @@ defmodule Operately.PeopleTest do
     test "update_person/2 with invalid data returns error changeset", ctx do
       assert {:error, %Ecto.Changeset{}} = People.update_person(ctx.person, @invalid_attrs)
       assert ctx.person == People.get_person!(ctx.person.id)
+    end
+
+    test "update_person/3 with valid avatar_blob_id updates the person", %{person: person, blob: blob} do
+      update_attrs = %{
+        full_name: "some updated full_name",
+        title: "some updated title",
+        avatar_blob_id: blob.id
+      }
+
+      assert {:ok, %Person{} = updated_person} = People.update_person(person, update_attrs)
+      assert updated_person.full_name == "some updated full_name"
+      assert updated_person.title == "some updated title"
+      assert updated_person.avatar_blob_id == blob.id
     end
 
     test "delete_person/1 deletes the person", ctx do
