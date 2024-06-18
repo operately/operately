@@ -1,9 +1,8 @@
 import { useState } from "react";
 
 import { useAddFirstCompanyMutation } from "@/models/companies";
-import { logIn } from "@/graphql/Me";
+import { logIn } from "@/models/people";
 import { camelCaseToSpacedWords } from "@/utils/strings";
-
 
 export interface FormState {
   fields: FormFields;
@@ -19,7 +18,7 @@ export interface FormFields {
   role: string;
   password: string;
   passwordConfirmation: string;
-  
+
   setCompanyName: (name: string) => void;
   setFullName: (content: string) => void;
   setEmail: (content: string) => void;
@@ -33,7 +32,6 @@ export interface FormError {
   message: string;
 }
 
-
 export function useForm(): FormState {
   const [companyName, setCompanyName] = useState("");
   const [fullName, setFullName] = useState("");
@@ -43,12 +41,18 @@ export function useForm(): FormState {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const fields = {
-    companyName, setCompanyName,
-    fullName, setFullName,
-    email, setEmail,
-    role, setRole,
-    password, setPassword,
-    passwordConfirmation, setPasswordConfirmation,
+    companyName,
+    setCompanyName,
+    fullName,
+    setFullName,
+    email,
+    setEmail,
+    role,
+    setRole,
+    password,
+    setPassword,
+    passwordConfirmation,
+    setPasswordConfirmation,
   };
 
   const { submit, submitting, errors } = useSubmit(fields);
@@ -61,18 +65,16 @@ export function useForm(): FormState {
   };
 }
 
-
 function useSubmit(fields: FormFields) {
   const [errors, setErrors] = useState<FormError[]>([]);
 
   const [add, { loading: submitting }] = useAddFirstCompanyMutation({
     onCompleted: () => {
-      logIn(fields.email, fields.password)
-      .then(() => {
+      logIn(fields.email, fields.password).then(() => {
         window.location.href = "/";
       });
-    }
-  })
+    },
+  });
 
   const submit = async () => {
     let errors = validate(fields);
@@ -81,7 +83,7 @@ function useSubmit(fields: FormFields) {
       setErrors(errors);
       return false;
     }
-    
+
     await add({
       variables: {
         input: {
@@ -96,8 +98,8 @@ function useSubmit(fields: FormFields) {
     });
 
     return true;
-  }
-  
+  };
+
   return {
     submit,
     submitting,
@@ -105,25 +107,24 @@ function useSubmit(fields: FormFields) {
   };
 }
 
-
 function validate(fields: FormFields): FormError[] {
   let result: FormError[] = [];
 
   for (let key in fields) {
-    if(!fields[key]) {
+    if (!fields[key]) {
       const fieldName = camelCaseToSpacedWords(key, { capitalizeFirst: true });
       result.push({ field: key, message: `${fieldName} is required` });
     }
   }
-  
+
   if (fields.companyName.length < 3) {
     result.push({ field: "companyName", message: "Company name must have at least 3 characters" });
   }
-  
+
   if (fields.email.includes(" ") || !fields.email.includes("@")) {
     result.push({ field: "email", message: "Email must have the @ sign and no spaces" });
   }
-  
+
   if (fields.email.length > 160) {
     result.push({ field: "email", message: "Email must not have more than 160 characters" });
   }
@@ -131,11 +132,11 @@ function validate(fields: FormFields): FormError[] {
   if (fields.password.length < 12) {
     result.push({ field: "password", message: "Passoword must have at least 12 characters" });
   }
-  
+
   if (fields.password.length > 72) {
     result.push({ field: "password", message: "Passoword must not have more than 72 characters" });
   }
-  
+
   if (fields.password !== fields.passwordConfirmation) {
     result.push({ field: "password", message: "Passoword and password confirmation do not match" });
   }

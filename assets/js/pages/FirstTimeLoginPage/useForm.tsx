@@ -1,9 +1,8 @@
 import { useState } from "react";
 
 import { useChangePasswordMutation } from "@/models/accounts";
-import { logIn } from "@/graphql/Me";
+import { logIn } from "@/models/people";
 import { useLoadedData } from "./loader";
-
 
 export interface FormState {
   fields: FormFields;
@@ -15,7 +14,7 @@ export interface FormState {
 export interface FormFields {
   password: string;
   passwordConfirmation: string;
-  
+
   setPassword: (content: string) => void;
   setPasswordConfirmation: (content: string) => void;
 }
@@ -25,7 +24,6 @@ export interface FormError {
   message: string;
 }
 
-
 export function useForm(): FormState {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -33,7 +31,7 @@ export function useForm(): FormState {
   const fields = {
     password,
     setPassword,
-    
+
     passwordConfirmation,
     setPasswordConfirmation,
   };
@@ -48,19 +46,17 @@ export function useForm(): FormState {
   };
 }
 
-
 function useSubmit(fields: FormFields) {
   const { invitation, token } = useLoadedData();
   const [errors, setErrors] = useState<FormError[]>([]);
 
   const [add, { loading: submitting }] = useChangePasswordMutation({
     onCompleted: () => {
-      logIn(invitation.member.email!, fields.password)
-      .then(() => {
+      logIn(invitation.member.email!, fields.password).then(() => {
         window.location.href = "/";
       });
-    }
-  })
+    },
+  });
 
   const submit = async () => {
     let errors = validate(fields);
@@ -69,7 +65,7 @@ function useSubmit(fields: FormFields) {
       setErrors(errors);
       return false;
     }
-    
+
     await add({
       variables: {
         input: {
@@ -81,8 +77,8 @@ function useSubmit(fields: FormFields) {
     });
 
     return true;
-  }
-  
+  };
+
   return {
     submit,
     submitting,
@@ -90,18 +86,17 @@ function useSubmit(fields: FormFields) {
   };
 }
 
-
 function validate(fields: FormFields): FormError[] {
   let result: FormError[] = [];
 
   if (fields.password.length < 12) {
     result.push({ field: "password", message: "Passoword must have at least 12 characters" });
   }
-  
+
   if (fields.password.length > 72) {
     result.push({ field: "password", message: "Passoword must not have more than 72 characters" });
   }
-  
+
   if (fields.password !== fields.passwordConfirmation) {
     result.push({ field: "password", message: "Passoword and password confirmation do not match" });
   }
