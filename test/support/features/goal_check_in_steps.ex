@@ -109,7 +109,7 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "notification-progress-update-submitted")
+    |> UI.click(testid: "notification-item-goal_check_in")
     |> UI.click(testid: "acknowledge-check-in")
     |> UI.assert_text("Acknowledged by #{ctx.reviewer.full_name}")
   end

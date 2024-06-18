@@ -250,7 +250,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "goal-timeframe-editing")
+    |> UI.click(testid: "notification-item-goal_timeframe_editing")
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("I think the timeframe extension is a good idea.")
     |> UI.click(testid: "post-comment")
@@ -280,7 +280,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal timeframe change"})
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the timeframe change"})
   end
 
   step :comment_on_the_goal_closed, ctx do
