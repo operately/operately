@@ -4,21 +4,21 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { FilledButton } from "@/components/Button";
-import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { ProjectList } from "@/features/ProjectList";
 
 import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { group, projects } = useLoadedData();
-  const newProjectPath = createPath("spaces", group.id, "projects", "new");
+  const { space, projects } = useLoadedData();
+  const newProjectPath = createPath("spaces", space.id, "projects", "new");
 
   return (
-    <Pages.Page title={group.name}>
+    <Pages.Page title={space.name!}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px" backgroundColor="bg-surface">
-          <GroupPageNavigation group={group} activeTab="projects" />
+          <SpacePageNavigation space={space} activeTab="projects" />
 
           <div className="flex items-center justify-between mb-8">
             <div className="font-extrabold text-3xl">Projects</div>

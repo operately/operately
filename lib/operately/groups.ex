@@ -68,7 +68,7 @@ defmodule Operately.Groups do
 
     Multi.new()
     |> Multi.update(:group, changeset)
-    |> Activities.insert(author.id, :group_edited, fn _ -> %{
+    |> Activities.insert_sync(author.id, :group_edited, fn _ -> %{
       company_id: group.company_id,
       group_id: group.id,
       old_name: group.name,
@@ -118,7 +118,8 @@ defmodule Operately.Groups do
     query = (
       from p in Person,
       join: m in Member, on: m.person_id == p.id,
-      where: m.group_id == ^group.id and not p.suspended
+      where: m.group_id == ^group.id and not p.suspended,
+      order_by: p.full_name
     )
 
     Repo.all(query)

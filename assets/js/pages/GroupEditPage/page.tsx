@@ -8,23 +8,24 @@ import { useForm, FormState } from "./useForm";
 import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
 import { Link } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
-  const { group } = useLoadedData();
-  const form = useForm(group);
+  const { space } = useLoadedData();
+  const form = useForm(space);
 
   return (
-    <Pages.Page title={["Appearance Settings", group.name]}>
+    <Pages.Page title={["Appearance Settings", space.name!]}>
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-2">
-          <Link to={`/spaces/${group.id}`}>
+          <Link to={Paths.spacePath(space.id!)}>
             <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
-            Back to the {group.name} Space
+            Back to the {space.name} Space
           </Link>
         </div>
 
         <Paper.Body minHeight="none">
-          <div className="font-extrabold text-2xl text-center">Editing {group.name}</div>
+          <div className="font-extrabold text-2xl text-center">Editing {space.name}</div>
 
           <div className="my-8 flex flex-col gap-4">
             <Forms.TextInput

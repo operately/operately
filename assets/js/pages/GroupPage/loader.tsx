@@ -1,21 +1,19 @@
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as Companies from "@/models/companies";
 
-import { Company, Group } from "@/gql/generated";
+import { Company } from "@/gql/generated";
 
 interface LoadedData {
   company: Company;
-  group: Group;
+  space: Spaces.Space;
   loadedAt: Date;
 }
 
 export async function loader({ params }): Promise<LoadedData> {
   return {
     company: await Companies.getCompany(),
-    group: await Groups.getGroup(params.id, {
-      includeMembers: true,
-    }),
+    space: await Spaces.getSpace({ id: params.id, includeMembers: true }),
     loadedAt: new Date(),
   };
 }

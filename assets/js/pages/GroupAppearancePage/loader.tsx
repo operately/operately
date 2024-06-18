@@ -1,20 +1,12 @@
-import client from "@/graphql/client";
-
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/graphql/Groups";
+import * as Spaces from "@/models/spaces";
 
 interface LoaderResult {
-  group: Groups.Group;
+  space: Spaces.Space;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const groupData = await client.query({
-    query: Groups.GET_GROUP,
-    variables: { id: params.id },
-    fetchPolicy: "network-only",
-  });
-
-  return { group: groupData.data.group };
+  return { space: await Spaces.getSpace({ id: params.id }) };
 }
 
 export function useLoadedData(): LoaderResult {

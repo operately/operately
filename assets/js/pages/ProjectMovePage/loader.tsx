@@ -1,10 +1,10 @@
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 
 interface LoaderResult {
   project: Projects.Project;
-  groups: Groups.Group[];
+  spaces: Spaces.Space[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -14,7 +14,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includePermissions: true,
     }),
-    groups: await Groups.getGroups(),
+    spaces: await Spaces.getSpaces({}),
   };
 }
 

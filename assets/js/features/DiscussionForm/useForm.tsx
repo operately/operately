@@ -1,14 +1,14 @@
 import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as Discussions from "@/models/discussions";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as People from "@/models/people";
 
 import { useNavigate } from "react-router-dom";
 
 interface UseFormOptions {
   mode: "create" | "edit";
-  space: Groups.Group;
+  space: Spaces.Space;
   discussion?: Discussions.Discussion;
 }
 

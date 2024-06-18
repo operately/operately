@@ -1,34 +1,28 @@
+import * as api from "@/api";
+
+export type { Space } from "@/api";
+
+export { useEditSpaceMutation } from "./useEditSpaceMutation";
+export { useJoinSpaceMutation } from "./useJoinSpaceMutation";
+
+export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
+  return await api.getSpace(params).then((res) => res.space!);
+}
+
+export async function getSpaces(params: api.GetSpacesInput): Promise<api.Space[]> {
+  return await api.getSpaces(params).then((res) => res.spaces!);
+}
+
+export function sortSpaces(groups: any[]) {
+  return [...groups].sort((a, b) => {
+    if (a.isCompanySpace) return -100;
+    if (b.isCompanySpace) return 100;
+
+    return a.name.localeCompare(b.name);
+  });
+}
+
 import { gql, useMutation, ApolloClient } from "@apollo/client";
-
-export type { Group } from "@/gql";
-
-export const GET_GROUP = gql`
-  query GetGroup($id: ID!) {
-    group(id: $id) {
-      id
-      name
-      mission
-      icon
-      color
-      isCompanySpace
-      isMember
-
-      members {
-        id
-        fullName
-        avatarUrl
-        title
-      }
-
-      pointsOfContact {
-        id
-        name
-        type
-        value
-      }
-    }
-  }
-`;
 
 const CREATE_GROUP = gql`
   mutation CreateGroup($input: CreateGroupInput!) {
@@ -39,7 +33,7 @@ const CREATE_GROUP = gql`
   }
 `;
 
-export function useCreateGroup(options = {}) {
+export function useCreateSpace(options = {}) {
   return useMutation(CREATE_GROUP, options);
 }
 
@@ -63,7 +57,7 @@ interface ListPotentialGroupMembersParams {
   };
 }
 
-export function listPotentialGroupMembers(
+export function listPotentialSpaceMembers(
   client: ApolloClient<object>,
   { variables }: ListPotentialGroupMembersParams,
 ) {
@@ -90,7 +84,7 @@ const REMOVE_GROUP_MEMBER = gql`
   }
 `;
 
-export function useRemoveMemberFromGroup(options = {}) {
+export function useRemoveMemberFromSpace(options = {}) {
   return useMutation(REMOVE_GROUP_MEMBER, options);
 }
 
@@ -110,6 +104,6 @@ const UPDATE_GROUP_APPEARANCE = gql`
   }
 `;
 
-export function useUpdateGroupAppearanceMutation(options = {}) {
+export function useUpdateSpaceAppearanceMutation(options = {}) {
   return useMutation(UPDATE_GROUP_APPEARANCE, options);
 }

@@ -1,14 +1,14 @@
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import * as Companies from "@/models/companies";
 
-import { Company, Group } from "@/gql/generated";
+import { Company } from "@/gql/generated";
 
 interface LoadedData {
   company: Company;
-  group: Group;
+  space: Spaces.Space;
   goals: Goals.Goal[];
   projects: Projects.Project[];
 }
@@ -16,7 +16,7 @@ interface LoadedData {
 export async function loader({ params }): Promise<LoadedData> {
   return {
     company: await Companies.getCompany(),
-    group: await Groups.getGroup(params.id),
+    space: await Spaces.getSpace({ id: params.id }),
 
     goals: await Goals.getGoals({
       includeTargets: true,

@@ -2,8 +2,8 @@ defmodule Operately.Groups.Member do
   use Operately.Schema
 
   schema "members" do
-    field :group_id, :binary_id
-    field :person_id, :binary_id
+    belongs_to :group, Operately.Groups.Group
+    belongs_to :person, Operately.People.Person
 
     timestamps()
   end

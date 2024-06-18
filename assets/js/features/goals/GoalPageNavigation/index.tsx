@@ -2,13 +2,16 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
-import * as Groups from "@/graphql/Groups";
+import * as Spaces from "@/models/spaces";
+import * as gql from "@/gql";
 
-export function Navigation({ space }: { space: Groups.Group }) {
+import { Paths } from "@/routes/paths";
+
+export function Navigation({ space }: { space: Spaces.Space | gql.Group }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/spaces/${space.id}/goals`}>
-        {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
+      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>
+        {React.createElement(Icons[space.icon!], { size: 16, className: space.color })}
         {space.name}
       </Paper.NavItem>
     </Paper.Navigation>

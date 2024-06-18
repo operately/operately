@@ -3,7 +3,7 @@ import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as Timeframes from "@/utils/timeframes";
 
 import { createPath } from "@/utils/paths";
@@ -76,8 +76,8 @@ interface FormConfig {
   parentGoalOptions?: Goals.Goal[];
 
   allowSpaceSelection: boolean;
-  space?: Groups.Group;
-  spaces?: Groups.Group[];
+  space?: Spaces.Space;
+  spaces?: Spaces.Space[];
 
   isCompanyWide?: boolean;
 }
@@ -153,7 +153,7 @@ function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption
     if (config.allowSpaceSelection || config.mode === "edit") {
       return null;
     } else {
-      return { value: config.space!.id, label: config.space!.name };
+      return { value: config.space!.id!, label: config.space!.name! };
     }
   });
 
@@ -161,9 +161,9 @@ function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption
     if (config.mode === "edit") return [];
 
     if (config.allowSpaceSelection) {
-      const spaces = Groups.sortGroups(config.spaces!);
+      const spaces = Spaces.sortSpaces(config.spaces!);
 
-      return spaces.map((space) => ({ value: space.id, label: space.name }));
+      return spaces.map((space) => ({ value: space.id!, label: space.name! }));
     } else {
       return [];
     }

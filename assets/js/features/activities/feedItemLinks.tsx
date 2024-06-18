@@ -31,7 +31,7 @@ export const goalLink = (goal: api.Goal) => {
   return <Link to={path}>{name}</Link>;
 };
 
-export const spaceLink = (space: api.Group) => {
+export const spaceLink = (space: api.Space) => {
   const path = Paths.spacePath(space!.id!);
   const name = space!.name!;
 

@@ -1,9 +1,9 @@
 import { Project } from ".";
 
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 
 export interface ProjectGroup {
-  space: Groups.Group;
+  space: Spaces.Space;
   projects: Project[];
 }
 
@@ -15,7 +15,7 @@ export function groupBySpace(projects: Project[]): ProjectGroup[] {
 
     if (!groups.find((group) => group.space.id === space.id)) {
       groups.push({
-        space,
+        space: space as Spaces.Space,
         projects: [],
       });
     }
@@ -27,7 +27,7 @@ export function groupBySpace(projects: Project[]): ProjectGroup[] {
     if (a.space.isCompanySpace) return -100;
     if (b.space.isCompanySpace) return 100;
 
-    return a.space.name.localeCompare(b.space.name);
+    return a.space.name!.localeCompare(b.space.name!);
   });
 
   return groups;

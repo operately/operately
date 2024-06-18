@@ -6,16 +6,16 @@ import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import { GoalTree } from "@/features/goals/GoalTree";
 import { FilledButton } from "@/components/Button";
-import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 
 export function Page() {
-  const { group } = useLoadedData();
+  const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={group.name}>
+    <Pages.Page title={space.name!}>
       <Paper.Root fluid>
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation group={group} activeTab="goals" />
+          <SpacePageNavigation space={space} activeTab="goals" />
           <Content />
         </Paper.Body>
       </Paper.Root>
@@ -24,19 +24,19 @@ export function Page() {
 }
 
 function Content() {
-  const { group, goals, projects } = useLoadedData();
-  const newGoalPath = createPath("spaces", group.id, "goals", "new");
+  const { space, goals, projects } = useLoadedData();
+  const newGoalPath = createPath("spaces", space.id, "goals", "new");
 
   return (
     <>
       <div className="flex items-center justify-between mb-8">
-        <div className="font-extrabold text-3xl">Goals in {group.name}</div>
+        <div className="font-extrabold text-3xl">Goals in {space.name}</div>
         <FilledButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
           Add Goal
         </FilledButton>
       </div>
 
-      <GoalTree goals={goals} projects={projects} options={{ spaceId: group.id }} />
+      <GoalTree goals={goals} projects={projects} options={{ spaceId: space.id! }} />
     </>
   );
 }

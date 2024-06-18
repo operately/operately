@@ -1,9 +1,9 @@
 import * as React from "react";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 
-import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
+import { Paths } from "@/routes/paths";
 
 export interface FormState {
   fields: Fields;
@@ -20,7 +20,7 @@ interface Error {
 }
 
 interface Fields {
-  group: Groups.Group;
+  space: Spaces.Space;
 
   name: string;
   purpose: string;
@@ -29,12 +29,12 @@ interface Fields {
   setPurpose: (purpose: string) => void;
 }
 
-export function useForm(group: Groups.Group): FormState {
-  const [name, setName] = React.useState<string>(group.name);
-  const [purpose, setPurpose] = React.useState<string>(group.mission || "");
+export function useForm(space: Spaces.Space): FormState {
+  const [name, setName] = React.useState<string>(space.name!);
+  const [purpose, setPurpose] = React.useState<string>(space.mission || "");
 
   const fields = {
-    group,
+    space,
 
     name,
     purpose,
@@ -57,8 +57,8 @@ export function useForm(group: Groups.Group): FormState {
 function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
-  const [create, { loading: submitting }] = Groups.useEditGroupMutation({
-    onCompleted: () => navigate(createPath("spaces", fields.group.id)),
+  const [create, { loading: submitting }] = Spaces.useEditSpaceMutation({
+    onCompleted: () => navigate(Paths.spacePath(fields.space.id!)),
   });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -74,7 +74,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
     await create({
       variables: {
         input: {
-          id: fields.group.id,
+          id: fields.space.id,
           name: fields.name,
           mission: fields.purpose,
         },
@@ -84,7 +84,7 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
     return true;
   };
 
-  const cancel = useNavigateTo(createPath("spaces", fields.group.id));
+  const cancel = useNavigateTo(Paths.spacePath(fields.space.id!));
 
   return [submit, cancel, submitting, errors];
 }

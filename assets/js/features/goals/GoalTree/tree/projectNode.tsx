@@ -1,4 +1,5 @@
 import * as Time from "@/utils/time";
+import * as Spaces from "@/models/spaces";
 
 import { Project } from "@/models/projects";
 import { Paths } from "@/routes/paths";
@@ -18,7 +19,7 @@ export class ProjectNode extends Node {
     this.name = project.name;
 
     this.champion = project.champion!;
-    this.space = project.space;
+    this.space = project.space as Spaces.Space;
     this.isClosed = !!project.closedAt;
     this.progress = this.calculateProgress();
     this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);

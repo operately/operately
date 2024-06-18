@@ -2,11 +2,11 @@ defmodule Operately.Groups.Group do
   use Operately.Schema
 
   schema "groups" do
-    has_many :members, Operately.Groups.Member, foreign_key: :group_id
+    belongs_to :company, Operately.Companies.Company
 
+    has_many :members, Operately.Groups.Member, foreign_key: :group_id
     has_one :access_context, Operately.Access.Context, foreign_key: :group_id
 
-    field :company_id, :binary_id
     field :name, :string
     field :mission, :string
     field :icon, :string, default: "IconPlanet"

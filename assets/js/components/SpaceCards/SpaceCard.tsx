@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Groups from "@/graphql/Groups";
+import * as Spaces from "@/models/spaces";
 import * as Icons from "@tabler/icons-react";
 
 import classnames from "classnames";
@@ -7,7 +7,7 @@ import classnames from "classnames";
 import { Card } from "./Card";
 
 export interface SpaceCardProps {
-  group: Groups.Group;
+  space: Spaces.Space;
   comingSoon?: boolean;
   onClick?: () => void;
   shadowSize?: "base" | "lg";
@@ -16,9 +16,9 @@ export interface SpaceCardProps {
 }
 
 export function SpaceCard(props: SpaceCardProps) {
-  const { name, mission, color, icon, privateSpace } = props.group;
+  const { name, mission, color, icon, privateSpace } = props.space;
   const comingSoon = props.comingSoon ?? false;
-  const iconElement = Icons[icon];
+  const iconElement = Icons[icon!];
   const shadowSize = props.shadowSize ?? "base";
 
   const className = classnames(
@@ -41,7 +41,7 @@ export function SpaceCard(props: SpaceCardProps) {
   };
 
   return (
-    <Card className={className} title={name} {...cardProps}>
+    <Card className={className} title={name!} {...cardProps}>
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>

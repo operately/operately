@@ -1,21 +1,20 @@
-import React from "react";
+import * as React from "react";
+import * as Spaces from "@/models/spaces";
 
 import { useNavigate } from "react-router-dom";
-import * as Groups from "@/graphql/Groups";
-
 import Avatar from "@/components/Avatar";
 
-export default function MemberList({ group }: { group: Groups.Group }) {
+export default function MemberList({ space }: { space: Spaces.Space }) {
   const navigate = useNavigate();
-  const gotoGroupMembersPage = () => navigate(`/spaces/${group.id}/members`);
+  const gotoSpaceMembersPage = () => navigate(`/spaces/${space.id}/members`);
 
-  if (group.members!.length === 0) return null;
+  if (space.members!.length === 0) return null;
 
-  if (group.isCompanySpace) {
+  if (space.isCompanySpace) {
     return (
       <div>
-        <div className="inline-flex gap-2 justify-center mb-4 flex-wrap mx-8" data-test-id="group-members">
-          {group.members!.map((m) => (
+        <div className="inline-flex gap-2 justify-center mb-4 flex-wrap mx-8" data-test-id="space-members">
+          {space.members!.map((m) => (
             <Avatar key={m.id} person={m} size={32} />
           ))}
         </div>
@@ -26,10 +25,10 @@ export default function MemberList({ group }: { group: Groups.Group }) {
       <div>
         <div
           className="inline-flex gap-2 justify-center mb-4 flex-wrap mx-8"
-          onClick={gotoGroupMembersPage}
-          data-test-id="group-members"
+          onClick={gotoSpaceMembersPage}
+          data-test-id="space-members"
         >
-          {group.members!.map((m) => (
+          {space.members!.map((m) => (
             <Avatar key={m.id} person={m} size={32} />
           ))}
         </div>

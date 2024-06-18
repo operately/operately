@@ -1,55 +1,39 @@
-defmodule Operately.Features.GroupsTest do
+defmodule Operately.Features.SpacesTest do
   use Operately.FeatureCase
 
-  import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
 
-  setup ctx do
-    company = company_fixture(%{name: "Test Org"})
-    person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
+  alias Operately.Support.Features.SpaceSteps, as: Steps
 
-    ctx = Map.merge(ctx, %{company: company, person: person})
-    ctx = UI.login_as(ctx, ctx.person)
+  setup ctx, do: Steps.setup(ctx)
 
-    {:ok, ctx}
+  feature "listing existing space", ctx do
+    ctx
+    |> Steps.given_two_spaces_exists()
+    |> Steps.visit_loby()
+    |> Steps.assert_all_spaces_are_listed()
   end
 
-  feature "listing existing groups", ctx do
-    group1 = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
-    group2 = group_fixture(ctx.person, %{name: "Engineering", mission: "Build the best product"})
+  feature "creating a new space", ctx do
+    params = %{
+      name: "Marketing", 
+      mission: "Let the world know about our products", 
+      color: "text-green-500", 
+      icon: "IconBolt"
+    }
 
     ctx
-    |> visit_page()
-    |> UI.assert_text(group1.name)
-    |> UI.assert_text(group1.mission)
-    |> UI.assert_text(group2.name)
-    |> UI.assert_text(group2.mission)
+    |> Steps.visit_loby()
+    |> Steps.click_on_add_space()
+    |> Steps.fill_in_space_form(params)
+    |> Steps.submit_space_form()
+    |> Steps.assert_space_created(params)
+    |> Steps.assert_creator_is_space_member(params)
   end
 
-  feature "creating a new group", ctx do
-    ctx
-    |> visit_page()
-    |> UI.click(testid: "add-group")
-    |> UI.fill_in(Query.text_field("Name"), with: "Marketing")
-    |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products")
-    |> UI.click(testid: "color-text-green-500")
-    |> UI.click(testid: "icon-IconBolt")
-    |> UI.click(Query.button("Create Space"))
-    |> UI.assert_has(Query.text("Marketing", count: 2))
-    |> UI.assert_has(Query.text("Let the world know about our products"))
-
-    group = Operately.Groups.get_group_by_name("Marketing")
-    assert group != nil
-    assert group.color == "text-green-500"
-    assert group.icon == "IconBolt"
-
-    members = Operately.Groups.list_members(group)
-    assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
-  end
-
-  feature "listing group members", ctx do
+  feature "listing space members", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
@@ -63,7 +47,7 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_has(Query.text(person.full_name))
   end
 
-  feature "joining a group", ctx do
+  feature "joining a space", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
@@ -78,7 +62,7 @@ defmodule Operately.Features.GroupsTest do
     assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
   end
 
-  feature "adding group members", ctx do
+  feature "adding space members", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
@@ -87,15 +71,15 @@ defmodule Operately.Features.GroupsTest do
     |> UI.click(title: group.name)
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "add-remove-members")
-    |> UI.click(testid: "add-group-members")
+    |> UI.click(testid: "add-space-members")
     |> UI.fill_in(Query.css("#people-search"), with: "Mati")
     |> UI.assert_text("Mati Aharoni")
     |> UI.send_keys([:enter])
-    |> UI.click(testid: "submit-group-members")
+    |> UI.click(testid: "submit-space-members")
     |> UI.assert_has(title: person.full_name)
   end
 
-  feature "removing group members", ctx do
+  feature "removing space members", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
@@ -111,7 +95,7 @@ defmodule Operately.Features.GroupsTest do
     |> UI.refute_text(person.full_name)
   end
 
-  feature "listing projects in a group", ctx do
+  feature "listing projects in a space", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
     project2 = project_fixture(%{name: "Project 2", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
@@ -124,7 +108,7 @@ defmodule Operately.Features.GroupsTest do
     |> UI.assert_text(project2.name)
   end
 
-  feature "editing group's name and purpose", ctx do
+  feature "editing space's name and purpose", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
 
     ctx

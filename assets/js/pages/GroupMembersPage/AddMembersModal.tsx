@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
@@ -7,7 +6,7 @@ import { FilledButton, GhostButton } from "@/components/Button";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
-import * as Groups from "@/graphql/Groups";
+import * as Spaces from "@/models/spaces";
 import client from "@/graphql/client";
 import * as Icons from "@tabler/icons-react";
 
@@ -19,9 +18,7 @@ interface ContextDescriptor {
 
 const Context = React.createContext<ContextDescriptor | null>(null);
 
-export default function AddMembersModal({ groupId, onSubmit, members }) {
-  const { t } = useTranslation();
-
+export default function AddMembersModal({ spaceId, onSubmit, members }) {
   const [selected, setSelectedList] = React.useState<Option[]>([]);
   const [isModalOpen, setIsModalOpen]: [boolean, any] = React.useState(false);
 
@@ -31,9 +28,9 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
   };
 
   const search = async (value: string) => {
-    let result = await Groups.listPotentialGroupMembers(client, {
+    let result = await Spaces.listPotentialSpaceMembers(client, {
       variables: {
-        groupId,
+        groupId: spaceId,
         query: value,
         excludeIds: selected.map((p) => p.value),
         limit: 10,
@@ -46,9 +43,9 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
 
   const submit = async () => {
     await client.mutate({
-      mutation: Groups.ADD_MEMBERS,
+      mutation: Spaces.ADD_MEMBERS,
       variables: {
-        groupId,
+        groupId: spaceId,
         personIds: selected.map((s) => s.person.id),
       },
     });
@@ -65,17 +62,17 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
     <Context.Provider value={{ selected, add, remove }}>
       <div className="flex items-center my-8 gap-2">
         <div className="h-px bg-surface-outline flex-1" />
-        <GhostButton type="primary" onClick={openModal} testId="add-group-members">
+        <GhostButton type="primary" onClick={openModal} testId="add-space-members">
           Add Members
         </GhostButton>
         <div className="h-px bg-surface-outline flex-1" />
       </div>
 
-      <Modal title={t("forms.add_group_members_title")} isOpen={isModalOpen} hideModal={hideModal}>
+      <Modal title="Add Members" isOpen={isModalOpen} hideModal={hideModal}>
         <SearchField
           onSelect={add}
           loader={search}
-          placeholder={t("forms.add_group_members_search_placeholder")}
+          placeholder={"Search for people..."}
           alreadySelected={selected.map((p) => p.value) + members.map((p: Person) => p.id)}
         />
 
@@ -84,8 +81,8 @@ export default function AddMembersModal({ groupId, onSubmit, members }) {
         </div>
 
         <div className="mt-4 flex">
-          <FilledButton type="primary" onClick={submit} testId="submit-group-members">
-            {t("forms.add_group_members_button")}
+          <FilledButton type="primary" onClick={submit} testId="submit-space-members">
+            Add Members
           </FilledButton>
         </div>
       </Modal>
