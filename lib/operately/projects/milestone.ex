@@ -4,6 +4,8 @@ defmodule Operately.Projects.Milestone do
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
 
+    has_many :tasks, Operately.Tasks.Task
+
     field :title, :string
     field :status, Ecto.Enum, values: [:pending, :done], default: :pending
     field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control], default: :concept
