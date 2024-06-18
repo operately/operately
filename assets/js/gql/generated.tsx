@@ -491,6 +491,7 @@ export type Assignments = {
 
 export type Blob = {
   __typename?: 'Blob';
+  id: Scalars['ID']['output'];
   author: Person;
   filename: Scalars['String']['output'];
   signedUploadUrl: Scalars['String']['output'];
