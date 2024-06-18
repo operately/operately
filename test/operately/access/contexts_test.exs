@@ -54,18 +54,14 @@ defmodule Operately.AccessContextsTest do
   end
 
   describe "access_contexts relationships with projects, groups, activities and companies" do
-    import Operately.ActivitiesFixtures
     import Operately.GoalsFixtures
 
     setup do
-      company = company_fixture()
+      company = create_company_without_context()
+      group = create_group_without_context(company.id)
       creator = person_fixture_with_account(%{company_id: company.id})
-      group = group_fixture(creator)
-      goal = goal_fixture(creator, %{space_id: group.id, targets: []})
-      project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
-      activity = activity_fixture(%{author_id: creator.id})
 
-      {:ok, company: company, group: group, goal: goal, project: project, activity: activity, creator: creator}
+      {:ok, company: company, group: group, creator: creator}
     end
 
     test "create access_context for a company" do
@@ -93,8 +89,11 @@ defmodule Operately.AccessContextsTest do
     end
 
     test "access_context cannot be attached to more than one entity", ctx do
+      project = create_project_without_context(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+      goal = create_goal_without_context(ctx.creator, %{group_id: ctx.group.id})
+
       # refutes project and group
-      attrs = %{project_id: ctx.project.id, group_id: ctx.group.id}
+      attrs = %{project_id: project.id, group_id: ctx.group.id}
       changeset = Context.changeset(%Context{}, attrs)
 
       refute changeset.valid?
@@ -108,7 +107,7 @@ defmodule Operately.AccessContextsTest do
       assert {:error, %Ecto.Changeset{}} = Access.create_context(attrs)
 
       # refutes goal and group
-      attrs = %{goal_id: ctx.goal.id, group_id: ctx.group.id}
+      attrs = %{goal_id: goal.id, group_id: ctx.group.id}
       changeset = Context.changeset(%Context{}, attrs)
 
       refute changeset.valid?
@@ -141,5 +140,28 @@ defmodule Operately.AccessContextsTest do
     })
     |> Repo.insert()
     group
+  end
+
+  defp create_project_without_context(attrs) do
+    {:ok, project} = Operately.Projects.Project.changeset(
+      Map.merge(attrs, %{name: "some name"})
+    )
+    |> Repo.insert()
+
+    project
+  end
+
+  defp create_goal_without_context(creator, attrs) do
+    {:ok, goal} = Map.merge(%{
+      name: "some name",
+      company_id: creator.company_id,
+      champion_id: creator.id,
+      reviewer_id: creator.id,
+      creator_id: creator.id,
+    }, attrs)
+    |> Operately.Goals.Goal.changeset()
+    |> Repo.insert()
+
+    goal
   end
 end
