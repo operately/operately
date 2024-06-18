@@ -3,7 +3,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Notifications from "@/models/notifications";
-import * as People from "@/models/people";
 import * as Api from "@/api";
 
 import { useDocumentTitle } from "@/layouts/header";
