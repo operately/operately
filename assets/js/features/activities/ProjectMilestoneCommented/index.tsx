@@ -9,7 +9,6 @@ import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
-import { match } from "ts-pattern";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {

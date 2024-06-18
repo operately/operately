@@ -1,14 +1,15 @@
 import { Activity, ActivityContentSpaceJoining } from "@/api";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, spaceLink } from "../feedItemLinks";
+import { Paths } from "@/routes/paths";
 
 const SpaceJoining: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.spacePath(content(activity).space!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -47,7 +48,7 @@ const SpaceJoining: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
+  NotificationLocation(_props: { activity: Activity }) {
     throw new Error("Not implemented");
   },
 };

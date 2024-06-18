@@ -280,7 +280,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the timeframe change"})
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on timeframe change"})
   end
 
   step :comment_on_the_goal_closed, ctx do
@@ -317,7 +317,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal closing"})
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on goal closing"})
   end
 
   step :close_goal, ctx, params do

@@ -1,5 +1,4 @@
 import * as People from "@/models/people";
-import * as People from "@/models/people";
 
 import type { ActivityContentProjectContributorAddition } from "@/api";
 import type { Activity } from "@/models/activities";
