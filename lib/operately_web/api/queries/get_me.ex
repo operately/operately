@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
   defp preload_manager(me, _), do: me
 
   defp serialize(me, include_manager) do
-    %{me: 
+    %{me:
       %{
         id: me.id,
         full_name: me.full_name,
@@ -31,6 +31,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         avatar_url: me.avatar_url,
         timezone: me.timezone,
         companyRole: me.company_role,
+        avatar_blob_id: me.avatar_blob_id,
 
         send_daily_summary: me.send_daily_summary,
         notify_on_mention: me.notify_on_mention,

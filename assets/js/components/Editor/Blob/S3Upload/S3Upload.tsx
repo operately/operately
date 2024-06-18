@@ -18,7 +18,10 @@ export const S3Upload = async (file) => {
 
     const response = await axios.put(signedUploadUrl, file, config);
     if (response.status === 200) {
-      return signedUploadUrl;
+      return {
+        id: data.createBlob.id,
+        url: data.createBlob.url,
+      };
     } else {
       throw new Error(`Upload failed with status ${response.status}`);
     }

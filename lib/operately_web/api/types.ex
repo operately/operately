@@ -712,6 +712,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :blob do
+    field :id, :string
     field :author, :person
     field :status, :string
     field :filename, :string
