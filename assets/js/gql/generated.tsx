@@ -491,9 +491,9 @@ export type Assignments = {
 
 export type Blob = {
   __typename?: 'Blob';
-  id: Scalars['ID']['output'];
   author: Person;
   filename: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
   signedUploadUrl: Scalars['String']['output'];
   status: Scalars['String']['output'];
   storageType?: Maybe<Scalars['String']['output']>;
@@ -900,14 +900,6 @@ export type NewMilestoneInput = {
   title: Scalars['String']['input'];
 };
 
-export type Notification = {
-  __typename?: 'Notification';
-  activity: Activity;
-  id: Scalars['ID']['output'];
-  read: Scalars['Boolean']['output'];
-  readAt: Scalars['DateTime']['output'];
-};
-
 export type Objective = {
   __typename?: 'Objective';
   activities?: Maybe<Array<Maybe<Activity>>>;
@@ -941,6 +933,7 @@ export type PauseProjectInput = {
 
 export type Person = {
   __typename?: 'Person';
+  avatarBlobId?: Maybe<Scalars['ID']['output']>;
   avatarUrl?: Maybe<Scalars['String']['output']>;
   company: Company;
   companyRole?: Maybe<Scalars['String']['output']>;
@@ -1161,7 +1154,6 @@ export type RootMutationType = {
   editProjectTimeline: Project;
   editUpdate: Update;
   joinSpace: Group;
-  markNotificationAsRead: Notification;
   moveProjectToSpace: Project;
   newInvitationToken: Invitation;
   pauseProject: Project;
@@ -1352,6 +1344,7 @@ export type RootMutationTypeCreateObjectiveArgs = {
 
 
 export type RootMutationTypeCreateProfileArgs = {
+  avatarBlobId?: InputMaybe<Scalars['ID']['input']>;
   avatarUrl: Scalars['String']['input'];
   fullName: Scalars['String']['input'];
   timezone: Scalars['String']['input'];
@@ -1448,11 +1441,6 @@ export type RootMutationTypeEditUpdateArgs = {
 
 export type RootMutationTypeJoinSpaceArgs = {
   input: JoinSpaceInput;
-};
-
-
-export type RootMutationTypeMarkNotificationAsReadArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -2080,6 +2068,7 @@ export type UpdateNotificationSettingsInput = {
 };
 
 export type UpdateProfileInput = {
+  avatarBlobId?: InputMaybe<Scalars['ID']['input']>;
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['ID']['input']>;

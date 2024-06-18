@@ -13,6 +13,7 @@ defmodule TurboConnect.Api do
 
       use Plug.Builder
 
+      plug Plug.Parsers, parsers: [:urlencoded, :json], json_decoder: Jason
       plug TurboConnect.Plugs.Match, __MODULE__
       plug TurboConnect.Plugs.ParseInputs
     end

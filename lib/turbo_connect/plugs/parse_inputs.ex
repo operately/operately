@@ -8,7 +8,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def init(_), do: []
 
   def call(conn, _opts) do
-    conn = Plug.Conn.fetch_query_params(conn)
+    params = atomize_keys(conn.params)
 
     inputs = conn.assigns.turbo_req_handler.__inputs__()
     types = conn.assigns.turbo_api.__types__()
@@ -16,22 +16,11 @@ defmodule TurboConnect.Plugs.ParseInputs do
     strict_parsing = conn.assigns.turbo_req_type == :mutation
     specs = {inputs, types, unions}
 
-    with {:ok, map} <- get_inputs_as_map(conn), {:ok, inputs} <- parse_inputs(specs, map, strict_parsing) do
+    with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing) do
       Plug.Conn.assign(conn, :turbo_inputs, inputs)
     else
       {:error, status, body} -> send_resp(conn, status, body) |> halt()
     end
-  end
-
-  defp get_inputs_as_map(conn) do
-    case conn.assigns.turbo_req_type do
-      :query -> 
-        {:ok, Jason.encode!(conn.query_params) |> Jason.decode!(keys: :atoms)}
-      :mutation -> 
-        {:ok, Jason.encode!(conn.query_params) |> Jason.decode!(keys: :atoms)}
-    end
-  rescue
-    _ -> {:error, 400, "Could not parse inputs"}
   end
 
   def parse_inputs({inputs, types, unions}, values, strict) do
@@ -100,4 +89,16 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def parse_input(:datetime, _types, _unions, _value, _string), do: {:error, 422, "Datetime parsing not implemented"}
 
   def parse_input(type, _types, _unions, _value, _string), do: {:error, 422, "Type handler not implemented for #{inspect(type)}"}
+
+  #
+  # Utilities to convert string keys to atoms in conn.params
+  #
+  def atomize_keys(map) when is_map(map), do: Map.new(map, &atomize_keys/1)
+  def atomize_keys(list) when is_list(list), do: Enum.map(list, &atomize_keys/1)
+
+  def atomize_keys({key, val}) when is_binary(key), do: atomize_keys({String.to_existing_atom(key), val})
+
+  def atomize_keys({key, val}), do: {key, atomize_keys(val)}
+  def atomize_keys(term), do: term
+
 end
