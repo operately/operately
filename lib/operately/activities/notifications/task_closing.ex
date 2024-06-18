@@ -1,5 +1,6 @@
 defmodule Operately.Activities.Notifications.TaskClosing do
-  def dispatch(activity) do
-    raise "Notification dispatcher for TaskClosing not implemented"
+  def dispatch(_activity) do
+    # Notification dispatcher for TaskClosing not implemented yet
+    {:ok, []}
   end
 end
