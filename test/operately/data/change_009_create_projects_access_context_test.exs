@@ -21,8 +21,7 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
 
   test "creates access_context for existing projects", ctx do
     projects = Enum.map(1..5, fn _ ->
-      {:ok, project} = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
-      project
+      create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
     end)
 
     Enum.each(projects, fn project ->
@@ -41,22 +40,24 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
 
   test "creates access_context successfully when a project already has access context", ctx do
     project_with_context = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
-    {:ok, project_without_context} = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+    project_without_context = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
 
-    assert nil != Access.get_context_by_project!(project_with_context.id)
+    assert nil != Access.get_context!(project_id: project_with_context.id)
 
     Change009CreateProjectsAccessContext.run()
 
-    assert nil != Access.get_context_by_project!(project_without_context.id)
+    assert nil != Access.get_context!(project_id: project_without_context.id)
   end
 
   def create_project(attrs) do
-    Operately.Projects.Project.changeset(%{
+    {:ok, project} = Operately.Projects.Project.changeset(%{
       name: "some name",
       company_id: attrs.company_id,
       group_id: attrs.group_id,
       creator_id: attrs.creator_id,
     })
     |> Repo.insert()
+
+    project
   end
 end
