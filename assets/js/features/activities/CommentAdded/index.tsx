@@ -117,18 +117,15 @@ const CommentAdded: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const commentedActivity = content(activity).activity!;
     const person = People.firstName(activity.author!);
+    const action = match(commentedActivity.action)
+      .with("goal_timeframe_editing", () => "timeframe change")
+      .with("goal_closing", () => "goal closing")
+      .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
+      .otherwise(() => {
+        throw new Error("Comment added not implemented for action: " + commentedActivity.action);
+      });
 
-    return (
-      person +
-      " commented on the " +
-      match(commentedActivity.action)
-        .with("goal_timeframe_editing", () => "timeframe change")
-        .with("goal_closing", () => "goal closing")
-        .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
-        .otherwise(() => {
-          throw new Error("Comment added not implemented for action: " + commentedActivity.action);
-        })
-    );
+    return person + " commented on " + action;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -84,15 +84,11 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return (
-      <>
-        {People.firstName(activity.author!)} posted: {activity.commentThread!.title!}
-      </>
-    );
+    return People.firstName(activity.author!) + " posted: " + activity.commentThread!.title!;
   },
 
-  CommentNotificationTitle({ activity }: { activity: Activity }) {
-    return <>commented on {activity.commentThread!.title}</>;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 
