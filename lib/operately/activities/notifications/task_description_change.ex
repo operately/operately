@@ -1,5 +1,6 @@
 defmodule Operately.Activities.Notifications.TaskDescriptionChange do
-  def dispatch(activity) do
-    raise "Notification dispatcher for TaskDescriptionChange not implemented"
+  def dispatch(_activity) do
+    # Notification dispatcher for TaskDescriptionChange not implemented yet
+    {:ok, []}
   end
 end
