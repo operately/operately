@@ -12,7 +12,7 @@ interface LoadedData {
 export async function loader({ params }): Promise<LoadedData> {
   return {
     company: await Companies.getCompany(),
-    space: await Spaces.getSpace(params.id),
+    space: await Spaces.getSpace({ id: params.id }),
     discussions: await Discussions.getDiscussions({ spaceId: params.id }),
   };
 }
