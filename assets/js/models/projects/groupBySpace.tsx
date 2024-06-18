@@ -1,6 +1,6 @@
 import { Project } from ".";
 
-import * as Groups from "@/models/groups";
+import * as Groups from "@/models/spaces";
 
 export interface ProjectGroup {
   space: Groups.Group;

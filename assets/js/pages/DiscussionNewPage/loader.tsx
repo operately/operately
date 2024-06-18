@@ -1,15 +1,15 @@
 import * as Pages from "@/components/Pages";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as People from "@/models/people";
 
 interface LoaderResult {
-  space: Groups.Group;
+  space: Spaces.Space;
   me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    space: await Groups.getGroup(params.spaceId),
+    space: await Spaces.getSpace({ id: params.id }),
     me: await People.getMe({}),
   };
 }

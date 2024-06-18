@@ -1,16 +1,16 @@
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 interface LoaderResult {
   company: Companies.Company;
   me: People.Person;
 
-  space?: Groups.Group;
+  space?: Spaces.Space;
   spaceID?: string;
-  spaces?: Groups.Group[];
+  spaces?: Spaces.Space[];
   goal?: Goals.Goal;
   goals: Goals.Goal[];
 
@@ -31,15 +31,15 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const me = await People.getMe({});
   const goals = await Goals.getGoals({});
 
-  let space: Groups.Group | undefined;
-  let spaces: Groups.Group[] | undefined;
+  let space: Spaces.Space | undefined;
+  let spaces: Spaces.Space[] | undefined;
   let allowSpaceSelection: boolean;
 
   if (spaceID) {
-    space = await Groups.getGroup(params.id);
+    space = await Spaces.getSpace({ id: spaceID });
     allowSpaceSelection = false;
   } else {
-    spaces = await Groups.getGroups();
+    spaces = await Spaces.getSpaces({});
     allowSpaceSelection = true;
   }
 

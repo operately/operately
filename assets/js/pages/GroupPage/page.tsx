@@ -7,42 +7,42 @@ import * as Icons from "@tabler/icons-react";
 import MemberList from "./MemberList";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { FilledButton } from "@/components/Button";
 
-import { useJoinSpaceMutation } from "@/models/groups";
+import { useJoinSpaceMutation } from "@/models/spaces";
 
 export function Page() {
-  const { group } = useLoadedData();
+  const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={group.name}>
+    <Pages.Page title={space.name!}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation group={group} activeTab="overview" />
+          <SpacePageNavigation space={space} activeTab="overview" />
 
           <div className="mt-12">
             <div className="font-medium flex items-center gap-2 justify-center mb-2">
-              {React.createElement(Icons[group.icon], { size: 48, className: group.color, strokeWidth: 1 })}
+              {React.createElement(Icons[space.icon!], { size: 48, className: space.color, strokeWidth: 1 })}
             </div>
 
-            <div className="font-bold text-4xl text-center">{group.name}</div>
+            <div className="font-bold text-4xl text-center">{space.name}</div>
 
             <div className="text-center mt-1">
-              <div className="">{group.mission}</div>
+              <div className="">{space.mission}</div>
             </div>
           </div>
 
-          <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="group-members">
-            <MemberList group={group} />
+          <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="space-members">
+            <MemberList space={space!} />
           </div>
 
-          <JoinButton group={group} />
+          <JoinButton space={space} />
 
           <Paper.DimmedSection>
             <div className="uppercase text-xs font-semibold mb-2">Activity</div>
-            <SpaceActivity space={group} />
+            <SpaceActivity space={space} />
           </Paper.DimmedSection>
         </Paper.Body>
       </Paper.Root>
@@ -59,15 +59,15 @@ function SpaceActivity({ space }) {
   return <Feed items={data!.activities!} testId="space-feed" page="space" />;
 }
 
-function JoinButton({ group }) {
+function JoinButton({ space }) {
   const refresh = useRefresh();
 
   const [join] = useJoinSpaceMutation({ onCompleted: refresh });
 
-  if (group.isMember) return null;
+  if (space.isMember) return null;
 
   const handleClick = async () => {
-    await join({ variables: { input: { spaceId: group.id } } });
+    await join({ variables: { input: { spaceId: space.id } } });
   };
 
   return (

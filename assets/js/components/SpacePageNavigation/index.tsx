@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as Paper from "@/components/PaperContainer";
 
 import { DivLink } from "@/components/Link";
@@ -11,18 +11,18 @@ import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
 
-interface GroupPageNavigationProps {
-  group: Groups.Group;
+interface SpacePageNavigationProps {
+  space: Spaces.Space;
   activeTab: "overview" | "discussions" | "goals" | "projects";
 }
 
-export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationProps) {
+export function SpacePageNavigation({ space, activeTab }: SpacePageNavigationProps) {
   const { negTop, negHor } = Paper.usePaperSizeHelpers();
 
-  const overviewPath = createPath("spaces", group.id);
-  const goalsPath = createPath("spaces", group.id, "goals");
-  const projectsPath = createPath("spaces", group.id, "projects");
-  const discussionsPath = createPath("spaces", group.id, "discussions");
+  const overviewPath = createPath("spaces", space.id);
+  const goalsPath = createPath("spaces", space.id, "goals");
+  const projectsPath = createPath("spaces", space.id, "projects");
+  const discussionsPath = createPath("spaces", space.id, "discussions");
   const wrapperClassName = classNames(
     "mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t",
     negHor,
@@ -32,7 +32,7 @@ export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationPro
   return (
     <div className={wrapperClassName}>
       <div className="flex items-center justify-between">
-        <div className="font-medium pl-4 text-sm w-3/12 truncate pt-1">{group.name}</div>
+        <div className="font-medium pl-4 text-sm w-3/12 truncate pt-1">{space.name}</div>
 
         <div className="flex items-center justify-center gap-2 flex-1 w-6/12">
           <Tab id="overview" activeTab={activeTab} link={overviewPath} title="Overview" />
@@ -42,7 +42,7 @@ export function GroupPageNavigation({ group, activeTab }: GroupPageNavigationPro
         </div>
 
         <div className="font-medium pr-3 flex justify-end items-center w-3/12">
-          <Settings group={group} />
+          <Settings space={space} />
         </div>
       </div>
     </div>
@@ -78,27 +78,27 @@ function Tab({ id, activeTab, link, title }: TabProps) {
   );
 }
 
-export function Settings({ group }) {
+export function Settings({ space }) {
   return (
     <PageOptions.Root noBorder testId="space-settings">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit name and purpose"
-        to={`/spaces/${group.id}/edit`}
+        to={`/spaces/${space.id}/edit`}
         dataTestId="edit-name-and-purpose"
       />
-      {!group.isCompanySpace && (
+      {!space.isCompanySpace && (
         <PageOptions.Link
           icon={Icons.IconUserPlus}
           title="Add/Remove members"
-          to={`/spaces/${group.id}/members`}
+          to={`/spaces/${space.id}/members`}
           dataTestId="add-remove-members"
         />
       )}
       <PageOptions.Link
         icon={Icons.IconPaint}
         title="Change Appearance"
-        to={`/spaces/${group.id}/appearance`}
+        to={`/spaces/${space.id}/appearance`}
         dataTestId="change-appearance"
       />
     </PageOptions.Root>

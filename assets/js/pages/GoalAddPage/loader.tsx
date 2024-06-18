@@ -1,16 +1,16 @@
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
-import * as Groups from "@/models/groups";
+import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 interface LoaderResult {
   company: Companies.Company;
   me: People.Person;
 
-  space?: Groups.Group;
+  space?: Spaces.Space;
   spaceID?: string;
-  spaces?: Groups.Group[];
+  spaces?: Spaces.Space[];
 
   allowSpaceSelection: boolean;
   parentGoal?: Goals.Goal;
@@ -38,9 +38,9 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   let loadedData: LoaderResult = { company, me, allowSpaceSelection, spaceID, isCompanyWide };
 
   if (spaceID) {
-    loadedData.space = await Groups.getGroup(spaceID);
+    loadedData.space = await Spaces.getSpace({ id: spaceID });
   } else {
-    loadedData.spaces = await Groups.getGroups();
+    loadedData.spaces = await Spaces.getSpaces({});
   }
 
   if (parentGoalId) {

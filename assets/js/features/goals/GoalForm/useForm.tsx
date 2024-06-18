@@ -3,7 +3,7 @@ import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
-import * as Groups from "@/models/groups";
+import * as Groups from "@/models/spaces";
 import * as Timeframes from "@/utils/timeframes";
 
 import { createPath } from "@/utils/paths";

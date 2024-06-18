@@ -8,6 +8,6 @@ const MUTATION = gql`
   }
 `;
 
-export function useEditGroupMutation(options?: any) {
+export function useEditSpaceMutation(options?: any) {
   return useMutation(MUTATION, options);
 }

@@ -1,6 +1,6 @@
 import { Goal } from ".";
 
-import * as Groups from "@/models/groups";
+import * as Groups from "@/models/spaces";
 
 interface GoalGroup {
   space: Groups.Group;

@@ -559,19 +559,6 @@ export interface GoalPermissions {
   canArchive?: boolean | null;
 }
 
-export interface Group {
-  id?: string | null;
-  name?: string | null;
-  mission?: string | null;
-  isMember?: boolean | null;
-  isCompanySpace?: boolean | null;
-  privateSpace?: boolean | null;
-  icon?: string | null;
-  color?: string | null;
-  members?: Person[] | null;
-  pointsOfContact?: GroupContact[] | null;
-}
-
 export interface GroupContact {
   id?: string | null;
   name?: string | null;
@@ -779,6 +766,19 @@ export interface Reaction {
   emoji?: string | null;
   reactionType?: string | null;
   person?: Person | null;
+}
+
+export interface Space {
+  id?: string | null;
+  name?: string | null;
+  mission?: string | null;
+  isMember?: boolean | null;
+  isCompanySpace?: boolean | null;
+  privateSpace?: boolean | null;
+  icon?: string | null;
+  color?: string | null;
+  members?: Person[] | null;
+  pointsOfContact?: GroupContact[] | null;
 }
 
 export interface Target {
@@ -1039,24 +1039,6 @@ export interface GetGoalsResult {
 }
 
 
-export interface GetGroupInput {
-
-}
-
-export interface GetGroupResult {
-
-}
-
-
-export interface GetGroupsInput {
-
-}
-
-export interface GetGroupsResult {
-
-}
-
-
 export interface GetInvitationInput {
 
 }
@@ -1148,12 +1130,22 @@ export interface GetProjectsResult {
 }
 
 
+export interface GetSpaceInput {
+  id?: string | null;
+  includeMembers?: boolean | null;
+}
+
+export interface GetSpaceResult {
+  space?: Space | null;
+}
+
+
 export interface GetSpacesInput {
 
 }
 
 export interface GetSpacesResult {
-
+  spaces?: Space[] | null;
 }
 
 
@@ -1836,14 +1828,6 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_goals", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
-  async getGroup(input: GetGroupInput): Promise<GetGroupResult> {
-    return axios.get(this.getBasePath() + "/get_group", { params: toSnake(input)}).then(({ data }) => toCamel(data));
-  }
-
-  async getGroups(input: GetGroupsInput): Promise<GetGroupsResult> {
-    return axios.get(this.getBasePath() + "/get_groups", { params: toSnake(input)}).then(({ data }) => toCamel(data));
-  }
-
   async getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
     return axios.get(this.getBasePath() + "/get_invitation", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -1882,6 +1866,10 @@ export class ApiClient {
 
   async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
     return axios.get(this.getBasePath() + "/get_projects", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
+  async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
+    return axios.get(this.getBasePath() + "/get_space", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
   async getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
@@ -2198,12 +2186,6 @@ export async function getGoalCheckIns(input: GetGoalCheckInsInput) : Promise<Get
 export async function getGoals(input: GetGoalsInput) : Promise<GetGoalsResult> {
   return defaultApiClient.getGoals(input);
 }
-export async function getGroup(input: GetGroupInput) : Promise<GetGroupResult> {
-  return defaultApiClient.getGroup(input);
-}
-export async function getGroups(input: GetGroupsInput) : Promise<GetGroupsResult> {
-  return defaultApiClient.getGroups(input);
-}
 export async function getInvitation(input: GetInvitationInput) : Promise<GetInvitationResult> {
   return defaultApiClient.getInvitation(input);
 }
@@ -2233,6 +2215,9 @@ export async function getProjectCheckIn(input: GetProjectCheckInInput) : Promise
 }
 export async function getProjects(input: GetProjectsInput) : Promise<GetProjectsResult> {
   return defaultApiClient.getProjects(input);
+}
+export async function getSpace(input: GetSpaceInput) : Promise<GetSpaceResult> {
+  return defaultApiClient.getSpace(input);
 }
 export async function getSpaces(input: GetSpacesInput) : Promise<GetSpacesResult> {
   return defaultApiClient.getSpaces(input);
@@ -2485,14 +2470,6 @@ export function useGetGoals(input: GetGoalsInput) : UseQueryHookResult<GetGoalsR
   return useQuery<GetGoalsResult>(() => defaultApiClient.getGoals(input));
 }
 
-export function useGetGroup(input: GetGroupInput) : UseQueryHookResult<GetGroupResult> {
-  return useQuery<GetGroupResult>(() => defaultApiClient.getGroup(input));
-}
-
-export function useGetGroups(input: GetGroupsInput) : UseQueryHookResult<GetGroupsResult> {
-  return useQuery<GetGroupsResult>(() => defaultApiClient.getGroups(input));
-}
-
 export function useGetInvitation(input: GetInvitationInput) : UseQueryHookResult<GetInvitationResult> {
   return useQuery<GetInvitationResult>(() => defaultApiClient.getInvitation(input));
 }
@@ -2531,6 +2508,10 @@ export function useGetProjectCheckIn(input: GetProjectCheckInInput) : UseQueryHo
 
 export function useGetProjects(input: GetProjectsInput) : UseQueryHookResult<GetProjectsResult> {
   return useQuery<GetProjectsResult>(() => defaultApiClient.getProjects(input));
+}
+
+export function useGetSpace(input: GetSpaceInput) : UseQueryHookResult<GetSpaceResult> {
+  return useQuery<GetSpaceResult>(() => defaultApiClient.getSpace(input));
 }
 
 export function useGetSpaces(input: GetSpacesInput) : UseQueryHookResult<GetSpacesResult> {
@@ -2836,10 +2817,6 @@ export default {
   useGetGoalCheckIns,
   getGoals,
   useGetGoals,
-  getGroup,
-  useGetGroup,
-  getGroups,
-  useGetGroups,
   getInvitation,
   useGetInvitation,
   getKeyResources,
@@ -2860,6 +2837,8 @@ export default {
   useGetProjectCheckIn,
   getProjects,
   useGetProjects,
+  getSpace,
+  useGetSpace,
   getSpaces,
   useGetSpaces,
   getTask,

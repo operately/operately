@@ -1653,8 +1653,6 @@ export type RootQueryType = {
   discussions?: Maybe<Array<Maybe<Discussion>>>;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
-  group?: Maybe<Group>;
-  groups?: Maybe<Array<Maybe<Group>>>;
   homeDashboard: Dashboard;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
@@ -1731,11 +1729,6 @@ export type RootQueryTypeGoalsArgs = {
   includeLongerTimeframes?: InputMaybe<Scalars['Boolean']['input']>;
   spaceId?: InputMaybe<Scalars['ID']['input']>;
   timeframe?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type RootQueryTypeGroupArgs = {
-  id: Scalars['ID']['input'];
 };
 
 

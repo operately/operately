@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-import * as Groups from "@/models/groups";
+import * as Groups from "@/models/spaces";
 
 interface LoaderResult {
   project: Projects.Project;

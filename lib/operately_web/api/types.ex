@@ -228,7 +228,7 @@ defmodule OperatelyWeb.Api.Types do
     field :objectives, list_of(:objective)
   end
 
-  object :group do
+  object :space do
     field :id, :string
     field :name, :string
     field :mission, :string

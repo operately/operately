@@ -1,7 +1,7 @@
 import type { SortColumn, SortDirection } from "./";
 
 import * as People from "@/models/people";
-import * as Groups from "@/models/groups";
+import * as Groups from "@/models/spaces";
 import * as Time from "@/utils/time";
 
 export type NodeTypes = "goal" | "project";

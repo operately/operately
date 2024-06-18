@@ -2,7 +2,7 @@ import React from "react";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-import { GroupPageNavigation } from "@/components/GroupPageNavigation";
+import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { DivLink } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -15,10 +15,10 @@ export function Page() {
   const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={space.name}>
+    <Pages.Page title={space.name!}>
       <Paper.Root size="large">
         <Paper.Body minHeight="500px">
-          <GroupPageNavigation group={space} activeTab="discussions" />
+          <SpacePageNavigation space={space} activeTab="discussions" />
           <div className="mt-4 mb-8 flex items-center justify-between">
             <div className="text-2xl font-extrabold">Discussions</div>
             <FilledButton

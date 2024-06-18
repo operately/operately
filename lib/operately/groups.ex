@@ -118,7 +118,8 @@ defmodule Operately.Groups do
     query = (
       from p in Person,
       join: m in Member, on: m.person_id == p.id,
-      where: m.group_id == ^group.id and not p.suspended
+      where: m.group_id == ^group.id and not p.suspended,
+      order_by: p.full_name
     )
 
     Repo.all(query)
