@@ -33,7 +33,6 @@ export function Page() {
   }
 
   const me = data.me;
-  console.log(me);
 
   return (
     <Paper.Root size="small">
