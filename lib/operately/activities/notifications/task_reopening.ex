@@ -1,5 +1,6 @@
 defmodule Operately.Activities.Notifications.TaskReopening do
-  def dispatch(activity) do
-    raise "Notification dispatcher for TaskReopening not implemented"
+  def dispatch(_activity) do
+    # Notification dispatcher for TaskReopening not implemented yet
+    {:ok, []}
   end
 end

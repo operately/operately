@@ -1,5 +1,6 @@
 defmodule Operately.Activities.Notifications.TaskAssigneeAssignment do
-  def dispatch(activity) do
-    raise "Notification dispatcher for TaskAssigneeAssignment not implemented"
+  def dispatch(_activity) do
+    # Notification dispatcher for TaskAssigneeAssignment not implemented yet
+    {:ok, []}
   end
 end
