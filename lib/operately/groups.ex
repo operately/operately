@@ -68,7 +68,7 @@ defmodule Operately.Groups do
 
     Multi.new()
     |> Multi.update(:group, changeset)
-    |> Activities.insert(author.id, :group_edited, fn _ -> %{
+    |> Activities.insert_sync(author.id, :group_edited, fn _ -> %{
       company_id: group.company_id,
       group_id: group.id,
       old_name: group.name,
