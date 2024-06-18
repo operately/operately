@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Graphql.Mutations.People do
           full_name: args.input.full_name,
           title: args.input.title,
           timezone: args.input.timezone,
-          blob_id: args.input.avatar_blob_id,
+          avatar_blob_id: args.input.avatar_blob_id,
           avatar_url: args.input.avatar_url,
           manager_id: args.input[:manager_id]
         })
