@@ -89,7 +89,7 @@ defmodule Operately.AccessContextsTest do
     test "create access_context for a project", ctx do
       project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
 
-      assert nil != Access.get_context_by_project!(project.id)
+      assert nil != Access.get_context!(project_id: project.id)
     end
 
     test "access_context cannot be attached to more than one entity", ctx do

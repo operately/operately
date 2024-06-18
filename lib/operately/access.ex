@@ -16,10 +16,6 @@ defmodule Operately.Access do
     Repo.get_by!(Context, attrs)
   end
 
-  def get_context_by_project!(project_id) do
-    Repo.get_by!(Context, project_id: project_id)
-  end
-
   def create_context(attrs \\ %{}) do
     %Context{}
     |> Context.changeset(attrs)
