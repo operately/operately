@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Spaces from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
@@ -9,7 +10,7 @@ import { Form, useForm } from "@/features/DiscussionForm";
 export function Page() {
   const { discussion } = useLoadedData();
 
-  const form = useForm({ space: discussion.space, discussion, mode: "edit" });
+  const form = useForm({ space: discussion.space as Spaces.Space, discussion, mode: "edit" });
 
   return (
     <Pages.Page title={"Edit Post"}>

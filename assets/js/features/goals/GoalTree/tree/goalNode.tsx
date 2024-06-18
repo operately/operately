@@ -6,6 +6,7 @@ import { Paths } from "@/routes/paths";
 
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
+import * as Spaces from "@/models/spaces";
 
 export class GoalNode extends Node {
   public goal: Goal;
@@ -25,7 +26,7 @@ export class GoalNode extends Node {
     this.progress = this.goal.progressPercentage;
     this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
 
-    this.space = goal.space;
+    this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space.id;
   }
 

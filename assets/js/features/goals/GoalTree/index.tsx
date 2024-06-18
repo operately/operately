@@ -145,7 +145,7 @@ function NodeSpace({ node }: { node: Node }) {
   return (
     <div className="text-sm w-24 truncate">
       <DivLink
-        to={Paths.spaceGoalsPath(node.space.id)}
+        to={Paths.spaceGoalsPath(node.space!.id!)}
         className="hover:underline decoration-content-subtle font-medium"
       >
         {node.space.name}

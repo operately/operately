@@ -1,7 +1,7 @@
 import type { SortColumn, SortDirection } from "./";
 
 import * as People from "@/models/people";
-import * as Groups from "@/models/spaces";
+import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
 
 export type NodeTypes = "goal" | "project";
@@ -23,7 +23,7 @@ export abstract class Node {
   public parent: Node | undefined;
   public children: Node[];
   public hasChildren: boolean;
-  public space: Groups.Group;
+  public space: Spaces.Space;
   public isClosed: boolean;
   public progress: number;
   public lastCheckInDate: Date | null;
@@ -94,7 +94,7 @@ export abstract class Node {
     if (this.space.isCompanySpace && !b.space.isCompanySpace) return -1;
     if (!this.space.isCompanySpace && b.space.isCompanySpace) return 1;
 
-    return this.space.name.localeCompare(b.name);
+    return this.space.name!.localeCompare(b.name);
   }
 
   compareLastCheckIn(b: Node): number {

@@ -93,7 +93,7 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
-      spaceId: marketing.id,
+      spaceId: marketing.id!,
     });
 
     const expected = `
@@ -117,7 +117,7 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
-      spaceId: marketing.id,
+      spaceId: marketing.id!,
     });
 
     const expected = `
