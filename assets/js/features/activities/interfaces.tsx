@@ -16,8 +16,6 @@ export interface ActivityHandler {
   NotificationTitle(props: { activity: Activity }): JSX.Element | string;
   NotificationLocation(props: { activity: Activity }): JSX.Element | string | null;
 
-  // CommentNotificationTitle(props: { activity: Activity }): JSX.Element;
-
   // Comments
   commentCount(activity: Activity): number;
   hasComments(activity: Activity): boolean;
