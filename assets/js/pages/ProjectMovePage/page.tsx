@@ -50,12 +50,12 @@ function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; 
     onCompleted: gotoProject,
   });
 
-  const moveProjectToSpace = async (project: Projects.Project, group: Groups.Group) => {
+  const moveProjectToSpace = async (project: Projects.Project, space: Spaces.Space) => {
     await move({
       variables: {
         input: {
           projectId: project.id,
-          spaceId: group.id,
+          spaceId: space.id!,
         },
       },
     });
@@ -68,12 +68,12 @@ function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; 
       </div>
 
       <SpaceCardGrid>
-        {candidateSpaces.map((group) => (
+        {candidateSpaces.map((space) => (
           <SpaceCard
-            key={group.id}
-            group={group}
-            testId={`space-${group.id}`}
-            onClick={() => moveProjectToSpace(project, group)}
+            key={space.id!}
+            space={space}
+            testId={`space-${space.id}`}
+            onClick={() => moveProjectToSpace(project, space)}
           />
         ))}
       </SpaceCardGrid>
