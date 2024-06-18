@@ -8,13 +8,12 @@ import { SpaceCardLink, SpaceCardGrid } from "@/components/SpaceCards";
 
 import { useLoadedData } from "./loader";
 
-
 export function Page() {
-  const { company, groups } = useLoadedData();
+  const { company, spaces } = useLoadedData();
 
-  const sortedAndFilteredGroups = [...groups]
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .filter((group) => group.id !== company.companySpaceId);
+  const sortedAndFilteredSpaces = [...spaces]
+    .sort((a, b) => a.name!.localeCompare(b.name!))
+    .filter((space) => space.id !== company.companySpaceId);
 
   return (
     <Pages.Page title="Lobby">
@@ -28,7 +27,7 @@ export function Page() {
           </div>
 
           <SpaceCardLink
-            group={{
+            space={{
               name: "Company Space",
               color: "text-cyan-500",
               icon: "IconBuildingEstate",
@@ -44,7 +43,7 @@ export function Page() {
         <div className="flex items-center justify-center mt-8 mb-8">
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>
 
-          <GhostButton testId="add-group" linkTo="/spaces/new" type="primary">
+          <GhostButton testId="add-space" linkTo="/spaces/new" type="primary">
             Add a new Space
           </GhostButton>
 
@@ -52,8 +51,8 @@ export function Page() {
         </div>
 
         <SpaceCardGrid>
-          {sortedAndFilteredGroups.map((group) => (
-            <SpaceCardLink key={group.id} group={group} />
+          {sortedAndFilteredSpaces.map((space) => (
+            <SpaceCardLink key={space.id} space={space} />
           ))}
         </SpaceCardGrid>
       </Paper.Root>
