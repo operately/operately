@@ -15,7 +15,7 @@ import ActivityHandler from "@/features/activities";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
 
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 
 interface LoaderResult {
   notifications: Api.Notification[];
@@ -113,19 +113,17 @@ function NotificationItem({ notification }: any) {
   const testId = "notification-item" + "-" + notification.activity.action;
 
   const goToActivity = useNavigateTo(ActivityHandler.pagePath(notification.activity));
-  const [mark] = useMarkAsRead();
+  const [mark] = Notifications.useMarkNotificationAsRead();
   const refresh = Pages.useRefresh();
 
   const clickHandler = React.useCallback(async () => {
-    await mark({ variables: { id: notification.id } });
+    await mark({ id: notification.id });
     goToActivity();
   }, []);
 
   const closeHandler = React.useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    await mark({ variables: { id: notification.id } });
-
+    await mark({ id: notification.id });
     refresh();
   }, []);
 
@@ -160,16 +158,6 @@ function NotificationItem({ notification }: any) {
       )}
     </div>
   );
-}
-
-function useMarkAsRead() {
-  return useMutation(gql`
-    mutation MarkNotificationAsRead($id: ID!) {
-      markNotificationAsRead(id: $id) {
-        id
-      }
-    }
-  `);
 }
 
 export function useSubscribeToChanges() {

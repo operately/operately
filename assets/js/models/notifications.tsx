@@ -25,3 +25,4 @@ export function useUnreadCount() {
 }
 
 export const useMarkAllNotificationsAsRead = Api.useMarkAllNotificationsAsRead;
+export const useMarkNotificationAsRead = Api.useMarkNotificationAsRead;

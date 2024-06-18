@@ -1536,7 +1536,7 @@ export interface MarkAllNotificationsAsReadResult {
 
 
 export interface MarkNotificationAsReadInput {
-
+  id?: string | null;
 }
 
 export interface MarkNotificationAsReadResult {

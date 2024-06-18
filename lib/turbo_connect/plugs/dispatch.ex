@@ -18,7 +18,10 @@ defmodule TurboConnect.Plugs.Dispatch do
         conn 
         |> put_resp_content_type("application/json")
         |> send_resp(200, Jason.encode!(result))
-      {:error, body} -> conn |> send_resp(500, body)
+
+      {:error, :not_found} -> conn |> send_resp(404, "Not found")
+      {:error, _body} -> conn |> send_resp(500, "Internal Server Error")
+      _ -> conn |> send_resp(500, "Internal Server Error")
     end
   rescue
     e -> 
