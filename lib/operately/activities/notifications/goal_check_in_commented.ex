@@ -1,6 +1,6 @@
 defmodule Operately.Activities.Notifications.GoalCheckInCommented do
   def dispatch(activity) do
-    goal_id = activity.content.goal_id
+    goal_id = activity.content["goal_id"]
     goal = Operately.Goals.get_goal!(goal_id)
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
 
@@ -8,7 +8,7 @@ defmodule Operately.Activities.Notifications.GoalCheckInCommented do
 
     notifications = Enum.map(people, fn person ->
       %{
-        person_id: person.id,
+        person_id: person,
         activity_id: activity.id,
         should_send_email: true,
       }
