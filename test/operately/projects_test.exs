@@ -53,7 +53,7 @@ defmodule Operately.ProjectsTest do
       assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
       assert project.name == "some name"
 
-      assert nil != Operately.Access.get_context_by_project!(project.id)
+      assert nil != Operately.Access.get_context!(project_id: project.id)
     end
 
     test "update_project/2 with valid data updates the project", ctx do
