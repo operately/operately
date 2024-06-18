@@ -1,7 +1,6 @@
 defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
   use Operately.DataCase
 
-  import Operately.AccessFixtures, only: [context_fixture: 1]
   import Operately.CompaniesFixtures
   import Operately.ActivitiesFixtures
   import Operately.PeopleFixtures
@@ -15,7 +14,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
 
   setup do
     company = company_fixture()
-    context_fixture(%{company_id: company.id})
     company = Repo.preload(company, :access_context)
 
     author = person_fixture_with_account(%{company_id: company.id})
@@ -88,7 +86,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
   describe "assigns access_context to space activities" do
     setup ctx do
       group = group_fixture(ctx.author)
-      context_fixture(%{group_id: group.id})
       group = Repo.preload(group, :access_context)
 
       Map.merge(ctx, %{group: group})
@@ -295,7 +292,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       group = group_fixture(ctx.author)
 
       goal = goal_fixture(ctx.author, %{space_id: group.id, targets: []})
-      context_fixture(%{goal_id: goal.id})
       goal = Repo.preload(goal, :access_context)
 
       Map.merge(ctx, %{goal: goal})
@@ -835,7 +831,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
 
     test "entity_type is :update", ctx do
       goal = goal_fixture(ctx.author, %{space_id: ctx.group.id, targets: []})
-      context_fixture(%{goal_id: goal.id})
       goal = Repo.preload(goal, :access_context)
 
       comment = comment_fixture(ctx.author, %{entity_id: goal.id, entity_type: :update})

@@ -30,7 +30,7 @@ defmodule Operately.Data.Change011CreateCompaniesAccessContextTest do
 
     assert nil != Access.get_context!(company_id: company_with_context.id)
 
-    Change012CreateCompaniesAccessContext.run()
+    Change011CreateCompaniesAccessContext.run()
 
     assert nil != Access.get_context!(company_id: company_without_context.id)
   end
