@@ -1,10 +1,12 @@
 import * as React from "react";
 import * as Timeframes from "@/utils/timeframes";
+import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalEditing } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
+import { Paths } from "@/routes/paths";
 import { goalLink, feedTitle } from "../feedItemLinks";
 
 const GoalEditing: ActivityHandler = {
@@ -12,8 +14,8 @@ const GoalEditing: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -59,12 +61,12 @@ const GoalEditing: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " " + shortDesc(content(activity));
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 
@@ -148,4 +150,29 @@ function DeletedTargets({ content }: { content: ActivityContentGoalEditing }) {
       </ul>
     </div>
   );
+}
+
+function shortDesc(content: ActivityContentGoalEditing): string {
+  const oldTimeframe = Timeframes.parse(content.oldTimeframe!);
+  const newTimeframe = Timeframes.parse(content.newTimeframe!);
+
+  const changes = {
+    name: content.oldName !== content.newName,
+    timeframe: !Timeframes.equalDates(oldTimeframe, newTimeframe),
+    champion: content.oldChampionId !== content.newChampionId,
+    reviewer: content.oldReviewerId !== content.newReviewerId,
+    measurements: content.addedTargets!.length + content.updatedTargets!.length + content.deletedTargets!.length > 0,
+  };
+
+  const activeChanges = Object.keys(changes).filter((key) => changes[key]);
+
+  return "changed the goal's " + joinChanges(activeChanges);
+}
+
+function joinChanges(changes: string[]): string {
+  if (changes.length === 0) return "";
+  if (changes.length === 1) return changes[0]!;
+  if (changes.length === 2) return changes[0]! + " and " + changes[1]!;
+
+  return changes.slice(0, -1).join(", ") + ", and " + changes[changes.length - 1]!;
 }

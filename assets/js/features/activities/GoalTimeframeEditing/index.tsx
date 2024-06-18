@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import * as People from "@/models/people";
 
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
@@ -114,12 +115,12 @@ export const GoalTimeframeEditing: ActivityHandler = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " edited the goal's timeframe";
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    return <>commented on the goal timeframe change</>;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 

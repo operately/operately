@@ -13,7 +13,7 @@ const GoalArchived: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    return Paths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
