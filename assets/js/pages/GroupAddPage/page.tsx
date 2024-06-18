@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
-import * as Groups from "@/graphql/Groups";
+import * as Spaces from "@/models/spaces";
 
-import { GroupColorChooser } from "@/components/GroupColorChooser";
-import { GroupIconChooser } from "@/components/GroupIconChooser";
+import { SpaceColorChooser } from "@/components/SpaceColorChooser";
+import { SpaceIconChooser } from "@/components/SpaceIconChooser";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   return (
@@ -23,7 +24,7 @@ export function Page() {
 function Form() {
   let navigate = useNavigate();
 
-  const [createGroup, { loading }] = Groups.useCreateGroup();
+  const [createGroup, { loading }] = Spaces.useCreateSpace();
 
   const [name, setName] = React.useState("");
   const [mission, setMission] = React.useState("");
@@ -47,7 +48,7 @@ function Form() {
       },
     });
 
-    navigate(`/spaces/${res.data.createGroup.id}`);
+    navigate(Paths.spacePath(res.data?.createGroup.id!));
   };
 
   const onCancel = () => navigate("/");
@@ -70,11 +71,11 @@ function Form() {
       />
 
       <div>
-        <GroupColorChooser color={color} setColor={setColor} name={name} />
+        <SpaceColorChooser color={color} setColor={setColor} name={name} />
       </div>
 
       <div>
-        <GroupIconChooser icon={icon} setIcon={setIcon} color={color} name={name} />
+        <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} name={name} />
       </div>
 
       <Forms.SubmitArea>

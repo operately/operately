@@ -4,13 +4,13 @@ import classnames from "classnames";
 
 import * as Icons from "@tabler/icons-react";
 
-interface GroupColorChooserProps {
+interface SpaceColorChooserProps {
   color: string;
   name: string;
   setColor: (color: string) => void;
 }
 
-export function GroupColorChooser({ color, name, setColor }: GroupColorChooserProps) {
+export function SpaceColorChooser({ color, name, setColor }: SpaceColorChooserProps) {
   return (
     <>
       <h2 className="font-bold">Color</h2>
