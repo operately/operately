@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Graphql.Types.Blobs do
   use Absinthe.Schema.Notation
 
   object :blob do
+    field :id, non_null(:id)
     field :author, non_null(:person)
     field :status, non_null(:string)
     field :filename, non_null(:string)
