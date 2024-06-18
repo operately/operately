@@ -101,12 +101,12 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   step :assert_project_created_notification_sent, ctx, fields do
     people = who_should_be_notified(fields)
 
-    Enum.reduce(people, ctx, fn {person, role}, ctx ->
+    Enum.reduce(people, ctx, fn {person, _role}, ctx ->
       ctx
       |> UI.login_as(person)
       |> NotificationsSteps.assert_notification_exists(
         author: fields.creator,
-        subject: "#{Person.first_name(fields.creator)} created a new project and assigned you as the #{role}"
+        subject: "#{Person.first_name(fields.creator)} started the #{fields.name} project"
       )
     end)
   end

@@ -49,7 +49,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
     |> UI.visit("/notifications")
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "commented on: #{ctx.milestone.title}"
+      action: "commented on #{ctx.milestone.title}"
     })
   end
 

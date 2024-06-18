@@ -50,7 +50,7 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   @tag login_as: :champion
-  feature "pausing and resuming a project", ctx do
+  feature "pausing a project", ctx do
     ctx
     |> Steps.visit_project_page()
     |> Steps.pause_project()

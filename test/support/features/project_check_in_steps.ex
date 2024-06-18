@@ -86,7 +86,7 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   def open_check_in_from_notifications(ctx, %{status: _status, description: _description}) do
     ctx
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "project-check-in-submitted")
+    |> UI.click(testid: "notification-item-project_check_in_submitted")
   end
 
   def acknowledge_check_in(ctx) do

@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import * as People from "@/models/people";
 
 import * as Icons from "@tabler/icons-react";
 
@@ -82,12 +83,12 @@ const GoalClosing: ActivityHandler = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return <>Goal closed</>;
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " closed the goal";
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    return <>commented on the goal closing</>;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 

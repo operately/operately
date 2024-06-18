@@ -1,16 +1,20 @@
+import * as People from "@/models/people";
+
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, goalLink } from "../feedItemLinks";
+import { Paths } from "@/routes/paths";
+import { match } from "ts-pattern";
 
 const GoalCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -45,12 +49,19 @@ const GoalCreated: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const myRole = content(activity).goal!.myRole!;
+    const person = People.firstName(activity.author!);
+    const role = match(myRole)
+      .with("champion", () => "the champion")
+      .with("reviewer", () => "the reviewer")
+      .otherwise(() => "a contributor");
+
+    return person + " added a new goal and assigned you as " + role;
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return goalLink(content(activity).goal!);
   },
 };
 

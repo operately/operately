@@ -1,7 +1,14 @@
 import * as React from "react";
+import * as People from "@/models/people";
 
 import type { ActivityHandler } from "../interfaces";
-import type { Activity, ActivityContentCommentAdded, ActivityContentGoalTimeframeEditing } from "@/api";
+import type {
+  Activity,
+  ActivityContentCommentAdded,
+  ActivityContentGoalClosing,
+  ActivityContentGoalDiscussionCreation,
+  ActivityContentGoalTimeframeEditing,
+} from "@/api";
 
 import { match } from "ts-pattern";
 import { Paths } from "@/routes/paths";
@@ -14,8 +21,25 @@ const CommentAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    const commentedActivity = content(activity).activity!;
+
+    return match(commentedActivity.action)
+      .with("goal_timeframe_editing", () => {
+        const content = commentedActivity.content as ActivityContentGoalTimeframeEditing;
+        return Paths.goalActivityPath(content.goal!.id!, commentedActivity.id!);
+      })
+      .with("goal_closing", () => {
+        const content = commentedActivity.content as ActivityContentGoalClosing;
+        return Paths.goalActivityPath(content.goal!.id!, commentedActivity.id!);
+      })
+      .with("goal_discussion_creation", () => {
+        const content = commentedActivity.content as ActivityContentGoalDiscussionCreation;
+        return Paths.goalActivityPath(content.goal!.id!, commentedActivity.id!);
+      })
+      .otherwise(() => {
+        throw new Error("Comment added not implemented for action: " + commentedActivity.action);
+      });
   },
 
   PageTitle(_props: { activity: any }) {
@@ -47,7 +71,7 @@ const CommentAdded: ActivityHandler = {
         }
       })
       .with("goal_closing", () => {
-        const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
+        const c = commentedActivity.content as ActivityContentGoalClosing;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
         const activityLink = <Link to={path}>goal closing</Link>;
@@ -59,7 +83,7 @@ const CommentAdded: ActivityHandler = {
         }
       })
       .with("goal_discussion_creation", () => {
-        const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
+        const c = commentedActivity.content as ActivityContentGoalDiscussionCreation;
         const goal = c.goal!;
         const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
         const activityLink = <Link to={path}>{commentedActivity.commentThread!.title}</Link>;
@@ -90,12 +114,39 @@ const CommentAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const commentedActivity = content(activity).activity!;
+    const person = People.firstName(activity.author!);
+    const action = match(commentedActivity.action)
+      .with("goal_timeframe_editing", () => "timeframe change")
+      .with("goal_closing", () => "goal closing")
+      .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
+      .otherwise(() => {
+        throw new Error("Comment added not implemented for action: " + commentedActivity.action);
+      });
+
+    return person + " commented on " + action;
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    const commentedActivity = content(activity).activity!;
+
+    return match(commentedActivity.action)
+      .with("goal_timeframe_editing", () => {
+        const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
+        return c.goal!.name!;
+      })
+      .with("goal_closing", () => {
+        const c = commentedActivity.content as ActivityContentGoalClosing;
+        return c.goal!.name!;
+      })
+      .with("goal_discussion_creation", () => {
+        const c = commentedActivity.content as ActivityContentGoalDiscussionCreation;
+        return c.goal!.name!;
+      })
+      .otherwise(() => {
+        throw new Error("Comment added not implemented for action: " + commentedActivity.action);
+      });
   },
 };
 

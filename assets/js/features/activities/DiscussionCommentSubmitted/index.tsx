@@ -1,19 +1,18 @@
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
-import type { ActivityContentGoalArchived } from "@/api";
+import type { ActivityContentDiscussionCommentSubmitted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
 
-const GoalArchived: ActivityHandler = {
+const DiscussionCommentSubmitted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return Paths.goalPath(content(activity).goal!.id!);
+  pagePath(_activity: Activity): string {
+    return Paths.discussionPath(content(_activity).space!.id!, content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -28,16 +27,12 @@ const GoalArchived: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    if (page === "goal") {
-      return feedTitle(activity, "archived this goal");
-    } else {
-      return feedTitle(activity, "archived the", goalLink(content(activity).goal!), "goal");
-    }
+  FeedItemTitle(_props: { activity: Activity; page: any }) {
+    throw new Error("Not implemented");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+    throw new Error("Not implemented");
   },
 
   commentCount(_activity: Activity): number {
@@ -49,16 +44,16 @@ const GoalArchived: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " archived the " + content(activity).goal!.name! + " goal";
+    return People.firstName(activity.author!) + " commented on: " + content(activity).discussion!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).goal!.name!;
+    return content(activity).space!.name!;
   },
 };
 
-function content(activity: Activity): ActivityContentGoalArchived {
-  return activity.content as ActivityContentGoalArchived;
+function content(activity: Activity): ActivityContentDiscussionCommentSubmitted {
+  return activity.content as ActivityContentDiscussionCommentSubmitted;
 }
 
-export default GoalArchived;
+export default DiscussionCommentSubmitted;

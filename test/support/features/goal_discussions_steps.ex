@@ -107,7 +107,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "goal-discussion-creation")
+    |> UI.click(testid: "notification-item-goal_discussion_creation")
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "post-comment")

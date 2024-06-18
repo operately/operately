@@ -2,9 +2,11 @@ import * as React from "react";
 import * as Time from "@/utils/time";
 import * as Milestones from "@/models/milestones";
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 import FormattedTime from "@/components/FormattedTime";
 
+import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -17,8 +19,8 @@ const ProjectTimelineEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -63,12 +65,12 @@ const ProjectTimelineEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " changed the project timeline";
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).project!.name!;
   },
 };
 

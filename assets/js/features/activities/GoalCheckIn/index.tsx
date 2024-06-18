@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import * as People from "@/models/people";
 import RichContent from "@/components/RichContent";
 
 import { Paths } from "@/routes/paths";
@@ -65,12 +66,12 @@ const GoalCheckIn: ActivityHandler = {
     return true;
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " updated the progress for " + content(activity).goal!.name!;
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 

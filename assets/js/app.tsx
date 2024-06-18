@@ -10,7 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import routes from "./routes";
+import { createAppRoutes } from "./routes";
 
 import Api from "@/api";
 
@@ -18,11 +18,12 @@ import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/client";
 import "./i18n";
 
+import { setupTestErrorLogger } from "@/utils/errorLogger";
 import { ThemeProvider } from "./theme";
 
-Api.configureDefault({
-  basePath: "/api/v2",
-});
+setupTestErrorLogger();
+
+Api.configureDefault({ basePath: "/api/v2" });
 
 if (window.appConfig.sentry.enabled) {
   Sentry.init({
@@ -43,6 +44,7 @@ if (window.appConfig.sentry.enabled) {
 }
 
 const rootElement: HTMLElement | null = document.getElementById("root");
+const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>

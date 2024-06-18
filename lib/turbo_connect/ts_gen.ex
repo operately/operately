@@ -49,6 +49,14 @@ defmodule TurboConnect.TsGen do
         this.basePath = config.basePath;
       }
 
+      getBasePath() {
+        if (!this.basePath) {
+          throw new Error("ApiClient is not configured");
+        }
+
+        return this.basePath;
+      }
+
     #{Queries.generate_class_functions(api_module.__queries__())}
     #{Mutations.generate_class_functions(api_module.__mutations__())}
     }

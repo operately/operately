@@ -5,14 +5,15 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "./../feedItemLinks";
+import { Paths } from "@/routes/paths";
 
 const ProjectContributorAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -50,12 +51,12 @@ const ProjectContributorAddition: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " added you as a contributor";
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).project!.name!;
   },
 };
 

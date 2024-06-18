@@ -250,7 +250,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "goal-timeframe-editing")
+    |> UI.click(testid: "notification-item-goal_timeframe_editing")
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("I think the timeframe extension is a good idea.")
     |> UI.click(testid: "post-comment")
@@ -280,14 +280,14 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal timeframe change"})
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on timeframe change"})
   end
 
   step :comment_on_the_goal_closed, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "goal-closing")
+    |> UI.click(testid: "notification-item-goal_closing")
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("I think we did a great job!")
     |> UI.click(testid: "post-comment")
@@ -317,7 +317,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on the goal closing"})
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on goal closing"})
   end
 
   step :close_goal, ctx, params do
@@ -410,7 +410,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "closed the #{ctx.goal.name} goal"
+      action: "closed the goal"
     })
   end
 

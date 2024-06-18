@@ -31,7 +31,7 @@ defmodule Operately.Activities.Preloader do
     ids = Enum.map(references, &elem(&1, 3)) |> Enum.uniq()
 
     query = from r in schema, where: r.id in ^ids
-    opts = [include_deleted: true]
+    opts = [with_deleted: true]
     records = Repo.all(query, opts) |> Enum.map(fn r -> {r.id, r} end) |> Map.new()
 
     inject(activities, references, records)

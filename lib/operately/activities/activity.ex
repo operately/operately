@@ -10,6 +10,7 @@ defmodule Operately.Activities.Activity do
     "project_review_request_submitted",
     "project_review_acknowledged",
     "project_review_commented",
+    "project_discussion_comment_submitted"
   ]
 
   schema "activities" do
