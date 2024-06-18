@@ -57,7 +57,7 @@ export function useForm(space: Spaces.Space): FormState {
 function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
-  const [create, { loading: submitting }] = Spaces.useEditGroupMutation({
+  const [create, { loading: submitting }] = Spaces.useEditSpaceMutation({
     onCompleted: () => navigate(Paths.spacePath(fields.space.id!)),
   });
 

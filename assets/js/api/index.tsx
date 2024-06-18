@@ -125,7 +125,7 @@ export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
   discussion?: Discussion | null;
-  space?: Group | null;
+  space?: Space | null;
   title?: string | null;
 }
 
@@ -140,7 +140,7 @@ export interface ActivityContentDiscussionPosting {
   spaceId?: string | null;
   title?: string | null;
   discussionId?: string | null;
-  space?: Group | null;
+  space?: Space | null;
   discussion?: Discussion | null;
 }
 
@@ -308,8 +308,8 @@ export interface ActivityContentProjectMilestoneCommented {
 
 export interface ActivityContentProjectMoved {
   project?: Project | null;
-  oldSpace?: Group | null;
-  newSpace?: Group | null;
+  oldSpace?: Space | null;
+  newSpace?: Space | null;
 }
 
 export interface ActivityContentProjectPausing {
@@ -367,7 +367,7 @@ export interface ActivityContentProjectTimelineEdited {
 export interface ActivityContentSpaceJoining {
   companyId?: string | null;
   spaceId?: string | null;
-  space?: Group | null;
+  space?: Space | null;
 }
 
 export interface ActivityContentTaskAdding {
@@ -496,14 +496,8 @@ export interface Company {
   trustedEmailDomains?: string[] | null;
   enabledExperimentalFeatures?: string[] | null;
   companySpaceId?: string | null;
-  tenets?: Tenet[] | null;
   admins?: Person[] | null;
   people?: Person[] | null;
-}
-
-export interface Dashboard {
-  id?: string | null;
-  panels?: Panel[] | null;
 }
 
 export interface Discussion {
@@ -514,7 +508,7 @@ export interface Discussion {
   author?: Person | null;
   title?: string | null;
   body?: string | null;
-  space?: Group | null;
+  space?: Space | null;
   reactions?: Reaction[] | null;
   comments?: Comment[] | null;
 }
@@ -541,7 +535,7 @@ export interface Goal {
   isArchived?: boolean | null;
   isClosed?: boolean | null;
   archivedAt?: string | null;
-  space?: Group | null;
+  space?: Space | null;
   myRole?: string | null;
 }
 
@@ -559,45 +553,12 @@ export interface GoalPermissions {
   canArchive?: boolean | null;
 }
 
-export interface GroupContact {
-  id?: string | null;
-  name?: string | null;
-  type?: string | null;
-  value?: string | null;
-}
-
 export interface Invitation {
   id?: string | null;
   adminName?: string | null;
   admin?: Person | null;
   member?: Person | null;
   token?: string | null;
-}
-
-export interface KeyResult {
-  id?: string | null;
-  name?: string | null;
-  status?: string | null;
-  updatedAt?: string | null;
-  stepsCompleted?: number | null;
-  stepsTotal?: number | null;
-  owner?: Person | null;
-  group?: Group | null;
-}
-
-export interface Kpi {
-  id?: string | null;
-  name?: string | null;
-  description?: string | null;
-  unit?: string | null;
-  target?: number | null;
-  targetDirection?: string | null;
-  metrics?: KpiMetric[] | null;
-}
-
-export interface KpiMetric {
-  date?: string | null;
-  value?: number | null;
 }
 
 export interface Milestone {
@@ -623,16 +584,6 @@ export interface Notification {
   read?: boolean | null;
   readAt?: string | null;
   activity?: Activity | null;
-}
-
-export interface Objective {
-  id?: string | null;
-  name?: string | null;
-  description?: string | null;
-  owner?: Person | null;
-  keyResults?: KeyResult[] | null;
-  group?: Group | null;
-  activities?: Activity[] | null;
 }
 
 export interface Panel {
@@ -684,7 +635,7 @@ export interface Project {
   closedBy?: Person | null;
   isOutdated?: boolean | null;
   spaceId?: string | null;
-  space?: Group | null;
+  space?: Space | null;
   myRole?: string | null;
   permissions?: ProjectPermissions | null;
   nextMilestone?: Milestone | null;
@@ -778,7 +729,6 @@ export interface Space {
   icon?: string | null;
   color?: string | null;
   members?: Person[] | null;
-  pointsOfContact?: GroupContact[] | null;
 }
 
 export interface Target {
@@ -805,15 +755,6 @@ export interface Task {
   description?: string | null;
   assignees?: Person[] | null;
   creator?: Person | null;
-}
-
-export interface Tenet {
-  id?: string | null;
-  name?: string | null;
-  description?: string | null;
-  kpis?: Kpi[] | null;
-  company?: Company | null;
-  objectives?: Objective[] | null;
 }
 
 export interface Timeframe {

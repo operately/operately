@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_space_joining do
     field :company_id, :string
     field :space_id, :string
-    field :space, :group
+    field :space, :space
   end
 
   object :activity_content_goal_archived do
@@ -60,8 +60,8 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_project_moved do
     field :project, :project
-    field :old_space, :group
-    field :new_space, :group
+    field :old_space, :space
+    field :new_space, :space
   end
 
   object :update_content_project_contributor_removed do
@@ -135,7 +135,7 @@ defmodule OperatelyWeb.Api.Types do
     field :closed_by, :person
     field :is_outdated, :boolean
     field :space_id, :string
-    field :space, :group
+    field :space, :space
     field :my_role, :string
     field :permissions, :project_permissions
     field :next_milestone, :milestone
@@ -154,7 +154,7 @@ defmodule OperatelyWeb.Api.Types do
     field :author, :person
     field :title, :string
     field :body, :string
-    field :space, :group
+    field :space, :space
     field :reactions, list_of(:reaction)
     field :comments, list_of(:comment)
   end
@@ -202,30 +202,10 @@ defmodule OperatelyWeb.Api.Types do
     field :value, :float
   end
 
-  object :key_result do
-    field :id, :string
-    field :name, :string
-    field :status, :string
-    field :updated_at, :date
-    field :steps_completed, :integer
-    field :steps_total, :integer
-    field :owner, :person
-    field :group, :group
-  end
-
   object :milestone_comment do
     field :id, :string
     field :action, :string
     field :comment, :comment
-  end
-
-  object :tenet do
-    field :id, :string
-    field :name, :string
-    field :description, :string
-    field :kpis, list_of(:kpi)
-    field :company, :company
-    field :objectives, list_of(:objective)
   end
 
   object :space do
@@ -238,7 +218,6 @@ defmodule OperatelyWeb.Api.Types do
     field :icon, :string
     field :color, :string
     field :members, list_of(:person)
-    field :points_of_contact, list_of(:group_contact)
   end
 
   object :panel do
@@ -343,7 +322,7 @@ defmodule OperatelyWeb.Api.Types do
     field :space_id, :string
     field :title, :string
     field :discussion_id, :string
-    field :space, :group
+    field :space, :space
     field :discussion, :discussion
   end
 
@@ -462,13 +441,6 @@ defmodule OperatelyWeb.Api.Types do
     field :person_id, :string
   end
 
-  object :group_contact do
-    field :id, :string
-    field :name, :string
-    field :type, :string
-    field :value, :string
-  end
-
   object :goal_permissions do
     field :can_edit, :boolean
     field :can_check_in, :boolean
@@ -536,7 +508,7 @@ defmodule OperatelyWeb.Api.Types do
     field :is_archived, :boolean
     field :is_closed, :boolean
     field :archived_at, :date
-    field :space, :group
+    field :space, :space
     field :my_role, :string
   end
 
@@ -556,7 +528,7 @@ defmodule OperatelyWeb.Api.Types do
     field :space_id, :string
     field :discussion_id, :string
     field :discussion, :discussion
-    field :space, :group
+    field :space, :space
     field :title, :string
   end
 
@@ -564,16 +536,6 @@ defmodule OperatelyWeb.Api.Types do
     field :creator_role, :string
     field :creator, :person
     field :champion, :person
-  end
-
-  object :kpi do
-    field :id, :string
-    field :name, :string
-    field :description, :string
-    field :unit, :string
-    field :target, :integer
-    field :target_direction, :string
-    field :metrics, list_of(:kpi_metric)
   end
 
   object :activity_content_goal_discussion_editing do
@@ -678,16 +640,6 @@ defmodule OperatelyWeb.Api.Types do
     field :review_request_id, :string
   end
 
-  object :objective do
-    field :id, :string
-    field :name, :string
-    field :description, :string
-    field :owner, :person
-    field :key_results, list_of(:key_result)
-    field :group, :group
-    field :activities, list_of(:activity)
-  end
-
   object :update_content_status_update do
     field :message, :string
     field :old_health, :string
@@ -768,7 +720,6 @@ defmodule OperatelyWeb.Api.Types do
     field :trusted_email_domains, list_of(:string)
     field :enabled_experimental_features, list_of(:string)
     field :company_space_id, :string
-    field :tenets, list_of(:tenet)
     field :admins, list_of(:person)
     field :people, list_of(:person)
   end
@@ -906,19 +857,9 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment
   end
 
-  object :dashboard do
-    field :id, :string
-    field :panels, list_of(:panel)
-  end
-
   object :update_content_project_start_time_changed do
     field :old_start_time, :string
     field :new_start_time, :string
-  end
-
-  object :kpi_metric do
-    field :date, :date
-    field :value, :integer
   end
 
   object :project_contributor do
