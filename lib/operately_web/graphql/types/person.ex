@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Graphql.Types.Person do
     field :title, :string
     field :avatar_url, :string
     field :timezone, :string
+    field :avatar_blob_id, :id
     field :company_role, :string
     field :email, :string
 

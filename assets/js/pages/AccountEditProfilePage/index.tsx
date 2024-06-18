@@ -93,6 +93,7 @@ function ProfileForm({ me }) {
   const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
   const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ? me.avatarUrl : "");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [blobId, setBlobId] = useState(me.avatarBlobId ? me.avatarBlobId : "");
   const fileUploader = new MultipartFileUploader();
 
   const [timezone, setTimezone] = useState(() => {
@@ -106,8 +107,8 @@ function ProfileForm({ me }) {
   async function S3FileUploader(file) {
     try {
       const response = await S3Upload(file);
-      const url = response;
-      setAvatarUrl(url);
+      setBlobId(response.id);
+      setAvatarUrl(response.url);
     } catch (error) {
       throw new Error(`File upload failed: ${error.message}`);
     }
@@ -143,16 +144,18 @@ function ProfileForm({ me }) {
           timezone: timezone?.value,
           managerId: managerStatus === "select-from-list" ? manager?.id : null,
           avatarUrl: avatarUrl,
+          avatarBlobId: blobId,
         },
       },
     });
   };
 
   const handleFileUpload = async (file) => {
-    const url = await fileUploader.upload(file, (progress) => {
+    const blob = await fileUploader.upload(file, (progress) => {
       setUploadProgress(progress);
     });
-    setAvatarUrl(url);
+    setBlobId(blob.id);
+    setAvatarUrl(blob.url);
   };
 
   async function uploadFile(file) {
