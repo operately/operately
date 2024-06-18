@@ -287,7 +287,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
-    |> UI.click(testid: "goal-closing")
+    |> UI.click(testid: "notification-item-goal_closing")
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("I think we did a great job!")
     |> UI.click(testid: "post-comment")

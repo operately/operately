@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalClosing } from "@/api";
 import { Paths } from "@/routes/paths";
@@ -66,12 +67,12 @@ const GoalClosing: ActivityHandler = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " reopened the " + content(activity).goal!.name! + " goal";
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    return <>commented on the goal reopening</>;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 

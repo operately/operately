@@ -1,7 +1,10 @@
+import * as People from "@/models/people";
+
 import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalArchived } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
+import { Paths } from "@/routes/paths";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalArchived: ActivityHandler = {
@@ -9,8 +12,8 @@ const GoalArchived: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    throw new Error("Not implemented");
+  pagePath(activity: Activity): string {
+    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -45,12 +48,12 @@ const GoalArchived: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " archived the " + content(activity).goal!.name! + " goal";
   },
 
-  CommentNotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).goal!.name!;
   },
 };
 
