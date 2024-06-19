@@ -9,57 +9,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types Absinthe.Type.Custom
 
   # Types
-  import_types OperatelyWeb.Graphql.Types.Activities
   import_types OperatelyWeb.Graphql.Types.ActivityContent
-  import_types OperatelyWeb.Graphql.Types.ActivityContentCommentAdded
-  import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionCommentSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionEditing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentDiscussionPosting
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalArchived
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckIn
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckInAcknowledgement
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCheckInEdit
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalClosing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalCreated
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalDiscussionCreation
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalDiscussionEditing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalEditing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalReopening
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalReparent
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGoalTimeframeEditing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentGroupEdited
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectArchived
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInAcknowledged
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInCommented
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInEdit
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCheckInSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectClosed
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectContributorAddition
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectCreated
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectDiscussionSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectGoalConnection
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectGoalDisconnection
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectMilestoneCommented
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectMoved
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectPausing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectRenamed
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectResuming
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewAcknowledged
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewCommented
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewRequestSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectReviewSubmitted
-  import_types OperatelyWeb.Graphql.Types.ActivityContentProjectTimelineEdited
-  import_types OperatelyWeb.Graphql.Types.ActivityContentSpaceJoining
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAdding
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskAssigneeAssignment
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskClosing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskDescriptionChange
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskNameEditing
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskPriorityChange
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskReopening
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskSizeChange
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskStatusChange
-  import_types OperatelyWeb.Graphql.Types.ActivityContentTaskUpdate
   import_types OperatelyWeb.Graphql.Types.Assignments
   import_types OperatelyWeb.Graphql.Types.Blobs
   import_types OperatelyWeb.Graphql.Types.CommentThreads
