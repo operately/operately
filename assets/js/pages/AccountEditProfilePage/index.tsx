@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react";
+
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as Forms from "@/components/Form";
+import * as Pages from "@/components/Pages";
 
 import PeopleSearch from "@/components/PeopleSearch";
 
@@ -38,17 +40,19 @@ export function Page() {
   const me = data.me;
 
   return (
-    <Paper.Root size="small">
-      <Paper.Navigation>
-        <Paper.NavItem linkTo="/account">Account</Paper.NavItem>
-      </Paper.Navigation>
+    <Pages.Page title="Edit Profile">
+      <Paper.Root size="small">
+        <Paper.Navigation>
+          <Paper.NavItem linkTo="/account">Account</Paper.NavItem>
+        </Paper.Navigation>
 
-      <Paper.Body minHeight="300px">
-        <div className="mt-8 flex flex-col gap-8">
-          <ProfileForm me={me} />
-        </div>
-      </Paper.Body>
-    </Paper.Root>
+        <Paper.Body minHeight="300px">
+          <div className="mt-8 flex flex-col gap-8">
+            <ProfileForm me={me} />
+          </div>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
