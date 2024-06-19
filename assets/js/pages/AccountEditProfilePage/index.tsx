@@ -28,6 +28,7 @@ const dimmedClassName = classNames(
   "underline underline-offset-2",
   "cursor-pointer",
   "transition-colors",
+  "text-sm",
 );
 
 export function Page() {
@@ -56,20 +57,7 @@ export function Page() {
   );
 }
 
-function FileInput({ onChange, error }) {
-  const className = classNames(
-    "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border",
-    "border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal",
-    "leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3",
-    "file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none",
-    "file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3",
-    "file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150",
-    "file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem]",
-    "hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700",
-    "focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200",
-    "dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
-  );
-
+function FileInput({ onChange }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
@@ -80,18 +68,12 @@ function FileInput({ onChange, error }) {
 
   return (
     <div>
-      <div className="flex-1">
+      <div className="flex items-center justify-center">
         <FilledButton type="secondary" onClick={handleClick}>
           Upload Photo
         </FilledButton>
-        <input
-          ref={fileInputRef}
-          className={error ? "border-red-500" : `${className}`}
-          onChange={onChange}
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-        />
+
+        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" style={{ display: "none" }} />
       </div>
     </div>
   );
@@ -190,25 +172,21 @@ function ProfileForm({ me }) {
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
-      <section className="flex flex-col w-full justify-center items-center text-center">
+      <section className="flex flex-col w-full justify-center items-center text-center -mt-4">
         {avatarUrl ? <ImageAvatar person={me} size="xxlarge" /> : <BackupAvatar person={me} size="xxlarge" />}
-        <div className="ml-4 mt-2">
+
+        <div className="mt-2 flex flex-col gap-1">
           <FileInput
             onChange={async (e) => {
               const file = e.target.files[0];
               await uploadFile(file);
             }}
-            error={false}
           />
           <button className={dimmedClassName} type="button" onClick={handleRemoveAvatar}>
-            Remove Avatar and Use Initials
+            Remove Avatar and use my initials
           </button>
         </div>
       </section>
-
-      <div className="progress-container">
-        <div className="progress-bar" style={{ width: `${uploadProgress}%` }}></div>
-      </div>
 
       <div>
         <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
