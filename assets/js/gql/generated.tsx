@@ -1186,7 +1186,6 @@ export type RootMutationType = {
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
   updateNotificationSettings?: Maybe<Person>;
-  updateProfile?: Maybe<Person>;
   updateProjectContributor: ProjectContributor;
   updateProjectDescription: Project;
   updateTask: Task;
@@ -1612,11 +1611,6 @@ export type RootMutationTypeUpdateMilestoneTitleArgs = {
 
 export type RootMutationTypeUpdateNotificationSettingsArgs = {
   input: UpdateNotificationSettingsInput;
-};
-
-
-export type RootMutationTypeUpdateProfileArgs = {
-  input: UpdateProfileInput;
 };
 
 
@@ -2058,15 +2052,6 @@ export type UpdateNotificationSettingsInput = {
   notifyAboutAssignments?: InputMaybe<Scalars['Boolean']['input']>;
   notifyOnMention?: InputMaybe<Scalars['Boolean']['input']>;
   sendDailySummary?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type UpdateProfileInput = {
-  avatarBlobId?: InputMaybe<Scalars['ID']['input']>;
-  avatarUrl?: InputMaybe<Scalars['String']['input']>;
-  fullName?: InputMaybe<Scalars['String']['input']>;
-  managerId?: InputMaybe<Scalars['ID']['input']>;
-  timezone?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTargetInput = {
