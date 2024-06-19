@@ -23,7 +23,7 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
   test "GoalDiscussionCreation operation creates activity and thread", ctx do
     title = "some title"
 
-    Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal.id, title, "{}")
+    Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, title, "{}")
 
     activity = from(a in Activity,
       where: a.action == "goal_discussion_creation" and a.content["goal_id"] == ^ctx.goal.id,

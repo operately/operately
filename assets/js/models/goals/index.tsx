@@ -5,11 +5,7 @@ import { Goal, Target } from "@/gql/generated";
 
 export type { Target, Goal } from "@/gql/generated";
 
-export {
-  useEditGoalTimeframeMutation,
-  useCreateGoalDiscussionMutation,
-  useEditGoalDiscussionMutation,
-} from "@/gql/generated";
+export { useEditGoalTimeframeMutation, useEditGoalDiscussionMutation } from "@/gql/generated";
 
 export const getGoal = makeQueryFn(GetGoalDocument, "goal") as (v: GetGoalQueryVariables) => Promise<Goal>;
 export const getGoals = makeQueryFn(GetGoalsDocument, "goals") as (v: GetGoalsQueryVariables) => Promise<Goal[]>;
@@ -19,7 +15,6 @@ export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
 export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromProjectMutation";
 export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutation";
 export { useEditGoalMutation } from "./useEditGoalMutation";
-export { useCreateGoalMutation } from "./useCreateGoalMutation";
 export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";
 export { useReopenGoalMutation } from "./useReopenGoalMutation";
 
