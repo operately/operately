@@ -14,6 +14,7 @@ export { useCloseGoalMutation } from "./useCloseGoalMutation";
 export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
 export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromProjectMutation";
 export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutation";
+export { useCreateGoalMutation } from "./useCreateGoalMutation";
 export { useEditGoalMutation } from "./useEditGoalMutation";
 export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";
 export { useReopenGoalMutation } from "./useReopenGoalMutation";

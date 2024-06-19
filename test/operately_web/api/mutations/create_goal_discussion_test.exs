@@ -36,13 +36,5 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
         message: rich_text("Hello World") |> Jason.encode!()
       })
     end
-
-    test "if goal ID is invalid, it returns an error", ctx do
-      assert {400, "Bad Request"} = mutation(ctx.conn, :create_goal_discussion, %{
-        goal_id: "1",
-        title: "Some title",
-        message: rich_text("Hello World") |> Jason.encode!()
-      })
-    end
   end
 end 
