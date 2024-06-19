@@ -225,56 +225,6 @@ defmodule Operately.People do
     Operately.People.FetchOrCreateAccountOperation.call(company, attrs)
   end
 
-  alias Operately.Dashboards
-
-  def find_or_create_home_dashboard(person) do
-    person = get_person!(person.id)
-    person = Repo.preload(person, [:home_dashboard])
-
-    if person.home_dashboard do
-      {:ok, person.home_dashboard}
-    else
-      create_home_dashboard(person)
-    end
-  end
-
-  defp create_home_dashboard(person) do
-    Repo.transaction(fn ->
-      case Dashboards.create_dashboard(%{company_id: person.company_id}) do
-        {:ok, dashboard} ->
-          {:ok, _person} = update_person(person, %{home_dashboard_id: dashboard.id})
-
-          {:ok, _} = Dashboards.create_panel(%{
-            dashboard_id: dashboard.id,
-            index: 0,
-            type: "account"
-          })
-
-          {:ok, _} = Dashboards.create_panel(%{
-            dashboard_id: dashboard.id,
-            index: 1,
-            type: "my-assignments"
-          })
-
-          # {:ok, _} = Dashboards.create_panel(%{
-          #   dashboard_id: dashboard.id,
-          #   index: 2,
-          #   type: "activity"
-          # })
-
-          # {:ok, _} = Dashboards.create_panel(%{
-          #   dashboard_id: dashboard.id,
-          #   index: 3,
-          #   type: "my-projects"
-          # })
-
-          dashboard
-        {:error, changeset} -> 
-          {:error, changeset}
-      end
-    end)
-  end
-
   def get_assignments(person, time_range_start, time_range_end) do
     alias Operately.Projects.Project
     alias Operately.Projects.Milestone

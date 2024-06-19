@@ -65,7 +65,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.CommentThreads
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
-  import_types OperatelyWeb.Graphql.Types.Dashboards
   import_types OperatelyWeb.Graphql.Types.Discussions
   import_types OperatelyWeb.Graphql.Types.GoalPermissions
   import_types OperatelyWeb.Graphql.Types.Goals
@@ -128,7 +127,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Blobs
   import_types OperatelyWeb.Graphql.Mutations.Comments
   import_types OperatelyWeb.Graphql.Mutations.Companies
-  import_types OperatelyWeb.Graphql.Mutations.Dashboards
   import_types OperatelyWeb.Graphql.Mutations.Discussions
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
@@ -175,7 +173,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :blob_mutations
     import_fields :comment_mutations
     import_fields :company_mutations
-    import_fields :dashboard_mutations
     import_fields :discussion_mutations
     import_fields :goal_mutations
     import_fields :group_mutations
