@@ -1,24 +1,27 @@
 import React, { useRef, useState } from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import { useProfileMutation } from "@/models/people";
 import * as Forms from "@/components/Form";
-import { useNavigateTo } from "@/routes/useNavigateTo";
+
 import PeopleSearch from "@/components/PeopleSearch";
+
+import { useNavigateTo } from "@/routes/useNavigateTo";
 import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
 import { CreateBlob } from "@/graphql/Blobs";
+
+import classNames from "classnames";
 import moment from "moment-timezone";
+
 import { FilledButton } from "@/components/Button";
-import classnames from "classnames";
 import { BackupAvatar, ImageAvatar } from "@/components/Avatar";
 
 export async function loader() {
   return null;
 }
 
-const dimmedClassName = classnames(
+const dimmedClassName = classNames(
   "text-content-dimmed hover:text-content-hover",
   "underline underline-offset-2",
   "cursor-pointer",
@@ -50,8 +53,17 @@ export function Page() {
 }
 
 function FileInput({ onChange, error }) {
-  const className = useState(
-    "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
+  const className = classNames(
+    "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border",
+    "border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal",
+    "leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3",
+    "file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none",
+    "file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3",
+    "file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150",
+    "file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem]",
+    "hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700",
+    "focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200",
+    "dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,9 +95,6 @@ function FileInput({ onChange, error }) {
 
 function ProfileForm({ me }) {
   const navigateToAccount = useNavigateTo("/account");
-  const [update, { loading }] = useProfileMutation({
-    onCompleted: navigateToAccount,
-  });
 
   const [name, setName] = useState(me.fullName);
   const [title, setTitle] = useState(me.title);
@@ -95,6 +104,8 @@ function ProfileForm({ me }) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [blobId, setBlobId] = useState(me.avatarBlobId ? me.avatarBlobId : "");
   const fileUploader = new MultipartFileUploader();
+
+  const [loading, setLoading] = useState(false);
 
   const [timezone, setTimezone] = useState(() => {
     if (me.timezone) {
@@ -132,22 +143,21 @@ function ProfileForm({ me }) {
     return true;
   };
 
-  const handleSubmit = () => {
-    if (!verifyFields()) {
-      return;
-    }
-    update({
-      variables: {
-        input: {
-          fullName: name,
-          title: title,
-          timezone: timezone?.value,
-          managerId: managerStatus === "select-from-list" ? manager?.id : null,
-          avatarUrl: avatarUrl,
-          avatarBlobId: blobId,
-        },
-      },
-    });
+  const handleSubmit = async () => {
+    if (!verifyFields()) return;
+
+    setLoading(true);
+
+    await People.updateMyProfile({
+      fullName: name,
+      title: title,
+      timezone: timezone?.value,
+      managerId: managerStatus === "select-from-list" ? manager?.id : null,
+      avatarUrl: avatarUrl,
+      avatarBlobId: blobId,
+    }).finally(() => setLoading(false));
+
+    navigateToAccount();
   };
 
   const handleFileUpload = async (file) => {
@@ -227,7 +237,7 @@ function ProfileForm({ me }) {
       />
 
       <Forms.SubmitArea>
-        <FilledButton type="primary" onClick={handleSubmit}>
+        <FilledButton type="primary" onClick={handleSubmit} loading={loading}>
           Save Changes
         </FilledButton>
       </Forms.SubmitArea>

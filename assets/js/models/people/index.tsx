@@ -10,6 +10,8 @@ import * as api from "@/api";
 export const getPeople = makeQueryFn(GetPeopleDocument, "people") as () => Promise<Person[]>;
 export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
 
+export { updateMyProfile } from "@/api";
+
 export const getMe = async (input: GetMeInput) => {
   const res = await Api.getMe(input);
   return res.me as Person;

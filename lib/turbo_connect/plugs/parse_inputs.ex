@@ -45,6 +45,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   #
 
   def parse_input(:string, _types, _unions, value, _strict) when is_binary(value), do: {:ok, value}
+  def parse_input(:string, _types, _unions, value, true) when is_nil(value), do: {:ok, nil}
 
   def parse_input(:boolean, _types, _unions, value, true) when is_boolean(value), do: {:ok, value}
   def parse_input(:boolean, _types, _unions, "true", false), do: {:ok, true}

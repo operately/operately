@@ -51,7 +51,7 @@ export function FilledButton(props: FilledButtonProps) {
 function Spinner({ active }: { active?: boolean }) {
   return (
     <div className="inset-0 flex items-center justify-center absolute">
-      {active && <PuffLoader size={24} color="var(--color-accent-1)" />}
+      {active && <PuffLoader size={24} color="var(--color-white-1)" />}
     </div>
   );
 }
