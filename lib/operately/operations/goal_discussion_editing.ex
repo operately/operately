@@ -17,16 +17,14 @@ defmodule Operately.Operations.GoalDiscussionEditing do
 
     Multi.new()
     |> Multi.update(:thread, change)
-    |> Multi.insert(:activity, Activities.Activity.changeset(%{
-      author_id: author.id,
-      action: Atom.to_string(@action),
-      content: Activities.build_content!(@action, %{
+    |> Activities.insert_sync(author.id, @action, fn _changes ->
+      %{
         company_id: goal.company_id,
         space_id: goal.group_id,
         goal_id: goal.id,
         activity_id: activity_id,
-      })
-    }))
+      }
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:activity)
   end
