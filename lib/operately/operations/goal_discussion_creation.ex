@@ -8,29 +8,26 @@ defmodule Operately.Operations.GoalDiscussionCreation do
 
   def run(author, goal, title, message) do
     Multi.new()
-    |> Multi.insert(:activity_without_thread, Activities.Activity.changeset(%{
-      author_id: author.id,
-      action: Atom.to_string(@action),
-      content: Activities.build_content!(@action, %{
+    |> Activities.insert_sync(author.id, @action, fn _changes ->
+      %{
         company_id: goal.company_id,
         space_id: goal.group_id,
         goal_id: goal.id,
-      })
-    }))
+      }
+    end)
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
-      parent_id: changes.activity_without_thread.id,
+      parent_id: changes.activity.id,
       parent_type: "activity",
       message: Jason.decode!(message),
       title: title,
       has_title: true,
     }) end)
-    |> Multi.update(:activity, fn changes ->
-      Activities.Activity.changeset(changes.activity_without_thread, %{
+    |> Multi.update(:activity_with_thread, fn changes ->
+      Activities.Activity.changeset(changes.activity, %{
         comment_thread_id: changes.thread.id
-      }) 
+      })
     end)
-    |> Activities.dispatch_notification()
     |> Repo.transaction()
-    |> Repo.extract_result(:activity)
+    |> Repo.extract_result(:activity_with_thread)
   end
 end
