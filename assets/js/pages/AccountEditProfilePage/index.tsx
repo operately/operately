@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import { useProfileMutation } from "@/graphql/Me";
+import { useProfileMutation } from "@/models/people";
 import * as Forms from "@/components/Form";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import PeopleSearch from "@/components/PeopleSearch";

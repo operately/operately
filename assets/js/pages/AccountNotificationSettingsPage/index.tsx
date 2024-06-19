@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import Avatar from "@/components/Avatar";
-import { useUpdateNotificationsSettings } from "@/graphql/Me";
+import { useUpdateNotificationsSettings } from "@/models/people";
 import * as Forms from "@/components/Form";
 import { useMe } from "@/contexts/CurrentUserContext";
 

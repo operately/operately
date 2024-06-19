@@ -3,7 +3,7 @@ import React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
-import { logOut } from "@/graphql/Me";
+import { logOut } from "@/models/people";
 
 import { PuffLoader } from "react-spinners";
 import { Link } from "react-router-dom";

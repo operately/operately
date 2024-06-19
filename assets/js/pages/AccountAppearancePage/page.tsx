@@ -12,7 +12,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { GhostButton } from "@/components/Button";
 
-import * as Me from "@/graphql/Me";
+import * as People from "@/models/people";
 
 export function Page() {
   const { me } = useLoadedData();
@@ -45,7 +45,7 @@ export function Page() {
 function SubmitButton() {
   const theme = useTheme();
   const goToAccount = useNavigateTo("/account");
-  const [update] = Me.useUpdateAppearanceMutation({ onCompleted: goToAccount });
+  const [update] = People.useUpdateAppearanceMutation({ onCompleted: goToAccount });
 
   const save = React.useCallback(() => {
     update({
