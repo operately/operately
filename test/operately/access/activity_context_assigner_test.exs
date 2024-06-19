@@ -298,13 +298,16 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "goal_discussion_creation action", ctx do
-      Operately.Operations.GoalDiscussionCreation.run(
+      {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(
         ctx.author,
-        ctx.goal.id,
+        ctx.goal,
         "some title",
         "{}"
       )
-      |> assert_context_assigned(ctx.goal.access_context.id)
+
+      activity = Repo.reload(activity)
+
+      assert activity.context_id == ctx.goal.access_context.id
     end
 
     test "goal_discussion_editing action", ctx do
@@ -458,38 +461,38 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.project.access_context.id)
     end
 
-    # test "project_discussion_submitted action", ctx do
-    #   attrs = %{
-    #     action: "project_discussion_submitted",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id, discussion_id: ctx.update.id, title: "some title" }
-    #   }
+    test "project_discussion_submitted action", ctx do
+      attrs = %{
+        action: "project_discussion_submitted",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, discussion_id: ctx.update.id, title: "some title" }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
-    # test "project_goal_connection action", ctx do
-    #   attrs = %{
-    #     action: "project_goal_connection",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
-    #   }
+    test "project_goal_connection action", ctx do
+      attrs = %{
+        action: "project_goal_connection",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
-    # test "project_goal_disconnection action", ctx do
-    #   attrs = %{
-    #     action: "project_goal_disconnection",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
-    #   }
+    test "project_goal_disconnection action", ctx do
+      attrs = %{
+        action: "project_goal_disconnection",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
     test "project_milestone_commented action", ctx do
       attrs = %{
@@ -502,16 +505,16 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.project.access_context.id)
     end
 
-    # test "project_moved action", ctx do
-    #   attrs = %{
-    #     action: "project_moved",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_space_id: ctx.group.id, new_space_id: ctx.group.id }
-    #   }
+    test "project_moved action", ctx do
+      attrs = %{
+        action: "project_moved",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_space_id: ctx.group.id, new_space_id: ctx.group.id }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
     test "project_pausing action", ctx do
       attrs = %{
@@ -546,16 +549,16 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.project.access_context.id)
     end
 
-    # test "project_timeline_edited action", ctx do
-    #   attrs = %{
-    #     action: "project_timeline_edited",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_start_date: DateTime.utc_now(), new_start_date: DateTime.utc_now(), old_end_date: DateTime.utc_now(), new_end_date: DateTime.utc_now() }
-    #   }
+    test "project_timeline_edited action", ctx do
+      attrs = %{
+        action: "project_timeline_edited",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_start_date: DateTime.utc_now(), new_start_date: DateTime.utc_now(), old_end_date: DateTime.utc_now(), new_end_date: DateTime.utc_now() }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
   end
 
   describe "assigns access_context to task activities" do

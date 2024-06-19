@@ -37,7 +37,6 @@ defmodule Operately.Activities do
       dispatch_notification(multi)
     else
       multi
-      |> dispatch_notification()
     end
   end
 
