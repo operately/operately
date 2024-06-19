@@ -9,14 +9,6 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
     field :enabled_experimental_features, list_of(:string)
     field :company_space_id, :string
 
-    field :tenets, list_of(:tenet) do
-      resolve fn company, _, _ ->
-        tenets = Operately.Companies.list_tenets(company.id)
-
-        {:ok, tenets}
-      end
-    end
-
     field :admins, list_of(:person) do
       resolve fn company, _, _ ->
         admins = Operately.Companies.list_admins(company.id)
@@ -32,6 +24,5 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
         {:ok, people}
       end
     end
-    
   end
 end
