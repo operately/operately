@@ -561,7 +561,6 @@ export type Company = {
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   people?: Maybe<Array<Maybe<Person>>>;
-  tenets?: Maybe<Array<Maybe<Tenet>>>;
   trustedEmailDomains?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
 };
 
@@ -601,30 +600,6 @@ export type CreateGroupInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateKeyResultInput = {
-  name: Scalars['String']['input'];
-  objectiveId: Scalars['ID']['input'];
-};
-
-export type CreateKpiInput = {
-  dangerDirection: Scalars['String']['input'];
-  dangerThreshold: Scalars['Int']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  target: Scalars['Int']['input'];
-  targetDirection: Scalars['String']['input'];
-  unit: Scalars['String']['input'];
-  warningDirection: Scalars['String']['input'];
-  warningThreshold: Scalars['Int']['input'];
-};
-
-export type CreateObjectiveInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-  timeframe?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type CreateProjectInput = {
   championId: Scalars['ID']['input'];
   creatorIsContributor: Scalars['String']['input'];
@@ -634,11 +609,6 @@ export type CreateProjectInput = {
   reviewerId: Scalars['ID']['input'];
   spaceId: Scalars['ID']['input'];
   visibility: Scalars['String']['input'];
-};
-
-export type CreateProjectReviewRequestInput = {
-  content: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
 };
 
 export type CreateTargetInput = {
@@ -666,12 +636,6 @@ export type CreateUpdateInput = {
   title?: InputMaybe<Scalars['String']['input']>;
   updatableId: Scalars['ID']['input'];
   updatableType: Scalars['String']['input'];
-};
-
-export type Dashboard = {
-  __typename?: 'Dashboard';
-  id: Scalars['ID']['output'];
-  panels?: Maybe<Array<Maybe<Panel>>>;
 };
 
 export type Discussion = {
@@ -838,35 +802,6 @@ export type JoinSpaceInput = {
   spaceId: Scalars['String']['input'];
 };
 
-export type KeyResult = {
-  __typename?: 'KeyResult';
-  group?: Maybe<Group>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  owner?: Maybe<Person>;
-  status?: Maybe<Scalars['String']['output']>;
-  stepsCompleted?: Maybe<Scalars['Int']['output']>;
-  stepsTotal?: Maybe<Scalars['Int']['output']>;
-  updatedAt: Scalars['Date']['output'];
-};
-
-export type Kpi = {
-  __typename?: 'Kpi';
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  metrics?: Maybe<Array<Maybe<KpiMetric>>>;
-  name: Scalars['String']['output'];
-  target?: Maybe<Scalars['Int']['output']>;
-  targetDirection?: Maybe<Scalars['String']['output']>;
-  unit?: Maybe<Scalars['String']['output']>;
-};
-
-export type KpiMetric = {
-  __typename?: 'KpiMetric';
-  date: Scalars['Date']['output'];
-  value: Scalars['Int']['output'];
-};
-
 export type Milestone = {
   __typename?: 'Milestone';
   comments?: Maybe<Array<Maybe<MilestoneComment>>>;
@@ -899,33 +834,6 @@ export type NewMilestoneInput = {
   dueTime: Scalars['Date']['input'];
   title: Scalars['String']['input'];
 };
-
-export type Objective = {
-  __typename?: 'Objective';
-  activities?: Maybe<Array<Maybe<Activity>>>;
-  description?: Maybe<Scalars['String']['output']>;
-  group?: Maybe<Group>;
-  id: Scalars['ID']['output'];
-  keyResults?: Maybe<Array<Maybe<KeyResult>>>;
-  name: Scalars['String']['output'];
-  owner?: Maybe<Person>;
-};
-
-export type Panel = {
-  __typename?: 'Panel';
-  id: Scalars['ID']['output'];
-  index?: Maybe<Scalars['Int']['output']>;
-  linkedResource?: Maybe<PanelLinkedResource>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-export type PanelInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  index?: InputMaybe<Scalars['Int']['input']>;
-  type: Scalars['String']['input'];
-};
-
-export type PanelLinkedResource = Project;
 
 export type PauseProjectInput = {
   projectId: Scalars['String']['input'];
@@ -985,7 +893,6 @@ export type Project = {
   insertedAt: Scalars['Date']['output'];
   isArchived: Scalars['Boolean']['output'];
   isOutdated: Scalars['Boolean']['output'];
-  isPinned: Scalars['Boolean']['output'];
   keyResources?: Maybe<Array<Maybe<ProjectKeyResource>>>;
   lastCheckIn?: Maybe<ProjectCheckIn>;
   milestones?: Maybe<Array<Maybe<Milestone>>>;
@@ -1077,17 +984,6 @@ export type ProjectPermissions = {
   canView: Scalars['Boolean']['output'];
 };
 
-export type ProjectReviewRequest = {
-  __typename?: 'ProjectReviewRequest';
-  author?: Maybe<Person>;
-  content: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  insertedAt: Scalars['Date']['output'];
-  reviewId?: Maybe<Scalars['String']['output']>;
-  status: Scalars['String']['output'];
-  updatedAt: Scalars['Date']['output'];
-};
-
 export type Reaction = {
   __typename?: 'Reaction';
   emoji: Scalars['String']['output'];
@@ -1132,13 +1028,8 @@ export type RootMutationType = {
   createGoal?: Maybe<Goal>;
   createGoalDiscussion: Activity;
   createGroup?: Maybe<Group>;
-  createKeyResult?: Maybe<KeyResult>;
-  createKpi?: Maybe<Kpi>;
-  createObjective?: Maybe<Objective>;
   createProject: Project;
-  createProjectReviewRequest?: Maybe<ProjectReviewRequest>;
   createTask?: Maybe<Task>;
-  createTenet?: Maybe<Tenet>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
   editComment?: Maybe<Comment>;
@@ -1156,7 +1047,6 @@ export type RootMutationType = {
   moveProjectToSpace: Project;
   newInvitationToken: Invitation;
   pauseProject: Project;
-  pinProjectToHomePage: Scalars['Boolean']['output'];
   postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
   postProjectCheckIn: ProjectCheckIn;
@@ -1169,16 +1059,11 @@ export type RootMutationType = {
   removeProjectMilestone: Milestone;
   reopenGoal: Goal;
   resumeProject: Project;
-  setGoalGroup?: Maybe<Objective>;
   setGroupMission?: Maybe<Group>;
-  setKeyResultOwner?: Maybe<KeyResult>;
   setMilestoneDeadline: Milestone;
   setMilestoneStatus: Milestone;
-  setObjectiveOwner?: Maybe<Objective>;
   setProjectDueDate: Project;
   setProjectStartDate: Project;
-  setTargetGroup?: Maybe<KeyResult>;
-  updateDashboard: Dashboard;
   updateGroupAppearance: Group;
   updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
@@ -1324,39 +1209,13 @@ export type RootMutationTypeCreateGroupArgs = {
 };
 
 
-export type RootMutationTypeCreateKeyResultArgs = {
-  input: CreateKeyResultInput;
-};
-
-
-export type RootMutationTypeCreateKpiArgs = {
-  input: CreateKpiInput;
-};
-
-
-export type RootMutationTypeCreateObjectiveArgs = {
-  input: CreateObjectiveInput;
-};
-
-
 export type RootMutationTypeCreateProjectArgs = {
   input: CreateProjectInput;
 };
 
 
-export type RootMutationTypeCreateProjectReviewRequestArgs = {
-  input: CreateProjectReviewRequestInput;
-};
-
-
 export type RootMutationTypeCreateTaskArgs = {
   input: CreateTaskInput;
-};
-
-
-export type RootMutationTypeCreateTenetArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
 };
 
 
@@ -1446,11 +1305,6 @@ export type RootMutationTypePauseProjectArgs = {
 };
 
 
-export type RootMutationTypePinProjectToHomePageArgs = {
-  projectId: Scalars['ID']['input'];
-};
-
-
 export type RootMutationTypePostDiscussionArgs = {
   input: PostDiscussionInput;
 };
@@ -1513,21 +1367,9 @@ export type RootMutationTypeResumeProjectArgs = {
 };
 
 
-export type RootMutationTypeSetGoalGroupArgs = {
-  groupId?: InputMaybe<Scalars['ID']['input']>;
-  id: Scalars['ID']['input'];
-};
-
-
 export type RootMutationTypeSetGroupMissionArgs = {
   groupId: Scalars['ID']['input'];
   mission: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeSetKeyResultOwnerArgs = {
-  id: Scalars['ID']['input'];
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1543,12 +1385,6 @@ export type RootMutationTypeSetMilestoneStatusArgs = {
 };
 
 
-export type RootMutationTypeSetObjectiveOwnerArgs = {
-  id: Scalars['ID']['input'];
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
 export type RootMutationTypeSetProjectDueDateArgs = {
   dueDate?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
@@ -1558,17 +1394,6 @@ export type RootMutationTypeSetProjectDueDateArgs = {
 export type RootMutationTypeSetProjectStartDateArgs = {
   projectId: Scalars['ID']['input'];
   startDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-
-export type RootMutationTypeSetTargetGroupArgs = {
-  groupId?: InputMaybe<Scalars['ID']['input']>;
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeUpdateDashboardArgs = {
-  input: UpdateDashboardInput;
 };
 
 
@@ -1616,8 +1441,6 @@ export type RootMutationTypeUpdateTaskStatusArgs = {
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
-  activities?: Maybe<Array<Maybe<Activity>>>;
-  activity: Activity;
   assignments: Assignments;
   comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
@@ -1627,12 +1450,7 @@ export type RootQueryType = {
   goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
-  keyResults?: Maybe<Array<Maybe<KeyResult>>>;
-  kpi?: Maybe<Kpi>;
-  kpis?: Maybe<Array<Maybe<Kpi>>>;
   milestone?: Maybe<Milestone>;
-  objective?: Maybe<Objective>;
-  objectives?: Maybe<Array<Maybe<Objective>>>;
   people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
   potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
@@ -1640,26 +1458,11 @@ export type RootQueryType = {
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
-  projectReviewRequest: ProjectReviewRequest;
   projects?: Maybe<Array<Maybe<Project>>>;
   task: Task;
   tasks?: Maybe<Array<Maybe<Task>>>;
-  tenet?: Maybe<Tenet>;
-  tenets?: Maybe<Array<Maybe<Tenet>>>;
   update: Update;
   updates: Array<Maybe<Update>>;
-};
-
-
-export type RootQueryTypeActivitiesArgs = {
-  actions?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  scopeId: Scalars['String']['input'];
-  scopeType: Scalars['String']['input'];
-};
-
-
-export type RootQueryTypeActivityArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -1712,28 +1515,8 @@ export type RootQueryTypeKeyResourceArgs = {
 };
 
 
-export type RootQueryTypeKeyResultsArgs = {
-  objectiveId: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeKpiArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type RootQueryTypeMilestoneArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeObjectiveArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeObjectivesArgs = {
-  groupId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1771,11 +1554,6 @@ export type RootQueryTypeProjectContributorCandidatesArgs = {
 };
 
 
-export type RootQueryTypeProjectReviewRequestArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type RootQueryTypeProjectsArgs = {
   filters?: InputMaybe<ProjectListFilters>;
 };
@@ -1789,11 +1567,6 @@ export type RootQueryTypeTaskArgs = {
 export type RootQueryTypeTasksArgs = {
   milestoneId: Scalars['String']['input'];
   status?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type RootQueryTypeTenetArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -1837,16 +1610,6 @@ export type Task = {
   size?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   updatedAt: Scalars['Date']['output'];
-};
-
-export type Tenet = {
-  __typename?: 'Tenet';
-  company: Company;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  kpis?: Maybe<Array<Maybe<Kpi>>>;
-  name: Scalars['String']['output'];
-  objectives?: Maybe<Array<Maybe<Objective>>>;
 };
 
 export type Timeframe = {
@@ -1991,11 +1754,6 @@ export type UpdateContentStatusUpdate = {
   phaseStart?: Maybe<Scalars['String']['output']>;
   projectEndTime?: Maybe<Scalars['String']['output']>;
   projectStartTime?: Maybe<Scalars['String']['output']>;
-};
-
-export type UpdateDashboardInput = {
-  id: Scalars['ID']['input'];
-  panels?: InputMaybe<Array<InputMaybe<PanelInput>>>;
 };
 
 export type UpdateGroupAppearanceInput = {

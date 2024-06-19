@@ -70,19 +70,14 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Goals
   import_types OperatelyWeb.Graphql.Types.Groups
   import_types OperatelyWeb.Graphql.Types.Invitations
-  import_types OperatelyWeb.Graphql.Types.KeyResults
-  import_types OperatelyWeb.Graphql.Types.Kpis
   import_types OperatelyWeb.Graphql.Types.Milestones
-  import_types OperatelyWeb.Graphql.Types.Objectives
   import_types OperatelyWeb.Graphql.Types.Person
   import_types OperatelyWeb.Graphql.Types.ProjectCheckIn
   import_types OperatelyWeb.Graphql.Types.ProjectHealths
   import_types OperatelyWeb.Graphql.Types.ProjectPermissions
-  import_types OperatelyWeb.Graphql.Types.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Types.Projects
   import_types OperatelyWeb.Graphql.Types.Reactions
   import_types OperatelyWeb.Graphql.Types.Tasks
-  import_types OperatelyWeb.Graphql.Types.Tenets
   import_types OperatelyWeb.Graphql.Types.Timeframe
   import_types OperatelyWeb.Graphql.Types.UpdateContentGoalCheckIn
   import_types OperatelyWeb.Graphql.Types.UpdateContentMessage
@@ -101,7 +96,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Updates
 
   # Queries
-  import_types OperatelyWeb.Graphql.Queries.Activities
   import_types OperatelyWeb.Graphql.Queries.Assignments
   import_types OperatelyWeb.Graphql.Queries.Comments
   import_types OperatelyWeb.Graphql.Queries.Companies
@@ -110,16 +104,11 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Groups
   import_types OperatelyWeb.Graphql.Queries.Invitations
   import_types OperatelyWeb.Graphql.Queries.KeyResources
-  import_types OperatelyWeb.Graphql.Queries.KeyResults
-  import_types OperatelyWeb.Graphql.Queries.Kpis
   import_types OperatelyWeb.Graphql.Queries.Milestones
-  import_types OperatelyWeb.Graphql.Queries.Objectives
   import_types OperatelyWeb.Graphql.Queries.People
   import_types OperatelyWeb.Graphql.Queries.ProjectCheckIns
-  import_types OperatelyWeb.Graphql.Queries.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Queries.Projects
   import_types OperatelyWeb.Graphql.Queries.Tasks
-  import_types OperatelyWeb.Graphql.Queries.Tenets
   import_types OperatelyWeb.Graphql.Queries.Updates
 
   # Mutations
@@ -130,23 +119,17 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Discussions
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
-  import_types OperatelyWeb.Graphql.Mutations.KeyResults
-  import_types OperatelyWeb.Graphql.Mutations.Kpis
   import_types OperatelyWeb.Graphql.Mutations.Milestones
-  import_types OperatelyWeb.Graphql.Mutations.Objectives
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
-  import_types OperatelyWeb.Graphql.Mutations.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Mutations.Projects
   import_types OperatelyWeb.Graphql.Mutations.Reactions
   import_types OperatelyWeb.Graphql.Mutations.Tasks
-  import_types OperatelyWeb.Graphql.Mutations.Tenets
   import_types OperatelyWeb.Graphql.Mutations.Updates
 
   # Subscriptions
   import_types OperatelyWeb.Graphql.Subscriptions.Notifications
 
   query do
-    import_fields :activity_queries
     import_fields :assignment_queries
     import_fields :comment_queries
     import_fields :company_queries
@@ -155,16 +138,11 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :group_queries
     import_fields :invitation_queries
     import_fields :key_resource_queries
-    import_fields :key_result_queries
-    import_fields :kpi_queries
     import_fields :milestone_queries
-    import_fields :objective_queries
     import_fields :person_queries
     import_fields :project_check_in_queries
-    import_fields :project_review_request_queries
     import_fields :project_queries
     import_fields :task_queries
-    import_fields :tenet_queries
     import_fields :update_queries
   end
 
@@ -176,16 +154,11 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :discussion_mutations
     import_fields :goal_mutations
     import_fields :group_mutations
-    import_fields :key_result_mutations
-    import_fields :kpi_mutations
     import_fields :milestone_mutations
-    import_fields :objective_mutations
     import_fields :project_check_in_mutations
-    import_fields :project_review_request_mutations
     import_fields :project_mutations
     import_fields :reaction_mutations
     import_fields :task_mutations
-    import_fields :tenet_mutations
     import_fields :update_mutations
   end
 
