@@ -1,28 +1,34 @@
 import React, { useRef, useState } from "react";
+
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import { useProfileMutation } from "@/models/people";
 import * as Forms from "@/components/Form";
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import * as Pages from "@/components/Pages";
+
 import PeopleSearch from "@/components/PeopleSearch";
+
+import { useNavigateTo } from "@/routes/useNavigateTo";
 import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
 import { CreateBlob } from "@/graphql/Blobs";
+
+import classNames from "classnames";
 import moment from "moment-timezone";
+
 import { FilledButton } from "@/components/Button";
-import classnames from "classnames";
 import { BackupAvatar, ImageAvatar } from "@/components/Avatar";
 
 export async function loader() {
   return null;
 }
 
-const dimmedClassName = classnames(
+const dimmedClassName = classNames(
   "text-content-dimmed hover:text-content-hover",
   "underline underline-offset-2",
   "cursor-pointer",
   "transition-colors",
+  "text-sm",
 );
 
 export function Page() {
@@ -35,25 +41,23 @@ export function Page() {
   const me = data.me;
 
   return (
-    <Paper.Root size="small">
-      <Paper.Navigation>
-        <Paper.NavItem linkTo="/account">Account</Paper.NavItem>
-      </Paper.Navigation>
+    <Pages.Page title="Edit Profile">
+      <Paper.Root size="small">
+        <Paper.Navigation>
+          <Paper.NavItem linkTo="/account">Account</Paper.NavItem>
+        </Paper.Navigation>
 
-      <Paper.Body minHeight="300px">
-        <div className="mt-8 flex flex-col gap-8">
-          <ProfileForm me={me} />
-        </div>
-      </Paper.Body>
-    </Paper.Root>
+        <Paper.Body minHeight="300px">
+          <div className="mt-8 flex flex-col gap-8">
+            <ProfileForm me={me} />
+          </div>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
-function FileInput({ onChange, error }) {
-  const className = useState(
-    "relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary",
-  );
-
+function FileInput({ onChange }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
@@ -64,18 +68,12 @@ function FileInput({ onChange, error }) {
 
   return (
     <div>
-      <div className="flex-1">
+      <div className="flex items-center justify-center">
         <FilledButton type="secondary" onClick={handleClick}>
           Upload Photo
         </FilledButton>
-        <input
-          ref={fileInputRef}
-          className={error ? "border-red-500" : `${className}`}
-          onChange={onChange}
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-        />
+
+        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" style={{ display: "none" }} />
       </div>
     </div>
   );
@@ -83,18 +81,16 @@ function FileInput({ onChange, error }) {
 
 function ProfileForm({ me }) {
   const navigateToAccount = useNavigateTo("/account");
-  const [update, { loading }] = useProfileMutation({
-    onCompleted: navigateToAccount,
-  });
 
   const [name, setName] = useState(me.fullName);
   const [title, setTitle] = useState(me.title);
   const [manager, setManager] = useState(me.manager);
   const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
   const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ? me.avatarUrl : "");
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [blobId, setBlobId] = useState(me.avatarBlobId ? me.avatarBlobId : "");
   const fileUploader = new MultipartFileUploader();
+
+  const [loading, setLoading] = useState(false);
 
   const [timezone, setTimezone] = useState(() => {
     if (me.timezone) {
@@ -132,28 +128,25 @@ function ProfileForm({ me }) {
     return true;
   };
 
-  const handleSubmit = () => {
-    if (!verifyFields()) {
-      return;
-    }
-    update({
-      variables: {
-        input: {
-          fullName: name,
-          title: title,
-          timezone: timezone?.value,
-          managerId: managerStatus === "select-from-list" ? manager?.id : null,
-          avatarUrl: avatarUrl,
-          avatarBlobId: blobId,
-        },
-      },
-    });
+  const handleSubmit = async () => {
+    if (!verifyFields()) return;
+
+    setLoading(true);
+
+    await People.updateMyProfile({
+      fullName: name,
+      title: title,
+      timezone: timezone?.value,
+      managerId: managerStatus === "select-from-list" ? manager?.id : null,
+      avatarUrl: avatarUrl,
+      avatarBlobId: blobId,
+    }).finally(() => setLoading(false));
+
+    navigateToAccount();
   };
 
   const handleFileUpload = async (file) => {
-    const blob = await fileUploader.upload(file, (progress) => {
-      setUploadProgress(progress);
-    });
+    const blob = await fileUploader.upload(file, () => {});
     setBlobId(blob.id);
     setAvatarUrl(blob.url);
   };
@@ -176,25 +169,21 @@ function ProfileForm({ me }) {
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
-      <section className="flex flex-col w-full justify-center items-center text-center">
+      <section className="flex flex-col w-full justify-center items-center text-center -mt-4">
         {avatarUrl ? <ImageAvatar person={me} size="xxlarge" /> : <BackupAvatar person={me} size="xxlarge" />}
-        <div className="ml-4 mt-2">
+
+        <div className="mt-2 flex flex-col gap-1">
           <FileInput
             onChange={async (e) => {
               const file = e.target.files[0];
               await uploadFile(file);
             }}
-            error={false}
           />
           <button className={dimmedClassName} type="button" onClick={handleRemoveAvatar}>
-            Remove Avatar and Use Initials
+            Remove Avatar and use my initials
           </button>
         </div>
       </section>
-
-      <div className="progress-container">
-        <div className="progress-bar" style={{ width: `${uploadProgress}%` }}></div>
-      </div>
 
       <div>
         <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
@@ -227,7 +216,7 @@ function ProfileForm({ me }) {
       />
 
       <Forms.SubmitArea>
-        <FilledButton type="primary" onClick={handleSubmit}>
+        <FilledButton type="primary" onClick={handleSubmit} loading={loading}>
           Save Changes
         </FilledButton>
       </Forms.SubmitArea>

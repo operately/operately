@@ -39,7 +39,6 @@ export function createAppRoutes() {
 
         pageRoute("/account", pages.AccountPage),
         pageRoute("/account/profile", pages.AccountEditProfilePage),
-        pageRoute("/account/notifications", pages.AccountNotificationSettingsPage),
         pageRoute("/account/appearance", pages.AccountAppearancePage),
 
         pageRoute("/people/:id", pages.ProfilePage),

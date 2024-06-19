@@ -1,5 +1,4 @@
 import { makeQueryFn } from "@/graphql/client";
-import { useMutation, gql } from "@apollo/client";
 import Api, { GetMeInput } from "@/api";
 
 import { Person, GetPeopleDocument, GetPersonDocument, GetPersonQueryVariables } from "@/gql/generated";
@@ -9,6 +8,8 @@ import * as api from "@/api";
 
 export const getPeople = makeQueryFn(GetPeopleDocument, "people") as () => Promise<Person[]>;
 export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
+
+export { updateMyProfile } from "@/api";
 
 export const getMe = async (input: GetMeInput) => {
   const res = await Api.getMe(input);
@@ -85,10 +86,7 @@ export function logOut() {
 export function logIn(email: string, password: string) {
   const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
 
-  const headers = {
-    "x-csrf-token": csrfToken,
-    "Content-Type": "application/json",
-  } as HeadersInit;
+  const headers = { "x-csrf-token": csrfToken, "Content-Type": "application/json" } as HeadersInit;
 
   const data = {
     email,
@@ -100,48 +98,4 @@ export function logIn(email: string, password: string) {
     headers: headers,
     body: JSON.stringify(data),
   });
-}
-
-export function useProfileMutation(options = {}) {
-  return useMutation(
-    gql`
-      mutation UpdateProfile($input: UpdateProfileInput!) {
-        updateProfile(input: $input) {
-          fullName
-          title
-          timezone
-          avatarUrl
-        }
-      }
-    `,
-    options,
-  );
-}
-
-export function useUpdateNotificationsSettings(options = {}) {
-  return useMutation(
-    gql`
-      mutation UpdateNotificationsSettings($input: UpdateNotificationSettingsInput!) {
-        updateNotificationSettings(input: $input) {
-          sendDailySummary
-          notifyOnMention
-          notifyAboutAssignments
-        }
-      }
-    `,
-    options,
-  );
-}
-
-export function useUpdateAppearanceMutation(options = {}) {
-  return useMutation(
-    gql`
-      mutation UpdateAppearance($input: UpdateAppearanceInput!) {
-        updateAppearance(input: $input) {
-          theme
-        }
-      }
-    `,
-    options,
-  );
 }

@@ -8,7 +8,6 @@ defmodule Operately.People.Person do
   schema "people" do
     belongs_to(:account, Operately.People.Account)
     belongs_to(:company, Operately.Companies.Company)
-    belongs_to(:home_dashboard, Operately.Dashboards.Dashboard)
 
     belongs_to(:manager, Operately.People.Person)
     has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
@@ -50,7 +49,6 @@ defmodule Operately.People.Person do
       :account_id,
       :company_id,
       :manager_id,
-      :home_dashboard_id,
       :send_daily_summary,
       :notify_on_mention,
       :notify_about_assignments,

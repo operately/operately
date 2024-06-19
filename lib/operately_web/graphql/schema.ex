@@ -65,7 +65,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.CommentThreads
   import_types OperatelyWeb.Graphql.Types.Comments
   import_types OperatelyWeb.Graphql.Types.Companies
-  import_types OperatelyWeb.Graphql.Types.Dashboards
   import_types OperatelyWeb.Graphql.Types.Discussions
   import_types OperatelyWeb.Graphql.Types.GoalPermissions
   import_types OperatelyWeb.Graphql.Types.Goals
@@ -128,7 +127,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Blobs
   import_types OperatelyWeb.Graphql.Mutations.Comments
   import_types OperatelyWeb.Graphql.Mutations.Companies
-  import_types OperatelyWeb.Graphql.Mutations.Dashboards
   import_types OperatelyWeb.Graphql.Mutations.Discussions
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
@@ -136,7 +134,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Kpis
   import_types OperatelyWeb.Graphql.Mutations.Milestones
   import_types OperatelyWeb.Graphql.Mutations.Objectives
-  import_types OperatelyWeb.Graphql.Mutations.People
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Mutations.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Mutations.Projects
@@ -176,7 +173,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :blob_mutations
     import_fields :comment_mutations
     import_fields :company_mutations
-    import_fields :dashboard_mutations
     import_fields :discussion_mutations
     import_fields :goal_mutations
     import_fields :group_mutations
@@ -184,7 +180,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :kpi_mutations
     import_fields :milestone_mutations
     import_fields :objective_mutations
-    import_fields :person_mutations
     import_fields :project_check_in_mutations
     import_fields :project_review_request_mutations
     import_fields :project_mutations

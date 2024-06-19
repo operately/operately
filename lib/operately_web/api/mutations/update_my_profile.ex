@@ -2,14 +2,34 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
   use TurboConnect.Mutation
 
   inputs do
-    # TODO: Define input fields
+    field :full_name, :string
+    field :title, :string
+    field :timezone, :string
+    field :manager_id, :string
+    field :avatar_url, :string
+    field :avatar_blob_id, :string
+    field :theme, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :me, :person
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    me = conn.assigns.current_account.person
+
+    {:ok, me} = Operately.People.update_person(me, inputs)
+    {:ok, serialize(me)}
+  end
+
+  defp serialize(me) do
+    %{
+      me: %{
+        full_name: me.full_name,
+        title: me.title,
+        timezone: me.timezone,
+        avatar_url: me.avatar_url,
+      }
+    }
   end
 end

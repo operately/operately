@@ -85,19 +85,6 @@ defmodule OperatelyWeb.Graphql.Types.Projects do
       end
     end
 
-    field :is_pinned, non_null(:boolean) do
-      resolve fn project, _, %{context: context} ->
-        person = context.current_account.person
-
-        if person.home_dashboard_id do
-          pinned = Operately.Dashboards.has_panel?(person.home_dashboard_id, "pinned-project", project.id)
-          {:ok, pinned}
-        else
-          {:ok, false}
-        end
-      end
-    end
-
     field :is_archived, non_null(:boolean) do
       resolve fn project, _, _ ->
         {:ok, project.deleted_at != nil}

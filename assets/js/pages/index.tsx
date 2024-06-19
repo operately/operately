@@ -5,7 +5,6 @@
 
 import * as AccountAppearancePage from "./AccountAppearancePage";
 import * as AccountEditProfilePage from "./AccountEditProfilePage";
-import * as AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import * as AccountPage from "./AccountPage";
 import * as CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
@@ -88,10 +87,6 @@ export default {
   AccountEditProfilePage: {
     loader: AccountEditProfilePage.loader,
     Page: AccountEditProfilePage.Page
-  },
-  AccountNotificationSettingsPage: {
-    loader: AccountNotificationSettingsPage.loader,
-    Page: AccountNotificationSettingsPage.Page
   },
   AccountPage: {
     loader: AccountPage.loader,

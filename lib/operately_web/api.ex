@@ -90,8 +90,6 @@ defmodule OperatelyWeb.Api do
   mutation :update_group_appearance, OperatelyWeb.Api.Mutations.UpdateGroupAppearance
   mutation :update_milestone, OperatelyWeb.Api.Mutations.UpdateMilestone
   mutation :update_milestone_description, OperatelyWeb.Api.Mutations.UpdateMilestoneDescription
-  mutation :update_my_appearance, OperatelyWeb.Api.Mutations.UpdateMyAppearance
-  mutation :update_my_notification_settings, OperatelyWeb.Api.Mutations.UpdateMyNotificationSettings
   mutation :update_my_profile, OperatelyWeb.Api.Mutations.UpdateMyProfile
   mutation :update_project_contributor, OperatelyWeb.Api.Mutations.UpdateProjectContributor
   mutation :update_project_description, OperatelyWeb.Api.Mutations.UpdateProjectDescription
