@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
     field :manager_id, :string
     field :avatar_url, :string
     field :avatar_blob_id, :string
+    field :theme, :string
   end
 
   outputs do
