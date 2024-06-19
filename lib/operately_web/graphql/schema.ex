@@ -136,7 +136,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Kpis
   import_types OperatelyWeb.Graphql.Mutations.Milestones
   import_types OperatelyWeb.Graphql.Mutations.Objectives
-  import_types OperatelyWeb.Graphql.Mutations.People
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Mutations.ProjectReviewRequests
   import_types OperatelyWeb.Graphql.Mutations.Projects
@@ -184,7 +183,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :kpi_mutations
     import_fields :milestone_mutations
     import_fields :objective_mutations
-    import_fields :person_mutations
     import_fields :project_check_in_mutations
     import_fields :project_review_request_mutations
     import_fields :project_mutations

@@ -1135,7 +1135,6 @@ export type RootMutationType = {
   createKeyResult?: Maybe<KeyResult>;
   createKpi?: Maybe<Kpi>;
   createObjective?: Maybe<Objective>;
-  createProfile?: Maybe<Person>;
   createProject: Project;
   createProjectReviewRequest?: Maybe<ProjectReviewRequest>;
   createTask?: Maybe<Task>;
@@ -1337,15 +1336,6 @@ export type RootMutationTypeCreateKpiArgs = {
 
 export type RootMutationTypeCreateObjectiveArgs = {
   input: CreateObjectiveInput;
-};
-
-
-export type RootMutationTypeCreateProfileArgs = {
-  avatarBlobId?: InputMaybe<Scalars['ID']['input']>;
-  avatarUrl: Scalars['String']['input'];
-  fullName: Scalars['String']['input'];
-  timezone: Scalars['String']['input'];
-  title: Scalars['String']['input'];
 };
 
 
@@ -1635,13 +1625,11 @@ export type RootQueryType = {
   discussions?: Maybe<Array<Maybe<Discussion>>>;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
-  homeDashboard: Dashboard;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
   keyResults?: Maybe<Array<Maybe<KeyResult>>>;
   kpi?: Maybe<Kpi>;
   kpis?: Maybe<Array<Maybe<Kpi>>>;
-  me?: Maybe<Person>;
   milestone?: Maybe<Milestone>;
   objective?: Maybe<Objective>;
   objectives?: Maybe<Array<Maybe<Objective>>>;

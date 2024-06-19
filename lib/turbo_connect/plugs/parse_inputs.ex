@@ -35,7 +35,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def find_field(fields, field_name) do
     case Enum.find(fields, fn {name, _, _} -> name == field_name end) do
-      nil -> {:error, 400, "Field not found: #{field_name}"}
+      nil -> {:error, 400, "Unknown input field: #{field_name}"}
       field -> {:ok, field}
     end
   end

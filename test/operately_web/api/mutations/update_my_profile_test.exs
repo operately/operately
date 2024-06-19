@@ -5,6 +5,10 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfileTest do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, :update_my_profile, %{})
     end
+
+    test "if extra fields are provided, it is an error and won't update the profile", ctx do
+      assert {400, "Unknown input field: password"} = mutation(ctx.conn, :update_my_profile, %{password: "hack"})
+    end
   end
 
   describe "update_my_profile functionality" do
