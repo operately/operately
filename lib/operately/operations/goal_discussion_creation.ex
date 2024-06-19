@@ -6,9 +6,7 @@ defmodule Operately.Operations.GoalDiscussionCreation do
 
   @action :goal_discussion_creation
 
-  def run(author, goal_id, title, message) do
-    goal = Operately.Goals.get_goal!(goal_id)
-
+  def run(author, goal, title, message) do
     Multi.new()
     |> Multi.insert(:activity_without_thread, Activities.Activity.changeset(%{
       author_id: author.id,

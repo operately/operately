@@ -3,6 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
+import * as Api from "@/api";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { FilledButton } from "@/components/Button";
@@ -12,8 +13,9 @@ import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Validators } from "@/utils/validators";
 
-import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
+import { useFormState, formValidator } from "@/components/Form/useFormState";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -68,12 +70,16 @@ type FormFields = {
 };
 
 function useForm({ goal }: { goal: Goals.Goal }) {
+  const navigate = useNavigate();
+
   const [title, setTitle] = React.useState("");
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
   });
+
+  const [submitting, setSubmitting] = React.useState(false);
 
   return useFormState<FormFields>({
     fields: {
@@ -85,17 +91,20 @@ function useForm({ goal }: { goal: Goals.Goal }) {
       formValidator("title", "Title is required", Validators.nonEmptyString),
       formValidator("editor", "Body is required", Validators.nonEmptyRichText),
     ],
-    action: useFormMutationAction({
-      mutationHook: Goals.useCreateGoalDiscussionMutation,
-      variables: (fields) => ({
-        input: {
+    action: [
+      async (fields: FormFields) => {
+        setSubmitting(true);
+
+        Api.createGoalDiscussion({
           goalId: goal.id,
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
-        },
-      }),
-      onCompleted: (data, navigate) => navigate(Paths.goalActivityPath(goal.id, data.createGoalDiscussion.id)),
-    }),
+        })
+          .then((data) => navigate(Paths.goalActivityPath(goal.id, data.id!)))
+          .finally(() => setSubmitting(false));
+      },
+      submitting,
+    ],
   });
 }
 

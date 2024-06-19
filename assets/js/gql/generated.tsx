@@ -33,419 +33,7 @@ export type Scalars = {
    * string.
    */
   NaiveDateTime: { input: any; output: any; }
-  /** ISO8601 encoded UTC datetime */
-  UtcDatetime: { input: any; output: any; }
 };
-
-export type Activity = {
-  __typename?: 'Activity';
-  action: Scalars['String']['output'];
-  actionType: Scalars['String']['output'];
-  author: Person;
-  commentThread?: Maybe<CommentThread>;
-  content: ActivityContent;
-  eventData: ActivityDataUnion;
-  id: Scalars['ID']['output'];
-  insertedAt: Scalars['UtcDatetime']['output'];
-  person: Person;
-  resource?: Maybe<ActivityResourceUnion>;
-  resourceId: Scalars['ID']['output'];
-  resourceType: Scalars['String']['output'];
-  scopeId: Scalars['ID']['output'];
-  scopeType: Scalars['String']['output'];
-  updatedAt: Scalars['UtcDatetime']['output'];
-};
-
-export type ActivityContent = ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalDiscussionCreation | ActivityContentGoalDiscussionEditing | ActivityContentGoalEditing | ActivityContentGoalReopening | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
-
-export type ActivityContentCommentAdded = {
-  __typename?: 'ActivityContentCommentAdded';
-  activity?: Maybe<Activity>;
-  comment: Comment;
-};
-
-export type ActivityContentDiscussionCommentSubmitted = {
-  __typename?: 'ActivityContentDiscussionCommentSubmitted';
-  discussionId: Scalars['String']['output'];
-  space: Group;
-  spaceId: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type ActivityContentDiscussionEditing = {
-  __typename?: 'ActivityContentDiscussionEditing';
-  companyId: Scalars['String']['output'];
-  discussionId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-};
-
-export type ActivityContentDiscussionPosting = {
-  __typename?: 'ActivityContentDiscussionPosting';
-  companyId: Scalars['String']['output'];
-  discussion: Discussion;
-  discussionId: Scalars['String']['output'];
-  space: Group;
-  spaceId: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type ActivityContentGoalArchived = {
-  __typename?: 'ActivityContentGoalArchived';
-  goal: Goal;
-};
-
-export type ActivityContentGoalCheckIn = {
-  __typename?: 'ActivityContentGoalCheckIn';
-  goal: Goal;
-  update: Update;
-};
-
-export type ActivityContentGoalCheckInAcknowledgement = {
-  __typename?: 'ActivityContentGoalCheckInAcknowledgement';
-  goal: Goal;
-  update: Update;
-};
-
-export type ActivityContentGoalCheckInEdit = {
-  __typename?: 'ActivityContentGoalCheckInEdit';
-  checkInId: Scalars['String']['output'];
-  companyId: Scalars['String']['output'];
-  goalId: Scalars['String']['output'];
-};
-
-export type ActivityContentGoalClosing = {
-  __typename?: 'ActivityContentGoalClosing';
-  companyId: Scalars['String']['output'];
-  goal: Goal;
-  goalId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  success?: Maybe<Scalars['String']['output']>;
-};
-
-export type ActivityContentGoalCreated = {
-  __typename?: 'ActivityContentGoalCreated';
-  goal: Goal;
-};
-
-export type ActivityContentGoalDiscussionCreation = {
-  __typename?: 'ActivityContentGoalDiscussionCreation';
-  companyId?: Maybe<Scalars['String']['output']>;
-  goal: Goal;
-  goalId?: Maybe<Scalars['String']['output']>;
-};
-
-export type ActivityContentGoalDiscussionEditing = {
-  __typename?: 'ActivityContentGoalDiscussionEditing';
-  activityId: Scalars['String']['output'];
-  companyId: Scalars['String']['output'];
-  goalId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-};
-
-export type ActivityContentGoalEditing = {
-  __typename?: 'ActivityContentGoalEditing';
-  addedTargets: Array<Maybe<Target>>;
-  companyId: Scalars['String']['output'];
-  deletedTargets: Array<Maybe<Target>>;
-  goal: Goal;
-  goalId: Scalars['String']['output'];
-  newChampion: Person;
-  newChampionId: Scalars['String']['output'];
-  newName: Scalars['String']['output'];
-  newReviewer: Person;
-  newReviewerId: Scalars['String']['output'];
-  newTimeframe: Timeframe;
-  oldChampionId: Scalars['String']['output'];
-  oldName: Scalars['String']['output'];
-  oldReviewerId: Scalars['String']['output'];
-  oldTimeframe: Timeframe;
-  updatedTargets: Array<Maybe<GoalEditingUpdatedTarget>>;
-};
-
-export type ActivityContentGoalReopening = {
-  __typename?: 'ActivityContentGoalReopening';
-  companyId?: Maybe<Scalars['String']['output']>;
-  goal: Goal;
-  goalId?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
-};
-
-export type ActivityContentGoalReparent = {
-  __typename?: 'ActivityContentGoalReparent';
-  companyId: Scalars['String']['output'];
-  newParentGoalId?: Maybe<Scalars['String']['output']>;
-  oldParentGoalId?: Maybe<Scalars['String']['output']>;
-};
-
-export type ActivityContentGoalTimeframeEditing = {
-  __typename?: 'ActivityContentGoalTimeframeEditing';
-  goal: Goal;
-  newTimeframe: Timeframe;
-  oldTimeframe: Timeframe;
-};
-
-export type ActivityContentGroupEdited = {
-  __typename?: 'ActivityContentGroupEdited';
-  exampleField: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectArchived = {
-  __typename?: 'ActivityContentProjectArchived';
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectCheckInAcknowledged = {
-  __typename?: 'ActivityContentProjectCheckInAcknowledged';
-  checkIn: ProjectCheckIn;
-  checkInId: Scalars['String']['output'];
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectCheckInCommented = {
-  __typename?: 'ActivityContentProjectCheckInCommented';
-  checkIn?: Maybe<ProjectCheckIn>;
-  checkInId: Scalars['String']['output'];
-  comment: Comment;
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectCheckInEdit = {
-  __typename?: 'ActivityContentProjectCheckInEdit';
-  checkInId: Scalars['String']['output'];
-  companyId: Scalars['String']['output'];
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectCheckInSubmitted = {
-  __typename?: 'ActivityContentProjectCheckInSubmitted';
-  checkIn: ProjectCheckIn;
-  checkInId: Scalars['String']['output'];
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectClosed = {
-  __typename?: 'ActivityContentProjectClosed';
-  project: Project;
-};
-
-export type ActivityContentProjectContributorAddition = {
-  __typename?: 'ActivityContentProjectContributorAddition';
-  companyId: Scalars['String']['output'];
-  person: Person;
-  personId: Scalars['String']['output'];
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectCreated = {
-  __typename?: 'ActivityContentProjectCreated';
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectDiscussionSubmitted = {
-  __typename?: 'ActivityContentProjectDiscussionSubmitted';
-  discussionId: Scalars['String']['output'];
-  project: Project;
-  projectId: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectGoalConnection = {
-  __typename?: 'ActivityContentProjectGoalConnection';
-  goal: Goal;
-  project: Project;
-};
-
-export type ActivityContentProjectGoalDisconnection = {
-  __typename?: 'ActivityContentProjectGoalDisconnection';
-  goal: Goal;
-  project: Project;
-};
-
-export type ActivityContentProjectMilestoneCommented = {
-  __typename?: 'ActivityContentProjectMilestoneCommented';
-  comment: Comment;
-  commentAction: Scalars['String']['output'];
-  milestone: Milestone;
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectMoved = {
-  __typename?: 'ActivityContentProjectMoved';
-  newSpace: Group;
-  oldSpace: Group;
-  project: Project;
-};
-
-export type ActivityContentProjectPausing = {
-  __typename?: 'ActivityContentProjectPausing';
-  companyId: Scalars['String']['output'];
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectRenamed = {
-  __typename?: 'ActivityContentProjectRenamed';
-  newName: Scalars['String']['output'];
-  oldName: Scalars['String']['output'];
-  project: Project;
-};
-
-export type ActivityContentProjectResuming = {
-  __typename?: 'ActivityContentProjectResuming';
-  companyId: Scalars['String']['output'];
-  project: Project;
-  projectId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectReviewAcknowledged = {
-  __typename?: 'ActivityContentProjectReviewAcknowledged';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  reviewId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectReviewCommented = {
-  __typename?: 'ActivityContentProjectReviewCommented';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  reviewId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectReviewRequestSubmitted = {
-  __typename?: 'ActivityContentProjectReviewRequestSubmitted';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  requestId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectReviewSubmitted = {
-  __typename?: 'ActivityContentProjectReviewSubmitted';
-  project: Project;
-  projectId: Scalars['String']['output'];
-  reviewId: Scalars['String']['output'];
-};
-
-export type ActivityContentProjectTimelineEdited = {
-  __typename?: 'ActivityContentProjectTimelineEdited';
-  newEndDate?: Maybe<Scalars['Date']['output']>;
-  newMilestones?: Maybe<Array<Maybe<Milestone>>>;
-  newStartDate?: Maybe<Scalars['Date']['output']>;
-  oldEndDate?: Maybe<Scalars['Date']['output']>;
-  oldStartDate?: Maybe<Scalars['Date']['output']>;
-  project: Project;
-  updatedMilestones?: Maybe<Array<Maybe<Milestone>>>;
-};
-
-export type ActivityContentSpaceJoining = {
-  __typename?: 'ActivityContentSpaceJoining';
-  companyId: Scalars['String']['output'];
-  space: Group;
-  spaceId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskAdding = {
-  __typename?: 'ActivityContentTaskAdding';
-  companyId: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskAssigneeAssignment = {
-  __typename?: 'ActivityContentTaskAssigneeAssignment';
-  companyId: Scalars['String']['output'];
-  personId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskClosing = {
-  __typename?: 'ActivityContentTaskClosing';
-  companyId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskDescriptionChange = {
-  __typename?: 'ActivityContentTaskDescriptionChange';
-  companyId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskNameEditing = {
-  __typename?: 'ActivityContentTaskNameEditing';
-  companyId: Scalars['String']['output'];
-  newName: Scalars['String']['output'];
-  oldName: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskPriorityChange = {
-  __typename?: 'ActivityContentTaskPriorityChange';
-  companyId: Scalars['String']['output'];
-  newPriority: Scalars['String']['output'];
-  oldPriority: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskReopening = {
-  __typename?: 'ActivityContentTaskReopening';
-  companyId: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskSizeChange = {
-  __typename?: 'ActivityContentTaskSizeChange';
-  companyId: Scalars['String']['output'];
-  newSize: Scalars['String']['output'];
-  oldSize: Scalars['String']['output'];
-  spaceId: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskStatusChange = {
-  __typename?: 'ActivityContentTaskStatusChange';
-  companyId: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityContentTaskUpdate = {
-  __typename?: 'ActivityContentTaskUpdate';
-  companyId: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  taskId: Scalars['String']['output'];
-};
-
-export type ActivityDataUnion = ActivityEventDataCommentPost | ActivityEventDataMilestoneCreate | ActivityEventDataProjectCreate;
-
-export type ActivityEventDataCommentPost = {
-  __typename?: 'ActivityEventDataCommentPost';
-  updateId: Scalars['String']['output'];
-};
-
-export type ActivityEventDataMilestoneCreate = {
-  __typename?: 'ActivityEventDataMilestoneCreate';
-  title: Scalars['String']['output'];
-};
-
-export type ActivityEventDataProjectCreate = {
-  __typename?: 'ActivityEventDataProjectCreate';
-  champion?: Maybe<Person>;
-};
-
-export type ActivityResourceUnion = Comment | Milestone | Project | Update;
 
 export type AddCompanyMemberInput = {
   email: Scalars['String']['input'];
@@ -540,18 +128,6 @@ export type Comment = {
   reactions: Array<Maybe<Reaction>>;
 };
 
-export type CommentThread = {
-  __typename?: 'CommentThread';
-  author: Person;
-  comments: Array<Maybe<Comment>>;
-  commentsCount: Scalars['Int']['output'];
-  id: Scalars['ID']['output'];
-  insertedAt: Scalars['Date']['output'];
-  message: Scalars['String']['output'];
-  reactions: Array<Maybe<Reaction>>;
-  title?: Maybe<Scalars['String']['output']>;
-};
-
 export type Company = {
   __typename?: 'Company';
   admins?: Maybe<Array<Maybe<Person>>>;
@@ -574,12 +150,6 @@ export type CreateCommentInput = {
   content: Scalars['String']['input'];
   entityId: Scalars['String']['input'];
   entityType: Scalars['String']['input'];
-};
-
-export type CreateGoalDiscussionInput = {
-  goalId: Scalars['String']['input'];
-  message: Scalars['String']['input'];
-  title: Scalars['String']['input'];
 };
 
 export type CreateGoalInput = {
@@ -749,13 +319,6 @@ export type Goal = {
   targets?: Maybe<Array<Maybe<Target>>>;
   timeframe: Timeframe;
   updatedAt: Scalars['Date']['output'];
-};
-
-export type GoalEditingUpdatedTarget = {
-  __typename?: 'GoalEditingUpdatedTarget';
-  id: Scalars['String']['output'];
-  newName: Scalars['String']['output'];
-  oldName: Scalars['String']['output'];
 };
 
 export type GoalPermissions = {
@@ -1026,7 +589,6 @@ export type RootMutationType = {
   createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
-  createGoalDiscussion: Activity;
   createGroup?: Maybe<Group>;
   createProject: Project;
   createTask?: Maybe<Task>;
@@ -1196,11 +758,6 @@ export type RootMutationTypeCreateCommentArgs = {
 
 export type RootMutationTypeCreateGoalArgs = {
   input: CreateGoalInput;
-};
-
-
-export type RootMutationTypeCreateGoalDiscussionArgs = {
-  input: CreateGoalDiscussionInput;
 };
 
 
@@ -1812,13 +1369,6 @@ export type AddCompanyMemberMutationVariables = Exact<{
 
 export type AddCompanyMemberMutation = { __typename?: 'RootMutationType', addCompanyMember: { __typename?: 'Invitation', id: string, token: string } };
 
-export type CreateGoalDiscussionMutationVariables = Exact<{
-  input: CreateGoalDiscussionInput;
-}>;
-
-
-export type CreateGoalDiscussionMutation = { __typename?: 'RootMutationType', createGoalDiscussion: { __typename?: 'Activity', id: string } };
-
 export type EditGoalDiscussionMutationVariables = Exact<{
   input: EditGoalDiscussionInput;
 }>;
@@ -1949,39 +1499,6 @@ export function useAddCompanyMemberMutation(baseOptions?: Apollo.MutationHookOpt
 export type AddCompanyMemberMutationHookResult = ReturnType<typeof useAddCompanyMemberMutation>;
 export type AddCompanyMemberMutationResult = Apollo.MutationResult<AddCompanyMemberMutation>;
 export type AddCompanyMemberMutationOptions = Apollo.BaseMutationOptions<AddCompanyMemberMutation, AddCompanyMemberMutationVariables>;
-export const CreateGoalDiscussionDocument = gql`
-    mutation CreateGoalDiscussion($input: CreateGoalDiscussionInput!) {
-  createGoalDiscussion(input: $input) {
-    id
-  }
-}
-    `;
-export type CreateGoalDiscussionMutationFn = Apollo.MutationFunction<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>;
-
-/**
- * __useCreateGoalDiscussionMutation__
- *
- * To run a mutation, you first call `useCreateGoalDiscussionMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateGoalDiscussionMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createGoalDiscussionMutation, { data, loading, error }] = useCreateGoalDiscussionMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateGoalDiscussionMutation(baseOptions?: Apollo.MutationHookOptions<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>(CreateGoalDiscussionDocument, options);
-      }
-export type CreateGoalDiscussionMutationHookResult = ReturnType<typeof useCreateGoalDiscussionMutation>;
-export type CreateGoalDiscussionMutationResult = Apollo.MutationResult<CreateGoalDiscussionMutation>;
-export type CreateGoalDiscussionMutationOptions = Apollo.BaseMutationOptions<CreateGoalDiscussionMutation, CreateGoalDiscussionMutationVariables>;
 export const EditGoalDiscussionDocument = gql`
     mutation EditGoalDiscussion($input: EditGoalDiscussionInput!) {
   editGoalDiscussion(input: $input) {
