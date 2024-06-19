@@ -11,6 +11,7 @@ import { useTheme, useSetTheme } from "@/theme";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { FilledButton } from "@/components/Button";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export async function loader(): Promise<null> {
   return null;

@@ -1179,13 +1179,11 @@ export type RootMutationType = {
   setProjectDueDate: Project;
   setProjectStartDate: Project;
   setTargetGroup?: Maybe<KeyResult>;
-  updateAppearance?: Maybe<Person>;
   updateDashboard: Dashboard;
   updateGroupAppearance: Group;
   updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
-  updateNotificationSettings?: Maybe<Person>;
   updateProjectContributor: ProjectContributor;
   updateProjectDescription: Project;
   updateTask: Task;
@@ -1579,11 +1577,6 @@ export type RootMutationTypeSetTargetGroupArgs = {
 };
 
 
-export type RootMutationTypeUpdateAppearanceArgs = {
-  input: UpdateAppearanceInput;
-};
-
-
 export type RootMutationTypeUpdateDashboardArgs = {
   input: UpdateDashboardInput;
 };
@@ -1606,11 +1599,6 @@ export type RootMutationTypeUpdateMilestoneDescriptionArgs = {
 
 export type RootMutationTypeUpdateMilestoneTitleArgs = {
   input: UpdateMilestoneTitleInput;
-};
-
-
-export type RootMutationTypeUpdateNotificationSettingsArgs = {
-  input: UpdateNotificationSettingsInput;
 };
 
 
@@ -1906,10 +1894,6 @@ export type Update = {
   updatedAt: Scalars['NaiveDateTime']['output'];
 };
 
-export type UpdateAppearanceInput = {
-  theme?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateContent = UpdateContentGoalCheckIn | UpdateContentMessage | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectCreated | UpdateContentProjectDiscussion | UpdateContentProjectEndTimeChanged | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentProjectStartTimeChanged | UpdateContentReview | UpdateContentStatusUpdate;
 
 export type UpdateContentGoalCheckIn = {
@@ -2046,12 +2030,6 @@ export type UpdateMilestoneInput = {
 export type UpdateMilestoneTitleInput = {
   id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
-};
-
-export type UpdateNotificationSettingsInput = {
-  notifyAboutAssignments?: InputMaybe<Scalars['Boolean']['input']>;
-  notifyOnMention?: InputMaybe<Scalars['Boolean']['input']>;
-  sendDailySummary?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateTargetInput = {

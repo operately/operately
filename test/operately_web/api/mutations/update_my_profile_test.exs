@@ -27,5 +27,30 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfileTest do
       assert person.timezone == "America/New_York"
       assert person.avatar_url == "https://example.com/avatar.jpg"
     end
+
+    test "update the theme", ctx do
+      person = ctx.person
+
+      assert {200, %{me: %{}}} = mutation(ctx.conn, :update_my_profile, %{theme: "dark"})
+      person = Operately.People.get_person!(person.id)
+      assert person.theme == "dark"
+
+      assert {200, %{me: %{}}} = mutation(ctx.conn, :update_my_profile, %{theme: "light"})
+      person = Operately.People.get_person!(person.id)
+      assert person.theme == "light"
+    end
+
+    test "inputs that are not provided are not updated", ctx do
+      person = ctx.person
+
+      assert {200, %{me: %{}}} = mutation(ctx.conn, :update_my_profile, %{full_name: "John Doe"})
+
+      person = Operately.People.get_person!(person.id)
+
+      assert person.full_name == "John Doe"
+      assert person.title == ctx.person.title
+      assert person.timezone == ctx.person.timezone
+      assert person.avatar_url == ctx.person.avatar_url
+    end
   end
 end 

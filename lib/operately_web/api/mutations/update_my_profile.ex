@@ -18,15 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
   def call(conn, inputs) do
     me = conn.assigns.current_account.person
 
-    {:ok, me} = Operately.People.update_person(me, %{
-      full_name: inputs[:full_name],
-      title: inputs[:title],
-      timezone: inputs[:timezone],
-      avatar_blob_id: inputs[:avatar_blob_id],
-      avatar_url: inputs[:avatar_url],
-      manager_id: inputs[:manager_id],
-    })
-
+    {:ok, me} = Operately.People.update_person(me, inputs)
     {:ok, serialize(me)}
   end
 

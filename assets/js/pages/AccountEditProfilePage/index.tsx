@@ -146,9 +146,7 @@ function ProfileForm({ me }) {
   };
 
   const handleFileUpload = async (file) => {
-    const blob = await fileUploader.upload(file, (progress) => {
-      setUploadProgress(progress);
-    });
+    const blob = await fileUploader.upload(file, () => {});
     setBlobId(blob.id);
     setAvatarUrl(blob.url);
   };

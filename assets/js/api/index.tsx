@@ -1648,24 +1648,6 @@ export interface UpdateMilestoneDescriptionResult {
 }
 
 
-export interface UpdateMyAppearanceInput {
-
-}
-
-export interface UpdateMyAppearanceResult {
-
-}
-
-
-export interface UpdateMyNotificationSettingsInput {
-
-}
-
-export interface UpdateMyNotificationSettingsResult {
-
-}
-
-
 export interface UpdateMyProfileInput {
   fullName?: string | null;
   title?: string | null;
@@ -1673,6 +1655,7 @@ export interface UpdateMyProfileInput {
   managerId?: string | null;
   avatarUrl?: string | null;
   avatarBlobId?: string | null;
+  theme?: string | null;
 }
 
 export interface UpdateMyProfileResult {
@@ -2070,14 +2053,6 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/update_milestone_description", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
-  async updateMyAppearance(input: UpdateMyAppearanceInput): Promise<UpdateMyAppearanceResult> {
-    return axios.post(this.getBasePath() + "/update_my_appearance", toSnake(input)).then(({ data }) => toCamel(data));
-  }
-
-  async updateMyNotificationSettings(input: UpdateMyNotificationSettingsInput): Promise<UpdateMyNotificationSettingsResult> {
-    return axios.post(this.getBasePath() + "/update_my_notification_settings", toSnake(input)).then(({ data }) => toCamel(data));
-  }
-
   async updateMyProfile(input: UpdateMyProfileInput): Promise<UpdateMyProfileResult> {
     return axios.post(this.getBasePath() + "/update_my_profile", toSnake(input)).then(({ data }) => toCamel(data));
   }
@@ -2353,12 +2328,6 @@ export async function updateMilestone(input: UpdateMilestoneInput) : Promise<Upd
 }
 export async function updateMilestoneDescription(input: UpdateMilestoneDescriptionInput) : Promise<UpdateMilestoneDescriptionResult> {
   return defaultApiClient.updateMilestoneDescription(input);
-}
-export async function updateMyAppearance(input: UpdateMyAppearanceInput) : Promise<UpdateMyAppearanceResult> {
-  return defaultApiClient.updateMyAppearance(input);
-}
-export async function updateMyNotificationSettings(input: UpdateMyNotificationSettingsInput) : Promise<UpdateMyNotificationSettingsResult> {
-  return defaultApiClient.updateMyNotificationSettings(input);
 }
 export async function updateMyProfile(input: UpdateMyProfileInput) : Promise<UpdateMyProfileResult> {
   return defaultApiClient.updateMyProfile(input);
@@ -2712,14 +2681,6 @@ export function useUpdateMilestoneDescription() : UseMutationHookResult<UpdateMi
   return useMutation<UpdateMilestoneDescriptionInput, UpdateMilestoneDescriptionResult>((input) => defaultApiClient.updateMilestoneDescription(input));
 }
 
-export function useUpdateMyAppearance() : UseMutationHookResult<UpdateMyAppearanceInput, UpdateMyAppearanceResult> {
-  return useMutation<UpdateMyAppearanceInput, UpdateMyAppearanceResult>((input) => defaultApiClient.updateMyAppearance(input));
-}
-
-export function useUpdateMyNotificationSettings() : UseMutationHookResult<UpdateMyNotificationSettingsInput, UpdateMyNotificationSettingsResult> {
-  return useMutation<UpdateMyNotificationSettingsInput, UpdateMyNotificationSettingsResult>((input) => defaultApiClient.updateMyNotificationSettings(input));
-}
-
 export function useUpdateMyProfile() : UseMutationHookResult<UpdateMyProfileInput, UpdateMyProfileResult> {
   return useMutation<UpdateMyProfileInput, UpdateMyProfileResult>((input) => defaultApiClient.updateMyProfile(input));
 }
@@ -2911,10 +2872,6 @@ export default {
   useUpdateMilestone,
   updateMilestoneDescription,
   useUpdateMilestoneDescription,
-  updateMyAppearance,
-  useUpdateMyAppearance,
-  updateMyNotificationSettings,
-  useUpdateMyNotificationSettings,
   updateMyProfile,
   useUpdateMyProfile,
   updateProjectContributor,
