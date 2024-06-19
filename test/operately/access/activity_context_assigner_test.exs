@@ -13,6 +13,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
   import Operately.CommentsFixtures
   import Operately.ActivitiesFixtures
 
+  alias Operately.Repo
   alias Operately.Activities
 
   setup do
@@ -329,34 +330,41 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "goal_reopening action", ctx do
-      {:ok, goal} = Operately.Operations.GoalReopening.run(
+      Operately.Operations.GoalReopening.run(
         ctx.author,
         ctx.goal.id,
         "{}"
       )
 
       activity = from(a in Activities.Activity,
-        where: a.content["goal_id"] == ^goal.id and a.action == "goal_reopening"
+        where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_reopening"
       )
-      |> Operately.Repo.one()
+      |> Repo.one()
 
       assert activity.context_id == ctx.goal.access_context.id
     end
 
-    # test "goal_timeframe_editing action", ctx do
-    #   attrs = %{
-    #     action: "goal_timeframe_editing",
-    #     author_id: ctx.author.id,
-    #     content: %{
-    #       goal_id: ctx.goal.id, company_id: ctx.company.id, space_id: ctx.group.id,
-    #       old_timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
-    #       new_timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
-    #     }
-    #   }
+    test "goal_timeframe_editing action", ctx do
+      Operately.Operations.GoalTimeframeEditing.run(
+        ctx.author,
+        %{
+          id: ctx.goal.id,
+          timeframe: %{
+            type: "days",
+            start_date: Date.utc_today(),
+            end_date: Date.add(Date.utc_today(), 5)
+          },
+          comment: "{}"
+        }
+      )
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.goal.access_context.id)
-    # end
+      activity = from(a in Activities.Activity,
+        where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_timeframe_editing"
+      )
+      |> Repo.one()
+
+      assert activity.context_id == ctx.goal.access_context.id
+    end
   end
 
   describe "assigns access_context to project activities" do
@@ -371,16 +379,16 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.project.access_context.id)
     end
 
-    # test "project_archived action", ctx do
-    #   attrs = %{
-    #     action: "project_archived",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
-    #   }
+    test "project_archived action", ctx do
+      attrs = %{
+        action: "project_archived",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
     test "project_check_in_acknowledged action", ctx do
       attrs = %{
@@ -667,7 +675,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
 
     Ecto.Multi.new()
     |> Activities.insert_sync(attrs.author_id, action, fn _ -> attrs.content end)
-    |> Operately.Repo.transaction()
+    |> Repo.transaction()
     |> Repo.extract_result(:updated_activity)
   end
 
