@@ -434,27 +434,29 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.project.access_context.id)
     end
 
-    # test "project_closed action", ctx do
-    #   attrs = %{
-    #     action: "project_closed",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
-    #   }
+    test "project_closed action", ctx do
+      attrs = %{
+        action: "project_closed",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
+      }
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
-    # test "project_contributor_addition action", ctx do
-    #   attrs = %{
-    #     action: "project_contributor_addition",
-    #     author_id: ctx.author.id,
-    #     content: %{ project_id: ctx.project.id, company_id: ctx.company.id, person_id: ctx.author.id, contributor_id: ctx.author.id, responsibility: "-", role: "-" }
-    #   }
+    test "project_contributor_addition action", ctx do
+      contributor = contributor_fixture(%{person_id: ctx.author.id, project_id: ctx.project.id})
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.project.access_context.id)
-    # end
+      attrs = %{
+        action: "project_contributor_addition",
+        author_id: ctx.author.id,
+        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, person_id: ctx.author.id, contributor_id: contributor.id, responsibility: "-", role: "-" }
+      }
+
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.project.access_context.id)
+    end
 
     # test "project_discussion_submitted action", ctx do
     #   attrs = %{
