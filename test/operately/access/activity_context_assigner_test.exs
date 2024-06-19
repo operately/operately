@@ -1,6 +1,8 @@
 defmodule Operately.AccessActivityContextAssignerTest do
   use Operately.DataCase
 
+  import Ecto.Query
+
   import Operately.UpdatesFixtures, only: [update_fixture: 1]
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -326,16 +328,20 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.goal.access_context.id)
     end
 
-    # test "goal_reopening action", ctx do
-    #   attrs = %{
-    #     action: "goal_reopening",
-    #     author_id: ctx.author.id,
-    #     content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, space_id: ctx.group.id }
-    #   }
+    test "goal_reopening action", ctx do
+      {:ok, goal} = Operately.Operations.GoalReopening.run(
+        ctx.author,
+        ctx.goal.id,
+        "{}"
+      )
 
-    #   create_activity(attrs)
-    #   |> assert_context_assigned(ctx.goal.access_context.id)
-    # end
+      activity = from(a in Activities.Activity,
+        where: a.content["goal_id"] == ^goal.id and a.action == "goal_reopening"
+      )
+      |> Operately.Repo.one()
+
+      assert activity.context_id == ctx.goal.access_context.id
+    end
 
     # test "goal_timeframe_editing action", ctx do
     #   attrs = %{
