@@ -8,18 +8,18 @@ defmodule Operately.Activities.Notifications.GoalTimeframeEditing do
       goal.reviewer_id,
     ]
 
-    mentioned = 
+    mentioned =
       message
       |> ProsemirrorMentions.extract_ids()
-      |> Enum.map(fn id -> Operately.People.get_person!(id) end)
+      |> Enum.map(fn id -> Operately.People.get_person!(id).id end)
 
     people = Enum.uniq(assigned ++ mentioned)
 
-    notifications = 
+    notifications =
       people
       |> Enum.uniq()
       |> Enum.filter(fn person_id -> person_id != activity.author_id end)
-      |> Enum.map(fn person_id -> 
+      |> Enum.map(fn person_id ->
         %{
           person_id: person_id,
           activity_id: activity.id,
