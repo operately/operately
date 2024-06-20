@@ -40,8 +40,9 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_discussion_submitted, ctx, params do
-    ctx
+    ctx 
     |> UI.assert_text(params.title)
+    |> UI.sleep(100) # give it a moment to load the discussion
 
     activity = last_activity()
     comment_thread = last_comment_thread()
