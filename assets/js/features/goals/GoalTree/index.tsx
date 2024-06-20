@@ -307,7 +307,7 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
             <FilledButton
               size="xs"
               type="secondary"
-              linkTo={Paths.projectCheckInPath(project.id, project.lastCheckIn!.id)}
+              linkTo={Paths.projectCheckInPath(project.id!, project.lastCheckIn!.id!)}
               linkTarget="_blank"
             >
               Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
@@ -315,13 +315,13 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
-            <Avatar person={project.lastCheckIn!.author} size={16} /> {project.lastCheckIn!.author.fullName} on{" "}
-            <FormattedTime time={project.lastCheckIn!.insertedAt} format="short-date" />
+            <Avatar person={project.lastCheckIn!.author!} size={16} /> {project.lastCheckIn!.author!.fullName!} on{" "}
+            <FormattedTime time={project.lastCheckIn!.insertedAt!} format="short-date" />
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
             <div className="mb-2">
-              <SmallStatusIndicator status={project.lastCheckIn!.status} />
+              <SmallStatusIndicator status={project.lastCheckIn!.status!} />
             </div>
             <RichContent jsonContent={project.lastCheckIn?.description!} />
           </div>
@@ -487,7 +487,7 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
 
   if (project.closedAt) return <CompletedProgress />;
 
-  const milestones = Milestones.sortByDeadline(project.milestones!.map((m) => m!));
+  const milestones = Milestones.sortByDeadline(project.milestones!);
   const { pending, done } = Milestones.splitByStatus(milestones);
 
   return (
@@ -529,8 +529,11 @@ function PendingMilestones({ project, pending }: { project: Projects.Project; pe
         {pending!.map((milestone) => (
           <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
             <div className="inline-flex items-center gap-1 flex-1 truncate">
-              <MilestoneIcon milestone={milestone!} />
-              <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(project.id, milestone!.id)}>
+              <MilestoneIcon milestone={{ status: "pending", deadlineAt: milestone!.deadlineAt! }} />
+              <DivLink
+                className="truncate hover:underline"
+                to={Paths.projectMilestonePath(project.id!, milestone!.id!)}
+              >
                 {milestone!.title}
               </DivLink>
             </div>
@@ -556,8 +559,11 @@ function DoneMilestones({ project, done }: { project: Projects.Project; done: Mi
         {done!.map((milestone) => (
           <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
             <div className="inline-flex items-center gap-1 truncate">
-              <MilestoneIcon milestone={milestone!} />
-              <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(project.id, milestone!.id)}>
+              <MilestoneIcon milestone={{ status: "done", deadlineAt: milestone!.completedAt! }} />
+              <DivLink
+                className="truncate hover:underline"
+                to={Paths.projectMilestonePath(project.id!, milestone!.id!)}
+              >
                 {milestone!.title}
               </DivLink>
             </div>

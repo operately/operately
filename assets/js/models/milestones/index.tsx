@@ -1,8 +1,10 @@
 import { gql, useMutation } from "@apollo/client";
 import * as Time from "@/utils/time";
 
-import { Milestone } from "@/gql";
-export type { Milestone };
+import * as Gql from "@/gql";
+import * as Api from "@/api";
+
+export type Milestone = Api.Milestone | Gql.Milestone;
 
 export const FRAGMENT = `
   {
@@ -63,10 +65,10 @@ export function splitByStatus(milestones: Milestone[]) {
   };
 }
 
-export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
+export function sortByDeadline(milestones: Milestone[] | Gql.Maybe<Milestone>[], { reverse = false } = {}) {
   let result: Milestone[] = [];
 
-  return result.concat(milestones).sort((m1, m2) => {
+  return result.concat(milestones.map((m: Milestone) => m!)).sort((m1, m2) => {
     let d1 = +new Date(m1.deadlineAt);
     let d2 = +new Date(m2.deadlineAt);
 

@@ -33,7 +33,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
   return (
     <div className={className}>
       <div className="flex flex-col">
-        {showSpace && <div className="text-xs text-content-dimmed font-medium">{project.space.name}</div>}
+        {showSpace && <div className="text-xs text-content-dimmed font-medium">{project.space!.name!}</div>}
         <ProjectNameLine project={project} />
         <ProjectStatusLine project={project} />
       </div>
