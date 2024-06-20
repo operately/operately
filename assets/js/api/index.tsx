@@ -1027,11 +1027,11 @@ export interface GetNotificationsResult {
 
 
 export interface GetPeopleInput {
-
+  includeSuspended?: boolean | null;
 }
 
 export interface GetPeopleResult {
-
+  people?: Person[] | null;
 }
 
 

@@ -1,15 +1,16 @@
 import { makeQueryFn } from "@/graphql/client";
 import Api, { GetMeInput } from "@/api";
 
-import { Person, GetPeopleDocument, GetPersonDocument, GetPersonQueryVariables } from "@/gql/generated";
+import { GetPersonDocument, GetPersonQueryVariables } from "@/gql/generated";
 
-export { Person } from "@/gql/generated";
+import * as gql from "@/gql";
 import * as api from "@/api";
 
-export const getPeople = makeQueryFn(GetPeopleDocument, "people") as () => Promise<Person[]>;
+export type Person = gql.Person | api.Person;
+
 export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
 
-export { updateMyProfile } from "@/api";
+export { getPeople, updateMyProfile } from "@/api";
 
 export const getMe = async (input: GetMeInput) => {
   const res = await Api.getMe(input);
@@ -44,15 +45,15 @@ export function usePeopleSearch() {
   };
 }
 
-export function firstName(person: Pick<Person | api.Person, "fullName">): string {
+export function firstName(person: Pick<Person, "fullName">): string {
   return person.fullName!.split(" ")[0]!;
 }
 
-export function shortName(person: Pick<Person | api.Person, "fullName">): string {
+export function shortName(person: Pick<Person, "fullName">): string {
   return firstName(person) + " " + lastNameInitial(person) + ".";
 }
 
-function lastNameInitial(person: Pick<Person | api.Person, "fullName">): string {
+function lastNameInitial(person: Pick<Person, "fullName">): string {
   return person.fullName!.split(" ").slice(-1)[0]![0]!;
 }
 
@@ -67,7 +68,7 @@ export function formattedName(person: Pick<Person, "fullName">, nameFormat: Name
     return shortName(person);
   }
 
-  return person.fullName;
+  return person.fullName!;
 }
 
 export function logOut() {

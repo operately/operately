@@ -67,7 +67,7 @@ function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
 
       <div
         className="text-xs text-content-dimmed text-right cursor-pointer flex items-center gap-1 justify-end -mt-5 px-2"
-        onClick={() => chart.collapse(node.person.id)}
+        onClick={() => chart.collapse(node.person.id!)}
       >
         Collapse <Icons.IconChevronUp size={14} />
       </div>
@@ -104,19 +104,23 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
         <div
           className={classNames({
             "rounded-xl text-xs px-1.5 py-0.5 flex items-center gap-0.5 ": true,
-            "bg-dark-3 text-white-1": chart.expanded.includes(person.id),
-            "bg-stone-400 text-white-1": !chart.expanded.includes(person.id),
+            "bg-dark-3 text-white-1": chart.expanded.includes(person.id!),
+            "bg-stone-400 text-white-1": !chart.expanded.includes(person.id!),
             "opacity-0": node.totalReports === 0,
             "cursor-pointer": node.totalReports > 0,
           })}
           onClick={() => {
             if (node.totalReports > 0) {
-              chart.toggle(person.id);
+              chart.toggle(person.id!);
             }
           }}
         >
           {node.totalReports}
-          {chart.expanded.includes(person.id) ? <Icons.IconChevronUp size={14} /> : <Icons.IconChevronDown size={14} />}
+          {chart.expanded.includes(person.id!) ? (
+            <Icons.IconChevronUp size={14} />
+          ) : (
+            <Icons.IconChevronDown size={14} />
+          )}
         </div>
       </div>
     </div>
@@ -128,6 +132,6 @@ function sortNodes(nodes: OrgChartNode[]) {
     if (a.totalReports > b.totalReports) return -1;
     if (a.totalReports < b.totalReports) return 1;
 
-    return a.person.fullName.localeCompare(b.person.fullName);
+    return a.person.fullName!.localeCompare(b.person.fullName!);
   });
 }

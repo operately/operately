@@ -10,7 +10,7 @@ export function Page() {
   const { company, people } = useLoadedData();
 
   const sortedPeople = React.useMemo(() => {
-    return [...people].sort((a, b) => a.fullName.localeCompare(b.fullName));
+    return [...people].sort((a, b) => a.fullName!.localeCompare(b.fullName!));
   }, [people]);
 
   return (
