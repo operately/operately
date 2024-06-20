@@ -25,15 +25,16 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
     assert ctx.goal.timeframe.start_date == ~D[2024-04-01]
     assert ctx.goal.timeframe.end_date == ~D[2024-06-30]
 
-
-    Operately.Operations.GoalTimeframeEditing.run(
-      ctx.author,
-      %{
-        id: ctx.goal.id,
-        timeframe: %{ type: "days", start_date: ~D[2024-04-15], end_date: ~D[2024-08-30]},
-        comment: "{}"
-      }
-    )
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      Operately.Operations.GoalTimeframeEditing.run(
+        ctx.author,
+        %{
+          id: ctx.goal.id,
+          timeframe: %{ type: "days", start_date: ~D[2024-04-15], end_date: ~D[2024-08-30]},
+          comment: "{}"
+        }
+      )
+    end)
 
     goal = Repo.reload(ctx.goal)
 
@@ -43,7 +44,8 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
   end
 
   test "GoalTimeframeEditing operation creates activity and thread", ctx do
-    Operately.Operations.GoalTimeframeEditing.run(
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      Operately.Operations.GoalTimeframeEditing.run(
         ctx.author,
         %{
           id: ctx.goal.id,
@@ -51,6 +53,7 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
           comment: "{}"
         }
       )
+    end)
 
     activity = from(a in Activity, where: a.action == "goal_timeframe_editing" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
 
