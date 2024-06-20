@@ -60,7 +60,7 @@ defmodule Operately.Blobs do
         config = ExAws.Config.new(:s3, host: host)
 
         ExAws.S3.put_object(bucket, blob.filename, path) |> ExAws.request!()
-          {:ok, "http://#{host}:9090/#{bucket}/#{path}"}
+        {:ok, "http://#{host}:9090/#{bucket}/#{path}" |> IO.inspect()}
 
       "local" ->
         host = OperatelyWeb.Endpoint.url()
