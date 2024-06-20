@@ -9,7 +9,7 @@ import PeopleSearch from "@/components/PeopleSearch";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
-import { useMe } from "@/models/people";
+import { useGetMe } from "@/models/people";
 import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
 import { CreateBlob } from "@/graphql/Blobs";
 
@@ -32,7 +32,7 @@ const dimmedClassName = classNames(
 );
 
 export function Page() {
-  const { data } = useMe({ includeManager: true });
+  const { data } = useGetMe({ includeManager: true });
 
   if (!data) {
     return null;

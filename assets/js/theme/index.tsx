@@ -1,5 +1,5 @@
 import React from "react";
-import { useMe } from "@/models/people";
+import { useGetMe } from "@/models/people";
 
 const ThemeContext = React.createContext({
   theme: "dark",
@@ -8,7 +8,7 @@ const ThemeContext = React.createContext({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { data, loading, error } = useMe({});
+  const { data, loading, error } = useGetMe({});
 
   if (loading) return null;
 

@@ -7,9 +7,11 @@ import * as Icons from "@tabler/icons-react";
 import { Form, useForm } from "@/features/projectCheckIns/Form";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const { project, me } = useLoadedData();
+  const me = useMe();
+  const { project } = useLoadedData();
 
   const form = useForm({ project, mode: "create", author: me });
 

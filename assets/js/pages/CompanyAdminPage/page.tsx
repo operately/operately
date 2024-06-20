@@ -8,9 +8,11 @@ import { CompanyAdmins } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
 import { createPath } from "@/utils/paths";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const { company, me } = useLoadedData();
+  const me = useMe();
+  const { company } = useLoadedData();
 
   return (
     <Pages.Page title={[company.name, "Admininstration"]}>

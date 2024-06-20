@@ -5,14 +5,12 @@ import * as api from "@/api";
 
 export type Person = gql.Person | api.Person;
 
-export { getPerson, getPeople, updateMyProfile } from "@/api";
+export { useGetMe, getPerson, getPeople, updateMyProfile } from "@/api";
 
 export const getMe = async (input: GetMeInput) => {
   const res = await Api.getMe(input);
   return res.me as Person;
 };
-
-export const useMe = Api.useGetMe;
 
 export function usePeopleSearch() {
   //

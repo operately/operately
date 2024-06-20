@@ -1,10 +1,10 @@
 import React from "react";
 
 import { usePerfBarData } from "./usePerfBarData";
-import { useMe } from "@/models/people";
+import { useGetMe } from "@/models/people";
 
 export function PerfBar() {
-  const meData = useMe({});
+  const meData = useGetMe({});
   const data = usePerfBarData();
 
   if (meData?.loading) return null;

@@ -1,12 +1,10 @@
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
-import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 interface LoaderResult {
   company: Companies.Company;
-  me: People.Person;
 
   space?: Spaces.Space;
   spaceID?: string;
@@ -28,7 +26,6 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const goal = goalID ? await Goals.getGoal({ id: goalID }) : undefined;
 
   const company = await Companies.getCompany();
-  const me = await People.getMe({});
   const goals = await Goals.getGoals({});
 
   let space: Spaces.Space | undefined;
@@ -43,7 +40,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
     allowSpaceSelection = true;
   }
 
-  return { company, me, spaceID, space, spaces, allowSpaceSelection, goal, goals };
+  return { company, spaceID, space, spaces, allowSpaceSelection, goal, goals };
 }
 
 export function useLoadedData(): LoaderResult {

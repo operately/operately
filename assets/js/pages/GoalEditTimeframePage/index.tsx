@@ -14,21 +14,21 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
 import { DimmedLink } from "@/components/Link";
 import { Datepicker } from "@/components/Datepicker";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    me: await People.getMe({}),
     goal: await Goals.getGoal({ id: params.goalId }),
   };
 }
 
 export function Page() {
-  const { goal, me } = Pages.useLoadedData<LoaderResult>();
+  const me = useMe();
+  const { goal } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ goal });
 
   return (

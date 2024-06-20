@@ -7,6 +7,7 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
   const { spaceID } = useLoadedData();
@@ -19,7 +20,8 @@ export function Page() {
 }
 
 function NewGoalForSpacePage() {
-  const { company, me, space, parentGoal, goals } = useLoadedData();
+  const me = useMe();
+  const { company, space, parentGoal, goals } = useLoadedData();
 
   const form = useForm({
     mode: "create",
@@ -51,7 +53,8 @@ function NewGoalForSpacePage() {
 }
 
 function NewGoalPage() {
-  const { company, me, spaces, parentGoal, goals, isCompanyWide } = useLoadedData();
+  const me = useMe();
+  const { company, spaces, parentGoal, goals, isCompanyWide } = useLoadedData();
 
   const form = useForm({
     mode: "create",

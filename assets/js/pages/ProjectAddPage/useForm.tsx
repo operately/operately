@@ -9,6 +9,7 @@ import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export interface FormState {
   fields: Fields;
@@ -58,7 +59,8 @@ interface Error {
 }
 
 export function useForm(): FormState {
-  const { company, me, spaceID, goal: initialGoal, goals } = useLoadedData();
+  const me = useMe();
+  const { company, spaceID, goal: initialGoal, goals } = useLoadedData();
 
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
