@@ -112,6 +112,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "post-comment")
+    |> UI.sleep(100) # give it a moment for the comment to be submitted
   end
 
   step :assert_comment_submitted, ctx, message do
