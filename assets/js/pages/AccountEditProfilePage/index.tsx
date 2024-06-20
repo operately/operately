@@ -73,7 +73,7 @@ function FileInput({ onChange }) {
           Upload Photo
         </FilledButton>
 
-        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" />
+        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" style={{display: "none"}} />
       </div>
     </div>
   );
