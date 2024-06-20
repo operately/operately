@@ -1,16 +1,14 @@
 import * as React from "react";
 import * as Milestones from "@/models/milestones";
-
-import { FilledButton } from "@/components/Button";
-import FormattedTime from "@/components/FormattedTime";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/models/people";
-
 import * as Time from "@/utils/time";
 import * as Icons from "@tabler/icons-react";
 
-import { DateSelector } from "./DateSelector";
 import classNames from "classnames";
+import FormattedTime from "@/components/FormattedTime";
+
+import { FilledButton } from "@/components/Button";
+import { DateSelector } from "./DateSelector";
 import { Summary } from "@/components/RichContent";
 
 export function MilestoneList({ form }) {
@@ -194,7 +192,6 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
   const { editor } = TipTapEditor.useEditor({
     autoFocus: false,
     placeholder: "Write here...",
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[150px] p-2 py-1 text-sm",
     content: initialDescription,
   });

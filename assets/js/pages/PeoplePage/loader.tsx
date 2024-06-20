@@ -10,7 +10,7 @@ interface LoaderResult {
 export async function loader(): Promise<LoaderResult> {
   return {
     company: await Companies.getCompany(),
-    people: await People.getPeople(),
+    people: await People.getPeople({}).then((data) => People.sortByName(data.people!)),
   };
 }
 

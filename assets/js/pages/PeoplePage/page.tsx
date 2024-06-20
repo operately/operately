@@ -9,10 +9,6 @@ import { Link } from "@/components/Link";
 export function Page() {
   const { company, people } = useLoadedData();
 
-  const sortedPeople = React.useMemo(() => {
-    return [...people].sort((a, b) => a.fullName!.localeCompare(b.fullName!));
-  }, [people]);
-
   return (
     <Pages.Page title={"People"}>
       <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
@@ -23,7 +19,7 @@ export function Page() {
 
         <h1 className="text-3xl font-bold text-center mt-2 mb-16">Members of {company.name}</h1>
 
-        <PeopleList people={sortedPeople} />
+        <PeopleList people={people} />
       </div>
     </Pages.Page>
   );

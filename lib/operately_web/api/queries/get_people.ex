@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
       id: person.id,
       full_name: person.full_name,
       email: person.email,
+      title: person.title,
       avatar_url: person.avatar_url,
       manager_id: person.manager_id
     }

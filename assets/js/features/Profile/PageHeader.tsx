@@ -26,8 +26,8 @@ export function PageHeader(props: PageHeaderProps) {
       </div>
 
       <Tabs.Root activeTab={props.activeTab}>
-        <Tabs.Tab id="about" title="About" linkTo={Paths.profilePath(props.person.id)} />
-        <Tabs.Tab id="goals" title="Goals" linkTo={Paths.profileGoalsPath(props.person.id)} />
+        <Tabs.Tab id="about" title="About" linkTo={Paths.profilePath(props.person.id!)} />
+        <Tabs.Tab id="goals" title="Goals" linkTo={Paths.profileGoalsPath(props.person.id!)} />
       </Tabs.Root>
     </div>
   );

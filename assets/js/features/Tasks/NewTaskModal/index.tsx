@@ -26,7 +26,6 @@ function useForm({ onSubmit, milestone }) {
   const { editor } = TipTapEditor.useEditor({
     autoFocus: false,
     placeholder: "Add a description here...",
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] p-2 py-1",
   });
 

@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
@@ -46,7 +45,6 @@ function Editor() {
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[350px] py-2 font-medium",
     content: JSON.parse(project.description!),
   });

@@ -95,7 +95,6 @@ export function useForm(config: FormConfig): FormState {
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
     autoFocus: false,
     placeholder: "Write a description...",
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[150px] p-2 py-1",
   });
 
