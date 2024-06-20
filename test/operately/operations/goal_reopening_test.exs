@@ -10,7 +10,6 @@ defmodule Operately.Operations.GoalReopeningTest do
   import Operately.GroupsFixtures
 
   alias Operately.Repo
-  alias Operately.Goals
   alias Operately.Goals.Goal
   alias Operately.Activities.Activity
 
@@ -20,16 +19,12 @@ defmodule Operately.Operations.GoalReopeningTest do
     reader = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(author)
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      goal_fixture(author, %{space_id: group.id, targets: []})
-        |> Goal.changeset(%{
-          closed_at: DateTime.utc_now(),
-          closed_by_id: author.id,
-        })
-        |> Repo.update()
-    end)
-
-    goal = Goals.list_goals() |> hd()
+    {:ok, goal} = goal_fixture(author, %{space_id: group.id, targets: []})
+      |> Goal.changeset(%{
+        closed_at: DateTime.utc_now(),
+        closed_by_id: author.id,
+      })
+      |> Repo.update()
 
     {:ok, author: author, reader: reader, goal: goal}
   end
