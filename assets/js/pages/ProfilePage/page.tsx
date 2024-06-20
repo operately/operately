@@ -14,7 +14,7 @@ export function Page() {
   const { person } = useLoadedData();
 
   return (
-    <Pages.Page title={[person.fullName, "Profile"]}>
+    <Pages.Page title={[person.fullName!, "Profile"]}>
       <Paper.Root>
         <PageNavigation />
 
@@ -52,7 +52,7 @@ function Contact({ person }: { person: People.Person }) {
 
 function PersonFeedContent() {
   const { person } = useLoadedData();
-  const { data, loading, error } = useItemsQuery("person", person.id);
+  const { data, loading, error } = useItemsQuery("person", person.id!);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;

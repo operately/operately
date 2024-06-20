@@ -34,7 +34,7 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
 
     const response = await search({
       query: searchTerm,
-      ignoredIds: props.addedPeople.map((person) => person.id),
+      ignoredIds: props.addedPeople.map((person) => person.id!),
     });
 
     setPeople(response);

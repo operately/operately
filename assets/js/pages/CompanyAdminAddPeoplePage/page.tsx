@@ -10,7 +10,6 @@ import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import { InvitationUrl } from "@/features/CompanyAdmin";
 
-
 export function Page() {
   const { company } = useLoadedData();
 
@@ -20,8 +19,10 @@ export function Page() {
         <Paper.Navigation>
           <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
           <Paper.NavSeparator />
-          <Paper.NavItem linkTo="/company/admin/managePeople" testId="manage-people-link">Manage People</Paper.NavItem>
-        </Paper.Navigation> 
+          <Paper.NavItem linkTo="/company/admin/managePeople" testId="manage-people-link">
+            Manage People
+          </Paper.NavItem>
+        </Paper.Navigation>
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-2xl font-extrabold">Add a new Member</div>
@@ -81,7 +82,9 @@ function PersonForm() {
       </div>
 
       {errors.map((e, idx) => (
-        <div key={idx} className="text-red-500 text-sm">{e.message}</div>
+        <div key={idx} className="text-red-500 text-sm">
+          {e.message}
+        </div>
       ))}
 
       <InvitationUrl url={result} />

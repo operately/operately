@@ -1,12 +1,13 @@
 import * as React from "react";
-
-import { Company, Person } from "@/gql/generated";
+import * as People from "@/models/people";
+import { Company } from "@/gql/generated";
 import { useRefresh, useLoadedData } from "./loader";
 
 import * as Companies from "@/models/companies";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export interface FormState {
-  me: Person;
+  me: People.Person;
   company: Company;
 
   addAdmins: (peopleIds: string[]) => Promise<void>;
@@ -14,7 +15,8 @@ export interface FormState {
 }
 
 export function useFrom(): FormState {
-  const { me, company } = useLoadedData();
+  const me = useMe();
+  const { company } = useLoadedData();
   const removeAdmin = useRemoveAdmin();
   const addAdmins = useAddAdmins();
 

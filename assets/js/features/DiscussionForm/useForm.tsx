@@ -2,7 +2,6 @@ import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
-import * as People from "@/models/people";
 
 import { useNavigate } from "react-router-dom";
 
@@ -41,7 +40,6 @@ export function useForm(options: UseFormOptions): FormState {
 
   const { editor, uploading, empty } = TipTapEditor.useEditor({
     placeholder: "Write here...",
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
   });

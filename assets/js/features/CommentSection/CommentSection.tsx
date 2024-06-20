@@ -1,6 +1,5 @@
 import React from "react";
 
-import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as TipTapEditor from "@/components/Editor";
@@ -57,7 +56,6 @@ function EditComment({ comment, onCancel, form }) {
 
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[200px] p-4",
     content: JSON.parse(comment.content)["message"],
   });

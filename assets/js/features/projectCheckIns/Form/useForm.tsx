@@ -48,7 +48,6 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
     content: checkIn && JSON.parse(checkIn.description),
   });

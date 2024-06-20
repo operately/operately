@@ -6,9 +6,11 @@ import * as Pages from "@/components/Pages";
 import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const { company, me, goal } = useLoadedData();
+  const me = useMe();
+  const { company, goal } = useLoadedData();
 
   const form = useForm({
     mode: "edit",

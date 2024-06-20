@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Milestones from "@/models/milestones";
 import * as Projects from "@/models/projects";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 
 import { useRefresh } from "./loader";
@@ -112,7 +111,6 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
     content: JSON.parse(milestone.description || "{}"),
     editable: true,
     className: "p-2 min-h-[200px]",
-    peopleSearch: People.usePeopleSearch(),
   });
 
   const startEditing = React.useCallback(() => {

@@ -144,7 +144,7 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
-      personId: john.id,
+      personId: john.id!,
     });
 
     const expected = `

@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/models/people";
 
 import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -81,7 +80,6 @@ export function useForm(project: Projects.Project): FormState {
 function useWhatWentWellEditor() {
   return TipTapEditor.useEditor({
     placeholder: `Write your answer here...`,
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
   });
 }
@@ -89,7 +87,6 @@ function useWhatWentWellEditor() {
 function useWhatCouldHaveGoneBetterEditor() {
   return TipTapEditor.useEditor({
     placeholder: `Write your answer here...`,
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
   });
 }
@@ -97,7 +94,6 @@ function useWhatCouldHaveGoneBetterEditor() {
 function useWhatDidYouLearnEditor() {
   return TipTapEditor.useEditor({
     placeholder: `Write your answer here...`,
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
   });
 }

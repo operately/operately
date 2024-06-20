@@ -1027,20 +1027,23 @@ export interface GetNotificationsResult {
 
 
 export interface GetPeopleInput {
-
+  includeSuspended?: boolean | null;
 }
 
 export interface GetPeopleResult {
-
+  people?: Person[] | null;
 }
 
 
 export interface GetPersonInput {
-
+  id?: string | null;
+  includeManager?: boolean | null;
+  includeReports?: boolean | null;
+  includePeers?: boolean | null;
 }
 
 export interface GetPersonResult {
-
+  person?: Person | null;
 }
 
 

@@ -76,7 +76,7 @@ function classNames(error: boolean | undefined) {
 
 function personAsOption(person: Person, showTitle = false): Option {
   return {
-    value: person.id,
+    value: person.id!,
     label: <PersonLabel person={person} showTitle={!!showTitle} />,
     person: person,
   };

@@ -1008,7 +1008,6 @@ export type RootQueryType = {
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
   milestone?: Maybe<Milestone>;
-  people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
   potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
   project?: Maybe<Project>;
@@ -1418,21 +1417,6 @@ export type GetInvitationQueryVariables = Exact<{
 
 
 export type GetInvitationQuery = { __typename?: 'RootQueryType', invitation: { __typename?: 'Invitation', admin: { __typename?: 'Person', fullName: string, company: { __typename?: 'Company', name: string } }, member: { __typename?: 'Person', fullName: string, email?: string | null } } };
-
-export type GetPeopleQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetPeopleQuery = { __typename?: 'RootQueryType', people?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, managerId?: string | null } | null> | null };
-
-export type GetPersonQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-  includeManager?: InputMaybe<Scalars['Boolean']['input']>;
-  includeReports?: InputMaybe<Scalars['Boolean']['input']>;
-  includePeers?: InputMaybe<Scalars['Boolean']['input']>;
-}>;
-
-
-export type GetPersonQuery = { __typename?: 'RootQueryType', person?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null, email?: string | null, suspended: boolean, manager?: { __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null, reports?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null, peers?: Array<{ __typename?: 'Person', id: string, fullName: string, title?: string | null, avatarUrl?: string | null } | null> | null } | null };
 
 export type GetProjectQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1940,105 +1924,6 @@ export function useGetInvitationLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetInvitationQueryHookResult = ReturnType<typeof useGetInvitationQuery>;
 export type GetInvitationLazyQueryHookResult = ReturnType<typeof useGetInvitationLazyQuery>;
 export type GetInvitationQueryResult = Apollo.QueryResult<GetInvitationQuery, GetInvitationQueryVariables>;
-export const GetPeopleDocument = gql`
-    query GetPeople {
-  people {
-    id
-    fullName
-    title
-    avatarUrl
-    managerId
-  }
-}
-    `;
-
-/**
- * __useGetPeopleQuery__
- *
- * To run a query within a React component, call `useGetPeopleQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPeopleQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetPeopleQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetPeopleQuery(baseOptions?: Apollo.QueryHookOptions<GetPeopleQuery, GetPeopleQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPeopleQuery, GetPeopleQueryVariables>(GetPeopleDocument, options);
-      }
-export function useGetPeopleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPeopleQuery, GetPeopleQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPeopleQuery, GetPeopleQueryVariables>(GetPeopleDocument, options);
-        }
-export type GetPeopleQueryHookResult = ReturnType<typeof useGetPeopleQuery>;
-export type GetPeopleLazyQueryHookResult = ReturnType<typeof useGetPeopleLazyQuery>;
-export type GetPeopleQueryResult = Apollo.QueryResult<GetPeopleQuery, GetPeopleQueryVariables>;
-export const GetPersonDocument = gql`
-    query GetPerson($id: ID!, $includeManager: Boolean = false, $includeReports: Boolean = false, $includePeers: Boolean = false) {
-  person(id: $id) {
-    id
-    fullName
-    title
-    avatarUrl
-    email
-    suspended
-    manager @include(if: $includeManager) {
-      id
-      fullName
-      title
-      avatarUrl
-    }
-    reports @include(if: $includeReports) {
-      id
-      fullName
-      title
-      avatarUrl
-    }
-    peers @include(if: $includePeers) {
-      id
-      fullName
-      title
-      avatarUrl
-    }
-  }
-}
-    `;
-
-/**
- * __useGetPersonQuery__
- *
- * To run a query within a React component, call `useGetPersonQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPersonQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetPersonQuery({
- *   variables: {
- *      id: // value for 'id'
- *      includeManager: // value for 'includeManager'
- *      includeReports: // value for 'includeReports'
- *      includePeers: // value for 'includePeers'
- *   },
- * });
- */
-export function useGetPersonQuery(baseOptions: Apollo.QueryHookOptions<GetPersonQuery, GetPersonQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPersonQuery, GetPersonQueryVariables>(GetPersonDocument, options);
-      }
-export function useGetPersonLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPersonQuery, GetPersonQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPersonQuery, GetPersonQueryVariables>(GetPersonDocument, options);
-        }
-export type GetPersonQueryHookResult = ReturnType<typeof useGetPersonQuery>;
-export type GetPersonLazyQueryHookResult = ReturnType<typeof useGetPersonLazyQuery>;
-export type GetPersonQueryResult = Apollo.QueryResult<GetPersonQuery, GetPersonQueryVariables>;
 export const GetProjectDocument = gql`
     query GetProject($id: ID!, $includeGoal: Boolean = false, $includeReviewer: Boolean = false, $includeContributors: Boolean = false, $includePermissions: Boolean = false, $includeSpace: Boolean = false, $includeKeyResources: Boolean = false, $includeMilestones: Boolean = false, $includeLastCheckIn: Boolean = false, $includeRetrospective: Boolean = false, $includeClosedBy: Boolean = false) {
   project(id: $id) {

@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/models/people";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { useNavigate } from "react-router-dom";
@@ -43,7 +42,6 @@ export function useForm(options: UseFormOptions): FormState {
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write here...`,
-    peopleSearch: People.usePeopleSearch(),
     className: "min-h-[250px] py-2 font-medium",
     content: options.checkIn && JSON.parse(options.checkIn!.message!),
   });

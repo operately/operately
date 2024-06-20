@@ -75,7 +75,7 @@ export abstract class Node {
   }
 
   compareChampion(b: Node): number {
-    return this.champion.fullName.localeCompare(b.champion.fullName);
+    return this.champion.fullName!.localeCompare(b.champion.fullName!);
   }
 
   compareName(b: Node): number {

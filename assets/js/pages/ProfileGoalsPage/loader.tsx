@@ -11,7 +11,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    person: await People.getPerson({ id: params.id }),
+    person: await People.getPerson({ id: params.id }).then((data) => data.person!),
 
     goals: await Goals.getGoals({
       includeTargets: true,

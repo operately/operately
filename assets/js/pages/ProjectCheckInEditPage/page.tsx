@@ -7,9 +7,11 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const { checkIn, project, me } = useLoadedData();
+  const me = useMe();
+  const { checkIn, project } = useLoadedData();
 
   const form = useForm({ project, checkIn, mode: "edit", author: me });
 

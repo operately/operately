@@ -8,10 +8,10 @@ import { FilledButton } from "@/components/Button";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Paths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  me: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -20,12 +20,12 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.goalId,
       includeTargets: true,
     }),
-    me: await People.getMe({}),
   };
 }
 
 export function Page() {
-  const { goal, me } = Pages.useLoadedData<LoaderResult>();
+  const me = useMe();
+  const { goal } = Pages.useLoadedData<LoaderResult>();
 
   const form = useForm({ goal, mode: "create" });
 
