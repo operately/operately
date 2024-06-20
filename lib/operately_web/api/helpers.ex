@@ -15,4 +15,10 @@ defmodule OperatelyWeb.Api.Helpers do
       raise "No account associated with the connection, maybe you forgot to load the account in a plug?"
     end
   end
+
+  def extend_query(query, true, fun), do: fun.(query)
+  def extend_query(query, _, _), do: query
+
+  def extend_map_if(m1, true, fun), do: Map.merge(m1, fun.())
+  def extend_map_if(m1, _, _), do: m1
 end
