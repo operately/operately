@@ -261,9 +261,7 @@ function useForm({ goal }): Form {
     onCompleted: navigateToGoalPage,
   });
 
-  const peopleSearch = People.usePeopleSearch();
   const commentEditor = TipTapEditor.useEditor({
-    peopleSearch: peopleSearch,
     placeholder: "Explain the reason for the change here...",
   });
 

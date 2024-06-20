@@ -184,7 +184,7 @@ function NodeChampion({ node }: { node: Node }) {
   return (
     <DivLink
       className="flex items-center gap-1.5 text-sm truncate w-24 cursor-pointer"
-      to={Paths.profileGoalsPath(node.champion!.id)}
+      to={Paths.profileGoalsPath(node.champion!.id!)}
     >
       <Avatar person={node.champion!} size={16} />
       <div className="truncate">{People.firstName(node.champion!)}</div>
