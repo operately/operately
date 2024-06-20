@@ -50,13 +50,11 @@ defmodule Operately.Operations.GoalClosingTest do
     activity = from(a in Activity, where: a.action == "goal_closing" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
 
     assert activity.comment_thread_id != nil
-
     assert 0 == notifications_count()
 
     perform_job(activity.id)
 
     assert 1 == notifications_count()
-
     assert nil != fetch_notification(activity.id)
   end
 end

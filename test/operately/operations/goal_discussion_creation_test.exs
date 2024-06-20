@@ -38,13 +38,11 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
 
     assert activity.comment_thread_id != nil
     assert activity.comment_thread.title == title
-
     assert 0 == notifications_count()
 
     perform_job(activity.id)
 
     assert 1 == notifications_count()
-
     assert nil != fetch_notification(activity.id)
   end
 end
