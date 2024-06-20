@@ -22,9 +22,9 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
     {:ok, author: author, reader: reader, goal: goal}
   end
 
-  test "GoalDiscussionCreation operation creates activity and thread", ctx do
+  test "GoalDiscussionCreation operation creates activity, thread and notification", ctx do
     title = "some title"
-    message = "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"mention\",\"attrs\":{\"id\":\"#{ctx.reader.id}\",\"label\":\"#{ctx.reader.full_name}\"}}]}]}"
+    message = notification_message(ctx.reader)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, title, message)
@@ -45,6 +45,6 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
 
     assert 1 == notifications_count()
 
-    assert nil != fetch_notification(ctx.reader.id)
+    assert nil != fetch_notification(activity.id)
   end
 end
