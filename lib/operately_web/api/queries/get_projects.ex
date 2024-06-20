@@ -37,13 +37,18 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> extend_query(inputs[:space_id], fn q -> from p in q, where: p.group_id == ^inputs.space_id end)
     |> extend_query(inputs[:goal_id], fn q -> from p in q, where: p.goal_id == ^inputs.goal_id end)
     |> extend_query(inputs[:include_space], fn q -> from p in q, preload: [:group] end)
-    |> extend_query(inputs[:include_milestones], fn q -> from p in q, preload: [:milestones] end)
     |> extend_query(inputs[:include_contributors], fn q -> from p in q, preload: [contributors: :person] end)
     |> extend_query(inputs[:include_last_check_in], fn q -> from p in q, preload: [last_check_in: :author] end)
     |> extend_query(inputs[:include_champion], fn q -> from p in q, preload: [champion: :person] end)
     |> extend_query(inputs[:include_goal], fn q -> from p in q, preload: [:goal] end)
     |> extend_query(inputs[:include_archived], fn q -> from p in q, where: is_nil(p.deleted_at) end)
+    |> extend_query(inputs[:include_milestones], fn q -> from p in q, preload: [:milestones] end)
     |> Repo.all()
+    |> then(fn projects ->
+      Enum.map(projects, fn project ->
+        %{project | next_milestone: Operately.Projects.get_next_milestone(project)}
+      end)
+    end)
   end
 
   defp apply_visibility_filter(query, person) do
