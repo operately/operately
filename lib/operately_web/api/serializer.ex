@@ -7,6 +7,8 @@ end
 defimpl OperatelyWeb.Api.Serializer, for: Any do
   def serialize(nil), do: nil
   def serialize(%Ecto.Association.NotLoaded{}), do: nil
+  def serialize(datetime = %NaiveDateTime{}), do: datetime |> NaiveDateTime.to_iso8601()
+  def serialize(datetime = %DateTime{}), do: datetime |> DateTime.to_iso8601()
 end
 
 defimpl OperatelyWeb.Api.Serializer, for: List do
@@ -49,8 +51,8 @@ defimpl OperatelyWeb.Api.Serializer, for: Operately.Projects.Milestone do
       id: milestone.id,
       title: milestone.title,
       status: milestone.status,
-      inserted_at: milestone.inserted_at,
-      deadline_at: milestone.deadline_at,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
+      deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
     }
   end
 end
@@ -86,11 +88,11 @@ defimpl OperatelyWeb.Api.Serializer, for: Operately.Projects.Project do
       id: project.id,
       name: project.name,
       private: project.private,
-      inserted_at: project.inserted_at,
-      updated_at: project.updated_at,
-      started_at: project.started_at,
-      closed_at: project.closed_at,
-      deadline: project.deadline,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(project.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(project.updated_at),
+      started_at: OperatelyWeb.Api.Serializer.serialize(project.started_at),
+      closed_at: OperatelyWeb.Api.Serializer.serialize(project.closed_at),
+      deadline: OperatelyWeb.Api.Serializer.serialize(project.deadline),
       is_archived: project.deleted_at != nil,
       is_outdated: Operately.Projects.outdated?(project),
       status: project.status,

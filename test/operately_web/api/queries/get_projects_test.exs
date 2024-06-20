@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_champion: true})
-      assert res.projects == serialize(project)
+      assert res.projects == [serialize(project) |> Map.put(:champion, serialize(ctx.person))]
     end
 
     test "include_goal", ctx do
