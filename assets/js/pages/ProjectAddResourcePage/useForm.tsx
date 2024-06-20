@@ -48,7 +48,7 @@ export function useForm(project: Projects.Project, resourceType: string): FormSt
   }, [name, url, resourceType]);
 
   return {
-    projectId: project.id,
+    projectId: project.id!,
     resourceType,
 
     name,

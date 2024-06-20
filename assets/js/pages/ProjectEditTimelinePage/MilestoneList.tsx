@@ -182,7 +182,7 @@ function MilestoneEdit({ milestone, form, close }) {
 }
 
 function milestoneTestID(milestone: Milestones.Milestone) {
-  return "milestone-" + milestone.title.toLowerCase().replace(/\s+/g, "-");
+  return "milestone-" + milestone.title!.toLowerCase().replace(/\s+/g, "-");
 }
 
 function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescription, onSubmit, onCancel }) {

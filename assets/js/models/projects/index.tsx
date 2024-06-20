@@ -1,14 +1,15 @@
 import client from "@/graphql/client";
 
-import type { ProjectContributor, Milestone } from "@/gql";
 import * as Time from "@/utils/time";
 import * as api from "@/api";
 import * as gql from "@/gql";
 import { GetProjectDocument, GetProjectQueryVariables } from "@/gql/generated";
 
 export type Project = api.Project | gql.Project;
+export type ProjectContributor = api.ProjectContributor | gql.ProjectContributor;
+export type Milestone = api.Milestone | gql.Milestone;
+export type KeyResource = api.ProjectKeyResource | gql.ProjectKeyResource;
 
-export type { ProjectContributor, Milestone } from "@/gql";
 export { getProjects } from "@/api";
 
 export { groupBySpace } from "./groupBySpace";

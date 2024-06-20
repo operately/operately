@@ -16,7 +16,7 @@ export function Page() {
   const form = useForm({ project, checkIn, mode: "edit", author: me });
 
   return (
-    <Pages.Page title={["Edit Project Check-In", project.name]}>
+    <Pages.Page title={["Edit Project Check-In", project.name!]}>
       <Paper.Root>
         <Paper.Body>
           <Header form={form} checkIn={checkIn} />

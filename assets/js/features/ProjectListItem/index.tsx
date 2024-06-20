@@ -116,7 +116,7 @@ function ContribList({ project, size }) {
   return (
     <div className="flex items-center gap-1">
       {sortedContributors.map((contributor) => (
-        <Avatar key={contributor!.id} person={contributor!.person} size={size} />
+        <Avatar key={contributor!.id} person={contributor!.person!} size={size} />
       ))}
     </div>
   );

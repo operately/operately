@@ -17,7 +17,7 @@ export function Page() {
   const form = useForm(project, keyResource);
 
   return (
-    <Pages.Page title={["Edit", keyResource.title, project.name]}>
+    <Pages.Page title={["Edit", keyResource.title, project.name!]}>
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 

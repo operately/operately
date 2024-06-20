@@ -48,7 +48,7 @@ export function useForm(project: Projects.Project, keyResource: KeyResources.Key
   }, [name, url, keyResource.id]);
 
   return {
-    projectId: project.id,
+    projectId: project.id!,
     resourceType: keyResource.resourceType,
 
     name,

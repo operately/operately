@@ -20,7 +20,7 @@ export function Page() {
   const form = useForm(project);
 
   return (
-    <Pages.Page title={["Contributors", project.name]}>
+    <Pages.Page title={["Contributors", project.name!]}>
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 
