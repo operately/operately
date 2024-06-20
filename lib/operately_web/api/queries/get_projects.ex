@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> extend_query(inputs[:include_space], fn q -> from p in q, preload: [:group] end)
     |> extend_query(inputs[:include_contributors], fn q -> from p in q, preload: [contributors: :person] end)
     |> extend_query(inputs[:include_last_check_in], fn q -> from p in q, preload: [last_check_in: :author] end)
-    |> extend_query(inputs[:include_champion], fn q -> from p in q, preload: [champion: :person] end)
+    |> extend_query(inputs[:include_champion], fn q -> from p in q, preload: [:champion] end)
     |> extend_query(inputs[:include_goal], fn q -> from p in q, preload: [:goal] end)
     |> extend_query(inputs[:include_archived], fn q -> from p in q, where: is_nil(p.deleted_at) end)
     |> extend_query(inputs[:include_milestones], fn q -> from p in q, preload: [:milestones] end)
@@ -108,6 +108,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     }
   end
 
+  defp serialize_champion(nil), do: nil
   defp serialize_champion(champion) do
     %{
       id: champion.id,
@@ -117,10 +118,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     }
   end
 
-  def serialize_goal(goal) do
+  defp serialize_goal(nil), do: nil
+  defp serialize_goal(goal) do
     %{
       id: goal.id,
-      title: goal.title,
+      name: goal.name,
     }
   end
 
