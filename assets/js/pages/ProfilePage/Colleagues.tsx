@@ -12,8 +12,8 @@ export function Colleagues({ person }: { person: People.Person }) {
   const [allPeersVisible, setAllPeersVisible] = React.useState(false);
   const [allReportsVisible, setAllReportsVisible] = React.useState(false);
 
-  const sortedPeers = person.peers!.slice().sort((a, b) => a!.fullName.localeCompare(b!.fullName));
-  const sortedReports = person.reports!.slice().sort((a, b) => a!.fullName.localeCompare(b!.fullName));
+  const sortedPeers = People.sortByName(person.peers!);
+  const sortedReports = People.sortByName(person.reports!);
 
   const visiblePeers = allPeersVisible ? sortedPeers : sortedPeers.slice(0, 4);
   const visibleReports = allReportsVisible ? sortedReports : sortedReports.slice(0, 4);
@@ -67,7 +67,7 @@ export function Colleagues({ person }: { person: People.Person }) {
             <div className="text-xs font-medium text-content-dimmed mb-2">Reports</div>
 
             <div className="flex flex-col gap-2">
-              {person.reports!.map((person, index) => (
+              {sortedReports.map((person, index) => (
                 <PersonCard
                   key={person!.id}
                   person={person!}
@@ -78,7 +78,7 @@ export function Colleagues({ person }: { person: People.Person }) {
               ))}
             </div>
 
-            {!allReportsVisible && person.reports!.length > visibleReports.length && (
+            {!allReportsVisible && sortedReports.length > visibleReports.length && (
               <div className="mt-2 flex items-center justify-center">
                 <FilledButton type="secondary" size="xxs" onClick={() => setAllReportsVisible(true)}>
                   Show all
@@ -128,7 +128,7 @@ function PersonCard(props: PersonCardProps) {
   const testid = `person-card-${person.id}`;
 
   if (link) {
-    return <DivLink to={Paths.profilePath(person.id)} className={className} children={content} testId={testid} />;
+    return <DivLink to={Paths.profilePath(person.id!)} className={className} children={content} testId={testid} />;
   } else {
     return <div className={className} children={content} data-test-id={testid} />;
   }

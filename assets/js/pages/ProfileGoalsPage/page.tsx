@@ -11,7 +11,7 @@ export function Page() {
   const { person, goals, projects } = useLoadedData();
 
   return (
-    <Pages.Page title={[person.fullName, "Profile"]}>
+    <Pages.Page title={[person.fullName!, "Profile"]}>
       <Paper.Root fluid>
         <PageNavigation />
 
@@ -20,7 +20,7 @@ export function Page() {
 
           <div className="mt-4" />
 
-          <GoalTree goals={goals} projects={projects} options={{ personId: person.id }} />
+          <GoalTree goals={goals} projects={projects} options={{ personId: person.id! }} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

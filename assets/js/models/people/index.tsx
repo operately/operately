@@ -1,16 +1,11 @@
-import { makeQueryFn } from "@/graphql/client";
 import Api, { GetMeInput } from "@/api";
-
-import { GetPersonDocument, GetPersonQueryVariables } from "@/gql/generated";
 
 import * as gql from "@/gql";
 import * as api from "@/api";
 
 export type Person = gql.Person | api.Person;
 
-export const getPerson = makeQueryFn(GetPersonDocument, "person") as (v: GetPersonQueryVariables) => Promise<Person>;
-
-export { getPeople, updateMyProfile } from "@/api";
+export { getPerson, getPeople, updateMyProfile } from "@/api";
 
 export const getMe = async (input: GetMeInput) => {
   const res = await Api.getMe(input);
@@ -99,4 +94,11 @@ export function logIn(email: string, password: string) {
     headers: headers,
     body: JSON.stringify(data),
   });
+}
+
+export function sortByName(people: Person[] | gql.Maybe<Person>[]): Person[] {
+  return people
+    .slice()
+    .map((p) => p!)
+    .sort((a, b) => a!.fullName!.localeCompare(b!.fullName!));
 }
