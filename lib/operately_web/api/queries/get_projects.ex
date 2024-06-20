@@ -93,7 +93,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> extend_map_if(inputs[:include_milestones], fn -> %{milestones: serialize_milestones(project.milestones)} end)
     |> extend_map_if(inputs[:include_contributors], fn -> %{contributors: serialize_contributors(project.contributors)} end)
     |> extend_map_if(inputs[:include_last_check_in], fn -> %{last_check_in: serialize_last_check_in(project.last_check_in)} end)
-    |> extend_map_if(inputs[:include_next_milestone], fn -> %{next_milestone: serialize_milestone(project.next_milestone)} end)
+    |> extend_map_if(inputs[:include_milestones], fn -> %{next_milestone: serialize_milestone(project.next_milestone)} end)
   end
 
   defp serialize_space(space) do
@@ -123,6 +123,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     Enum.map(milestones, fn milestone -> serialize_milestone(milestone) end)
   end
 
+  defp serialize_milestone(nil), do: nil
   defp serialize_milestone(milestone) do
     %{
       id: milestone.id,
@@ -133,6 +134,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     }
   end
 
+  defp serialize_last_check_in(nil), do: nil
   defp serialize_last_check_in(last_check_in) do
     %{
       id: last_check_in.id,
