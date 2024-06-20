@@ -1,5 +1,6 @@
 defmodule Operately.Operations.GoalDiscussionCreationTest do
   use Operately.DataCase
+  use Operately.Support.Notifications
 
   import Ecto.Query, only: [from: 2]
 
@@ -10,7 +11,6 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
 
   alias Operately.Repo
   alias Operately.Activities.Activity
-  alias Operately.Notifications.Notification
 
   setup do
     company = company_fixture()
@@ -39,12 +39,12 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
     assert activity.comment_thread_id != nil
     assert activity.comment_thread.title == title
 
-    assert 0 == Repo.aggregate(Notification, :count, :id)
+    assert 0 == notifications_count()
 
-    Oban.Testing.perform_job(Operately.Activities.NotificationDispatcher, %{activity_id: activity.id}, [])
+    perform_job(activity.id)
 
-    assert 1 == Repo.aggregate(Notification, :count, :id)
+    assert 1 == notifications_count()
 
-    assert nil != from(n in Notification, where: n.person_id == ^ctx.reader.id) |> Repo.one()
+    assert nil != fetch_notification(ctx.reader.id)
   end
 end
