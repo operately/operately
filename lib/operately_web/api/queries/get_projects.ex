@@ -2,13 +2,15 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Projects.Project
+  alias Operately.Projects.Contributor
+
   inputs do
     field :only_my_projects, :boolean
     field :only_reviewed_by_me, :boolean
 
     field :space_id, :string
     field :goal_id, :string
-    field :company_id, :string
 
     field :include_space, :boolean
     field :include_milestones, :boolean
@@ -23,17 +25,48 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     field :projects, list_of(:project)
   end
 
-  def call(_conn, _inputs) do
-    projects = Operately.Projects.ListOperation.run(person, %{
-      company_id: inputs.company_id,
-      space_id: inputs.space_id,
-      goal_id: inputs.goal_id,
-      include_archived: inputs.include_archived,
-      only_my_projects: inputs.only_my_projects,
-      only_reviewed_by_me: inputs.only_reviewed_by_me,
-    })
+  def call(conn, inputs) do
+    projects = load(me(conn), inputs)
+    {:ok, %{projects: serialize(projects, inputs)}}
+  end
 
-    {:ok, serialize(projects, inputs)}
+  defp load(person, inputs) do
+    (from p in Project, as: :project, where: p.company_id == ^person.company_id)
+    |> apply_visibility_filter(person)
+    |> apply_role_filter(person, inputs)
+    |> extend_query(inputs[:space_id], fn q -> from p in q, where: p.group_id == ^inputs.space_id end)
+    |> extend_query(inputs[:goal_id], fn q -> from p in q, where: p.goal_id == ^inputs.goal_id end)
+    |> extend_query(inputs[:include_space], fn q -> from p in q, preload: [:group] end)
+    |> extend_query(inputs[:include_milestones], fn q -> from p in q, preload: [:milestones] end)
+    |> extend_query(inputs[:include_contributors], fn q -> from p in q, preload: [contributors: :person] end)
+    |> extend_query(inputs[:include_last_check_in], fn q -> from p in q, preload: [last_check_in: :author] end)
+    |> extend_query(inputs[:include_champion], fn q -> from p in q, preload: [champion: :person] end)
+    |> extend_query(inputs[:include_goal], fn q -> from p in q, preload: [:goal] end)
+    |> extend_query(inputs[:include_archived], fn q -> from p in q, where: is_nil(p.deleted_at) end)
+    |> Repo.all()
+  end
+
+  defp apply_visibility_filter(query, person) do
+    from p in query, where: not(p.private) or exists(contributor_subquery(person))
+  end
+  
+  defp apply_role_filter(query, person, inputs) do
+    cond do
+      inputs[:only_reviewed_by_me] ->
+        from p in query, where: exists(contributor_subquery(person, [:champion, :contributor]))
+      inputs[:only_my_projects] ->
+        from p in query, where: exists(contributor_subquery(person, [:reviewer]))
+      true ->
+        query
+    end
+  end
+
+  defp contributor_subquery(person) do
+    from c in Contributor, where: c.project_id == parent_as(:project).id and c.person_id == ^person.id
+  end
+
+  defp contributor_subquery(person, roles) do
+    from c in Contributor, where: c.project_id == parent_as(:project).id and c.person_id == ^person.id and c.role in ^roles
   end
 
   defp serialize(projects, inputs) when is_list(projects) do
@@ -54,13 +87,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
       is_outdated: Operately.Projects.outdated?(project),
       status: project.status,
     }
-    |> extend_map_if(inputs.include_space, fn -> %{space: serialize_space(project.space)} end)
-    |> extend_map_if(inputs.include_champion, fn -> %{champion: serialize_champion(project.champion)} end)
-    |> extend_map_if(inputs.include_goal, fn -> %{goal: serialize_goal(project.goal)} end)
-    |> extend_map_if(inputs.include_milestones, fn -> %{milestones: serialize_milestones(project.milestones)} end)
-    |> extend_map_if(inputs.include_contributors, fn -> %{contributors: serialize_contributors(project.contributors)} end)
-    |> extend_map_if(inputs.include_last_check_in, fn -> %{last_check_in: serialize_last_check_in(project.last_check_in)} end)
-    |> extend_map_if(inputs.include_next_milestone, fn -> %{next_milestone: serialize_milestone(project.next_milestone)} end)
+    |> extend_map_if(inputs[:include_space], fn -> %{space: serialize_space(project.group)} end)
+    |> extend_map_if(inputs[:include_champion], fn -> %{champion: serialize_champion(project.champion)} end)
+    |> extend_map_if(inputs[:include_goal], fn -> %{goal: serialize_goal(project.goal)} end)
+    |> extend_map_if(inputs[:include_milestones], fn -> %{milestones: serialize_milestones(project.milestones)} end)
+    |> extend_map_if(inputs[:include_contributors], fn -> %{contributors: serialize_contributors(project.contributors)} end)
+    |> extend_map_if(inputs[:include_last_check_in], fn -> %{last_check_in: serialize_last_check_in(project.last_check_in)} end)
+    |> extend_map_if(inputs[:include_next_milestone], fn -> %{next_milestone: serialize_milestone(project.next_milestone)} end)
   end
 
   defp serialize_space(space) do

@@ -16,8 +16,9 @@ defmodule OperatelyWeb.Api.Helpers do
     end
   end
 
-  def extend_query(query, true, fun), do: fun.(query)
-  def extend_query(query, _, _), do: query
+  def extend_query(query, nil, _), do: query
+  def extend_query(query, false, _), do: query
+  def extend_query(query, _, fun), do: fun.(query)
 
   def extend_map_if(m1, true, fun), do: Map.merge(m1, fun.())
   def extend_map_if(m1, _, _), do: m1

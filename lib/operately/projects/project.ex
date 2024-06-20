@@ -12,8 +12,14 @@ defmodule Operately.Projects.Project do
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
     has_many :check_ins, Operately.Projects.CheckIn, foreign_key: :project_id
+    
+    has_one :champion_contributor, Operately.Projects.Contributor, foreign_key: :project_id, where: [role: "champion"]
+    has_one :reviewer_contributor, Operately.Projects.Contributor, foreign_key: :project_id, where: [role: "reviewer"]
 
     has_one :access_context, Operately.Access.Context, foreign_key: :project_id
+    has_one :champion, through: [:champion_contributor, :person]
+    has_one :reviewer, through: [:reviewer_contributor, :person]
+    field :next_milestone, :any, virtual: true
 
     field :description, :map
     field :name, :string
