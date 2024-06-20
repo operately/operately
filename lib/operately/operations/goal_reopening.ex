@@ -19,7 +19,7 @@ defmodule Operately.Operations.GoalReopening do
         space_id: goal.group_id,
         goal_id: goal_id,
       }
-    end)
+    end, include_notification: false)
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
       parent_id: changes.activity.id,
       parent_type: "activity",
@@ -30,6 +30,7 @@ defmodule Operately.Operations.GoalReopening do
         comment_thread_id: changes.thread.id
       })
     end)
+    |> Activities.dispatch_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
   end

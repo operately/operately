@@ -20,7 +20,7 @@ defmodule Operately.Operations.GoalTimeframeEditing do
         old_timeframe: Map.from_struct(goal.timeframe),
         new_timeframe: Map.from_struct(changes.goal.timeframe)
       }
-    end)
+    end, include_notification: false)
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
       parent_id: changes.activity.id,
       parent_type: "activity",
@@ -29,6 +29,7 @@ defmodule Operately.Operations.GoalTimeframeEditing do
     |> Multi.update(:activity_with_thread, fn changes ->
       Activities.Activity.changeset(changes.activity, %{comment_thread_id: changes.thread.id})
     end)
+    |> Activities.dispatch_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
   end

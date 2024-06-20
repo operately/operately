@@ -14,7 +14,7 @@ defmodule Operately.Operations.GoalDiscussionCreation do
         space_id: goal.group_id,
         goal_id: goal.id,
       }
-    end)
+    end, include_notification: false)
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
       parent_id: changes.activity.id,
       parent_type: "activity",
@@ -27,6 +27,7 @@ defmodule Operately.Operations.GoalDiscussionCreation do
         comment_thread_id: changes.thread.id
       })
     end)
+    |> Activities.dispatch_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:activity_with_thread)
   end
