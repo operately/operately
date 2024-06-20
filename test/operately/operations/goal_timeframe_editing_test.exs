@@ -1,5 +1,6 @@
 defmodule Operately.Operations.GoalTimeframeEditingTest do
   use Operately.DataCase
+  use Operately.Support.Notifications
 
   import Ecto.Query, only: [from: 2]
 
@@ -14,10 +15,11 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
   setup do
     company = company_fixture()
     author = person_fixture_with_account(%{company_id: company.id})
+    reader = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(author)
     goal = goal_fixture(author, %{space_id: group.id, targets: []})
 
-    {:ok, author: author, goal: goal}
+    {:ok, author: author, reader: reader, goal: goal}
   end
 
   test "GoalTimeframeEditing operation updates goal", ctx do
@@ -50,7 +52,7 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
         %{
           id: ctx.goal.id,
           timeframe: %{type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 5)},
-          comment: "{}"
+          comment: notification_message(ctx.reader)
         }
       )
     end)
@@ -58,5 +60,11 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
     activity = from(a in Activity, where: a.action == "goal_timeframe_editing" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
 
     assert activity.comment_thread_id != nil
+    assert 0 == notifications_count()
+
+    perform_job(activity.id)
+
+    assert 1 == notifications_count()
+    assert nil != fetch_notification(activity.id)
   end
 end
