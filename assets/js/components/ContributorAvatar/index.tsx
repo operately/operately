@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
 
-import { ProjectContributor } from "@/gql/generated";
+import { ProjectContributor } from "@/models/projects";
 
 interface ContributorAvatarProps {
   contributor: ProjectContributor;
@@ -10,8 +10,8 @@ interface ContributorAvatarProps {
 
 export default function ContributorAvatar(props: ContributorAvatarProps) {
   return (
-    <div className={`shrink-0 relative ${borderClass(props.contributor.role)}`}>
-      <Avatar person={props.contributor.person} />
+    <div className={`shrink-0 relative ${borderClass(props.contributor.role!)}`}>
+      <Avatar person={props.contributor.person!} />
     </div>
   );
 }

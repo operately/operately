@@ -20,7 +20,7 @@ export function Page() {
   const title = KeyResources.humanTitle(resourceType);
 
   return (
-    <Pages.Page title={["Add Resource", project.name]}>
+    <Pages.Page title={["Add Resource", project.name!]}>
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 

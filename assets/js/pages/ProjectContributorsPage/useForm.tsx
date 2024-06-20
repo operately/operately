@@ -34,7 +34,7 @@ interface AddColobState {
 
 function useAddContrib(project: Projects.Project): AddColobState {
   const refresh = useRefresh();
-  const hasPermission = project.permissions.canEditContributors;
+  const hasPermission = project.permissions!.canEditContributors!;
 
   const [active, setActive] = React.useState(false);
 
@@ -46,7 +46,7 @@ function useAddContrib(project: Projects.Project): AddColobState {
 
   const submittable = !!personID && !!responsibility;
 
-  const [addColab, _s] = Projects.useAddProjectContributorMutation(project.id);
+  const [addColab, _s] = Projects.useAddProjectContributorMutation(project.id!);
 
   const submit = async () => {
     if (!submittable) return;

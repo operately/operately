@@ -19,7 +19,7 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit Project Resources", project.name]}>
+    <Pages.Page title={["Edit Project Resources", project.name!]}>
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 
@@ -48,7 +48,7 @@ function ResourceList({ project }: { project: Projects.Project }) {
 function ResourcesListWithData({ project }: { project: Projects.Project }) {
   return (
     <div className="grid grid-cols-4 gap-4 mt-8">
-      {project.keyResources!.map((resource) => (
+      {project.keyResources!.map((resource: any) => (
         <ResourceListItem key={resource!.id} resource={resource!} />
       ))}
     </div>

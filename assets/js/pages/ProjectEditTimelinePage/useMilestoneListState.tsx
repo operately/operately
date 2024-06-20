@@ -1,10 +1,13 @@
 import React from "react";
 
-import * as Milestones from "@/models/milestones";
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 
-interface Milestone extends Milestones.Milestone {
+interface Milestone {
+  id: string;
+  title: string;
+  deadlineAt: string;
+  description: string;
   deletable: boolean;
 }
 

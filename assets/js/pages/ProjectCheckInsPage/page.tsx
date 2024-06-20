@@ -18,7 +18,7 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={[project.name, "Check-Ins"]}>
+    <Pages.Page title={[project.name!, "Check-Ins"]}>
       <Paper.Root>
         <Navigation />
 
@@ -36,7 +36,7 @@ function Navigation() {
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>
@@ -99,7 +99,7 @@ export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheck
   const { project } = useLoadedData();
 
   const author = checkIn.author;
-  const path = Paths.projectCheckInPath(project.id, checkIn.id);
+  const path = Paths.projectCheckInPath(project.id!, checkIn.id);
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>

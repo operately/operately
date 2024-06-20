@@ -26,7 +26,7 @@ export function Page() {
   const commentsForm = useForMilestone(milestone);
 
   return (
-    <Pages.Page title={[milestone.title, project.name]}>
+    <Pages.Page title={[milestone.title!, project.name!]}>
       <Paper.Root size="large">
         <ProjectMilestonesNavigation project={project} />
 

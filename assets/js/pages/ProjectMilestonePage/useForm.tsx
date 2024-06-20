@@ -194,7 +194,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
   const submit = React.useCallback(async () => {
     if (loading) return false;
 
-    if (title.trim().length === 0) {
+    if (title!.trim().length === 0) {
       setTitleError(true);
       return false;
     }
@@ -228,7 +228,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
     state,
     startEditing,
 
-    title,
+    title: title!,
     date,
 
     setTitle,

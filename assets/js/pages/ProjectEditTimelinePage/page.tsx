@@ -22,7 +22,7 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title={["Edit Project Timeline", project.name]}>
+    <Pages.Page title={["Edit Project Timeline", project.name!]}>
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
           <Header form={form} />

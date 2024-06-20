@@ -13,7 +13,7 @@ export function groupBySpace(projects: Project[]): ProjectGroup[] {
   for (const project of projects) {
     const space = project.space;
 
-    if (!groups.find((group) => group.space.id === space.id)) {
+    if (!groups.find((group) => group.space.id === space!.id!)) {
       groups.push({
         space: space as Spaces.Space,
         projects: [],

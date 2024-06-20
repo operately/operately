@@ -24,7 +24,7 @@ export async function loader(): Promise<LoaderResult> {
       includeLastCheckIn: true,
       includeChampion: true,
       includeMilestones: true,
-    }),
+    }).then((data) => data.projects!),
   };
 }
 

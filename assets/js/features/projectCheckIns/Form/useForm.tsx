@@ -53,11 +53,11 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
   });
 
   const [post] = ProjectCheckIns.usePostMutation({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id, data.postProjectCheckIn.id)),
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id!, data.postProjectCheckIn.id)),
   });
 
   const [edit] = ProjectCheckIns.useEditMutation({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id, data.editProjectCheckIn.id)),
+    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id!, data.editProjectCheckIn.id)),
   });
 
   const submit = async (): Promise<boolean> => {
@@ -112,7 +112,7 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
   const submitDisabled = !editor.editor || editor.uploading;
 
   const cancelPath =
-    mode === "create" ? Paths.projectCheckInsPath(project.id) : Paths.projectCheckInPath(project.id, checkIn!.id);
+    mode === "create" ? Paths.projectCheckInsPath(project.id!) : Paths.projectCheckInPath(project.id!, checkIn!.id);
 
   return {
     mode,

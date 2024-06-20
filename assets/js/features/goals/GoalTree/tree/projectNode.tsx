@@ -12,22 +12,22 @@ export class ProjectNode extends Node {
     super();
 
     this.project = project;
-    this.parentId = project.goal?.id;
+    this.parentId = project.goal?.id!;
 
-    this.id = project.id;
+    this.id = project.id!;
     this.type = "project";
-    this.name = project.name;
+    this.name = project.name!;
 
     this.champion = project.champion!;
     this.space = project.space as Spaces.Space;
     this.isClosed = !!project.closedAt;
     this.progress = this.calculateProgress();
     this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
-    this.spaceId = project.space.id;
+    this.spaceId = project.space!.id!;
   }
 
   linkTo(): string {
-    return Paths.projectPath(this.project.id);
+    return Paths.projectPath(this.project!.id!);
   }
 
   childrenInfoLabel(): string | null {

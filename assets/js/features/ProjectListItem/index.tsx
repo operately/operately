@@ -33,7 +33,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
   return (
     <div className={className}>
       <div className="flex flex-col">
-        {showSpace && <div className="text-xs text-content-dimmed font-medium">{project.space.name}</div>}
+        {showSpace && <div className="text-xs text-content-dimmed font-medium">{project.space!.name!}</div>}
         <ProjectNameLine project={project} />
         <ProjectStatusLine project={project} />
       </div>
@@ -116,7 +116,7 @@ function ContribList({ project, size }) {
   return (
     <div className="flex items-center gap-1">
       {sortedContributors.map((contributor) => (
-        <Avatar key={contributor!.id} person={contributor!.person} size={size} />
+        <Avatar key={contributor!.id} person={contributor!.person!} size={size} />
       ))}
     </div>
   );

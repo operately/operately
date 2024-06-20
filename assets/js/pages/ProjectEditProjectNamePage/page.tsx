@@ -13,10 +13,10 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit Project Name", project.name]}>
+    <Pages.Page title={["Edit Project Name", project.name!]}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Paper.NavItem linkTo={`/projects/${project.id!}`}>
             <Icons.IconClipboardList size={16} />
             {project.name}
           </Paper.NavItem>

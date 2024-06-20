@@ -32,9 +32,9 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={project.name}>
+    <Pages.Page title={project.name!}>
       <Paper.Root size="large">
-        <Navigation space={project.space} />
+        <Navigation space={project.space!} />
 
         <Paper.Body>
           <Banner project={project} />
@@ -224,7 +224,7 @@ function ResourcesZeroState({ project }) {
 function ResourcesList({ project }: { project: Projects.Project }) {
   return (
     <div className="grid grid-cols-4 gap-4">
-      {project.keyResources!.map((resource, index) => (
+      {project.keyResources!.map((resource: any, index: number) => (
         <Resource
           key={index}
           icon={<ResourceIcon resourceType={resource!.resourceType} size={32} />}
@@ -277,7 +277,7 @@ function DescriptionZeroState({ project }) {
 }
 
 function showEditResource(project: Projects.Project) {
-  if (!project.permissions.canEditResources) return false;
+  if (!project.permissions!.canEditResources) return false;
 
   const resources = project.keyResources || [];
 
@@ -285,13 +285,13 @@ function showEditResource(project: Projects.Project) {
 }
 
 function showEditDescription(project: Projects.Project) {
-  if (!project.permissions.canEditDescription) return false;
+  if (!project.permissions!.canEditDescription) return false;
 
   return project.description !== null;
 }
 
 function showEditMilestones(project: Projects.Project) {
-  if (!project.permissions.canEditMilestone) return false;
+  if (!project.permissions!.canEditMilestone) return false;
 
   const milestones = project.milestones || [];
 

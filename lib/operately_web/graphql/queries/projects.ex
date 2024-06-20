@@ -8,26 +8,6 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
   end
 
   object :project_queries do
-    field :projects, list_of(:project) do
-      arg :filters, :project_list_filters
-
-      resolve fn _, args, %{context: context} ->
-        person = context.current_account.person
-        filters = Map.get(args, :filters, %{})
-
-        projects = Operately.Projects.ListOperation.run(person, %{
-          company_id: person.company_id,
-          space_id: filters[:space_id],
-          include_archived: filters[:include_archived],
-          filter: filters[:filter],
-        })
-
-        projects = preload_contributors(projects, filters)
-
-        {:ok, projects}
-      end
-    end
-
     field :project, :project do
       arg :id, non_null(:id)
 
@@ -59,33 +39,6 @@ defmodule OperatelyWeb.Graphql.Queries.Projects do
 
         {:ok, candidates}
       end
-    end
-
-    defp preload_contributors(projects, filters) do
-      if filters[:group_id] && filters[:limit_contributors_to_group_members] do
-        preload_only_group_members(projects, filters[:group_id])
-      else
-        preload_all(projects)
-      end
-    end
-
-    defp preload_only_group_members(projects, group_id) do
-      import Ecto.Query
-      alias Operately.Projects.Contributor
-      alias Operately.Groups.Member
-
-      query = from(
-        c in Contributor, 
-        preload: [:person], 
-        join: m in Member, on: c.person_id == m.person_id,
-        where: m.group_id == ^group_id
-      )
-
-      Operately.Repo.preload(projects, contributors: query)
-    end
-
-    defp preload_all(projects) do
-      Operately.Repo.preload(projects, contributors: :person)
     end
 
   end
