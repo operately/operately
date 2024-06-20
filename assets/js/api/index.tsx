@@ -1066,11 +1066,21 @@ export interface GetProjectCheckInResult {
 
 
 export interface GetProjectsInput {
-
+  onlyMyProjects?: boolean | null;
+  onlyReviewedByMe?: boolean | null;
+  spaceId?: string | null;
+  goalId?: string | null;
+  includeSpace?: boolean | null;
+  includeMilestones?: boolean | null;
+  includeContributors?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeChampion?: boolean | null;
+  includeGoal?: boolean | null;
+  includeArchived?: boolean | null;
 }
 
 export interface GetProjectsResult {
-
+  projects?: Project[] | null;
 }
 
 

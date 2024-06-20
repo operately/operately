@@ -14,13 +14,11 @@ export async function loader({ params }): Promise<LoadedData> {
     company: await Companies.getCompany(),
     space: await Spaces.getSpace({ id: params.id }),
     projects: await Projects.getProjects({
-      filters: {
-        spaceId: params.id,
-      },
+      spaceId: params.id,
       includeContributors: true,
       includeMilestones: true,
       includeLastCheckIn: true,
-    }),
+    }).then((data) => data.projects!),
   };
 }
 

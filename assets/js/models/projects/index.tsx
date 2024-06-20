@@ -1,15 +1,15 @@
 import client from "@/graphql/client";
 
-import type { Project, ProjectContributor, Milestone } from "@/gql";
+import type { ProjectContributor, Milestone } from "@/gql";
 import * as Time from "@/utils/time";
-import {
-  GetProjectDocument,
-  GetProjectQueryVariables,
-  GetProjectsDocument,
-  GetProjectsQueryVariables,
-} from "@/gql/generated";
+import * as api from "@/api";
+import * as gql from "@/gql";
+import { GetProjectDocument, GetProjectQueryVariables } from "@/gql/generated";
 
-export type { Project, ProjectContributor, Milestone } from "@/gql";
+export type Project = api.Project | gql.Project;
+
+export type { ProjectContributor, Milestone } from "@/gql";
+export { getProjects } from "@/api";
 
 export { groupBySpace } from "./groupBySpace";
 export { useMoveProjectToSpaceMutation } from "./useMoveProjectToSpaceMutation";
@@ -37,21 +37,8 @@ export async function getProject(variables: GetProjectQueryVariables): Promise<P
   return data.data.project;
 }
 
-export async function getProjects(variables: GetProjectsQueryVariables): Promise<Project[]> {
-  variables.filters = variables.filters || {};
-  variables.filters.filter = variables.filters.filter || "all-projects";
-
-  let data = await client.query({
-    query: GetProjectsDocument,
-    variables: variables,
-    fetchPolicy: "network-only",
-  });
-
-  return data.data.projects;
-}
-
 export function sortByName(projects: Project[]) {
-  return [...projects].sort((a, b) => a.name.localeCompare(b.name));
+  return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));
 }
 
 export function sortByClosedAt(projects: Project[]) {
