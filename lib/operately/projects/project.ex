@@ -78,4 +78,27 @@ defmodule Operately.Projects.Project do
       :creator_id,
     ])
   end
+
+  def set_next_milestone(projects) when is_list(projects) do
+    Enum.map(projects, fn project -> set_next_milestone(project) end)
+  end
+
+  def set_next_milestone(project = %__MODULE__{}) do
+    case project.milestones do
+      [] -> 
+        project
+
+      %Ecto.Association.NotLoaded{} -> 
+        raise "Milestones must be preloaded"
+
+      milestones ->
+        next = 
+          milestones 
+          |> Enum.filter(fn milestone -> milestone.status == :pending end)
+          |> Enum.sort_by(fn milestone -> milestone.due_at end)
+          |> List.first()
+
+        Map.put(project, :next_milestone, next)
+    end
+  end
 end

@@ -44,11 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> extend_query(inputs[:include_archived], fn q -> from p in q, where: is_nil(p.deleted_at) end)
     |> extend_query(inputs[:include_milestones], fn q -> from p in q, preload: [:milestones] end)
     |> Repo.all()
-    |> then(fn projects ->
-      Enum.map(projects, fn project ->
-        %{project | next_milestone: Operately.Projects.get_next_milestone(project)}
-      end)
-    end)
+    |> set_next_milestones(inputs[:include_milestones])
   end
 
   defp apply_visibility_filter(query, person) do
@@ -58,9 +54,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   defp apply_role_filter(query, person, inputs) do
     cond do
       inputs[:only_reviewed_by_me] ->
-        from p in query, where: exists(contributor_subquery(person, [:champion, :contributor]))
-      inputs[:only_my_projects] ->
         from p in query, where: exists(contributor_subquery(person, [:reviewer]))
+      inputs[:only_my_projects] ->
+        from p in query, where: exists(contributor_subquery(person, [:champion, :contributor]))
       true ->
         query
     end
@@ -73,6 +69,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   defp contributor_subquery(person, roles) do
     from c in Contributor, where: c.project_id == parent_as(:project).id and c.person_id == ^person.id and c.role in ^roles
   end
+
+  defp set_next_milestones(projects, true), do: Project.set_next_milestone(projects)
+  defp set_next_milestones(projects, _), do: projects
 
   defp serialize(projects, inputs) when is_list(projects) do
     Enum.map(projects, fn p -> serialize(p, inputs) end)
