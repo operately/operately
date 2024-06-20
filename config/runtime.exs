@@ -26,8 +26,8 @@ config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABL
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 
 config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE") || "local"
-config :operately, :storage_bucket, System.get_env("OPERATELY_STORAGE_BUCKET")
-config :operately, :storage_host, System.get_env("OPERATELY_STORAGE_HOST") || "s3.amazonaws.com"
+config :operately, :storage_bucket, System.get_env("OPERATELY_STORAGE_BUCKET") || "operately"
+config :operately, :storage_host, System.get_env("OPERATELY_STORAGE_HOST") || "localhost"
 
 # Determines if the 'Sign in with Google' feature is enabled.
 # Set `ALLOW_LOGIN_WITH_GOOGLE` in the .env file to "yes"
