@@ -17,7 +17,7 @@ export function Page() {
   const candidateSpaces = spaces.filter((space) => space.id !== project.spaceId);
 
   return (
-    <Pages.Page title={["Move to another space", project.name]}>
+    <Pages.Page title={["Move to another space", project.name!]}>
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 
@@ -44,7 +44,7 @@ function NoOtherSpaces() {
 }
 
 function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; candidateSpaces: Spaces.Space[] }) {
-  const gotoProject = useNavigateTo(Paths.projectPath(project.id));
+  const gotoProject = useNavigateTo(Paths.projectPath(project.id!));
 
   const [move] = Projects.useMoveProjectToSpaceMutation({
     onCompleted: gotoProject,

@@ -13,7 +13,7 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Retrospective", project.name]}>
+    <Pages.Page title={["Retrospective", project.name!]}>
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 

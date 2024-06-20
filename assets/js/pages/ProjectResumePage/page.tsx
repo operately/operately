@@ -15,7 +15,7 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Resume", project.name]}>
+    <Pages.Page title={["Resume", project.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
           <Paper.NavItem linkTo={`/projects/${project.id}`}>

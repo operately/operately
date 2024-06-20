@@ -13,7 +13,7 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Set Project Goal", project.name]}>
+    <Pages.Page title={["Set Project Goal", project.name!]}>
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 
@@ -31,7 +31,7 @@ function GoalList() {
   const { project, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const projectPath = Paths.projectPath(project.id);
+  const projectPath = Paths.projectPath(project.id!);
 
   const [connect] = Goals.useConnectGoalToProjectMutation({ onCompleted: () => navigate(projectPath) });
 

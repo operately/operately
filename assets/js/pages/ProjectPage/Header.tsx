@@ -56,7 +56,7 @@ function ParentGoal({ project }: { project: Projects.Project }) {
       <>
         <Icons.IconTarget size={14} className="text-red-500" />
         <DivLink
-          to={Paths.goalPath(goal.id)}
+          to={Paths.goalPath(goal.id!)}
           className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
           testId="project-goal-link"
         >
@@ -96,9 +96,9 @@ function ContributorList({ project }: { project: Projects.Project }) {
     <div className="flex items-center">
       <Link to={contributorsPath} data-test-id="project-contributors">
         <div className="flex items-center justify-center gap-1 cursor-pointer">
-          {sortedContributors.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
+          {sortedContributors!.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
 
-          {project.permissions.canEditContributors && (
+          {project.permissions!.canEditContributors && (
             <div className="ml-2">
               <GhostButton size="xs" type="secondary" testId="manage-team-button">
                 Manage Team
