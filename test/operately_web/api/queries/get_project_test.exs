@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
+  import Operately.GroupsFixtures
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -37,6 +38,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
     test "returns 400 if id is not provided", ctx do
       assert {400, "Bad request"} = query(ctx.conn, :get_project, %{})
+    end
+
+    test "include_space", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id)
+      project = create_project(ctx, group_id: space.id)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_space: true})
+      assert res.project.space == serialize(space, level: :essential)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
+      assert res.project.space == nil
     end
 
     test "include closed_by includes the person who closed the project if such exists", ctx do

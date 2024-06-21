@@ -61,7 +61,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_last_check_in -> from p in q, preload: [last_check_in: :author]
         :include_milestones -> from p in q, preload: [:milestones]
         :include_goal -> from p in q, preload: [:goal]
-        :include_space -> from p in q, preload: [:space]
+        :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_permissions -> q # this is done after loading
