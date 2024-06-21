@@ -28,8 +28,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
 
   def call(conn, inputs) do
     projects = load(me(conn), inputs)
+    output = %{projects: Serializer.serialize(projects, level: :full)}
 
-    {:ok, %{projects: Serializer.serialize(projects)}}
+    {:ok, output}
   end
 
   defp load(person, inputs) do
