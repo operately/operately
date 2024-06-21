@@ -1,4 +1,4 @@
-defmodule Operately.Data.Change012CreateCompaniesAccessContextTest do
+defmodule Operately.Data.Change011CreateCompaniesAccessContextTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
@@ -6,7 +6,7 @@ defmodule Operately.Data.Change012CreateCompaniesAccessContextTest do
   alias Operately.Repo
   alias Operately.Access
   alias Operately.Access.Context
-  alias Operately.Data.Change012CreateCompaniesAccessContext
+  alias Operately.Data.Change011CreateCompaniesAccessContext
 
   test "creates access_context for existing companies" do
     companies = Enum.map(1..5, fn _ ->
@@ -17,7 +17,7 @@ defmodule Operately.Data.Change012CreateCompaniesAccessContextTest do
       assert nil == Repo.get_by(Context, company_id: company.id)
     end)
 
-    Change012CreateCompaniesAccessContext.run()
+    Change011CreateCompaniesAccessContext.run()
 
     Enum.each(companies, fn company ->
       assert %Context{} = Repo.get_by(Context, company_id: company.id)
@@ -30,7 +30,7 @@ defmodule Operately.Data.Change012CreateCompaniesAccessContextTest do
 
     assert nil != Access.get_context!(company_id: company_with_context.id)
 
-    Change012CreateCompaniesAccessContext.run()
+    Change011CreateCompaniesAccessContext.run()
 
     assert nil != Access.get_context!(company_id: company_without_context.id)
   end
