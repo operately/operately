@@ -131,6 +131,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       private: project.private,
       status: project.status,
       description: project.description && Jason.encode!(project.description),
+      retrospective: project.retrospective && Jason.encode!(project.retrospective),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(project.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(project.updated_at),
       started_at: OperatelyWeb.Api.Serializer.serialize(project.started_at),

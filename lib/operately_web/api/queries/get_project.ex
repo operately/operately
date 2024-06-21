@@ -15,7 +15,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_last_check_in, :boolean
     field :include_milestones, :boolean
     field :include_permissions, :boolean
-    field :include_retrospective, :boolean
     field :include_champion, :boolean
     field :include_reviewer, :boolean
     field :include_space, :boolean
