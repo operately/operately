@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> Project.scope_goal(inputs[:goal_id])
     |> apply_role_filter(person, inputs)
     |> include_requested(include_filters)
-    |> Repo.all()
+    |> Repo.all(with_deleted: inputs[:include_archived] == true)
     |> Project.after_load_hooks()
   end
   
@@ -65,7 +65,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
         :include_key_resources -> from p in q, preload: [:key_resources]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_archived -> from p in q, where: is_nil(p.deleted_at)
         :include_milestones -> from p in q, preload: [:milestones]
         _ -> q 
       end

@@ -84,7 +84,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.KeyResource do
     %{
       id: key_resource.id,
       title: key_resource.title,
-      description: key_resource.description,
+      link: key_resource.link,
+      resource_type: key_resource.resource_type,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(key_resource.inserted_at),
     }
   end
@@ -129,6 +130,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       name: project.name,
       private: project.private,
       status: project.status,
+      description: Jason.encode!(project.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(project.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(project.updated_at),
       started_at: OperatelyWeb.Api.Serializer.serialize(project.started_at),
@@ -145,7 +147,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       contributors: OperatelyWeb.Api.Serializer.serialize(project.contributors),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
-      permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions)
+      permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions),
+      key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources)
     }
   end
 end

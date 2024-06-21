@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.space == nil
     end
 
-    test "include closed_by includes the person who closed the project if such exists", ctx do
+    test "include_closed_by", ctx do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_closed_by: true})
@@ -63,7 +63,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.closed_by == serialize(ctx.person, level: :essential)
     end
 
-    test "if include_contributors is true, it includes the contributors", ctx do
+    test "include_contributors", ctx do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_contributors: true})
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.contributors == serialize(Operately.Projects.list_project_contributors(project), level: :essential)
     end
 
-    test "if include_goal is true, it includes the goal", ctx do
+    test "include_goal", ctx do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_goal: true})
@@ -94,7 +94,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.goal == nil
     end
 
-    test "if include_champion is true, it includes the champion", ctx do
+    test "include_champion", ctx do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
@@ -104,7 +104,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.champion == serialize(ctx.person, level: :essential)
     end
 
-    test "if include_reviewer is true, it includes the reviewer", ctx do
+    test "include_reviewer", ctx do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.reviewer == serialize(ctx.person, level: :essential)
     end
 
-    test "it loads archived projects as well", ctx do
+    test "include_archived", ctx do
       project = create_project(ctx)
       {:ok, project} = Operately.Projects.archive_project(ctx.person, project)
 
@@ -122,7 +122,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.is_archived == true
     end
 
-    test "if include_permissions is true, it includes the permissions", ctx do
+    test "include_permissions", ctx do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
@@ -130,6 +130,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_permissions: true})
       assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate_permissions(project, ctx.person))
+    end
+
+    test "include_key_resources", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
+      assert res.project.key_resources == nil
+
+      key_resource = key_resource_fixture(project_id: project.id)
+      assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_key_resources: true})
+      assert res.project.key_resources == [serialize(key_resource, level: :essential)]
     end
   end
 
