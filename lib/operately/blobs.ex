@@ -37,14 +37,26 @@ defmodule Operately.Blobs do
     end
   end
 
+  def get_link(host, bucket, path) do
+    case Application.get_env(:operately, :storage_host) do
+      "localhost" -> "http://#{host}/#{bucket}/#{path}"
+      _ ->
+        bucket = Application.get_env(:operately, :storage_bucket)
+        host = Application.get_env(:operately, :storage_host)
+        config = ExAws.Config.new(:s3, host: host)
+        ExAws.S3.presigned_url(config, :get_object, bucket, path, expires_in: 3600) |> IO.inspect()
+    end
+  end
+
   def get_signed_get_url(%Blob{} = blob) do
     case Application.get_env(:operately, :storage_type) do
       "s3" ->
         host = get_host()
         bucket = Application.get_env(:operately, :storage_bucket)
         path = "#{blob.company_id}-#{blob.id}"
+        bucket_Link = get_link(host, bucket, path)
 
-        "http://#{host}/#{bucket}/#{path}"
+        "#{bucket_Link}"
 
       "local" ->
         host = OperatelyWeb.Endpoint.url()
