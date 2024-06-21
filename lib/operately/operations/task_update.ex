@@ -16,7 +16,7 @@ defmodule Operately.Operations.TaskUpdate do
   end
 
   def update_task_name(multi, task, name) do
-    Multi.update(multi, :task, fn _ ->  
+    Multi.update(multi, :task, fn _ ->
       Operately.Tasks.Task.changeset(task, %{name: name})
     end)
   end
@@ -42,7 +42,7 @@ defmodule Operately.Operations.TaskUpdate do
   end
 
   def insert_activity(multi, author, task, name) do
-    Activities.insert(multi, author.id, :task_update, fn _changes ->
+    Activities.insert_sync(multi, author.id, :task_update, fn _changes ->
       %{
         company_id: author.company_id,
         task_id: task.id,
