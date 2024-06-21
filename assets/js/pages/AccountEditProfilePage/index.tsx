@@ -102,7 +102,7 @@ function ProfileForm({ me }) {
 
   async function S3FileUploader(file) {
     try {
-      const response = await S3Upload(file);
+      const response = await S3Upload(file, () => {});
       setBlobId(response.id);
       setAvatarUrl(response.url);
     } catch (error) {
