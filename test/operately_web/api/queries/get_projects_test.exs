@@ -28,6 +28,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
     test "include_champion", ctx do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
       project = Map.put(project, :champion_id, ctx.person.id)
+      project = Map.put(project, :champion, ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_champion: true})
       assert res.projects == serialize([project], level: :full)
@@ -39,11 +40,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = Map.put(project, :goal, goal)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_goal: true})
-      assert res.projects == serialize([project])
+      assert res.projects == serialize([project], level: :full)
     end
 
     test "if include_milestones is true, but there are no milestones it returns empty list and next_milestone = nil", ctx do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
+      project = Map.put(project, :milestones, [])
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_milestones: true})
       assert res.projects == serialize([project], level: :full)

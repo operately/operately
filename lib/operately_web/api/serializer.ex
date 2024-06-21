@@ -31,8 +31,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Any do
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: List do
-  def serialize(nil, _), do: nil
-  def serialize(data, _), do: Enum.map(data, &OperatelyWeb.Api.Serializer.serialize/1)
+  def serialize(data, opts), do: Enum.map(data, fn item -> OperatelyWeb.Api.Serializer.serialize(item, opts) end)
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
