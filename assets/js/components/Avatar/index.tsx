@@ -97,7 +97,7 @@ function initials(fullName: string): string {
   }
 }
 
-export function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
+function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass = classnames(
     "flex items-center justify-center",
     "text-dark-1",
@@ -129,18 +129,18 @@ export function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 //
 // Fixed based on this issue: https://github.com/chakra-ui/chakra-ui/issues/5909.
 //
-export function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
+function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
   const baseClass = "rounded-full overflow-hidden bg-white shrink-0";
   const sizeClass = SizeClasses({ size });
-  const className = baseClass + " " + sizeClass;
+  const className = `${baseClass} ${sizeClass}`;
 
-  const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
+  const style = typeof size === 'number' ? { width: `${size}px`, height: '100%' } : {};
 
-  const image = React.useMemo(() => {
-    return <img src={person.avatarUrl!} alt={person.fullName!} referrerPolicy="no-referrer" />;
-  }, [person.avatarUrl, person.fullName]);
+  const image = React.useMemo(() => (
+    <img src={person.avatarUrl!} alt={person.fullName!} referrerPolicy="no-referrer" style={{ height: '100%', width: '100%' }} />
+  ), [person.avatarUrl, person.fullName]);
 
   return (
     <div title={person.fullName!} className={className} style={style}>
