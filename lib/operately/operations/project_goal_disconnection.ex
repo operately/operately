@@ -2,7 +2,7 @@ defmodule Operately.Operations.ProjectGoalDisconnection do
   alias Ecto.Multi
   alias Operately.Activities
   alias Operately.Repo
-  
+
   def run(person, project, goal) do
     project_changeset = Operately.Projects.change_project(project, %{
       goal_id: nil
@@ -10,7 +10,7 @@ defmodule Operately.Operations.ProjectGoalDisconnection do
 
     Multi.new()
     |> Multi.update(:project, project_changeset)
-    |> Activities.insert(person.id, :project_goal_disconnection, fn _ -> %{
+    |> Activities.insert_sync(person.id, :project_goal_disconnection, fn _ -> %{
       company_id: person.company_id,
       project_id: project.id,
       goal_id: goal.id
@@ -18,5 +18,4 @@ defmodule Operately.Operations.ProjectGoalDisconnection do
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
-
 end
