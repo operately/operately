@@ -1,9 +1,9 @@
 defmodule Operately.Activities do
   import Ecto.Query, warn: false
+  import Operately.Activities.ContextAutoAssigner, only: [assign_context: 1]
 
   alias Operately.Repo
   alias Operately.Activities.Activity
-  alias Operately.Activities.Recorder
   alias Operately.Activities.NotificationDispatcher
   alias Operately.Activities.ListActivitiesOperation
 
@@ -13,22 +13,6 @@ defmodule Operately.Activities do
 
   def list_activities(scope_type, scope_id, actions) do
     ListActivitiesOperation.run(scope_type, scope_id, actions)
-  end
-
-  def insert(multi, author_id, action, callback) do
-    IO.puts """
-    [DEPRECATION] Operately.Activities.insert/4 is deprecated. Use Operately.Activities.insert_sync/4 instead.
-    """
-
-    Ecto.Multi.run(multi, :activity_recording_job, fn _repo, changes ->
-      job = Recorder.new(%{
-        action: action,
-        author_id: author_id,
-        params: callback.(changes),
-      })
-
-      Oban.insert(job)
-    end)
   end
 
   def insert_sync(multi, author_id, action, callback, opts \\ []) do
@@ -42,6 +26,7 @@ defmodule Operately.Activities do
         content: content
       })
     end)
+    |> assign_context()
     |> dispatch_notification(opts)
   end
 
