@@ -17,7 +17,7 @@ import classNames from "classnames";
 import moment from "moment-timezone";
 
 import { FilledButton } from "@/components/Button";
-import { BackupAvatar } from "@/components/Avatar";
+import Avatar from "@/components/Avatar";
 
 export async function loader() {
   return null;
@@ -170,12 +170,7 @@ function ProfileForm({ me }) {
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center mt-4">
-        {avatarUrl ? 
-          <img src={avatarUrl} alt="avatar" className="rounded-full w-24 h-24" />
-          : 
-          <BackupAvatar person={me} size="xxlarge" />
-        }
-
+        <Avatar person={{...me, avatarUrl: avatarUrl}} size="xxlarge" />
         <div className="mt-2 flex flex-col gap-1">
           <FileInput
             onChange={async (e) => {
