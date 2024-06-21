@@ -140,7 +140,7 @@ defmodule Operately.Updates do
 
     Multi.new()
     |> Multi.insert(:update, changeset)
-    |> Activities.insert(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: project.id} end)
+    |> Activities.insert_sync(author.id, action, fn changes -> %{update_id: changes.update.id, project_id: project.id} end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
   end
