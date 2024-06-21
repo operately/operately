@@ -95,7 +95,7 @@ defmodule Operately.Projects.Project do
         next = 
           milestones 
           |> Enum.filter(fn milestone -> milestone.status == :pending end)
-          |> Enum.sort_by(fn milestone -> milestone.due_at end)
+          |> Enum.sort_by(fn milestone -> milestone.deadline_at end)
           |> List.first()
 
         Map.put(project, :next_milestone, next)
