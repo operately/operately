@@ -110,7 +110,7 @@ defmodule Operately.Updates do
       Operately.Projects.record_phase_history(project, previous_phase, new_phase)
     end)
     |> Multi.update(:project, Project.changeset(project, %{phase: new_phase}))
-    |> Activities.insert(author.id, :project_review_submitted, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
+    |> Activities.insert_sync(author.id, :project_review_submitted, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
   end
