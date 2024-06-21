@@ -23,7 +23,7 @@ defmodule Operately.Updates do
 
     if update.updatable_type == :project do
       query = from p in Person,
-        join: c in Contributor, on: c.person_id == p.id, 
+        join: c in Contributor, on: c.person_id == p.id,
         where: c.project_id == ^update.updatable_id,
         where: p.id != ^update.author_id,
         where: not is_nil(p.email) and p.notify_about_assignments
@@ -86,8 +86,8 @@ defmodule Operately.Updates do
       title: "",
       type: :review,
       content: Operately.Updates.Types.Review.build(
-        content["survey"], 
-        content["previousPhase"], 
+        content["survey"],
+        content["previousPhase"],
         content["newPhase"],
         review_request_id
       )
@@ -99,15 +99,15 @@ defmodule Operately.Updates do
       if review_request_id do
         request = Operately.Projects.get_review_request!(review_request_id)
 
-        multi |> Multi.update(:review_request, fn changes -> 
+        multi |> Multi.update(:review_request, fn changes ->
           ReviewRequest.changeset(request, %{status: :completed, update_id: changes.update.id})
         end)
       else
         multi
       end
     end)
-    |> Multi.run(:phase_history, fn _repo, _changes -> 
-      Operately.Projects.record_phase_history(project, previous_phase, new_phase) 
+    |> Multi.run(:phase_history, fn _repo, _changes ->
+      Operately.Projects.record_phase_history(project, previous_phase, new_phase)
     end)
     |> Multi.update(:project, Project.changeset(project, %{phase: new_phase}))
     |> Activities.insert(author.id, :project_review_submitted, fn changes -> %{update_id: changes.update.id, project_id: changes.project.id} end)
@@ -257,7 +257,7 @@ defmodule Operately.Updates do
       update,
       update_added: "*")
   end
-  
+
   def acknowledge_update(author, update) do
     changeset = change_update(update, %{
       acknowledged: true,
@@ -272,7 +272,7 @@ defmodule Operately.Updates do
 
     Multi.new()
     |> Multi.update(:update, changeset)
-    |> Activities.insert_sync(author.id, action, fn _changes -> 
+    |> Activities.insert_sync(author.id, action, fn _changes ->
       %{
         company_id: author.company_id,
         goal_id: update.updatable_id,
@@ -317,7 +317,7 @@ defmodule Operately.Updates do
 
   def count_comments(entity_id, entity_type) do
     query = (from c in Comment, where: c.entity_id == ^entity_id and c.entity_type == ^entity_type)
-      
+
     Repo.aggregate(query, :count, :id)
   end
 
@@ -331,6 +331,7 @@ defmodule Operately.Updates do
   end
 
   def create_comment(author, update, content) do
+    IO.puts("\nHere...\n")
     changeset = Comment.changeset(%{
       author_id: author.id,
       update_id: update.id,
@@ -342,17 +343,17 @@ defmodule Operately.Updates do
     |> then(fn multi ->
       case update.type do
         :project_discussion ->
-          Activities.insert(multi, author.id, :discussion_comment_submitted, fn changes -> %{
+          Activities.insert_sync(multi, author.id, :discussion_comment_submitted, fn changes -> %{
             company_id: author.company_id,
-            space_id: update.updatable_id, 
-            discussion_id: update.id, 
+            space_id: update.updatable_id,
+            discussion_id: update.id,
             comment_id: changes.comment.id
           } end)
         :status_update ->
-          Activities.insert(multi, author.id, :project_status_update_commented, fn changes -> %{
+          Activities.insert_sync(multi, author.id, :project_status_update_commented, fn changes -> %{
             company_id: author.company_id,
             project_id: update.updatable_id,
-            update_id: update.id, 
+            update_id: update.id,
             comment_id: changes.comment.id
           } end)
         _ ->
@@ -381,8 +382,8 @@ defmodule Operately.Updates do
 
   def list_reactions(entity_id, entity_type) do
     query = (
-      from r in Reaction, 
-       where: r.entity_id == ^entity_id and r.entity_type == ^entity_type, 
+      from r in Reaction,
+       where: r.entity_id == ^entity_id and r.entity_type == ^entity_type,
        order_by: r.inserted_at
     )
 
