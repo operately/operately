@@ -59,7 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
       case include do
         :include_closed_by -> from p in q, preload: [:closed_by]
         :include_goal -> from p in q, preload: [:goal]
-        :include_space -> from p in q, preload: [:space]
+        :include_space -> from p in q, preload: [:group]
         :include_contributors -> from p in q, preload: [contributors: :person]
         :include_last_check_in -> from p in q, preload: [last_check_in: :author]
         :include_key_resources -> from p in q, preload: [:key_resources]
