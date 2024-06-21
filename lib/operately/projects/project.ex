@@ -40,6 +40,8 @@ defmodule Operately.Projects.Project do
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
 
+    field :permissions, :any, virtual: true
+
     timestamps()
     soft_delete()
   end
@@ -79,17 +81,61 @@ defmodule Operately.Projects.Project do
     ])
   end
 
-  def set_next_milestone(projects) when is_list(projects) do
-    Enum.map(projects, fn project -> set_next_milestone(project) end)
+  # Scopes
+
+  import Ecto.Query, only: [from: 2]
+
+  def scope_company(query, company_id) do
+    from p in query, where: p.company_id == ^company_id
   end
 
-  def set_next_milestone(project = %__MODULE__{}) do
-    case project.milestones do
-      [] -> 
-        project
+  def scope_visibility(query, person_id) do
+    alias Operately.Projects.Contributor
+    
+    sub = from c in Contributor, 
+       where: c.project_id == parent_as(:project).id,
+       where: c.person_id == ^person_id
 
-      %Ecto.Association.NotLoaded{} -> 
-        raise "Milestones must be preloaded"
+    from p in query, where: not(p.private) or exists(sub)
+  end
+
+  def scope_role(query, person_id, roles) do
+    alias Operately.Projects.Contributor
+
+    sub = from c in Contributor, 
+      where: c.project_id == parent_as(:project).id,
+      where: c.person_id == ^person_id,
+      where: c.role in ^roles
+
+    from p in query, where: exists(sub)
+  end
+
+  def scope_space(query, nil), do: query
+  def scope_space(query, space_id) do
+    from p in query, where: p.group_id == ^space_id
+  end
+
+  def scope_goal(query, nil), do: query
+  def scope_goal(query, goal_id) do
+    from p in query, where: p.goal_id == ^goal_id
+  end
+
+  # After load hooks
+
+  def after_load_hooks(projects) when is_list(projects) do
+    Enum.map(projects, fn project -> after_load_hooks(project) end)
+  end
+
+  def after_load_hooks(nil), do: nil
+  def after_load_hooks(project = %__MODULE__{}) do
+    project
+    |> set_next_milestone()
+  end
+
+  defp set_next_milestone(project = %__MODULE__{}) do
+    case project.milestones do
+      [] -> project
+      %Ecto.Association.NotLoaded{} -> project
 
       milestones ->
         next = 
@@ -100,5 +146,10 @@ defmodule Operately.Projects.Project do
 
         Map.put(project, :next_milestone, next)
     end
+  end
+
+  def set_permissions(project = %__MODULE__{}, user) do
+    persmission = Operately.Projects.Permissions.calculate_permissions(project, user)
+    Map.put(project, :permissions, persmission)
   end
 end

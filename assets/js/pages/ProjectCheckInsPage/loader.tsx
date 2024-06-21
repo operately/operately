@@ -12,7 +12,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     project: await Projects.getProject({
       id: params.projectID,
       includePermissions: true,
-    }),
+    }).then((data) => data.project!),
     checkIns: await ProjectCheckIns.getCheckIns(params.projectID, {
       includeAuthor: true,
     }),

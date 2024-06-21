@@ -11,12 +11,13 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.id,
       includeSpace: true,
       includeGoal: true,
+      includeChampion: true,
       includePermissions: true,
       includeContributors: true,
       includeKeyResources: true,
       includeMilestones: true,
       includeLastCheckIn: true,
-    }),
+    }).then((data) => data.project!),
   };
 }
 

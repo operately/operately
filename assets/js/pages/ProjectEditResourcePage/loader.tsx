@@ -13,7 +13,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.projectID,
       includeSpace: true,
       includePermissions: true,
-    }),
+    }).then((data) => data.project!),
     keyResource: await KeyResources.getKeyResource(params.id),
   };
 }

@@ -10,9 +10,10 @@ export async function loader({ params }): Promise<LoaderData> {
     project: await Projects.getProject({
       id: params.projectID,
       includeSpace: true,
+      includeChampion: true,
       includePermissions: true,
       includeContributors: true,
-    }),
+    }).then((data) => data.project!),
   };
 }
 

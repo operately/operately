@@ -212,7 +212,7 @@ defmodule Operately.Projects do
   end
 
   def list_project_contributors(project) do
-    query = (from c in Contributor, where: c.project_id == ^project.id)
+    query = (from c in Contributor, where: c.project_id == ^project.id, preload: :person)
 
     query
     |> Contributor.order_by_role_and_insertion_at()

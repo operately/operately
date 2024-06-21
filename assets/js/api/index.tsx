@@ -1048,11 +1048,22 @@ export interface GetPersonResult {
 
 
 export interface GetProjectInput {
-
+  id?: string | null;
+  includeClosedBy?: boolean | null;
+  includeContributors?: boolean | null;
+  includeGoal?: boolean | null;
+  includeKeyResources?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeMilestones?: boolean | null;
+  includePermissions?: boolean | null;
+  includeRetrospective?: boolean | null;
+  includeChampion?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeSpace?: boolean | null;
 }
 
 export interface GetProjectResult {
-
+  project?: Project | null;
 }
 
 
