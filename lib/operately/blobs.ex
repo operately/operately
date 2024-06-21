@@ -30,12 +30,43 @@ defmodule Operately.Blobs do
     Blob.changeset(blob, attrs)
   end
 
-  def get_signed_get_url(%Blob{} = blob) do
-    host = OperatelyWeb.Endpoint.url()
-    path = "#{blob.company_id}-#{blob.id}"
-    token = Operately.Blobs.Tokens.gen_get_token(path)
+  def get_host do
+    case Application.get_env(:operately, :storage_host) do
+      "localhost" -> "#{Application.get_env(:operately, :storage_host)}:9090"
+      _ -> Application.get_env(:operately, :storage_host)
+    end
+  end
 
-    "#{host}/media/#{path}?token=#{token}"
+  def get_link(host, bucket, path) do
+    case Application.get_env(:operately, :storage_host) do
+      "localhost" -> "http://#{host}/#{bucket}/#{path}"
+      _ ->
+        bucket = Application.get_env(:operately, :storage_bucket)
+        host = Application.get_env(:operately, :storage_host)
+        config = ExAws.Config.new(:s3, host: host)
+        ExAws.S3.presigned_url(config, :get_object, bucket, path, expires_in: 3600) |> IO.inspect()
+    end
+  end
+
+  def get_signed_get_url(%Blob{} = blob) do
+    case Application.get_env(:operately, :storage_type) do
+      "s3" ->
+        host = get_host()
+        bucket = Application.get_env(:operately, :storage_bucket)
+        path = "#{blob.company_id}-#{blob.id}"
+        bucket_Link = get_link(host, bucket, path)
+
+        "#{bucket_Link}"
+
+      "local" ->
+        host = OperatelyWeb.Endpoint.url()
+        path = "#{blob.company_id}-#{blob.id}"
+        token = Operately.Blobs.Tokens.gen_get_token(path)
+
+        "#{host}/media/#{path}?token=#{token}"
+      _ ->
+        {:error, "Storage type not supported"}
+    end
   end
 
   def get_singed_upload_url(%Blob{} = blob) do
