@@ -124,6 +124,7 @@ defmodule Operately.Projects.Project do
     Enum.map(projects, fn project -> after_load_hooks(project) end)
   end
 
+  def after_load_hooks(nil), do: nil
   def after_load_hooks(project = %__MODULE__{}) do
     project
     |> set_next_milestone()

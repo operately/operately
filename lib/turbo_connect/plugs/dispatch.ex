@@ -20,8 +20,15 @@ defmodule TurboConnect.Plugs.Dispatch do
         |> send_resp(200, Jason.encode!(result))
 
       {:error, :not_found} -> conn |> send_resp(404, "Not found")
-      {:error, _body} -> conn |> send_resp(500, "Internal Server Error")
-      _ -> conn |> send_resp(500, "Internal Server Error")
+      {:error, :bad_request} -> conn |> send_resp(400, "Bad request")
+
+      e = {:error, _body} -> 
+        Logger.error("\nUnexpected return value from #{conn.assigns.turbo_req_name} handler: #{inspect(e)}\n")
+        conn |> send_resp(500, "Internal Server Error")
+
+      e -> 
+        Logger.error("\nUnexpected return value from #{conn.assigns.turbo_req_name} handler: #{inspect(e)}\n")
+        conn |> send_resp(500, "Internal Server Error")
     end
   rescue
     e -> 

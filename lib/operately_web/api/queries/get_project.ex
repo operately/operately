@@ -26,12 +26,18 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   end
 
   def call(conn, inputs) do
-    id = inputs[:id]
-    include_filters = extract_include_filters(inputs)
-    project = load(me(conn), id, include_filters)
-    output = %{project: Serializer.serialize(project, level: :full)}
+    if inputs[:id] == nil do
+      {:error, :bad_request}
+    else
+      include_filters = extract_include_filters(inputs)
+      project = load(me(conn), inputs[:id], include_filters)
 
-    {:ok, output}
+      if nil == project do
+        {:error, :not_found}
+      else
+        {:ok, %{project: Serializer.serialize(project, level: :full)}}
+      end
+    end
   end
 
   def load(person, id, include_filters) do
@@ -41,7 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> Project.scope_company(person.company_id)
     |> Project.scope_visibility(person.id)
     |> include_requested(include_filters)
-    |> Repo.all()
+    |> Repo.one()
     |> Project.after_load_hooks()
   end
 
@@ -58,7 +64,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_archived -> from p in q, where: is_nil(p.deleted_at)
-        _ -> q 
+        _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)
   end
