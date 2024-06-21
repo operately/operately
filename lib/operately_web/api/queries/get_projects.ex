@@ -4,7 +4,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
 
   alias OperatelyWeb.Api.Serializer
   alias Operately.Projects.Project
-  alias Operately.Projects.Contributor
 
   inputs do
     field :only_my_projects, :boolean
@@ -34,8 +33,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   end
 
   defp load(person, inputs) do
-    (from p in Project, as: :project, where: p.company_id == ^person.company_id)
-    |> apply_visibility_filter(person)
+    (from p in Project, as: :project)
+    |> Project.scope_company(person.company_id)
+    |> Project.scope_visibility(person.id)
     |> apply_role_filter(person, inputs)
     |> extend_query(inputs[:space_id], fn q -> from p in q, where: p.group_id == ^inputs.space_id end)
     |> extend_query(inputs[:goal_id], fn q -> from p in q, where: p.goal_id == ^inputs.goal_id end)
@@ -47,32 +47,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> extend_query(inputs[:include_archived], fn q -> from p in q, where: is_nil(p.deleted_at) end)
     |> extend_query(inputs[:include_milestones], fn q -> from p in q, preload: [:milestones] end)
     |> Repo.all()
-    |> set_next_milestones(inputs[:include_milestones])
-  end
-
-  defp apply_visibility_filter(query, person) do
-    from p in query, where: not(p.private) or exists(contributor_subquery(person))
+    |> Project.after_load_hooks()
   end
   
   defp apply_role_filter(query, person, inputs) do
     cond do
-      inputs[:only_reviewed_by_me] ->
-        from p in query, where: exists(contributor_subquery(person, [:reviewer]))
-      inputs[:only_my_projects] ->
-        from p in query, where: exists(contributor_subquery(person, [:champion, :contributor]))
-      true ->
-        query
+      inputs[:only_reviewed_by_me] -> Project.scope_role(query, person.id, [:reviewer])
+      inputs[:only_my_projects] -> Project.scope_role(query, person.id, [:champion, :contributor])
+      true -> query
     end
   end
-
-  defp contributor_subquery(person) do
-    from c in Contributor, where: c.project_id == parent_as(:project).id and c.person_id == ^person.id
-  end
-
-  defp contributor_subquery(person, roles) do
-    from c in Contributor, where: c.project_id == parent_as(:project).id and c.person_id == ^person.id and c.role in ^roles
-  end
-
-  defp set_next_milestones(projects, true), do: Project.set_next_milestone(projects)
-  defp set_next_milestones(projects, _), do: projects
 end
