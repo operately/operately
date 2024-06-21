@@ -24,7 +24,6 @@ export const S3Upload = async (file: File, progressCallback: ProgressCallback) =
       await axios.put(signedUploadUrl, file, config);
     }
     catch (error) {
-      console.error("Error uploading file:", error);
       throw new Error(`Error uploading file: ${error.message}`);
     }
     return {
@@ -33,7 +32,6 @@ export const S3Upload = async (file: File, progressCallback: ProgressCallback) =
     }
 
   } catch (error) {
-    console.error(error);
     throw new Error("File upload failed");
   }
 };
