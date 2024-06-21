@@ -7,17 +7,10 @@ defmodule Operately.Operations.TaskDescriptionChange do
   alias Operately.Tasks.Task
 
   def run(author, task_id, description) do
-    task = Operately.Tasks.get_task!(task_id)
-    changeset = Task.changeset(task, %{description: description})
+    task = from(t in Task, where: t.id == ^task_id, preload: :group) |> Repo.one()
+    space = task.group
 
-    space = from(t in Task,
-      join: m in Operately.Projects.Milestone, on: m.id == t.milestone_id,
-      join: p in Operately.Projects.Project, on: p.id == m.project_id,
-      join: g in Operately.Groups.Group, on: g.id == p.group_id,
-      where: t.id == ^task_id,
-      select: g
-    )
-    |> Repo.one()
+    changeset = Task.changeset(task, %{description: description})
 
     Multi.new()
     |> Multi.update(:task, changeset)

@@ -4,6 +4,7 @@ defmodule Operately.Tasks.Task do
   schema "tasks" do
     belongs_to :creator, Operately.People.Person
     belongs_to :milestone, Operately.Projects.Milestone
+    has_one :group, through: [:milestone, :project, :group]
 
     has_many :assignees, Operately.Tasks.Assignee
 
@@ -13,7 +14,7 @@ defmodule Operately.Tasks.Task do
     field :description, :map
     field :due_date, :naive_datetime
 
-    field :status, :string, default: "todo" 
+    field :status, :string, default: "todo"
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
 
