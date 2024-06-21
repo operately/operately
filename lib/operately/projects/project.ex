@@ -108,6 +108,16 @@ defmodule Operately.Projects.Project do
     from p in query, where: exists(sub)
   end
 
+  def scope_space(query, nil), do: query
+  def scope_space(query, space_id) do
+    from p in query, where: p.group_id == ^space_id
+  end
+
+  def scope_goal(query, nil), do: query
+  def scope_goal(query, goal_id) do
+    from p in query, where: p.goal_id == ^goal_id
+  end
+
   # After load hooks
 
   def after_load_hooks(projects) when is_list(projects) do

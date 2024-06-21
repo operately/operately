@@ -22,4 +22,14 @@ defmodule OperatelyWeb.Api.Helpers do
 
   def extend_map_if(m1, true, fun), do: Map.merge(m1, fun.())
   def extend_map_if(m1, _, _), do: m1
+
+  def extract_include_filters(inputs) do
+    Enum.reduce(inputs, [], fn {k, v}, acc ->
+      if String.starts_with?(Atom.to_string(k), "include_") && v do
+        [k | acc]
+      else
+        acc
+      end
+    end)
+  end
 end

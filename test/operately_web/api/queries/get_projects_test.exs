@@ -2,7 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ProjectsFixtures
-  import Operately.PeopleFixtures
   import Operately.GoalsFixtures
 
   import OperatelyWeb.Api.Serializer

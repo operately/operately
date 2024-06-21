@@ -59,6 +59,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
     %{
       id: space.id,
       name: space.name,
+      color: space.color,
+      icon: space.icon,
     }
   end
 end
@@ -69,8 +71,21 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       id: milestone.id,
       title: milestone.title,
       status: milestone.status,
+      description: milestone.description,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
       deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
+      completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.KeyResource do
+  def serialize(key_resource, level: :essential) do
+    %{
+      id: key_resource.id,
+      title: key_resource.title,
+      description: key_resource.description,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(key_resource.inserted_at),
     }
   end
 end
