@@ -25,24 +25,34 @@ defmodule Operately.Activities do
         action: action,
         author_id: author_id,
         params: callback.(changes),
-      }) 
+      })
 
       Oban.insert(job)
     end)
   end
 
-  def insert_sync(multi, author_id, action, callback) do
+  def insert_sync(multi, author_id, action, callback, opts \\ []) do
     multi
     |> Ecto.Multi.insert(:activity, fn changes ->
       {:ok, content} = build_content(Atom.to_string(action), callback.(changes))
 
       Activity.changeset(%{
-        author_id: author_id, 
+        author_id: author_id,
         action: Atom.to_string(action),
         content: content
       })
     end)
-    |> dispatch_notification()
+    |> dispatch_notification(opts)
+  end
+
+  def dispatch_notification(multi, opts) do
+    include_notification = Keyword.get(opts, :include_notification, true)
+
+    if include_notification do
+      dispatch_notification(multi)
+    else
+      multi
+    end
   end
 
   def dispatch_notification(multi) do
