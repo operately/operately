@@ -50,7 +50,7 @@ defmodule Operately.Operations.TaskAdding do
     Enum.reduce(assignee_ids, multi, fn assignee_id, multi ->
       multi_id = "assignee_#{assignee_id}"
 
-      Multi.insert(multi, multi_id, fn changes -> 
+      Multi.insert(multi, multi_id, fn changes ->
         Operately.Tasks.Assignee.changeset(%{
           task_id: changes.task.id,
           person_id: assignee_id,
@@ -60,7 +60,7 @@ defmodule Operately.Operations.TaskAdding do
   end
 
   def insert_activity(multi, creator) do
-    Activities.insert(multi, creator.id, :task_adding, fn changes ->
+    Activities.insert_sync(multi, creator.id, :task_adding, fn changes ->
       %{
         company_id: creator.company_id,
         name: changes.task.name,

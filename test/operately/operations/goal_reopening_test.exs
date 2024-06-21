@@ -1,5 +1,6 @@
 defmodule Operately.Operations.GoalReopeningTest do
   use Operately.DataCase
+  use Operately.Support.Notifications
 
   import Ecto.Query, only: [from: 2]
 
@@ -15,6 +16,7 @@ defmodule Operately.Operations.GoalReopeningTest do
   setup do
     company = company_fixture()
     author = person_fixture_with_account(%{company_id: company.id})
+    reader = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(author)
 
     {:ok, goal} = goal_fixture(author, %{space_id: group.id, targets: []})
@@ -24,14 +26,16 @@ defmodule Operately.Operations.GoalReopeningTest do
       })
       |> Repo.update()
 
-    {:ok, author: author, goal: goal}
+    {:ok, author: author, reader: reader, goal: goal}
   end
 
   test "GoalReopening operation updates goal", ctx do
     assert ctx.goal.closed_at != nil
     assert ctx.goal.closed_by_id == ctx.author.id
 
-    Operately.Operations.GoalReopening.run(ctx.author, ctx.goal.id, "{}")
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      Operately.Operations.GoalReopening.run(ctx.author, ctx.goal.id, "{}")
+    end)
 
     goal = Repo.reload(ctx.goal)
 
@@ -39,11 +43,20 @@ defmodule Operately.Operations.GoalReopeningTest do
     assert goal.closed_by_id == nil
   end
 
-  test "GoalReopening operation creates activity and thread", ctx do
-    Operately.Operations.GoalReopening.run(ctx.author, ctx.goal.id, "{}")
+  test "GoalReopening operation creates activity, thread and notification", ctx do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      message = notification_message(ctx.reader)
+      Operately.Operations.GoalReopening.run(ctx.author, ctx.goal.id, message)
+    end)
 
     activity = from(a in Activity, where: a.action == "goal_reopening" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
 
     assert activity.comment_thread_id != nil
+    assert 0 == notifications_count()
+
+    perform_job(activity.id)
+
+    assert 1 == notifications_count()
+    assert nil != fetch_notification(activity.id)
   end
 end
