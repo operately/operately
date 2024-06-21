@@ -144,7 +144,29 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       milestones: OperatelyWeb.Api.Serializer.serialize(project.milestones),
       contributors: OperatelyWeb.Api.Serializer.serialize(project.contributors),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
-      next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone)
+      next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
+      permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions)
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
+  def serialize(permissions, level: :essential) do
+    %{
+      can_view: permissions.can_view,
+      can_create_milestone: permissions.can_create_milestone,
+      can_delete_milestone: permissions.can_delete_milestone,
+      can_edit_milestone: permissions.can_edit_milestone,
+      can_edit_description: permissions.can_edit_description,
+      can_edit_timeline: permissions.can_edit_timeline,
+      can_edit_resources: permissions.can_edit_resources,
+      can_edit_goal: permissions.can_edit_goal,
+      can_edit_name: permissions.can_edit_name,
+      can_edit_space: permissions.can_edit_space,
+      can_edit_contributors: permissions.can_edit_contributors,
+      can_pause: permissions.can_pause,
+      can_check_in: permissions.can_check_in,
+      can_acknowledge_check_in: permissions.can_acknowledge_check_in,
     }
   end
 end

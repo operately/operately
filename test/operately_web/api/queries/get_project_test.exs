@@ -109,6 +109,16 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
       assert res.project.is_archived == true
     end
+
+    test "if include_permissions is true, it includes the permissions", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: project.id})
+      assert res.project.permissions == nil
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_permissions: true})
+      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate_permissions(project, ctx.person))
+    end
   end
 
   def create_project(ctx, attrs \\ %{}) do

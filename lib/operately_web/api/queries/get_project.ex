@@ -49,6 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> include_requested(include_filters)
     |> Repo.one(with_deleted: true)
     |> Project.after_load_hooks()
+    |> include_permissions(person, include_filters)
   end
 
   def include_requested(query, requested) do
@@ -63,8 +64,17 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_space -> from p in q, preload: [:space]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
+        :include_permissions -> q # this is done after loading
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)
+  end
+
+  def include_permissions(project, person, include_filters) do
+    if Enum.member?(include_filters, :include_permissions) do
+      Project.set_permissions(project, person)
+    else
+      project
+    end
   end
 end

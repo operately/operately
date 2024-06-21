@@ -40,6 +40,8 @@ defmodule Operately.Projects.Project do
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
 
+    field :permissions, :any, virtual: true
+
     timestamps()
     soft_delete()
   end
@@ -144,5 +146,10 @@ defmodule Operately.Projects.Project do
 
         Map.put(project, :next_milestone, next)
     end
+  end
+
+  def set_permissions(project = %__MODULE__{}, user) do
+    persmission = Operately.Projects.Permissions.calculate_permissions(project, user)
+    Map.put(project, :permissions, persmission)
   end
 end
