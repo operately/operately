@@ -43,7 +43,6 @@ defmodule Operately.Blobs do
         host = get_host()
         bucket = Application.get_env(:operately, :storage_bucket)
         path = "#{blob.company_id}-#{blob.id}"
-        post_link = get_s3_post_link(host, bucket, path)
 
         "http://#{host}/#{bucket}/#{path}"
 
