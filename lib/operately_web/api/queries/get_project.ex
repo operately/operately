@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> Project.scope_company(person.company_id)
     |> Project.scope_visibility(person.id)
     |> include_requested(include_filters)
-    |> Repo.one()
+    |> Repo.one(with_deleted: true)
     |> Project.after_load_hooks()
   end
 
@@ -63,7 +63,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_space -> from p in q, preload: [:space]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_archived -> from p in q, where: is_nil(p.deleted_at)
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)

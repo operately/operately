@@ -94,7 +94,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Contributor do
   def serialize(contributor, level: :essential) do
     %{
       id: contributor.id,
-      role: contributor.role,
+      role: Atom.to_string(contributor.role),
       responsibility: contributor.responsibility,
       person: OperatelyWeb.Api.Serializer.serialize(contributor.person),
     }
@@ -128,6 +128,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       id: project.id,
       name: project.name,
       private: project.private,
+      status: project.status,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(project.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(project.updated_at),
       started_at: OperatelyWeb.Api.Serializer.serialize(project.started_at),
@@ -135,9 +136,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       deadline: OperatelyWeb.Api.Serializer.serialize(project.deadline),
       is_archived: project.deleted_at != nil,
       is_outdated: Operately.Projects.outdated?(project),
-      status: project.status,
+      closed_by: OperatelyWeb.Api.Serializer.serialize(project.closed_by),
       space: OperatelyWeb.Api.Serializer.serialize(project.group),
       champion: OperatelyWeb.Api.Serializer.serialize(project.champion),
+      reviewer: OperatelyWeb.Api.Serializer.serialize(project.reviewer),
       goal: OperatelyWeb.Api.Serializer.serialize(project.goal),
       milestones: OperatelyWeb.Api.Serializer.serialize(project.milestones),
       contributors: OperatelyWeb.Api.Serializer.serialize(project.contributors),

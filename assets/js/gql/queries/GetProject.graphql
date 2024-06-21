@@ -1,15 +1,15 @@
 query GetProject(
   $id: ID!
-  $includeGoal: Boolean = false
-  $includeReviewer: Boolean = false
-  $includeContributors: Boolean = false
-  $includePermissions: Boolean = false
-  $includeSpace: Boolean = false
-  $includeKeyResources: Boolean = false
-  $includeMilestones: Boolean = false
-  $includeLastCheckIn: Boolean = false
-  $includeRetrospective: Boolean = false
   $includeClosedBy: Boolean = false
+  $includeContributors: Boolean = false
+  $includeGoal: Boolean = false
+  $includeKeyResources: Boolean = false
+  $includeLastCheckIn: Boolean = false
+  $includeMilestones: Boolean = false
+  $includePermissions: Boolean = false
+  $includeRetrospective: Boolean = false
+  $includeReviewer: Boolean = false
+  $includeSpace: Boolean = false
 ) {
   project(id: $id) {
     id
