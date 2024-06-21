@@ -46,9 +46,9 @@ defmodule Operately.Projects do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{group_id: space_id}))
     |> Activities.insert_sync(author.id, :project_moved, fn _ -> %{
-      company_id: project.company_id, 
-      project_id: project.id, 
-      old_space_id: project.group_id, 
+      company_id: project.company_id,
+      project_id: project.id,
+      old_space_id: project.group_id,
       new_space_id: space_id
     } end)
     |> Repo.transaction()
@@ -60,8 +60,8 @@ defmodule Operately.Projects do
     |> Multi.update(:project, change_project(project, %{name: new_name}))
     |> Activities.insert_sync(author.id, :project_renamed, fn changes -> %{
       company_id: project.company_id,
-      project_id: project.id, 
-      old_name: project.name, 
+      project_id: project.id,
+      old_name: project.name,
       new_name: changes.project.name
     } end)
     |> Repo.transaction()
@@ -213,7 +213,7 @@ defmodule Operately.Projects do
 
   def list_project_contributors(project) do
     query = (from c in Contributor, where: c.project_id == ^project.id)
-    
+
     query
     |> Contributor.order_by_role_and_insertion_at()
     |> Repo.all()
@@ -236,7 +236,7 @@ defmodule Operately.Projects do
 
   def list_notification_subscribers(project_id, exclude: author_id) do
     query = from p in Person,
-      join: c in Contributor, on: c.person_id == p.id, 
+      join: c in Contributor, on: c.person_id == p.id,
       where: c.project_id == ^project_id,
       where: p.id != ^author_id,
       where: not is_nil(p.email) and p.notify_about_assignments
@@ -396,7 +396,7 @@ defmodule Operately.Projects do
         |> PhaseHistory.changeset(%{end_time: DateTime.utc_now()})
         |> Repo.update()
       end
-      
+
       {:ok, phase} = create_phase_history(%{
         project_id: project.id,
         phase: new_phase,
@@ -425,14 +425,6 @@ defmodule Operately.Projects do
 
   def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
   def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
-
-  def create_review_request(author, attrs) do
-    Multi.new()
-    |> Multi.insert(:request, ReviewRequest.changeset(attrs))
-    |> Activities.insert(author.id, :project_review_request_submitted, fn changes -> %{project_id: attrs.project_id, request_id: changes.request.id} end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:request)
-  end
 
   def update_review_request(%ReviewRequest{} = review_request, attrs) do
     review_request

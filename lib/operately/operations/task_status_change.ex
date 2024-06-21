@@ -14,7 +14,7 @@ defmodule Operately.Operations.TaskStatusChange do
     |> find_and_lock_milestone(task.milestone_id)
     |> update_task_status(task, new_status)
     |> update_kanban_state(old_status, new_status, column_index)
-    |> Activities.insert(creator.id, :task_status_change, fn changes ->
+    |> Activities.insert_sync(creator.id, :task_status_change, fn changes ->
       %{
         company_id: creator.company_id,
         task_id: changes.task.id,
