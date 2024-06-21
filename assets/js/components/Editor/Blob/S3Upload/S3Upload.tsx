@@ -1,11 +1,12 @@
 import { CreateBlob } from "@/graphql/Blobs";
 import axios from "axios";
+import { ProgressCallback } from "../FileUploader";
 
 /**
  * @param {File} file
  * @returns {Promise<string>}
  */
-export const S3Upload = async (file) => {
+export const S3Upload = async (file: File, progressCallback: ProgressCallback) => {
   try {
     const { data } = await CreateBlob({ filename: file.name });
     const signedUploadUrl = data.createBlob.signedUploadUrl;
@@ -14,19 +15,23 @@ export const S3Upload = async (file) => {
         "Content-Type": file.type,
         "Access-Control-Allow-Origin": "*",
       },
+      onUploadProgress: (progressEvent: any) => {
+        progressCallback(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+      },
     };
 
-    const response = await axios.put(signedUploadUrl, file, config);
-    if (response.status === 200) {
-      return {
-        id: data.createBlob.id,
-        url: data.createBlob.url,
-      };
-    } else {
-      throw new Error(`Upload failed with status ${response.status}`);
+    try {
+      await axios.put(signedUploadUrl, file, config);
     }
+    catch (error) {
+      throw new Error(`Error uploading file: ${error.message}`);
+    }
+    return {
+      id: data.createBlob.id,
+      url: data.createBlob.url
+    }
+
   } catch (error) {
-    console.error(error);
     throw new Error("File upload failed");
   }
 };
