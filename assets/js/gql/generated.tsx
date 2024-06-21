@@ -1004,7 +1004,6 @@ export type RootQueryType = {
   milestone?: Maybe<Milestone>;
   person?: Maybe<Person>;
   potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
-  project?: Maybe<Project>;
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
@@ -1079,11 +1078,6 @@ export type RootQueryTypePotentialGroupMembersArgs = {
   groupId: Scalars['ID']['input'];
   limit?: InputMaybe<Scalars['Int']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type RootQueryTypeProjectArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
