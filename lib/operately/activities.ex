@@ -1,5 +1,6 @@
 defmodule Operately.Activities do
   import Ecto.Query, warn: false
+  import Operately.Activities.ContextAutoAssigner, only: [assign_context: 1]
 
   alias Operately.Repo
   alias Operately.Activities.Activity
@@ -25,6 +26,7 @@ defmodule Operately.Activities do
         content: content
       })
     end)
+    |> assign_context()
     |> dispatch_notification(opts)
   end
 
