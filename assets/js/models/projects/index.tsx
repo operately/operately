@@ -1,16 +1,13 @@
-import client from "@/graphql/client";
-
 import * as Time from "@/utils/time";
 import * as api from "@/api";
 import * as gql from "@/gql";
-import { GetProjectDocument, GetProjectQueryVariables } from "@/gql/generated";
 
 export type Project = api.Project | gql.Project;
 export type ProjectContributor = api.ProjectContributor | gql.ProjectContributor;
 export type Milestone = api.Milestone | gql.Milestone;
 export type KeyResource = api.ProjectKeyResource | gql.ProjectKeyResource;
 
-export { getProjects } from "@/api";
+export { getProject, getProjects } from "@/api";
 
 export { groupBySpace } from "./groupBySpace";
 export { useMoveProjectToSpaceMutation } from "./useMoveProjectToSpaceMutation";
@@ -27,16 +24,6 @@ export { useUpdateProjectContributorMutation } from "./useUpdateProjectContribut
 export { useRemoveProjectContributorMutation } from "./useRemoveProjectContributorMutation";
 export { useResumeProjectMutation } from "./useResumeProjectMutation";
 export { usePauseProjectMutation } from "./usePauseProjectMutation";
-
-export async function getProject(variables: GetProjectQueryVariables): Promise<Project> {
-  let data = await client.query({
-    query: GetProjectDocument,
-    variables: variables,
-    fetchPolicy: "network-only",
-  });
-
-  return data.data.project;
-}
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));

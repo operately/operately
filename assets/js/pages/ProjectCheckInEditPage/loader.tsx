@@ -10,7 +10,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    project: await Projects.getProject({ id: params.projectID }),
+    project: await Projects.getProject({ id: params.projectID }).then((data) => data.project!),
     checkIn: await ProjectCheckIns.getCheckIn(params.id, {
       includeAuthor: true,
       includeReactions: true,

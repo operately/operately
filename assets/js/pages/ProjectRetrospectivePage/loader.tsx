@@ -13,7 +13,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
       includeRetrospective: true,
       includeClosedBy: true,
-    }),
+    }).then((data) => data.project!),
   };
 }
 

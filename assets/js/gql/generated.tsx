@@ -1408,16 +1408,16 @@ export type GetInvitationQuery = { __typename?: 'RootQueryType', invitation: { _
 
 export type GetProjectQueryVariables = Exact<{
   id: Scalars['ID']['input'];
-  includeGoal?: InputMaybe<Scalars['Boolean']['input']>;
-  includeReviewer?: InputMaybe<Scalars['Boolean']['input']>;
-  includeContributors?: InputMaybe<Scalars['Boolean']['input']>;
-  includePermissions?: InputMaybe<Scalars['Boolean']['input']>;
-  includeSpace?: InputMaybe<Scalars['Boolean']['input']>;
-  includeKeyResources?: InputMaybe<Scalars['Boolean']['input']>;
-  includeMilestones?: InputMaybe<Scalars['Boolean']['input']>;
-  includeLastCheckIn?: InputMaybe<Scalars['Boolean']['input']>;
-  includeRetrospective?: InputMaybe<Scalars['Boolean']['input']>;
   includeClosedBy?: InputMaybe<Scalars['Boolean']['input']>;
+  includeContributors?: InputMaybe<Scalars['Boolean']['input']>;
+  includeGoal?: InputMaybe<Scalars['Boolean']['input']>;
+  includeKeyResources?: InputMaybe<Scalars['Boolean']['input']>;
+  includeLastCheckIn?: InputMaybe<Scalars['Boolean']['input']>;
+  includeMilestones?: InputMaybe<Scalars['Boolean']['input']>;
+  includePermissions?: InputMaybe<Scalars['Boolean']['input']>;
+  includeRetrospective?: InputMaybe<Scalars['Boolean']['input']>;
+  includeReviewer?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSpace?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
@@ -1900,7 +1900,7 @@ export type GetInvitationQueryHookResult = ReturnType<typeof useGetInvitationQue
 export type GetInvitationLazyQueryHookResult = ReturnType<typeof useGetInvitationLazyQuery>;
 export type GetInvitationQueryResult = Apollo.QueryResult<GetInvitationQuery, GetInvitationQueryVariables>;
 export const GetProjectDocument = gql`
-    query GetProject($id: ID!, $includeGoal: Boolean = false, $includeReviewer: Boolean = false, $includeContributors: Boolean = false, $includePermissions: Boolean = false, $includeSpace: Boolean = false, $includeKeyResources: Boolean = false, $includeMilestones: Boolean = false, $includeLastCheckIn: Boolean = false, $includeRetrospective: Boolean = false, $includeClosedBy: Boolean = false) {
+    query GetProject($id: ID!, $includeClosedBy: Boolean = false, $includeContributors: Boolean = false, $includeGoal: Boolean = false, $includeKeyResources: Boolean = false, $includeLastCheckIn: Boolean = false, $includeMilestones: Boolean = false, $includePermissions: Boolean = false, $includeRetrospective: Boolean = false, $includeReviewer: Boolean = false, $includeSpace: Boolean = false) {
   project(id: $id) {
     id
     name
@@ -2028,16 +2028,16 @@ export const GetProjectDocument = gql`
  * const { data, loading, error } = useGetProjectQuery({
  *   variables: {
  *      id: // value for 'id'
- *      includeGoal: // value for 'includeGoal'
- *      includeReviewer: // value for 'includeReviewer'
- *      includeContributors: // value for 'includeContributors'
- *      includePermissions: // value for 'includePermissions'
- *      includeSpace: // value for 'includeSpace'
- *      includeKeyResources: // value for 'includeKeyResources'
- *      includeMilestones: // value for 'includeMilestones'
- *      includeLastCheckIn: // value for 'includeLastCheckIn'
- *      includeRetrospective: // value for 'includeRetrospective'
  *      includeClosedBy: // value for 'includeClosedBy'
+ *      includeContributors: // value for 'includeContributors'
+ *      includeGoal: // value for 'includeGoal'
+ *      includeKeyResources: // value for 'includeKeyResources'
+ *      includeLastCheckIn: // value for 'includeLastCheckIn'
+ *      includeMilestones: // value for 'includeMilestones'
+ *      includePermissions: // value for 'includePermissions'
+ *      includeRetrospective: // value for 'includeRetrospective'
+ *      includeReviewer: // value for 'includeReviewer'
+ *      includeSpace: // value for 'includeSpace'
  *   },
  * });
  */

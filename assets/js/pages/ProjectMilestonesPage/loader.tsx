@@ -12,7 +12,7 @@ export async function loader({ params }): Promise<LoadedData> {
       includeSpace: true,
       includePermissions: true,
       includeMilestones: true,
-    }),
+    }).then((data) => data.project!),
   };
 }
 
