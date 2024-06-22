@@ -103,7 +103,8 @@ defmodule Operately.Goals.Goal do
       join: c in subquery(latest_updates),
       on: u.updatable_id == c.updatable_id 
         and u.updatable_type == c.updatable_type 
-        and u.inserted_at == c.max_inserted_at
+        and u.inserted_at == c.max_inserted_at,
+      preload: [:author]
 
     updates = Operately.Repo.all(query)
 
