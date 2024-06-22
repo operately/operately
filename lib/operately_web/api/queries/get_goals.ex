@@ -1,5 +1,9 @@
 defmodule OperatelyWeb.Api.Queries.GetGoals do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
+
+  alias OperatelyWeb.Api.Serializer
+  alias Operately.Goals.Goal
 
   inputs do
     field :space_id, :string
@@ -24,18 +28,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
     include_filters = extract_include_filters(inputs)
 
     (from p in Goal, as: :goal)
-    |> Goal.scope_company(person.company_id)
     |> Goal.scope_space(inputs[:space_id])
+    |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
     |> Repo.all()
+    |> Goal.prealod_last_check_ins()
   end
 
-  def include_requested(query, requested) do
+  defp include_requested(query, requested) do
     Enum.reduce(requested, query, fn include, q ->
       case include do
         :include_targets -> from p in q, preload: [:targets]
         :include_projects -> from p in q, preload: [:projects]
-        :include_last_check_in -> from p in q, preload: [last_check_in: :author]
+        :include_last_check_in -> q # this is done after the load
         _ -> q 
       end
     end)

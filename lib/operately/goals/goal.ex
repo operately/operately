@@ -30,6 +30,7 @@ defmodule Operately.Goals.Goal do
     field :success, :string
 
     field :my_role, :string, virtual: true
+    field :last_check_in, :update, virtual: true
 
     timestamps()
     soft_delete()
@@ -65,5 +66,48 @@ defmodule Operately.Goals.Goal do
       :reviewer_id,
       :creator_id,
     ])
+  end
+
+  #
+  # Scopes
+  #
+
+  import Ecto.Query, only: [from: 2]
+
+  def scope_space(query, nil), do: query
+  def scope_space(query, space_id) do
+    from g in query, where: g.group_id == ^space_id
+  end
+
+  def scope_company(query, company_id) do
+    from g in query, where: g.company_id == ^company_id
+  end
+
+  #
+  # Queries
+  #
+
+  def preload_last_check_in(goals) when is_list(goals) do
+    alias Operately.Updates.Update
+
+    subquery = from u in Update,
+      group_by: [u.updatable_id, u.updatable_type],
+      where: u.type == :goal_check_in,
+      select: %{parent_id: c.parent_id, max_inserted_at: max(c.inserted_at)}
+
+    queyr = from u in Update,
+      join: c in subquery,
+      on: [
+        u.updatable_id == c.updatable_id, 
+        u.updatable_type == c.updatable_type, 
+        u.inserted_at == c.max_inserted_at
+      ]
+
+    updates = Repo.all(query)
+
+    Enum.map(goals, fn goal ->
+      last_check_in = Enum.find(updates, fn u -> u.updatable_id == goal.id end)
+      Map.put(goal, :last_check_in, last_check_in)
+    end)
   end
 end
