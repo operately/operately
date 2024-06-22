@@ -10,7 +10,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
 
     field :include_targets, :boolean
     field :include_projects, :boolean
+    field :include_space, :boolean
     field :include_last_check_in, :boolean
+
+    field :include_champion, :boolean
+    field :include_reviewer, :boolean
   end
 
   outputs do
@@ -40,7 +44,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
       case include do
         :include_targets -> from p in q, preload: [:targets]
         :include_projects -> from p in q, preload: [:projects]
+        :include_space -> from p in q, preload: [:group]
         :include_last_check_in -> q # this is done after the load
+        :include_champion -> from p in q, preload: [:champion]
+        :include_reviewer -> from p in q, preload: [:reviewer]
         _ -> q 
       end
     end)

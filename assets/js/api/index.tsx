@@ -972,11 +972,17 @@ export interface GetGoalCheckInsResult {
 
 
 export interface GetGoalsInput {
-
+  spaceId?: string | null;
+  includeTargets?: boolean | null;
+  includeProjects?: boolean | null;
+  includeSpace?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeChampion?: boolean | null;
+  includeReviewer?: boolean | null;
 }
 
 export interface GetGoalsResult {
-
+  goals?: Goal[] | null;
 }
 
 
@@ -1056,7 +1062,6 @@ export interface GetProjectInput {
   includeLastCheckIn?: boolean | null;
   includeMilestones?: boolean | null;
   includePermissions?: boolean | null;
-  includeRetrospective?: boolean | null;
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
