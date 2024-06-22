@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
     Enum.reduce(requested, query, fn include, q ->
       case include do
         :include_targets -> from p in q, preload: [:targets]
-        :include_projects -> from p in q, preload: [:projects]
+        :include_projects -> from p in q, preload: [projects: [:champion, :reviewer]]
         :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
