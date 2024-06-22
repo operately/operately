@@ -1,8 +1,9 @@
 defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
   use OperatelyWeb.TurboCase
 
-  alias Operately.GoalsFixtures
-  alias Operately.UpdatesFixtures
+  import Operately.GoalsFixtures
+  import Operately.UpdatesFixtures
+  import OperatelyWeb.Api.Serializer
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -25,8 +26,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
 
       assert {200, res} = query(ctx.conn, :get_goals, %{include_last_check_in: true})
       assert length(res.goals) == 2
-      assert Enum.at(res.goals, 0).last_check_in == serialize(update1, level: :full)
-      assert Enum.at(res.goals, 1).last_check_in == serialize(update1, level: :full)
+      assert Enum.at(res.goals, 0).last_check_in == serialize(update1, level: :essential)
+      assert Enum.at(res.goals, 1).last_check_in == serialize(update3, level: :essential)
     end
   end
 end 

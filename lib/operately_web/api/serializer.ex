@@ -45,11 +45,52 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   end
 end
 
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Timeframe do
+  def serialize(timeframe, level: :essential) do
+    %{
+      id: timeframe.id,
+      # start_date: OperatelyWeb.Api.Serializer.serialize(timeframe.start_date),
+      # end_date: OperatelyWeb.Api.Serializer.serialize(timeframe.end_date),
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
+  def serialize(update, level: :essential) do
+    %{
+      id: update.id,
+    }
+  end
+end
+
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
   def serialize(data, level: :essential) do
     %{
       id: data.id,
       name: data.name,
+    }
+  end
+
+  def serialize(data, level: :full) do
+    %{
+      id: data.id,
+      name: data.name,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(data.updated_at),
+
+      is_archived: data.deleted_at != nil,
+      is_closed: data.closed_at != nil,
+
+      parent_goal_id: data.parent_goal_id,
+      progress_percentage: Operately.Goals.progress_percentage(data),
+
+      timeframe: OperatelyWeb.Api.Serializer.serialize(data.timeframe),
+      space: OperatelyWeb.Api.Serializer.serialize(data.group),
+      champion: OperatelyWeb.Api.Serializer.serialize(data.champion),
+      reviewer: OperatelyWeb.Api.Serializer.serialize(data.reviewer),
+      projects: OperatelyWeb.Api.Serializer.serialize(data.projects),
+      last_check_in: OperatelyWeb.Api.Serializer.serialize(data.last_check_in),
+      targets: OperatelyWeb.Api.Serializer.serialize(data.targets),
     }
   end
 end
