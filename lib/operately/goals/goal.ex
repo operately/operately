@@ -30,7 +30,7 @@ defmodule Operately.Goals.Goal do
     field :success, :string
 
     field :my_role, :string, virtual: true
-    field :last_check_in, :update, virtual: true
+    field :last_check_in, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -90,20 +90,22 @@ defmodule Operately.Goals.Goal do
   def preload_last_check_in(goals) when is_list(goals) do
     alias Operately.Updates.Update
 
-    subquery = from u in Update,
+    latest_updates = from u in Update,
       group_by: [u.updatable_id, u.updatable_type],
       where: u.type == :goal_check_in,
-      select: %{parent_id: c.parent_id, max_inserted_at: max(c.inserted_at)}
+      select: %{
+        updatable_type: u.updatable_type, 
+        updatable_id: u.updatable_id,
+        max_inserted_at: max(u.inserted_at)
+      }
 
-    queyr = from u in Update,
-      join: c in subquery,
-      on: [
-        u.updatable_id == c.updatable_id, 
-        u.updatable_type == c.updatable_type, 
-        u.inserted_at == c.max_inserted_at
-      ]
+    query = from u in Update,
+      join: c in subquery(latest_updates),
+      on: u.updatable_id == c.updatable_id 
+        and u.updatable_type == c.updatable_type 
+        and u.inserted_at == c.max_inserted_at
 
-    updates = Repo.all(query)
+    updates = Operately.Repo.all(query)
 
     Enum.map(goals, fn goal ->
       last_check_in = Enum.find(updates, fn u -> u.updatable_id == goal.id end)

@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
     |> Repo.all()
-    |> Goal.prealod_last_check_ins()
+    |> Goal.preload_last_check_in()
   end
 
   defp include_requested(query, requested) do
