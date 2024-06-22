@@ -44,7 +44,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
     loadedData.parentGoal = await Goals.getGoal({ id: parentGoalId });
   }
 
-  loadedData.goals = await Goals.getGoals({});
+  loadedData.goals = await Goals.getGoals({}).then((data) => data.goals!);
 
   return loadedData;
 }

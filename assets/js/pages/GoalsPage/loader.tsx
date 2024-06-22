@@ -10,28 +10,28 @@ interface LoaderResult {
 }
 
 export async function loader(): Promise<LoaderResult> {
-  const companyPromise = await Companies.getCompany();
+  const companyPromise = Companies.getCompany();
 
-  const goalsPromise = await Goals.getGoals({
+  const goalsPromise = Goals.getGoals({
     includeTargets: true,
     includeSpace: true,
     includeLastCheckIn: true,
     includeChampion: true,
     includeReviewer: true,
-  });
+  }).then((data) => data.goals!);
 
-  const projectsPromise = await Projects.getProjects({
+  const projectsPromise = Projects.getProjects({
     includeGoal: true,
     includeSpace: true,
     includeLastCheckIn: true,
     includeChampion: true,
     includeMilestones: true,
-  });
+  }).then((data) => data.projects!);
 
   return {
-    company: companyPromise,
-    goals: goalsPromise.goals!,
-    projects: projectsPromise.projects!,
+    company: await companyPromise,
+    goals: await goalsPromise,
+    projects: await projectsPromise,
   };
 }
 

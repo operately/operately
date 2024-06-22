@@ -26,7 +26,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const goal = goalID ? await Goals.getGoal({ id: goalID }) : undefined;
 
   const company = await Companies.getCompany();
-  const goals = await Goals.getGoals({});
+  const goals = await Goals.getGoals({}).then((data) => data.goals!);
 
   let space: Spaces.Space | undefined;
   let spaces: Spaces.Space[] | undefined;
