@@ -166,7 +166,7 @@ defmodule Prosemirror2HtmlTest do
 
   test "mulitple nodes" do
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
           "type" => "paragraph",
@@ -195,7 +195,7 @@ defmodule Prosemirror2HtmlTest do
 
   test "paragraph" do
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
           "type" => "paragraph",
@@ -216,11 +216,11 @@ defmodule Prosemirror2HtmlTest do
   test "bold mark" do
     opts = [domain: "https://example.com"]
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
-          "type" => "text", 
-          "text" => "Hello", 
+          "type" => "text",
+          "text" => "Hello",
           "marks" => [
             %{
               "type" => "bold"
@@ -237,11 +237,11 @@ defmodule Prosemirror2HtmlTest do
   test "multiple marks" do
     opts = [domain: "https://example.com"]
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
-          "type" => "text", 
-          "text" => "Hello", 
+          "type" => "text",
+          "text" => "Hello",
           "marks" => [
             %{
               "type" => "bold"
@@ -262,19 +262,19 @@ defmodule Prosemirror2HtmlTest do
     opts = [domain: "https://example.com"]
 
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
           "type" => "blob",
           "attrs" => %{
-             "alt" => "Authentication Failed message", 
-             "filesize" => 91747, 
-             "filetype" => "image/png", 
-             "id" => "loegrjli3g3bgeqlxm8", 
-             "progress" => 100, 
-             "src" => "/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5", 
-             "status" => "uploaded", 
-             "title" => "Authentication Failed message"
+            "alt" => "Authentication Failed message",
+            "filesize" => 91747,
+            "filetype" => "image/png",
+            "id" => "loegrjli3g3bgeqlxm8",
+            "progress" => 100,
+            "src" => %{"url" => "/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5"},
+            "status" => "uploaded",
+            "title" => "Authentication Failed message"
           }
         }
       ]
