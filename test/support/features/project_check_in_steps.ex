@@ -137,6 +137,7 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
+    |> UI.sleep(200) # Wait for the comment to be posted
   end
 
   def assert_comment_on_check_in_received_in_notifications(ctx) do

@@ -10,22 +10,28 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  const personPromise = People.getPerson({ id: params.id }).then((data) => data.person!);
+
+  const goalsPromise = Goals.getGoals({
+    includeTargets: true,
+    includeSpace: true,
+    includeLastCheckIn: true,
+    includeChampion: true,
+    includeReviewer: true,
+  }).then((data) => data.goals!);
+
+  const projectsPromise = Projects.getProjects({
+    includeGoal: true,
+    includeSpace: true,
+    includeLastCheckIn: true,
+    includeChampion: true,
+    includeMilestones: true,
+  }).then((data) => data.projects!);
+
   return {
-    person: await People.getPerson({ id: params.id }).then((data) => data.person!),
-
-    goals: await Goals.getGoals({
-      includeTargets: true,
-      includeSpace: true,
-      includeLastCheckIn: true,
-    }),
-
-    projects: await Projects.getProjects({
-      includeGoal: true,
-      includeSpace: true,
-      includeLastCheckIn: true,
-      includeChampion: true,
-      includeMilestones: true,
-    }).then((data) => data.projects!),
+    person: await personPromise,
+    goals: await goalsPromise,
+    projects: await projectsPromise,
   };
 }
 

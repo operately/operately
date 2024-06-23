@@ -1,14 +1,20 @@
 import { makeQueryFn } from "@/graphql/client";
 
-import { GetGoalsDocument, GetGoalsQueryVariables, GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
-import { Goal, Target } from "@/gql/generated";
+import { GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
+import { Target } from "@/gql/generated";
 
-export type { Target, Goal } from "@/gql/generated";
+import * as api from "@/api";
+import * as gql from "@/gql";
+
+export type Goal = api.Goal | gql.Goal;
+
+export type { Target } from "@/gql/generated";
+
+export { getGoals } from "@/api";
 
 export { useEditGoalTimeframeMutation, useEditGoalDiscussionMutation } from "@/gql/generated";
 
 export const getGoal = makeQueryFn(GetGoalDocument, "goal") as (v: GetGoalQueryVariables) => Promise<Goal>;
-export const getGoals = makeQueryFn(GetGoalsDocument, "goals") as (v: GetGoalsQueryVariables) => Promise<Goal[]>;
 
 export { useCloseGoalMutation } from "./useCloseGoalMutation";
 export { useArchiveGoalMutation } from "./useArchiveGoalMutation";

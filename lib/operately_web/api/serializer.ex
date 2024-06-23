@@ -28,6 +28,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Any do
   def serialize(%Ecto.Association.NotLoaded{}, _opts), do: nil
   def serialize(datetime = %NaiveDateTime{}, _opts), do: datetime |> NaiveDateTime.to_iso8601()
   def serialize(datetime = %DateTime{}, _opts), do: datetime |> DateTime.to_iso8601()
+  def serialize(date = %Date{}, _opts), do: date |> Date.to_iso8601()
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: List do
@@ -45,11 +46,78 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   end
 end
 
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Target do
+  def serialize(target, level: :essential) do
+    %{
+      id: target.id,
+      name: target.name,
+      from: target.from,
+      to: target.to,
+      unit: target.unit,
+      index: target.index,
+      value: target.value,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(target.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(target.updated_at),
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Timeframe do
+  def serialize(timeframe, level: :essential) do
+    %{
+      type: timeframe.type,
+      start_date: OperatelyWeb.Api.Serializer.serialize(timeframe.start_date),
+      end_date: OperatelyWeb.Api.Serializer.serialize(timeframe.end_date),
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
+  def serialize(update = %{type: :goal_check_in}, level: :full) do
+    %{
+      id: update.id,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
+      author: OperatelyWeb.Api.Serializer.serialize(update.author),
+      content: %{
+        message: update.content["message"],
+      }
+    }
+  end
+
+  def serialize(%{type: :project_discussion}, level: :essential) do
+    raise "Not implemented"
+  end
+end
+
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
   def serialize(data, level: :essential) do
     %{
       id: data.id,
       name: data.name,
+    }
+  end
+
+  def serialize(data, level: :full) do
+    %{
+      id: data.id,
+      name: data.name,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(data.updated_at),
+
+      is_archived: data.deleted_at != nil,
+      is_closed: data.closed_at != nil,
+
+      parent_goal_id: data.parent_goal_id,
+      parent_goal: OperatelyWeb.Api.Serializer.serialize(data.parent_goal),
+      progress_percentage: Operately.Goals.progress_percentage(data),
+
+      timeframe: OperatelyWeb.Api.Serializer.serialize(data.timeframe),
+      space: OperatelyWeb.Api.Serializer.serialize(data.group),
+      champion: OperatelyWeb.Api.Serializer.serialize(data.champion),
+      reviewer: OperatelyWeb.Api.Serializer.serialize(data.reviewer),
+      projects: OperatelyWeb.Api.Serializer.serialize(data.projects),
+      last_check_in: OperatelyWeb.Api.Serializer.serialize(data.last_check_in, level: :full),
+      targets: OperatelyWeb.Api.Serializer.serialize(data.targets),
     }
   end
 end

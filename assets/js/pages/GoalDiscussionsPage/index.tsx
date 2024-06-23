@@ -44,16 +44,16 @@ export const Page = function () {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={[goal.name]}>
+    <Pages.Page title={[goal.name!]}>
       <Paper.Root size="large">
-        <Navigation space={goal.space} />
+        <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
           <Header goal={goal} activeTab="discussions" />
 
           <div className="flex items-center my-6">
             <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
-            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id)} testId="start-discussion">
+            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
               Start a new discussion
             </FilledButton>
           </div>

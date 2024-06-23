@@ -17,7 +17,7 @@ export interface FormData {
 }
 
 export function useForm(goal: Goals.Goal): FormData {
-  const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id));
+  const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id!));
 
   const [success, setSuccess, successOptions] = Forms.useRadioGroupState([
     { label: "Yes", value: "yes", default: true },
@@ -51,6 +51,6 @@ export function useForm(goal: Goals.Goal): FormData {
     retrospectiveEditor,
 
     submit,
-    cancelPath: Paths.goalPath(goal.id),
+    cancelPath: Paths.goalPath(goal.id!),
   };
 }

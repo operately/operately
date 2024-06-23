@@ -29,9 +29,9 @@ export function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={[goal.name]}>
+    <Pages.Page title={[goal.name!]}>
       <Paper.Root size="large">
-        <Navigation space={goal.space} />
+        <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
           <Header goal={goal} activeTab="status" />

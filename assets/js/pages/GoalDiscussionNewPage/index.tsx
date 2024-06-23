@@ -32,7 +32,7 @@ export function Page() {
   const form = useForm({ goal });
 
   return (
-    <Pages.Page title={["New Discussion", goal.name]}>
+    <Pages.Page title={["New Discussion", goal.name!]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 
@@ -55,7 +55,7 @@ export function Page() {
               Post Discussion
             </FilledButton>
 
-            <DimmedLink to={Paths.goalDiscussionsPath(goal.id)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalDiscussionsPath(goal.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -100,7 +100,7 @@ function useForm({ goal }: { goal: Goals.Goal }) {
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
         })
-          .then((data) => navigate(Paths.goalActivityPath(goal.id, data.id!)))
+          .then((data) => navigate(Paths.goalActivityPath(goal.id!, data.id!)))
           .finally(() => setSubmitting(false));
       },
       submitting,

@@ -32,7 +32,7 @@ export function Page() {
   const form = useForm({ goal });
 
   return (
-    <Pages.Page title={["Edit Timeframe", goal.name]}>
+    <Pages.Page title={["Edit Timeframe", goal.name!]}>
       <Paper.Root size="small">
         <GoalSubpageNavigation goal={goal} />
 
@@ -57,7 +57,7 @@ function Subtitle({ goal }: { goal: Goals.Goal }) {
   return (
     <div className="mb-8">
       <div className="text-content-accent">
-        Current timeframe: {Timeframes.format(Timeframes.parse(goal.timeframe))}
+        Current timeframe: {Timeframes.format(Timeframes.parse(goal.timeframe!))}
       </div>
     </div>
   );
@@ -199,7 +199,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           Submit
         </FilledButton>
 
-        <DimmedLink to={Paths.goalPath(goal.id)}>Cancel</DimmedLink>
+        <DimmedLink to={Paths.goalPath(goal.id!)}>Cancel</DimmedLink>
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export function Page() {
   const { goal, activity } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name]}>
+    <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name!]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 

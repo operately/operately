@@ -49,11 +49,11 @@ export function useForm(options: UseFormOptions): FormState {
   const [targets, { update: updateTarget }] = useTargetListState(goal);
 
   const [post, { loading: submittingPost }] = GoalCheckIns.usePostUpdate({
-    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.createUpdate.id)),
+    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id!, data.createUpdate.id)),
   });
 
   const [edit, { loading: submittingEdit }] = GoalCheckIns.useEditUpdate({
-    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id, data.editUpdate.id)),
+    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id!, data.editUpdate.id)),
   });
 
   const submit = async (): Promise<boolean> => {
@@ -123,7 +123,7 @@ interface TargetState {
 
 function useTargetListState(goal: Goals.Goal): [TargetState[], { update: (id: string, value: number) => void }] {
   const [targets, { update }] = useListState<TargetState>(
-    goal.targets!.map((target) => ({
+    goal.targets!.map((target: any) => ({
       id: target!.id,
       name: target!.name,
       value: target!.value,

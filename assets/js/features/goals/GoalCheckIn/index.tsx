@@ -54,13 +54,13 @@ export function LastCheckInMessage({ goal }) {
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
+  const path = Paths.goalProgressUpdatePath(goal.id!, goal.lastCheckIn!.id!);
 
   return (
     <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
       <Icons.IconMessage size={14} />{" "}
       <DivLink to={path} className="hover:underline cursor-pointer">
-        {plurarize(goal.lastCheckIn?.commentsCount, "comment", "comments")}
+        {plurarize(goal.lastCheckIn!.commentsCount!, "comment", "comments")}
       </DivLink>
     </div>
   );
@@ -68,7 +68,7 @@ function LastMessageComments({ goal }: { goal: Goals.Goal }) {
 
 function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
   const update = goal.lastCheckIn!;
-  const reactions = update.reactions!.map((r) => r!);
+  const reactions = update.reactions!.map((r: any) => r!);
   const entity = { id: update.id!, type: "update" };
 
   const addReactionForm = useReactionsForm(entity, reactions);
@@ -111,7 +111,7 @@ function Acknowledgement({ goal }: { goal: Goals.Goal }) {
       </div>
     );
   } else {
-    if (goal.permissions.canAcknowledgeCheckIn) {
+    if (goal.permissions!.canAcknowledgeCheckIn) {
       return <> &mdash; You didn't yet acknowledge this update.</>;
     } else {
       return (
@@ -126,7 +126,7 @@ function Acknowledgement({ goal }: { goal: Goals.Goal }) {
 
 function AcknowledgeButton({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
-  if (!goal.permissions.canAcknowledgeCheckIn) return null;
+  if (!goal.permissions!.canAcknowledgeCheckIn) return null;
   if (goal.lastCheckIn.acknowledged) return null;
 
   const refresh = Pages.useRefresh();

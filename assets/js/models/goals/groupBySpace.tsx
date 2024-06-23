@@ -13,7 +13,7 @@ export function groupBySpace(goals: Goal[]): GoalGroup[] {
   for (const goal of goals) {
     const space = goal.space;
 
-    if (!groups.find((group) => group.space.id === space.id)) {
+    if (!groups.find((group) => group.space.id === space!.id)) {
       groups.push({
         space: space as Spaces.Space,
         goals: [],

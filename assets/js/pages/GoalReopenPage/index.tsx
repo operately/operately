@@ -63,7 +63,7 @@ function useForm(goal: Goals.Goal): FormState {
     className: "min-h-[200px] py-2 font-medium",
   });
 
-  const goalPath = Paths.goalPath(goal.id);
+  const goalPath = Paths.goalPath(goal.id!);
 
   const [reopen] = Goals.useReopenGoalMutation({ onCompleted: () => navigate(goalPath) });
 

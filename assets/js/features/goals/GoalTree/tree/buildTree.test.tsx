@@ -170,7 +170,7 @@ describe("Tree", () => {
       sortDirection: "asc",
       showCompleted: false,
 
-      goalId: g2.id,
+      goalId: g2.id!,
     });
 
     const expected = `
@@ -189,7 +189,7 @@ describe("Tree", () => {
     const g4 = goalMock("G4", marketing, john, { parentGoalId: g3.id });
 
     const p1 = projectMock("P1", marketing, john, { goal: g1 });
-    const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: new Date() });
+    const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: Date.now().toString() });
 
     const g5 = goalMock("G5", company, john, { isClosed: true });
 
@@ -249,7 +249,7 @@ describe("Tree", () => {
     const g3 = goalMock("G3", company, john);
 
     const p1 = projectMock("P1", marketing, john, { goal: g1 });
-    const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: new Date() });
+    const p2 = projectMock("P2", marketing, john, { goal: g1, closedAt: Date.now().toString() });
     const p3 = projectMock("P3", marketing, john, { goal: g1 });
 
     const withCompleted = buildTree([g1, g2, g3], [p1, p2, p3], {
