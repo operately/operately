@@ -8,7 +8,7 @@ export function filterPossibleParentGoals(goals: Goal[], goal: Goal): Goal[] {
 
   while (queue.length) {
     const currentGoal = queue.shift();
-    nonSelectableGoals.add(currentGoal!.id);
+    nonSelectableGoals.add(currentGoal!.id!);
 
     goals.forEach((g) => {
       if (g.parentGoalId === currentGoal?.id) {
@@ -17,5 +17,5 @@ export function filterPossibleParentGoals(goals: Goal[], goal: Goal): Goal[] {
     });
   }
 
-  return goals.filter((g) => !nonSelectableGoals.has(g.id));
+  return goals.filter((g) => !nonSelectableGoals.has(g.id!));
 }

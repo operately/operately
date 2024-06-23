@@ -30,7 +30,7 @@ export function Page() {
   const form = useForm({ goal, mode: "create" });
 
   return (
-    <Pages.Page title={["Goal Progress Update", goal.name]}>
+    <Pages.Page title={["Goal Progress Update", goal.name!]}>
       <Paper.Root>
         <Navigation goal={goal} />
 

@@ -1,9 +1,9 @@
-import { Goal } from "@/models/goals";
-import { Project } from "@/models/projects";
+import * as Api from "@/api";
+
 import { Space } from "@/models/spaces";
 import { Person } from "@/models/people";
 
-export function goalMock(name: string, space: Space, champion: Person, params: Partial<Goal> = {}): Goal {
+export function goalMock(name: string, space: Space, champion: Person, params: Partial<Api.Goal> = {}): Api.Goal {
   return {
     id: name,
     name,
@@ -12,7 +12,7 @@ export function goalMock(name: string, space: Space, champion: Person, params: P
     champion,
     championId: champion.id,
     ...params,
-  } as unknown as Goal;
+  } as unknown as Api.Goal;
 }
 
 export function spaceMock(name: string): Space {
@@ -23,7 +23,12 @@ export function personMock(name: string): Person {
   return { id: name, fullName: name } as unknown as Person;
 }
 
-export function projectMock(name: string, space: Space, champion: Person, params: Partial<Project> = {}): Project {
+export function projectMock(
+  name: string,
+  space: Space,
+  champion: Person,
+  params: Partial<Api.Project> = {},
+): Api.Project {
   return {
     id: name,
     name,
@@ -33,5 +38,5 @@ export function projectMock(name: string, space: Space, champion: Person, params
     championId: champion.id,
     milestones: [],
     ...params,
-  } as unknown as Project;
+  } as unknown as Api.Project;
 }

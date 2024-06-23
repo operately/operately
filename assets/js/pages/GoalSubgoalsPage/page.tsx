@@ -12,9 +12,9 @@ export function Page() {
   const { goal, goals, projects } = useLoadedData();
 
   return (
-    <Pages.Page title={[goal.name]}>
+    <Pages.Page title={[goal.name!]}>
       <Paper.Root fluid>
-        <Navigation space={goal.space} />
+        <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
           <Header goal={goal} activeTab="subgoals" />
@@ -25,7 +25,7 @@ export function Page() {
             goals={goals}
             projects={projects}
             options={{
-              goalId: goal.id,
+              goalId: goal.id!,
             }}
           />
         </Paper.Body>

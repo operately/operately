@@ -14,7 +14,7 @@ export function AckCTA() {
   });
 
   if (update.acknowledged) return null;
-  if (!goal.permissions.canAcknowledgeCheckIn) return null;
+  if (!goal.permissions!.canAcknowledgeCheckIn) return null;
 
   const handleAck = async () => {
     await ack({

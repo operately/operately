@@ -44,10 +44,10 @@ export function Header({ goal, activeTab }: HeaderProps) {
         </div>
 
         <Tabs.Root activeTab={activeTab}>
-          <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id)} />
-          <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id)} />
-          <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id)} />
-          <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id)} />
+          <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
+          <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
+          <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
+          <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
         </Tabs.Root>
       </div>
     </div>
@@ -61,7 +61,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconTarget size={14} className="text-red-500" />
-        <GhostLink to={Paths.goalPath(goal.id)} text={goal.name} testID="project-goal-link" dimmed size="sm" />
+        <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testID="project-goal-link" dimmed size="sm" />
       </div>
     );
   } else {
@@ -162,7 +162,7 @@ function Options({ goal }) {
 }
 
 function Timeframe({ goal }: { goal: Goals.Goal }) {
-  const timeframe = Timeframes.parse(goal.timeframe);
+  const timeframe = Timeframes.parse(goal.timeframe!);
 
   return (
     <div className="font-medium text-sm mt-1 text-content-dimmed">

@@ -29,7 +29,7 @@ export function Page() {
   const content = update.content as GoalCheckIns.GoalCheckInContent;
 
   return (
-    <Pages.Page title={["Goal Progress Update", goal.name]}>
+    <Pages.Page title={["Goal Progress Update", goal.name!]}>
       <Paper.Root>
         <Navigation goal={goal} />
 
@@ -113,7 +113,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit Update"
-        to={Paths.goalEditProgressUpdatePath(goal.id, update.id!)}
+        to={Paths.goalEditProgressUpdatePath(goal.id!, update.id!)}
         dataTestId="edit-update"
       />
     </PageOptions.Root>

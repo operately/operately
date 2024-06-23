@@ -162,7 +162,7 @@ function NodeTimeframe({ node }: { node: Node }) {
 }
 
 function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
-  const timeframe = Timeframes.parse(goal.timeframe);
+  const timeframe = Timeframes.parse(goal.timeframe!);
 
   return <div className="text-sm w-24 truncate">{Timeframes.format(timeframe)}</div>;
 }
@@ -231,9 +231,9 @@ function NodeActions({ node }: { node: Node }) {
 }
 
 function GoalOptions({ node, open, setOpen }: { node: GoalNode; open: boolean; setOpen: (open: boolean) => void }) {
-  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id });
-  const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id });
-  const testId = createTestId(node.type, "options", node.goal.name);
+  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
+  const newProjectPath = Paths.projectNewPath({ goalId: node.goal.id! });
+  const testId = createTestId(node.type, "options", node.goal.name!);
 
   return (
     <DropdownMenu
@@ -372,7 +372,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
             <FilledButton
               size="xs"
               type="secondary"
-              linkTo={Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn!.id)}
+              linkTo={Paths.goalProgressUpdatePath(goal.id!, goal.lastCheckIn!.id!)}
               linkTarget="_blank"
             >
               Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
@@ -430,7 +430,7 @@ function GoalProgress({ node }: { node: GoalNode }) {
             <div className="uppercase text-xs font-bold mb-2">Success Conditions</div>
             {goal.targets!.length > 0 ? (
               <div>
-                {goal.targets!.map((target) => (
+                {goal.targets!.map((target: any) => (
                   <div
                     key={target!.id}
                     className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between"

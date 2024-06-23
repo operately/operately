@@ -31,7 +31,7 @@ export function Page() {
   const form = useForm({ goal, activity: activity });
 
   return (
-    <Pages.Page title={["New Discussion", goal.name]}>
+    <Pages.Page title={["New Discussion", goal.name!]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 
@@ -52,7 +52,7 @@ export function Page() {
               Save
             </FilledButton>
 
-            <DimmedLink to={Paths.goalActivityPath(goal.id, activity.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalActivityPath(goal.id!, activity.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -95,7 +95,7 @@ function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Ac
           message: JSON.stringify(fields.editor.editor.getJSON()),
         },
       }),
-      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id, activity.id!)),
+      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id!, activity.id!)),
     }),
   });
 }

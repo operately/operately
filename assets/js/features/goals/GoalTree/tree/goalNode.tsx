@@ -16,22 +16,22 @@ export class GoalNode extends Node {
 
     this.goal = goal;
 
-    this.id = goal.id;
+    this.id = goal.id!;
     this.parentId = goal.parentGoalId!;
 
     this.type = "goal";
-    this.name = goal.name;
+    this.name = goal.name!;
     this.champion = goal.champion!;
-    this.isClosed = goal.isClosed;
-    this.progress = this.goal.progressPercentage;
+    this.isClosed = goal.isClosed!;
+    this.progress = this.goal.progressPercentage!;
     this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
 
     this.space = goal.space as Spaces.Space;
-    this.spaceId = goal.space.id;
+    this.spaceId = goal.space!.id!;
   }
 
   linkTo(): string {
-    return Paths.goalPath(this.goal.id);
+    return Paths.goalPath(this.goal.id!);
   }
 
   childrenInfoLabel(): string {
@@ -50,8 +50,8 @@ export class GoalNode extends Node {
   }
 
   compareTimeframe(b: GoalNode): number {
-    const timeframeA = Timeframes.parse(this.goal.timeframe);
-    const timeframeB = Timeframes.parse(b.goal.timeframe);
+    const timeframeA = Timeframes.parse(this.goal.timeframe!);
+    const timeframeB = Timeframes.parse(b.goal.timeframe!);
 
     return Time.compareAsc(timeframeA.endDate, timeframeB.endDate);
   }

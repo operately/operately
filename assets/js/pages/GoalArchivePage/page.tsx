@@ -13,7 +13,7 @@ export function Page() {
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={["Archiving ", goal.name]}>
+    <Pages.Page title={["Archiving ", goal.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
           <Paper.NavItem linkTo={`/goals/${goal.id}`}>{goal.name}</Paper.NavItem>

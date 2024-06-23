@@ -30,7 +30,7 @@ export function Page() {
   const form = useForm({ goal, checkIn, mode: "edit" });
 
   return (
-    <Pages.Page title={["Edit Goal Progress Update", goal.name]}>
+    <Pages.Page title={["Edit Goal Progress Update", goal.name!]}>
       <Paper.Root>
         <Navigation goal={goal} checkin={checkIn} />
 
@@ -72,5 +72,5 @@ function SubmitButton({ form }) {
 }
 
 function CancelLink({ goal, checkin }: { goal: Goals.Goal; checkin: GoalCheckIns.GoalCheckIn }) {
-  return <DimmedLink to={Paths.goalProgressUpdatePath(goal.id, checkin.id!)}>Cancel</DimmedLink>;
+  return <DimmedLink to={Paths.goalProgressUpdatePath(goal.id!, checkin.id!)}>Cancel</DimmedLink>;
 }
