@@ -979,6 +979,7 @@ export interface GetGoalsInput {
   includeLastCheckIn?: boolean | null;
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
+  includeParentGoal?: boolean | null;
 }
 
 export interface GetGoalsResult {

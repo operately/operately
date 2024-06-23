@@ -108,6 +108,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       is_closed: data.closed_at != nil,
 
       parent_goal_id: data.parent_goal_id,
+      parent_goal: OperatelyWeb.Api.Serializer.serialize(data.parent_goal),
       progress_percentage: Operately.Goals.progress_percentage(data),
 
       timeframe: OperatelyWeb.Api.Serializer.serialize(data.timeframe),

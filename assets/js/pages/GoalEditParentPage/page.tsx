@@ -11,13 +11,13 @@ import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 export function Page() {
   const { goal } = useLoadedData();
 
-  const goalPath = Paths.goalPath(goal.id);
+  const goalPath = Paths.goalPath(goal.id!);
 
   return (
-    <Pages.Page title={["Changing Parent", goal.name]}>
+    <Pages.Page title={["Changing Parent", goal.name!]}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo={goalPath}>{goal.name}</Paper.NavItem>
+          <Paper.NavItem linkTo={goalPath}>{goal.name!}</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body>
@@ -34,7 +34,7 @@ function GoalList() {
   const { goal, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const goalPath = Paths.goalPath(goal.id);
+  const goalPath = Paths.goalPath(goal.id!);
 
   const [select] = Goals.useChangeGoalParentMutation({ onCompleted: () => navigate(goalPath) });
 

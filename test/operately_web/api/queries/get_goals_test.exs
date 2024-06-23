@@ -29,5 +29,15 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       assert Enum.at(res.goals, 0).last_check_in == serialize(update1, level: :essential)
       assert Enum.at(res.goals, 1).last_check_in == serialize(update3, level: :essential)
     end
+
+    test "include_parent_goal", ctx do
+      parent_goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id, parent_goal_id: parent_goal.id)
+
+      assert {200, res} = query(ctx.conn, :get_goals, %{include_parent_goal: true})
+      assert length(res.goals) == 2
+      assert Enum.find(res.goals, fn g -> g.id == parent_goal.id end).parent_goal == nil
+      assert Enum.find(res.goals, fn g -> g.id == goal.id end).parent_goal == serialize(parent_goal, level: :essential)
+    end
   end
 end 

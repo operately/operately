@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
 
     field :include_champion, :boolean
     field :include_reviewer, :boolean
+    field :include_parent_goal, :boolean
   end
 
   outputs do
@@ -47,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
         :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
+        :include_parent_goal -> from p in q, preload: [:parent_goal]
         :include_last_check_in -> q # this is done after the load
         _ -> q 
       end

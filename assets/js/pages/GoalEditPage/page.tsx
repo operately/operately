@@ -21,7 +21,7 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title={["Edit", goal.name]}>
+    <Pages.Page title={["Edit", goal.name!]}>
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
           <Header form={form} />
