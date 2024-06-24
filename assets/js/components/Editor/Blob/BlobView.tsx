@@ -43,7 +43,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
   const image = (
     <img
-      src={node.attrs.src}
+      src={node.attrs.src.url}
       alt={node.attrs.alt}
       title={node.attrs.title}
       className={classnames({
@@ -57,7 +57,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
   const imgNode = view.editable ? (
     image
   ) : (
-    <a href={node.attrs.src} target="_blank">
+    <a href={node.attrs.src.url} target="_blank">
       {image}
     </a>
   );
@@ -91,7 +91,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         {!view.editable && (
           <>
             <div className="text-content-dimmed text-sm">•</div>
-            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
+            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src.url} target="_blank">
               View
             </a>
           </>
