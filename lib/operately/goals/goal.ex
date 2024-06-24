@@ -113,4 +113,8 @@ defmodule Operately.Goals.Goal do
       Map.put(goal, :last_check_in, last_check_in)
     end)
   end
+
+  def preload_permissions(_goal, _person) do
+    raise "Not implemented preload_permissions"
+  end
 end
