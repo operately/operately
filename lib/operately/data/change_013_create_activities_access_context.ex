@@ -17,8 +17,8 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   end
 
   defp query do
-    from(a in Activity, 
-      where: is_nil(a.context_id), 
+    from(a in Activity,
+      where: is_nil(a.context_id),
       where: a.action not in ^Activity.deprecated_actions(),
       order_by: [asc: a.inserted_at])
   end
@@ -116,7 +116,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       where: c.id == ^activity.content.company_id,
       preload: :access_context
     )
-    |> Repo.one()
+    |> Repo.one!()
     |> update_activity(activity)
   end
 
@@ -134,7 +134,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       where: g.id == ^space_id,
       preload: :access_context
     )
-    |> Repo.one()
+    |> Repo.one!(with_deleted: true)
     |> update_activity(activity)
   end
 
@@ -143,7 +143,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       where: g.id == ^goal_id,
       preload: :access_context
     )
-    |> Repo.one()
+    |> Repo.one!(with_deleted: true)
     |> update_activity(activity)
   end
 
@@ -152,7 +152,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       where: p.id == ^project_id,
       preload: :access_context
     )
-    |> Repo.one()
+    |> Repo.one!(with_deleted: true)
     |> update_activity(activity)
   end
 
@@ -163,7 +163,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       where: t.id == ^activity.content.task_id,
       preload: :access_context
     )
-    |> Repo.one()
+    |> Repo.one!(with_deleted: true)
     |> update_activity(activity)
   end
 
@@ -193,7 +193,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       on: a.id == t.parent_id,
       where: t.id == ^comment.entity_id
     )
-    |> Repo.one()
+    |> Repo.one!()
 
     activity
     |> Activity.changeset(%{context_id: parent.context_id})
