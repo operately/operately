@@ -57,10 +57,12 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
   const imgNode = view.editable ? (
     image
   ) : (
-    <a href={node.attrs.src.url} target="_blank">
+    <a href={node.attrs.src} target="_blank">
       {image}
     </a>
   );
+
+  console.log("node.attrs.src", node.attrs.src.url);
 
   return (
     <NodeViewWrapper className="blob-container blob-image relative group">
@@ -91,7 +93,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         {!view.editable && (
           <>
             <div className="text-content-dimmed text-sm">•</div>
-            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src.url} target="_blank">
+            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
               View
             </a>
           </>
