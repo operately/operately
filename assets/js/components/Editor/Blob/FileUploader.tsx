@@ -1,8 +1,9 @@
 import axios from "axios";
 import csrftoken from "@/utils/csrf_token";
 import { CreateBlob } from "@/graphql/Blobs";
+import { S3Upload } from "./S3Upload/S3Upload";
 
-type ProgressCallback = (number: number) => any;
+export type ProgressCallback = (number: number) => any;
 
 export interface FileUploader {
   upload: (file: File, progressCallback: ProgressCallback) => Promise<{ id: string, url: string }>;
@@ -19,7 +20,12 @@ export class MultipartFileUploader implements FileUploader {
 
       const signedUploadUrl = blob.data.createBlob.signedUploadUrl;
 
-      await this.uploadFile(file, signedUploadUrl, progressCallback);
+      if (blob.data.createBlob.storageType === "local") {
+        await this.uploadFile(file, signedUploadUrl, progressCallback);
+      }
+      else {
+        await S3Upload(file, progressCallback);
+      }
 
       return {
         id: blob.data.createBlob.id,
