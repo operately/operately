@@ -57,7 +57,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
   const imgNode = view.editable ? (
     image
   ) : (
-    <a href={node.attrs.src} target="_blank">
+    <a href={node.attrs.src.url} target="_blank">
       {image}
     </a>
   );
@@ -82,7 +82,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
             <a
               className="text-content-dimmed text-sm underline cursor-pointer"
               download={node.attrs.title}
-              href={node.attrs.src}
+              href={node.attrs.src.url}
             >
               Download
             </a>
@@ -91,7 +91,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         {!view.editable && (
           <>
             <div className="text-content-dimmed text-sm">•</div>
-            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
+            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src.url} target="_blank">
               View
             </a>
           </>
@@ -135,7 +135,7 @@ function FileView({ node, deleteNode, view }) {
                 <a
                   className="text-content-dimmed text-sm underline cursor-pointer"
                   download={node.attrs.title}
-                  href={node.attrs.src}
+                  href={node.attrs.src.url}
                 >
                   Download
                 </a>
