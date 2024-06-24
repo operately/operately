@@ -1,21 +1,12 @@
-import { makeQueryFn } from "@/graphql/client";
-
-import { GetGoalDocument, GetGoalQueryVariables } from "@/gql/generated";
-import { Target } from "@/gql/generated";
-
 import * as api from "@/api";
-import * as gql from "@/gql";
 
-export type Goal = api.Goal | gql.Goal;
+export type Goal = api.Goal;
 
 export type { Target } from "@/gql/generated";
 
-export { getGoals } from "@/api";
+export { getGoal, getGoals } from "@/api";
 
 export { useEditGoalTimeframeMutation, useEditGoalDiscussionMutation } from "@/gql/generated";
-
-export const getGoal = makeQueryFn(GetGoalDocument, "goal") as (v: GetGoalQueryVariables) => Promise<Goal>;
-
 export { useCloseGoalMutation } from "./useCloseGoalMutation";
 export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
 export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromProjectMutation";
@@ -28,22 +19,26 @@ export { useReopenGoalMutation } from "./useReopenGoalMutation";
 export { groupBySpace } from "./groupBySpace";
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 
-export function targetProgressPercentage(target: Target): number {
-  if (target.from <= target.to) {
-    if (target.value < target.from) {
+export function targetProgressPercentage(target: Required<api.Target>): number {
+  const from = target.from!;
+  const to = target.to!;
+  const value = target.value!;
+
+  if (from < to) {
+    if (value < from) {
       return 0;
-    } else if (target.value > target.to) {
+    } else if (value > to) {
       return 100;
     } else {
-      return ((target.value - target.from) / (target.to - target.from)) * 100;
+      return ((value - from) / (to - from)) * 100;
     }
   } else {
-    if (target.value > target.from) {
+    if (value > from) {
       return 0;
-    } else if (target.value < target.to) {
+    } else if (value < to) {
       return 100;
     } else {
-      return ((target.from - target.value) / (target.from - target.to)) * 100;
+      return ((from - value) / (from - to)) * 100;
     }
   }
 }
