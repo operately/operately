@@ -43,7 +43,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
   const image = (
     <img
-      src={node.attrs.src}
+      src={node.attrs.src.url}
       alt={node.attrs.alt}
       title={node.attrs.title}
       className={classnames({
