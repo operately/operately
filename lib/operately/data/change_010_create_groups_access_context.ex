@@ -8,7 +8,7 @@ defmodule Operately.Data.Change010CreateGroupsAccessContext do
 
   def run do
     Repo.transaction(fn ->
-      groups = Repo.all(from g in Group, select: g.id)
+      groups = from(g in Group, select: g.id) |> Repo.all(with_deleted: true)
 
       Enum.each(groups, fn group_id ->
         case create_group_access_contexts(group_id) do
