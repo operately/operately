@@ -62,8 +62,6 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
     </a>
   );
 
-  console.log("node.attrs.src", node.attrs.src.url);
-
   return (
     <NodeViewWrapper className="blob-container blob-image relative group">
       {imgNode}
