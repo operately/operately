@@ -68,7 +68,7 @@ after_pipeline:
           - test-results gen-pipeline-report
 
 promotions:
-  - name: Staging 1
-    pipeline_file: staging1.yml
+  - name: Deploy
+    pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
