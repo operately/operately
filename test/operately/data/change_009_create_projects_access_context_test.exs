@@ -1,6 +1,8 @@
 defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   use Operately.DataCase
 
+  import Ecto.Query, only: [from: 1]
+
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
@@ -9,6 +11,7 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   alias Operately.Repo
   alias Operately.Access
   alias Operately.Access.Context
+  alias Operately.Projects.Project
   alias Operately.Data.Change009CreateProjectsAccessContext
 
   setup do
@@ -49,8 +52,25 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
     assert nil != Access.get_context!(project_id: project_without_context.id)
   end
 
+  test "creates access_context for soft-deleted projects", ctx do
+    project_soft_deleted = create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+    Repo.soft_delete(project_soft_deleted)
+
+    create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+
+    Change009CreateProjectsAccessContext.run()
+
+    projects = from(p in Project) |> Repo.all(with_deleted: true)
+
+    assert 2 == length(projects)
+
+    Enum.each(projects, fn project ->
+      assert nil != Access.get_context!(project_id: project.id)
+    end)
+  end
+
   def create_project(attrs) do
-    {:ok, project} = Operately.Projects.Project.changeset(%{
+    {:ok, project} = Project.changeset(%{
       name: "some name",
       company_id: attrs.company_id,
       group_id: attrs.group_id,

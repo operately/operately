@@ -8,7 +8,7 @@ defmodule Operately.Data.Change009CreateProjectsAccessContext do
 
   def run do
     Repo.transaction(fn ->
-      projects = Repo.all(from p in Project, select: p.id)
+      projects = from(p in Project, select: p.id) |> Repo.all(with_deleted: true)
 
       Enum.each(projects, fn project_id ->
         case create_projects_access_contexts(project_id) do
