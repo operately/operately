@@ -1,6 +1,8 @@
 defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
   use Operately.DataCase
 
+  import Ecto.Query, only: [from: 1]
+
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
@@ -8,6 +10,7 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Goals.Goal
   alias Operately.Access.Context
   alias Operately.Data.Change012CreateGoalsAccessContext
 
@@ -44,6 +47,23 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
     Change012CreateGoalsAccessContext.run()
 
     assert nil != Access.get_context!(goal_id: goal_without_context.id)
+  end
+
+  test "creates access_context for soft-deleted goals", ctx do
+    create_goal(ctx.company.id, ctx.group.id, ctx.person.id)
+    |> Repo.soft_delete()
+
+    create_goal(ctx.company.id, ctx.group.id, ctx.person.id)
+
+    Change012CreateGoalsAccessContext.run()
+
+    goals = from(p in Goal) |> Repo.all(with_deleted: true)
+
+    assert 2 == length(goals)
+
+    Enum.each(goals, fn goal ->
+      assert nil != Access.get_context!(goal_id: goal.id)
+    end)
   end
 
   def create_goal(company_id, group_id, person_id) do
