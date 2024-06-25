@@ -2,8 +2,8 @@ defmodule Operately.Access.Binding do
   use Operately.Schema
 
   schema "access_bindings" do
-    belongs_to :group, Operately.Access.Group
-    belongs_to :context, Operately.Access.Context
+    belongs_to :access_group, Operately.Access.Group
+    belongs_to :access_context, Operately.Access.Context
     field :access_level, :integer
 
     timestamps()
@@ -21,8 +21,8 @@ defmodule Operately.Access.Binding do
 
   def changeset(binding, attrs) do
     binding
-    |> cast(attrs, [:group_id, :context_id, :access_level])
+    |> cast(attrs, [:access_group_id, :access_context_id, :access_level])
     |> validate_inclusion(:access_level, @valid_access_levels, message: "invalid access level")
-    |> validate_required([:group_id, :context_id, :access_level])
+    |> validate_required([:access_group_id, :access_context_id, :access_level])
   end
 end
