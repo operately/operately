@@ -373,4 +373,10 @@ defmodule Operately.Support.Features.UI do
       session |> Browser.take_screenshot()
     end)
   end
+
+  def str_to_testid(str) do
+    str
+    |> String.downcase()
+    |> String.replace(~r/[^a-z0-9]/, "-")
+  end
 end

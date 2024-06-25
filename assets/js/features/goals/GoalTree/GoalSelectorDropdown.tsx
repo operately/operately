@@ -44,6 +44,7 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
             "border-surface-outline": !error,
           })}
           onClick={() => setOpen(!open)}
+          data-test-id="goal-selector"
         >
           {selected ? (
             <div className="truncate flex items-center gap-1.5">
