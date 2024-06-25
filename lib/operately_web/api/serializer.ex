@@ -117,6 +117,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(data.updated_at),
       closed_by: OperatelyWeb.Api.Serializer.serialize(data.closed_by),
+      closed_at: OperatelyWeb.Api.Serializer.serialize(data.closed_at),
 
       is_archived: data.deleted_at != nil,
       is_closed: data.closed_at != nil,

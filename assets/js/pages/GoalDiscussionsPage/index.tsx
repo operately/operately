@@ -24,19 +24,22 @@ interface LoaderResult {
 }
 
 export const loader = async function ({ params }): Promise<LoaderResult> {
+  const goalPromise = Goals.getGoal({
+    id: params.goalId,
+    includeSpace: true,
+    includeParentGoal: true,
+    includePermissions: true,
+  }).then((data) => data.goal!);
+
+  const activitiesPromise = Activities.getActivities({
+    scopeType: "goal",
+    scopeId: params.goalId,
+    actions: ["goal_timeframe_editing", "goal_closing", "goal_check_in", "goal_reopening", "goal_discussion_creation"],
+  });
+
   return {
-    goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }).then((data) => data.goal!),
-    activities: await Activities.getActivities({
-      scopeType: "goal",
-      scopeId: params.goalId,
-      actions: [
-        "goal_timeframe_editing",
-        "goal_closing",
-        "goal_check_in",
-        "goal_reopening",
-        "goal_discussion_creation",
-      ],
-    }),
+    goal: await goalPromise,
+    activities: await activitiesPromise,
   };
 };
 

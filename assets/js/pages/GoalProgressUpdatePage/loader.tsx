@@ -8,8 +8,12 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const goalPromise = Goals.getGoal({ id: params.goalId, includeTargets: true }).then((data) => data.goal!);
-  const updatePromise = GoalCheckIns.getCheckIn(params.id, {}).then((data) => data.update!);
+  const goalPromise = Goals.getGoal({
+    id: params.goalId,
+    includeTargets: true,
+    includePermissions: true,
+  }).then((data) => data.goal!);
+  const updatePromise = GoalCheckIns.getCheckIn(params.id, {});
 
   return {
     goal: await goalPromise,
