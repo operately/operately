@@ -114,6 +114,10 @@ defmodule Operately.Goals.Goal do
     end)
   end
 
+  def preload_last_check_in(goal = %__MODULE__{}) do
+    [goal] |> preload_last_check_in() |> hd()
+  end
+
   def preload_permissions(_goal, _person) do
     raise "Not implemented preload_permissions"
   end

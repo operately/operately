@@ -24,12 +24,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :goal, :goal
   end
 
-  def call(conn, inputs) do
-    id = inputs[:id]
+  def call(conn, %{id: id} = inputs) do
     goal = load(id, me(conn), inputs)
-    output = %{goal: Serializer.serialize(goal, level: :full)}
 
-    {:ok, output}
+    if goal do
+      output = %{goal: Serializer.serialize(goal, level: :full)}
+      {:ok, output}
+    else
+      {:error, :not_found}
+    end
+  end
+
+  def call(_conn, _) do
+    {:error, :bad_request}
   end
 
   defp load(id, person, inputs) do
@@ -40,8 +47,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
     |> Repo.one()
-    |> Goal.preload_last_check_in()
-    |> Goal.preload_permissions(person)
+    |> load_last_check_in(inputs[:include_last_check_in])
+    |> load_permissions(person, inputs[:include_permissions])
   end
 
   defp include_requested(query, requested) do
@@ -60,4 +67,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       end
     end)
   end
+
+  defp load_last_check_in(nil, _), do: nil
+  defp load_last_check_in(goal, true), do: Goal.preload_last_check_in(goal)
+  defp load_last_check_in(goal, _), do: goal
+
+  defp load_permissions(nil, _, _), do: nil
+  defp load_permissions(goal, person, true), do: Goal.preload_permissions(goal, person)
+  defp load_permissions(goal, _, _), do: goal
 end

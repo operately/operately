@@ -1,3 +1,95 @@
 defmodule OperatelyWeb.Api.Queries.GetGoalTest do
-  use OperatelyWeb.ConnCase
+  alias Operately.Support.RichText
+  use OperatelyWeb.TurboCase
+
+  import Operately.GoalsFixtures
+  import Operately.UpdatesFixtures
+  import OperatelyWeb.Api.Serializer
+
+  describe "security" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, :get_goal, %{})
+    end
+  end
+
+  describe "get_goals functionality" do
+    setup :register_and_log_in_account
+
+    test "when id is not provided", ctx do
+      assert {400, "Bad request"} = query(ctx.conn, :get_goal, %{})
+    end
+
+    test "when goal does not exist", ctx do
+      assert {404, "Not found"} = query(ctx.conn, :get_goal, %{id: Ecto.UUID.generate()})
+    end
+
+    test "with no includes", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal == serialize(goal, level: :full)
+    end
+
+    test "include_champion", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.champion == nil
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_champion: true})
+      assert res.goal.champion == serialize(ctx.person, level: :essential)
+    end
+
+    test "include_closed_by", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.closed_by == nil
+
+      # requested, but the goal is not closed
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_closed_by: true})
+      assert res.goal.closed_by == nil
+
+      retrospective = Jason.encode!(RichText.rich_text("Writing a retrospective"))
+      {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.person, goal.id, "success", retrospective)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_closed_by: true})
+      assert res.goal.closed_by == serialize(ctx.person, level: :essential)
+    end
+
+    test "include_last_check_in", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.last_check_in == nil
+
+      # requested, but the goal has no check-ins
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_last_check_in: true})
+      assert res.goal.last_check_in == nil
+
+      update = update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.person.id})
+      update = Operately.Repo.preload(update, :author)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_last_check_in: true})
+      assert res.goal.last_check_in == serialize(update, level: :full)
+    end
+
+    test "include_parent_goal", ctx do
+      parent_goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id, parent_goal_id: parent_goal.id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.parent_goal == nil
+
+      # requested, but the goal has no parent goal
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: parent_goal.id, include_parent_goal: true})
+      assert res.goal.parent_goal == nil
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_parent_goal: true})
+      assert res.goal.parent_goal == serialize(parent_goal, level: :essential)
+    end
+  end
 end 
