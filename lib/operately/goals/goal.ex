@@ -106,7 +106,7 @@ defmodule Operately.Goals.Goal do
       on: u.updatable_id == c.updatable_id 
         and u.updatable_type == c.updatable_type 
         and u.inserted_at == c.max_inserted_at,
-      preload: [:author]
+      preload: [:author, [reactions: :person]]
 
     updates = Operately.Repo.all(query)
 

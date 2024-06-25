@@ -72,6 +72,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Timeframe do
   end
 end
 
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Reaction do
+  def serialize(reaction, level: :essential) do
+    %{
+      id: reaction.id,
+      emoji: reaction.emoji,
+      person: OperatelyWeb.Api.Serializer.serialize(reaction.person),
+    }
+  end
+end
+
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
   def serialize(update = %{type: :goal_check_in}, level: :full) do
     %{
@@ -79,8 +89,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(update.author),
       content: %{
-        message: update.content["message"],
-      }
+        message: Jason.encode!(update.content["message"]),
+      },
+      reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
+      comments_count: Operately.Updates.count_comments(update.id, :update)
     }
   end
 
