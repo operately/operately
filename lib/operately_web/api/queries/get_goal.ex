@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     query
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
-    |> Repo.one()
+    |> Repo.one(with_deleted: true)
     |> load_last_check_in(inputs[:include_last_check_in])
     |> load_permissions(person, inputs[:include_permissions])
   end
