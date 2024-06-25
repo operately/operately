@@ -42,6 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> Project.scope_goal(inputs[:goal_id])
     |> apply_role_filter(person, inputs)
     |> include_requested(include_filters)
+    |> Project.order_by_name()
     |> Repo.all(with_deleted: inputs[:include_archived] == true)
     |> Project.after_load_hooks()
   end

@@ -120,6 +120,12 @@ defmodule Operately.Projects.Project do
     from p in query, where: p.goal_id == ^goal_id
   end
 
+  # Queries
+
+  def order_by_name(query) do
+    from p in query, order_by: [asc: p.name]
+  end
+
   # After load hooks
 
   def after_load_hooks(projects) when is_list(projects) do
