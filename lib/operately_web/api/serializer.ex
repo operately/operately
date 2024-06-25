@@ -101,6 +101,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
     %{
       id: data.id,
       name: data.name,
+      description: data.description && Jason.encode!(data.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(data.updated_at),
       closed_by: OperatelyWeb.Api.Serializer.serialize(data.closed_by),
