@@ -43,10 +43,6 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :wallaby, screenshot_on_failure: true
-
-config :mix_test_watch, extra_extensions: [".feature"]
-
 config :operately, :start_query_counter, true
 config :operately, :restrict_entry, false
 
@@ -77,4 +73,6 @@ config :ex_aws,
     debug_requests: true
   ]
 
+config :wallaby, screenshot_on_failure: true
 config :wallaby, otp_app: :operately
+config :wallaby, hackney_options: [timeout: 3_000]
