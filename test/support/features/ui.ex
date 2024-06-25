@@ -233,7 +233,9 @@ defmodule Operately.Support.Features.UI do
 
   def refute_text(state, text) do
     execute(state, fn session ->
-      session |> Browser.refute_has(Query.text(text))
+      visible_text = session |> Browser.text()
+      refute String.contains?(visible_text, text)
+      session
     end)
   end
 
