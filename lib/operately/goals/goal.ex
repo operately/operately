@@ -32,6 +32,8 @@ defmodule Operately.Goals.Goal do
     field :my_role, :string, virtual: true
     field :last_check_in, :any, virtual: true
 
+    field :permissions, :any, virtual: true
+
     timestamps()
     soft_delete()
   end
@@ -118,7 +120,9 @@ defmodule Operately.Goals.Goal do
     [goal] |> preload_last_check_in() |> hd()
   end
 
-  def preload_permissions(_goal, _person) do
-    raise "Not implemented preload_permissions"
+  def preload_permissions(goal, person) do
+    persmissions = Operately.Goals.Permissions.calculate(goal, person)
+
+    Map.put(goal, :permissions, persmissions)
   end
 end

@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
   import Operately.GoalsFixtures
   import Operately.UpdatesFixtures
+  import Operately.ProjectsFixtures
   import OperatelyWeb.Api.Serializer
 
   describe "security" do
@@ -90,6 +91,83 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_parent_goal: true})
       assert res.goal.parent_goal == serialize(parent_goal, level: :essential)
+    end
+
+    test "include_permissions", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.permissions == nil
+
+      permissions = Operately.Goals.Permissions.calculate(goal, ctx.person)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_permissions: true})
+      assert res.goal.permissions == serialize(permissions, level: :full)
+    end
+
+    test "include_projects", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.projects == nil
+
+      # requested, but the goal has no projects
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_projects: true})
+      assert res.goal.projects == []
+
+      project1 = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
+      project2 = project_fixture(company_id: ctx.company.id, name: "Project 2", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
+
+      Operately.Operations.ProjectGoalConnection.run(ctx.person, project1, goal)
+      Operately.Operations.ProjectGoalConnection.run(ctx.person, project2, goal)
+
+      project1 = Operately.Repo.preload(project1, [:champion, :reviewer])
+      project2 = Operately.Repo.preload(project2, [:champion, :reviewer])
+
+      # requested, but the goal has no projects
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_projects: true})
+      assert length(res.goal.projects) == 2
+      assert Enum.find(res.goal.projects, fn p -> p.id == project1.id end) == serialize(project1, level: :full)
+      assert Enum.find(res.goal.projects, fn p -> p.id == project2.id end) == serialize(project2, level: :full)
+    end
+
+    test "include_reviewer", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.reviewer == nil
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_reviewer: true})
+      assert res.goal.reviewer == serialize(ctx.person, level: :essential)
+    end
+
+    test "include_space", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.space == nil
+
+      space = Operately.Groups.get_group!(ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_space: true})
+      assert res.goal.space == serialize(space, level: :essential)
+    end
+
+    test "include_targets", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      assert res.goal.targets == nil
+
+      goal = Operately.Repo.preload(goal, :targets)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_targets: true})
+      assert res.goal.targets == serialize(goal.targets, level: :essential)
     end
   end
 end 

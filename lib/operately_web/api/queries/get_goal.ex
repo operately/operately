@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_projects, :boolean
     field :include_reviewer, :boolean
     field :include_space, :boolean
-    field :include_targets, :booean
+    field :include_targets, :boolean
   end
 
   outputs do

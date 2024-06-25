@@ -116,9 +116,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       space: OperatelyWeb.Api.Serializer.serialize(data.group),
       champion: OperatelyWeb.Api.Serializer.serialize(data.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(data.reviewer),
-      projects: OperatelyWeb.Api.Serializer.serialize(data.projects),
+      projects: OperatelyWeb.Api.Serializer.serialize(data.projects, level: :full),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(data.last_check_in, level: :full),
       targets: OperatelyWeb.Api.Serializer.serialize(data.targets),
+      permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions, level: :full),
     }
   end
 end
@@ -240,6 +241,18 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_pause: permissions.can_pause,
       can_check_in: permissions.can_check_in,
       can_acknowledge_check_in: permissions.can_acknowledge_check_in,
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Permissions do
+  def serialize(permissions, level: :full) do
+    %{
+      can_edit: permissions.can_edit,
+      can_check_in: permissions.can_check_in,
+      can_acknowledge_check_in: permissions.can_acknowledge_check_in,
+      can_close: permissions.can_close,
+      can_archive: permissions.can_archive,
     }
   end
 end
