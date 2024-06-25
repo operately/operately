@@ -25,7 +25,7 @@ interface LoaderResult {
 
 export const loader = async function ({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }),
+    goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }).then((data) => data.goal!),
     activities: await Activities.getActivities({
       scopeType: "goal",
       scopeId: params.goalId,

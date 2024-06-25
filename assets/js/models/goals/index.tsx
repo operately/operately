@@ -1,8 +1,7 @@
 import * as api from "@/api";
 
 export type Goal = api.Goal;
-
-export type { Target } from "@/gql/generated";
+export type Target = api.Target;
 
 export { getGoal, getGoals } from "@/api";
 
@@ -19,7 +18,7 @@ export { useReopenGoalMutation } from "./useReopenGoalMutation";
 export { groupBySpace } from "./groupBySpace";
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 
-export function targetProgressPercentage(target: Required<api.Target>): number {
+export function targetProgressPercentage(target: Target): number {
   const from = target.from!;
   const to = target.to!;
   const value = target.value!;

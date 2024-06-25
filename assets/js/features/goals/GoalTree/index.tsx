@@ -355,7 +355,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
     <Popover.Root>
       <Popover.Trigger className="cursor-pointer pt-0.5 flex items-center gap-1">
         <Icons.IconCalendar size={14} />
-        <DaysAgo date={goal.lastCheckIn!.insertedAt} className="font-medium" />
+        <DaysAgo date={goal.lastCheckIn!.insertedAt!} className="font-medium" />
       </Popover.Trigger>
 
       <Popover.Content
@@ -381,7 +381,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
             <Avatar person={goal.lastCheckIn!.author!} size={16} /> {goal.lastCheckIn!.author!.fullName} on{" "}
-            <FormattedTime time={goal.lastCheckIn!.insertedAt} format="short-date" />
+            <FormattedTime time={goal.lastCheckIn!.insertedAt!} format="short-date" />
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">

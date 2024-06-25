@@ -950,12 +950,11 @@ export interface GetGoalInput {
   includeClosedBy?: boolean | null;
   includeLastCheckIn?: boolean | null;
   includeParentGoal?: boolean | null;
-  includeParentGoal?: boolean | null;
   includePermissions?: boolean | null;
   includeProjects?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
-  includeTargets?: Booean | null;
+  includeTargets?: boolean | null;
 }
 
 export interface GetGoalResult {

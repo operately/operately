@@ -12,7 +12,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_closed_by, :boolean
     field :include_last_check_in, :boolean
     field :include_parent_goal, :boolean
-    field :include_parent_goal, :boolean
     field :include_permissions, :boolean
     field :include_projects, :boolean
     field :include_reviewer, :boolean

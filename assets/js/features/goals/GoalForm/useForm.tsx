@@ -179,14 +179,14 @@ type UpdateTarget = (id: string, field: string, value: any) => void;
 function useTargets(config: FormConfig): [TargetList, AddTarget, RemoveTarget, UpdateTarget] {
   const [list, { add, remove, update }] = useListState<Target>((): Target[] => {
     if (config.mode === "edit") {
-      return (config.goal?.targets! || [])
+      return (config.goal?.targets || [])
         .map((t) => t!)
         .map((t) => ({
-          id: t.id,
-          name: t.name,
-          from: t.from.toString(),
-          to: t.to.toString(),
-          unit: t.unit,
+          id: t.id!,
+          name: t.name!,
+          from: t.from!.toString(),
+          to: t.to!.toString(),
+          unit: t.unit!,
         }));
     } else {
       return [newEmptyTarget(), newEmptyTarget(), newEmptyTarget()];

@@ -23,7 +23,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }),
+    goal: await Goals.getGoal({ id: params.goalId, includeParentGoal: true }).then((data) => data.goal!),
   };
 }
 

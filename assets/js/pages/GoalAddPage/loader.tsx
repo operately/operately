@@ -41,7 +41,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   }
 
   if (parentGoalId) {
-    loadedData.parentGoal = await Goals.getGoal({ id: parentGoalId });
+    loadedData.parentGoal = await Goals.getGoal({ id: parentGoalId }).then((data) => data.goal!);
   }
 
   loadedData.goals = await Goals.getGoals({
