@@ -29,7 +29,7 @@ defmodule Operately.Operations.GroupCreation do
       Operately.Access.Binding.changeset(%{
         access_group_id: changes.members_access_group.id,
         access_context_id: changes.context.id,
-        access_level: 10,
+        access_level: 40,
       })
     end)
   end
