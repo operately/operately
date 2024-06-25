@@ -15,12 +15,12 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  const goalPromise = Goals.getGoal({ id: params.goalId, includeTargets: true }).then((data) => data.goal!);
+  const checkInPromise = GoalCheckIns.getCheckIn(params.id, {});
+
   return {
-    goal: await Goals.getGoal({
-      id: params.goalId,
-      includeTargets: true,
-    }),
-    checkIn: await GoalCheckIns.getCheckIn(params.id, {}),
+    goal: await goalPromise,
+    checkIn: await checkInPromise,
   };
 }
 

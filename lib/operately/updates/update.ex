@@ -5,6 +5,7 @@ defmodule Operately.Updates.Update do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "updates" do
+    has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :update], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment
     belongs_to :author, Operately.People.Person
 

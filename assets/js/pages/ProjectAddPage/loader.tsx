@@ -23,7 +23,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const spaceID = params.id;
   const searchParams = new URL(request.url).searchParams;
   const goalID = searchParams.get("goalId") || undefined;
-  const goal = goalID ? await Goals.getGoal({ id: goalID }) : undefined;
+  const goal = goalID ? await Goals.getGoal({ id: goalID }).then((data) => data.goal!) : undefined;
 
   const company = await Companies.getCompany();
   const goals = await Goals.getGoals({

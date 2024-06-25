@@ -12,7 +12,13 @@ export async function loader({ params }): Promise<LoaderResult> {
   return {
     spaceID: params.id,
     company: await Companies.getCompany(),
-    goal: await Goals.getGoal({ id: params.goalId, includeTargets: true }),
+    goal: await Goals.getGoal({
+      id: params.goalId,
+      includeTargets: true,
+      includeChampion: true,
+      includeReviewer: true,
+      includeSpace: true,
+    }).then((data) => data.goal!),
   };
 }
 

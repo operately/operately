@@ -19,7 +19,10 @@ export async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal({
       id: params.goalId,
       includeTargets: true,
-    }),
+      includeSpace: true,
+      includeChampion: true,
+      includeReviewer: true,
+    }).then((data) => data.goal!),
   };
 }
 

@@ -15,7 +15,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({ id: params.goalId }),
+    goal: await Goals.getGoal({ id: params.goalId }).then((data) => data.goal!),
   };
 }
 

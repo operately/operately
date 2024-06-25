@@ -32,6 +32,8 @@ defmodule Operately.Goals.Goal do
     field :my_role, :string, virtual: true
     field :last_check_in, :any, virtual: true
 
+    field :permissions, :any, virtual: true
+
     timestamps()
     soft_delete()
   end
@@ -104,7 +106,7 @@ defmodule Operately.Goals.Goal do
       on: u.updatable_id == c.updatable_id 
         and u.updatable_type == c.updatable_type 
         and u.inserted_at == c.max_inserted_at,
-      preload: [:author]
+      preload: [:author, [reactions: :person]]
 
     updates = Operately.Repo.all(query)
 
@@ -112,5 +114,15 @@ defmodule Operately.Goals.Goal do
       last_check_in = Enum.find(updates, fn u -> u.updatable_id == goal.id end)
       Map.put(goal, :last_check_in, last_check_in)
     end)
+  end
+
+  def preload_last_check_in(goal = %__MODULE__{}) do
+    [goal] |> preload_last_check_in() |> hd()
+  end
+
+  def preload_permissions(goal, person) do
+    persmissions = Operately.Goals.Permissions.calculate(goal, person)
+
+    Map.put(goal, :permissions, persmissions)
   end
 end

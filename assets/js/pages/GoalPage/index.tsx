@@ -17,11 +17,13 @@ export async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({
       id: params.id,
+      includeSpace: true,
       includeTargets: true,
       includeProjects: true,
       includeLastCheckIn: true,
       includeParentGoal: true,
-    }),
+      includePermissions: true,
+    }).then((data) => data.goal!),
   };
 }
 

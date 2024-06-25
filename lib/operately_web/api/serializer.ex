@@ -72,6 +72,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Timeframe do
   end
 end
 
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Reaction do
+  def serialize(reaction, level: :essential) do
+    %{
+      id: reaction.id,
+      emoji: reaction.emoji,
+      person: OperatelyWeb.Api.Serializer.serialize(reaction.person),
+    }
+  end
+end
+
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
   def serialize(update = %{type: :goal_check_in}, level: :full) do
     %{
@@ -79,8 +89,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(update.author),
       content: %{
-        message: update.content["message"],
-      }
+        message: Jason.encode!(update.content["message"]),
+      },
+      reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
+      comments_count: Operately.Updates.count_comments(update.id, :update)
     }
   end
 
@@ -101,8 +113,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
     %{
       id: data.id,
       name: data.name,
+      description: data.description && Jason.encode!(data.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(data.updated_at),
+      closed_by: OperatelyWeb.Api.Serializer.serialize(data.closed_by),
+      closed_at: OperatelyWeb.Api.Serializer.serialize(data.closed_at),
 
       is_archived: data.deleted_at != nil,
       is_closed: data.closed_at != nil,
@@ -115,9 +130,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       space: OperatelyWeb.Api.Serializer.serialize(data.group),
       champion: OperatelyWeb.Api.Serializer.serialize(data.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(data.reviewer),
-      projects: OperatelyWeb.Api.Serializer.serialize(data.projects),
+      projects: OperatelyWeb.Api.Serializer.serialize(data.projects, level: :full),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(data.last_check_in, level: :full),
       targets: OperatelyWeb.Api.Serializer.serialize(data.targets),
+      permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions, level: :full),
     }
   end
 end
@@ -239,6 +255,18 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_pause: permissions.can_pause,
       can_check_in: permissions.can_check_in,
       can_acknowledge_check_in: permissions.can_acknowledge_check_in,
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Permissions do
+  def serialize(permissions, level: :full) do
+    %{
+      can_edit: permissions.can_edit,
+      can_check_in: permissions.can_check_in,
+      can_acknowledge_check_in: permissions.can_acknowledge_check_in,
+      can_close: permissions.can_close,
+      can_archive: permissions.can_archive,
     }
   end
 end

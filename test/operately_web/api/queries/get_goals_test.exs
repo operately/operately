@@ -24,8 +24,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       update3 = update_fixture(%{type: :goal_check_in, updatable_id: goal2.id, updatable_type: :goal, author_id: ctx.person.id})
       _update4 = update_fixture(%{type: :goal_check_in, updatable_id: goal2.id, updatable_type: :goal, author_id: ctx.person.id})
 
-      update1 = Operately.Repo.preload(update1, :author)
-      update3 = Operately.Repo.preload(update3, :author)
+      update1 = Operately.Repo.preload(update1, [:author, [reactions: :author]])
+      update3 = Operately.Repo.preload(update3, [:author, [reactions: :author]])
 
       assert {200, res} = query(ctx.conn, :get_goals, %{include_last_check_in: true})
       assert length(res.goals) == 2

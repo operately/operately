@@ -945,11 +945,20 @@ export interface GetDiscussionsResult {
 
 
 export interface GetGoalInput {
-
+  id?: string | null;
+  includeChampion?: boolean | null;
+  includeClosedBy?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeParentGoal?: boolean | null;
+  includePermissions?: boolean | null;
+  includeProjects?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeSpace?: boolean | null;
+  includeTargets?: boolean | null;
 }
 
 export interface GetGoalResult {
-
+  goal?: Goal | null;
 }
 
 
