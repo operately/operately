@@ -20,13 +20,27 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
+    {:ok, goal} = Operately.Goals.create_goal(champion, %{
+      company_id: company.id,
+      space_id: group.id,
+      name: "Test Goal",
+      champion_id: champion.id,
+      reviewer_id: reviewer.id,
+      timeframe: %{
+        type: "year",
+        start_date: ~D[2021-01-01],
+        end_date: ~D[2021-12-31]
+      }
+    })
+
     ctx = Map.merge(ctx, %{
       company: company,
       champion: champion,
       reviewer: reviewer,
       group: group,
       non_contributor: non_contributor,
-      project_manager: project_manager
+      project_manager: project_manager,
+      goal: goal
     })
 
     UI.login_based_on_tag(ctx)
@@ -44,21 +58,18 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.fill(testid: "project-name-input", with: fields.name)
     |> UI.select_person_in(id: "Champion", name: fields.champion.full_name)
     |> UI.select_person_in(id: "Reviewer", name: fields.reviewer.full_name)
-    |> then(fn ctx ->
-      if fields[:add_creator_as_contributor] do
-        ctx
-        |> UI.click(testid: "yes-contributor")
-        |> UI.fill(testid: "creator-responsibility-input", with: "Responsible for managing the project")
-      else
-        ctx
-      end
+    |> run_if(fields[:goal], fn ctx ->
+      ctx
+      |> UI.click(testid: "goal-selector")
+      |> UI.click(testid: UI.str_to_testid("goal-" <> fields.goal.name))
     end)
-    |> then(fn ctx ->
-      if fields[:private] do
-        ctx |> UI.click(testid: "invite-only")
-      else
-        ctx
-      end
+    |> run_if(fields[:add_creator_as_contributor], fn ctx ->
+      ctx
+      |> UI.click(testid: "yes-contributor")
+      |> UI.fill(testid: "creator-responsibility-input", with: "Responsible for managing the project")
+    end)
+    |> run_if(fields[:private], fn ctx ->
+      ctx |> UI.click(testid: "invite-only")
     end)
     |> UI.click(testid: "save")
     |> UI.assert_text(fields.name)
@@ -116,6 +127,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       {fields.champion, "champion"},
       {fields.reviewer, "reviewer"}
     ] |> Enum.filter(& elem(&1, 0).id != fields.creator.id)
+  end
+
+  defp run_if(ctx, condition, fun) do
+    if condition, do: fun.(ctx), else: ctx
   end
 
 end

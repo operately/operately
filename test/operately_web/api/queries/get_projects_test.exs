@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
 
     test "include_space", ctx do
       space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Space 1")
-      project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: space.id)
+      project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: space.id)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{})
       assert res.projects |> hd() |> Map.get(:space) == nil
