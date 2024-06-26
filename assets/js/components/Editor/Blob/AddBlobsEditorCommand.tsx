@@ -11,18 +11,18 @@ export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | Fi
 }
 
 async function handleUpload(file: File, view: any, pos: any, uploader: FileUploader) {
-  const id = generateUniqueId();
+  const tempId = generateUniqueId();
 
   // Step 1: Add a placeholder node before uploading the file.
-  createNode(id, file, view, pos);
+  createNode(tempId, file, view, pos);
 
   // Step 2: Start the upload process and hook up progress updates.
-  const path = await uploader.upload(file, (progress) => {
-    updateNodeAttrs(id, { progress: progress }, view);
+  const { id, url } = await uploader.upload(file, (progress) => {
+    updateNodeAttrs(tempId, { progress: progress }, view);
   });
 
   // Step 3: Update the node with the final path.
-  updateNodeAttrs(id, { src: path, status: "uploaded" }, view);
+  updateNodeAttrs(tempId, { id: id, src: url, status: "uploaded" }, view);
 }
 
 function generateUniqueId() {
