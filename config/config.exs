@@ -78,21 +78,6 @@ config :operately, Oban,
     mailer: 10
   ]
 
-config :ex_aws,
-  access_key_id: "test",
-  secret_access_key: "test",
-  access_control_allow_origin: "*",
-  access_control_allow_headers: "Content-Type",
-  access_control_allow_methods: "GET, POST, PUT, DELETE",
-  expose_headers: "",
-  s3: [
-    scheme: "http://",
-    host: "s3mock",
-    port: 9090,
-    region: "local",
-    debug_requests: true
-  ]
-
 config :operately, OperatelyEmail.Mailer,
   adapter: Bamboo.LocalAdapter
 

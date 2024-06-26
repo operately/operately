@@ -16,7 +16,7 @@ export async function uploadFile(file: File, progressCallback: ProgressCallback)
     const form = new FormData();
     form.append("file", file);
 
-    await client.post(blob.signedUploadUrl!, form, config);
+    await client.put(blob.signedUploadUrl!, form, config);
     return { id: blob.id!, url: blob.url! };
   } catch (error) {
     console.error("Error uploading file:", error);
