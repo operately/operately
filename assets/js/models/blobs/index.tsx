@@ -11,12 +11,9 @@ export async function uploadFile(file: File, progressCallback: ProgressCallback)
     const blob = await createBlob({ filename: file.name });
 
     const client = axios.create();
-    const config = axiosConfig(progressCallback);
+    const config = axiosConfig(file, progressCallback);
 
-    const form = new FormData();
-    form.append("file", file);
-
-    await client.put(blob.signedUploadUrl!, form, config);
+    await client.put(blob.signedUploadUrl!, file, config);
     return { id: blob.id!, url: blob.url! };
   } catch (error) {
     console.error("Error uploading file:", error);
@@ -24,10 +21,10 @@ export async function uploadFile(file: File, progressCallback: ProgressCallback)
   }
 }
 
-function axiosConfig(progressCallback: ProgressCallback): AxiosRequestConfig {
+function axiosConfig(file: File, progressCallback: ProgressCallback): AxiosRequestConfig {
   return {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": file.type,
       "x-csrf-token": csrftoken(),
     },
     onUploadProgress: (progressEvent: any) => {
