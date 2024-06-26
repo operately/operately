@@ -21,9 +21,21 @@ export function BlobView({ node, deleteNode, updateAttributes, editor }) {
     case "image/jpeg":
     case "image/gif":
       return <ImageView node={node} deleteNode={deleteNode} updateAttributes={updateAttributes} view={editor.view} />;
+    case "video/mp4":
+    case "video/quicktime":
+    case "video/ogg":
+      return <VideoView node={node} deleteNode={deleteNode} view={editor.view} />;
     default:
       return <FileView node={node} deleteNode={deleteNode} view={editor.view} />;
   }
+}
+
+function VideoView({ node, deleteNode, view }) {
+  return (
+    <NodeViewWrapper className="blob-container relative group flex justify-center">
+      <video src={node.attrs.src} controls data-drag-handle width="320" height="240"></video>
+    </NodeViewWrapper>
+  );
 }
 
 function ImageView({ node, deleteNode, updateAttributes, view }) {
@@ -64,7 +76,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
   return (
     <NodeViewWrapper className="blob-container blob-image relative group">
-      {imgNode}
+      <div className="flex items-center justify-center">{imgNode}</div>
 
       <div className="footer flex items-center gap-1 justify-center">
         <NodeViewContent
