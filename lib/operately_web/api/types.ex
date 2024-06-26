@@ -663,16 +663,6 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone, :milestone
   end
 
-  object :blob do
-    field :id, :string
-    field :author, :person
-    field :status, :string
-    field :filename, :string
-    field :url, :string
-    field :signed_upload_url, :string
-    field :storage_type, :string
-  end
-
   union :activity_resource_union, types: [
     :project,
     :update,

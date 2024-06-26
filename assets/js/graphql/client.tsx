@@ -78,8 +78,7 @@ let client: any;
 if (typeof window !== "undefined") {
   try {
     client = setupClient();
-  } 
-  catch (e) {
+  } catch (e) {
     console.error("Failed to setup Apollo client", e);
     client = null;
   }

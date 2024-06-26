@@ -460,16 +460,6 @@ export interface Assignments {
   assignments?: Assignment[] | null;
 }
 
-export interface Blob {
-  id?: string | null;
-  author?: Person | null;
-  status?: string | null;
-  filename?: string | null;
-  url?: string | null;
-  signedUploadUrl?: string | null;
-  storageType?: string | null;
-}
-
 export interface Comment {
   id?: string | null;
   insertedAt?: string | null;
@@ -1337,11 +1327,14 @@ export interface ConnectGoalToProjectResult {
 
 
 export interface CreateBlobInput {
-
+  filename?: string | null;
 }
 
 export interface CreateBlobResult {
-
+  id?: string | null;
+  url?: string | null;
+  signedUploadUrl?: string | null;
+  storageType?: string | null;
 }
 
 

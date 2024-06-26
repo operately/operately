@@ -1,34 +1,19 @@
 import axios from "axios";
 import csrftoken from "@/utils/csrf_token";
-import { CreateBlob } from "@/graphql/Blobs";
+import * as Blobs from "@/models/blobs";
 
 type ProgressCallback = (number: number) => any;
 
 export interface FileUploader {
-  upload: (file: File, progressCallback: ProgressCallback) => Promise<{ id: string, url: string }>;
+  upload: (file: File, progressCallback: ProgressCallback) => Promise<{ id: string; url: string }>;
 }
 
 export class MultipartFileUploader implements FileUploader {
-  async upload(file: File, progressCallback: ProgressCallback): Promise<{ id: string, url: string }> {
-    try {
-      const blob = await CreateBlob({ filename: file.name });
+  async upload(file: File, progressCallback: ProgressCallback): Promise<{ id: string; url: string }> {
+    const blob = await Blobs.createBlob({ filename: file.name });
+    await this.uploadFile(file, blob.signedUploadUrl!, progressCallback);
 
-      if (blob.errors) {
-        throw new Error(`GraphQL Error: ${blob.errors.map((error: any) => error.message).join(", ")}`);
-      }
-
-      const signedUploadUrl = blob.data.createBlob.signedUploadUrl;
-
-      await this.uploadFile(file, signedUploadUrl, progressCallback);
-
-      return {
-        id: blob.data.createBlob.id,
-        url: blob.data.createBlob.url
-      };
-    } catch (error) {
-      console.error("Error during file upload:", error);
-      throw new Error(`File upload failed: ${error.message}`);
-    }
+    return { id: blob.id!, url: blob.url! };
   }
 
   private async uploadFile(file: File, signedUploadUrl: string, progressCallback: ProgressCallback): Promise<void> {

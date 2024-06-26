@@ -77,21 +77,6 @@ export type Assignments = {
   assignments?: Maybe<Array<Maybe<Assignment>>>;
 };
 
-export type Blob = {
-  __typename?: 'Blob';
-  author: Person;
-  filename: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  signedUploadUrl: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  storageType?: Maybe<Scalars['String']['output']>;
-  url: Scalars['String']['output'];
-};
-
-export type BlobInput = {
-  filename: Scalars['String']['input'];
-};
-
 export type ChangeGoalParentInput = {
   goalId: Scalars['String']['input'];
   parentGoalId?: InputMaybe<Scalars['String']['input']>;
@@ -580,7 +565,6 @@ export type RootMutationType = {
   closeGoal: Goal;
   closeProject: Project;
   connectGoalToProject: Project;
-  createBlob: Blob;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
   createGroup?: Maybe<Group>;
@@ -737,11 +721,6 @@ export type RootMutationTypeCloseProjectArgs = {
 export type RootMutationTypeConnectGoalToProjectArgs = {
   goalId: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeCreateBlobArgs = {
-  input: BlobInput;
 };
 
 
