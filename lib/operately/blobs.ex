@@ -38,7 +38,7 @@ defmodule Operately.Blobs do
     "#{host}/media/#{path}?token=#{token}"
   end
 
-  def get_singed_upload_url(%Blob{} = blob) do
+  def get_signed_upload_url(%Blob{} = blob) do
     path = "#{blob.company_id}-#{blob.id}"
 
     case Application.get_env(:operately, :storage_type) do

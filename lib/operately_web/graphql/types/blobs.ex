@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Graphql.Types.Blobs do
 
     field :signed_upload_url, non_null(:string) do
       resolve fn blob, _, _ ->
-        Operately.Blobs.get_singed_upload_url(blob)
+        Operately.Blobs.get_signed_upload_url(blob)
       end
     end
   end
