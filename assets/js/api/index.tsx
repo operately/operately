@@ -1334,7 +1334,6 @@ export interface CreateBlobResult {
   id?: string | null;
   url?: string | null;
   signedUploadUrl?: string | null;
-  storageType?: string | null;
 }
 
 

@@ -18,6 +18,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
       assert blob.id != nil
       assert blob.url == "/blobs/#{blob.id}"
       assert blob.signed_upload_url != nil
+
+      blob = Operately.Blobs.get_blob!(blob.id)
       assert blob.storage_type != nil
     end
   end

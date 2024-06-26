@@ -1,23 +1,23 @@
-import { FileUploader, MultipartFileUploader } from "./FileUploader";
+import * as Blobs from "@/models/blobs";
 
 export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | FileList; pos: number; view: any }) {
   if (!view.editable) return false;
 
   Array.from(files).forEach(async (file) => {
-    handleUpload(file, view, pos, new MultipartFileUploader());
+    handleUpload(file, view, pos);
   });
 
   return true;
 }
 
-async function handleUpload(file: File, view: any, pos: any, uploader: FileUploader) {
+async function handleUpload(file: File, view: any, pos: any) {
   const tempId = generateUniqueId();
 
   // Step 1: Add a placeholder node before uploading the file.
   createNode(tempId, file, view, pos);
 
   // Step 2: Start the upload process and hook up progress updates.
-  const { id, url } = await uploader.upload(file, (progress) => {
+  const { id, url } = await Blobs.uploadFile(file, (progress) => {
     updateNodeAttrs(tempId, { progress: progress }, view);
   });
 

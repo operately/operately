@@ -19,7 +19,16 @@ defmodule Operately.Blobs.Blob do
   @doc false
   def changeset(blob, attrs) do
     blob
-    |> cast(attrs, [:filename, :author_id, :company_id, :status, :storage_type])
+    |> cast(attrs, [:filename, :author_id, :company_id, :status])
+    |> set_storage_type()
     |> validate_required([:filename, :author_id, :company_id, :status, :storage_type])
+  end
+
+  def set_storage_type(blob) do
+    case Application.get_env(:operately, :storage_type) do
+      "s3" -> put_change(blob, :storage_type, :s3)
+      "local" -> put_change(blob, :storage_type, :local)
+      e -> raise "Storage type #{inspect(e)} not supported"
+    end
   end
 end
