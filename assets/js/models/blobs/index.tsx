@@ -7,22 +7,22 @@ type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  try {
-    const blob = await createBlob({ filename: file.name });
+  const blob = await createBlob({ filename: file.name });
+  const url = blob.signedUploadUrl!;
 
-    const client = axios.create();
-    const config = axiosConfig(file, progressCallback);
-
-    await client.put(blob.signedUploadUrl!, file, config);
-    return { id: blob.id!, url: blob.url! };
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    throw new Error(`Error uploading file: ${error.message}`);
+  if (blob.uploadStrategy === "direct") {
+    await directUpload(file, url, progressCallback);
+  } else {
+    await multipartUpload(file, url, progressCallback);
   }
+
+  return { id: blob.id!, url: blob.url! };
 }
 
-function axiosConfig(file: File, progressCallback: ProgressCallback): AxiosRequestConfig {
-  return {
+async function directUpload(file: File, url: string, progressCallback: ProgressCallback) {
+  const client = axios.create();
+
+  const config = {
     headers: {
       "Content-Type": file.type,
       "x-csrf-token": csrftoken(),
@@ -31,4 +31,25 @@ function axiosConfig(file: File, progressCallback: ProgressCallback): AxiosReque
       progressCallback(Math.round((progressEvent.loaded * 100) / progressEvent.total));
     },
   };
+
+  await client.put(url, file, config);
+}
+
+async function multipartUpload(file: File, url: string, progressCallback: ProgressCallback) {
+  const client = axios.create();
+
+  const config: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "x-csrf-token": csrftoken(),
+    },
+    onUploadProgress: (progressEvent: any) => {
+      progressCallback(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+    },
+  };
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  await client.put(url, formData, config);
 }

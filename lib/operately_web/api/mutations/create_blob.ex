@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
     field :id, :string
     field :url, :string
     field :signed_upload_url, :string
+    field :upload_strategy, :string # "direct", "multipart"
   end
 
   def call(conn, inputs) do
@@ -26,8 +27,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
 
     {:ok, %{
       id: blob.id,
-      url: "/blobs/#{blob.id}",
+      url: Operately.Blobs.Blob.url(blob),
       signed_upload_url: url,
+      upload_strategy: Operately.Blobs.Blob.upload_strategy(blob),
     }}
   end
 end
