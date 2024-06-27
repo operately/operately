@@ -6,6 +6,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   import Operately.PeopleFixtures
 
   alias Operately.Repo
+  alias Operately.Access
   alias Operately.People
   alias Operately.People.Person
   alias Operately.Invitations
@@ -40,6 +41,14 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert person.company_role == :member
     assert person.full_name == "John Doe"
     assert person.title == "Developer"
+  end
+
+  test "CompanyMemberAdding operation creates members's access group", ctx do
+    Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+
+    person = People.get_person_by_email(ctx.company, @email)
+
+    assert nil != Access.get_group!(person_id: person.id)
   end
 
   test "CompanyMemberAdding operation creates invitation for person", ctx do
