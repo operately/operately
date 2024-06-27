@@ -41,7 +41,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
     cond do
       person == nil -> {:error, "Not found"}
       person.account_id != nil -> {:error, "Not found"}
-      true -> 
+      true ->
         Multi.new()
         |> Multi.insert(:account, build_account(attrs))
         |> Multi.update(:person, fn %{account: account} -> Person.changeset(person, %{
@@ -57,7 +57,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
     if Operately.Companies.is_email_allowed?(company, attrs.email) do
       Multi.new()
       |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: random_password()}))
-      |> Multi.insert(:person, fn %{account: account} -> build_person_for_account(account, attrs) end)
+      |> People.insert_person(fn %{account: account} -> build_person_for_account(account, attrs) end)
       |> Repo.transaction()
       |> Repo.extract_result(:account)
     else
