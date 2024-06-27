@@ -12,6 +12,8 @@ defmodule Operately.People.Person do
     belongs_to(:manager, Operately.People.Person)
     has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
 
+    has_one :access_group, Operately.Access.Group, foreign_key: :person_id
+
     field :full_name, :string
     field :title, :string
     field :avatar_url, :string
