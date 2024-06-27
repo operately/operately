@@ -69,6 +69,7 @@ defmodule Operately.Support.Features.DiscussionSteps do
     |> UI.click(testid: "toolbar-button-add-an-image-or-file")
     |> UI.assert_has(Wallaby.Query.css("[data-test-upload-triggered=true]", visible: false))
     |> UI.upload_file(testid: "attachment-input-field", path: "/home/dev/app/README.md")
+    |> UI.sleep(1000)
   end
 
   step :assert_file_is_added, ctx do
@@ -76,7 +77,8 @@ defmodule Operately.Support.Features.DiscussionSteps do
   end
 
   step :submit_discussion, ctx do
-    ctx |> UI.click(testid: "post-discussion")
+    ctx 
+    |> UI.click(testid: "post-discussion")
   end
 
   step :assert_discussion_is_posted_with_attachment, ctx do
