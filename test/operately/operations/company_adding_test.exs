@@ -51,6 +51,15 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert nil != Groups.get_group(company.company_space_id)
   end
 
+
+  test "CompanyAdding operation creates admin's access group" do
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+
+    person = People.get_person_by_email(company, @email)
+
+    assert nil != Access.get_group!(person_id: person.id)
+  end
+
   test "CompanyAdding operation creates company and group access contexts" do
     {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
 

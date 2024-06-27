@@ -1,5 +1,6 @@
 defmodule Operately.People do
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Operately.Repo
 
   alias Operately.People.{Person, Account}
@@ -26,6 +27,19 @@ defmodule Operately.People do
   def get_account_by_email_and_password(email, password) when is_binary(email) and is_binary(password) do
     account = Repo.get_by(Operately.People.Account, email: email)
     if Operately.People.Account.valid_password?(account, password), do: account
+  end
+
+  def insert_person(multi, callback) when is_function(callback, 1) do
+    multi
+    |> Multi.insert(:person, fn changes -> callback.(changes) end)
+    |> insert_person_access_group()
+  end
+
+  defp insert_person_access_group(multi) do
+    multi
+    |> Multi.insert(:person_access_group, fn changes ->
+      Operately.Access.Group.changeset(%{person_id: changes.person.id})
+    end)
   end
 
   def create_person(attrs \\ %{}) do
@@ -236,7 +250,7 @@ defmodule Operately.People do
     )
 
     milestones = Repo.all(
-      from m in Milestone, 
+      from m in Milestone,
         where: m.project_id in ^(Enum.map(projects, & &1.id)),
         where: not is_nil(m.deadline_at),
         where: m.deadline_at > ^time_range_start,
@@ -252,14 +266,14 @@ defmodule Operately.People do
         where: p.next_update_scheduled_at < ^time_range_end
     )
 
-    assignments = [] 
+    assignments = []
       ++ Enum.map(milestones, fn milestone ->
         %{
           type: "milestone",
           due: milestone.deadline_at,
           resource: milestone
         }
-      end) 
+      end)
         ++ Enum.map(pending_status_updates, fn project_status_update ->
           %{
             type: "project_status_update",
