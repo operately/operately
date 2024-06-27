@@ -13,6 +13,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
     test "it creates a new blob record in the database", ctx do
       assert {200, blob} = mutation(ctx.conn, :create_blob, %{
         filename: "test.txt",
+        size: 1024,
+        content_type: "text/plain"
       })
 
       assert blob.id != nil

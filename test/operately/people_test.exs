@@ -36,7 +36,9 @@ defmodule Operately.PeopleTest do
     @valid_blob_attrs %{
       filename: "some_file.png",
       status: :uploaded,
-      storage_type: :s3
+      storage_type: :s3,
+      content_type: "image/png",
+      size: 1234
     }
 
     setup do
