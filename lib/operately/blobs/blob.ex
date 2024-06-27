@@ -9,9 +9,12 @@ defmodule Operately.Blobs.Blob do
     belongs_to :company, Operately.Companies.Company
     belongs_to :author, Operately.People.Person
 
-    field :filename, :string
     field :status, Ecto.Enum, values: [:pending, :uploaded, :deleted]
     field :storage_type, Ecto.Enum, values: [:s3, :local]
+
+    field :filename, :string
+    field :size, :integer, default: 0
+    field :content_type, :string
 
     timestamps()
   end
@@ -19,7 +22,28 @@ defmodule Operately.Blobs.Blob do
   @doc false
   def changeset(blob, attrs) do
     blob
-    |> cast(attrs, [:filename, :author_id, :company_id, :status, :storage_type])
-    |> validate_required([:filename, :author_id, :company_id, :status, :storage_type])
+    |> cast(attrs, [:filename, :author_id, :company_id, :status, :size, :content_type])
+    |> set_storage_type()
+    |> validate_required([:filename, :author_id, :company_id, :status, :storage_type, :size, :content_type])
+  end
+
+  defp set_storage_type(blob) do
+    case Application.get_env(:operately, :storage_type) do
+      "s3" -> put_change(blob, :storage_type, :s3)
+      "local" -> put_change(blob, :storage_type, :local)
+      e -> raise "Storage type #{inspect(e)} not supported"
+    end
+  end
+
+  def upload_strategy(blob) do
+    case blob.storage_type do
+      :s3 -> "direct"
+      :local -> "multipart"
+      e -> raise "Storage type #{inspect(e)} not supported"
+    end
+  end
+
+  def url(blob) do
+    "/blobs/#{blob.id}"
   end
 end

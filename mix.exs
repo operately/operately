@@ -55,6 +55,8 @@ defmodule Operately.MixProject do
       {:ueberauth, "~> 0.7"},
       {:ueberauth_google, "~> 0.10"},
       {:inflex, "~> 2.0.0"},
+      {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.0"},
 
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
@@ -69,8 +71,6 @@ defmodule Operately.MixProject do
       {:wallaby, "~> 0.30.0", runtime: false, only: :test},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.1", only: [:test]},
-      {:ex_aws, "~> 2.1"},
-      {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.15"},
       {:sweet_xml, "~> 0.7"}
     ]

@@ -13,7 +13,9 @@ defmodule Operately.BlobsFixtures do
       |> Enum.into(%{
         filename: "some filename",
         status: :pending,
-        storage_type: :local
+        storage_type: :local,
+        size: 1024,
+        content_type: "application/pdf",
       })
       |> Operately.Blobs.create_blob()
 

@@ -15,7 +15,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
     send_file(conn, 200, "/media/#{path}")
   end
 
-  post "*path" do
+  put "*path" do
     source = conn.body_params["file"].path
     destination = "/media/#{path}"
 
@@ -38,7 +38,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
 
     operation = case conn.method do
       "GET" -> "get"
-      "POST" -> "upload"
+      "PUT" -> "upload"
     end
 
     case Operately.Blobs.Tokens.validate(operation, path, token) do

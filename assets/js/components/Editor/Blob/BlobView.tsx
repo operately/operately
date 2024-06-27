@@ -21,9 +21,59 @@ export function BlobView({ node, deleteNode, updateAttributes, editor }) {
     case "image/jpeg":
     case "image/gif":
       return <ImageView node={node} deleteNode={deleteNode} updateAttributes={updateAttributes} view={editor.view} />;
+    case "video/mp4":
+    case "video/quicktime":
+    case "video/ogg":
+      return <VideoView node={node} deleteNode={deleteNode} view={editor.view} updateAttributes={updateAttributes} />;
     default:
       return <FileView node={node} deleteNode={deleteNode} view={editor.view} />;
   }
+}
+
+function VideoView({ node, deleteNode, view, updateAttributes }) {
+  const disableEnter = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      return;
+    }
+  };
+
+  const updateTitle = (e: React.FocusEvent<HTMLSpanElement>) => {
+    updateAttributes({
+      alt: e.target.innerText,
+      title: e.target.innerText,
+    });
+  };
+
+  return (
+    <NodeViewWrapper className="blob-container relative group flex-col justify-center">
+      <video src={node.attrs.src} controls data-drag-handle width="640" height="480" className="mb-2"></video>
+
+      <NodeViewContent
+        className="title outline-none flex items-center justify-center gap-1 font-medium w-full"
+        contentEditable={view.editable}
+        suppressContentEditableWarning={true}
+        onKeyDown={disableEnter}
+        onBlur={updateTitle}
+      >
+        {node.attrs.alt}
+      </NodeViewContent>
+
+      {view.editable && node.attrs.status === "uploading" && (
+        <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+          <div className="bg-content-accent rounded-xl text-content-accent font-medium w-32 h-5 overflow-hidden">
+            <div className="bg-accent-1 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
+          </div>
+        </div>
+      )}
+
+      {view.editable && (
+        <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
+          <Icons.IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
+        </div>
+      )}
+    </NodeViewWrapper>
+  );
 }
 
 function ImageView({ node, deleteNode, updateAttributes, view }) {
@@ -64,7 +114,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
   return (
     <NodeViewWrapper className="blob-container blob-image relative group">
-      {imgNode}
+      <div className="flex items-center justify-center">{imgNode}</div>
 
       <div className="footer flex items-center gap-1 justify-center">
         <NodeViewContent

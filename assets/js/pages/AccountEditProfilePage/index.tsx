@@ -7,16 +7,12 @@ import * as Pages from "@/components/Pages";
 
 import PeopleSearch from "@/components/PeopleSearch";
 
+import { FilledButton } from "@/components/Button";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { MultipartFileUploader } from "@/components/Editor/Blob/FileUploader";
 import { useGetMe } from "@/models/people";
-import { S3Upload } from "@/components/Editor/Blob/S3Upload/S3Upload";
-import { CreateBlob } from "@/graphql/Blobs";
 
 import classNames from "classnames";
 import moment from "moment-timezone";
-
-import { FilledButton } from "@/components/Button";
 import Avatar from "@/components/Avatar";
 
 export async function loader() {
@@ -73,7 +69,7 @@ function FileInput({ onChange }) {
           Upload Photo
         </FilledButton>
 
-        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" style={{display: "none"}} />
+        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" style={{ display: "none" }} />
       </div>
     </div>
   );
@@ -87,8 +83,7 @@ function ProfileForm({ me }) {
   const [manager, setManager] = useState(me.manager);
   const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
   const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ? me.avatarUrl : "");
-  const [blobId, setBlobId] = useState(me.avatarBlobId ? me.avatarBlobId : "");
-  const fileUploader = new MultipartFileUploader();
+  const [blobId] = useState(me.avatarBlobId ? me.avatarBlobId : "");
 
   const [loading, setLoading] = useState(false);
 
@@ -99,16 +94,6 @@ function ProfileForm({ me }) {
       return null;
     }
   });
-
-  async function S3FileUploader(file) {
-    try {
-      const response = await S3Upload(file);
-      setBlobId(response.id);
-      setAvatarUrl(response.url);
-    } catch (error) {
-      throw new Error(`File upload failed: ${error.message}`);
-    }
-  }
 
   const timezones = moment.tz.names().map((tz) => ({
     value: tz,
@@ -145,22 +130,6 @@ function ProfileForm({ me }) {
     navigateToAccount();
   };
 
-  const handleFileUpload = async (file) => {
-    const blob = await fileUploader.upload(file, () => {});
-    setBlobId(blob.id);
-    setAvatarUrl(blob.url);
-  };
-
-  async function uploadFile(file) {
-    const blob = await CreateBlob({ filename: file.name });
-
-    if (blob.data.createBlob.storageType === "local") {
-      await handleFileUpload(file);
-    } else {
-      await S3FileUploader(file);
-    }
-  }
-
   const isValid = name.length > 0 && title.length > 0;
 
   const handleRemoveAvatar = () => {
@@ -170,14 +139,9 @@ function ProfileForm({ me }) {
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
       <section className="flex flex-col w-full justify-center items-center text-center mt-4">
-        <Avatar person={{...me, avatarUrl: avatarUrl}} size="xxlarge" />
+        <Avatar person={{ ...me, avatarUrl: avatarUrl }} size="xxlarge" />
         <div className="mt-2 flex flex-col gap-1">
-          <FileInput
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              await uploadFile(file);
-            }}
-          />
+          <FileInput onChange={async () => {}} />
           <button className={dimmedClassName} type="button" onClick={handleRemoveAvatar}>
             Remove Avatar and use my initials
           </button>
@@ -251,10 +215,10 @@ function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus })
   );
 }
 
-function formatTimezone(timezone) {
+function formatTimezone(timezone: string) {
   if (!timezone) return "";
 
   const offset = moment.tz(timezone).format("Z");
-  const cities = timezone.split("/").slice(-1)[0].replace(/_/g, " ");
+  const cities = timezone.split("/")!.slice(-1)![0]!.replace(/_/g, " ");
   return `(UTC${offset}) ${cities}`;
 }
