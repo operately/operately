@@ -51,6 +51,14 @@ defmodule Operately.Access do
     Repo.get_by!(Group, attrs)
   end
 
+  def get_group(id) when is_binary(id) do
+    Repo.get(Group, id)
+  end
+
+  def get_group(attrs) when is_list(attrs) do
+    Repo.get_by(Group, attrs)
+  end
+
   def create_group(attrs \\ %{}) do
     %Group{}
     |> Group.changeset(attrs)
