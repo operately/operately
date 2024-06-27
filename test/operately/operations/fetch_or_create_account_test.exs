@@ -4,6 +4,7 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
   import Operately.CompaniesFixtures
 
   alias Operately.People
+  alias Operately.Access
 
   @email "john@allowed_email.com"
 
@@ -30,6 +31,14 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
     assert person.email == @email
     assert person.company_role == :member
     assert nil != People.get_account_by_email(@email)
+  end
+
+  test "FetchOrCreateAccountOperation creates person's access group", ctx do
+    Operately.People.FetchOrCreateAccountOperation.call(ctx.company, @attrs)
+
+    person = People.get_person_by_email(ctx.company, @email)
+
+    assert nil != Access.get_group!(person_id: person.id)
   end
 
   test "FetchOrCreateAccountOperation doesn't create account for non-trusted email domain", ctx do
