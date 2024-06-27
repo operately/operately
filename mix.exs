@@ -55,7 +55,8 @@ defmodule Operately.MixProject do
       {:ueberauth, "~> 0.7"},
       {:ueberauth_google, "~> 0.10"},
       {:inflex, "~> 2.0.0"},
-      {:aws_signature, "~> 0.3.2"},
+      {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.0"},
 
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},

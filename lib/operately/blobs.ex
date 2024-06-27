@@ -34,8 +34,7 @@ defmodule Operately.Blobs do
     path = "#{blob.company_id}-#{blob.id}"
 
     case Application.get_env(:operately, :storage_type) do
-      "s3" ->
-        {:ok, presigned_s3_url("GET", path)}
+      "s3" -> presigned_s3_url(:get, path, 3600)
 
       "local" ->
         host = OperatelyWeb.Endpoint.url()
@@ -50,10 +49,14 @@ defmodule Operately.Blobs do
 
   def get_signed_upload_url(%Blob{} = blob) do
     path = "#{blob.company_id}-#{blob.id}"
+    headers = [
+      {"Content-Type", blob.content_type},
+      {"Content-Length", Integer.to_string(blob.size)}
+    ]
 
     case Application.get_env(:operately, :storage_type) do
-      "s3" ->
-        {:ok, presigned_s3_url("PUT", path)}
+      "s3" -> presigned_s3_url(:put, path, 3600, headers)
+
       "local" ->
         host = OperatelyWeb.Endpoint.url()
         token = Operately.Blobs.Tokens.gen_upload_token(path)
@@ -64,29 +67,20 @@ defmodule Operately.Blobs do
     end
   end
 
-  defp presigned_s3_url(method, path, expires_in \\ 3600) when method in ["GET", "PUT"] do
+  defp presigned_s3_url(method, path, expires_in, headers \\ []) when method in [:get, :put] do
     host = System.get_env("OPERATELY_STORAGE_S3_HOST")
     scheme = System.get_env("OPERATELY_STORAGE_S3_SCHEME")
-    port = System.get_env("OPERATELY_STORAGE_S3_PORT", "443")
+    port = System.get_env("OPERATELY_STORAGE_S3_PORT")
     bucket = System.get_env("OPERATELY_STORAGE_S3_BUCKET")
     region = System.get_env("OPERATELY_STORAGE_S3_REGION")
     access_key_id = System.get_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID")
     secret_access_key = System.get_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY")
 
-    uri = "#{scheme}://#{host}:#{port}/#{bucket}/#{URI.encode(path)}"
+    port = if port == nil, do: "", else: ":#{port}"
+    url = "#{scheme}://#{host}#{port}/#{bucket}/#{path}"
+    time = NaiveDateTime.utc_now() |> NaiveDateTime.to_erl()
+    config = %{access_key_id: access_key_id, secret_access_key: secret_access_key, region: region}
 
-    :aws_signature.sign_v4_query_params(
-      access_key_id,
-      secret_access_key,
-      region,
-      "S3",
-      :calendar.universal_time(),
-      method,
-      uri,
-      ttl: expires_in,
-      uri_encode_path: false,
-      body_digest: "UNSIGNED-PAYLOAD"
-    )
-    |> IO.inspect()
+    ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, [], nil, headers)
   end
 end

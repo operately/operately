@@ -30,7 +30,7 @@ async function directUpload(file: File, url: string, progressCallback: ProgressC
   const config = {
     headers: {
       "Content-Type": file.type,
-      "x-csrf-token": csrftoken(),
+      "Content-Length": file.size,
     },
     onUploadProgress: (progressEvent: any) => {
       progressCallback(Math.round((progressEvent.loaded * 100) / progressEvent.total));
