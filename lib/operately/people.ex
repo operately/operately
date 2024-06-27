@@ -1,5 +1,6 @@
 defmodule Operately.People do
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Operately.Repo
 
   alias Operately.People.{Person, Account}
@@ -28,10 +29,28 @@ defmodule Operately.People do
     if Operately.People.Account.valid_password?(account, password), do: account
   end
 
+  def insert_person(multi, callback) when is_function(callback, 1) do
+    multi
+    |> Multi.insert(:person, fn changes -> callback.(changes) end)
+    |> insert_person_access_group()
+  end
+
+  defp insert_person_access_group(multi) do
+    multi
+    |> Multi.insert(:person_access_group, fn changes ->
+      Operately.Access.Group.changeset(%{person_id: changes.person.id})
+    end)
+  end
+
   def create_person(attrs \\ %{}) do
-    %Person{}
-    |> Person.changeset(attrs)
-    |> Repo.insert()
+    changeset = Person.changeset(%Person{}, attrs)
+
+    case Repo.insert(changeset) do
+      {:ok, person} ->
+        Operately.Access.create_group(%{person_id: person.id})
+        {:ok, person}
+      error -> error
+    end
   end
 
   def update_person(%Person{} = person, attrs) do
@@ -58,10 +77,6 @@ defmodule Operately.People do
     else
       Repo.all(from p in Person, where: p.manager_id == ^person.manager_id and p.id != ^person.id and not p.suspended and p.company_id == ^person.company_id)
     end
-  end
-
-  def delete_person(%Person{} = person) do
-    Repo.delete(person)
   end
 
   def change_person(%Person{} = person, attrs \\ %{}) do
@@ -236,7 +251,7 @@ defmodule Operately.People do
     )
 
     milestones = Repo.all(
-      from m in Milestone, 
+      from m in Milestone,
         where: m.project_id in ^(Enum.map(projects, & &1.id)),
         where: not is_nil(m.deadline_at),
         where: m.deadline_at > ^time_range_start,
@@ -252,14 +267,14 @@ defmodule Operately.People do
         where: p.next_update_scheduled_at < ^time_range_end
     )
 
-    assignments = [] 
+    assignments = []
       ++ Enum.map(milestones, fn milestone ->
         %{
           type: "milestone",
           due: milestone.deadline_at,
           resource: milestone
         }
-      end) 
+      end)
         ++ Enum.map(pending_status_updates, fn project_status_update ->
           %{
             type: "project_status_update",

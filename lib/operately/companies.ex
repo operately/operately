@@ -86,21 +86,6 @@ defmodule Operately.Companies do
     end)
   end
 
-  def add_member(admin, args) do
-    cond do
-      admin.company_role != :admin ->
-        {:error, "Only admins can add members"}
-
-      true ->
-        args = Map.put(args, :company_id, admin.company_id)
-        args = Map.put(args, :company_role, :member)
-
-        changeset = Person.changeset(args)
-
-        Repo.insert(changeset)
-    end
-  end
-
   def add_trusted_email_domain(company, admin, domain) do
     cond do
       admin.company_role != :admin ->

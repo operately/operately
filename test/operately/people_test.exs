@@ -109,11 +109,6 @@ defmodule Operately.PeopleTest do
       assert updated_person.avatar_blob_id == blob.id
     end
 
-    test "delete_person/1 deletes the person", ctx do
-      assert {:ok, %Person{}} = People.delete_person(ctx.person)
-      assert_raise Ecto.NoResultsError, fn -> People.get_person!(ctx.person.id) end
-    end
-
     test "change_person/1 returns a person changeset", ctx do
       assert %Ecto.Changeset{} = People.change_person(ctx.person)
     end
