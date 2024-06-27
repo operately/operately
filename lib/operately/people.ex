@@ -43,9 +43,14 @@ defmodule Operately.People do
   end
 
   def create_person(attrs \\ %{}) do
-    %Person{}
-    |> Person.changeset(attrs)
-    |> Repo.insert()
+    changeset = Person.changeset(%Person{}, attrs)
+
+    case Repo.insert(changeset) do
+      {:ok, person} ->
+        Operately.Access.create_group(%{person_id: person.id})
+        {:ok, person}
+      error -> error
+    end
   end
 
   def update_person(%Person{} = person, attrs) do
@@ -72,10 +77,6 @@ defmodule Operately.People do
     else
       Repo.all(from p in Person, where: p.manager_id == ^person.manager_id and p.id != ^person.id and not p.suspended and p.company_id == ^person.company_id)
     end
-  end
-
-  def delete_person(%Person{} = person) do
-    Repo.delete(person)
   end
 
   def change_person(%Person{} = person, attrs \\ %{}) do
