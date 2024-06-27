@@ -7,7 +7,12 @@ type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  const blob = await createBlob({ filename: file.name });
+  const blob = await createBlob({
+    filename: file.name,
+    size: file.size,
+    contentType: file.type,
+  });
+
   const url = blob.signedUploadUrl!;
 
   if (blob.uploadStrategy === "direct") {

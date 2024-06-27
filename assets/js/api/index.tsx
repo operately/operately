@@ -1328,6 +1328,8 @@ export interface ConnectGoalToProjectResult {
 
 export interface CreateBlobInput {
   filename?: string | null;
+  size?: number | null;
+  contentType?: string | null;
 }
 
 export interface CreateBlobResult {

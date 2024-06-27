@@ -58,21 +58,6 @@ config :junit_formatter,
 config :operately, notification_email: "test@localhost"
 config :operately, :sandbox, Ecto.Adapters.SQL.Sandbox
 
-config :ex_aws,
-  access_key_id: "test",
-  secret_access_key: "test",
-  access_control_allow_origin: "*",
-  access_control_allow_headers: "Content-Type",
-  access_control_allow_methods: ["GET", "POST", "PUT", "DELETE"],
-  expose_headers: "",
-  s3: [
-    scheme: "http://",
-    host: "s3mock",
-    port: 9090,
-    region: "local",
-    debug_requests: true
-  ]
-
 config :wallaby, screenshot_on_failure: true
 config :wallaby, otp_app: :operately
 config :wallaby, hackney_options: [timeout: 3_000]

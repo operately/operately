@@ -34,17 +34,15 @@ defmodule Operately.Blobs do
     path = "#{blob.company_id}-#{blob.id}"
 
     case Application.get_env(:operately, :storage_type) do
+      "s3" ->
+        {:ok, presigned_s3_url("GET", path)}
+
       "local" ->
         host = OperatelyWeb.Endpoint.url()
         path = "#{blob.company_id}-#{blob.id}"
         token = Operately.Blobs.Tokens.gen_get_token(path)
 
         {:ok, "#{host}/media/#{path}?token=#{token}"}
-      "s3" ->
-        bucket = Application.get_env(:operately, :storage_s3_bucket)
-
-        ExAws.Config.new(:s3)
-        |> ExAws.S3.presigned_url(:get_object, bucket, path, expires_in: 3600) 
       _ ->
         {:error, "Storage type not supported"}
     end
@@ -55,10 +53,7 @@ defmodule Operately.Blobs do
 
     case Application.get_env(:operately, :storage_type) do
       "s3" ->
-        bucket = Application.get_env(:operately, :storage_s3_bucket)
-
-        ExAws.Config.new(:s3)
-        |> ExAws.S3.presigned_url(:put_object, bucket, path, expires_in: 3600) 
+        {:ok, presigned_s3_url("PUT", path)}
       "local" ->
         host = OperatelyWeb.Endpoint.url()
         token = Operately.Blobs.Tokens.gen_upload_token(path)
@@ -67,5 +62,31 @@ defmodule Operately.Blobs do
       _ ->
         {:error, "Storage type not supported"}
     end
+  end
+
+  defp presigned_s3_url(method, path, expires_in \\ 3600) when method in ["GET", "PUT"] do
+    host = System.get_env("OPERATELY_STORAGE_S3_HOST")
+    scheme = System.get_env("OPERATELY_STORAGE_S3_SCHEME")
+    port = System.get_env("OPERATELY_STORAGE_S3_PORT", "443")
+    bucket = System.get_env("OPERATELY_STORAGE_S3_BUCKET")
+    region = System.get_env("OPERATELY_STORAGE_S3_REGION")
+    access_key_id = System.get_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID")
+    secret_access_key = System.get_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY")
+
+    uri = "#{scheme}://#{host}:#{port}/#{bucket}/#{URI.encode(path)}"
+
+    :aws_signature.sign_v4_query_params(
+      access_key_id,
+      secret_access_key,
+      region,
+      "S3",
+      :calendar.universal_time(),
+      method,
+      uri,
+      ttl: expires_in,
+      uri_encode_path: false,
+      body_digest: "UNSIGNED-PAYLOAD"
+    )
+    |> IO.inspect()
   end
 end

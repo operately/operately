@@ -26,23 +26,6 @@ config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABL
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 
 config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "local")
-config :operately, :storage_s3_bucket, System.get_env("OPERATELY_STORAGE_S3_BUCKET")
-
-if System.get_env("OPERATELY_STORAGE_TYPE") == "s3" do
-  config :ex_aws,
-    access_key_id: System.get_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID"),
-    secret_access_key: System.get_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY"),
-    access_control_allow_origin: "*",
-    access_control_allow_headers: "Content-Type",
-    access_control_allow_methods: "GET, POST, PUT, DELETE",
-    expose_headers: "",
-    s3: [
-      scheme: System.get_env("OPERATELY_STORAGE_S3_SCHEME", "https") <> "://",
-      host: System.get_env("OPERATELY_STORAGE_S3_HOST") || "s3.amazonaws.com",
-      port: String.to_integer(System.get_env("OPERATELY_STORAGE_S3_PORT", "443")),
-      region: System.get_env("OPERATELY_STORAGE_S3_REGION", "us-east-1"),
-    ]
-end
 
 # Determines if the 'Sign in with Google' feature is enabled.
 # Set `ALLOW_LOGIN_WITH_GOOGLE` in the .env file to "yes"

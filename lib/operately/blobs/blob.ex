@@ -9,9 +9,12 @@ defmodule Operately.Blobs.Blob do
     belongs_to :company, Operately.Companies.Company
     belongs_to :author, Operately.People.Person
 
-    field :filename, :string
     field :status, Ecto.Enum, values: [:pending, :uploaded, :deleted]
     field :storage_type, Ecto.Enum, values: [:s3, :local]
+
+    field :filename, :string
+    field :size, :integer, default: 0
+    field :content_type, :string
 
     timestamps()
   end
@@ -19,9 +22,9 @@ defmodule Operately.Blobs.Blob do
   @doc false
   def changeset(blob, attrs) do
     blob
-    |> cast(attrs, [:filename, :author_id, :company_id, :status])
+    |> cast(attrs, [:filename, :author_id, :company_id, :status, :size, :content_type])
     |> set_storage_type()
-    |> validate_required([:filename, :author_id, :company_id, :status, :storage_type])
+    |> validate_required([:filename, :author_id, :company_id, :status, :storage_type, :size, :content_type])
   end
 
   defp set_storage_type(blob) do

@@ -4,6 +4,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
 
   inputs do
     field :filename, :string
+    field :size, :integer
+    field :content_type, :string
   end
 
   outputs do
@@ -21,6 +23,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
       author_id: person.id,
       status: :pending,
       filename: inputs.filename,
+      size: inputs.size,
+      content_type: inputs.content_type,
     })
 
     {:ok, url} = Operately.Blobs.get_signed_upload_url(blob)
