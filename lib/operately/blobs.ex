@@ -33,10 +33,10 @@ defmodule Operately.Blobs do
   def get_signed_get_url(%Blob{} = blob) do
     path = "#{blob.company_id}-#{blob.id}"
 
-    case Application.get_env(:operately, :storage_type) do
-      "s3" -> presigned_s3_url(:get, path, 3600)
+    case blob.storage_type do
+      :s3 -> presigned_s3_url(:get, path, 3600)
 
-      "local" ->
+      :local ->
         host = OperatelyWeb.Endpoint.url()
         path = "#{blob.company_id}-#{blob.id}"
         token = Operately.Blobs.Tokens.gen_get_token(path)
@@ -54,14 +54,15 @@ defmodule Operately.Blobs do
       {"Content-Length", Integer.to_string(blob.size)}
     ]
 
-    case Application.get_env(:operately, :storage_type) do
-      "s3" -> presigned_s3_url(:put, path, 3600, headers)
+    case blob.storage_type do
+      :s3 -> presigned_s3_url(:put, path, 3600, headers)
 
-      "local" ->
+      :local ->
         host = OperatelyWeb.Endpoint.url()
         token = Operately.Blobs.Tokens.gen_upload_token(path)
 
         {:ok, "#{host}/media/#{path}?token=#{token}"}
+
       _ ->
         {:error, "Storage type not supported"}
     end
