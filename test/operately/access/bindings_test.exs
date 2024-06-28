@@ -44,11 +44,11 @@ defmodule Operately.AccessBindingsTest do
       valid_attrs = %{
         group_id: ctx.group.id,
         context_id: ctx.context.id,
-        access_level: 70,
+        access_level: Binding.edit_access(),
       }
 
       assert {:ok, %Binding{} = binding} = Access.create_binding(valid_attrs)
-      assert binding.access_level == 70
+      assert binding.access_level == Binding.edit_access()
     end
 
     test "create_binding/1 with invalid data returns error changeset" do
@@ -60,10 +60,10 @@ defmodule Operately.AccessBindingsTest do
         group_id: ctx.group.id,
         context_id: ctx.context.id,
       })
-      update_attrs = %{access_level: 100}
+      update_attrs = %{access_level: Binding.full_access()}
 
       assert {:ok, %Binding{} = binding} = Access.update_binding(binding, update_attrs)
-      assert binding.access_level == 100
+      assert binding.access_level == Binding.full_access()
     end
 
     test "update_binding/2 with invalid data returns error changeset", ctx do
