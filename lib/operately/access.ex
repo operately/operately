@@ -8,13 +8,13 @@ defmodule Operately.Access do
     Repo.all(Context)
   end
 
-  def get_context!(id) when is_binary(id) do
-    Repo.get!(Context, id)
-  end
+  def get_context!(id) when is_binary(id), do: Repo.get!(Context, id)
 
-  def get_context!(attrs) when is_list(attrs) do
-    Repo.get_by!(Context, attrs)
-  end
+  def get_context!(attrs) when is_list(attrs), do: Repo.get_by!(Context, attrs)
+
+  def get_context(id) when is_binary(id), do: Repo.get(Context, id)
+
+  def get_context(attrs) when is_list(attrs), do: Repo.get_by(Context, attrs)
 
   def create_context(attrs \\ %{}) do
     %Context{}
@@ -43,21 +43,13 @@ defmodule Operately.Access do
     Repo.all(Group)
   end
 
-  def get_group!(id) when is_binary(id) do
-    Repo.get!(Group, id)
-  end
+  def get_group!(id) when is_binary(id), do: Repo.get!(Group, id)
 
-  def get_group!(attrs) when is_list(attrs) do
-    Repo.get_by!(Group, attrs)
-  end
+  def get_group!(attrs) when is_list(attrs), do: Repo.get_by!(Group, attrs)
 
-  def get_group(id) when is_binary(id) do
-    Repo.get(Group, id)
-  end
+  def get_group(id) when is_binary(id), do: Repo.get(Group, id)
 
-  def get_group(attrs) when is_list(attrs) do
-    Repo.get_by(Group, attrs)
-  end
+  def get_group(attrs) when is_list(attrs), do: Repo.get_by(Group, attrs)
 
   def create_group(attrs \\ %{}) do
     %Group{}
@@ -86,7 +78,13 @@ defmodule Operately.Access do
     Repo.all(Binding)
   end
 
-  def get_binding!(id), do: Repo.get!(Binding, id)
+  def get_binding!(id) when is_binary(id), do: Repo.get!(Binding, id)
+
+  def get_binding!(attrs) when is_list(attrs), do: Repo.get_by!(Binding, attrs)
+
+  def get_binding(id) when is_binary(id), do: Repo.get(Binding, id)
+
+  def get_binding(attrs) when is_list(attrs), do: Repo.get_by(Binding, attrs)
 
   def create_binding(attrs \\ %{}) do
     %Binding{}
@@ -115,7 +113,13 @@ defmodule Operately.Access do
     Repo.all(GroupMembership)
   end
 
-  def get_group_membership!(id), do: Repo.get!(GroupMembership, id)
+  def get_group_membership!(id) when is_binary(id), do: Repo.get!(GroupMembership, id)
+
+  def get_group_membership!(attrs) when is_list(attrs), do: Repo.get_by!(GroupMembership, attrs)
+
+  def get_group_membership(id) when is_binary(id), do: Repo.get(GroupMembership, id)
+
+  def get_group_membership(attrs) when is_list(attrs), do: Repo.get_by(GroupMembership, attrs)
 
   def create_group_membership(attrs \\ %{}) do
     %GroupMembership{}

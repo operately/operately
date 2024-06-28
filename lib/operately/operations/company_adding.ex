@@ -5,13 +5,15 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.People.Account
   alias Operately.People.Person
   alias Operately.Groups
-  alias Operately.Access.Context
+  alias Operately.Access.{Context, Group, Binding, GroupMembership}
 
   def run(attrs, opts \\ []) do
     Multi.new()
     |> insert_company(attrs)
-    |> insert_context()
+    |> insert_access_context()
     |> insert_group()
+    |> insert_access_groups()
+    |> insert_access_bindings()
     |> insert_account(attrs, opts)
     |> insert_person(attrs, opts)
     |> Repo.transaction()
@@ -29,7 +31,7 @@ defmodule Operately.Operations.CompanyAdding do
     }))
   end
 
-  defp insert_context(multi) do
+  defp insert_access_context(multi) do
     Multi.insert(multi, :company_context, fn changes ->
       Context.changeset(%{
         company_id: changes.company.id,
@@ -49,6 +51,40 @@ defmodule Operately.Operations.CompanyAdding do
     |> Groups.insert_group(attrs)
     |> Multi.update(:updated_company, fn %{company: company, group: group} ->
       Company.changeset(company, %{company_space_id: group.id})
+    end)
+  end
+
+  defp insert_access_groups(multi) do
+    multi
+    |> Multi.insert(:admins_access_group, fn changes ->
+      Group.changeset(%{
+        company_id: changes.company.id,
+        tag: :full_access,
+      })
+    end)
+    |> Multi.insert(:members_access_group, fn changes ->
+      Group.changeset(%{
+        company_id: changes.company.id,
+        tag: :standard,
+      })
+    end)
+  end
+
+  defp insert_access_bindings(multi) do
+    multi
+    |> Multi.insert(:admins_access_binding, fn changes ->
+      Binding.changeset(%{
+        group_id: changes.admins_access_group.id,
+        context_id: changes.company_context.id,
+        access_level: 100,
+      })
+    end)
+    |> Multi.insert(:members_access_binding, fn changes ->
+      Binding.changeset(%{
+        group_id: changes.members_access_group.id,
+        context_id: changes.company_context.id,
+        access_level: 10,
+      })
     end)
   end
 
@@ -76,6 +112,12 @@ defmodule Operately.Operations.CompanyAdding do
           avatar_url: "",
           title: attrs.role,
           company_role: :admin,
+        })
+      end)
+      |> Multi.insert(:admin_access_membership, fn changes ->
+        GroupMembership.changeset(%{
+          group_id: changes.admins_access_group.id,
+          person_id: changes.person.id,
         })
       end)
     else
