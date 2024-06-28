@@ -125,6 +125,9 @@ defmodule Operately.AccessContextsTest do
     })
     |> Repo.insert()
 
+    Access.create_group(%{company_id: company.id, tag: :full_access})
+    Access.create_group(%{company_id: company.id, tag: :standard})
+
     company
   end
 
