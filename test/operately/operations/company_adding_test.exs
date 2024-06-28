@@ -52,12 +52,29 @@ defmodule Operately.Operations.CompanyAddingTest do
   end
 
 
-  test "CompanyAdding operation creates admin's access group" do
+  test "CompanyAdding operation creates admin user's access group" do
     {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
 
     person = People.get_person_by_email(company, @email)
 
     assert nil != Access.get_group!(person_id: person.id)
+  end
+
+  test "CompanyAdding operation creates access groups, bindings and group_memberships for admins and members" do
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+
+    person = People.get_person_by_email(company, @email)
+    full_access = Access.get_group!(company_id: company.id, tag: :full_access)
+    standard = Access.get_group!(company_id: company.id, tag: :standard)
+
+    assert nil != full_access
+    assert nil != standard
+
+    assert nil != Access.get_binding!(group_id: full_access.id, access_level: 100)
+    assert nil != Access.get_binding!(group_id: standard.id, access_level: 10)
+
+    assert nil != Access.get_group_membership(group_id: full_access.id, person_id: person.id)
+    assert nil == Access.get_group_membership(group_id: standard.id, person_id: person.id)
   end
 
   test "CompanyAdding operation creates company and group access contexts" do
