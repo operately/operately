@@ -1,14 +1,12 @@
 defmodule Operately.Operations.GroupCreationTest do
   use Operately.DataCase
 
-  import Ecto.Query, only: [from: 2]
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Repo
   alias Operately.Groups
   alias Operately.Access
-  alias Operately.Access.{Binding, GroupMembership}
+  alias Operately.Access.Binding
 
   @group_attrs %{
     name: "my group",
@@ -43,32 +41,29 @@ defmodule Operately.Operations.GroupCreationTest do
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
 
     access_groups = Access.list_groups()
-    access_context = Access.get_context!(group_id: group.id)
+    context = Access.get_context!(group_id: group.id)
 
-    assert nil != access_context
-    assert 2 == length(access_groups)
+    assert nil != context
+    assert 5 == length(access_groups) # 1 user's + 2 company's + 2 space's
 
-    assert Enum.all?(access_groups, fn access_group ->
-      access_group.group_id == group.id
-    end)
+    space_members = Access.get_group(group_id: group.id, tag: :standard)
+    space_managers = Access.get_group(group_id: group.id, tag: :full_access)
 
-    Enum.each(access_groups, fn access_group ->
-      query = from(b in Binding, where: b.access_group_id == ^access_group.id and b.access_context_id == ^access_context.id)
+    assert nil != Access.get_binding(group_id: space_members.id, context_id: context.id, access_level: Binding.comment_access())
+    assert nil != Access.get_binding(group_id: space_managers.id, context_id: context.id, access_level: Binding.full_access())
 
-      assert nil != Repo.one(query)
-    end)
+    company_members = Access.get_group(company_id: group.company_id, tag: :standard)
+    company_admins = Access.get_group(company_id: group.company_id, tag: :full_access)
+
+    assert nil != Access.get_binding(group_id: company_members.id, context_id: context.id, access_level: Binding.view_access())
+    assert nil != Access.get_binding(group_id: company_admins.id, context_id: context.id, access_level: Binding.full_access())
   end
 
   test "GroupCreation operation adds creator to managers group", ctx do
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
 
-    membership = Repo.one(from(m in GroupMembership, where: m.person_id == ^ctx.creator.id))
-    access_context = Access.get_context!(group_id: group.id)
+    managers = Access.get_group(group_id: group.id, tag: :full_access)
 
-    assert nil != membership
-
-    binding = Repo.one(from(b in Binding, where: b.access_group_id == ^membership.access_group_id and b.access_context_id == ^access_context.id))
-
-    assert binding.access_level == 100
+    assert nil != Access.get_group_membership!(group_id: managers.id, person_id: ctx.creator.id)
   end
 end
