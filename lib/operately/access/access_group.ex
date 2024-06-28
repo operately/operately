@@ -17,7 +17,7 @@ defmodule Operately.Access.Group do
   def changeset(group, attrs) do
     group
     |> cast(attrs, [:person_id, :company_id, :tag])
-    |> validate_one_association
+    |> validate_one_association()
     |> validate_required([])
   end
 
