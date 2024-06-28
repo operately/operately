@@ -27,8 +27,8 @@ defmodule Operately.Operations.GroupCreation do
     end)
     |> Multi.insert(:members_access_binding, fn changes ->
       Operately.Access.Binding.changeset(%{
-        access_group_id: changes.members_access_group.id,
-        access_context_id: changes.context.id,
+        group_id: changes.members_access_group.id,
+        context_id: changes.context.id,
         access_level: 40,
       })
     end)
@@ -41,14 +41,14 @@ defmodule Operately.Operations.GroupCreation do
     end)
     |> Multi.insert(:managers_access_binding, fn changes ->
       Operately.Access.Binding.changeset(%{
-        access_group_id: changes.managers_access_group.id,
-        access_context_id: changes.context.id,
+        group_id: changes.managers_access_group.id,
+        context_id: changes.context.id,
         access_level: 100,
       })
     end)
     |> Multi.insert(:creator_in_managers, fn changes ->
       Operately.Access.GroupMembership.changeset(%{
-        access_group_id: changes.managers_access_group.id,
+        group_id: changes.managers_access_group.id,
         person_id: creator.id,
       })
     end)

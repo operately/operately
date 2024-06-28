@@ -6,8 +6,8 @@ defmodule Operately.Access.Group do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
 
-    has_many :memberships, Operately.Access.GroupMembership, foreign_key: :access_group_id
-    has_many :bindings, Operately.Access.Binding, foreign_key: :access_group_id
+    has_many :memberships, Operately.Access.GroupMembership, foreign_key: :group_id
+    has_many :bindings, Operately.Access.Binding, foreign_key: :group_id
 
     field :tag, Ecto.Enum, values: [:full_access, :standard]
 
@@ -32,7 +32,7 @@ defmodule Operately.Access.Group do
     if count <= 1 do
       changeset
     else
-      add_error(changeset, :base, "Only one association (Person or Company) may be set.")
+      add_error(changeset, :base, "Only one association (Person, Company or Group) may be set.")
     end
   end
 end
