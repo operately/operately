@@ -40,6 +40,12 @@ defmodule Operately.People do
     |> Multi.insert(:person_access_group, fn changes ->
       Operately.Access.Group.changeset(%{person_id: changes.person.id})
     end)
+    |> Multi.insert(:person_access_membership, fn changes ->
+      Operately.Access.GroupMembership.changeset(%{
+        group_id: changes.person_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
   end
 
   def create_person(attrs \\ %{}) do

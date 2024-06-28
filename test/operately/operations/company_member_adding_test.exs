@@ -43,12 +43,14 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert person.title == "Developer"
   end
 
-  test "CompanyMemberAdding operation creates members's access group", ctx do
+  test "CompanyMemberAdding operation creates members's access group and membership", ctx do
     Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
+    group = Access.get_group!(person_id: person.id)
 
-    assert nil != Access.get_group!(person_id: person.id)
+    assert nil != group
+    assert nil != Access.get_group_membership(group_id: group.id, person_id: person.id)
   end
 
   test "CompanyMemberAdding operation creates invitation for person", ctx do
