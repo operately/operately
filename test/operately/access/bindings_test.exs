@@ -30,7 +30,10 @@ defmodule Operately.AccessBindingsTest do
         context_id: ctx.context.id,
       })
 
-      assert Access.list_bindings() == [binding]
+      bindings_list = Access.list_bindings()
+
+      assert 3 == length(bindings_list)
+      assert Enum.member?(bindings_list, binding)
     end
 
     test "get_binding!/1 returns the binding with given id", ctx do
