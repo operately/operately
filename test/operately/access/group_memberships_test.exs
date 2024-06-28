@@ -22,7 +22,7 @@ defmodule Operately.AccessGroupMembershipsTest do
     test "list_group_memberships/0 returns all group_memberships", ctx do
       group_membership = group_membership_fixture(%{
         person_id: ctx.person.id,
-        access_group_id: ctx.group.id,
+        group_id: ctx.group.id,
       })
 
       assert Access.list_group_memberships() == [group_membership]
@@ -31,7 +31,7 @@ defmodule Operately.AccessGroupMembershipsTest do
     test "get_group_membership!/1 returns the group_membership with given id", ctx do
       group_membership = group_membership_fixture(%{
         person_id: ctx.person.id,
-        access_group_id: ctx.group.id,
+        group_id: ctx.group.id,
       })
 
       assert Access.get_group_membership!(group_membership.id) == group_membership
@@ -40,7 +40,7 @@ defmodule Operately.AccessGroupMembershipsTest do
     test "create_group_membership/1 with valid data creates a group_membership", ctx do
       valid_attrs = %{
         person_id: ctx.person.id,
-        access_group_id: ctx.group.id,
+        group_id: ctx.group.id,
       }
 
       assert {:ok, %GroupMembership{} = _group_membership} = Access.create_group_membership(valid_attrs)
@@ -54,7 +54,7 @@ defmodule Operately.AccessGroupMembershipsTest do
       another_person = person_fixture(company_id: ctx.company.id)
       group_membership = group_membership_fixture(%{
         person_id: ctx.person.id,
-        access_group_id: ctx.group.id,
+        group_id: ctx.group.id,
       })
 
       update_attrs = %{person_id: another_person.id}
@@ -65,7 +65,7 @@ defmodule Operately.AccessGroupMembershipsTest do
     test "delete_group_membership/1 deletes the group_membership", ctx do
       group_membership = group_membership_fixture(%{
         person_id: ctx.person.id,
-        access_group_id: ctx.group.id,
+        group_id: ctx.group.id,
       })
 
       assert {:ok, %GroupMembership{}} = Access.delete_group_membership(group_membership)
@@ -75,7 +75,7 @@ defmodule Operately.AccessGroupMembershipsTest do
     test "change_group_membership/1 returns a group_membership changeset", ctx do
       group_membership = group_membership_fixture(%{
         person_id: ctx.person.id,
-        access_group_id: ctx.group.id,
+        group_id: ctx.group.id,
       })
 
       assert %Ecto.Changeset{} = Access.change_group_membership(group_membership)
