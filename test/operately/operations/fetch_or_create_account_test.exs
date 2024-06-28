@@ -37,8 +37,10 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
     Operately.People.FetchOrCreateAccountOperation.call(ctx.company, @attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
+    group = Access.get_group!(person_id: person.id)
 
-    assert nil != Access.get_group!(person_id: person.id)
+    assert nil != group
+    assert nil != Access.get_group_membership(group_id: group.id, person_id: person.id)
   end
 
   test "FetchOrCreateAccountOperation doesn't create account for non-trusted email domain", ctx do
