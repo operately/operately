@@ -41,6 +41,11 @@ organization with 10x less effort.
 
 This project is in alpha and may experience significant changes.
 
+## Installation
+
+- [Try out Operately on your local machine](docs/installation/local.md)
+- [Single Host Installation](docs/installation/single-host.md)
+
 ## Development
 
 - [How to contribute to Operately](CONTRIBUTING.md)
