@@ -6,9 +6,13 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Spaces from "@/models/spaces";
 
+import { useLoadedData } from "./loader";
+
+import { Paths } from "@/routes/paths";
 import { SpaceColorChooser } from "@/components/SpaceColorChooser";
 import { SpaceIconChooser } from "@/components/SpaceIconChooser";
-import { Paths } from "@/routes/paths";
+import PermissionSelector from "@/components/PermissionSelector";
+
 
 export function Page() {
   return (
@@ -22,7 +26,8 @@ export function Page() {
 }
 
 function Form() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const { company } = useLoadedData();
 
   const [createGroup, { loading }] = Spaces.useCreateSpace();
 
@@ -77,6 +82,8 @@ function Form() {
       <div>
         <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} name={name} />
       </div>
+
+      <PermissionSelector companyName={company.name} />
 
       <Forms.SubmitArea>
         <Forms.SubmitButton>Create Space</Forms.SubmitButton>
