@@ -270,3 +270,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Permissions do
     }
   end
 end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
+  def serialize(company, level: :essential) do
+    %{
+       id: Operately.Companies.ShortId.encode(company.short_id),
+       name: company.name,
+    }
+  end
+end
