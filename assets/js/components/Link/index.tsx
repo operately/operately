@@ -21,6 +21,7 @@ interface ButtonLinkProps extends Props {
 interface DivLinkProps extends Props {
   to: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const baseClassNoUnderline = classnames(
