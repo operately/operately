@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api do
   query :get_activity, OperatelyWeb.Api.Queries.GetActivity
   query :get_comments, OperatelyWeb.Api.Queries.GetComments
   query :get_company, OperatelyWeb.Api.Queries.GetCompany
+  query :get_companies, OperatelyWeb.Api.Queries.GetCompanies
   query :get_discussion, OperatelyWeb.Api.Queries.GetDiscussion
   query :get_discussions, OperatelyWeb.Api.Queries.GetDiscussions
   query :get_goal, OperatelyWeb.Api.Queries.GetGoal

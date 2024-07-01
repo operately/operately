@@ -907,6 +907,15 @@ export interface GetCommentsResult {
 }
 
 
+export interface GetCompaniesInput {
+  includeMemberCount?: boolean | null;
+}
+
+export interface GetCompaniesResult {
+  companies?: Company[] | null;
+}
+
+
 export interface GetCompanyInput {
   id?: string | null;
 }
@@ -1765,6 +1774,10 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_comments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return axios.get(this.getBasePath() + "/get_companies", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
     return axios.get(this.getBasePath() + "/get_company", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -2122,6 +2135,9 @@ export async function getActivity(input: GetActivityInput) : Promise<GetActivity
 export async function getComments(input: GetCommentsInput) : Promise<GetCommentsResult> {
   return defaultApiClient.getComments(input);
 }
+export async function getCompanies(input: GetCompaniesInput) : Promise<GetCompaniesResult> {
+  return defaultApiClient.getCompanies(input);
+}
 export async function getCompany(input: GetCompanyInput) : Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
 }
@@ -2391,6 +2407,10 @@ export function useGetActivity(input: GetActivityInput) : UseQueryHookResult<Get
 
 export function useGetComments(input: GetCommentsInput) : UseQueryHookResult<GetCommentsResult> {
   return useQuery<GetCommentsResult>(() => defaultApiClient.getComments(input));
+}
+
+export function useGetCompanies(input: GetCompaniesInput) : UseQueryHookResult<GetCompaniesResult> {
+  return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
 }
 
 export function useGetCompany(input: GetCompanyInput) : UseQueryHookResult<GetCompanyResult> {
@@ -2746,6 +2766,8 @@ export default {
   useGetActivity,
   getComments,
   useGetComments,
+  getCompanies,
+  useGetCompanies,
   getCompany,
   useGetCompany,
   getDiscussion,

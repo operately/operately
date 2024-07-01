@@ -11,6 +11,13 @@ defmodule Operately.Companies do
     Repo.all(Company)
   end
 
+  def list_companies(account = %Operately.People.Account{}) do
+    Repo.all(
+      from c in Company, 
+        join: p in assoc(c, :people), 
+        where: p.account_id == ^account.id)
+  end
+
   def count_companies do
     Repo.aggregate(Company, :count, :id)
   end
