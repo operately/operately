@@ -1,4 +1,5 @@
 defmodule Operately.Operations.CompanyAdding do
+  alias Operately.Companies.ShortId
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Companies.Company
@@ -28,6 +29,7 @@ defmodule Operately.Operations.CompanyAdding do
     Multi.insert(multi, :company, Company.changeset(%{
       name: attrs.company_name,
       trusted_email_domains: attrs.trusted_email_domains,
+      short_id: ShortId.generate(),
     }))
   end
 
