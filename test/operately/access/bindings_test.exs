@@ -5,8 +5,6 @@ defmodule Operately.AccessBindingsTest do
   alias Operately.Access.Binding
 
   import Operately.AccessFixtures
-  import Operately.PeopleFixtures
-  import Operately.ProjectsFixtures
   import Operately.CompaniesFixtures
 
   describe "access_bindings" do
@@ -14,11 +12,8 @@ defmodule Operately.AccessBindingsTest do
 
     setup do
       company = company_fixture()
-      creator = person_fixture_with_account(%{company_id: company.id})
-      group = Operately.GroupsFixtures.group_fixture(creator)
-      project = project_fixture(%{company_id: company.id, group_id: group.id, creator_id: creator.id})
 
-      context = Access.get_context!(project_id: project.id)
+      context = Access.get_context!(company_id: company.id)
       group = group_fixture()
 
       {:ok, %{context: context, group: group}}
@@ -49,11 +44,11 @@ defmodule Operately.AccessBindingsTest do
       valid_attrs = %{
         group_id: ctx.group.id,
         context_id: ctx.context.id,
-        access_level: 70,
+        access_level: Binding.edit_access(),
       }
 
       assert {:ok, %Binding{} = binding} = Access.create_binding(valid_attrs)
-      assert binding.access_level == 70
+      assert binding.access_level == Binding.edit_access()
     end
 
     test "create_binding/1 with invalid data returns error changeset" do
@@ -65,10 +60,10 @@ defmodule Operately.AccessBindingsTest do
         group_id: ctx.group.id,
         context_id: ctx.context.id,
       })
-      update_attrs = %{access_level: 100}
+      update_attrs = %{access_level: Binding.full_access()}
 
       assert {:ok, %Binding{} = binding} = Access.update_binding(binding, update_attrs)
-      assert binding.access_level == 100
+      assert binding.access_level == Binding.full_access()
     end
 
     test "update_binding/2 with invalid data returns error changeset", ctx do
