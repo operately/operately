@@ -2,6 +2,7 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
   use Operately.DataCase
 
   alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.People.Person
   alias Operately.Companies.Company
 
@@ -23,8 +24,8 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
       assert nil != full_access
       assert nil != standard
 
-      assert nil != Access.get_binding!(group_id: full_access.id, access_level: 100)
-      assert nil != Access.get_binding!(group_id: standard.id, access_level: 10)
+      assert nil != Access.get_binding!(group_id: full_access.id, access_level: Binding.full_access())
+      assert nil != Access.get_binding!(group_id: standard.id, access_level: Binding.view_access())
 
       people = from(p in Person, where: p.company_id == ^company.id) |> Repo.all()
 
