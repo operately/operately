@@ -1,0 +1,112 @@
+import React, { useState, useEffect } from "react";
+
+import { SelectBoxNoLabel } from "@/components/Form";
+import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
+import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
+import { PermissionLevels } from ".";
+
+
+interface DropdownOption {
+  value: PermissionLevels;
+  label: string;
+}
+
+const COMPANY_PERMISSIONS = [
+  {value: PermissionLevels.FULL_ACCESS, label: "Has Full Access"},
+  {value: PermissionLevels.EDIT_ACCESS, label: "Can Edit"},
+  {value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment"},
+  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
+]
+
+const INTERNET_PERMISSIONS = [
+  {value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment"},
+  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
+]
+
+
+export default function AccessLevel() {
+  const { permissions } = usePermissionsContext();
+
+  if (permissions.internet !== PermissionLevels.NO_ACCESS) {
+      return (
+        <div className="flex flex-col gap-2">
+          <h2 className="font-bold">Access Levels</h2>
+          <CompanyAccessLevel />
+          <InternetAccessLevel />
+        </div>
+      );
+  }
+
+  if(permissions.company !== PermissionLevels.NO_ACCESS) {
+    return (
+      <div className="flex flex-col gap-2">
+        <h2 className="font-bold">Access Level</h2>
+        <CompanyAccessLevel />
+      </div>
+    );
+  }
+
+  return <></>;
+}
+
+
+function CompanyAccessLevel() {
+  const [currentPermission, setCurrentPermission] = useState<DropdownOption>();
+  const { companyName, dispatch, permissions } = usePermissionsContext();
+
+  useEffect(() => {
+    if(!currentPermission) {
+      setCurrentPermission(COMPANY_PERMISSIONS.find(option => option.value === permissions.company));
+    }
+  }, [currentPermission, setCurrentPermission])
+
+  const handleChange = (option: DropdownOption) => {
+    setCurrentPermission(option);
+    dispatch({ type: ReducerActions.SET_COMPANY_ACCESS, access_level: option.value });
+  }
+
+  return (
+    <div className="grid grid-cols-[70%_30%] gap-2 w-full">
+      <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
+        <IconBuildingCommunity size={25} />
+        <span>Everyone at {companyName}</span>
+      </div>
+      <SelectBoxNoLabel
+        onChange={handleChange}
+        options={COMPANY_PERMISSIONS}
+        value={currentPermission}
+      /> 
+    </div>
+  );
+}
+
+
+function InternetAccessLevel() {
+  const [currentPermission, setCurrentPermission] = useState<DropdownOption>();
+  const { dispatch, permissions } = usePermissionsContext();
+
+  useEffect(() => {
+    if(!currentPermission) {
+      setCurrentPermission(INTERNET_PERMISSIONS.find(option => option.value === permissions.internet));
+    }
+  }, [currentPermission, setCurrentPermission])
+
+  const handleChange = (option: DropdownOption) => {
+    setCurrentPermission(option);
+    dispatch({ type: ReducerActions.SET_INTERNET_ACCESS, access_level: option.value });
+  }
+
+  return (
+    <div className="grid grid-cols-[70%_30%] gap-2 w-full">
+      <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
+        <IconNetwork size={25} />
+        <span>Anyone on the internet</span>
+      </div>
+      <SelectBoxNoLabel
+        onChange={handleChange}
+        options={INTERNET_PERMISSIONS}
+        value={currentPermission}
+      /> 
+    </div>
+  );
+}

@@ -11,15 +11,21 @@ import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { SpaceColorChooser } from "@/components/SpaceColorChooser";
 import { SpaceIconChooser } from "@/components/SpaceIconChooser";
-import PermissionSelector from "@/components/PermissionSelector";
+
+import { PermissionSelector } from "@/components/PermissionsSelector";
+import { PermissionsProvider, usePermissionsContext } from "@/components/PermissionsSelector/PermissionsContext";
 
 
 export function Page() {
+  const { company } = useLoadedData();
+
   return (
     <Paper.Root size="small">
       <h1 className="mb-4 font-bold text-3xl text-center">Creating a new space</h1>
       <Paper.Body minHeight="none">
-        <Form />
+        <PermissionsProvider companyName={company.name}>
+          <Form />
+        </PermissionsProvider>
       </Paper.Body>
     </Paper.Root>
   );
@@ -27,7 +33,7 @@ export function Page() {
 
 function Form() {
   const navigate = useNavigate();
-  const { company } = useLoadedData();
+  const { permissions } = usePermissionsContext();
 
   const [createGroup, { loading }] = Spaces.useCreateSpace();
 
@@ -83,7 +89,7 @@ function Form() {
         <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} name={name} />
       </div>
 
-      <PermissionSelector companyName={company.name} />
+      <PermissionSelector />
 
       <Forms.SubmitArea>
         <Forms.SubmitButton>Create Space</Forms.SubmitButton>
