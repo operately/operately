@@ -26,7 +26,7 @@ defmodule Operately.AccessFixtures do
     {:ok, binding} =
       attrs
       |> Enum.into(%{
-        access_level: 100,
+        access_level: Operately.Access.Binding.full_access(),
       })
       |> Operately.Access.create_binding()
 
