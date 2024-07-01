@@ -3,25 +3,13 @@ import React, { useState, useEffect } from "react";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
 import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
-import { PermissionLevels } from ".";
+import { PermissionLevels, PERMISSIONS_LIST } from ".";
 
 
 interface DropdownOption {
   value: PermissionLevels;
   label: string;
 }
-
-const COMPANY_PERMISSIONS = [
-  {value: PermissionLevels.FULL_ACCESS, label: "Has Full Access"},
-  {value: PermissionLevels.EDIT_ACCESS, label: "Can Edit"},
-  {value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment"},
-  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
-]
-
-const INTERNET_PERMISSIONS = [
-  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
-]
-
 
 export default function AccessLevel() {
   const { permissions } = usePermissionsContext();
@@ -55,7 +43,7 @@ function CompanyAccessLevel() {
 
   useEffect(() => {
     if(!currentPermission) {
-      setCurrentPermission(COMPANY_PERMISSIONS.find(option => option.value === permissions.company));
+      setCurrentPermission(PERMISSIONS_LIST.find(option => option.value === permissions.company));
     }
   }, [currentPermission, setCurrentPermission])
 
@@ -72,12 +60,17 @@ function CompanyAccessLevel() {
       </div>
       <SelectBoxNoLabel
         onChange={handleChange}
-        options={COMPANY_PERMISSIONS}
+        options={PERMISSIONS_LIST}
         value={currentPermission}
       /> 
     </div>
   );
 }
+
+
+const INTERNET_PERMISSIONS = [
+  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
+]
 
 
 function InternetAccessLevel() {

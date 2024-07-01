@@ -12,8 +12,8 @@ import { Paths } from "@/routes/paths";
 import { SpaceColorChooser } from "@/components/SpaceColorChooser";
 import { SpaceIconChooser } from "@/components/SpaceIconChooser";
 
-import { PermissionSelector } from "@/components/PermissionsSelector";
-import { PermissionsProvider, usePermissionsContext } from "@/components/PermissionsSelector/PermissionsContext";
+import { PermissionSelector } from "@/features/Permissions";
+import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
 
 export function Page() {
