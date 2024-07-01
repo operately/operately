@@ -32,4 +32,8 @@ defmodule OperatelyWeb.Api.Helpers do
       end
     end)
   end
+
+  def id_without_comments(id) do
+    id |> String.split("-") |> List.last()
+  end
 end
