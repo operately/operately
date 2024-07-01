@@ -2,11 +2,13 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   use TurboConnect.Query
 
   inputs do
-    # TODO: Define input fields
+    field :id, :string
+    field :include_admins, :boolean
+    field :include_people, :boolean
   end
 
   outputs do
-    # TODO: Define output fields
+    field :company, :company
   end
 
   def call(_conn, _inputs) do
