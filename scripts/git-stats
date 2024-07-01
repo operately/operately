@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+require 'date'
+
+start_of_year = Date.new(Date.today().year, 1, 1)
+end_of_year = Date.new(Date.today().year, 12, 31)
+
+# Run the Git log command to get commit data
+log_data = `git log origin/main --pretty=format:"%H,%an,%at" --since=#{start_of_year.strftime('%Y-%m-%d')} --until=#{end_of_year.strftime('%Y-%m-%d')}`
+
+# Initialize a hash to store commit counts per author per week
+commit_counts = Hash.new { |hash, key| hash[key] = Hash.new(0) }
+weeks = {}
+
+# Process the log data
+log_data.each_line do |line|
+  commit_hash, author, timestamp = line.strip.split(',')
+  week = Date.strptime(timestamp, '%s').strftime('%W')
+  commit_counts[author][week] += 1
+  weeks[week] = true
+end
+
+# Sort the weeks
+sorted_weeks = weeks.keys.sort
+header = "WEEK".ljust(10) + sorted_weeks.map { |w| w.ljust(2) }.join(' ')
+
+puts "Merged PRs per week, target >= 5"
+header = "WEEK".ljust(10) + sorted_weeks.map { |w| w.ljust(2) }.join(' ')
+puts "-" * header.length
+puts "\e[32m" + "WEEK".ljust(10) + sorted_weeks.map { |w| w.ljust(2) }.join(' ') + "\e[0m"
+puts "-" * header.length
+
+# Print the commit counts per author per week
+commit_counts.each do |author, weeks|
+  puts author.split(" ")[0].ljust(10) + sorted_weeks.map { |week| 
+    if weeks[week] == 0
+      " ."
+    else
+      weeks[week].to_s.rjust(2) 
+    end
+  }.join(' ') + "  = " + "#{weeks.values.sum}".rjust(4)
+end
+
+puts "-" * header.length
+
+puts "Total".ljust(10) + sorted_weeks.map { |week| commit_counts.values.map { |v| v[week] }.sum.to_s.rjust(2) }.join(' ') + "  = " + "#{commit_counts.values.map { |v| v.values.sum }.sum}".rjust(4)
+
+puts "-" * header.length
