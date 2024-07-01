@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { Link } from "react-router-dom";
+import { DivLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 import * as Notifications from "@/models/notifications";
 
@@ -9,8 +10,8 @@ export function Bell() {
   const count = Notifications.useUnreadCount();
 
   return (
-    <Link
-      to="/notifications"
+    <DivLink
+      to={Paths.notificationsPath()}
       className="flex items-center justify-center cursor-pointer relative group rounded-full bg-surface-accent border border-surface-outline"
       style={{ height: "32px", width: "32px" }}
       data-test-id="notifications-bell"
@@ -21,7 +22,7 @@ export function Bell() {
         className="text-content-dimmed group-hover:text-content-accent transition-all"
       />
       <UnreadIndicator count={count} />
-    </Link>
+    </DivLink>
   );
 }
 
