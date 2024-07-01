@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :mission, non_null(:string)
     field :icon, non_null(:string)
     field :color, non_null(:string)
+    field :company_permissions, non_null(:integer)
+    field :internet_permissions, non_null(:integer)
   end
 
   input_object :contact_input do
@@ -55,14 +57,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
       resolve fn args, %{context: context} ->
         creator = context.current_account.person
 
-        attrs = %{
-          name: args.input.name,
-          mission: args.input.mission,
-          icon: args.input.icon,
-          color: args.input.color
-        }
-
-        Operately.Groups.create_group(creator, attrs)
+        Operately.Groups.create_group(creator, args.input)
       end
     end
 
