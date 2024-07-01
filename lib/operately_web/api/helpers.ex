@@ -36,4 +36,14 @@ defmodule OperatelyWeb.Api.Helpers do
   def id_without_comments(id) do
     id |> String.split("-") |> List.last()
   end
+
+  def id_with_comments(comments, id) do
+    comments = comments
+      |> String.downcase()
+      |> String.replace(~r/[^a-zA-Z0-9]/, "-")
+      |> String.trim_leading("-")
+      |> String.trim_trailing("-")
+
+    comments <> "-" <> id
+  end
 end

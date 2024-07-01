@@ -1,13 +1,16 @@
 import React from "react";
 
-export function Logo() {
+export function Logo(props: { width?: string; height?: string }) {
+  const width = props.width || "22px";
+  const height = props.height || "22px";
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       id="Layer_1"
       viewBox="193.04 193.04 613.92 613.92"
-      width="22px"
-      height="22px"
+      width={width}
+      height={height}
     >
       <polygon points="602.32 806.96 397.68 806.96 397.68 602.32 602.32 806.96" fill="#024fac"></polygon>
       <polygon points="397.68 193.04 602.32 193.04 602.32 397.68 397.68 193.04" fill="#024fac"></polygon>
