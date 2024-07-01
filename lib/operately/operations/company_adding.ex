@@ -68,6 +68,12 @@ defmodule Operately.Operations.CompanyAdding do
         tag: :standard,
       })
     end)
+    |> Multi.insert(:anonymous_access_group, fn changes ->
+      Group.changeset(%{
+        company_id: changes.company.id,
+        tag: :anonymous,
+      })
+    end)
   end
 
   defp insert_access_bindings(multi) do
@@ -76,14 +82,14 @@ defmodule Operately.Operations.CompanyAdding do
       Binding.changeset(%{
         group_id: changes.admins_access_group.id,
         context_id: changes.company_context.id,
-        access_level: 100,
+        access_level: Binding.full_access(),
       })
     end)
     |> Multi.insert(:members_access_binding, fn changes ->
       Binding.changeset(%{
         group_id: changes.members_access_group.id,
         context_id: changes.company_context.id,
-        access_level: 10,
+        access_level: Binding.view_access(),
       })
     end)
   end

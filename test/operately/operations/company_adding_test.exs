@@ -5,6 +5,7 @@ defmodule Operately.Operations.CompanyAddingTest do
   alias Operately.Groups
   alias Operately.People
   alias Operately.Access
+  alias Operately.Access.Binding
 
   @email "john@your-company.com"
 
@@ -68,12 +69,14 @@ defmodule Operately.Operations.CompanyAddingTest do
     person = People.get_person_by_email(company, @email)
     full_access = Access.get_group!(company_id: company.id, tag: :full_access)
     standard = Access.get_group!(company_id: company.id, tag: :standard)
+    anonymous = Access.get_group!(company_id: company.id, tag: :anonymous)
 
     assert nil != full_access
     assert nil != standard
+    assert nil != anonymous
 
-    assert nil != Access.get_binding!(group_id: full_access.id, access_level: 100)
-    assert nil != Access.get_binding!(group_id: standard.id, access_level: 10)
+    assert nil != Access.get_binding!(group_id: full_access.id, access_level: Binding.full_access())
+    assert nil != Access.get_binding!(group_id: standard.id, access_level: Binding.view_access())
 
     assert nil != Access.get_group_membership(group_id: full_access.id, person_id: person.id)
     assert nil == Access.get_group_membership(group_id: standard.id, person_id: person.id)
