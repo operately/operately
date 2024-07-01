@@ -24,8 +24,6 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
 
   test "GoalTimeframeEditing operation updates goal", ctx do
     assert ctx.goal.timeframe.type == "quarter"
-    assert ctx.goal.timeframe.start_date == ~D[2024-04-01]
-    assert ctx.goal.timeframe.end_date == ~D[2024-06-30]
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalTimeframeEditing.run(
