@@ -19,15 +19,18 @@ log_data.each_line do |line|
   weeks[week] = true
 end
 
+total_weeks = weeks.keys.count
+
 # Sort the weeks
 sorted_weeks = weeks.keys.sort
-header = "WEEK".ljust(10) + sorted_weeks.map { |w| w.ljust(2) }.join(' ')
 
-puts "Merged PRs per week, target >= 5"
+puts "Merged PRs per week, targets: >5/week, >20/month"
 header = "WEEK".ljust(10) + sorted_weeks.map { |w| w.ljust(2) }.join(' ')
-puts "-" * header.length
-puts "\e[32m" + "WEEK".ljust(10) + sorted_weeks.map { |w| w.ljust(2) }.join(' ') + "\e[0m"
-puts "-" * header.length
+separator = "-" * header.length
+
+puts separator
+puts "\e[32m" + header + "\e[0m"
+puts separator
 
 # Print the commit counts per author per week
 commit_counts.each do |author, weeks|
@@ -37,11 +40,11 @@ commit_counts.each do |author, weeks|
     else
       weeks[week].to_s.rjust(2) 
     end
-  }.join(' ') + "  = " + "#{weeks.values.sum}".rjust(4)
+  }.join(' ') + "  = " + "#{weeks.values.sum}".rjust(4) + " (avg: #{(weeks.values.sum.to_f / weeks.keys.count).round(1).to_s.rjust(4)})"
 end
 
-puts "-" * header.length
+puts separator
 
-puts "Total".ljust(10) + sorted_weeks.map { |week| commit_counts.values.map { |v| v[week] }.sum.to_s.rjust(2) }.join(' ') + "  = " + "#{commit_counts.values.map { |v| v.values.sum }.sum}".rjust(4)
+puts "Total".ljust(10) + sorted_weeks.map { |week| commit_counts.values.map { |v| v[week] }.sum.to_s.rjust(2) }.join(' ') + "  = " + "#{commit_counts.values.map { |v| v.values.sum }.sum}".rjust(4) + " (avg: #{(commit_counts.values.map { |v| v.values.sum }.sum.to_f / commit_counts.keys.count).round(1).to_s.rjust(4)})"
 
-puts "-" * header.length
+puts separator
