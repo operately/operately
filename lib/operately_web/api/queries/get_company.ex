@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
       Operately.Companies.get_company_by_short_id(me(conn), inputs[:id])
       |> case do
         nil -> {:error, :not_found}
-        company -> Serializer.serialize(company, level: :short)
+        company -> {:ok, Serializer.serialize(company, level: :essential)}
       end
     end
   end
