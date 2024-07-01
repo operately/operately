@@ -25,7 +25,7 @@ function PublicRoutes() {
 export function createAppRoutes() {
   return createBrowserRouter([
     {
-      path: "/:companySlug",
+      path: "/:companyId",
       loader: companyLoader,
       element: <ProtectedRoutes />,
       errorElement: <ErrorPage />,
