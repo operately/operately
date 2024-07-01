@@ -68,6 +68,12 @@ defmodule Operately.Operations.CompanyAdding do
         tag: :standard,
       })
     end)
+    |> Multi.insert(:anonymous_access_group, fn changes ->
+      Group.changeset(%{
+        company_id: changes.company.id,
+        tag: :anonymous,
+      })
+    end)
   end
 
   defp insert_access_bindings(multi) do
