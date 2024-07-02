@@ -13,8 +13,8 @@ import { TextTooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 
-import { createPath } from "@/utils/paths";
 import classNames from "classnames";
+import { Paths } from "@/routes/paths";
 
 interface ProjectListItemProps {
   project: Projects.Project;
@@ -43,7 +43,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
 }
 
 function ProjectNameLine({ project }) {
-  const path = createPath("projects", project.id);
+  const path = Paths.projectPath(project.id);
 
   return (
     <div className="font-extrabold flex items-center gap-2">
@@ -61,7 +61,7 @@ function ProjectStatusLine({ project }) {
     return (
       <div className="mt-2 text-sm font-medium">
         Closed on <FormattedTime time={project.closedAt} format="short-date" /> &middot;{" "}
-        <Link to={createPath("projects", project.id, "retrospective")}>Read the retrospective</Link>
+        <Link to={Paths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
       </div>
     );
   } else {

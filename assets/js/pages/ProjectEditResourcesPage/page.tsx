@@ -10,10 +10,10 @@ import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { Link, ButtonLink, DivLink } from "@/components/Link";
 
 import { createTestId } from "@/utils/testid";
-import { createPath } from "@/utils/paths";
-
 import { useLoadedData } from "./loader";
 import { useRemoveAction } from "./useRemoveAction";
+import { Paths } from "@/routes/paths";
+import { createPath } from "react-router-dom";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -64,7 +64,7 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
   const icon = <ResourceIcon resourceType={resource!.resourceType} size={32} />;
   const removeId = createTestId("remove-resource", title);
 
-  const editPath = createPath("projects", project.id, "resources", resource!.id, "edit");
+  const editPath = Paths.projectEditResourcePath(project.id!, resource!.id);
   const editId = createTestId("edit-resource", title);
 
   return (
@@ -120,7 +120,7 @@ function PotentialResourceListItem({ resourceType }: { resourceType: string }) {
   const icon = <ResourceIcon resourceType={resourceType} size={32} />;
 
   const id = createTestId("add-resource", title);
-  const path = createPath("projects", project.id, "resources", "new", { resourceType });
+  const path = Paths.projectNewResourcePath(project.id!, { resourceType });
 
   return (
     <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">

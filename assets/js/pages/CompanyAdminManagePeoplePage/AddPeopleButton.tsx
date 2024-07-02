@@ -1,9 +1,9 @@
 import * as React from "react";
 import { GhostButton } from "@/components/Button";
-import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
 
 export function AddPeopleButton() {
-  const addPeoplePath = createPath("company", "admin", "managePeople", "addPeople");
+  const addPeoplePath = Paths.companyManagePeopleAddPeoplePath();
 
   return (
     <div className="flex items-center my-8 gap-2">

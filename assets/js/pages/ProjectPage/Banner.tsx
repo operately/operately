@@ -5,10 +5,10 @@ import * as Projects from "@/models/projects";
 
 import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
-import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
 
 export default function Banner({ project }: { project: Projects.Project }) {
-  const retroPath = createPath("projects", project.id, "retrospective");
+  const retroPath = Paths.projectRetrospectivePath(project.id!);
 
   if (project.status === "closed") {
     return (

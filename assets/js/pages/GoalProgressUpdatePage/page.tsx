@@ -8,7 +8,6 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import { useLoadedData, useRefresh } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { createPath } from "@/utils/paths";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
@@ -96,7 +95,7 @@ function Title({ update }) {
 }
 
 function Navigation({ goal }) {
-  const goalPath = createPath("goals", goal.id);
+  const goalPath = Paths.goalPath(goal.id!);
 
   return (
     <Paper.Navigation>

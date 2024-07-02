@@ -9,10 +9,10 @@ import { GhostButton } from "@/components/Button";
 import FormattedTime from "@/components/FormattedTime";
 
 import { useLoadedData } from "./loader";
-import { createPath } from "@/utils/paths";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Link } from "@/components/Link";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -33,7 +33,7 @@ export function Page() {
 }
 
 function Title({ project }) {
-  const editTimeline = createPath("projects", project.id, "edit", "timeline");
+  const editTimeline = Paths.projectEditTimelinePath(project.id);
 
   return (
     <div className="flex items-center justify-between mb-8">
@@ -118,7 +118,7 @@ function MilestoneList({ project }) {
 }
 
 function PendingItem({ project, milestone }) {
-  const path = createPath("projects", project.id, "milestones", milestone.id);
+  const path = Paths.projectMilestonePath(project.id, milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
@@ -146,7 +146,7 @@ function PendingItem({ project, milestone }) {
 }
 
 function DoneItem({ project, milestone }) {
-  const path = createPath("projects", project.id, "milestones", milestone.id);
+  const path = Paths.projectMilestonePath(project.id, milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">

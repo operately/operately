@@ -3,8 +3,8 @@ import * as Projects from "@/models/projects";
 import * as KeyResources from "@/models/keyResources";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { createPath } from "@/utils/paths";
 import { useEditResource } from "@/models/keyResources";
+import { Paths } from "@/routes/paths";
 
 interface FormState {
   projectId: string;
@@ -22,7 +22,7 @@ interface FormState {
 }
 
 export function useForm(project: Projects.Project, keyResource: KeyResources.KeyResource): FormState {
-  const gotoResourceList = useNavigateTo(createPath("projects", project.id, "edit", "resources"));
+  const gotoResourceList = useNavigateTo(Paths.projectEditResourcesPath(project.id!));
 
   const [name, setName] = React.useState(keyResource.title);
   const [url, setUrl] = React.useState(keyResource.link);

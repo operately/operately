@@ -7,9 +7,9 @@ import { DivLink } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { Summary } from "@/components/RichContent";
-import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -21,11 +21,7 @@ export function Page() {
           <SpacePageNavigation space={space} activeTab="discussions" />
           <div className="mt-4 mb-8 flex items-center justify-between">
             <div className="text-2xl font-extrabold">Discussions</div>
-            <FilledButton
-              linkTo={createPath("spaces", space.id, "discussions", "new")}
-              size="sm"
-              testId="new-discussion"
-            >
+            <FilledButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
               New Discussion
             </FilledButton>
           </div>
@@ -59,7 +55,7 @@ function DiscussionList() {
 }
 
 function DiscussionListItem({ space, discussion }) {
-  const path = createPath("spaces", space.id, "discussions", discussion.id);
+  const path = Paths.discussionPath(space.id!, discussion.id);
 
   return (
     <DivLink

@@ -3,10 +3,10 @@ import React from "react";
 import { DimmedLabel } from "./Label";
 
 import * as Projects from "@/models/projects";
-import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
+import { Paths } from "@/routes/paths";
 
 export default function Overview({ project }) {
   return (
@@ -75,7 +75,7 @@ function CloseButton({ project }: { project: Projects.Project }) {
   if (project.isArchived) return null;
 
   const type = Projects.allMilestonesCompleted(project) ? "primary" : "secondary";
-  const linkTo = createPath("projects", project.id, "close");
+  const linkTo = Paths.projectClosePath(project.id!);
 
   return (
     <GhostButton type={type} linkTo={linkTo} size="sm" testId="close-project-button">

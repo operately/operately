@@ -7,12 +7,12 @@ import { FilledButton } from "@/components/Button";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { ProjectList } from "@/features/ProjectList";
 
-import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { space, projects } = useLoadedData();
-  const newProjectPath = createPath("spaces", space.id, "projects", "new");
+  const newProjectPath = Paths.spaceNewProjectPath(space.id!);
 
   return (
     <Pages.Page title={space.name!}>

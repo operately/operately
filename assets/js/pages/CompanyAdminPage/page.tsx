@@ -7,8 +7,8 @@ import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { CompanyAdmins } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
-import { createPath } from "@/utils/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const me = useMe();
@@ -40,9 +40,9 @@ export function Page() {
 }
 
 function Menu() {
-  const manageTrustedDomains = createPath("company", "admin", "manageTrustedEmailDomains");
-  const managePeople = createPath("company", "admin", "managePeople");
-  const manageAdmins = createPath("company", "admin", "manageAdmins");
+  const manageTrustedDomains = Paths.companyAdminManageTrustedDomainsPath();
+  const managePeople = Paths.companyManagePeoplePath();
+  const manageAdmins = Paths.companyManageAdminsPath();
 
   return (
     <div className="mt-12">

@@ -2,9 +2,9 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 import * as TipTapEditor from "@/components/Editor";
 
-import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { Paths } from "@/routes/paths";
 
 interface Error {
   field: string;
@@ -31,7 +31,7 @@ export function useForm(project: Projects.Project): FormState {
   const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor();
   const whatDidYouLearn = useWhatDidYouLearnEditor();
 
-  const goToProject = useNavigateTo(createPath("projects", project.id));
+  const goToProject = useNavigateTo(Paths.projectPath(project.id!));
 
   const [post, { loading }] = Projects.useCloseProjectMutation({
     onCompleted: goToProject,
