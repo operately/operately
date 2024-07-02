@@ -25,7 +25,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :visit_profile_page, ctx do
-    UI.visit(ctx, "/people/#{ctx.person.id}")
+    UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person))
   end
 
   step :assert_contact_email_visible, ctx do
@@ -51,7 +51,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :assert_on_manager_profile, ctx do
-    UI.assert_page(ctx, "/people/#{ctx.manager.id}")
+    UI.assert_page(ctx, Paths.profile_path(ctx.company, ctx.manager))
   end
 
   step :assert_person_listed_as_report_on_manager_profile, ctx do
