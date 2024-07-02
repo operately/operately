@@ -16,6 +16,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goals", goal_id(goal), "progress-updates", update.id])
   end
 
+  def goal_check_in_new_path(company = %Company{}, goal = %Goal{}) do
+    create_path([company_id(company), "goals", goal_id(goal), "progress-updates", "new"])
+  end
+
   def goal_activity_path(company = %Company{}, goal = %Goal{}, activity) do
     create_path([company_id(company), "goals", goal_id(goal), "activities", activity.id])
   end
@@ -50,6 +54,10 @@ defmodule OperatelyWeb.Paths do
 
   def project_check_in_path(company = %Company{}, project = %Project{}, check_in) do
     create_path([company_id(company), "projects", project_id(project), "check-ins", check_in.id])
+  end
+
+  def project_check_in_new_path(company = %Company{}, project = %Project{}) do
+    create_path([company_id(company), "projects", project_id(project), "check-ins", "new"])
   end
 
   def project_retrospective_path(company = %Company{}, project = %Project{}) do
@@ -97,6 +105,14 @@ defmodule OperatelyWeb.Paths do
   #
 
   def create_path(parts) do
+    if Enum.any?(parts, fn part -> part == nil end) do
+      raise ArgumentError, "illegal nil in path parts"
+    end
+
+    if Enum.any?(parts, fn part -> part == "" end) do
+      raise ArgumentError, "illegal empty string in path parts"
+    end
+
     "/" <> Enum.join(parts, "/")
   end
 
