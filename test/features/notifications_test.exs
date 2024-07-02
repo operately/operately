@@ -41,7 +41,7 @@ defmodule Operately.Features.NotificationsTest do
 
   step :given_a_project_creation_notification_exists, ctx do
     ctx
-    |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.click(testid: "projects-tab")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "project-name-input", with: "Website Redesign")

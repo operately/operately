@@ -4,6 +4,10 @@ defmodule OperatelyWeb.Paths do
   alias Operately.Projects.Project
   alias Operately.Companies.Company
 
+  def account_path(company = %Company{}) do
+    create_path([company_id(company), "account"])
+  end
+
   def home_path(company = %Company{}) do
     create_path([company_id(company)])
   end
