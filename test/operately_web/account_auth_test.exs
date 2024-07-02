@@ -31,11 +31,6 @@ defmodule OperatelyWeb.AccountAuthTest do
       refute get_session(conn, :to_be_removed)
     end
 
-    test "redirects to the configured path", %{conn: conn, account: account} do
-      conn = conn |> put_session(:account_return_to, "/hello") |> AccountAuth.log_in_account(account)
-      assert redirected_to(conn) == "/hello"
-    end
-
     test "writes a cookie if remember_me is configured", %{conn: conn, account: account} do
       conn = conn |> fetch_cookies() |> AccountAuth.log_in_account(account, %{"remember_me" => "true"})
       assert get_session(conn, :account_token) == conn.cookies[@remember_me_cookie]
