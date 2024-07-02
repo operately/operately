@@ -13,7 +13,6 @@ import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
 import { useRemoveAction } from "./useRemoveAction";
 import { Paths } from "@/routes/paths";
-import { createPath } from "react-router-dom";
 
 export function Page() {
   const { project } = useLoadedData();
