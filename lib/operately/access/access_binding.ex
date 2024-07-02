@@ -33,4 +33,5 @@ defmodule Operately.Access.Binding do
   def comment_access, do: @comment_access
   def edit_access, do: @edit_access
   def full_access, do: @full_access
+  def valid_access_levels, do: @valid_access_levels
 end
