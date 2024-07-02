@@ -8,7 +8,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
     check_in = Projects.get_check_in!(activity.content["check_in_id"])
     company = Operately.Repo.preload(project, :company).company
 
-    {cta_text, cta_url} = contruct_cta_text_and_url(person, project, check_in)
+    {cta_text, cta_url} = contruct_cta_text_and_url(company, person, project, check_in)
 
     company
     |> new()
@@ -24,13 +24,14 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
   end
 
 
-  defp contruct_cta_text_and_url(person, project, check_in) do
+  defp contruct_cta_text_and_url(person, company, project, check_in) do
     reviewer = Projects.get_person_by_role(project, :reviewer)
+    url = OperatelyWeb.Paths.project_check_in_path(company, project, check_in) |> OperatelyWeb.Paths.to_url()
 
     if person.id == reviewer.id do
-      {"Acknowledge", OperatelyEmail.project_check_in_url(project.id, check_in.id) <> "?acknowledge=true"}
+      {"Acknowledge", url <> "?acknowledge=true"}
     else
-      {"View Check-In", OperatelyEmail.project_check_in_url(project.id, check_in.id)}
+      {"View Check-In", url}
     end
   end
 end

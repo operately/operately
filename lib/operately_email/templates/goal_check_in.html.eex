@@ -9,5 +9,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.goal_check_in_url(@goal.id, @update.id), "View Update") %>
+  <%= cta_button(@cta_url, "View Update") %>
 <% end %>

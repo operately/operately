@@ -1,14 +1,15 @@
 defmodule OperatelyEmail.Emails.GoalClosingEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
+  alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
     space = Operately.Groups.get_group!(goal.group_id)
-    link = OperatelyEmail.goal_activity_url(goal.id, activity.id)
     activity = Operately.Repo.preload(activity, :comment_thread)
+    link = Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
 
     success = activity.content["success"]
     message = activity.comment_thread.message

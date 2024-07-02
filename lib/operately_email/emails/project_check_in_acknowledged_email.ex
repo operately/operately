@@ -16,8 +16,8 @@ defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:check_in, check_in)
-    |> assign(:cta_url, OperatelyEmail.project_check_in_url(project.id, check_in.id))
     |> assign(:cta_text, "View Check-In")
+    |> assign(:cta_url, OperatelyWeb.Paths.project_check_in_path(company, project, check_in) |> OperatelyWeb.Paths.to_url())
     |> render("project_check_in_acknowledged")
   end
 end

@@ -16,6 +16,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInAcknowledgementEmail do
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)
+    |> assign(:cta_url, OperatelyWeb.Paths.goal_check_in_path(company, goal) |> OperatelyWeb.Paths.to_url())
     |> render("goal_check_in_acknowledgement")
   end
 end

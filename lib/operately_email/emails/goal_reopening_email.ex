@@ -7,7 +7,7 @@ defmodule OperatelyEmail.Emails.GoalReopeningEmail do
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
     space = Operately.Groups.get_group!(goal.group_id)
-    link = OperatelyEmail.goal_activity_url(goal.id, activity.id)
+    link = OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url()
     message = Operately.Repo.preload(activity, :comment_thread).comment_thread.message
 
     company
