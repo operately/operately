@@ -17,6 +17,7 @@ defmodule OperatelyEmail.Emails.GoalCreatedEmail do
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:role, role)
+    |> assign(:cta_url, OperatelyWeb.Paths.goal_path(company, goal))
     |> render("goal_created")
   end
 end

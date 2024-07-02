@@ -1,9 +1,10 @@
 defmodule Operately.Support.Features.NotificationsSteps do
   alias Operately.Support.Features.UI
   alias Operately.People.Person
+  alias OperatelyWeb.Paths
 
   def visit_notifications_page(ctx) do
-    UI.visit(ctx, "/notifications")
+    UI.visit(ctx, Paths.notifications_path(ctx.company))
   end
 
   def click_on_first_notification(ctx) do

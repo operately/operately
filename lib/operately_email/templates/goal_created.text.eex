@@ -1,3 +1,3 @@
 <%= short_name(@author) %> added the <%= @goal.name %> and assigned you as the <%= @role %>.
 
-Link: <%= OperatelyEmail.goal_url(@goal.id) %>
+Link: <%= @cta_url %>
