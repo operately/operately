@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
@@ -9,20 +9,27 @@ import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import * as Spaces from "@/models/spaces";
 import client from "@/graphql/client";
 import * as Icons from "@tabler/icons-react";
+import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
+import { SelectBoxNoLabel } from "@/components/Form";
+
+
+interface MemberOption extends Omit<Option, "person"> {
+  person: Person & { permissions: PermissionLevels }
+}
 
 interface ContextDescriptor {
-  selected: Option[];
-  add: (person: Option) => void;
+  selected: MemberOption[];
+  add: (person: MemberOption) => void;
   remove: (id: string) => void;
 }
 
 const Context = React.createContext<ContextDescriptor | null>(null);
 
 export default function AddMembersModal({ spaceId, onSubmit, members }) {
-  const [selected, setSelectedList] = React.useState<Option[]>([]);
+  const [selected, setSelectedList] = React.useState<MemberOption[]>([]);
   const [isModalOpen, setIsModalOpen]: [boolean, any] = React.useState(false);
 
-  const add = (selection: Option) => setSelectedList([...selected, selection]);
+  const add = (selection: MemberOption) => setSelectedList([...selected, selection]);
   const remove = (id: string) => {
     setSelectedList(selected.filter((p) => p.value !== id));
   };
@@ -36,8 +43,13 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
         limit: 10,
       },
     });
+    
+    const people = result.data.potentialGroupMembers.map(person => {
+      return {...person, permissions: PermissionLevels.COMMENT_ACCESS};
+    });
 
-    let people = [...result.data.potentialGroupMembers].sort((a, b) => a.fullName.localeCompare(b.fullName));
+    people.sort((a, b) => a.fullName.localeCompare(b.fullName));
+
     return people;
   };
 
@@ -46,7 +58,12 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
       mutation: Spaces.ADD_MEMBERS,
       variables: {
         groupId: spaceId,
-        personIds: selected.map((s) => s.person.id),
+        members: selected.map((s) => (
+          {
+            id: s.person.id,
+            permissions: s.person.permissions
+          }
+        )),
       },
     });
 
@@ -96,24 +113,28 @@ function PeopleList() {
   return (
     <div className="flex flex-col gap-2">
       {selected.map((s) => (
-        <PeopleListItem selected={s} />
+        <PeopleListItem selected={s} key={s.person.id} />
       ))}
     </div>
   );
 }
 
-function PeopleListItem({ selected }: { selected: Option }): JSX.Element {
+function PeopleListItem({ selected }: { selected: MemberOption }): JSX.Element {
+  const { person } = selected;
   const { remove } = React.useContext(Context) as ContextDescriptor;
+  const [permissions, setPermissions] = useState(PERMISSIONS_LIST.find(obj => obj.value === person.permissions));
 
   return (
-    <div className="px-2 py-1 bg-surface rounded flex justify-between items-center" key={selected.value}>
-      <div className="flex items-center gap-2">
-        <Avatar person={selected.person} size="tiny" />
-        <p>
-          {selected.person.fullName} &middot; {selected.person.title}
-        </p>
+    <div className="grid grid-cols-[60%_32%_1fr] gap-2 w-full">
+      <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
+        <Avatar person={person} size="tiny" />
+        <p>{person.fullName} &middot; {person.title}</p>
       </div>
-
+      <SelectBoxNoLabel
+        onChange={setPermissions}
+        options={PERMISSIONS_LIST}
+        value={permissions}
+      /> 
       <RemoveIcon onClick={() => remove(selected.value)} />
     </div>
   );
@@ -144,7 +165,7 @@ function SearchField({ onSelect, loader, placeholder, alreadySelected }) {
 
 function RemoveIcon({ onClick }) {
   return (
-    <div className="hover:cursor-pointer text-content-dimmed hover:text-content-accent" onClick={onClick}>
+    <div className="flex items-center justify-center text-content-dimmed hover:cursor-pointer hover:text-content-accent" onClick={onClick}>
       <Icons.IconX size={20} />
     </div>
   );

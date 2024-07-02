@@ -39,6 +39,11 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :space_id, non_null(:string)
   end
 
+  input_object :add_member_input do
+    field :id, non_null(:id)
+    field :permissions, non_null(:integer)
+  end
+
   object :group_mutations do
     field :join_space, non_null(:group) do
       arg :input, non_null(:join_space_input)
@@ -78,15 +83,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
       end
     end
 
-    field :add_group_members, :group do
+    field :add_group_members, :boolean do
       arg :group_id, non_null(:id)
-      arg :person_ids, non_null(list_of(non_null(:id)))
+      arg :members, non_null(list_of(:add_member_input))
 
       resolve fn args, _ ->
-        group = Operately.Groups.get_group!(args.group_id)
-        {:ok, _} = Operately.Groups.add_members(group, args.person_ids)
+        Operately.Operations.GroupMembersAdding.run(args.group_id, args.members)
 
-        {:ok, group}
+        {:ok, true}
       end
     end
 

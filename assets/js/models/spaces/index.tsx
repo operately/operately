@@ -89,10 +89,8 @@ export function useRemoveMemberFromSpace(options = {}) {
 }
 
 export const ADD_MEMBERS = gql`
-  mutation AddGroupMembers($groupId: ID!, $personIds: [ID!]!) {
-    addGroupMembers(groupId: $groupId, personIds: $personIds) {
-      id
-    }
+  mutation AddGroupMembers($groupId: ID!, $members: [AddMemberInput]!) {
+    addGroupMembers(groupId: $groupId, members: $members)
   }
 `;
 
