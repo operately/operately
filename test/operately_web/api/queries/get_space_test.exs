@@ -4,6 +4,8 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
 
+  alias Operately.Access.Binding
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_space, %{id: "1"})
@@ -57,12 +59,13 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
       m2 = person_fixture(company_id: ctx.company.id, full_name: "Bob Smith")
       m3 = person_fixture(company_id: ctx.company.id, full_name: "Charlie Smith")
 
-      [m1, m2, m3] |> Enum.each(fn m -> Operately.Groups.add_member(space, m.id) end)
+      members = [m1, m2, m3] |> Enum.map(fn person -> %{id: person.id, permissions: Binding.comment_access()} end)
+      Operately.Groups.add_members(space.id, members)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: space.id, include_members: true})
       assert length(res.space.members) == 4 # 3 members + current user
 
-      [m1, m2, m3, ctx.person] 
+      [m1, m2, m3, ctx.person]
       |> Enum.sort_by(fn m -> m.full_name end)
       |> Enum.with_index()
       |> Enum.map(fn {m, i} -> {m, Enum.at(res.space.members, i)} end)
@@ -71,4 +74,4 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
       end)
     end
   end
-end 
+end
