@@ -10,6 +10,7 @@ import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { Paths } from "@/routes/paths";
 
 export interface FormState {
   fields: Fields;
@@ -115,7 +116,7 @@ export function useForm(): FormState {
     amIContributor,
   };
 
-  const cancelPath = spaceID ? `/spaces/${spaceID}` : "/projects";
+  const cancelPath = spaceID ? Paths.spacePath(spaceID) : Paths.projectsPath();
 
   const { submit, submitting, cancel, errors } = useSubmit(fields, cancelPath);
 
@@ -135,7 +136,7 @@ function useSubmit(fields: Fields, cancelPath: string) {
 
   const [add, { loading: submitting }] = Projects.useCreateMutation({
     onCompleted: (data: any) => {
-      navigate(`/projects/${data?.createProject?.id}`);
+      navigate(Paths.projectPath(data.createProject.id));
     },
   });
 

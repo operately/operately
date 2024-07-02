@@ -7,6 +7,7 @@ import { FilledButton } from "@/components/Button";
 import { ProjectList } from "@/features/ProjectList";
 
 import classNames from "classnames";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { projects } = useLoadedData();
@@ -19,7 +20,7 @@ export function Page() {
           <Title />
 
           <div className="flex items-center justify-center mb-10 gap-4">
-            <FilledButton linkTo={"/projects/new"}>Add Project</FilledButton>
+            <FilledButton linkTo={Paths.newProjectPath()}>Add Project</FilledButton>
           </div>
 
           <ProjectList projects={projects} showSpace />

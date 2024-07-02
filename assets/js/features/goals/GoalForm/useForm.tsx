@@ -10,6 +10,7 @@ import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
+import { Paths } from "@/routes/paths";
 
 export interface FormState {
   config: FormConfig;
@@ -364,10 +365,10 @@ function prepareDescriptionForSave(fields: Fields): string | null {
 
 function createCancelPath(config: FormConfig): string {
   if (config.mode === "edit") {
-    return createPath("goals", config.goal?.id);
+    return Paths.goalPath(config.goal!.id!);
   } else if (config.allowSpaceSelection) {
-    return "/goals";
+    return Paths.goalsPath();
   } else {
-    return createPath("group", config.space!.id);
+    return Paths.spacePath(config.space!.id!);
   }
 }

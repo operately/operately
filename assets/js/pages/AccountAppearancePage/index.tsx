@@ -12,6 +12,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { FilledButton } from "@/components/Button";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { Paths } from "@/routes/paths";
 
 export async function loader(): Promise<null> {
   return null;
@@ -47,7 +48,7 @@ export function Page() {
 
 function SubmitButton() {
   const theme = useTheme();
-  const goToAccount = useNavigateTo("/account");
+  const goToAccount = useNavigateTo(Paths.accountPath());
   const [loading, setLoading] = React.useState(false);
 
   const save = React.useCallback(() => {
@@ -69,7 +70,7 @@ function SubmitButton() {
 function Navigation({ me }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo="/account">
+      <Paper.NavItem linkTo={Paths.accountPath()}>
         <Avatar person={me} size="tiny" />
         Account
       </Paper.NavItem>

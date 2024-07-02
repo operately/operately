@@ -48,7 +48,7 @@ function ProfileLink() {
 function AppearanceLink() {
   return (
     <Link
-      to="/account/appearance"
+      to={Paths.accountAppearancePath()}
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
       data-test-id="appearance-link"
     >

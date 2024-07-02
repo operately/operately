@@ -9,6 +9,7 @@ import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import { InvitationUrl } from "@/features/CompanyAdmin";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { company } = useLoadedData();
@@ -17,9 +18,9 @@ export function Page() {
     <Pages.Page title={["Add People", company.name]}>
       <Paper.Root size="small">
         <Paper.Navigation>
-          <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
           <Paper.NavSeparator />
-          <Paper.NavItem linkTo="/company/admin/managePeople" testId="manage-people-link">
+          <Paper.NavItem linkTo={Paths.companyManagePeoplePath()} testId="manage-people-link">
             Manage People
           </Paper.NavItem>
         </Paper.Navigation>

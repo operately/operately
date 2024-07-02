@@ -6,6 +6,7 @@ import { useLoadedData } from "./loader";
 import { useFrom } from "./useForm";
 import { AddAdminsModal } from "./AddAdminsModal";
 import { AdminList } from "./AdminList";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { company } = useLoadedData();
@@ -15,7 +16,7 @@ export function Page() {
     <Pages.Page title={["Add/Remove People", "Company Administration"]}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body>
