@@ -17,7 +17,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx
     |> Steps.submit_check_in(values)
-    |> UI.log_time("Check-in submitted")
     |> Steps.assert_check_in_submitted(values)
     |> Steps.assert_check_in_visible_on_project_page(values)
     |> Steps.assert_check_in_visible_on_feed(values)
