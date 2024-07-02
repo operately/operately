@@ -12,7 +12,7 @@ defmodule Operately.Features.SpacesTest do
   feature "listing existing space", ctx do
     ctx
     |> Steps.given_two_spaces_exists()
-    |> Steps.visit_loby()
+    |> Steps.visit_home()
     |> Steps.assert_all_spaces_are_listed()
   end
 
@@ -25,7 +25,7 @@ defmodule Operately.Features.SpacesTest do
     }
 
     ctx
-    |> Steps.visit_loby()
+    |> Steps.visit_home()
     |> Steps.click_on_add_space()
     |> Steps.fill_in_space_form(params)
     |> Steps.submit_space_form()
@@ -40,7 +40,7 @@ defmodule Operately.Features.SpacesTest do
     Operately.Groups.add_member(group, person.id)
 
     ctx
-    |> visit_page()
+    |> Steps.visit_home()
     |> UI.click(title: group.name)
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "add-remove-members")
@@ -53,9 +53,9 @@ defmodule Operately.Features.SpacesTest do
 
     ctx
     |> UI.login_as(person)
-    |> UI.visit("/spaces/#{group.id}")
+    |> UI.visit(Paths.space_path(ctx.company, group))
     |> UI.click(testid: "join-space-button")
-    |> UI.visit("/spaces/#{group.id}")
+    |> UI.visit(Paths.space_path(ctx.company, group))
     |> UI.assert_text("Mati A. joined the space")
 
     members = Operately.Groups.list_members(group)
@@ -67,7 +67,7 @@ defmodule Operately.Features.SpacesTest do
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     ctx
-    |> visit_page()
+    |> Steps.visit_home()
     |> UI.click(title: group.name)
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "add-remove-members")
@@ -86,7 +86,7 @@ defmodule Operately.Features.SpacesTest do
     Operately.Groups.add_member(group, person.id)
 
     ctx
-    |> visit_page()
+    |> Steps.visit_home()
     |> UI.click(title: group.name)
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "add-remove-members")
@@ -101,7 +101,7 @@ defmodule Operately.Features.SpacesTest do
     project2 = project_fixture(%{name: "Project 2", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
 
     ctx
-    |> visit_page()
+    |> Steps.visit_home()
     |> UI.click(title: group.name)
     |> UI.click(testid: "projects-tab")
     |> UI.assert_text(project1.name)
@@ -112,21 +112,15 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
 
     ctx
-    |> visit_page()
+    |> Steps.visit_home()
     |> UI.click(title: group.name)
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "edit-name-and-purpose")
     |> UI.fill_in(Query.text_field("Name"), with: "Marketing 2")
     |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products 2")
     |> UI.click(testid: "save")
-    |> UI.assert_page("/spaces/#{group.id}")
+    |> UI.assert_page(Paths.space_path(ctx.company, group))
     |> UI.assert_has(Query.text("Marketing 2", count: 2))
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
-  end
-
-  # # ===========================================================================
-
-  defp visit_page(ctx) do
-    UI.visit(ctx, "/")
   end
 end
