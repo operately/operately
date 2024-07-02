@@ -48,7 +48,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   step :start_adding_project, ctx do
     ctx
-    |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.click(testid: "projects-tab")
     |> UI.click(testid: "add-project")
   end
