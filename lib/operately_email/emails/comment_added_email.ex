@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.CommentAddedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.Repo
+  alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -9,7 +10,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
 
     where = get_where(activity)
     action = get_action(activity)
-    link = get_link(activity)
+    link = get_link(company, activity)
 
     company
     |> new()
@@ -55,19 +56,22 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
     end
   end
 
-  def get_link(activity) do
+  def get_link(company, activity) do
     comment_thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
     activity = Operately.Activities.get_activity!(comment_thread.parent_id)
 
     cond do
       activity.action == "goal_timeframe_editing" ->
-        OperatelyEmail.goal_activity_url(activity.content["goal_id"], activity.id)
+        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+        Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
 
       activity.action == "goal_closing" ->
-        OperatelyEmail.goal_activity_url(activity.content["goal_id"], activity.id)
+        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+        Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
 
       activity.action == "goal_discussion_creation" ->
-        OperatelyEmail.goal_activity_url(activity.content["goal_id"], activity.id)
+        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+        Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
 
       true ->
         raise "Unsupported action"

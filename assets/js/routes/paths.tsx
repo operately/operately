@@ -164,7 +164,7 @@ export class Paths {
   }
 
   static goalClosePath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "close"]);
+    return createCompanyPath(["goals", goalId, "complete"]);
   }
 
   static goalPath(goalId: string) {

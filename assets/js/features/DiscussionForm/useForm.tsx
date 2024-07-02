@@ -96,7 +96,7 @@ export function useForm(options: UseFormOptions): FormState {
   const submitting = submittingPost || submittingEdit;
 
   const discussionListPath = Paths.spaceDiscussionsPath(space.id!);
-  const discussionPath = Paths.discussionPath(space.id!, discussion?.id!);
+  const discussionPath = discussion ? Paths.discussionPath(space.id!, discussion?.id!) : null;
   const cancelPath = options.mode === "edit" ? discussionPath : discussionListPath;
 
   const submitButtonLabel = options.mode === "edit" ? "Save Changes" : "Post Discussion";
