@@ -5,6 +5,7 @@ import { useLoadedData } from "./loader";
 import { Person } from "@/models/people";
 import Avatar from "@/components/Avatar";
 import { Link } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { company, people } = useLoadedData();
@@ -14,7 +15,7 @@ export function Page() {
       <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
         <div className="flex items-center gap-4 justify-center">
           <div className="font-medium">Employee List</div>
-          <Link to="/people/org-chart">Org Chart</Link>
+          <Link to={Paths.orgChartPath()}>Org Chart</Link>
         </div>
 
         <h1 className="text-3xl font-bold text-center mt-2 mb-16">Members of {company.name}</h1>
@@ -36,8 +37,6 @@ function PeopleList({ people }: { people: Person[] }) {
 }
 
 function PersonCard({ person }: { person: Person }) {
-  const path = `/people/${person.id}`;
-
   return (
     <div className="bg-surface rounded shadow p-4 border border-stroke-base">
       <div className="flex items-start gap-4">
@@ -45,7 +44,7 @@ function PersonCard({ person }: { person: Person }) {
 
         <div className="flex flex-col">
           <div className="font-bold leading-tight">
-            <Link to={path} underline={false}>
+            <Link to={Paths.profilePath(person.id!!)} underline={false}>
               {person.fullName}
             </Link>
           </div>

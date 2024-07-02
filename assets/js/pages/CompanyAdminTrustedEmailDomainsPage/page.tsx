@@ -8,6 +8,7 @@ import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 import { GhostButton } from "@/components/Button";
 import { createTestId } from "@/utils/testid";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { company } = useLoadedData();
@@ -17,7 +18,7 @@ export function Page() {
     <Pages.Page title={["Trusted Email Domains", company.name]}>
       <Paper.Root size="small">
         <Paper.Navigation>
-          <Paper.NavItem linkTo="/company/admin">Company Administration</Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body minHeight="none">

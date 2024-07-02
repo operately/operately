@@ -1,5 +1,6 @@
 import React from "react";
 import { GhostButton } from "@/components/Button";
+import { Paths } from "./paths";
 
 export default function ErrorPage() {
   return (
@@ -12,8 +13,8 @@ export default function ErrorPage() {
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
         <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo="/" type="primary" testId="back-to-lobby">
-            Go back to the Lobby
+          <GhostButton linkTo={Paths.homePath()} type="primary" testId="back-to-lobby">
+            Go back to Home
           </GhostButton>
         </div>
       </div>

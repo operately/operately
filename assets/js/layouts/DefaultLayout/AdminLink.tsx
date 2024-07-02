@@ -1,11 +1,11 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import * as React from "react";
+
+import { Paths } from "@/routes/paths";
 import { createPath } from "@/utils/paths";
 import { GhostButton } from "@/components/Button";
 
 export function AdminLink() {
-  const isRootPath = useLocation().pathname === "/";
-  if (!isRootPath) return null;
+  if (!Paths.isHomePath()) return null;
 
   return (
     <div className="flex items-center justify-center">

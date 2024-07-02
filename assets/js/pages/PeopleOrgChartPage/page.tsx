@@ -8,6 +8,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { useOrgChart, OrgChart, OrgChartNode } from "./useOrgChart";
 import classNames from "classnames";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { people } = useLoadedData();
@@ -18,7 +19,7 @@ export function Page() {
     <Pages.Page title={"Org Chart"}>
       <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
         <div className="flex items-center gap-4 justify-center mb-16">
-          <Link to="/people">Employee List</Link>
+          <Link to={Paths.peoplePath()}>Employee List</Link>
           <div className="font-medium">Org Chart</div>
         </div>
 

@@ -1,4 +1,8 @@
 export class Paths {
+  static isHomePath() {
+    return window.location.pathname === Paths.homePath();
+  }
+
   static homePath() {
     return createCompanyPath([]);
   }
@@ -13,6 +17,18 @@ export class Paths {
 
   static accountProfilePath() {
     return createCompanyPath(["account", "profile"]);
+  }
+
+  static accountAppearancePath() {
+    return createCompanyPath(["account", "appearance"]);
+  }
+
+  static companyAdminPath() {
+    return createCompanyPath(["company", "admin"]);
+  }
+
+  static companyManagePeoplePath() {
+    return createCompanyPath(["company", "admin", "managePeople"]);
   }
 
   static peoplePath() {
@@ -75,6 +91,14 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "resume"]);
   }
 
+  static orgChartPath() {
+    return createCompanyPath(["people", "org-chart"]);
+  }
+
+  static newSpacePath() {
+    return createCompanyPath(["spaces", "new"]);
+  }
+
   static spacePath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId]);
   }
@@ -89,6 +113,14 @@ export class Paths {
 
   static goalPath(goalId: string) {
     return createCompanyPath(["goals", goalId]);
+  }
+
+  static newGoalPath(params?: { companyWide: boolean }) {
+    return createCompanyPath(["goals", "new"]) + (params?.companyWide ? "?company-wide=true" : "");
+  }
+
+  static newProjectPath() {
+    return createCompanyPath(["projects", "new"]);
   }
 
   static projectsPath() {

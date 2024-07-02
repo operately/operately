@@ -64,7 +64,7 @@ function Form() {
     navigate(Paths.spacePath(res.data?.createGroup.id!));
   };
 
-  const onCancel = () => navigate("/");
+  const onCancel = () => navigate(Paths.homePath());
 
   return (
     <Forms.Form isValid={true} onSubmit={onSubmit} onCancel={onCancel} loading={loading}>
