@@ -145,15 +145,6 @@ defmodule Operately.Groups do
     Repo.insert(changeset)
   end
 
-  def remove_member(group, people_id) do
-    query = (
-      from m in Member,
-      where: m.group_id == ^group.id and m.person_id == ^people_id
-    )
-
-    Repo.delete_all(query)
-  end
-
   def add_contact(group, name, value, type) do
     contact = %Contact{
       group_id: group.id,

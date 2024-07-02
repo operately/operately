@@ -600,7 +600,7 @@ export type RootMutationType = {
   removeCompanyAdmin?: Maybe<Person>;
   removeCompanyMember?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
-  removeGroupMember?: Maybe<Group>;
+  removeGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
