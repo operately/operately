@@ -94,16 +94,14 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
       end
     end
 
-    field :remove_group_member, :group do
+    field :remove_group_member, :boolean do
       arg :group_id, non_null(:id)
       arg :member_id, non_null(:id)
 
       resolve fn args, _ ->
-        group = Operately.Groups.get_group(args.group_id)
+        Operately.Operations.GroupMemberRemoving.run(args.group_id, args.member_id)
 
-        Operately.Groups.remove_member(group, args.member_id)
-
-        {:ok, group}
+        {:ok, true}
       end
     end
 
