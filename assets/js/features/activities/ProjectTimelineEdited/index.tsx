@@ -155,7 +155,7 @@ function UpdatedMilestones({ content }: { content: Content }) {
 }
 
 function MilestoneLink({ projectId, milestone }: { projectId: string; milestone: Milestones.Milestone }) {
-  const path = `/projects/${projectId}/milestones/${milestone.id}`;
+  const path = Paths.projectMilestonePath(projectId, milestone.id!);
   const title = milestone.title;
 
   return (

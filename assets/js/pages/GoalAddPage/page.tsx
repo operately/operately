@@ -8,6 +8,7 @@ import { DimmedLink } from "@/components/Link";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { spaceID } = useLoadedData();
@@ -37,7 +38,7 @@ function NewGoalForSpacePage() {
     <Pages.Page title="New Goal">
       <Paper.Root size="large">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/spaces/${space!.id}/goals`}>Back to {space!.name} Space</DimmedLink>
+          <DimmedLink to={Paths.spacePath(space!.id!)}>Back to {space!.name} Space</DimmedLink>
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Adding a new subgoal for {space!.name}</h1>
@@ -71,7 +72,7 @@ function NewGoalPage() {
     <Pages.Page title="New Goal">
       <Paper.Root size="large">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/goals`}>Back to Goals</DimmedLink>
+          <DimmedLink to={Paths.goalsPath()}>Back to Goals</DimmedLink>
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">

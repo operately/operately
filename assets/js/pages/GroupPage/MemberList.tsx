@@ -3,10 +3,11 @@ import * as Spaces from "@/models/spaces";
 
 import { useNavigate } from "react-router-dom";
 import Avatar from "@/components/Avatar";
+import { Paths } from "@/routes/paths";
 
 export default function MemberList({ space }: { space: Spaces.Space }) {
   const navigate = useNavigate();
-  const gotoSpaceMembersPage = () => navigate(`/spaces/${space.id}/members`);
+  const gotoSpaceMembersPage = () => navigate(Paths.spaceMembersPath(space.id!));
 
   if (space.members!.length === 0) return null;
 

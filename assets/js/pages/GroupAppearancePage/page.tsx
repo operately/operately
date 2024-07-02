@@ -24,7 +24,7 @@ export function Page() {
     <Pages.Page title={["Appearance Settings", space.name!]}>
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-2">
-          <Link to={`/spaces/${space.id}`}>
+          <Link to={Paths.spacePath(space.id!)}>
             <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
             Back to the {space.name} Space
           </Link>

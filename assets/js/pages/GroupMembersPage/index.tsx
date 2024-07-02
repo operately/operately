@@ -11,6 +11,7 @@ import { GhostButton } from "@/components/Button";
 
 import AddMembersModal from "./AddMembersModal";
 import { Link } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 interface LoadedData {
   space: Spaces.Space;
@@ -29,7 +30,7 @@ export function Page() {
   return (
     <Paper.Root size="medium">
       <div className="flex items-center justify-center mb-2">
-        <Link to={`/spaces/${space.id}`}>
+        <Link to={Paths.spacePath(space.id!)}>
           <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
           Back to the {space.name} Space
         </Link>
