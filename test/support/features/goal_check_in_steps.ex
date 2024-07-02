@@ -10,8 +10,6 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  import Ecto.Query, only: [from: 2]
-
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
@@ -77,7 +75,7 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     ctx
     |> visit_page()
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "updated the progress"})
-    |> UI.visit("/feed")
+    |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "updated the progress"})
   end
 
@@ -102,7 +100,7 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
   end
 
   step :visit_page, ctx do
-    UI.visit(ctx, "/goals/#{ctx.goal.id}")
+    UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :acknowledge_progress_update, ctx do
@@ -128,7 +126,7 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     ctx
     |> visit_page()
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "acknowledged"})
-    |> UI.visit("/feed")
+    |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "acknowledged"})
   end
 
