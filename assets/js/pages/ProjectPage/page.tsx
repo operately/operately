@@ -75,7 +75,7 @@ export function Page() {
 
                   <div className="text-sm">
                     {showEditMilestones(project) && (
-                      <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
+                      <Link to={Paths.projectMilestonesPath(project.id!)} testId="manage-timeline">
                         View
                       </Link>
                     )}
@@ -305,7 +305,7 @@ function CheckInSection({ project }) {
           <div className="font-bold text-sm">Check-Ins</div>
           {project.lastCheckIn && (
             <div className="text-sm">
-              <Link to={`/projects/${project.id}/check-ins`}>View all</Link>
+              <Link to={Paths.projectCheckInsPath(project.id!)}>View all</Link>
             </div>
           )}
         </div>
