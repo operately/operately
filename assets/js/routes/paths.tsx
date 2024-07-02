@@ -163,20 +163,24 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "appearance"]);
   }
 
+  static goalClosePath(goalId: string) {
+    return createCompanyPath(["goals", goalId, "close"]);
+  }
+
   static goalPath(goalId: string) {
     return createCompanyPath(["goals", goalId]);
   }
 
   static goalCheckInNewPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "check-ins", "new"]);
+    return createCompanyPath(["goals", goalId, "progress-updates", "new"]);
   }
 
   static goalCheckInPath(goalId: string, checkInId: string) {
-    return createCompanyPath(["goals", goalId, "check-ins", checkInId]);
+    return createCompanyPath(["goals", goalId, "progress-updates", checkInId]);
   }
 
   static goalCheckInsPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "check-ins"]);
+    return createCompanyPath(["goals", goalId, "progress-updates"]);
   }
 
   static newGoalPath(params?: { companyWide: boolean }) {
@@ -247,23 +251,23 @@ export class Paths {
     return createCompanyPath(["goals", goalId, "complete"]);
   }
 
-  static reopenGoalPath(goalId: string) {
+  static goalReopenPath(goalId: string) {
     return createCompanyPath(["goals", goalId, "reopen"]);
   }
 
-  static archiveGoalPath(goalId: string) {
+  static goalArchivePath(goalId: string) {
     return createCompanyPath(["goals", goalId, "archive"]);
   }
 
-  static editGoalParentPath(goalId: string) {
+  static goalEditParentPath(goalId: string) {
     return createCompanyPath(["goals", goalId, "edit", "parent"]);
   }
 
-  static editGoalTimeframePath(goalId: string) {
+  static goalEditTimeframePath(goalId: string) {
     return createCompanyPath(["goals", goalId, "edit", "timeframe"]);
   }
 
-  static editGoalPath(goalId: string) {
+  static goalEditPath(goalId: string) {
     return createCompanyPath(["goals", goalId, "edit"]);
   }
 
