@@ -57,6 +57,11 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
+export type AddMemberInput = {
+  id: Scalars['ID']['input'];
+  permissions: Scalars['Int']['input'];
+};
+
 export type AddReactionInput = {
   emoji: Scalars['String']['input'];
   entityId: Scalars['ID']['input'];
@@ -150,7 +155,9 @@ export type CreateGoalInput = {
 
 export type CreateGroupInput = {
   color: Scalars['String']['input'];
+  companyPermissions: Scalars['Int']['input'];
   icon: Scalars['String']['input'];
+  internetPermissions: Scalars['Int']['input'];
   mission: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
@@ -552,7 +559,7 @@ export type RootMutationType = {
   addCompanyTrustedEmailDomain: Company;
   addFirstCompany: Company;
   addGroupContact?: Maybe<Group>;
-  addGroupMembers?: Maybe<Group>;
+  addGroupMembers?: Maybe<Scalars['Boolean']['output']>;
   addKeyResource: ProjectKeyResource;
   addProjectContributor: ProjectContributor;
   addProjectMilestone: Milestone;
@@ -654,7 +661,7 @@ export type RootMutationTypeAddGroupContactArgs = {
 
 export type RootMutationTypeAddGroupMembersArgs = {
   groupId: Scalars['ID']['input'];
-  personIds: Array<Scalars['ID']['input']>;
+  members: Array<InputMaybe<AddMemberInput>>;
 };
 
 

@@ -6,23 +6,34 @@ import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Spaces from "@/models/spaces";
 
+import { useLoadedData } from "./loader";
+
+import { Paths } from "@/routes/paths";
 import { SpaceColorChooser } from "@/components/SpaceColorChooser";
 import { SpaceIconChooser } from "@/components/SpaceIconChooser";
-import { Paths } from "@/routes/paths";
+
+import { PermissionSelector } from "@/features/Permissions";
+import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
+
 
 export function Page() {
+  const { company } = useLoadedData();
+
   return (
     <Paper.Root size="small">
       <h1 className="mb-4 font-bold text-3xl text-center">Creating a new space</h1>
       <Paper.Body minHeight="none">
-        <Form />
+        <PermissionsProvider companyName={company.name}>
+          <Form />
+        </PermissionsProvider>
       </Paper.Body>
     </Paper.Root>
   );
 }
 
 function Form() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const { permissions } = usePermissionsContext();
 
   const [createGroup, { loading }] = Spaces.useCreateSpace();
 
@@ -44,6 +55,8 @@ function Form() {
           mission: mission,
           icon: icon,
           color: color,
+          companyPermissions: permissions.company,
+          internetPermissions: permissions.internet,
         },
       },
     });
@@ -77,6 +90,8 @@ function Form() {
       <div>
         <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} name={name} />
       </div>
+
+      <PermissionSelector />
 
       <Forms.SubmitArea>
         <Forms.SubmitButton>Create Space</Forms.SubmitButton>

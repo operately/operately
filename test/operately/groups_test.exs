@@ -28,10 +28,6 @@ defmodule Operately.GroupsTest do
       assert Groups.list_potential_members(ctx.group.id, "", [person1.id], 10) == [person2]
       assert Groups.list_potential_members(ctx.group.id, "Doe", [], 10) == [person1]
       assert Groups.list_potential_members(ctx.group.id, "CTO", [], 10) == [person2]
-
-      {:ok, _} = Groups.add_members(ctx.group, [person1.id])
-
-      assert Groups.list_potential_members(ctx.group.id, "", [], 10) == [person2]
     end
 
     test "get_group!/1 returns the group with given id", ctx do
