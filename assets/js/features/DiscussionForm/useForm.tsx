@@ -4,6 +4,7 @@ import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
 
 import { useNavigate } from "react-router-dom";
+import { Paths } from "@/routes/paths";
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -45,11 +46,11 @@ export function useForm(options: UseFormOptions): FormState {
   });
 
   const [post, { loading: submittingPost }] = Discussions.usePost({
-    onCompleted: (data: any) => navigate(`/spaces/${space.id}/discussions/${data.postDiscussion.id}`),
+    onCompleted: (data: any) => navigate(Paths.discussionPath(space.id!, data.postDiscussion.id)),
   });
 
   const [edit, { loading: submittingEdit }] = Discussions.useEdit({
-    onCompleted: (data: any) => navigate(`/spaces/${space.id}/discussions/${data.editDiscussion.id}`),
+    onCompleted: (data: any) => navigate(Paths.discussionPath(space.id!, data.editDiscussion.id)),
   });
 
   const submit = async (): Promise<boolean> => {
@@ -94,8 +95,8 @@ export function useForm(options: UseFormOptions): FormState {
 
   const submitting = submittingPost || submittingEdit;
 
-  const discussionListPath = `/spaces/${space.id}/discussions`;
-  const discussionPath = `/spaces/${space.id}/discussions/${discussion?.id}`;
+  const discussionListPath = Paths.spaceDiscussionsPath(space.id!);
+  const discussionPath = Paths.discussionPath(space.id!, discussion?.id!);
   const cancelPath = options.mode === "edit" ? discussionPath : discussionListPath;
 
   const submitButtonLabel = options.mode === "edit" ? "Save Changes" : "Post Discussion";

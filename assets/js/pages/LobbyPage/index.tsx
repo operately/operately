@@ -7,6 +7,7 @@ import { Logo } from "@/layouts/DefaultLayout/Logo";
 import { DivLink } from "@/components/Link";
 
 import classnames from "classnames";
+import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
   companies: Api.Company[];
@@ -47,7 +48,7 @@ function CompanyCards({ companies }: { companies: Api.Company[] }) {
   );
 }
 
-function CompanyCard({ company }) {
+function CompanyCard({ company }: { company: Api.Company }) {
   const className = classnames(
     "cursor-pointer",
     "rounded-lg",
@@ -59,7 +60,7 @@ function CompanyCard({ company }) {
   );
 
   return (
-    <DivLink to={`/${company.id}`} className={className}>
+    <DivLink to={Paths.companyHomePath(company.id!)} className={className}>
       <Icons.IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
       <div className="font-medium mt-2">{company.name}</div>
       <div className="text-xs">12 members</div>
@@ -80,7 +81,7 @@ function AddCompanyCard() {
   );
 
   return (
-    <DivLink to={`/new`} className={className}>
+    <DivLink to={Paths.newCompanyPath()} className={className}>
       <div className="font-bold text-lg">+ Create new</div>
       <div className="text-sm font-medium">Add new organization</div>
       <div className="flex justify-end mt-3">

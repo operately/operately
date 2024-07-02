@@ -1,11 +1,8 @@
 import * as React from "react";
 
 import { SpaceCard, SpaceCardProps } from "./SpaceCard";
+import { Paths } from "@/routes/paths";
 
 export function SpaceCardLink(props: SpaceCardProps) {
-  if (props.comingSoon) {
-    return <SpaceCard {...props} linkTo={`/`} />;
-  } else {
-    return <SpaceCard {...props} linkTo={`/spaces/${props.space.id!}`} />;
-  }
+  return <SpaceCard {...props} linkTo={Paths.spacePath(props.space.id!)} />;
 }

@@ -3,11 +3,12 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 
 import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
 
 export function ProjectPageNavigation({ project }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>

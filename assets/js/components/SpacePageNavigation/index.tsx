@@ -10,6 +10,7 @@ import { createPath } from "@/utils/paths";
 import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
+import { Paths } from "@/routes/paths";
 
 interface SpacePageNavigationProps {
   space: Spaces.Space;
@@ -84,21 +85,21 @@ export function Settings({ space }) {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit name and purpose"
-        to={`/spaces/${space.id}/edit`}
+        to={Paths.spaceEditPath(space.id)}
         dataTestId="edit-name-and-purpose"
       />
       {!space.isCompanySpace && (
         <PageOptions.Link
           icon={Icons.IconUserPlus}
           title="Add/Remove members"
-          to={`/spaces/${space.id}/members`}
+          to={Paths.spaceMembersPath(space.id)}
           dataTestId="add-remove-members"
         />
       )}
       <PageOptions.Link
         icon={Icons.IconPaint}
         title="Change Appearance"
-        to={`/spaces/${space.id}/appearance`}
+        to={Paths.spaceAppearancePath(space.id)}
         dataTestId="change-appearance"
       />
     </PageOptions.Root>

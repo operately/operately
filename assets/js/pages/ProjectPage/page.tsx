@@ -56,7 +56,7 @@ export function Page() {
 
                   <div className="text-sm">
                     {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
+                      <Link to={Paths.projectEditDescriptionPath(project.id!)} testId="edit-project-description-link">
                         Edit
                       </Link>
                     )}

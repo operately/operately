@@ -82,7 +82,7 @@ function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
 
 function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
   const person = node.person;
-  const path = `/people/${person.id}`;
+  const path = Paths.profilePath(person.id!);
 
   return (
     <div className="">

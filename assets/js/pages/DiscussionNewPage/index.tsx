@@ -8,6 +8,7 @@ import * as Spaces from "@/models/spaces";
 import { FilledButton } from "@/components/Button";
 
 import { Form, useForm } from "@/features/DiscussionForm";
+import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
   space: Spaces.Space;
@@ -45,7 +46,7 @@ export function Page() {
 function Navigation({ space }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/spaces/${space.id}/discussions`}>
+      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>
         {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
         {space.name}
       </Paper.NavItem>

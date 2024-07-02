@@ -8,7 +8,6 @@ import { Card } from "./Card";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
-  comingSoon?: boolean;
   onClick?: () => void;
   shadowSize?: "base" | "lg";
   testId?: string;
@@ -17,7 +16,6 @@ export interface SpaceCardProps {
 
 export function SpaceCard(props: SpaceCardProps) {
   const { name, mission, color, icon, privateSpace } = props.space;
-  const comingSoon = props.comingSoon ?? false;
   const iconElement = Icons[icon!];
   const shadowSize = props.shadowSize ?? "base";
 
@@ -45,10 +43,7 @@ export function SpaceCard(props: SpaceCardProps) {
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
-      <div className="text-content-dimmed text-xs truncate">
-        {comingSoon && <span className="bg-surface-dimmed uppercase text-[9px] py-0.5 px-1">Comming Soon</span>}{" "}
-        {mission}
-      </div>
+      <div className="text-content-dimmed text-xs truncate">{mission}</div>
 
       {privateSpace && (
         <div className="absolute top-2 right-2 text-accent-1">

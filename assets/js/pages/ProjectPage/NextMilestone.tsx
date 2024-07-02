@@ -9,6 +9,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { GhostButton } from "@/components/Button";
 import { createPath } from "@/utils/paths";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import { Paths } from "@/routes/paths";
 
 export function NextMilestone({ project }) {
   const milestones = project.milestones || [];
@@ -45,7 +46,7 @@ function MilestonesZeroState({ project }) {
 
 function AllMilestonesCompleted({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestones-link">
+    <Link to={Paths.projectEditTimelinePath(project.id!)} testId="add-milestones-link">
       Add more milestones
     </Link>
   );
@@ -77,7 +78,7 @@ function NextMilestoneList({
 }
 
 function MilestoneLink({ project, milestone }) {
-  const path = `/projects/${project.id}/milestones/${milestone.id}`;
+  const path = Paths.projectMilestonePath(project.id!, milestone.id!);
   const title = milestone.title;
   const deadline = milestone.deadlineAt;
 

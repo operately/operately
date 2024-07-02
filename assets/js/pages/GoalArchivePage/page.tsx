@@ -8,6 +8,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -16,7 +17,7 @@ export function Page() {
     <Pages.Page title={["Archiving ", goal.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
-          <Paper.NavItem linkTo={`/goals/${goal.id}`}>{goal.name}</Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.goalPath(goal.id!)}>{goal.name}</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body minHeight="none">
@@ -27,7 +28,7 @@ export function Page() {
 
           <div className="flex items-center gap-6 mt-8">
             <ArchiveButton goal={goal} />
-            <DimmedLink to={`/goals/${goal.id}`}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalPath(goal.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -36,7 +37,7 @@ export function Page() {
 }
 
 function ArchiveButton({ goal }) {
-  const navigateToGoal = useNavigateTo(`/goals/${goal.id}`);
+  const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id!));
 
   const [archive, { loading: loading }] = Goals.useArchiveGoalMutation({
     variables: {

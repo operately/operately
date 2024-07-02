@@ -9,6 +9,7 @@ import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { GhostButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -17,7 +18,7 @@ export function Page() {
     <Pages.Page title={["Overview Edit", project.name!]}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
             <Icons.IconClipboardList size={16} />
             {project.name}
           </Paper.NavItem>
@@ -37,7 +38,7 @@ export function Page() {
 function Editor() {
   const { project } = useLoadedData();
 
-  const goToProjectPage = useNavigateTo(`/projects/${project.id}`);
+  const goToProjectPage = useNavigateTo(Paths.projectPath(project.id!));
 
   const [post] = Projects.useUpdateDescriptionMutation({
     onCompleted: goToProjectPage,
@@ -73,7 +74,7 @@ function Editor() {
           <GhostButton onClick={submit} testId="save">
             Save Project Overview
           </GhostButton>
-          <DimmedLink to={`/projects/${project.id}`}>Discard Changes</DimmedLink>
+          <DimmedLink to={Paths.projectPath(project.id!)}>Discard Changes</DimmedLink>
         </div>
       </TipTapEditor.Root>
     </div>

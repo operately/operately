@@ -15,7 +15,7 @@ import { useForm, FormState } from "./useForm";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
 import { truncateString } from "@/utils/strings";
-
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -45,8 +45,8 @@ export function Page() {
 }
 
 export function Navigation({ task }: { task: Tasks.Task }) {
-  const projectPath = `/projects/${task.project.id}`;
-  const milestonePath = `/projects/${task.project.id}/milestones/${task.milestone.id}`;
+  const projectPath = Paths.projectPath(task.project.id);
+  const milestonePath = Paths.projectMilestonePath(task.project.id, task.milestone.id);
 
   return (
     <Paper.Navigation>

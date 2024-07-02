@@ -1,4 +1,12 @@
 export class Paths {
+  static newCompanyPath() {
+    return createPath(["new"]);
+  }
+
+  static companyHomePath(companyId: string) {
+    return createPath([companyId]);
+  }
+
   static isHomePath() {
     return window.location.pathname === Paths.homePath();
   }
@@ -39,6 +47,10 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "discussions", discussionId]);
   }
 
+  static discussionEditPath(spaceId: string, discussionId: string) {
+    return createCompanyPath(["spaces", spaceId, "discussions", discussionId, "edit"]);
+  }
+
   static projectPath(projectId: string) {
     return createCompanyPath(["projects", projectId]);
   }
@@ -69,6 +81,10 @@ export class Paths {
 
   static projectMilestonePath(projectId: string, milestoneId: string) {
     return createCompanyPath(["projects", projectId, "milestones", milestoneId]);
+  }
+
+  static projectContributorsPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "contributors"]);
   }
 
   static editProjectGoalPath(projectId: string) {
@@ -103,6 +119,10 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId]);
   }
 
+  static spaceEditPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "edit"]);
+  }
+
   static spaceGoalsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "goals"]);
   }
@@ -111,8 +131,28 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "projects"]);
   }
 
+  static spaceMembersPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "members"]);
+  }
+
+  static spaceDiscussionsPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "discussions"]);
+  }
+
+  static spaceAppearancePath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "appearance"]);
+  }
+
   static goalPath(goalId: string) {
     return createCompanyPath(["goals", goalId]);
+  }
+
+  static goalCheckInPath(goalId: string, checkInId: string) {
+    return createCompanyPath(["goals", goalId, "check-ins", checkInId]);
+  }
+
+  static goalCheckInsPath(goalId: string) {
+    return createCompanyPath(["goals", goalId, "check-ins"]);
   }
 
   static newGoalPath(params?: { companyWide: boolean }) {
@@ -203,8 +243,16 @@ export class Paths {
     return createCompanyPath(["people", personId, "goals"]);
   }
 
-  static projectMilestoneUrl(projectId: string, milestoneId: string) {
-    return createCompanyPath(["projects", projectId, "milestones", milestoneId]);
+  static projectEditTimelinePath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "edit", "timeline"]);
+  }
+
+  static projectEditDescriptionPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "edit", "description"]);
+  }
+
+  static taskPath(taskId: string) {
+    return createCompanyPath(["tasks", taskId]);
   }
 }
 
