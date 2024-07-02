@@ -44,6 +44,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "spaces", space_id(space), "discussions"])
   end
 
+  def space_discussions_new_path(company = %Company{}, space = %Group{}) do
+    create_path([company_id(company), "spaces", space_id(space), "discussions", "new"])
+  end
+
   def feed_path(company = %Company{}) do
     create_path([company_id(company), "feed"])
   end

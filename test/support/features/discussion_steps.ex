@@ -7,7 +7,7 @@ defmodule Operately.Support.Features.DiscussionSteps do
 
   step :post_a_discussion, ctx, params do
     ctx
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
     |> UI.click(testid: "new-discussion")
     |> UI.fill(testid: "discussion-title", with: params[:title])
     |> UI.fill_rich_text(params[:body])
@@ -18,7 +18,7 @@ defmodule Operately.Support.Features.DiscussionSteps do
     discussion = last_discussion(ctx)
 
     ctx
-    |> UI.assert_page("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
+    |> UI.assert_page(Paths.discussion_path(ctx.company, ctx.space, discussion))
     |> UI.assert_text("This is a discussion")
     |> UI.assert_text("This is the body of the discussion.")
   end
@@ -41,16 +41,16 @@ defmodule Operately.Support.Features.DiscussionSteps do
 
   step :assert_discussion_feed_on_space_page, ctx, params do
     ctx
-    |> UI.visit("/spaces/#{ctx.space.id}")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> UI.assert_text(params[:title])
     |> UI.assert_text(params[:body])
   end
 
   step :start_writting_discussion, ctx, params do
     ctx
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
     |> UI.click(testid: "new-discussion")
-    |> UI.assert_page("/spaces/#{ctx.space.id}/discussions/new")
+    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.space))
     |> UI.fill(testid: "discussion-title", with: params[:title])
   end
 
@@ -85,7 +85,7 @@ defmodule Operately.Support.Features.DiscussionSteps do
     discussion = last_discussion(ctx)
 
     ctx
-    |> UI.assert_page("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
+    |> UI.assert_page(Paths.discussion_path(ctx.company, ctx.space, discussion))
     |> UI.assert_text("Testing file attachment")
     |> UI.assert_text("README.md")
   end
