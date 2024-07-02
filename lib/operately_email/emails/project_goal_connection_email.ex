@@ -10,6 +10,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
     project = Projects.get_project!(activity.content["project_id"])
     goal = Goals.get_goal!(activity.content["goal_id"])
     company = Repo.preload(project, :company).company
+    link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
 
     company
     |> new()
@@ -19,6 +20,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:goal, goal)
+    |> assign(:link, link)
     |> render("project_goal_connection")
   end
 end

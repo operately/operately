@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.GoalDiscussionCreationEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
+  alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -10,7 +11,7 @@ defmodule OperatelyEmail.Emails.GoalDiscussionCreationEmail do
     comment_thread = Repo.preload(activity, :comment_thread).comment_thread
     title = comment_thread.title
     message = comment_thread.message
-    link = OperatelyEmail.goal_activity_url(goal.id, activity.id)
+    link = Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
 
     company
     |> new()

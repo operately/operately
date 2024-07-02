@@ -3,6 +3,7 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
 
   alias Operately.Repo
   alias Operately.Updates
+  alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -23,6 +24,7 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
     |> assign(:title, title)
     |> assign(:comment, comment)
     |> assign(:space, space)
+    |> assign(:cta_url, Paths.discussion_path(company, space, discussion) |> Paths.to_url())
     |> render("discussion_comment_submitted")
   end
 end

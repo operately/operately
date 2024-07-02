@@ -8,7 +8,7 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
     goal = Goals.get_goal!(activity.content["goal_id"])
 
     message = Operately.Repo.preload(activity, :comment_thread).comment_thread.message
-    link = OperatelyEmail.goal_activity_url(goal.id, activity.id)
+    link = OperatelyWeb.Paths.goal_activity_path(company, goal, activity) |> OperatelyWeb.Paths.to_url()
 
     company
     |> new()

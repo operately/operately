@@ -17,6 +17,8 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
       Projects.get_milestone!(milestone["milestone_id"])
     end)
 
+    link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
+
     company
     |> new()
     |> from(author)
@@ -29,6 +31,7 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     |> assign(:old_duration, old_duration)
     |> assign(:new_duration, new_duration)
     |> assign(:new_milestones, new_milestones)
+    |> assign(:link, link)
     |> render("project_timeline_edited")
   end
 

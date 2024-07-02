@@ -10,5 +10,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.discussion_url(@space.id, @discussion.id), "View Discussion") %>
+  <%= cta_button(@cta_url, "View Discussion") %>
 <% end %>

@@ -25,5 +25,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.project_retrospective_url(@project.id), "View Retrospective") %>
+  <%= cta_button(@link, "View Retrospective") %>
 <% end %>

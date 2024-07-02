@@ -3,5 +3,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.project_url(@project.id), "View Archived Project") %>
+  <%= cta_button(@link, "View Archived Project") %>
 <% end %>

@@ -7,5 +7,5 @@
 <% end %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.project_check_in_url(@project.id, @check_in.id), "View Comment") %>
+  <%= cta_button(@cta_url, @cta_text) %>
 <% end %>

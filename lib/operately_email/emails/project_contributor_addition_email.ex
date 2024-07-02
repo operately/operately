@@ -9,6 +9,7 @@ defmodule OperatelyEmail.Emails.ProjectContributorAdditionEmail do
     contributor = Projects.get_contributor!(activity.content["contributor_id"])
     role = activity.content["role"]
     responsibility = construct_responsibility(contributor)
+    link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
 
     company
     |> new()
@@ -19,6 +20,7 @@ defmodule OperatelyEmail.Emails.ProjectContributorAdditionEmail do
     |> assign(:project, project)
     |> assign(:responsibility, responsibility)
     |> assign(:role, role)
+    |> assign(:link, link)
     |> render("project_contributor_addition")
   end
 
