@@ -5,7 +5,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :navigate_to_invitation_page, ctx do
     ctx
-    |> UI.visit("/")
+    |> UI.visit(Paths.home_path(ctx.company))
     |> UI.click(testid: "go-to-admin")
     |> UI.click(testid: "add-remove-people-manually")
     |> UI.click(testid: "add-person")

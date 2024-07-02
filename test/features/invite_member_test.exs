@@ -33,9 +33,9 @@ defmodule Operately.Features.InviteMemberTest do
 
   feature "admin account can invite members", ctx do
     ctx
-    |> Steps.navigate_to_invitation_page
+    |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(@new_member)
-    |> Steps.assert_member_invited
+    |> Steps.assert_member_invited()
   end
 
   feature "new member can reset their password", ctx do
@@ -61,7 +61,7 @@ defmodule Operately.Features.InviteMemberTest do
     title_missing = Map.put(@new_member, :title, " ")
 
     ctx
-    |> Steps.navigate_to_invitation_page
+    |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(name_missing)
     |> UI.assert_text("Full name is required")
     |> Steps.invite_member(email_missing)
@@ -75,11 +75,11 @@ defmodule Operately.Features.InviteMemberTest do
 
   feature "admin can reissue tokens", ctx do
     ctx
-    |> Steps.navigate_to_invitation_page
+    |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(@new_member)
-    |> Steps.assert_member_invited
+    |> Steps.assert_member_invited()
     |> UI.click(testid: "manage-people-link")
     |> Steps.reissue_invitation_token(@new_member)
-    |> Steps.assert_member_invited
+    |> Steps.assert_member_invited()
   end
 end
