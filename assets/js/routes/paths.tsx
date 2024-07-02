@@ -32,23 +32,23 @@ export class Paths {
   }
 
   static companyAdminPath() {
-    return createCompanyPath(["company", "admin"]);
+    return createCompanyPath(["admin"]);
   }
 
   static companyManagePeoplePath() {
-    return createCompanyPath(["company", "admin", "managePeople"]);
+    return createCompanyPath(["admin", "manage-people"]);
   }
 
   static companyManageAdminsPath() {
-    return createCompanyPath(["company", "admin", "manageAdmins"]);
+    return createCompanyPath(["admin", "manage-admins"]);
   }
 
   static companyManagePeopleAddPeoplePath() {
-    return createCompanyPath(["company", "admin", "managePeople", "addPeople"]);
+    return createCompanyPath(["admin", "manage-people", "add"]);
   }
 
   static companyAdminManageTrustedDomainsPath() {
-    return createCompanyPath(["company", "admin", "manageTrustedDomains"]);
+    return createCompanyPath(["admin", "manage-trusted-email-domains"]);
   }
 
   static peoplePath() {

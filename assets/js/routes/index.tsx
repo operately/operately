@@ -34,11 +34,11 @@ export function createAppRoutes() {
         pageRoute("", pages.GroupListPage),
         pageRoute("feed", pages.FeedPage),
 
-        pageRoute("company/admin", pages.CompanyAdminPage),
-        pageRoute("company/admin/manageAdmins", pages.CompanyAdminManageAdminsPage),
-        pageRoute("company/admin/managePeople", pages.CompanyAdminManagePeoplePage),
-        pageRoute("company/admin/managePeople/addPeople", pages.CompanyAdminAddPeoplePage),
-        pageRoute("company/admin/manageTrustedEmailDomains", pages.CompanyAdminTrustedEmailDomainsPage),
+        pageRoute("admin", pages.CompanyAdminPage),
+        pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),
+        pageRoute("admin/manage-people", pages.CompanyAdminManagePeoplePage),
+        pageRoute("admin/manage-people/add", pages.CompanyAdminAddPeoplePage),
+        pageRoute("admin/manage-trusted-email-domains", pages.CompanyAdminTrustedEmailDomainsPage),
 
         pageRoute("account", pages.AccountPage),
         pageRoute("account/profile", pages.AccountEditProfilePage),

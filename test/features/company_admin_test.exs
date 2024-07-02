@@ -122,7 +122,7 @@ defmodule Operately.Features.CompanyAdminTest do
   #
 
   defp visit_page(ctx) do
-    UI.visit(ctx, "/company/admin")
+    UI.visit(ctx, Paths.company_admin_path(ctx.company))
   end
 
 end
