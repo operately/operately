@@ -1,11 +1,11 @@
 defmodule Operately.Features.ProjectsDescriptionTest do
   use Operately.FeatureCase
 
-  alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   setup ctx do
-    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
-    ctx = ProjectSteps.login(ctx)
+    ctx = Steps.create_project(ctx, name: "Test Project")
+    ctx = Steps.login(ctx)
 
     {:ok, ctx}
   end
@@ -13,37 +13,19 @@ defmodule Operately.Features.ProjectsDescriptionTest do
   @tag login_as: :champion
   feature "writing a project description", ctx do
     ctx
-    |> visit_show(ctx.project)
-    |> UI.assert_text("Project description is not yet set")
-    |> UI.assert_text("Write project description")
-    |> UI.click(testid: "write-project-description-link")
-    |> UI.fill_rich_text(project_description())
-    |> UI.click(testid: "save")
-    |> visit_show(ctx.project)
-    |> UI.assert_text(project_description())
+    |> Steps.visit_project_page()
+    |> Steps.assert_project_description_absent()
+    |> Steps.submit_project_description(description: project_description())
+    |> Steps.assert_project_description_present(description: project_description())
   end
 
   @tag login_as: :champion
   feature "editing a project description", ctx do
-    {:ok, project} = Operately.Projects.update_project(ctx.project, %{
-      description: Operately.Support.RichText.rich_text(project_description())
-    })
-
     ctx
-    |> visit_show(project)
-    |> UI.click(testid: "edit-project-description-link")
-    |> UI.fill_rich_text(project_description())
-    |> UI.click(testid: "save")
-    |> visit_show(ctx.project)
-    |> UI.assert_text(project_description())
-  end
-
-  #
-  # ======== Helper functions ========
-  #
-
-  defp visit_show(ctx, project) do
-    UI.visit(ctx, "/projects" <> "/" <> project.id)
+    |> Steps.given_project_has_description(description: "Old description")
+    |> Steps.assert_project_description_present(description: "Old description")
+    |> Steps.edit_project_description(description: "New description")
+    |> Steps.assert_project_description_present(description: "New description")
   end
 
   defp project_description() do
