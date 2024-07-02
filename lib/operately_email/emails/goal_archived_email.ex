@@ -15,6 +15,7 @@ defmodule OperatelyEmail.Emails.GoalArchivedEmail do
     |> subject(where: space.name, who: author, action: "archived the #{goal.name} goal")
     |> assign(:author, author)
     |> assign(:goal, goal)
+    |> assign(:cta_url, OperatelyWeb.Paths.goal_path(company, goal))
     |> render("goal_archived")
   end
 end

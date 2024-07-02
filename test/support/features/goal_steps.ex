@@ -85,7 +85,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_goal_parent_changed, ctx, parent_goal_name do
     ctx 
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(parent_goal_name)
   end
 
@@ -95,7 +95,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :visit_page, ctx do
-    UI.visit(ctx, "/goals/#{ctx.goal.id}")
+    UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :archive_goal, ctx do
@@ -104,7 +104,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "archive-goal")
     |> UI.assert_text("Archive this goal?")
     |> UI.click(testid: "confirm-archive-goal")
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :assert_goal_archived, ctx do
@@ -162,12 +162,12 @@ defmodule Operately.Support.Features.GoalSteps do
       end)
     end)
     |> UI.click(testid: "save-changes")
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :assert_goal_edited, ctx do
     ctx
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(ctx.edit_values.name)
     |> UI.assert_text(ctx.edit_values.new_champion.full_name)
     |> UI.assert_text(ctx.edit_values.new_reviewer.full_name)
@@ -208,7 +208,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "end-date-plus-1-month")
     |> UI.fill_rich_text("Extending the timeframe by 1 month to allow for more time to complete it.")
     |> UI.click(testid: "submit")
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :assert_goal_timeframe_edited, ctx do
@@ -268,7 +268,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_comment_on_the_timeframe_change_feed_posted, ctx do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.reviewer,
       title: "commented on the timeframe change",
@@ -295,7 +295,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_comment_on_the_goal_closing_feed_posted, ctx do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.reviewer,
       title: "commented on the goal closing",
@@ -328,7 +328,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "success-#{params.success}")
     |> UI.fill_rich_text(params.retrospective)
     |> UI.click(testid: "confirm-close-goal")
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :reopen_goal, ctx, params do
@@ -338,7 +338,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text("Reopening Goal")
     |> UI.fill_rich_text(params.message)
     |> UI.click(testid: "confirm-reopen-goal")
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
   step :assert_goal_closed, ctx, %{success: success} do
@@ -349,7 +349,7 @@ defmodule Operately.Support.Features.GoalSteps do
     assert goal.success == success
 
     ctx 
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text("This goal was closed on")
   end
 
@@ -360,7 +360,7 @@ defmodule Operately.Support.Features.GoalSteps do
     refute goal.closed_by_id
 
     ctx 
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.refute_text("This goal was closed on")
   end
 
@@ -386,21 +386,21 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_goal_reopened_feed_posted, ctx do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the goal"})
-    |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
-    |> UI.visit("/feed")
+    |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
   end
 
   step :assert_goal_closed_feed_posted, ctx do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the goal"})
-    |> UI.visit("/spaces/#{ctx.group.id}")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the #{ctx.goal.name} goal"})
-    |> UI.visit("/feed")
+    |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the #{ctx.goal.name} goal"})
   end
 
@@ -425,7 +425,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :visit_goal_list_page, ctx do
-    UI.visit(ctx, "/spaces/#{ctx.group.id}/goals")
+    UI.visit(ctx, Paths.space_goals_path(ctx.company, ctx.group))
   end
 
   step :assert_goal_is_not_editable, ctx do
@@ -438,7 +438,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :visit_company_goals_page, ctx do
-    UI.visit(ctx, "/goals")
+    UI.visit(ctx, Paths.goals_path(ctx.company))
   end
 
   step :add_company_goal, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
@@ -473,7 +473,7 @@ defmodule Operately.Support.Features.GoalSteps do
     assert Enum.at(goal.targets, 0).unit == unit
 
     ctx
-    |> UI.visit("/goals")
+    |> UI.visit(Paths.goals_path(ctx.company))
     |> UI.assert_text(name)
   end
 
@@ -524,7 +524,7 @@ defmodule Operately.Support.Features.GoalSteps do
     assert Enum.at(goal.targets, 0).unit == goal_params.unit
 
     ctx
-    |> UI.visit("/goals/#{goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, goal))
     |> UI.assert_text(goal_params.name)
     |> UI.assert_text(goal_params.target_name)
     |> UI.assert_text(parent_goal_name)
