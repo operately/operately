@@ -6,7 +6,6 @@ import * as Spaces from "@/models/spaces";
 import * as Paper from "@/components/PaperContainer";
 
 import { DivLink } from "@/components/Link";
-import { createPath } from "@/utils/paths";
 import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
@@ -20,10 +19,11 @@ interface SpacePageNavigationProps {
 export function SpacePageNavigation({ space, activeTab }: SpacePageNavigationProps) {
   const { negTop, negHor } = Paper.usePaperSizeHelpers();
 
-  const overviewPath = createPath("spaces", space.id);
-  const goalsPath = createPath("spaces", space.id, "goals");
-  const projectsPath = createPath("spaces", space.id, "projects");
-  const discussionsPath = createPath("spaces", space.id, "discussions");
+  const overviewPath = Paths.spacePath(space.id!);
+  const goalsPath = Paths.spaceGoalsPath(space.id!);
+  const projectsPath = Paths.spaceProjectsPath(space.id!);
+  const discussionsPath = Paths.spaceDiscussionsPath(space.id!);
+
   const wrapperClassName = classNames(
     "mb-8 border-b border-surface-outline bg-surface-dimmed rounded-t",
     negHor,

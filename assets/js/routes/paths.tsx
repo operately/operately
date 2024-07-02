@@ -39,12 +39,28 @@ export class Paths {
     return createCompanyPath(["company", "admin", "managePeople"]);
   }
 
+  static companyManageAdminsPath() {
+    return createCompanyPath(["company", "admin", "manageAdmins"]);
+  }
+
+  static companyManagePeopleAddPeoplePath() {
+    return createCompanyPath(["company", "admin", "managePeople", "addPeople"]);
+  }
+
+  static companyAdminManageTrustedDomainsPath() {
+    return createCompanyPath(["company", "admin", "manageTrustedDomains"]);
+  }
+
   static peoplePath() {
     return createCompanyPath(["people"]);
   }
 
   static discussionPath(spaceId: string, discussionId: string) {
     return createCompanyPath(["spaces", spaceId, "discussions", discussionId]);
+  }
+
+  static discussionNewPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "discussions", "new"]);
   }
 
   static discussionEditPath(spaceId: string, discussionId: string) {
@@ -77,6 +93,10 @@ export class Paths {
 
   static projectRetrospectivePath(projectId: string) {
     return createCompanyPath(["projects", projectId, "retrospective"]);
+  }
+
+  static projectMilestonesPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "milestones"]);
   }
 
   static projectMilestonePath(projectId: string, milestoneId: string) {
@@ -147,6 +167,10 @@ export class Paths {
     return createCompanyPath(["goals", goalId]);
   }
 
+  static goalCheckInNewPath(goalId: string) {
+    return createCompanyPath(["goals", goalId, "check-ins", "new"]);
+  }
+
   static goalCheckInPath(goalId: string, checkInId: string) {
     return createCompanyPath(["goals", goalId, "check-ins", checkInId]);
   }
@@ -157,6 +181,14 @@ export class Paths {
 
   static newGoalPath(params?: { companyWide: boolean }) {
     return createCompanyPath(["goals", "new"]) + (params?.companyWide ? "?company-wide=true" : "");
+  }
+
+  static spaceNewGoalPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "goals", "new"]);
+  }
+
+  static spaceNewProjectPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "projects", "new"]);
   }
 
   static newProjectPath() {
@@ -249,6 +281,22 @@ export class Paths {
 
   static projectEditDescriptionPath(projectId: string) {
     return createCompanyPath(["projects", projectId, "edit", "description"]);
+  }
+
+  static projectEditResourcesPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "edit", "resources"]);
+  }
+
+  static projectEditResourcePath(projectId: string, resourceId: string) {
+    return createCompanyPath(["projects", projectId, "edit", "resources", resourceId]);
+  }
+
+  static projectNewResourcePath(projectId: string, { resourceType }: { resourceType: string }) {
+    return createCompanyPath(["projects", projectId, "resources", "new"]) + "?resourceType=" + resourceType;
+  }
+
+  static projectClosePath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "close"]);
   }
 
   static taskPath(taskId: string) {

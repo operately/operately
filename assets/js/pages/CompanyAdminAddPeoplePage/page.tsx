@@ -5,7 +5,6 @@ import * as Pages from "@/components/Pages";
 import { GhostButton } from "@/components/Button";
 import { TextInputNoLabel } from "@/components/Form";
 
-import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import { InvitationUrl } from "@/features/CompanyAdmin";
@@ -36,7 +35,7 @@ export function Page() {
 
 function PersonForm() {
   const { fields, result, submit, errors } = useForm();
-  const managePeoplePath = createPath("company", "admin", "managePeople");
+  const managePeoplePath = Paths.companyManagePeoplePath();
 
   return (
     <div className="flex flex-col gap-4 mt-8">

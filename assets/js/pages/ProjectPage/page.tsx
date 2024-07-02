@@ -23,7 +23,6 @@ import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
-import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 import Options from "./Options";
@@ -205,7 +204,7 @@ function Resources({ project }) {
 }
 
 function ResourcesZeroState({ project }) {
-  const editPath = createPath("projects", project.id, "edit", "resources");
+  const editPath = Paths.projectEditResourcesPath(project.id!);
 
   const editLink = (
     <GhostButton linkTo={editPath} testId="add-resources-link" size="xs" type="secondary">
@@ -260,7 +259,7 @@ function Description({ project }) {
 }
 
 function DescriptionZeroState({ project }) {
-  const writePath = createPath("projects", project.id, "edit", "description");
+  const writePath = Paths.projectEditDescriptionPath(project.id!);
 
   const editLink = (
     <GhostButton linkTo={writePath} testId="write-project-description-link" size="xs" type="secondary">

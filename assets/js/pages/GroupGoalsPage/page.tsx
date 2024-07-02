@@ -2,11 +2,11 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { createPath } from "@/utils/paths";
 import { useLoadedData } from "./loader";
 import { GoalTree } from "@/features/goals/GoalTree";
 import { FilledButton } from "@/components/Button";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -25,7 +25,7 @@ export function Page() {
 
 function Content() {
   const { space, goals, projects } = useLoadedData();
-  const newGoalPath = createPath("spaces", space.id, "goals", "new");
+  const newGoalPath = Paths.spaceNewGoalPath(space.id!);
 
   return (
     <>
