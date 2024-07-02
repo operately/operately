@@ -7,6 +7,7 @@ defmodule Operately.Features.DiscussionsTest do
 
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Access.Binding
 
   alias Operately.Support.Features.DiscussionSteps, as: Steps
 
@@ -17,8 +18,16 @@ defmodule Operately.Features.DiscussionsTest do
 
     space = group_fixture(author, %{name: "Marketing", mission: "Let the world know about our products"})
 
-    Operately.Groups.add_member(space, author.id)
-    Operately.Groups.add_member(space, reader.id)
+    Operately.Groups.add_members(space.id, [
+      %{
+        id: reader.id,
+        permissions: Binding.view_access(),
+      },
+      %{
+        id: author.id,
+        permissions: Binding.full_access(),
+      }
+    ])
 
     ctx = Map.merge(ctx, %{company: company, author: author, reader: reader, space: space})
     ctx = UI.login_as(ctx, ctx.author)
@@ -70,7 +79,7 @@ defmodule Operately.Features.DiscussionsTest do
       to: ctx.author,
       author: ctx.reader,
       action: "commented on: This is a discussion"
-    })  
+    })
   end
 
   @tag login_as: :author
@@ -110,7 +119,7 @@ defmodule Operately.Features.DiscussionsTest do
   # Utilities
   #
   defp last_discussion(ctx) do
-    discussions = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) 
+    discussions = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion)
 
     if discussions != [] do
       hd(discussions)

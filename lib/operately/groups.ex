@@ -136,14 +136,7 @@ defmodule Operately.Groups do
     Repo.one(query) != nil
   end
 
-  def add_member(group, people_id) do
-    changeset = Member.changeset(%Member{}, %{
-      group_id: group.id,
-      person_id: people_id
-    })
-
-    Repo.insert(changeset)
-  end
+  defdelegate add_members(group_id, people_ids), to: Operately.Operations.GroupMembersAdding, as: :run
 
   def add_contact(group, name, value, type) do
     contact = %Contact{
