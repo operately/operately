@@ -3,16 +3,17 @@ import React from "react";
 import { Spacer } from "@/components/Spacer";
 import { Radio, RadioGroup } from "@/components/Form";
 import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
+import { PermissionOptions } from "./PermissionSelector";
 
 
-enum PermissionOptions {
-  PUBLIC="public",
-  INTERNAL="internal",
-  CONFIDENTIAL="confidential",
+interface PrivacyLevelProps {
+  description: string;
+  options: { label: string; value: PermissionOptions }[];
+  defaultValue: PermissionOptions;
 }
 
 
-export default function PrivacyLevel() {
+export default function PrivacyLevel({description, options, defaultValue}: PrivacyLevelProps) {
   const { dispatch } = usePermissionsContext();
 
   const handleChange = (value: PermissionOptions) => {
@@ -26,24 +27,21 @@ export default function PrivacyLevel() {
       case PermissionOptions.CONFIDENTIAL:
         dispatch({ type: ReducerActions.SET_CONFIDENTIAL });
         break;
+      case PermissionOptions.SECRET:
+        dispatch({ type: ReducerActions.SET_SECRET });
+        break;
     }
   }
-
-  const PRIVACY_OPTIONS = [
-    {label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC},
-    {label: "Internal - All organization members", value: PermissionOptions.INTERNAL},
-    {label: "Confidential - Only people invited to the space", value: PermissionOptions.CONFIDENTIAL},
-  ]
 
   return (
     <div>
       <h2 className="font-bold">Privacy</h2>
-      <p className="text-sm text-content-dimmed">Who can view information in this space?</p>
+      <p className="text-sm text-content-dimmed">{description}</p>
 
       <Spacer />
 
-      <RadioGroup name="privacy-level" onChange={handleChange} defaultValue="confidential">
-        {PRIVACY_OPTIONS.map((option, idx) => (
+      <RadioGroup name="privacy-level" onChange={handleChange} defaultValue={defaultValue} >
+        {options.map((option, idx) => (
           <Radio {...option} key={idx} />
         ))}
       </RadioGroup>

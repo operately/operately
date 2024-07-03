@@ -68,9 +68,6 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       |> UI.click(testid: "yes-contributor")
       |> UI.fill(testid: "creator-responsibility-input", with: "Responsible for managing the project")
     end)
-    |> run_if(fields[:private], fn ctx ->
-      ctx |> UI.click(testid: "invite-only")
-    end)
     |> UI.click(testid: "save")
     |> UI.assert_text(fields.name)
   end
@@ -85,7 +82,6 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     assert project.company_id == ctx.company.id
     assert project.group_id == ctx.group.id
     assert project.creator_id == fields.creator.id
-    assert project.private == Map.get(fields, :private, false)
 
     assert champion.person.full_name == fields.champion.full_name
     assert reviewer.person.full_name == fields.reviewer.full_name

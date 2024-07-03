@@ -74,14 +74,14 @@ defmodule Operately.Operations.GroupCreationTest do
 
     assert nil == Access.get_binding(group_id: anonymous_group.id, context_id: context.id, access_level: Binding.view_access())
 
-    attrs = Map.merge(@group_attrs, %{internet_permissions: Binding.comment_access()})
+    attrs = Map.merge(@group_attrs, %{public_permissions: Binding.comment_access()})
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, attrs)
     context = Access.get_context!(group_id: group.id)
 
     assert nil == Access.get_binding(group_id: anonymous_group.id, context_id: context.id, access_level: Binding.view_access())
     assert nil == Access.get_binding(group_id: anonymous_group.id, context_id: context.id, access_level: Binding.comment_access())
 
-    attrs = Map.merge(@group_attrs, %{internet_permissions: Binding.view_access()})
+    attrs = Map.merge(@group_attrs, %{public_permissions: Binding.view_access()})
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, attrs)
     context = Access.get_context!(group_id: group.id)
 

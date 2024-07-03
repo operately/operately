@@ -157,9 +157,9 @@ export type CreateGroupInput = {
   color: Scalars['String']['input'];
   companyPermissions: Scalars['Int']['input'];
   icon: Scalars['String']['input'];
-  internetPermissions: Scalars['Int']['input'];
   mission: Scalars['String']['input'];
   name: Scalars['String']['input'];
+  publicPermissions: Scalars['Int']['input'];
 };
 
 export type CreateProjectInput = {
