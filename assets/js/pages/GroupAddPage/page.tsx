@@ -21,7 +21,8 @@ export function Page() {
 
   return (
     <Paper.Root size="small">
-      <h1 className="mb-4 font-bold text-3xl text-center">Creating a new space</h1>
+      <h1 className="mb-1 font-bold text-3xl text-center">Create a new space</h1>
+      <span className="text-content-dimmed text-center block mb-4">Spaces help organize projects, goals, and team members in one place.</span>
       <Paper.Body minHeight="none">
         <PermissionsProvider companyName={company.name}>
           <Form />
@@ -84,14 +85,16 @@ function Form() {
       />
 
       <div>
-        <SpaceColorChooser color={color} setColor={setColor} name={name} />
+        <SpaceColorChooser color={color} setColor={setColor} />
       </div>
 
       <div>
-        <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} name={name} />
+        <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} />
       </div>
 
       <PermissionSelector />
+
+      <div className="text-content-dimmed text-sm block"><span>You can modify these settings later in Space preferences.</span></div>
 
       <Forms.SubmitArea>
         <Forms.SubmitButton>Create Space</Forms.SubmitButton>

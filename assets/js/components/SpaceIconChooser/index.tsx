@@ -5,17 +5,16 @@ import classnames from "classnames";
 import * as Icons from "@tabler/icons-react";
 
 interface SpaceIconChooserProps {
-  name: string;
   icon: string;
   setIcon: (icon: string) => void;
   color: string;
 }
 
-export function SpaceIconChooser({ name, color, icon, setIcon }: SpaceIconChooserProps) {
+export function SpaceIconChooser({ color, icon, setIcon }: SpaceIconChooserProps) {
   return (
     <>
       <h2 className="font-bold">Icon</h2>
-      <p className="text-sm text-content-dimmed">Choose an icon for the {name} Space.</p>
+      <p className="text-sm text-content-dimmed">Select an icon.</p>
 
       <div className="flex items-center gap-2 mt-2 flex-wrap">
         <IconOption setIcon={setIcon} color={color} icon="IconStar" current={icon} />
