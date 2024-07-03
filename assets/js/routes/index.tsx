@@ -31,7 +31,7 @@ export function createAppRoutes() {
       element: <ProtectedRoutes />,
       errorElement: <ErrorPage />,
       children: [
-        pageRoute("", pages.GroupListPage),
+        pageRoute("", pages.SpaceListPage),
         pageRoute("feed", pages.FeedPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
@@ -52,7 +52,7 @@ export function createAppRoutes() {
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
 
         pageRoute("spaces/new", pages.GroupAddPage),
-        pageRoute("spaces/:id", pages.GroupPage),
+        pageRoute("spaces/:id", pages.SpacePage),
         pageRoute("spaces/:id/edit", pages.GroupEditPage),
         pageRoute("spaces/:id/members", pages.GroupMembersPage),
         pageRoute("spaces/:id/appearance", pages.GroupAppearancePage),

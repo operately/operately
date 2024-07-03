@@ -170,7 +170,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
       mission: space.mission,
       color: space.color,
       icon: space.icon,
+      is_member: space.is_member,
       is_company_space: space.company.company_space_id == space.id,
+      members: OperatelyWeb.Api.Serializer.serialize(space.members),
     }
   end
 end

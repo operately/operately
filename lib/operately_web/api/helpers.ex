@@ -47,4 +47,8 @@ defmodule OperatelyWeb.Api.Helpers do
 
     comments <> "-" <> id
   end
+
+  def decode_id(id) do
+    id_without_comments(id) |> Operately.ShortUuid.decode()
+  end
 end

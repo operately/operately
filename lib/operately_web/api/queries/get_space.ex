@@ -1,8 +1,8 @@
 defmodule OperatelyWeb.Api.Queries.GetSpace do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   alias Operately.Repo
-  alias Operately.Groups
   alias Operately.Groups.Group
 
   import Ecto.Query, only: [from: 2]
@@ -17,47 +17,41 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   def call(conn, inputs) do
-    me = conn.assigns.current_account.person
-    space = load(inputs.id)
+    {:ok, id} = decode_id(inputs[:id])
+    space = load(id, me(conn), inputs)
 
     if space do
-      members = load_members(space, inputs[:include_members])
-      is_member = Groups.is_member?(space, me)
-
-      {:ok, serialize(space, members, is_member)}
+      {:ok, %{space: Serializer.serialize(space, level: :full)}}
     else
       {:error, :not_found}
     end
   end
 
-  defp load(id) do
-    (from s in Group, where: s.id == ^id, preload: [:company]) |> Repo.one() 
+  defp load(id, person, inputs) do
+    requested = extract_include_filters(inputs)
+
+    (from s in Group, where: s.id == ^id, preload: [:company]) 
+    |> Group.scope_company(person.company_id)
+    |> include_requested(requested)
+    |> Repo.one() 
+    |> preload_is_member(person)
+    |> sort_members()
   end
 
-  defp load_members(space, true), do: Groups.list_members(space)
-  defp load_members(_space, _), do: nil
-
-  defp serialize(space, members, is_member) do
-    %{
-      space: %{
-        id: space.id,
-        name: space.name,
-        mission: space.mission,
-        icon: space.icon,
-        color: space.color,
-        is_company_space: space.company.company_space_id == space.id,
-        is_member: is_member,
-        members: members && Enum.map(members, &serialize_member/1)
-      }
-    }
+  defp include_requested(query, requested) do
+    Enum.reduce(requested, query, fn include, q ->
+      case include do
+        :include_members -> from p in q, preload: [:members]
+        e -> raise "Unknown include filter: #{inspect e}"
+      end
+    end)
   end
 
-  defp serialize_member(member = %Operately.People.Person{}) do
-    %{
-      id: member.id,
-      full_name: member.full_name,
-      avatar_url: member.avatar_url,
-      title: member.title,
-    }
+  defp preload_is_member(nil, _), do: nil
+  defp preload_is_member(space, person), do: Group.load_is_member(space, person)
+
+  defp sort_members(group) when is_list(group.members) do
+    %{group | members: Enum.sort_by(group.members, & &1.full_name) }
   end
+  defp sort_members(group), do: group
 end

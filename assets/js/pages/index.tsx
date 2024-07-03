@@ -41,7 +41,6 @@ import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
 import * as GroupEditPage from "./GroupEditPage";
 import * as GroupGoalsPage from "./GroupGoalsPage";
 import * as GroupMembersPage from "./GroupMembersPage";
-import * as GroupPage from "./GroupPage";
 import * as GroupProjectsPage from "./GroupProjectsPage";
 import * as LobbyPage from "./LobbyPage";
 import * as NotFoundPage from "./NotFoundPage";
@@ -74,6 +73,7 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as SpaceListPage from "./SpaceListPage";
+import * as SpacePage from "./SpacePage";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -233,10 +233,6 @@ export default {
     loader: GroupMembersPage.loader,
     Page: GroupMembersPage.Page
   },
-  GroupPage: {
-    loader: GroupPage.loader,
-    Page: GroupPage.Page
-  },
   GroupProjectsPage: {
     loader: GroupProjectsPage.loader,
     Page: GroupProjectsPage.Page
@@ -364,6 +360,10 @@ export default {
   SpaceListPage: {
     loader: SpaceListPage.loader,
     Page: SpaceListPage.Page
+  },
+  SpacePage: {
+    loader: SpacePage.loader,
+    Page: SpacePage.Page
   },
   TaskPage: {
     loader: TaskPage.loader,
