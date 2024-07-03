@@ -78,9 +78,7 @@ export const LIST_GROUPS = gql`
 
 const REMOVE_GROUP_MEMBER = gql`
   mutation RemoveGroupMember($groupId: ID!, $memberId: ID!) {
-    removeGroupMember(groupId: $groupId, memberId: $memberId) {
-      id
-    }
+    removeGroupMember(groupId: $groupId, memberId: $memberId)
   }
 `;
 

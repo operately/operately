@@ -5,6 +5,7 @@ defmodule Operately.Features.SpacesTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
 
+  alias Operately.Access.Binding
   alias Operately.Support.Features.SpaceSteps, as: Steps
 
   setup ctx, do: Steps.setup(ctx)
@@ -18,9 +19,9 @@ defmodule Operately.Features.SpacesTest do
 
   feature "creating a new space", ctx do
     params = %{
-      name: "Marketing", 
-      mission: "Let the world know about our products", 
-      color: "text-green-500", 
+      name: "Marketing",
+      mission: "Let the world know about our products",
+      color: "text-green-500",
       icon: "IconBolt"
     }
 
@@ -37,7 +38,10 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    Operately.Groups.add_member(group, person.id)
+    Operately.Groups.add_members(group.id, [%{
+      id: person.id,
+      permissions: Binding.edit_access(),
+    }])
 
     ctx
     |> visit_page()
@@ -83,7 +87,10 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    Operately.Groups.add_member(group, person.id)
+    Operately.Groups.add_members(group.id, [%{
+      id: person.id,
+      permissions: Binding.edit_access(),
+    }])
 
     ctx
     |> visit_page()
