@@ -11,7 +11,7 @@ import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { FilledButton } from "@/components/Button";
 
-import { useJoinSpaceMutation } from "@/models/spaces";
+import { useJoinSpace } from "@/models/spaces";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -61,13 +61,13 @@ function SpaceActivity({ space }) {
 
 function JoinButton({ space }) {
   const refresh = useRefresh();
-
-  const [join] = useJoinSpaceMutation({ onCompleted: refresh });
+  const [join] = useJoinSpace();
 
   if (space.isMember) return null;
 
   const handleClick = async () => {
-    await join({ variables: { input: { spaceId: space.id } } });
+    await join({ spaceId: space.id });
+    refresh();
   };
 
   return (

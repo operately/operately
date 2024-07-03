@@ -2,11 +2,9 @@ import * as api from "@/api";
 import { gql, useMutation, ApolloClient } from "@apollo/client";
 
 export type { Space } from "@/api";
+export { useCreateGroup, useJoinSpace } from "@/api";
 
 export { useEditSpaceMutation } from "./useEditSpaceMutation";
-export { useJoinSpaceMutation } from "./useJoinSpaceMutation";
-
-export { useCreateGroup } from "@/api";
 
 export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
   return await api.getSpace(params).then((res) => res.space!);

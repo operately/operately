@@ -1,15 +1,15 @@
 defmodule OperatelyWeb.Api.Mutations.JoinSpace do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :space_id, :string
   end
 
-  outputs do
-    # TODO: Define output fields
-  end
+  def call(conn, inputs) do
+    {:ok, space_id} = decode_id(inputs.space_id)
+    {:ok, _} = Operately.Operations.SpaceJoining.run(me(conn), space_id)
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+    {:ok, %{}}
   end
 end
