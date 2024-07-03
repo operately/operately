@@ -1,9 +1,12 @@
 import * as api from "@/api";
+import { gql, useMutation, ApolloClient } from "@apollo/client";
 
 export type { Space } from "@/api";
 
 export { useEditSpaceMutation } from "./useEditSpaceMutation";
 export { useJoinSpaceMutation } from "./useJoinSpaceMutation";
+
+export { useCreateGroup } from "@/api";
 
 export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
   return await api.getSpace(params).then((res) => res.space!);
@@ -20,21 +23,6 @@ export function sortSpaces(groups: any[]) {
 
     return a.name.localeCompare(b.name);
   });
-}
-
-import { gql, useMutation, ApolloClient } from "@apollo/client";
-
-const CREATE_GROUP = gql`
-  mutation CreateGroup($input: CreateGroupInput!) {
-    createGroup(input: $input) {
-      id
-      name
-    }
-  }
-`;
-
-export function useCreateSpace(options = {}) {
-  return useMutation(CREATE_GROUP, options);
 }
 
 const LIST_POTENTIAL_GROUP_MEMBERS = gql`

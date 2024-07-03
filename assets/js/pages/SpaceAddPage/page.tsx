@@ -40,7 +40,7 @@ function Form() {
   const navigate = useNavigate();
   const { permissions } = usePermissionsContext();
 
-  const [createGroup, { loading }] = Spaces.useCreateSpace();
+  const [create, { loading }] = Spaces.useCreateGroup();
 
   const [name, setName] = React.useState("");
   const [mission, setMission] = React.useState("");
@@ -53,20 +53,16 @@ function Form() {
     const errors = validate(name, mission);
     setErrors(errors);
 
-    const res = await createGroup({
-      variables: {
-        input: {
-          name: name,
-          mission: mission,
-          icon: icon,
-          color: color,
-          companyPermissions: permissions.company,
-          publicPermissions: permissions.public,
-        },
-      },
+    const res = await create({
+      name: name,
+      mission: mission,
+      icon: icon,
+      color: color,
+      companyPermissions: permissions.company,
+      internetPermissions: permissions.internet,
     });
 
-    navigate(Paths.spacePath(res.data?.createGroup.id!));
+    navigate(Paths.spacePath(res.group.id!));
   };
 
   const onCancel = () => navigate(Paths.homePath());

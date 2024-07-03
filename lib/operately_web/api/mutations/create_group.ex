@@ -1,15 +1,23 @@
 defmodule OperatelyWeb.Api.Mutations.CreateGroup do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :name, :string
+    field :mission, :string
+    field :icon, :string
+    field :color, :string
+
+    field :company_permissions, :integer
+    field :internet_permissions, :integer
   end
 
   outputs do
-    # TODO: Define output fields
+    field :group, :group
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    {:ok, group} = Operately.Groups.create_group(me(conn), inputs)
+    {:ok, %{group: Serializer.serialize(group, level: :essential)}}
   end
 end

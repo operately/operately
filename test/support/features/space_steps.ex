@@ -47,6 +47,8 @@ defmodule Operately.Support.Features.SpaceSteps do
   step :submit_space_form, ctx, do: UI.click(ctx, Query.button("Create Space"))
 
   step :assert_space_created, ctx, %{name: name, mission: mission, color: color, icon: icon} do
+    UI.sleep(ctx, 500)
+
     group = Operately.Groups.get_group_by_name(name)
 
     assert group != nil

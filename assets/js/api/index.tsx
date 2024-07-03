@@ -1389,11 +1389,16 @@ export interface CreateGoalUpdateResult {
 
 
 export interface CreateGroupInput {
-
+  name?: string | null;
+  mission?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  companyPermissions?: number | null;
+  internetPermissions?: number | null;
 }
 
 export interface CreateGroupResult {
-
+  group?: Group | null;
 }
 
 
@@ -1524,7 +1529,8 @@ export interface MarkNotificationAsReadResult {
 
 
 export interface MoveProjectToSpaceInput {
-
+  projectId?: string | null;
+  spaceId?: string | null;
 }
 
 export interface MoveProjectToSpaceResult {

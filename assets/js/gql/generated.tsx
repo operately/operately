@@ -153,15 +153,6 @@ export type CreateGoalInput = {
   timeframe: TimeframeInput;
 };
 
-export type CreateGroupInput = {
-  color: Scalars['String']['input'];
-  companyPermissions: Scalars['Int']['input'];
-  icon: Scalars['String']['input'];
-  mission: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  publicPermissions: Scalars['Int']['input'];
-};
-
 export type CreateProjectInput = {
   championId: Scalars['ID']['input'];
   creatorIsContributor: Scalars['String']['input'];
@@ -510,11 +501,6 @@ export type ProjectKeyResource = {
   title: Scalars['String']['output'];
 };
 
-export type ProjectMoveInput = {
-  projectId: Scalars['ID']['input'];
-  spaceId: Scalars['ID']['input'];
-};
-
 export type ProjectPermissions = {
   __typename?: 'ProjectPermissions';
   canAcknowledgeCheckIn: Scalars['Boolean']['output'];
@@ -574,7 +560,6 @@ export type RootMutationType = {
   connectGoalToProject: Project;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
-  createGroup?: Maybe<Group>;
   createProject: Project;
   createTask?: Maybe<Task>;
   createUpdate: Update;
@@ -591,7 +576,6 @@ export type RootMutationType = {
   editProjectTimeline: Project;
   editUpdate: Update;
   joinSpace: Group;
-  moveProjectToSpace: Project;
   newInvitationToken: Invitation;
   pauseProject: Project;
   postDiscussion?: Maybe<Discussion>;
@@ -741,11 +725,6 @@ export type RootMutationTypeCreateGoalArgs = {
 };
 
 
-export type RootMutationTypeCreateGroupArgs = {
-  input: CreateGroupInput;
-};
-
-
 export type RootMutationTypeCreateProjectArgs = {
   input: CreateProjectInput;
 };
@@ -824,11 +803,6 @@ export type RootMutationTypeEditUpdateArgs = {
 
 export type RootMutationTypeJoinSpaceArgs = {
   input: JoinSpaceInput;
-};
-
-
-export type RootMutationTypeMoveProjectToSpaceArgs = {
-  input: ProjectMoveInput;
 };
 
 

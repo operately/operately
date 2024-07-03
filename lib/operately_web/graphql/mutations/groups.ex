@@ -1,15 +1,6 @@
 defmodule OperatelyWeb.Graphql.Mutations.Groups do
   use Absinthe.Schema.Notation
 
-  input_object :create_group_input do
-    field :name, non_null(:string)
-    field :mission, non_null(:string)
-    field :icon, non_null(:string)
-    field :color, non_null(:string)
-    field :company_permissions, non_null(:integer)
-    field :public_permissions, non_null(:integer)
-  end
-
   input_object :contact_input do
     field :name, non_null(:string)
     field :value, non_null(:string)
@@ -53,16 +44,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
         space_id = input.space_id
 
         Operately.Operations.SpaceJoining.run(author, space_id)
-      end
-    end
-
-    field :create_group, :group do
-      arg :input, non_null(:create_group_input)
-
-      resolve fn args, %{context: context} ->
-        creator = context.current_account.person
-
-        Operately.Groups.create_group(creator, args.input)
       end
     end
 
