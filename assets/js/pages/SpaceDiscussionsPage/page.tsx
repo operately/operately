@@ -33,7 +33,7 @@ export function Page() {
 }
 
 function DiscussionList() {
-  const { space, discussions } = useLoadedData();
+  const { discussions } = useLoadedData();
 
   const sortedDiscussions = [...discussions].sort((a, b) => {
     if (a.insertedAt > b.insertedAt) {
@@ -48,14 +48,14 @@ function DiscussionList() {
   return (
     <div className="mt-4 flex flex-col">
       {sortedDiscussions.map((discussion) => (
-        <DiscussionListItem key={discussion.id} discussion={discussion} space={space} />
+        <DiscussionListItem key={discussion.id} discussion={discussion} />
       ))}
     </div>
   );
 }
 
-function DiscussionListItem({ space, discussion }) {
-  const path = Paths.discussionPath(space.id!, discussion.id);
+function DiscussionListItem({ discussion }) {
+  const path = Paths.discussionPath(discussion.id);
 
   return (
     <DivLink

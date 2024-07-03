@@ -37,7 +37,6 @@ import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsPage from "./GoalsPage";
 import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
-import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
 import * as GroupEditPage from "./GroupEditPage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as LobbyPage from "./LobbyPage";
@@ -70,6 +69,7 @@ import * as ProjectPausePage from "./ProjectPausePage";
 import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
@@ -217,10 +217,6 @@ export default {
     loader: GroupAppearancePage.loader,
     Page: GroupAppearancePage.Page
   },
-  GroupDiscussionsPage: {
-    loader: GroupDiscussionsPage.loader,
-    Page: GroupDiscussionsPage.Page
-  },
   GroupEditPage: {
     loader: GroupEditPage.loader,
     Page: GroupEditPage.Page
@@ -348,6 +344,10 @@ export default {
   ProjectsPage: {
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page
+  },
+  SpaceDiscussionsPage: {
+    loader: SpaceDiscussionsPage.loader,
+    Page: SpaceDiscussionsPage.Page
   },
   SpaceGoalsPage: {
     loader: SpaceGoalsPage.loader,

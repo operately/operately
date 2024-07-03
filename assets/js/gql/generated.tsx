@@ -981,8 +981,6 @@ export type RootQueryType = {
   assignments: Assignments;
   comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
-  discussion: Discussion;
-  discussions?: Maybe<Array<Maybe<Discussion>>>;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
@@ -1014,16 +1012,6 @@ export type RootQueryTypeCommentsArgs = {
 
 export type RootQueryTypeCompanyArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeDiscussionArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeDiscussionsArgs = {
-  spaceId: Scalars['ID']['input'];
 };
 
 

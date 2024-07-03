@@ -927,20 +927,20 @@ export interface GetCompanyResult {
 
 
 export interface GetDiscussionInput {
-
+  id?: string | null;
 }
 
 export interface GetDiscussionResult {
-
+  discussion?: Discussion | null;
 }
 
 
 export interface GetDiscussionsInput {
-
+  spaceId?: string | null;
 }
 
 export interface GetDiscussionsResult {
-
+  discussions?: Discussion[] | null;
 }
 
 
