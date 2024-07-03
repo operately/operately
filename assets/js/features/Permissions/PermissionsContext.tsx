@@ -1,46 +1,51 @@
 import React, { Dispatch, ReactNode, createContext, useContext, useReducer } from "react"
+import { Space } from "@/models/spaces";
+import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
 
 interface ContextType {
-  companyName: string;
+  company: Company;
   permissions: Permissions;
   dispatch: Dispatch<ActionOptions>;
+  space?: Space;
 }
 
 interface Props {
   children: NonNullable<ReactNode>;
-  companyName: string;
+  company: Company;
+  space?: Space;
 }
 
 export enum ReducerActions {
   SET_PUBLIC,
   SET_INTERNAL,
   SET_CONFIDENTIAL,
-  SET_INTERNET_ACCESS,
+  SET_SECRET,
+  SET_PUBLIC_ACCESS,
   SET_COMPANY_ACCESS,
+  SET_SPACE_ACCESS,
 }
 
 type ActionOptions = { type: ReducerActions.SET_PUBLIC } |
   { type: ReducerActions.SET_INTERNAL } |
   { type: ReducerActions.SET_CONFIDENTIAL } |
-  { type: ReducerActions.SET_INTERNET_ACCESS, access_level: PermissionLevels } |
-  { type: ReducerActions.SET_COMPANY_ACCESS, access_level: PermissionLevels }
+  { type: ReducerActions.SET_SECRET } |
+  { type: ReducerActions.SET_PUBLIC_ACCESS, access_level: PermissionLevels } |
+  { type: ReducerActions.SET_COMPANY_ACCESS, access_level: PermissionLevels } |
+  { type: ReducerActions.SET_SPACE_ACCESS, access_level: PermissionLevels }
+
 
 interface Permissions {
-  internet: PermissionLevels;
+  public: PermissionLevels;
   company: PermissionLevels;
   space: PermissionLevels;
-  project: PermissionLevels;
-  goal: PermissionLevels;
 }
 
 
 const DEFAULT_PERMISSIONS = {
-  internet: PermissionLevels.NO_ACCESS,
+  public: PermissionLevels.NO_ACCESS,
   company: PermissionLevels.NO_ACCESS,
   space: PermissionLevels.NO_ACCESS,
-  project: PermissionLevels.NO_ACCESS,
-  goal: PermissionLevels.NO_ACCESS,
 };
 
 
@@ -48,40 +53,51 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
   switch (action.type) {
     case ReducerActions.SET_PUBLIC:
       return {
-        ...state,
+        space: PermissionLevels.VIEW_ACCESS,
         company: PermissionLevels.VIEW_ACCESS,
-        internet: PermissionLevels.VIEW_ACCESS,
+        public: PermissionLevels.VIEW_ACCESS,
       };
     case ReducerActions.SET_INTERNAL:
       return {
-        ...state,
+        space: PermissionLevels.VIEW_ACCESS,
         company: PermissionLevels.VIEW_ACCESS,
-        internet: PermissionLevels.NO_ACCESS,
+        public: PermissionLevels.NO_ACCESS
       };
     case ReducerActions.SET_CONFIDENTIAL:
       return {
-        ...state,
+        ...DEFAULT_PERMISSIONS,
+        space: PermissionLevels.VIEW_ACCESS,
+      };
+    case ReducerActions.SET_SECRET:
+      return {
         ...DEFAULT_PERMISSIONS,
       };
-    case ReducerActions.SET_INTERNET_ACCESS:
+
+    case ReducerActions.SET_PUBLIC_ACCESS:
       return {
         ...state,
-        internet: action.access_level,
+        public: action.access_level,
       };
     case ReducerActions.SET_COMPANY_ACCESS:
       return {
         ...state,
         company: action.access_level,
       };
+    case ReducerActions.SET_SPACE_ACCESS:
+      return {
+        ...state,
+        space: action.access_level,
+      };
   }
 }
 
 
-function PermissionsProvider({children, companyName}: Props) {
+function PermissionsProvider({children, company, space}: Props) {
   const [permissions, dispatch] = useReducer(reducerFunction, {...DEFAULT_PERMISSIONS});
 
   const data = {
-    companyName,
+    company,
+    space,
     permissions,
     dispatch,
   }

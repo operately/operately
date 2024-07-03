@@ -1,4 +1,4 @@
-export { PermissionSelector } from "./PermissionSelector"
+export { SpacePermissionSelector, ResourcePermissionSelector } from "./PermissionSelector"
 
 export enum PermissionLevels {
   FULL_ACCESS=100,
@@ -12,5 +12,9 @@ export const PERMISSIONS_LIST = [
   {value: PermissionLevels.FULL_ACCESS, label: "Has Full Access"},
   {value: PermissionLevels.EDIT_ACCESS, label: "Can Edit"},
   {value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment"},
+  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
+]
+
+export const PUBLIC_PERMISSIONS_LIST = [
   {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
 ]
