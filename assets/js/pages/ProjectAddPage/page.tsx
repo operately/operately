@@ -14,6 +14,9 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 import { Paths } from "@/routes/paths";
+import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
+import { ResourcePermissionSelector } from "@/features/Permissions";
+
 
 export function Page() {
   const { spaceID } = useLoadedData();
@@ -26,7 +29,7 @@ export function Page() {
 }
 
 function NewProjectForSpacePage() {
-  const { space, spaceID } = useLoadedData();
+  const { space, spaceID, company } = useLoadedData();
   const form = useForm();
 
   const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
@@ -41,7 +44,9 @@ function NewProjectForSpacePage() {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
 
         <Paper.Body minHeight="300px">
-          <Form form={form} />
+          <PermissionsProvider company={company} space={space}>
+            <Form form={form} />
+          </PermissionsProvider>
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -51,6 +56,7 @@ function NewProjectForSpacePage() {
 }
 
 function NewProjectPage() {
+  const { company } = useLoadedData();
   const form = useForm();
 
   return (
@@ -63,7 +69,9 @@ function NewProjectPage() {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
 
         <Paper.Body minHeight="300px">
-          <Form form={form} />
+          <PermissionsProvider company={company} space={form.fields.space || undefined} >
+            <Form form={form} />
+          </PermissionsProvider>
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -167,28 +175,9 @@ function Form({ form }: { form: FormState }) {
             )}
           </div>
         )}
-      </div>
 
-      <Paper.DimmedSection>
-        <Forms.RadioGroupWithLabel
-          label="Who can see this project?"
-          name="visibility"
-          defaultValue="everyone"
-          onChange={form.fields.setVisibility}
-        >
-          <Forms.RadioWithExplanation
-            label="All-Access"
-            explanation={"Anyone from " + form.fields.company.name + " can see this project"}
-            value="everyone"
-          />
-          <Forms.RadioWithExplanation
-            label={"Invite-only"}
-            explanation={"Only people you invite can see this project"}
-            value="invite"
-            testId="invite-only"
-          />
-        </Forms.RadioGroupWithLabel>
-      </Paper.DimmedSection>
+        <ResourcePermissionSelector />
+      </div>
     </Forms.Form>
   );
 }
