@@ -156,10 +156,21 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
   def serialize(space, level: :essential) do
     %{
-      id: space.id,
+      id: OperatelyWeb.Paths.space_id(space),
       name: space.name,
       color: space.color,
       icon: space.icon,
+    }
+  end
+
+  def serialize(space, level: :full) do
+    %{
+      id: OperatelyWeb.Paths.space_id(space),
+      name: space.name,
+      mission: space.mission,
+      color: space.color,
+      icon: space.icon,
+      is_company_space: space.company.company_space_id == space.id,
     }
   end
 end

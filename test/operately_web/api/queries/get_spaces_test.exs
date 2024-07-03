@@ -20,8 +20,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       other_space = group_fixture(person_fixture(company_id: other_company.id), company_id: other_company.id)
 
       assert {200, res} = query(ctx.conn, :get_spaces, %{})
-      assert Enum.find(res.spaces, fn s -> s.id == space.id end)
-      assert Enum.find(res.spaces, fn s -> s.id == other_space.id end) == nil
+      assert Enum.find(res.spaces, fn s -> s.id == Paths.space_id(space) end) != nil
+      assert Enum.find(res.spaces, fn s -> s.id == Paths.space_id(other_space) end) == nil
     end
   end
 
@@ -37,22 +37,12 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       company_space = Operately.Groups.get_group!(ctx.company.company_space_id)
       
       [s1, s2, company_space] 
+      |> Enum.map(fn s -> Operately.Repo.preload(s, :company) end)
       |> Enum.sort_by(& &1.name)
       |> Enum.with_index()
       |> Enum.each(fn {space, i} ->
-        assert Enum.at(res.spaces, i) == serialized_space(ctx, space)
+        assert Enum.at(res.spaces, i) == Serializer.serialize(space, level: :full)
       end)
     end
   end 
-
-  def serialized_space(ctx, space) do
-    %{
-      id: space.id,
-      name: space.name,
-      mission: space.mission,
-      icon: space.icon,
-      color: space.color,
-      is_company_space: ctx.company.company_space_id == space.id,
-    }
-  end
 end 
