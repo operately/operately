@@ -7,7 +7,7 @@ export type ProjectContributor = api.ProjectContributor | gql.ProjectContributor
 export type Milestone = api.Milestone | gql.Milestone;
 export type KeyResource = api.ProjectKeyResource | gql.ProjectKeyResource;
 
-export { getProject, getProjects, useMoveProjectToSpace } from "@/api";
+export { getProject, getProjects, useMoveProjectToSpace, useCreateProject } from "@/api";
 
 export { groupBySpace } from "./groupBySpace";
 export { useCloseProjectMutation } from "./useCloseProjectMutation";
@@ -15,7 +15,6 @@ export { useEditNameMutation } from "./useEditNameMutation";
 export { useUpdateDescriptionMutation } from "./useUpdateDescriptionMutation";
 export { useEditTimelineMutation } from "./useEditTimelineMutation";
 export { useArchiveMutation } from "./useArchiveMutation";
-export { useCreateMutation } from "./useCreateMutation";
 
 export { useProjectContributorCandidatesQuery } from "./useProjectContributorCandidatesQuery";
 export { useAddProjectContributorMutation } from "./useAddProjectContributorMutation";

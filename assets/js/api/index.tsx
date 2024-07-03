@@ -1403,11 +1403,18 @@ export interface CreateGroupResult {
 
 
 export interface CreateProjectInput {
-
+  spaceId?: string | null;
+  name?: string | null;
+  championId?: string | null;
+  reviewerId?: string | null;
+  visibility?: string | null;
+  creatorIsContributor?: string | null;
+  creatorRole?: string | null;
+  goalId?: string | null;
 }
 
 export interface CreateProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1502,7 +1509,7 @@ export interface EditProjectTimelineResult {
 
 
 export interface JoinSpaceInput {
-
+  spaceId?: string | null;
 }
 
 export interface JoinSpaceResult {

@@ -153,17 +153,6 @@ export type CreateGoalInput = {
   timeframe: TimeframeInput;
 };
 
-export type CreateProjectInput = {
-  championId: Scalars['ID']['input'];
-  creatorIsContributor: Scalars['String']['input'];
-  creatorRole?: InputMaybe<Scalars['String']['input']>;
-  goalId?: InputMaybe<Scalars['ID']['input']>;
-  name: Scalars['String']['input'];
-  reviewerId: Scalars['ID']['input'];
-  spaceId: Scalars['ID']['input'];
-  visibility: Scalars['String']['input'];
-};
-
 export type CreateTargetInput = {
   from: Scalars['Float']['input'];
   index: Scalars['Int']['input'];
@@ -342,10 +331,6 @@ export type Invitation = {
   id: Scalars['ID']['output'];
   member: Person;
   token: Scalars['String']['output'];
-};
-
-export type JoinSpaceInput = {
-  spaceId: Scalars['String']['input'];
 };
 
 export type Milestone = {
@@ -560,7 +545,6 @@ export type RootMutationType = {
   connectGoalToProject: Project;
   createComment?: Maybe<Comment>;
   createGoal?: Maybe<Goal>;
-  createProject: Project;
   createTask?: Maybe<Task>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
@@ -575,7 +559,6 @@ export type RootMutationType = {
   editProjectName: Project;
   editProjectTimeline: Project;
   editUpdate: Update;
-  joinSpace: Group;
   newInvitationToken: Invitation;
   pauseProject: Project;
   postDiscussion?: Maybe<Discussion>;
@@ -725,11 +708,6 @@ export type RootMutationTypeCreateGoalArgs = {
 };
 
 
-export type RootMutationTypeCreateProjectArgs = {
-  input: CreateProjectInput;
-};
-
-
 export type RootMutationTypeCreateTaskArgs = {
   input: CreateTaskInput;
 };
@@ -798,11 +776,6 @@ export type RootMutationTypeEditProjectTimelineArgs = {
 
 export type RootMutationTypeEditUpdateArgs = {
   input: EditUpdateInput;
-};
-
-
-export type RootMutationTypeJoinSpaceArgs = {
-  input: JoinSpaceInput;
 };
 
 

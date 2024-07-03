@@ -134,28 +134,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       end
     end
 
-    field :create_project, non_null(:project) do
-      arg :input, non_null(:create_project_input)
-
-      resolve fn args, %{context: context} ->
-        person = context.current_account.person
-
-        %Operately.Operations.ProjectCreation{
-          name: args.input.name,
-          champion_id: args.input.champion_id,
-          reviewer_id: args.input.reviewer_id,
-          creator_is_contributor: args.input[:creator_is_contributor],
-          creator_role: args.input[:creator_role],
-          visibility: args.input.visibility,
-          creator_id: person.id,
-          company_id: person.company_id,
-          group_id: args.input.space_id,
-          goal_id: args.input[:goal_id]
-        }
-        |> Operately.Projects.create_project()
-      end
-    end
-
     field :add_key_resource, non_null(:project_key_resource) do
       arg :input, non_null(:add_key_resource_input)
 

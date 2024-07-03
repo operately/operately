@@ -134,11 +134,7 @@ function useSubmit(fields: Fields, cancelPath: string) {
 
   const [errors, setErrors] = React.useState<Error[]>([]);
 
-  const [add, { loading: submitting }] = Projects.useCreateMutation({
-    onCompleted: (data: any) => {
-      navigate(Paths.projectPath(data.createProject.id));
-    },
-  });
+  const [add, { loading: submitting }] = Projects.useCreateProject();
 
   const submit = async () => {
     let errors = validate(fields);
@@ -148,20 +144,18 @@ function useSubmit(fields: Fields, cancelPath: string) {
       return false;
     }
 
-    await add({
-      variables: {
-        input: {
-          name: fields.name,
-          championId: fields.champion!.id,
-          reviewerId: fields.reviewer!.id,
-          visibility: fields.visibility,
-          creatorIsContributor: fields.creatorIsContributor,
-          creatorRole: fields.creatorRole,
-          spaceId: fields.space!.value,
-          goalId: fields.goal?.id,
-        },
-      },
+    const res = await add({
+      name: fields.name,
+      championId: fields.champion!.id,
+      reviewerId: fields.reviewer!.id,
+      visibility: fields.visibility,
+      creatorIsContributor: fields.creatorIsContributor,
+      creatorRole: fields.creatorRole,
+      spaceId: fields.space!.value,
+      goalId: fields.goal?.id,
     });
+
+    navigate(Paths.projectPath(res.project.id!));
 
     return true;
   };
