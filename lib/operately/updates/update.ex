@@ -45,6 +45,8 @@ defmodule Operately.Updates.Update do
 
     field :title, :string
 
+    field :space, :any, virtual: true # loaded by preload_space
+
     timestamps()
   end
 
@@ -99,6 +101,10 @@ defmodule Operately.Updates.Update do
 
   defp format_error(change) do
     change.errors |> Enum.map(fn {key, value} -> "#{inspect(key)} #{inspect(value)}" end) |> Enum.join(", ")
+  end
+
+  def preload_space(update) do
+    %{update | space: Operately.Groups.get_group!(update.updatable_id)}
   end
 
 end
