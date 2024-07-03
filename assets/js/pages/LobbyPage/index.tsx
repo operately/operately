@@ -8,6 +8,7 @@ import { DivLink } from "@/components/Link";
 
 import classnames from "classnames";
 import { Paths } from "@/routes/paths";
+import plurarize from "@/utils/plurarize";
 
 interface LoaderResult {
   companies: Api.Company[];
@@ -63,7 +64,7 @@ function CompanyCard({ company }: { company: Api.Company }) {
     <DivLink to={Paths.companyHomePath(company.id!)} className={className}>
       <Icons.IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
       <div className="font-medium mt-2">{company.name}</div>
-      <div className="text-xs">12 members</div>
+      <div className="text-xs">{plurarize(company.memberCount!, "member", "members")}</div>
     </DivLink>
   );
 }

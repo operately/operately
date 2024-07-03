@@ -288,11 +288,17 @@ end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
   def serialize(company, level: :essential) do
-    short_id = Operately.Companies.ShortId.encode(company.short_id)
-
     %{
-       id: OperatelyWeb.Api.Helpers.id_with_comments(company.name, short_id),
+       id: OperatelyWeb.Paths.company_id(company),
        name: company.name,
+    }
+  end
+
+  def serialize(company, level: :full) do
+    %{
+      id: OperatelyWeb.Paths.company_id(company),
+      name: company.name,
+      member_count: company.member_count
     }
   end
 end

@@ -14,6 +14,8 @@ defmodule Operately.Companies.Company do
     field :company_space_id, :binary_id
     field :short_id, :integer
 
+    field :member_count, :integer, virtual: true
+
     timestamps()
   end
 
@@ -27,6 +29,31 @@ defmodule Operately.Companies.Company do
     |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features, :company_space_id, :short_id])
     |> validate_required([:name])
     |> validate_length(:name, min: 3)
+  end
+
+  #
+  # After load actions
+  #
+
+  import Ecto.Query, only: [from: 2]
+
+  def load_member_count(companies) when is_list(companies) do
+    ids = Enum.map(companies, fn c -> c.id end)
+
+    query = from c in __MODULE__,
+      join: p in assoc(c, :people),
+      group_by: c.id,
+      where: c.id in ^ids,
+      select: {c.id, count(p.id)}
+
+    member_counts = Operately.Repo.all(query)
+
+    Enum.map(companies, fn company ->
+      case Enum.find(member_counts, fn {id, _} -> id == company.id end) do
+        {_, count} -> Map.put(company, :member_count, count)
+        nil -> Map.put(company, :member_count, 0)
+      end
+    end)
   end
 
 end

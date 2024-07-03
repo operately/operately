@@ -488,6 +488,7 @@ export interface Company {
   companySpaceId?: string | null;
   admins?: Person[] | null;
   people?: Person[] | null;
+  memberCount?: number | null;
 }
 
 export interface Discussion {
