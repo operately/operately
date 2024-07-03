@@ -347,3 +347,12 @@ function validatePathElements(elements: string[]) {
     });
   });
 }
+
+export function compareIds(a: string, b: string) {
+  return idWithoutComments(a) === idWithoutComments(b);
+}
+
+function idWithoutComments(id: string) {
+  const parts = id.split("-");
+  return parts[parts.length - 1];
+}

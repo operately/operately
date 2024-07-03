@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpace do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :project_id, :string
+    field :space_id, :string
   end
 
-  outputs do
-    # TODO: Define output fields
-  end
+  def call(conn, inputs) do
+    author = me(conn)
+    project_id = inputs.project_id
+    project = Operately.Projects.get_project!(project_id)
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+    {:ok, space_id} = decode_id(inputs.space_id)
+
+    Operately.Projects.move_project_to_space(author, project, space_id)
   end
 end
