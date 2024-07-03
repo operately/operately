@@ -6,15 +6,14 @@ import * as Icons from "@tabler/icons-react";
 
 interface SpaceColorChooserProps {
   color: string;
-  name: string;
   setColor: (color: string) => void;
 }
 
-export function SpaceColorChooser({ color, name, setColor }: SpaceColorChooserProps) {
+export function SpaceColorChooser({ color, setColor }: SpaceColorChooserProps) {
   return (
     <>
       <h2 className="font-bold">Color</h2>
-      <p className="text-sm text-content-dimmed">Choose a color for the {name} Space.</p>
+      <p className="text-sm text-content-dimmed">Select a color theme.</p>
 
       <div className="flex items-center gap-2 mt-2">
         <ColorOption setColor={setColor} color="text-blue-500" current={color} />

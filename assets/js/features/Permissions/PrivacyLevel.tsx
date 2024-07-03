@@ -31,7 +31,7 @@ export default function PrivacyLevel() {
 
   const PRIVACY_OPTIONS = [
     {label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC},
-    {label: "Internal - Only organization members", value: PermissionOptions.INTERNAL},
+    {label: "Internal - All organization members", value: PermissionOptions.INTERNAL},
     {label: "Confidential - Only people invited to the space", value: PermissionOptions.CONFIDENTIAL},
   ]
 

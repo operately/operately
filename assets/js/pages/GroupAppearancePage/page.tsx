@@ -34,10 +34,10 @@ export function Page() {
           <div className="font-extrabold text-2xl text-center">Appearance of {space.name}</div>
 
           <div className="h-px bg-stroke-base my-8"></div>
-          <SpaceColorChooser color={color!} name={space.name!} setColor={setColor} />
+          <SpaceColorChooser color={color!} setColor={setColor} />
 
           <div className="h-px bg-stroke-base my-8"></div>
-          <SpaceIconChooser icon={icon!} name={space.name!} setIcon={setIcon} color={color!} />
+          <SpaceIconChooser icon={icon!} setIcon={setIcon} color={color!} />
 
           <div className="h-px bg-stroke-base my-8"></div>
 
