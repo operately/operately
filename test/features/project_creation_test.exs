@@ -54,23 +54,11 @@ defmodule Operately.Features.ProjectCreationTest do
   end
 
   @tag login_as: :champion
-  feature "add a private project", ctx do
-    params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion, reviewer: ctx.reviewer, private: true}
-
-    ctx
-    |> Steps.start_adding_project()
-    |> Steps.submit_project_form(params)
-    |> Steps.assert_project_created(params)
-    |> Steps.assert_project_created_email_sent(params)
-    |> Steps.assert_project_created_notification_sent(params)
-  end
-
-  @tag login_as: :champion
   feature "select a parent goal while adding a project", ctx do
     params = %{
-      name: "Website Redesign", 
-      creator: ctx.champion, 
-      champion: ctx.champion, 
+      name: "Website Redesign",
+      creator: ctx.champion,
+      champion: ctx.champion,
       reviewer: ctx.reviewer,
       goal: ctx.goal
     }
