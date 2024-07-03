@@ -12,7 +12,7 @@ import { Paths } from "@/routes/paths";
 import { SpaceColorChooser } from "@/components/SpaceColorChooser";
 import { SpaceIconChooser } from "@/components/SpaceIconChooser";
 
-import { PermissionSelector } from "@/features/Permissions";
+import { SpacePermissionSelector } from "@/features/Permissions";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
 
@@ -24,7 +24,7 @@ export function Page() {
       <h1 className="mb-1 font-bold text-3xl text-center">Create a new space</h1>
       <span className="text-content-dimmed text-center block mb-4">Spaces help organize projects, goals, and team members in one place.</span>
       <Paper.Body minHeight="none">
-        <PermissionsProvider companyName={company.name}>
+        <PermissionsProvider company={company}>
           <Form />
         </PermissionsProvider>
       </Paper.Body>
@@ -57,7 +57,7 @@ function Form() {
           icon: icon,
           color: color,
           companyPermissions: permissions.company,
-          internetPermissions: permissions.internet,
+          publicPermissions: permissions.public,
         },
       },
     });
@@ -92,7 +92,7 @@ function Form() {
         <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} />
       </div>
 
-      <PermissionSelector />
+      <SpacePermissionSelector />
 
       <div className="text-content-dimmed text-sm block"><span>You can modify these settings later in Space preferences.</span></div>
 

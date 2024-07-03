@@ -51,7 +51,7 @@ defmodule Operately.Operations.GroupCreation do
 
   defp insert_bindings(multi, creator, attrs) do
     company_members = Map.get(attrs, :company_permissions, Binding.no_access())
-    anonymous_users = Map.get(attrs, :internet_permissions, nil)
+    anonymous_users = Map.get(attrs, :public_permissions, nil)
 
     multi
     |> insert_company_admins_binding()

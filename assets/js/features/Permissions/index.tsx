@@ -1,4 +1,4 @@
-export { PermissionSelector } from "./PermissionSelector"
+export { SpacePermissionSelector, ResourcePermissionSelector } from "./PermissionSelector"
 
 export enum PermissionLevels {
   FULL_ACCESS=100,

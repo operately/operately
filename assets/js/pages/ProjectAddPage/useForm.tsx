@@ -49,7 +49,7 @@ interface Fields {
   amIContributor: boolean;
 }
 
-interface SpaceOption {
+interface SpaceOption extends Spaces.Space {
   value: string;
   label: string;
 }
@@ -217,7 +217,7 @@ function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions
     if (loaded.allowSpaceSelection) {
       return null;
     } else {
-      return { value: loaded.space!.id!, label: loaded.space!.name! };
+      return { ...loaded.space!, value: loaded.space!.id!, label: loaded.space!.name! };
     }
   });
 
@@ -225,7 +225,7 @@ function useSpaces(): [Fields["space"], Fields["setSpace"], Fields["spaceOptions
     if (loaded.allowSpaceSelection) {
       const spaces = Spaces.sortSpaces(loaded.spaces!);
 
-      return spaces.map((space) => ({ value: space.id, label: space.name }));
+      return spaces.map((space) => ({ ...space, value: space.id, label: space.name }));
     } else {
       return [];
     }
