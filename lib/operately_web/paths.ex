@@ -114,7 +114,8 @@ defmodule OperatelyWeb.Paths do
   end
 
   def space_id(space) do
-    space.id
+    id = Operately.ShortUuid.encode(space.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(space.name, id)
   end
 
   def goal_id(goal) do
