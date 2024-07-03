@@ -57,16 +57,16 @@ export function createAppRoutes() {
         pageRoute("spaces/:id/members", pages.GroupMembersPage),
         pageRoute("spaces/:id/appearance", pages.GroupAppearancePage),
         pageRoute("spaces/:id/projects/new", pages.ProjectAddPage),
-        pageRoute("spaces/:id/projects", pages.GroupProjectsPage),
+        pageRoute("spaces/:id/projects", pages.SpaceProjectsPage),
+        pageRoute("spaces/:id/discussions", pages.GroupDiscussionsPage),
         pageRoute("spaces/:id/goals/new", pages.GoalAddPage),
-        pageRoute("spaces/:id/goals", pages.GroupGoalsPage),
+        pageRoute("spaces/:id/goals", pages.SpaceGoalsPage),
 
         pageRoute("tasks/:id", pages.TaskPage),
 
-        pageRoute("spaces/:id/discussions", pages.GroupDiscussionsPage),
-        pageRoute("spaces/:spaceId/discussions/new", pages.DiscussionNewPage),
-        pageRoute("spaces/:spaceId/discussions/:id", pages.DiscussionPage),
-        pageRoute("spaces/:spaceId/discussions/:id/edit", pages.DiscussionEditPage),
+        pageRoute("discussions/new", pages.DiscussionNewPage),
+        pageRoute("discussions/:id", pages.DiscussionPage),
+        pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
 
         pageRoute("goals", pages.GoalsPage),
         pageRoute("goals/new", pages.GoalAddPage),

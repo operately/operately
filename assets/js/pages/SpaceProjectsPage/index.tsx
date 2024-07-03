@@ -2,16 +2,33 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Spaces from "@/models/spaces";
+import * as Projects from "@/models/projects";
 
 import { FilledButton } from "@/components/Button";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { ProjectList } from "@/features/ProjectList";
-
-import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 
+interface LoadedData {
+  space: Spaces.Space;
+  projects: Projects.Project[];
+}
+
+export async function loader({ params }): Promise<LoadedData> {
+  return {
+    space: await Spaces.getSpace({ id: params.id }),
+    projects: await Projects.getProjects({
+      spaceId: params.id,
+      includeContributors: true,
+      includeMilestones: true,
+      includeLastCheckIn: true,
+    }).then((data) => data.projects!),
+  };
+}
+
 export function Page() {
-  const { space, projects } = useLoadedData();
+  const { space, projects } = Pages.useLoadedData<LoadedData>();
   const newProjectPath = Paths.spaceNewProjectPath(space.id!);
 
   return (

@@ -18,7 +18,7 @@ defmodule Operately.Support.Features.DiscussionSteps do
     discussion = last_discussion(ctx)
 
     ctx
-    |> UI.assert_page(Paths.discussion_path(ctx.company, ctx.space, discussion))
+    |> UI.assert_page(Paths.discussion_path(ctx.company, discussion))
     |> UI.assert_text("This is a discussion")
     |> UI.assert_text("This is the body of the discussion.")
   end
@@ -85,7 +85,7 @@ defmodule Operately.Support.Features.DiscussionSteps do
     discussion = last_discussion(ctx)
 
     ctx
-    |> UI.assert_page(Paths.discussion_path(ctx.company, ctx.space, discussion))
+    |> UI.assert_page(Paths.discussion_path(ctx.company, discussion))
     |> UI.assert_text("Testing file attachment")
     |> UI.assert_text("README.md")
   end

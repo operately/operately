@@ -20,7 +20,7 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
     |> assign(:discussion, discussion)
     |> assign(:title, title)
     |> assign(:space, space)
-    |> assign(:cta_url, OperatelyWeb.Paths.discussion_path(company, space, discussion) |> OperatelyWeb.Paths.to_url())
+    |> assign(:cta_url, OperatelyWeb.Paths.discussion_path(company, discussion) |> OperatelyWeb.Paths.to_url())
     |> render("discussion_posting")
   end
 end

@@ -33,12 +33,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   end
 
   defp load(person, inputs) do
+    {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
     include_filters = extract_include_filters(inputs)
 
     (from p in Project, as: :project)
     |> Project.scope_company(person.company_id)
     |> Project.scope_visibility(person.id)
-    |> Project.scope_space(inputs[:space_id])
+    |> Project.scope_space(space_id)
     |> Project.scope_goal(inputs[:goal_id])
     |> apply_role_filter(person, inputs)
     |> include_requested(include_filters)

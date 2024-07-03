@@ -39,9 +39,7 @@ import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
 import * as GroupEditPage from "./GroupEditPage";
-import * as GroupGoalsPage from "./GroupGoalsPage";
 import * as GroupMembersPage from "./GroupMembersPage";
-import * as GroupProjectsPage from "./GroupProjectsPage";
 import * as LobbyPage from "./LobbyPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
@@ -72,8 +70,10 @@ import * as ProjectPausePage from "./ProjectPausePage";
 import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
+import * as SpaceProjectsPage from "./SpaceProjectsPage";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -225,17 +225,9 @@ export default {
     loader: GroupEditPage.loader,
     Page: GroupEditPage.Page
   },
-  GroupGoalsPage: {
-    loader: GroupGoalsPage.loader,
-    Page: GroupGoalsPage.Page
-  },
   GroupMembersPage: {
     loader: GroupMembersPage.loader,
     Page: GroupMembersPage.Page
-  },
-  GroupProjectsPage: {
-    loader: GroupProjectsPage.loader,
-    Page: GroupProjectsPage.Page
   },
   LobbyPage: {
     loader: LobbyPage.loader,
@@ -357,6 +349,10 @@ export default {
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page
   },
+  SpaceGoalsPage: {
+    loader: SpaceGoalsPage.loader,
+    Page: SpaceGoalsPage.Page
+  },
   SpaceListPage: {
     loader: SpaceListPage.loader,
     Page: SpaceListPage.Page
@@ -364,6 +360,10 @@ export default {
   SpacePage: {
     loader: SpacePage.loader,
     Page: SpacePage.Page
+  },
+  SpaceProjectsPage: {
+    loader: SpaceProjectsPage.loader,
+    Page: SpaceProjectsPage.Page
   },
   TaskPage: {
     loader: TaskPage.loader,

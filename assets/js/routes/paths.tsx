@@ -63,16 +63,16 @@ export class Paths {
     return createCompanyPath(["people"]);
   }
 
-  static discussionPath(spaceId: string, discussionId: string) {
-    return createCompanyPath(["spaces", spaceId, "discussions", discussionId]);
+  static discussionPath(discussionId: string) {
+    return createCompanyPath(["discussions", discussionId]);
+  }
+
+  static discussionEditPath(discussionId: string) {
+    return createCompanyPath(["discussions", discussionId, "edit"]);
   }
 
   static discussionNewPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "discussions", "new"]);
-  }
-
-  static discussionEditPath(spaceId: string, discussionId: string) {
-    return createCompanyPath(["spaces", spaceId, "discussions", discussionId, "edit"]);
   }
 
   static projectPath(projectId: string) {
