@@ -25,72 +25,42 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
     test "returns the person", ctx do
       person = person_fixture(company_id: ctx.company.id)
       assert {200, res} = query(ctx.conn, :get_person, %{id: person.id})
-      assert res.person == serialized(person, [:theme])
+      assert res.person == Serializer.serialize(person, level: :full)
     end
 
-    test "includes the manager if requested and present", ctx do
+    test "include_manager", ctx do
       manager = person_fixture(company_id: ctx.company.id)
       person = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
-      assert {200, res} = query(ctx.conn, :get_person, %{id: person.id, include_manager: true})
+      person = Operately.Repo.preload(person, [:manager])
 
-      assert res.person == serialized(person, [:theme, {:manager, manager}])
+      assert {200, res} = query(ctx.conn, :get_person, %{id: person.id, include_manager: true})
+      assert res.person.manager == Serializer.serialize(manager, level: :essential)
+
+      assert {200, res} = query(ctx.conn, :get_person, %{id: manager.id, include_manager: true})
+      assert res.person.manager == nil
     end
 
-    test "if manager is not present, it doesn't include it, even if requested", ctx do
-      person = person_fixture(company_id: ctx.company.id)
-      assert {200, res} = query(ctx.conn, :get_person, %{id: person.id, include_manager: true})
-      assert res.person == serialized(person, [:theme, {:manager, nil}])
-    end
-
-    test "includes reports if requested", ctx do
+    test "includes_reports", ctx do
       person = person_fixture(company_id: ctx.company.id)
       report1 = person_fixture(company_id: ctx.company.id, manager_id: person.id)
       report2 = person_fixture(company_id: ctx.company.id, manager_id: person.id)
+
       assert {200, res} = query(ctx.conn, :get_person, %{id: person.id, include_reports: true})
-      assert res.person == serialized(person, [:theme, {:reports, [report1, report2]}])
+      assert length(res.person.reports) == 2
+      assert Enum.find(res.person.reports, fn r -> r.id == report1.id end) == Serializer.serialize(report1, level: :essential)
+      assert Enum.find(res.person.reports, fn r -> r.id == report2.id end) == Serializer.serialize(report2, level: :essential)
     end
 
-    test "includes peers if requested", ctx do
+    test "includes_peers", ctx do
       manager = person_fixture(company_id: ctx.company.id)
       person = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
       peer1 = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
       peer2 = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
 
       assert {200, res} = query(ctx.conn, :get_person, %{id: person.id, include_peers: true})
-      assert res.person == serialized(person, [:theme, {:peers, [peer1, peer2]}])
+      assert length(res.person.peers) == 2
+      assert Enum.find(res.person.peers, fn p -> p.id == peer1.id end) == Serializer.serialize(peer1, level: :essential)
+      assert Enum.find(res.person.peers, fn p -> p.id == peer2.id end) == Serializer.serialize(peer2, level: :essential)
     end
-  end
-
-  defp serialized(nil), do: nil
-  defp serialized(person) do
-    %{
-      id: person.id,
-      full_name: person.full_name,
-      email: person.email,
-      avatar_url: person.avatar_url,
-      title: person.title,
-      manager_id: person.manager_id,
-      suspended: person.suspended
-    }
-  end
-
-  defp serialized(person, []) do
-    serialized(person)
-  end
-
-  defp serialized(person, [:theme | rest]) do
-    serialized(person, rest) |> Map.merge(%{theme: person.theme || "system"})
-  end
-
-  defp serialized(person, [{:manager, manager} | rest]) do
-    serialized(person, rest) |> Map.merge(%{manager: serialized(manager)})
-  end
-
-  defp serialized(person, [{:reports, reports} | rest]) do
-    serialized(person, rest) |> Map.merge(%{reports: Enum.map(reports, &serialized/1)})
-  end
-
-  defp serialized(person, [{:peers, peers} | rest]) do
-    serialized(person, rest) |> Map.merge(%{peers: Enum.map(peers, &serialized/1)})
   end
 end 

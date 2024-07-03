@@ -10,6 +10,8 @@ defmodule OperatelyWeb.TurboCase do
     quote do
       import Plug.Conn
       import OperatelyWeb.TurboCase
+
+      alias OperatelyWeb.Api.Serializer
     end
   end
 

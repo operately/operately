@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     company_id = me(conn).company_id
     people = load_people(company_id, inputs[:include_suspended]) 
 
-    {:ok, %{people: serialize(people)}}
+    {:ok, %{people: Serializer.serialize(people, level: :essential)}}
   end
 
   defp load_people(company_id, include_suspended) do
@@ -23,20 +23,5 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     query = from p in query, order_by: [asc: p.full_name]
 
     Repo.all(query)
-  end
-
-  defp serialize(people) when is_list(people) do
-    Enum.map(people, fn p -> serialize(p) end)
-  end
-
-  defp serialize(person) do
-    %{
-      id: person.id,
-      full_name: person.full_name,
-      email: person.email,
-      title: person.title,
-      avatar_url: person.avatar_url,
-      manager_id: person.manager_id
-    }
   end
 end

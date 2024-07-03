@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Helpers do
       import Ecto.Query, only: [from: 2]
 
       alias Operately.Repo
+      alias OperatelyWeb.Api.Serializer
     end
   end
 

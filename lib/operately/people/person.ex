@@ -11,6 +11,7 @@ defmodule Operately.People.Person do
 
     belongs_to(:manager, Operately.People.Person)
     has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
+    field :peers, :any, virtual: true # loaded in a custom preload
 
     has_one :access_group, Operately.Access.Group, foreign_key: :person_id
 
@@ -78,5 +79,23 @@ defmodule Operately.People.Person do
   def first_name(person) do
     [first_name | _] = String.split(person.full_name, " ")
     first_name
+  end
+
+  import Ecto.Query, only: [from: 2]
+
+  #
+  # Scope
+  #
+  def scope_company(query, company_id) do
+    from p in query, where: p.company_id == ^company_id
+  end
+
+  #
+  # Custom prealoads
+  #
+
+  def preload_peers(person) do
+    peers = Operately.People.get_peers(person)
+    Map.put(person, :peers, peers)
   end
 end

@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       all_people = [ctx.person, person1, person2, person3] |> Enum.sort_by(&(&1.full_name))
 
       assert {200, res} = query(ctx.conn, :get_people, %{})
-      assert res == %{people: Enum.map(all_people, &serialized/1)}
+      assert res == %{people: Serializer.serialize(all_people, level: :essential)}
     end
 
     test "it doesn't return suspended accounts", ctx do
@@ -54,16 +54,5 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       assert Enum.find(people, fn person -> person.id == active_person.id end)
       assert Enum.find(people, fn person -> person.id == suspended_person.id end)
     end
-  end
-
-  defp serialized(person) do
-    %{
-      id: person.id,
-      full_name: person.full_name,
-      email: person.email,
-      title: person.title,
-      avatar_url: person.avatar_url,
-      manager_id: person.manager_id
-    }
   end
 end 
