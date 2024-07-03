@@ -23,7 +23,7 @@ export function Page() {
           <div className="relative w-64 px-4 py-3">
             <div className="font-bold">Welcome Back!</div>
             <div className="text-sm mt-4">
-              You are in the lobby of Operately. This is where you can find all the spaces you are a part of.
+              You are in the lobby of {company.name}. This is where you can find all the spaces you are a part of.
             </div>
           </div>
 

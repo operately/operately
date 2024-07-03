@@ -17,12 +17,8 @@ export function Page() {
 
   return (
     <Pages.Page title={"Org Chart"}>
-      <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
-        <div className="flex items-center gap-4 justify-center mb-16">
-          <Link to={Paths.peoplePath()}>Employee List</Link>
-          <div className="font-medium">Org Chart</div>
-        </div>
-
+      <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 mt-20">
+        <h1 className="text-3xl font-bold text-center mt-2 mb-16">Org Chart</h1>
         <Root chart={chart} />
 
         {chart.expanded.map((personId) => {

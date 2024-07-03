@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       colors: {
         "base": "var(--color-base)",
+        "base-accent": "var(--color-base-accent)",
 
         "surface": "var(--color-surface)",
         "surface-dimmed": "var(--color-surface-dimmed)",
