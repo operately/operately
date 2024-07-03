@@ -7,7 +7,12 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
     field :mission, :string
     field :trusted_email_domains, list_of(:string)
     field :enabled_experimental_features, list_of(:string)
-    field :company_space_id, :string
+
+    field :company_space_id, :string do
+      resolve fn company, _, _ ->
+        {:ok, Operately.ShortUuid.encode(company.company_space_id)}
+      end
+    end
 
     field :admins, list_of(:person) do
       resolve fn company, _, _ ->
