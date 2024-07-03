@@ -46,11 +46,11 @@ export function useForm(options: UseFormOptions): FormState {
   });
 
   const [post, { loading: submittingPost }] = Discussions.usePost({
-    onCompleted: (data: any) => navigate(Paths.discussionPath(space.id!, data.postDiscussion.id)),
+    onCompleted: (data: any) => navigate(Paths.discussionPath(data.postDiscussion.id)),
   });
 
   const [edit, { loading: submittingEdit }] = Discussions.useEdit({
-    onCompleted: (data: any) => navigate(Paths.discussionPath(space.id!, data.editDiscussion.id)),
+    onCompleted: (data: any) => navigate(Paths.discussionPath(data.editDiscussion.id)),
   });
 
   const submit = async (): Promise<boolean> => {
@@ -95,7 +95,7 @@ export function useForm(options: UseFormOptions): FormState {
 
   const submitting = submittingPost || submittingEdit;
   const cancelPath =
-    options.mode === "edit" ? Paths.discussionPath(space.id!, discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
+    options.mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
 
   const submitButtonLabel = options.mode === "edit" ? "Save Changes" : "Post Discussion";
 

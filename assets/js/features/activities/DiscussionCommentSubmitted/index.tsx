@@ -12,7 +12,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   pagePath(_activity: Activity): string {
-    return Paths.discussionPath(content(_activity).space!.id!, content(_activity).discussion!.id!);
+    return Paths.discussionPath(content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

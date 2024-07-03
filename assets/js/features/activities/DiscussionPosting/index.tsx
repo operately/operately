@@ -16,7 +16,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   pagePath(_activity: Activity): string {
-    return Paths.discussionPath(content(_activity).space!.id!, content(_activity).discussion!.id!);
+    return Paths.discussionPath(content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,10 +32,9 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const space = content(activity).space!;
     const discussion = content(activity).discussion!;
 
-    const path = Paths.discussionPath(space.id!, discussion.id!);
+    const path = Paths.discussionPath(discussion.id!);
     const link = <Link to={path}>{discussion.title!}</Link>;
 
     if (page === "space") {
