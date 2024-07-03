@@ -1,17 +1,6 @@
 defmodule OperatelyWeb.Graphql.Mutations.Projects do
   use Absinthe.Schema.Notation
 
-  input_object :create_project_input do
-    field :space_id, non_null(:id)
-    field :name, non_null(:string)
-    field :champion_id, non_null(:id)
-    field :reviewer_id, non_null(:id)
-    field :visibility, non_null(:string)
-    field :creator_is_contributor, non_null(:string)
-    field :creator_role, :string
-    field :goal_id, :id
-  end
-
   input_object :add_key_resource_input do
     field :project_id, non_null(:id)
     field :title, non_null(:string)
