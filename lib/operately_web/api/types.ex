@@ -712,6 +712,7 @@ defmodule OperatelyWeb.Api.Types do
     field :company_space_id, :string
     field :admins, list_of(:person)
     field :people, list_of(:person)
+    field :member_count, :integer
   end
 
   object :activity_content_goal_timeframe_editing do
