@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Groups do
     field :icon, non_null(:string)
     field :color, non_null(:string)
     field :company_permissions, non_null(:integer)
-    field :internet_permissions, non_null(:integer)
+    field :public_permissions, non_null(:integer)
   end
 
   input_object :contact_input do

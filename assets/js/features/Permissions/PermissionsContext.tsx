@@ -16,18 +16,18 @@ export enum ReducerActions {
   SET_PUBLIC,
   SET_INTERNAL,
   SET_CONFIDENTIAL,
-  SET_INTERNET_ACCESS,
+  SET_PUBLIC_ACCESS,
   SET_COMPANY_ACCESS,
 }
 
 type ActionOptions = { type: ReducerActions.SET_PUBLIC } |
   { type: ReducerActions.SET_INTERNAL } |
   { type: ReducerActions.SET_CONFIDENTIAL } |
-  { type: ReducerActions.SET_INTERNET_ACCESS, access_level: PermissionLevels } |
+  { type: ReducerActions.SET_PUBLIC_ACCESS, access_level: PermissionLevels } |
   { type: ReducerActions.SET_COMPANY_ACCESS, access_level: PermissionLevels }
 
 interface Permissions {
-  internet: PermissionLevels;
+  public: PermissionLevels;
   company: PermissionLevels;
   space: PermissionLevels;
   project: PermissionLevels;
@@ -36,7 +36,7 @@ interface Permissions {
 
 
 const DEFAULT_PERMISSIONS = {
-  internet: PermissionLevels.NO_ACCESS,
+  public: PermissionLevels.NO_ACCESS,
   company: PermissionLevels.NO_ACCESS,
   space: PermissionLevels.NO_ACCESS,
   project: PermissionLevels.NO_ACCESS,
@@ -50,23 +50,23 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
       return {
         ...state,
         company: PermissionLevels.VIEW_ACCESS,
-        internet: PermissionLevels.VIEW_ACCESS,
+        public: PermissionLevels.VIEW_ACCESS,
       };
     case ReducerActions.SET_INTERNAL:
       return {
         ...state,
         company: PermissionLevels.VIEW_ACCESS,
-        internet: PermissionLevels.NO_ACCESS,
+        public: PermissionLevels.NO_ACCESS,
       };
     case ReducerActions.SET_CONFIDENTIAL:
       return {
         ...state,
         ...DEFAULT_PERMISSIONS,
       };
-    case ReducerActions.SET_INTERNET_ACCESS:
+    case ReducerActions.SET_PUBLIC_ACCESS:
       return {
         ...state,
-        internet: action.access_level,
+        public: action.access_level,
       };
     case ReducerActions.SET_COMPANY_ACCESS:
       return {

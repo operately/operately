@@ -12,7 +12,7 @@ enum PermissionOptions {
 }
 
 
-export default function PrivacyLevel() {
+export default function PrivacyLevel({description}) {
   const { dispatch } = usePermissionsContext();
 
   const handleChange = (value: PermissionOptions) => {
@@ -38,7 +38,7 @@ export default function PrivacyLevel() {
   return (
     <div>
       <h2 className="font-bold">Privacy</h2>
-      <p className="text-sm text-content-dimmed">Who can view information in this space?</p>
+      <p className="text-sm text-content-dimmed">{description}</p>
 
       <Spacer />
 

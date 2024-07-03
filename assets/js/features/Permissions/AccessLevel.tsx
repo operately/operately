@@ -14,12 +14,12 @@ interface DropdownOption {
 export default function AccessLevel() {
   const { permissions } = usePermissionsContext();
 
-  if (permissions.internet !== PermissionLevels.NO_ACCESS) {
+  if (permissions.public !== PermissionLevels.NO_ACCESS) {
       return (
         <div className="flex flex-col gap-2">
           <h2 className="font-bold">Access Levels</h2>
           <CompanyAccessLevel />
-          <InternetAccessLevel />
+          <PublicAccessLevel />
         </div>
       );
   }
@@ -68,24 +68,24 @@ function CompanyAccessLevel() {
 }
 
 
-const INTERNET_PERMISSIONS = [
+const PUBLIC_PERMISSIONS = [
   {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
 ]
 
 
-function InternetAccessLevel() {
+function PublicAccessLevel() {
   const [currentPermission, setCurrentPermission] = useState<DropdownOption>();
   const { dispatch, permissions } = usePermissionsContext();
 
   useEffect(() => {
     if(!currentPermission) {
-      setCurrentPermission(INTERNET_PERMISSIONS.find(option => option.value === permissions.internet));
+      setCurrentPermission(PUBLIC_PERMISSIONS.find(option => option.value === permissions.public));
     }
   }, [currentPermission, setCurrentPermission])
 
   const handleChange = (option: DropdownOption) => {
     setCurrentPermission(option);
-    dispatch({ type: ReducerActions.SET_INTERNET_ACCESS, access_level: option.value });
+    dispatch({ type: ReducerActions.SET_PUBLIC_ACCESS, access_level: option.value });
   }
 
   return (
@@ -96,7 +96,7 @@ function InternetAccessLevel() {
       </div>
       <SelectBoxNoLabel
         onChange={handleChange}
-        options={INTERNET_PERMISSIONS}
+        options={PUBLIC_PERMISSIONS}
         value={currentPermission}
       /> 
     </div>

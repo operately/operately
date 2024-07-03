@@ -3,10 +3,10 @@ import PrivacyLevel from "./PrivacyLevel";
 import AccessLevel from "./AccessLevel";
 
 
-export function PermissionSelector() {
+export function SpacePermissionSelector() {
   return (
     <>
-      <PrivacyLevel />
+      <PrivacyLevel description="Who can view information in this space?" />
       <AccessLevel />
     </>
   )
