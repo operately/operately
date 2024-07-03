@@ -24,7 +24,7 @@ export function Page() {
       <h1 className="mb-1 font-bold text-3xl text-center">Create a new space</h1>
       <span className="text-content-dimmed text-center block mb-4">Spaces help organize projects, goals, and team members in one place.</span>
       <Paper.Body minHeight="none">
-        <PermissionsProvider companyName={company.name}>
+        <PermissionsProvider company={company}>
           <Form />
         </PermissionsProvider>
       </Paper.Body>
