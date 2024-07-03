@@ -13,11 +13,6 @@ export function Page() {
   return (
     <Pages.Page title={"People"}>
       <div className="max-w-5xl mx-auto sm:px-6 lg:px-8 my-10">
-        <div className="flex items-center gap-4 justify-center">
-          <div className="font-medium">Employee List</div>
-          <Link to={Paths.orgChartPath()}>Org Chart</Link>
-        </div>
-
         <h1 className="text-3xl font-bold text-center mt-2 mb-16">Members of {company.name}</h1>
 
         <PeopleList people={people} />

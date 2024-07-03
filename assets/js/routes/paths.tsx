@@ -1,10 +1,18 @@
 export class Paths {
+  static lobbyPath() {
+    return "/";
+  }
+
   static newCompanyPath() {
     return createPath(["new"]);
   }
 
   static companyHomePath(companyId: string) {
     return createPath([companyId]);
+  }
+
+  static feedPath() {
+    return createCompanyPath(["feed"]);
   }
 
   static isHomePath() {
