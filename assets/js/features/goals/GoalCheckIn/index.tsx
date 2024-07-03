@@ -5,7 +5,6 @@ import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 
 import { FilledButton } from "@/components/Button";
-import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
@@ -178,7 +177,7 @@ function CheckInButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 
-  const newCheckInPath = createPath("goals", goal.id, "check-ins", "new");
+  const newCheckInPath = Paths.goalCheckInNewPath(goal.id);
 
   return (
     <div className="flex flex-col gap-4">

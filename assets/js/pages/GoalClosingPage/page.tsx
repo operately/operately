@@ -9,6 +9,7 @@ import { DimmedLink } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormData } from "./useForm";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -18,7 +19,7 @@ export function Page() {
     <Pages.Page title={"Closing " + goal.name}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo={`/goals/${goal.id}`}>{goal.name}</Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.goalPath(goal.id!)}>{goal.name}</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body minHeight="none">

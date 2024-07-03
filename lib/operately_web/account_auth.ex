@@ -27,13 +27,13 @@ defmodule OperatelyWeb.AccountAuth do
   """
   def log_in_account(conn, account, params \\ %{}) do
     token = People.generate_account_session_token(account)
-    account_return_to = get_session(conn, :account_return_to)
+    path = after_login_path(account)
 
     conn
     |> renew_session()
     |> put_token_in_session(token)
     |> maybe_write_remember_me_cookie(token, params)
-    |> redirect(to: account_return_to || signed_in_path(conn))
+    |> redirect(to: path || signed_in_path(conn))
   end
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
@@ -42,6 +42,17 @@ defmodule OperatelyWeb.AccountAuth do
 
   defp maybe_write_remember_me_cookie(conn, _token, _params) do
     conn
+  end
+
+  @spec after_login_path(Operately.Account.t) :: String.t
+  defp after_login_path(account) do
+    companies = Operately.Companies.list_companies(account)
+
+    if length(companies) == 1 do
+      OperatelyWeb.Paths.home_path(hd(companies))
+    else
+      "/"
+    end
   end
 
   # This function renews the session ID and erases the whole

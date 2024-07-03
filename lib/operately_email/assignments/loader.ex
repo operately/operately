@@ -3,6 +3,7 @@ defmodule OperatelyEmail.Assignments.Loader do
   alias Operately.Repo
   alias Operately.Projects.Project
   alias Operately.Goals.Goal
+  alias OperatelyWeb.Paths  
 
   def load(person) do
     if person.account_id == nil do
@@ -18,10 +19,10 @@ defmodule OperatelyEmail.Assignments.Loader do
         join: a in assoc(p, :contributors),
         where: a.person_id == ^person.id and a.role == :champion,
         where: p.status == "active",
-        preload: [:milestones]
+        preload: [:milestones, :company]
     )
 
-    goals = Repo.all(from g in Goal, where: g.champion_id == ^person.id, where: is_nil(g.closed_at))
+    goals = Repo.all(from g in Goal, where: g.champion_id == ^person.id, where: is_nil(g.closed_at), preload: [:company])
 
     assignment_groups = []
 
@@ -51,7 +52,7 @@ defmodule OperatelyEmail.Assignments.Loader do
         %{
           type: :project_check_in,
           due: relative_due(project.next_check_in_scheduled_at),
-          url: OperatelyEmail.project_check_in_new_url(project.id),
+          url: Paths.project_check_in_new_path(project.company, project) |> Paths.to_url(),
           name: "Check-in"
         }
       ]
@@ -66,7 +67,7 @@ defmodule OperatelyEmail.Assignments.Loader do
         %{
           type: :goal_check_in,
           due: relative_due(goal.next_update_scheduled_at),
-          url: OperatelyEmail.goal_new_check_in_url(goal.id),
+          url: Paths.goal_check_in_new_path(goal.company, goal) |> Paths.to_url(),
           name: "Check-in"
         }
       ]
@@ -87,7 +88,7 @@ defmodule OperatelyEmail.Assignments.Loader do
       %{
         type: :milestone,
         due: relative_due(milestone.deadline_at),
-        url: OperatelyEmail.project_milestone_url(project.id, milestone.id),
+        url: Paths.project_milestone_path(project.company, project, milestone) |> Paths.to_url(),
         name: milestone.title
       }
     end)

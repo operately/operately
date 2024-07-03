@@ -32,7 +32,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :start_new_discussion, ctx, params do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}/discussions")
+    |> UI.visit(Paths.goal_discussions_path(ctx.company, ctx.goal))
     |> UI.click(testid: "start-discussion")
     |> UI.fill(testid: "discussion-title", with: params.title)
     |> UI.fill_rich_text(params.message)
@@ -68,7 +68,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :assert_discussion_submitted_feed_posted, ctx do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "posted #{last_comment_thread().title}",
@@ -137,7 +137,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :assert_comment_submitted_feed_posted, ctx do
     ctx
-    |> UI.visit("/goals/#{ctx.goal.id}")
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "commented on the #{last_comment_thread().title}",

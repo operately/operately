@@ -128,6 +128,7 @@ interface TaskBoardState {
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
 import classNames from "classnames";
+import { Paths } from "@/routes/paths";
 
 function orderTasksByKanbanState(tasks: Tasks.Task[], kanbanState: any, status: string): Tasks.Task[] {
   return tasks
@@ -301,7 +302,7 @@ function TaskItem({ task, zoneId, style }: { task: Tasks.Task; zoneId: string; s
       <div className="my-1" style={isDragging ? {} : style}>
         <DivLink
           className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
-          to={`/tasks/${task.id}`}
+          to={Paths.taskPath(task.id)}
         >
           <div className="font-medium">{task.name}</div>
 

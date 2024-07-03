@@ -57,7 +57,7 @@ function NewProjectPage() {
     <Pages.Page title="New Project">
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={`/projects`}>Back to Projects</DimmedLink>
+          <DimmedLink to={Paths.projectsPath()}>Back to Projects</DimmedLink>
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>

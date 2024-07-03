@@ -8,6 +8,7 @@ import * as Forms from "@/components/Form";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -16,7 +17,7 @@ export function Page() {
     <Pages.Page title={["Edit Project Name", project.name!]}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id!}`}>
+          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
             <Icons.IconClipboardList size={16} />
             {project.name}
           </Paper.NavItem>
@@ -31,9 +32,8 @@ export function Page() {
   );
 }
 
-function Form({ project }) {
-  const navigateToProject = useNavigateTo(`/projects/${project.id}`);
-
+function Form({ project }: { project: Projects.Project }) {
+  const navigateToProject = useNavigateTo(Paths.projectPath(project.id!));
   const [projectName, setProjectName] = React.useState(project.name);
 
   const [edit, { loading }] = Projects.useEditNameMutation({
@@ -53,7 +53,7 @@ function Form({ project }) {
 
   const handleCancel = () => navigateToProject();
 
-  const isValid = projectName.length > 0;
+  const isValid = projectName ? projectName.length > 0 : false;
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid} onCancel={handleCancel}>

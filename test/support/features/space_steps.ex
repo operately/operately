@@ -17,7 +17,7 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx
   end
 
-  step :visit_loby, ctx, do: UI.visit(ctx, "/")
+  step :visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company))
 
   step :given_two_spaces_exists, ctx do
     space1 = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})

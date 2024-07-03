@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectMilestoneSteps do
   alias Operately.Support.Features.{UI, EmailSteps, NotificationsSteps}
   alias Operately.People.Person
+  alias OperatelyWeb.Paths
 
   def given_that_a_milestone_exists(ctx, title) do
     {:ok, milestone} = Operately.Projects.create_milestone(ctx.champion, %{
@@ -13,7 +14,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
   end
 
   def visit_milestone_page(ctx) do
-    path = "/projects/#{ctx.project.id}/milestones/#{ctx.milestone.id}"
+    path = Paths.project_milestone_path(ctx.company, ctx.project, ctx.milestone)
     UI.visit(ctx, path)
   end
 
@@ -26,7 +27,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
 
   def assert_comment_visible_in_project_feed(ctx, comment) do
     ctx
-    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el
       |> UI.assert_text(Person.short_name(ctx.champion) <> " commented on the " <> ctx.milestone.title <> " milestone")
@@ -46,7 +47,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
   def assert_comment_notification_sent_to_project_reviewer(ctx) do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> UI.visit("/notifications")
+    |> UI.visit(Paths.notifications_path(ctx.company))
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "commented on #{ctx.milestone.title}"

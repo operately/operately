@@ -7,8 +7,8 @@ import { Link } from "@/components/Link";
 import { DimmedLabel } from "./Label";
 import FormattedTime from "@/components/FormattedTime";
 import { GhostButton } from "@/components/Button";
-import { createPath } from "@/utils/paths";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import { Paths } from "@/routes/paths";
 
 export function NextMilestone({ project }) {
   const milestones = project.milestones || [];
@@ -27,7 +27,7 @@ export function NextMilestone({ project }) {
 }
 
 function MilestonesZeroState({ project }) {
-  const editPath = createPath("projects", project.id, "edit", "timeline");
+  const editPath = Paths.projectEditTimelinePath(project.id!);
 
   const editLink = (
     <GhostButton linkTo={editPath} testId="add-milestones-link" size="xs" type="secondary">
@@ -45,7 +45,7 @@ function MilestonesZeroState({ project }) {
 
 function AllMilestonesCompleted({ project }) {
   const editLink = (
-    <Link to={`/projects/${project.id}/edit/timeline`} testId="add-milestones-link">
+    <Link to={Paths.projectEditTimelinePath(project.id!)} testId="add-milestones-link">
       Add more milestones
     </Link>
   );
@@ -77,7 +77,7 @@ function NextMilestoneList({
 }
 
 function MilestoneLink({ project, milestone }) {
-  const path = `/projects/${project.id}/milestones/${milestone.id}`;
+  const path = Paths.projectMilestonePath(project.id!, milestone.id!);
   const title = milestone.title;
   const deadline = milestone.deadlineAt;
 

@@ -15,9 +15,9 @@ defmodule Operately.Features.ErrorsTest do
     ctx
   end
 
-  feature "visiting a non existing page", ctx do
+  feature "visiting a non-existing route", ctx do
     ctx
-    |> UI.visit("/non-existing-page")
+    |> UI.visit(Paths.home_path(ctx.company) <> "/non-existing-page")
     |> UI.assert_text("Page Not Found")
   end
 

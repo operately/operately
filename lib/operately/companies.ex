@@ -1,5 +1,6 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
+  alias Operately.Companies.ShortId
   alias Operately.Repo
 
   alias Operately.Companies.Company
@@ -8,6 +9,13 @@ defmodule Operately.Companies do
 
   def list_companies do
     Repo.all(Company)
+  end
+
+  def list_companies(account = %Operately.People.Account{}) do
+    Repo.all(
+      from c in Company, 
+        join: p in assoc(c, :people), 
+        where: p.account_id == ^account.id)
   end
 
   def count_companies do
@@ -20,6 +28,16 @@ defmodule Operately.Companies do
 
   def get_company!(id), do: Repo.get!(Company, id)
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
+
+  def get_company_by_short_id(person = %Person{} = person, short_id) do
+    case ShortId.decode(short_id) do
+      {:ok, short_id} ->
+        query = from c in Company, join: p in assoc(c, :people), where: c.short_id == ^short_id and p.id == ^person.id
+        Repo.one(query)
+      :error ->
+        nil
+    end
+  end
 
   defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run
 

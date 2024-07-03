@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.GoalArchivedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
+  alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -15,6 +16,7 @@ defmodule OperatelyEmail.Emails.GoalArchivedEmail do
     |> subject(where: space.name, who: author, action: "archived the #{goal.name} goal")
     |> assign(:author, author)
     |> assign(:goal, goal)
+    |> assign(:cta_url, Paths.goal_path(company, goal) |> Paths.to_url())
     |> render("goal_archived")
   end
 end

@@ -57,6 +57,7 @@ defmodule Operately.MixProject do
       {:inflex, "~> 2.0.0"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.0"},
+      {:custom_base, "~> 0.2"},
 
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},

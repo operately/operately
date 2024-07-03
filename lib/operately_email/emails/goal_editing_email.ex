@@ -24,6 +24,7 @@ defmodule OperatelyEmail.Emails.GoalEditingEmail do
     |> assign(:new_champion, new_champion)
     |> assign(:old_reviewer, old_reviewer)
     |> assign(:new_reviewer, new_reviewer)
+    |> assign(:link, OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url())
     |> render("goal_editing")
   end
 end

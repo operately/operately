@@ -9,6 +9,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { GhostButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -17,7 +18,7 @@ export function Page() {
     <Pages.Page title={["Archiving ", project.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
-          <Paper.NavItem linkTo={`/projects/${project.id}`}>
+          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
             <Icons.IconClipboardList size={16} />
             {project.name}
           </Paper.NavItem>
@@ -31,7 +32,7 @@ export function Page() {
 
           <div className="flex items-center gap-6 mt-8">
             <ArchiveButton project={project} />
-            <DimmedLink to={`/projects/${project.id}`}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.projectPath(project.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -40,7 +41,7 @@ export function Page() {
 }
 
 function ArchiveButton({ project }) {
-  const navigateToProjectArchive = useNavigateTo(`/projects/${project.id}`);
+  const navigateToProjectArchive = useNavigateTo(Paths.projectPath(project.id!));
 
   const archiveForm = Projects.useArchiveMutation({
     variables: {

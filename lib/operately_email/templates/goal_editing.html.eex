@@ -71,5 +71,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(OperatelyEmail.goal_url(@goal.id), "View Goal") %>
+  <%= cta_button(@link, "View Goal") %>
 <% end %>

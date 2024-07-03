@@ -53,7 +53,7 @@ defmodule Operately.Features.DiscussionsTest do
   @tag login_as: :author
   feature "leave a comment on a discussion", ctx do
     ctx
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
     |> UI.click(testid: "new-discussion")
     |> UI.fill(testid: "discussion-title", with: "This is a discussion")
     |> UI.fill_rich_text("This is the body of the discussion.")
@@ -64,7 +64,7 @@ defmodule Operately.Features.DiscussionsTest do
 
     ctx
     |> UI.login_as(ctx.reader)
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions/#{discussion.id}")
+    |> UI.visit(Paths.discussion_path(ctx.company, ctx.space, discussion))
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
@@ -85,7 +85,7 @@ defmodule Operately.Features.DiscussionsTest do
   @tag login_as: :author
   feature "edit a posted discussion", ctx do
     ctx
-    |> UI.visit("/spaces/#{ctx.space.id}/discussions")
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
     |> UI.click(testid: "new-discussion")
     |> UI.fill(testid: "discussion-title", with: "This is a discussion")
     |> UI.fill_rich_text("This is the body of the discussion.")

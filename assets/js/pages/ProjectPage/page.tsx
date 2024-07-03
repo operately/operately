@@ -23,7 +23,6 @@ import * as People from "@/models/people";
 import { Link } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
-import { createPath } from "@/utils/paths";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 import Options from "./Options";
@@ -56,7 +55,7 @@ export function Page() {
 
                   <div className="text-sm">
                     {showEditDescription(project) && (
-                      <Link to={`/projects/${project.id}/edit/description`} testId="edit-project-description-link">
+                      <Link to={Paths.projectEditDescriptionPath(project.id!)} testId="edit-project-description-link">
                         Edit
                       </Link>
                     )}
@@ -76,7 +75,7 @@ export function Page() {
 
                   <div className="text-sm">
                     {showEditMilestones(project) && (
-                      <Link to={`/projects/${project.id}/milestones`} testId="manage-timeline">
+                      <Link to={Paths.projectMilestonesPath(project.id!)} testId="manage-timeline">
                         View
                       </Link>
                     )}
@@ -98,7 +97,7 @@ export function Page() {
 
                   <div className="text-sm">
                     {showEditResource(project) && (
-                      <Link to={`/projects/${project.id}/edit/resources`} testId="edit-resources-link">
+                      <Link to={Paths.projectEditResourcesPath(project.id!)} testId="edit-resources-link">
                         Edit
                       </Link>
                     )}
@@ -205,7 +204,7 @@ function Resources({ project }) {
 }
 
 function ResourcesZeroState({ project }) {
-  const editPath = createPath("projects", project.id, "edit", "resources");
+  const editPath = Paths.projectEditResourcesPath(project.id!);
 
   const editLink = (
     <GhostButton linkTo={editPath} testId="add-resources-link" size="xs" type="secondary">
@@ -260,7 +259,7 @@ function Description({ project }) {
 }
 
 function DescriptionZeroState({ project }) {
-  const writePath = createPath("projects", project.id, "edit", "description");
+  const writePath = Paths.projectEditDescriptionPath(project.id!);
 
   const editLink = (
     <GhostButton linkTo={writePath} testId="write-project-description-link" size="xs" type="secondary">
@@ -306,7 +305,7 @@ function CheckInSection({ project }) {
           <div className="font-bold text-sm">Check-Ins</div>
           {project.lastCheckIn && (
             <div className="text-sm">
-              <Link to={`/projects/${project.id}/check-ins`}>View all</Link>
+              <Link to={Paths.projectCheckInsPath(project.id!)}>View all</Link>
             </div>
           )}
         </div>

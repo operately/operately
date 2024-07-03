@@ -1,13 +1,14 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
+import * as Projects from "@/models/projects";
 
-import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
 
 export function ProjectPageNavigation({ project }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/projects/${project.id}`}>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
         <Icons.IconClipboardList size={16} />
         {project.name}
       </Paper.NavItem>
@@ -15,9 +16,9 @@ export function ProjectPageNavigation({ project }) {
   );
 }
 
-export function ProjectMilestonesNavigation({ project }) {
-  const dashboardPath = createPath("projects", project.id);
-  const milestonesPath = createPath("projects", project.id, "milestones");
+export function ProjectMilestonesNavigation({ project }: { project: Projects.Project }) {
+  const dashboardPath = Paths.projectPath(project.id!);
+  const milestonesPath = Paths.projectMilestonesPath(project.id!);
 
   return (
     <Paper.Navigation>

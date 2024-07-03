@@ -28,11 +28,11 @@ defmodule Operately.Features.AccountSettingsTest do
 
   defp change_theme(ctx, theme) do
     ctx
-    |> UI.visit("/account")
+    |> UI.visit(Paths.account_path(ctx.company))
     |> UI.click(testid: "appearance-link")
     |> UI.click(testid: "color-mode-#{theme}")
     |> UI.click(testid: "save")
-    |> UI.wait_for_page_to_load("/account")
+    |> UI.wait_for_page_to_load(Paths.account_path(ctx.company))
   end
 
   defp assert_person_has_theme(ctx, theme) do

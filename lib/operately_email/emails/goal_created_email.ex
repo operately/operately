@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.GoalCreatedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
+  alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -17,6 +18,7 @@ defmodule OperatelyEmail.Emails.GoalCreatedEmail do
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:role, role)
+    |> assign(:cta_url, Paths.goal_path(company, goal) |> Paths.to_url())
     |> render("goal_created")
   end
 end

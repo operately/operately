@@ -2,8 +2,8 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { createPath } from "@/utils/paths";
 import { useAddResource } from "@/models/keyResources";
+import { Paths } from "@/routes/paths";
 
 interface FormState {
   projectId: string;
@@ -21,7 +21,7 @@ interface FormState {
 }
 
 export function useForm(project: Projects.Project, resourceType: string): FormState {
-  const gotoResourceList = useNavigateTo(createPath("projects", project.id, "edit", "resources"));
+  const gotoResourceList = useNavigateTo(Paths.projectEditResourcesPath(project.id!));
 
   const [name, setName] = React.useState("");
   const [url, setUrl] = React.useState("");

@@ -34,7 +34,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const project = content(activity).project!;
     const milestone = content(activity).milestone!;
-    const path = Paths.projectMilestoneUrl(project.id!, milestone.id!);
+    const path = Paths.projectMilestonePath(project.id!, milestone.id!);
     const link = <Link to={path}>{milestone!.title!}</Link>;
     const what = didWhat(content(activity).commentAction!);
 

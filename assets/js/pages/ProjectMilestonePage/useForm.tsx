@@ -6,7 +6,7 @@ import * as Time from "@/utils/time";
 
 import { useRefresh } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { createPath } from "@/utils/paths";
+import { Paths } from "@/routes/paths";
 
 export interface FormState {
   milestone: Milestones.Milestone;
@@ -75,7 +75,7 @@ const useReopenMilestone = (milestone: Milestones.Milestone) => {
 
 const useArchiveMilestone = (project: Projects.Project, milestone: Milestones.Milestone) => {
   const refresh = useRefresh();
-  const gotoProject = useNavigateTo(createPath("projects", project.id));
+  const gotoProject = useNavigateTo(Paths.projectPath(project.id!));
 
   const [post] = Milestones.useRemoveMilestone({ onCompleted: gotoProject });
 

@@ -6,9 +6,11 @@ import * as Icons from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 import { FilledButton } from "@/components/Button";
 import { GoalTree } from "@/features/goals/GoalTree";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { company, goals, projects } = useLoadedData();
+  const newGoalPath = Paths.newGoalPath({ companyWide: true });
 
   return (
     <Pages.Page title={"Goals"}>
@@ -16,7 +18,7 @@ export function Page() {
         <Paper.Body className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">Goals in {company.name}</h1>
-            <FilledButton size="sm" linkTo={"/goals/new?company-wide=true"} testId="add-company-wide-goal">
+            <FilledButton size="sm" linkTo={newGoalPath} testId="add-company-wide-goal">
               <Icons.IconPlus className="mr-2 inline-block" size={16} />
               Add Company-Wide Goal
             </FilledButton>

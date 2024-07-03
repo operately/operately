@@ -7,6 +7,7 @@ import { logOut } from "@/models/people";
 
 import { PuffLoader } from "react-spinners";
 import { Link } from "react-router-dom";
+import { Paths } from "@/routes/paths";
 
 export async function loader(): Promise<null> {
   return null;
@@ -36,7 +37,7 @@ export function Page() {
 function ProfileLink() {
   return (
     <Link
-      to="/account/profile"
+      to={Paths.accountProfilePath()}
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
     >
       <Icons.IconUserCircle size={24} /> Profile
@@ -47,7 +48,7 @@ function ProfileLink() {
 function AppearanceLink() {
   return (
     <Link
-      to="/account/appearance"
+      to={Paths.accountAppearancePath()}
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
       data-test-id="appearance-link"
     >

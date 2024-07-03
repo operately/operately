@@ -14,6 +14,7 @@ import { useGetMe } from "@/models/people";
 import classNames from "classnames";
 import moment from "moment-timezone";
 import Avatar from "@/components/Avatar";
+import { Paths } from "@/routes/paths";
 
 export async function loader() {
   return null;
@@ -40,7 +41,7 @@ export function Page() {
     <Pages.Page title="Edit Profile">
       <Paper.Root size="small">
         <Paper.Navigation>
-          <Paper.NavItem linkTo="/account">Account</Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.accountPath()}>Account</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body minHeight="300px">
@@ -76,7 +77,7 @@ function FileInput({ onChange }) {
 }
 
 function ProfileForm({ me }) {
-  const navigateToAccount = useNavigateTo("/account");
+  const navigateToAccount = useNavigateTo(Paths.accountPath());
 
   const [name, setName] = useState(me.fullName);
   const [title, setTitle] = useState(me.title);

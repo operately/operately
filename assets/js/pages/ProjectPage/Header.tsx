@@ -89,7 +89,7 @@ function PrivateIndicator({ project }) {
 }
 
 function ContributorList({ project }: { project: Projects.Project }) {
-  const contributorsPath = `/projects/${project.id}/contributors`;
+  const contributorsPath = Paths.projectContributorsPath(project.id!);
   const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
 
   return (

@@ -6,10 +6,10 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Spaces from "@/models/spaces";
 import * as Timeframes from "@/utils/timeframes";
 
-import { createPath } from "@/utils/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
+import { Paths } from "@/routes/paths";
 
 export interface FormState {
   config: FormConfig;
@@ -215,11 +215,11 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
   const cancel = useNavigateTo(createCancelPath(config));
 
   const [create, { loading: submittingCreate }] = Goals.useCreateGoalMutation({
-    onCompleted: (data: any) => navigate(createPath("goals", data.createGoal.id)),
+    onCompleted: (data: any) => navigate(Paths.goalPath(data.createGoal.id)),
   });
 
   const [edit, { loading: submittingEdit }] = Goals.useEditGoalMutation({
-    onCompleted: (data: any) => navigate(createPath("goals", data.editGoal.id)),
+    onCompleted: (data: any) => navigate(Paths.goalPath(data.editGoal.id)),
   });
 
   const submitting = submittingCreate || submittingEdit;
@@ -364,10 +364,10 @@ function prepareDescriptionForSave(fields: Fields): string | null {
 
 function createCancelPath(config: FormConfig): string {
   if (config.mode === "edit") {
-    return createPath("goals", config.goal?.id);
+    return Paths.goalPath(config.goal!.id!);
   } else if (config.allowSpaceSelection) {
-    return "/goals";
+    return Paths.goalsPath();
   } else {
-    return createPath("group", config.space!.id);
+    return Paths.spacePath(config.space!.id!);
   }
 }

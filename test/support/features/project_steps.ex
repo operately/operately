@@ -85,7 +85,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   def post_new_discussion(ctx, title: title, body: body) do
     ctx
-    |> visit_project_page()
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "new-discussion-button")
     |> UI.fill(testid: "discussion-title-input", with: title)
     |> UI.fill_rich_text(body)
@@ -105,7 +105,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   def submit_check_in(ctx, content: content) do
     ctx
-    |> visit_project_page()
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "add-check-in")
     |> UI.fill_rich_text(content)
     |> UI.click(testid: "post-check-in")
@@ -148,10 +148,10 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
     ctx
-    |> UI.assert_page("/projects/#{ctx.project.id}")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> UI.assert_text(goal_name)
     |> UI.click(testid: "project-goal-link")
-    |> UI.assert_page("/goals/#{ctx.goal.id}")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(goal_name)
   end
 
@@ -183,7 +183,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :disconnect_goal, ctx do
     ctx
-    |> UI.assert_page("/projects/#{ctx.project.id}")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "connect-project-to-goal-link")
     |> UI.click(testid: "disconnect-goal")
@@ -191,7 +191,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_goal_link_not_on_project_page, ctx do
     ctx
-    |> UI.assert_page("/projects/#{ctx.project.id}")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> UI.assert_text("Not yet connected to a goal")
   end
 
@@ -234,7 +234,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_moved_feed_item_exists, ctx do
     ctx
-    |> visit_project_page()
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: ctx.new_space)
   end
 
@@ -243,13 +243,13 @@ defmodule Operately.Support.Features.ProjectSteps do
   #
 
   step :visit_project_page, ctx do
-    ctx |> UI.visit("/projects/#{ctx.project.id}")
+    ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
   end
 
   def visit_project_milestones_page(ctx, milestone_name) do
     {:ok, milestone} = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
 
-    ctx |> UI.visit("/projects/#{ctx.project.id}/milestones/#{milestone.id}")
+    ctx |> UI.visit(Paths.project_milestone_path(ctx.company, ctx.project, milestone))
   end
 
   def follow_last_check_in(ctx) do
@@ -313,7 +313,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_pause_visible_on_project_feed, ctx do
     ctx
-    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el |> UI.assert_text("paused the project")
     end)
@@ -352,7 +352,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_resume_visible_on_project_feed, ctx do
     ctx
-    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el |> UI.assert_text("resumed the project")
     end)
@@ -368,7 +368,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_renamed, ctx, new_name: new_name do
     ctx
-    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.assert_text(new_name)
 
     project = Operately.Projects.get_project!(ctx.project.id)
@@ -419,7 +419,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
 
     ctx
-    |> UI.visit("/projects/#{ctx.project.id}")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "added #{Operately.People.Person.short_name(contrib.person)} to the project",
@@ -481,9 +481,43 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert contrib == nil
 
     ctx
-    |> visit_project_page()
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "project-contributors")
     |> UI.refute_has(Query.text("Michael Scott"))
+  end
+
+  step :assert_project_description_absent, ctx do
+    ctx
+    |> UI.assert_text("Project description is not yet set")
+    |> UI.assert_text("Write project description")
+  end
+
+  step :submit_project_description, ctx, description: description do
+    ctx
+    |> UI.click(testid: "write-project-description-link")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "save")
+  end
+
+  step :assert_project_description_present, ctx, description: description do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text(description)
+  end
+
+  step :given_project_has_description, ctx, description: description do
+    {:ok, _project} = Operately.Projects.update_project(ctx.project, %{
+      description: Operately.Support.RichText.rich_text(description)
+    })
+    ctx
+  end
+
+  step :edit_project_description, ctx, description: description do
+    ctx
+    |> UI.click(testid: "edit-project-description-link")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "save")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
   end
 
 end

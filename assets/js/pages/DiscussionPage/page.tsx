@@ -17,6 +17,7 @@ import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const me = useMe();
@@ -80,7 +81,7 @@ function Title({ discussion }) {
 function Navigation({ space }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={`/spaces/${space.id}/discussions`}>
+      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>
         {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
         {space.name}
       </Paper.NavItem>
@@ -96,7 +97,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit Post"
-        to={`/spaces/${discussion.space.id}/discussions/${discussion.id}/edit`}
+        to={Paths.discussionEditPath(discussion.space.id, discussion.id)}
         dataTestId="edit-discussion"
       />
     </PageOptions.Root>

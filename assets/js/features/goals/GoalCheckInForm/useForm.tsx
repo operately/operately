@@ -98,7 +98,9 @@ export function useForm(options: UseFormOptions): FormState {
   const submitting = submittingPost || submittingEdit;
   const submitButtonLabel = options.mode === "create" ? "Submit" : "Save Changes";
   const cancelPath =
-    options.mode === "create" ? `/goals/${goal.id}/check-ins` : `/goals/${goal.id}/check-ins/${options.checkIn!.id}`;
+    options.mode === "create"
+      ? Paths.goalCheckInsPath(goal.id!)
+      : Paths.goalCheckInPath(goal.id!, options.checkIn!.id!);
 
   return {
     editor,
