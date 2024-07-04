@@ -1,5 +1,6 @@
 import * as Discussions from "@/models/discussions";
 import * as Comments from "@/models/comments";
+import * as Time from "@/utils/time";
 
 import { ItemType, FormState } from "./form";
 
@@ -7,7 +8,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
   const items = discussion.comments!.map((c) => {
     return {
       type: "comment" as ItemType,
-      insertedAt: c!.insertedAt,
+      insertedAt: Time.parse(c.insertedAt)!,
       value: c,
     };
   });

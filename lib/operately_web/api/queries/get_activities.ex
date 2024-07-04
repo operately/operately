@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Queries.GetActivities do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   alias Operately.Repo
   alias Operately.Activities.Activity
@@ -19,12 +20,24 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
 
   def call(conn, inputs) do
     company_id = conn.assigns.current_account.person.company_id
-    scope_id = inputs[:scope_id]
-    scope_type = inputs[:scope_type]
     actions = inputs[:actions] || []
+    {:ok, scope_type, scope_id} = decode_scope(inputs)
     activities = load_activities(company_id, scope_type, scope_id, actions)
 
     {:ok, %{activities: OperatelyWeb.Api.Serializers.Activity.serialize(activities)}}
+  end
+
+  def decode_scope(inputs) do
+    scope_id = inputs[:scope_id]
+    scope_type = inputs[:scope_type]
+
+    case scope_type do
+      "space" -> 
+        {:ok, id} = decode_id(scope_id)
+        {:ok, scope_type, id}
+
+      _ -> {:ok, scope_type, scope_id}
+    end
   end
 
   #

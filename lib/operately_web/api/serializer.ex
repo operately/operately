@@ -111,8 +111,29 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
     }
   end
 
-  def serialize(%{type: :project_discussion}, level: :essential) do
-    raise "Not implemented"
+  def serialize(update = %{type: :project_discussion}, level: :essential) do
+    %{
+      id: update.id,
+      title: update.content["title"],
+      body: Jason.encode!(update.content["body"]),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(update.updated_at),
+      author: OperatelyWeb.Api.Serializer.serialize(update.author),
+    }
+  end
+
+  def serialize(update = %{type: :project_discussion}, level: :full) do
+    %{
+      id: update.id,
+      title: update.content["title"],
+      body: Jason.encode!(update.content["body"]),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(update.updated_at),
+      author: OperatelyWeb.Api.Serializer.serialize(update.author),
+      space: OperatelyWeb.Api.Serializer.serialize(update.space),
+      reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
+      comments: OperatelyWeb.Api.Serializer.serialize(update.comments)
+    }
   end
 end
 
@@ -156,10 +177,23 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
   def serialize(space, level: :essential) do
     %{
-      id: space.id,
+      id: OperatelyWeb.Paths.space_id(space),
       name: space.name,
       color: space.color,
       icon: space.icon,
+    }
+  end
+
+  def serialize(space, level: :full) do
+    %{
+      id: OperatelyWeb.Paths.space_id(space),
+      name: space.name,
+      mission: space.mission,
+      color: space.color,
+      icon: space.icon,
+      is_member: space.is_member,
+      is_company_space: space.company.company_space_id == space.id,
+      members: OperatelyWeb.Api.Serializer.serialize(space.members),
     }
   end
 end

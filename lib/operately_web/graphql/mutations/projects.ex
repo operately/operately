@@ -1,17 +1,6 @@
 defmodule OperatelyWeb.Graphql.Mutations.Projects do
   use Absinthe.Schema.Notation
 
-  input_object :create_project_input do
-    field :space_id, non_null(:id)
-    field :name, non_null(:string)
-    field :champion_id, non_null(:id)
-    field :reviewer_id, non_null(:id)
-    field :visibility, non_null(:string)
-    field :creator_is_contributor, non_null(:string)
-    field :creator_role, :string
-    field :goal_id, :id
-  end
-
   input_object :add_key_resource_input do
     field :project_id, non_null(:id)
     field :title, non_null(:string)
@@ -53,11 +42,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :name, non_null(:string)
   end
 
-  input_object :project_move_input do
-    field :project_id, non_null(:id)
-    field :space_id, non_null(:id)
-  end
-
   input_object :close_project_input do
     field :project_id, non_null(:id)
     field :retrospective, non_null(:string)
@@ -91,18 +75,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         project_id = input.project_id
 
         Operately.Operations.ProjectPausing.run(author, project_id)
-      end
-    end
-
-    field :move_project_to_space, non_null(:project) do
-      arg :input, non_null(:project_move_input)
-
-      resolve fn args, %{context: context} ->
-        author = context.current_account.person
-        project = Operately.Projects.get_project!(args.input.project_id)
-        space_id = args.input.space_id
-
-        Operately.Projects.move_project_to_space(author, project, space_id)
       end
     end
 
@@ -159,28 +131,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         }
 
         Operately.Projects.EditTimelineOperation.run(author, project, attrs)
-      end
-    end
-
-    field :create_project, non_null(:project) do
-      arg :input, non_null(:create_project_input)
-
-      resolve fn args, %{context: context} ->
-        person = context.current_account.person
-
-        %Operately.Operations.ProjectCreation{
-          name: args.input.name,
-          champion_id: args.input.champion_id,
-          reviewer_id: args.input.reviewer_id,
-          creator_is_contributor: args.input[:creator_is_contributor],
-          creator_role: args.input[:creator_role],
-          visibility: args.input.visibility,
-          creator_id: person.id,
-          company_id: person.company_id,
-          group_id: args.input.space_id,
-          goal_id: args.input[:goal_id]
-        }
-        |> Operately.Projects.create_project()
       end
     end
 

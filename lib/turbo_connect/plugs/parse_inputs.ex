@@ -59,6 +59,36 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
+  def parse_input(:float, _types, _unions, value, true) when is_float(value), do: {:ok, value}
+  def parse_input(:float, _types, _unions, value, true) when is_number(value), do: {:ok, value}
+  def parse_input(:float, _types, _unions, value, false) do
+    case Float.parse(value) do
+      {float, ""} -> {:ok, float}
+      _ -> {:error, 422, "Invalid float: #{value}"}
+    end
+  end
+
+  def parse_input(:date, _types, _unions, value, _strict) when is_binary(value) do
+    case Date.from_iso8601(value) do
+      {:ok, date} -> {:ok, date}
+      _ -> {:error, 422, "Invalid date: #{value}"}
+    end
+  end
+
+  def parse_input(:datetime, _types, _unions, value, _strict) when is_binary(value) do
+    case DateTime.from_iso8601(value) do
+      {:ok, datetime} -> {:ok, datetime}
+      _ -> {:error, 422, "Invalid datetime: #{value}"}
+    end
+  end
+
+  def parse_input(:time, _types, _unions, value, _strict) when is_binary(value) do
+    case Time.from_iso8601(value) do
+      {:ok, time} -> {:ok, time}
+      _ -> {:error, 422, "Invalid time: #{value}"}
+    end
+  end
+
   #
   # Parsing lists
 
@@ -84,12 +114,22 @@ defmodule TurboConnect.Plugs.ParseInputs do
   # Error handling
   #
 
-  def parse_input(:float, _types, _unions, _value, _strict), do: {:error, 422, "Float parsing not implemented"}
-  def parse_input(:date, _types, _unions, _value, _strict), do: {:error, 422, "Date parsing not implemented"}
-  def parse_input(:time, _types, _unions, _value, _string), do: {:error, 422, "Time parsing not implemented"}
-  def parse_input(:datetime, _types, _unions, _value, _string), do: {:error, 422, "Datetime parsing not implemented"}
+  def parse_input(type, types, unions, values, strict) do
+    # TODO: What if the type is a union?
+    registered_type = types.objects[type]
 
-  def parse_input(type, _types, _unions, _value, _string), do: {:error, 422, "Type handler not implemented for #{inspect(type)}"}
+    if registered_type do
+      Enum.reduce(values, {:ok, %{}}, fn {name, value}, res ->
+        with {:ok, res} <- res,
+             {:ok, {field_name, field_type, _opts}} <- find_field(registered_type.fields, name),
+             {:ok, parsed} <- parse_input(field_type, types, unions, value, strict) do
+          {:ok, Map.put(res, field_name, parsed)}
+        end
+      end)
+    else
+      {:error, 422, "Unknown input type: #{type}"}
+    end
+  end
 
   #
   # Utilities to convert string keys to atoms in conn.params

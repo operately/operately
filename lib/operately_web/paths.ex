@@ -65,8 +65,8 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "notifications"])
   end
 
-  def discussion_path(company = %Company{}, space = %Group{}, discussion) do
-    create_path([company_id(company), "spaces", space_id(space), "discussions", discussion.id])
+  def discussion_path(company = %Company{}, discussion) do
+    create_path([company_id(company), "discussions", discussion.id])
   end
 
   def project_path(company = %Company{}, project = %Project{}) do
@@ -114,7 +114,8 @@ defmodule OperatelyWeb.Paths do
   end
 
   def space_id(space) do
-    space.id
+    id = Operately.ShortUuid.encode(space.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(space.name, id)
   end
 
   def goal_id(goal) do

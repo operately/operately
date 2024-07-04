@@ -45,13 +45,8 @@ export function useForm(options: UseFormOptions): FormState {
     content: discussion?.body && JSON.parse(discussion.body),
   });
 
-  const [post, { loading: submittingPost }] = Discussions.usePost({
-    onCompleted: (data: any) => navigate(Paths.discussionPath(space.id!, data.postDiscussion.id)),
-  });
-
-  const [edit, { loading: submittingEdit }] = Discussions.useEdit({
-    onCompleted: (data: any) => navigate(Paths.discussionPath(space.id!, data.editDiscussion.id)),
-  });
+  const [post, { loading: submittingPost }] = Discussions.usePostDiscussion();
+  const [edit, { loading: submittingEdit }] = Discussions.useEditDiscussion();
 
   const submit = async (): Promise<boolean> => {
     if (!editor) return false;
@@ -67,27 +62,23 @@ export function useForm(options: UseFormOptions): FormState {
     }
 
     if (options.mode === "edit") {
-      await edit({
-        variables: {
-          input: {
-            discussionId: discussion!.id,
-            title: title,
-            body: JSON.stringify(editor.getJSON()),
-          },
-        },
+      const res = await edit({
+        discussionId: discussion!.id,
+        title: title,
+        body: JSON.stringify(editor.getJSON()),
       });
+
+      navigate(Paths.discussionPath(res.discussion.id));
 
       return true;
     } else {
-      await post({
-        variables: {
-          input: {
-            spaceId: space.id,
-            title: title,
-            body: JSON.stringify(editor.getJSON()),
-          },
-        },
+      const res = await post({
+        spaceId: space.id,
+        title: title,
+        body: JSON.stringify(editor.getJSON()),
       });
+
+      navigate(Paths.discussionPath(res.discussion.id));
 
       return true;
     }
@@ -95,7 +86,7 @@ export function useForm(options: UseFormOptions): FormState {
 
   const submitting = submittingPost || submittingEdit;
   const cancelPath =
-    options.mode === "edit" ? Paths.discussionPath(space.id!, discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
+    options.mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
 
   const submitButtonLabel = options.mode === "edit" ? "Save Changes" : "Post Discussion";
 

@@ -57,11 +57,6 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
-export type AddMemberInput = {
-  id: Scalars['ID']['input'];
-  permissions: Scalars['Int']['input'];
-};
-
 export type AddReactionInput = {
   emoji: Scalars['String']['input'];
   entityId: Scalars['ID']['input'];
@@ -130,55 +125,10 @@ export type Company = {
   trustedEmailDomains?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
 };
 
-export type ContactInput = {
-  name: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  value: Scalars['String']['input'];
-};
-
 export type CreateCommentInput = {
   content: Scalars['String']['input'];
   entityId: Scalars['String']['input'];
   entityType: Scalars['String']['input'];
-};
-
-export type CreateGoalInput = {
-  championId: Scalars['ID']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  parentGoalId?: InputMaybe<Scalars['ID']['input']>;
-  reviewerId: Scalars['ID']['input'];
-  spaceId: Scalars['ID']['input'];
-  targets: Array<InputMaybe<CreateTargetInput>>;
-  timeframe: TimeframeInput;
-};
-
-export type CreateGroupInput = {
-  color: Scalars['String']['input'];
-  companyPermissions: Scalars['Int']['input'];
-  icon: Scalars['String']['input'];
-  mission: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  publicPermissions: Scalars['Int']['input'];
-};
-
-export type CreateProjectInput = {
-  championId: Scalars['ID']['input'];
-  creatorIsContributor: Scalars['String']['input'];
-  creatorRole?: InputMaybe<Scalars['String']['input']>;
-  goalId?: InputMaybe<Scalars['ID']['input']>;
-  name: Scalars['String']['input'];
-  reviewerId: Scalars['ID']['input'];
-  spaceId: Scalars['ID']['input'];
-  visibility: Scalars['String']['input'];
-};
-
-export type CreateTargetInput = {
-  from: Scalars['Float']['input'];
-  index: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  to: Scalars['Float']['input'];
-  unit: Scalars['String']['input'];
 };
 
 export type CreateTaskInput = {
@@ -200,29 +150,9 @@ export type CreateUpdateInput = {
   updatableType: Scalars['String']['input'];
 };
 
-export type Discussion = {
-  __typename?: 'Discussion';
-  author: Person;
-  body: Scalars['String']['output'];
-  comments?: Maybe<Array<Maybe<Comment>>>;
-  id: Scalars['ID']['output'];
-  insertedAt: Scalars['Date']['output'];
-  name: Scalars['String']['output'];
-  reactions?: Maybe<Array<Maybe<Reaction>>>;
-  space: Group;
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['Date']['output'];
-};
-
 export type EditCommentInput = {
   commentId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
-};
-
-export type EditDiscussionInput = {
-  body: Scalars['String']['input'];
-  discussionId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
 };
 
 export type EditGoalDiscussionInput = {
@@ -231,27 +161,10 @@ export type EditGoalDiscussionInput = {
   title: Scalars['String']['input'];
 };
 
-export type EditGoalInput = {
-  addedTargets: Array<InputMaybe<CreateTargetInput>>;
-  championId: Scalars['ID']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  goalId: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
-  reviewerId: Scalars['ID']['input'];
-  timeframe: TimeframeInput;
-  updatedTargets: Array<InputMaybe<UpdateTargetInput>>;
-};
-
 export type EditGoalTimeframeInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   timeframe: TimeframeInput;
-};
-
-export type EditGroupInput = {
-  id: Scalars['ID']['input'];
-  mission: Scalars['String']['input'];
-  name: Scalars['String']['input'];
 };
 
 export type EditKeyResourceInput = {
@@ -332,16 +245,7 @@ export type Group = {
   members?: Maybe<Array<Person>>;
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  pointsOfContact?: Maybe<Array<GroupContact>>;
   privateSpace: Scalars['Boolean']['output'];
-};
-
-export type GroupContact = {
-  __typename?: 'GroupContact';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  value: Scalars['String']['output'];
 };
 
 export type Invitation = {
@@ -351,10 +255,6 @@ export type Invitation = {
   id: Scalars['ID']['output'];
   member: Person;
   token: Scalars['String']['output'];
-};
-
-export type JoinSpaceInput = {
-  spaceId: Scalars['String']['input'];
 };
 
 export type Milestone = {
@@ -414,12 +314,6 @@ export type Person = {
   theme?: Maybe<Scalars['String']['output']>;
   timezone?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-};
-
-export type PostDiscussionInput = {
-  body: Scalars['String']['input'];
-  spaceId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
 };
 
 export type PostMilestoneCommentInput = {
@@ -510,11 +404,6 @@ export type ProjectKeyResource = {
   title: Scalars['String']['output'];
 };
 
-export type ProjectMoveInput = {
-  projectId: Scalars['ID']['input'];
-  spaceId: Scalars['ID']['input'];
-};
-
 export type ProjectPermissions = {
   __typename?: 'ProjectPermissions';
   canAcknowledgeCheckIn: Scalars['Boolean']['output'];
@@ -558,8 +447,6 @@ export type RootMutationType = {
   addCompanyMember: Invitation;
   addCompanyTrustedEmailDomain: Company;
   addFirstCompany: Company;
-  addGroupContact?: Maybe<Group>;
-  addGroupMembers?: Maybe<Scalars['Boolean']['output']>;
   addKeyResource: ProjectKeyResource;
   addProjectContributor: ProjectContributor;
   addProjectMilestone: Milestone;
@@ -573,45 +460,33 @@ export type RootMutationType = {
   closeProject: Project;
   connectGoalToProject: Project;
   createComment?: Maybe<Comment>;
-  createGoal?: Maybe<Goal>;
-  createGroup?: Maybe<Group>;
-  createProject: Project;
   createTask?: Maybe<Task>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
   editComment?: Maybe<Comment>;
-  editDiscussion?: Maybe<Discussion>;
-  editGoal?: Maybe<Goal>;
   editGoalDiscussion: Goal;
   editGoalTimeframe: Goal;
-  editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
   editProjectCheckIn: ProjectCheckIn;
   editProjectName: Project;
   editProjectTimeline: Project;
   editUpdate: Update;
-  joinSpace: Group;
-  moveProjectToSpace: Project;
   newInvitationToken: Invitation;
   pauseProject: Project;
-  postDiscussion?: Maybe<Discussion>;
   postMilestoneComment: MilestoneComment;
   postProjectCheckIn: ProjectCheckIn;
   removeCompanyAdmin?: Maybe<Person>;
   removeCompanyMember?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
-  removeGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
   reopenGoal: Goal;
   resumeProject: Project;
-  setGroupMission?: Maybe<Group>;
   setMilestoneDeadline: Milestone;
   setMilestoneStatus: Milestone;
   setProjectDueDate: Project;
   setProjectStartDate: Project;
-  updateGroupAppearance: Group;
   updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
@@ -650,18 +525,6 @@ export type RootMutationTypeAddCompanyTrustedEmailDomainArgs = {
 
 export type RootMutationTypeAddFirstCompanyArgs = {
   input: AddFirstCompanyInput;
-};
-
-
-export type RootMutationTypeAddGroupContactArgs = {
-  contact: ContactInput;
-  groupId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeAddGroupMembersArgs = {
-  groupId: Scalars['ID']['input'];
-  members: Array<InputMaybe<AddMemberInput>>;
 };
 
 
@@ -736,21 +599,6 @@ export type RootMutationTypeCreateCommentArgs = {
 };
 
 
-export type RootMutationTypeCreateGoalArgs = {
-  input: CreateGoalInput;
-};
-
-
-export type RootMutationTypeCreateGroupArgs = {
-  input: CreateGroupInput;
-};
-
-
-export type RootMutationTypeCreateProjectArgs = {
-  input: CreateProjectInput;
-};
-
-
 export type RootMutationTypeCreateTaskArgs = {
   input: CreateTaskInput;
 };
@@ -772,16 +620,6 @@ export type RootMutationTypeEditCommentArgs = {
 };
 
 
-export type RootMutationTypeEditDiscussionArgs = {
-  input: EditDiscussionInput;
-};
-
-
-export type RootMutationTypeEditGoalArgs = {
-  input: EditGoalInput;
-};
-
-
 export type RootMutationTypeEditGoalDiscussionArgs = {
   input: EditGoalDiscussionInput;
 };
@@ -789,11 +627,6 @@ export type RootMutationTypeEditGoalDiscussionArgs = {
 
 export type RootMutationTypeEditGoalTimeframeArgs = {
   input: EditGoalTimeframeInput;
-};
-
-
-export type RootMutationTypeEditGroupArgs = {
-  input: EditGroupInput;
 };
 
 
@@ -822,16 +655,6 @@ export type RootMutationTypeEditUpdateArgs = {
 };
 
 
-export type RootMutationTypeJoinSpaceArgs = {
-  input: JoinSpaceInput;
-};
-
-
-export type RootMutationTypeMoveProjectToSpaceArgs = {
-  input: ProjectMoveInput;
-};
-
-
 export type RootMutationTypeNewInvitationTokenArgs = {
   personId: Scalars['ID']['input'];
 };
@@ -839,11 +662,6 @@ export type RootMutationTypeNewInvitationTokenArgs = {
 
 export type RootMutationTypePauseProjectArgs = {
   input: PauseProjectInput;
-};
-
-
-export type RootMutationTypePostDiscussionArgs = {
-  input: PostDiscussionInput;
 };
 
 
@@ -873,12 +691,6 @@ export type RootMutationTypeRemoveCompanyTrustedEmailDomainArgs = {
 };
 
 
-export type RootMutationTypeRemoveGroupMemberArgs = {
-  groupId: Scalars['ID']['input'];
-  memberId: Scalars['ID']['input'];
-};
-
-
 export type RootMutationTypeRemoveKeyResourceArgs = {
   id: Scalars['ID']['input'];
 };
@@ -904,12 +716,6 @@ export type RootMutationTypeResumeProjectArgs = {
 };
 
 
-export type RootMutationTypeSetGroupMissionArgs = {
-  groupId: Scalars['ID']['input'];
-  mission: Scalars['String']['input'];
-};
-
-
 export type RootMutationTypeSetMilestoneDeadlineArgs = {
   deadlineAt?: InputMaybe<Scalars['Date']['input']>;
   milestoneId: Scalars['ID']['input'];
@@ -931,11 +737,6 @@ export type RootMutationTypeSetProjectDueDateArgs = {
 export type RootMutationTypeSetProjectStartDateArgs = {
   projectId: Scalars['ID']['input'];
   startDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-
-export type RootMutationTypeUpdateGroupAppearanceArgs = {
-  input: UpdateGroupAppearanceInput;
 };
 
 
@@ -981,15 +782,12 @@ export type RootQueryType = {
   assignments: Assignments;
   comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
-  discussion: Discussion;
-  discussions?: Maybe<Array<Maybe<Discussion>>>;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
   milestone?: Maybe<Milestone>;
   person?: Maybe<Person>;
-  potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
@@ -1014,16 +812,6 @@ export type RootQueryTypeCommentsArgs = {
 
 export type RootQueryTypeCompanyArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeDiscussionArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeDiscussionsArgs = {
-  spaceId: Scalars['ID']['input'];
 };
 
 
@@ -1056,14 +844,6 @@ export type RootQueryTypeMilestoneArgs = {
 
 export type RootQueryTypePersonArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypePotentialGroupMembersArgs = {
-  excludeIds?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  groupId: Scalars['ID']['input'];
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1280,12 +1060,6 @@ export type UpdateContentStatusUpdate = {
   projectStartTime?: Maybe<Scalars['String']['output']>;
 };
 
-export type UpdateGroupAppearanceInput = {
-  color: Scalars['String']['input'];
-  icon: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
-};
-
 export type UpdateMilestoneDescriptionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -1300,15 +1074,6 @@ export type UpdateMilestoneInput = {
 export type UpdateMilestoneTitleInput = {
   id: Scalars['ID']['input'];
   title: Scalars['String']['input'];
-};
-
-export type UpdateTargetInput = {
-  from: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  index: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  to: Scalars['Float']['input'];
-  unit: Scalars['String']['input'];
 };
 
 export type UpdateTaskInput = {

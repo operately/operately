@@ -7,14 +7,14 @@ import { GhostButton } from "@/components/Button";
 import { SpaceCardLink, SpaceCardGrid } from "@/components/SpaceCards";
 
 import { useLoadedData } from "./loader";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 
 export function Page() {
   const { company, spaces } = useLoadedData();
 
   const sortedAndFilteredSpaces = [...spaces]
     .sort((a, b) => a.name!.localeCompare(b.name!))
-    .filter((space) => space.id !== company.companySpaceId);
+    .filter((space) => !compareIds(space.id!, company.companySpaceId!));
 
   return (
     <Pages.Page title="Lobby">

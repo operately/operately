@@ -2,6 +2,7 @@ import React from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as Spaces from "@/models/spaces";
@@ -15,20 +16,23 @@ import { SpaceIconChooser } from "@/components/SpaceIconChooser";
 import { SpacePermissionSelector } from "@/features/Permissions";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
-
 export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Paper.Root size="small">
-      <h1 className="mb-1 font-bold text-3xl text-center">Create a new space</h1>
-      <span className="text-content-dimmed text-center block mb-4">Spaces help organize projects, goals, and team members in one place.</span>
-      <Paper.Body minHeight="none">
-        <PermissionsProvider company={company}>
-          <Form />
-        </PermissionsProvider>
-      </Paper.Body>
-    </Paper.Root>
+    <Pages.Page title="Create a new space">
+      <Paper.Root size="small">
+        <h1 className="mb-1 font-bold text-3xl text-center">Create a new space</h1>
+        <span className="text-content-dimmed text-center block mb-4">
+          Spaces help organize projects, goals, and team members in one place.
+        </span>
+        <Paper.Body minHeight="none">
+          <PermissionsProvider company={company}>
+            <Form />
+          </PermissionsProvider>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
@@ -36,7 +40,7 @@ function Form() {
   const navigate = useNavigate();
   const { permissions } = usePermissionsContext();
 
-  const [createGroup, { loading }] = Spaces.useCreateSpace();
+  const [create, { loading }] = Spaces.useCreateGroup();
 
   const [name, setName] = React.useState("");
   const [mission, setMission] = React.useState("");
@@ -49,20 +53,16 @@ function Form() {
     const errors = validate(name, mission);
     setErrors(errors);
 
-    const res = await createGroup({
-      variables: {
-        input: {
-          name: name,
-          mission: mission,
-          icon: icon,
-          color: color,
-          companyPermissions: permissions.company,
-          publicPermissions: permissions.public,
-        },
-      },
+    const res = await create({
+      name: name,
+      mission: mission,
+      icon: icon,
+      color: color,
+      companyPermissions: permissions.company,
+      publicPermissions: permissions.public,
     });
 
-    navigate(Paths.spacePath(res.data?.createGroup.id!));
+    navigate(Paths.spacePath(res.group.id!));
   };
 
   const onCancel = () => navigate(Paths.homePath());
@@ -94,7 +94,9 @@ function Form() {
 
       <SpacePermissionSelector />
 
-      <div className="text-content-dimmed text-sm block"><span>You can modify these settings later in Space preferences.</span></div>
+      <div className="text-content-dimmed text-sm block">
+        <span>You can modify these settings later in Space preferences.</span>
+      </div>
 
       <Forms.SubmitArea>
         <Forms.SubmitButton>Create Space</Forms.SubmitButton>

@@ -1,6 +1,3 @@
-export type { Discussion } from "@/gql";
+export type { Discussion } from "@/api";
 
-export { usePost } from "./usePost";
-export { useEdit } from "./useEdit";
-export { getDiscussion } from "./getDiscussion";
-export { getDiscussions } from "./getDiscussions";
+export { getDiscussion, getDiscussions, usePostDiscussion, useEditDiscussion } from "@/api";

@@ -12,6 +12,7 @@ defmodule OperatelyWeb.TurboCase do
       import OperatelyWeb.TurboCase
 
       alias OperatelyWeb.Api.Serializer
+      alias OperatelyWeb.Paths
     end
   end
 

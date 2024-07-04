@@ -64,7 +64,7 @@ defmodule Operately.Features.DiscussionsTest do
 
     ctx
     |> UI.login_as(ctx.reader)
-    |> UI.visit(Paths.discussion_path(ctx.company, ctx.space, discussion))
+    |> UI.visit(Paths.discussion_path(ctx.company, discussion))
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")

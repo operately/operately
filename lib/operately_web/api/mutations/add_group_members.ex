@@ -1,15 +1,16 @@
 defmodule OperatelyWeb.Api.Mutations.AddGroupMembers do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :group_id, :string
+    field :members, list_of(:add_member_input)
   end
 
-  outputs do
-    # TODO: Define output fields
-  end
+  def call(_conn, inputs) do
+    {:ok, id} = decode_id(inputs.group_id)
+    Operately.Operations.GroupMembersAdding.run(id, inputs.members)
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+    {:ok, %{}}
   end
 end

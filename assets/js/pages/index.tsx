@@ -35,15 +35,8 @@ import * as GoalProgressUpdatePage from "./GoalProgressUpdatePage";
 import * as GoalReopenPage from "./GoalReopenPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsPage from "./GoalsPage";
-import * as GroupAddPage from "./GroupAddPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
-import * as GroupDiscussionsPage from "./GroupDiscussionsPage";
-import * as GroupEditPage from "./GroupEditPage";
-import * as GroupGoalsPage from "./GroupGoalsPage";
-import * as GroupListPage from "./GroupListPage";
 import * as GroupMembersPage from "./GroupMembersPage";
-import * as GroupPage from "./GroupPage";
-import * as GroupProjectsPage from "./GroupProjectsPage";
 import * as LobbyPage from "./LobbyPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
@@ -74,6 +67,13 @@ import * as ProjectPausePage from "./ProjectPausePage";
 import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as SpaceAddPage from "./SpaceAddPage";
+import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
+import * as SpaceEditPage from "./SpaceEditPage";
+import * as SpaceGoalsPage from "./SpaceGoalsPage";
+import * as SpaceListPage from "./SpaceListPage";
+import * as SpacePage from "./SpacePage";
+import * as SpaceProjectsPage from "./SpaceProjectsPage";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -209,41 +209,13 @@ export default {
     loader: GoalsPage.loader,
     Page: GoalsPage.Page
   },
-  GroupAddPage: {
-    loader: GroupAddPage.loader,
-    Page: GroupAddPage.Page
-  },
   GroupAppearancePage: {
     loader: GroupAppearancePage.loader,
     Page: GroupAppearancePage.Page
   },
-  GroupDiscussionsPage: {
-    loader: GroupDiscussionsPage.loader,
-    Page: GroupDiscussionsPage.Page
-  },
-  GroupEditPage: {
-    loader: GroupEditPage.loader,
-    Page: GroupEditPage.Page
-  },
-  GroupGoalsPage: {
-    loader: GroupGoalsPage.loader,
-    Page: GroupGoalsPage.Page
-  },
-  GroupListPage: {
-    loader: GroupListPage.loader,
-    Page: GroupListPage.Page
-  },
   GroupMembersPage: {
     loader: GroupMembersPage.loader,
     Page: GroupMembersPage.Page
-  },
-  GroupPage: {
-    loader: GroupPage.loader,
-    Page: GroupPage.Page
-  },
-  GroupProjectsPage: {
-    loader: GroupProjectsPage.loader,
-    Page: GroupProjectsPage.Page
   },
   LobbyPage: {
     loader: LobbyPage.loader,
@@ -364,6 +336,34 @@ export default {
   ProjectsPage: {
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page
+  },
+  SpaceAddPage: {
+    loader: SpaceAddPage.loader,
+    Page: SpaceAddPage.Page
+  },
+  SpaceDiscussionsPage: {
+    loader: SpaceDiscussionsPage.loader,
+    Page: SpaceDiscussionsPage.Page
+  },
+  SpaceEditPage: {
+    loader: SpaceEditPage.loader,
+    Page: SpaceEditPage.Page
+  },
+  SpaceGoalsPage: {
+    loader: SpaceGoalsPage.loader,
+    Page: SpaceGoalsPage.Page
+  },
+  SpaceListPage: {
+    loader: SpaceListPage.loader,
+    Page: SpaceListPage.Page
+  },
+  SpacePage: {
+    loader: SpacePage.loader,
+    Page: SpacePage.Page
+  },
+  SpaceProjectsPage: {
+    loader: SpaceProjectsPage.loader,
+    Page: SpaceProjectsPage.Page
   },
   TaskPage: {
     loader: TaskPage.loader,

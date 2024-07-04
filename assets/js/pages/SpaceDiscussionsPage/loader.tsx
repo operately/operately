@@ -1,19 +1,19 @@
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
-import * as Companies from "@/models/companies";
 import * as Discussions from "@/models/discussions";
 
 interface LoadedData {
-  company: Companies.Company;
   space: Spaces.Space;
   discussions: Discussions.Discussion[];
 }
 
 export async function loader({ params }): Promise<LoadedData> {
+  const spacePromise = Spaces.getSpace({ id: params.id });
+  const discussionsPromise = Discussions.getDiscussions({ spaceId: params.id }).then((data) => data.discussions!);
+
   return {
-    company: await Companies.getCompany(),
-    space: await Spaces.getSpace({ id: params.id }),
-    discussions: await Discussions.getDiscussions({ spaceId: params.id }),
+    space: await spacePromise,
+    discussions: await discussionsPromise,
   };
 }
 

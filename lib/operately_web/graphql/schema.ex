@@ -49,9 +49,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.Assignments
   import_types OperatelyWeb.Graphql.Queries.Comments
   import_types OperatelyWeb.Graphql.Queries.Companies
-  import_types OperatelyWeb.Graphql.Queries.Discussions
   import_types OperatelyWeb.Graphql.Queries.Goals
-  import_types OperatelyWeb.Graphql.Queries.Groups
   import_types OperatelyWeb.Graphql.Queries.Invitations
   import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.Milestones
@@ -65,9 +63,7 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Accounts
   import_types OperatelyWeb.Graphql.Mutations.Comments
   import_types OperatelyWeb.Graphql.Mutations.Companies
-  import_types OperatelyWeb.Graphql.Mutations.Discussions
   import_types OperatelyWeb.Graphql.Mutations.Goals
-  import_types OperatelyWeb.Graphql.Mutations.Groups
   import_types OperatelyWeb.Graphql.Mutations.Milestones
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Mutations.Projects
@@ -82,9 +78,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :assignment_queries
     import_fields :comment_queries
     import_fields :company_queries
-    import_fields :discussion_queries
     import_fields :goal_queries
-    import_fields :group_queries
     import_fields :invitation_queries
     import_fields :key_resource_queries
     import_fields :milestone_queries
@@ -99,9 +93,7 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :account_mutations
     import_fields :comment_mutations
     import_fields :company_mutations
-    import_fields :discussion_mutations
     import_fields :goal_mutations
-    import_fields :group_mutations
     import_fields :milestone_mutations
     import_fields :project_check_in_mutations
     import_fields :project_mutations

@@ -1,15 +1,26 @@
 defmodule OperatelyWeb.Api.Mutations.UpdateGroupAppearance do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :id, :string
+    field :icon, :string
+    field :color, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :space, :space
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(_conn, inputs) do
+    {:ok, id} = decode_id(inputs.id)
+    group = Operately.Groups.get_group!(id)
+
+    {:ok, _} = Operately.Groups.update_group(group, %{
+      icon: inputs.icon,
+      color: inputs.color
+    })
+
+    {:ok, %{space: Serializer.serialize(group)}}
   end
 end

@@ -61,10 +61,10 @@ function MemberList({ space }: { space: Spaces.Space }) {
 
 function MemberListItem({ member }) {
   const [{ space }, refetch] = Paper.useLoadedData() as [LoadedData, () => void];
-  const [remove] = Spaces.useRemoveMemberFromSpace();
+  const [remove] = Spaces.useRemoveGroupMember();
 
   const handleRemove = async () => {
-    await remove({ variables: { groupId: space.id, memberId: member.id } });
+    await remove({ groupId: space.id, memberId: member.id });
 
     refetch();
   };

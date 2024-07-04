@@ -16,15 +16,16 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
     setup :register_and_log_in_account
 
     test "space does not exist", ctx do
-      assert {404, _} = query(ctx.conn, :get_space, %{id: Ecto.UUID.generate()})
+      id = Operately.ShortUuid.encode(Ecto.UUID.generate())
+      assert {404, _} = query(ctx.conn, :get_space, %{id: id})
     end
 
     test "get_space", ctx do
       space = group_fixture(ctx.person, company_id: ctx.company.id)
 
-      assert {200, res} = query(ctx.conn, :get_space, %{id: space.id})
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert res.space == %{
-        id: space.id,
+        id: Paths.space_id(space),
         name: space.name,
         mission: space.mission,
         icon: space.icon,
@@ -39,9 +40,9 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
       creator = person_fixture(company_id: ctx.company.id)
       space = group_fixture(creator, company_id: ctx.company.id)
 
-      assert {200, res} = query(ctx.conn, :get_space, %{id: space.id})
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert res.space == %{
-        id: space.id,
+        id: Paths.space_id(space),
         name: space.name,
         mission: space.mission,
         icon: space.icon,
@@ -62,7 +63,7 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
       members = [m1, m2, m3] |> Enum.map(fn person -> %{id: person.id, permissions: Binding.comment_access()} end)
       Operately.Groups.add_members(space.id, members)
 
-      assert {200, res} = query(ctx.conn, :get_space, %{id: space.id, include_members: true})
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space), include_members: true})
       assert length(res.space.members) == 4 # 3 members + current user
 
       [m1, m2, m3, ctx.person]

@@ -89,7 +89,7 @@ defmodule TurboConnect.TsGen do
       } else {
         newO = {}
         for (origKey in o) {
-          if (o.hasOwnProperty(origKey)) {
+          if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
             newKey = origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
             value = o[origKey]
             if (value instanceof Array || (value !== null && value.constructor === Object)) {
@@ -119,7 +119,7 @@ defmodule TurboConnect.TsGen do
       } else {
         newO = {}
         for (origKey in o) {
-          if (o.hasOwnProperty(origKey)) {
+          if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
             newKey = origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
             value = o[origKey]
             if (value instanceof Array || (value !== null && value.constructor === Object)) {

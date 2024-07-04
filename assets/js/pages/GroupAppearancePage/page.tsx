@@ -50,18 +50,16 @@ export function Page() {
 
 function SubmitButton({ space, color, icon }) {
   const goToSpace = useNavigateTo(Paths.spacePath(space.id));
-  const [update] = Spaces.useUpdateSpaceAppearanceMutation({ onCompleted: goToSpace });
+  const [update] = Spaces.useUpdateGroupAppearance();
 
-  const save = React.useCallback(() => {
-    update({
-      variables: {
-        input: {
-          id: space.id,
-          color,
-          icon,
-        },
-      },
+  const save = React.useCallback(async () => {
+    await update({
+      id: space.id,
+      color,
+      icon,
     });
+
+    goToSpace();
   }, [update, space.id, color, icon]);
 
   return (

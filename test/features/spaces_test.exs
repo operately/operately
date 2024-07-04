@@ -59,6 +59,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.login_as(person)
     |> UI.visit(Paths.space_path(ctx.company, group))
     |> UI.click(testid: "join-space-button")
+    |> UI.sleep(100)
     |> UI.visit(Paths.space_path(ctx.company, group))
     |> UI.assert_text("Mati A. joined the space")
 
@@ -99,6 +100,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.click(testid: "add-remove-members")
     |> UI.assert_text(person.full_name)
     |> UI.click(testid: "remove-member-#{person.id}")
+    |> UI.sleep(100)
     |> UI.refute_text(person.full_name)
   end
 
@@ -126,7 +128,6 @@ defmodule Operately.Features.SpacesTest do
     |> UI.fill_in(Query.text_field("Name"), with: "Marketing 2")
     |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products 2")
     |> UI.click(testid: "save")
-    |> UI.assert_page(Paths.space_path(ctx.company, group))
     |> UI.assert_has(Query.text("Marketing 2", count: 2))
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
   end

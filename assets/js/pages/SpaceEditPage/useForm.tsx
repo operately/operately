@@ -57,10 +57,7 @@ export function useForm(space: Spaces.Space): FormState {
 function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
-  const [create, { loading: submitting }] = Spaces.useEditSpaceMutation({
-    onCompleted: () => navigate(Paths.spacePath(fields.space.id!)),
-  });
-
+  const [create, { loading: submitting }] = Spaces.useEditGroup();
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const submit = async () => {
@@ -71,15 +68,13 @@ function useSubmit(fields: Fields): [() => Promise<boolean>, () => void, boolean
       return false;
     }
 
-    await create({
-      variables: {
-        input: {
-          id: fields.space.id,
-          name: fields.name,
-          mission: fields.purpose,
-        },
-      },
+    const res = await create({
+      id: fields.space.id,
+      name: fields.name,
+      mission: fields.purpose,
     });
+
+    navigate(Paths.spacePath(res.space!.id!));
 
     return true;
   };

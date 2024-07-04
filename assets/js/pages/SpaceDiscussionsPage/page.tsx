@@ -1,4 +1,5 @@
 import React from "react";
+import * as Time from "@/utils/time";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -33,12 +34,15 @@ export function Page() {
 }
 
 function DiscussionList() {
-  const { space, discussions } = useLoadedData();
+  const { discussions } = useLoadedData();
 
   const sortedDiscussions = [...discussions].sort((a, b) => {
-    if (a.insertedAt > b.insertedAt) {
+    const aDate = Time.parseISO(a.insertedAt!);
+    const bDate = Time.parseISO(b.insertedAt!);
+
+    if (aDate > bDate) {
       return -1;
-    } else if (a.insertedAt < b.insertedAt) {
+    } else if (aDate < bDate) {
       return 1;
     } else {
       return 0;
@@ -48,14 +52,14 @@ function DiscussionList() {
   return (
     <div className="mt-4 flex flex-col">
       {sortedDiscussions.map((discussion) => (
-        <DiscussionListItem key={discussion.id} discussion={discussion} space={space} />
+        <DiscussionListItem key={discussion.id} discussion={discussion} />
       ))}
     </div>
   );
 }
 
-function DiscussionListItem({ space, discussion }) {
-  const path = Paths.discussionPath(space.id!, discussion.id);
+function DiscussionListItem({ discussion }) {
+  const path = Paths.discussionPath(discussion.id);
 
   return (
     <DivLink

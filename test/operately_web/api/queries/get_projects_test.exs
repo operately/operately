@@ -68,5 +68,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       assert {200, res} = query(ctx.conn, :get_projects, %{include_last_check_in: true})
       assert res.projects == serialize([project], level: :full)
     end
+
+    test "scope by space_id", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Space 1")
+      project1 = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: space.id)
+      _project2 = project_fixture(company_id: ctx.company.id, name: "Project 2", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: Paths.space_id(space)})
+      assert res.projects == serialize([project1], level: :full)
+    end
   end
 end 

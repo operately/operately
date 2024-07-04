@@ -860,4 +860,26 @@ defmodule OperatelyWeb.Api.Types do
     field :person, :person
   end
 
+  object :create_target_input do
+    field :name, :string
+    field :from, :float
+    field :to, :float
+    field :unit, :string
+    field :index, :integer
+  end
+
+  object :update_target_input do
+    field :id, :string
+    field :name, :string
+    field :from, :float
+    field :to, :float
+    field :unit, :string
+    field :index, :integer
+  end
+
+  object :add_member_input do 
+    field :id, :string
+    field :permissions, :integer
+  end
+
 end

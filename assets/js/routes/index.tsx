@@ -31,7 +31,7 @@ export function createAppRoutes() {
       element: <ProtectedRoutes />,
       errorElement: <ErrorPage />,
       children: [
-        pageRoute("", pages.GroupListPage),
+        pageRoute("", pages.SpaceListPage),
         pageRoute("feed", pages.FeedPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
@@ -51,22 +51,22 @@ export function createAppRoutes() {
         pageRoute("people", pages.PeoplePage),
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
 
-        pageRoute("spaces/new", pages.GroupAddPage),
-        pageRoute("spaces/:id", pages.GroupPage),
-        pageRoute("spaces/:id/edit", pages.GroupEditPage),
+        pageRoute("spaces/new", pages.SpaceAddPage),
+        pageRoute("spaces/:id", pages.SpacePage),
+        pageRoute("spaces/:id/edit", pages.SpaceEditPage),
         pageRoute("spaces/:id/members", pages.GroupMembersPage),
         pageRoute("spaces/:id/appearance", pages.GroupAppearancePage),
         pageRoute("spaces/:id/projects/new", pages.ProjectAddPage),
-        pageRoute("spaces/:id/projects", pages.GroupProjectsPage),
+        pageRoute("spaces/:id/projects", pages.SpaceProjectsPage),
+        pageRoute("spaces/:id/discussions", pages.SpaceDiscussionsPage),
+        pageRoute("spaces/:id/discussions/new", pages.DiscussionNewPage),
         pageRoute("spaces/:id/goals/new", pages.GoalAddPage),
-        pageRoute("spaces/:id/goals", pages.GroupGoalsPage),
+        pageRoute("spaces/:id/goals", pages.SpaceGoalsPage),
 
         pageRoute("tasks/:id", pages.TaskPage),
 
-        pageRoute("spaces/:id/discussions", pages.GroupDiscussionsPage),
-        pageRoute("spaces/:spaceId/discussions/new", pages.DiscussionNewPage),
-        pageRoute("spaces/:spaceId/discussions/:id", pages.DiscussionPage),
-        pageRoute("spaces/:spaceId/discussions/:id/edit", pages.DiscussionEditPage),
+        pageRoute("discussions/:id", pages.DiscussionPage),
+        pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
 
         pageRoute("goals", pages.GoalsPage),
         pageRoute("goals/new", pages.GoalAddPage),

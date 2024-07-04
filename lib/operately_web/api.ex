@@ -33,6 +33,7 @@ defmodule OperatelyWeb.Api do
   query :get_unread_notification_count, OperatelyWeb.Api.Queries.GetUnreadNotificationCount
   query :search_people, OperatelyWeb.Api.Queries.SearchPeople
   query :search_project_contributor_candidates, OperatelyWeb.Api.Queries.SearchProjectContributorCandidates
+  query :search_potential_space_members, OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers
 
   mutation :acknowledge_goal_check_in, OperatelyWeb.Api.Mutations.AcknowledgeGoalCheckIn
   mutation :acknowledge_project_check_in, OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn
@@ -55,6 +56,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_blob, OperatelyWeb.Api.Mutations.CreateBlob
   mutation :create_comment, OperatelyWeb.Api.Mutations.CreateComment
   mutation :create_goal, OperatelyWeb.Api.Mutations.CreateGoal
+  mutation :edit_goal, OperatelyWeb.Api.Mutations.EditGoal
   mutation :create_goal_discussion, OperatelyWeb.Api.Mutations.CreateGoalDiscussion
   mutation :create_goal_update, OperatelyWeb.Api.Mutations.CreateGoalUpdate
   mutation :create_group, OperatelyWeb.Api.Mutations.CreateGroup

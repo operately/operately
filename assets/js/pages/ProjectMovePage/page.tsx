@@ -9,12 +9,12 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 import { SpaceCardGrid, SpaceCard } from "@/components/SpaceCards";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 
 export function Page() {
   const { project, spaces } = useLoadedData();
 
-  const candidateSpaces = spaces.filter((space) => space.id !== project.spaceId);
+  const candidateSpaces = spaces.filter((space) => !compareIds(space.id!, project.space?.id!));
 
   return (
     <Pages.Page title={["Move to another space", project.name!]}>
@@ -45,20 +45,11 @@ function NoOtherSpaces() {
 
 function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; candidateSpaces: Spaces.Space[] }) {
   const gotoProject = useNavigateTo(Paths.projectPath(project.id!));
-
-  const [move] = Projects.useMoveProjectToSpaceMutation({
-    onCompleted: gotoProject,
-  });
+  const [move] = Projects.useMoveProjectToSpace();
 
   const moveProjectToSpace = async (project: Projects.Project, space: Spaces.Space) => {
-    await move({
-      variables: {
-        input: {
-          projectId: project.id,
-          spaceId: space.id!,
-        },
-      },
-    });
+    await move({ projectId: project.id, spaceId: space.id! });
+    gotoProject();
   };
 
   return (

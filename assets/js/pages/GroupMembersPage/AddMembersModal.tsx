@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 
+import * as People from "@/models/people";
+import * as Spaces from "@/models/spaces";
+import * as Icons from "@tabler/icons-react";
+
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
 import { FilledButton, GhostButton } from "@/components/Button";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
-import * as Spaces from "@/models/spaces";
-import client from "@/graphql/client";
-import * as Icons from "@tabler/icons-react";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { SelectBoxNoLabel } from "@/components/Form";
 
-
 interface MemberOption extends Omit<Option, "person"> {
-  person: Person & { permissions: PermissionLevels }
+  person: Person & { permissions: PermissionLevels };
 }
 
 interface ContextDescriptor {
@@ -35,36 +35,31 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
   };
 
   const search = async (value: string) => {
-    let result = await Spaces.listPotentialSpaceMembers(client, {
-      variables: {
-        groupId: spaceId,
-        query: value,
-        excludeIds: selected.map((p) => p.value),
-        limit: 10,
-      },
-    });
-    
-    const people = result.data.potentialGroupMembers.map(person => {
-      return {...person, permissions: PermissionLevels.COMMENT_ACCESS};
+    let result = await Spaces.searchPotentialSpaceMembers({
+      groupId: spaceId,
+      query: value,
+      excludeIds: selected.map((p) => p.value),
+      limit: 10,
     });
 
-    people.sort((a, b) => a.fullName.localeCompare(b.fullName));
+    const people = result.people!.map((person: People.Person) => {
+      return { ...person, permissions: PermissionLevels.COMMENT_ACCESS };
+    });
+
+    people.sort((a, b) => a.fullName!.localeCompare(b.fullName!));
 
     return people;
   };
 
+  const [addMembers] = Spaces.useAddGroupMembers();
+
   const submit = async () => {
-    await client.mutate({
-      mutation: Spaces.ADD_MEMBERS,
-      variables: {
-        groupId: spaceId,
-        members: selected.map((s) => (
-          {
-            id: s.person.id,
-            permissions: s.person.permissions
-          }
-        )),
-      },
+    await addMembers({
+      groupId: spaceId,
+      members: selected.map((s) => ({
+        id: s.person.id,
+        permissions: s.person.permissions,
+      })),
     });
 
     setIsModalOpen(false);
@@ -122,19 +117,17 @@ function PeopleList() {
 function PeopleListItem({ selected }: { selected: MemberOption }): JSX.Element {
   const { person } = selected;
   const { remove } = React.useContext(Context) as ContextDescriptor;
-  const [permissions, setPermissions] = useState(PERMISSIONS_LIST.find(obj => obj.value === person.permissions));
+  const [permissions, setPermissions] = useState(PERMISSIONS_LIST.find((obj) => obj.value === person.permissions));
 
   return (
     <div className="grid grid-cols-[60%_32%_1fr] gap-2 w-full">
       <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
         <Avatar person={person} size="tiny" />
-        <p>{person.fullName} &middot; {person.title}</p>
+        <p>
+          {person.fullName} &middot; {person.title}
+        </p>
       </div>
-      <SelectBoxNoLabel
-        onChange={setPermissions}
-        options={PERMISSIONS_LIST}
-        value={permissions}
-      /> 
+      <SelectBoxNoLabel onChange={setPermissions} options={PERMISSIONS_LIST} value={permissions} />
       <RemoveIcon onClick={() => remove(selected.value)} />
     </div>
   );
@@ -165,7 +158,10 @@ function SearchField({ onSelect, loader, placeholder, alreadySelected }) {
 
 function RemoveIcon({ onClick }) {
   return (
-    <div className="flex items-center justify-center text-content-dimmed hover:cursor-pointer hover:text-content-accent" onClick={onClick}>
+    <div
+      className="flex items-center justify-center text-content-dimmed hover:cursor-pointer hover:text-content-accent"
+      onClick={onClick}
+    >
       <Icons.IconX size={20} />
     </div>
   );

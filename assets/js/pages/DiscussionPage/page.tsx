@@ -27,17 +27,17 @@ export function Page() {
   const commentsForm = useForDiscussion(discussion);
 
   return (
-    <Pages.Page title={discussion.title}>
+    <Pages.Page title={discussion.title!}>
       <Paper.Root size="large">
         <Navigation space={discussion.space} />
 
         <Paper.Body>
           <div className="px-16">
-            {me.id === discussion.author.id && <Options />}
+            {me.id === discussion.author!.id && <Options />}
             <Title discussion={discussion} />
 
             <Spacer size={4} />
-            <RichContent jsonContent={discussion.body} className="text-lg" />
+            <RichContent jsonContent={discussion.body!} className="text-lg" />
 
             <Spacer size={2} />
             <Reactions />
@@ -55,7 +55,7 @@ export function Page() {
 function Reactions() {
   const { discussion } = useLoadedData();
   const reactions = discussion.reactions!.map((r) => r!);
-  const entity = { id: discussion.id, type: "update" };
+  const entity = { id: discussion.id!, type: "update" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;
@@ -97,7 +97,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit Post"
-        to={Paths.discussionEditPath(discussion.space.id, discussion.id)}
+        to={Paths.discussionEditPath(discussion.id!)}
         dataTestId="edit-discussion"
       />
     </PageOptions.Root>

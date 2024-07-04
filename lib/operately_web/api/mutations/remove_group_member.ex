@@ -1,15 +1,17 @@
 defmodule OperatelyWeb.Api.Mutations.RemoveGroupMember do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :group_id, :string
+    field :member_id, :string
   end
 
-  outputs do
-    # TODO: Define output fields
-  end
+  def call(_, inputs) do
+    {:ok, id} = decode_id(inputs.group_id)
+    {:ok, _} = Operately.Operations.GroupMemberRemoving.run(id, inputs.member_id)
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+
+    {:ok, %{}}
   end
 end

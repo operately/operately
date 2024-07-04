@@ -14,7 +14,7 @@ function toCamel(o : any) {
   } else {
     newO = {}
     for (origKey in o) {
-      if (o.hasOwnProperty(origKey)) {
+      if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
         newKey = origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
         value = o[origKey]
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
@@ -40,7 +40,7 @@ function toSnake(o : any) {
   } else {
     newO = {}
     for (origKey in o) {
-      if (o.hasOwnProperty(origKey)) {
+      if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
         newKey = origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
         value = o[origKey]
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
@@ -450,6 +450,11 @@ export interface ActivityEventDataProjectCreate {
   champion?: Person | null;
 }
 
+export interface AddMemberInput {
+  id?: string | null;
+  permissions?: number | null;
+}
+
 export interface Assignment {
   type?: string | null;
   due?: string | null;
@@ -489,6 +494,14 @@ export interface Company {
   admins?: Person[] | null;
   people?: Person[] | null;
   memberCount?: number | null;
+}
+
+export interface CreateTargetInput {
+  name?: string | null;
+  from?: number | null;
+  to?: number | null;
+  unit?: string | null;
+  index?: number | null;
 }
 
 export interface Discussion {
@@ -867,6 +880,15 @@ export interface UpdateContentStatusUpdate {
   health?: ProjectHealth | null;
 }
 
+export interface UpdateTargetInput {
+  id?: string | null;
+  name?: string | null;
+  from?: number | null;
+  to?: number | null;
+  unit?: string | null;
+  index?: number | null;
+}
+
 export type ActivityContent = ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalDiscussionCreation | ActivityContentGoalDiscussionEditing | ActivityContentGoalEditing | ActivityContentGoalReopening | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion = ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
@@ -927,20 +949,20 @@ export interface GetCompanyResult {
 
 
 export interface GetDiscussionInput {
-
+  id?: string | null;
 }
 
 export interface GetDiscussionResult {
-
+  discussion?: Discussion | null;
 }
 
 
 export interface GetDiscussionsInput {
-
+  spaceId?: string | null;
 }
 
 export interface GetDiscussionsResult {
-
+  discussions?: Discussion[] | null;
 }
 
 
@@ -1166,6 +1188,18 @@ export interface SearchPeopleResult {
 }
 
 
+export interface SearchPotentialSpaceMembersInput {
+  groupId?: string | null;
+  query?: string | null;
+  excludeIds?: string[] | null;
+  limit?: number | null;
+}
+
+export interface SearchPotentialSpaceMembersResult {
+  people?: Person[] | null;
+}
+
+
 export interface SearchProjectContributorCandidatesInput {
 
 }
@@ -1229,7 +1263,8 @@ export interface AddFirstCompanyResult {
 
 
 export interface AddGroupMembersInput {
-
+  groupId?: string | null;
+  members?: AddMemberInput[] | null;
 }
 
 export interface AddGroupMembersResult {
@@ -1360,11 +1395,18 @@ export interface CreateCommentResult {
 
 
 export interface CreateGoalInput {
-
+  spaceId?: string | null;
+  name?: string | null;
+  championId?: string | null;
+  reviewerId?: string | null;
+  timeframe?: Timeframe | null;
+  targets?: CreateTargetInput[] | null;
+  description?: string | null;
+  parentGoalId?: string | null;
 }
 
 export interface CreateGoalResult {
-
+  goal?: Goal | null;
 }
 
 
@@ -1389,20 +1431,32 @@ export interface CreateGoalUpdateResult {
 
 
 export interface CreateGroupInput {
-
+  name?: string | null;
+  mission?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  companyPermissions?: number | null;
+  publicPermissions?: number | null;
 }
 
 export interface CreateGroupResult {
-
+  space?: Space | null;
 }
 
 
 export interface CreateProjectInput {
-
+  spaceId?: string | null;
+  name?: string | null;
+  championId?: string | null;
+  reviewerId?: string | null;
+  visibility?: string | null;
+  creatorIsContributor?: string | null;
+  creatorRole?: string | null;
+  goalId?: string | null;
 }
 
 export interface CreateProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1434,11 +1488,29 @@ export interface EditCommentResult {
 
 
 export interface EditDiscussionInput {
-
+  discussionId?: string | null;
+  title?: string | null;
+  body?: string | null;
 }
 
 export interface EditDiscussionResult {
+  discussion?: Discussion | null;
+}
 
+
+export interface EditGoalInput {
+  goalId?: string | null;
+  name?: string | null;
+  championId?: string | null;
+  reviewerId?: string | null;
+  timeframe?: Timeframe | null;
+  addedTargets?: CreateTargetInput[] | null;
+  updatedTargets?: UpdateTargetInput[] | null;
+  description?: string | null;
+}
+
+export interface EditGoalResult {
+  goal?: Goal | null;
 }
 
 
@@ -1470,11 +1542,13 @@ export interface EditGoalUpdateResult {
 
 
 export interface EditGroupInput {
-
+  id?: string | null;
+  name?: string | null;
+  mission?: string | null;
 }
 
 export interface EditGroupResult {
-
+  space?: Space | null;
 }
 
 
@@ -1497,7 +1571,7 @@ export interface EditProjectTimelineResult {
 
 
 export interface JoinSpaceInput {
-
+  spaceId?: string | null;
 }
 
 export interface JoinSpaceResult {
@@ -1524,7 +1598,8 @@ export interface MarkNotificationAsReadResult {
 
 
 export interface MoveProjectToSpaceInput {
-
+  projectId?: string | null;
+  spaceId?: string | null;
 }
 
 export interface MoveProjectToSpaceResult {
@@ -1551,11 +1626,13 @@ export interface PauseProjectResult {
 
 
 export interface PostDiscussionInput {
-
+  spaceId?: string | null;
+  title?: string | null;
+  body?: string | null;
 }
 
 export interface PostDiscussionResult {
-
+  discussion?: Discussion | null;
 }
 
 
@@ -1605,7 +1682,8 @@ export interface RemoveCompanyTrustedEmailDomainResult {
 
 
 export interface RemoveGroupMemberInput {
-
+  groupId?: string | null;
+  memberId?: string | null;
 }
 
 export interface RemoveGroupMemberResult {
@@ -1668,11 +1746,13 @@ export interface SetMilestoneDeadlineResult {
 
 
 export interface UpdateGroupAppearanceInput {
-
+  id?: string | null;
+  icon?: string | null;
+  color?: string | null;
 }
 
 export interface UpdateGroupAppearanceResult {
-
+  space?: Space | null;
 }
 
 
@@ -1871,6 +1951,10 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/search_people", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput): Promise<SearchPotentialSpaceMembersResult> {
+    return axios.get(this.getBasePath() + "/search_potential_space_members", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput): Promise<SearchProjectContributorCandidatesResult> {
     return axios.get(this.getBasePath() + "/search_project_contributor_candidates", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -1989,6 +2073,10 @@ export class ApiClient {
 
   async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
     return axios.post(this.getBasePath() + "/edit_discussion", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
+  async editGoal(input: EditGoalInput): Promise<EditGoalResult> {
+    return axios.post(this.getBasePath() + "/edit_goal", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
@@ -2208,6 +2296,9 @@ export async function getUnreadNotificationCount(input: GetUnreadNotificationCou
 export async function searchPeople(input: SearchPeopleInput) : Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
+export async function searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput) : Promise<SearchPotentialSpaceMembersResult> {
+  return defaultApiClient.searchPotentialSpaceMembers(input);
+}
 export async function searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput) : Promise<SearchProjectContributorCandidatesResult> {
   return defaultApiClient.searchProjectContributorCandidates(input);
 }
@@ -2297,6 +2388,9 @@ export async function editComment(input: EditCommentInput) : Promise<EditComment
 }
 export async function editDiscussion(input: EditDiscussionInput) : Promise<EditDiscussionResult> {
   return defaultApiClient.editDiscussion(input);
+}
+export async function editGoal(input: EditGoalInput) : Promise<EditGoalResult> {
+  return defaultApiClient.editGoal(input);
 }
 export async function editGoalDiscussion(input: EditGoalDiscussionInput) : Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
@@ -2506,6 +2600,10 @@ export function useSearchPeople(input: SearchPeopleInput) : UseQueryHookResult<S
   return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input));
 }
 
+export function useSearchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput) : UseQueryHookResult<SearchPotentialSpaceMembersResult> {
+  return useQuery<SearchPotentialSpaceMembersResult>(() => defaultApiClient.searchPotentialSpaceMembers(input));
+}
+
 export function useSearchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput) : UseQueryHookResult<SearchProjectContributorCandidatesResult> {
   return useQuery<SearchProjectContributorCandidatesResult>(() => defaultApiClient.searchProjectContributorCandidates(input));
 }
@@ -2624,6 +2722,10 @@ export function useEditComment() : UseMutationHookResult<EditCommentInput, EditC
 
 export function useEditDiscussion() : UseMutationHookResult<EditDiscussionInput, EditDiscussionResult> {
   return useMutation<EditDiscussionInput, EditDiscussionResult>((input) => defaultApiClient.editDiscussion(input));
+}
+
+export function useEditGoal() : UseMutationHookResult<EditGoalInput, EditGoalResult> {
+  return useMutation<EditGoalInput, EditGoalResult>((input) => defaultApiClient.editGoal(input));
 }
 
 export function useEditGoalDiscussion() : UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
@@ -2815,6 +2917,8 @@ export default {
   useGetUnreadNotificationCount,
   searchPeople,
   useSearchPeople,
+  searchPotentialSpaceMembers,
+  useSearchPotentialSpaceMembers,
   searchProjectContributorCandidates,
   useSearchProjectContributorCandidates,
   acknowledgeGoalCheckIn,
@@ -2875,6 +2979,8 @@ export default {
   useEditComment,
   editDiscussion,
   useEditDiscussion,
+  editGoal,
+  useEditGoal,
   editGoalDiscussion,
   useEditGoalDiscussion,
   editGoalTimeframe,

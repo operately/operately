@@ -223,7 +223,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "move-project-link")
-    |> UI.click(testid: "space-#{ctx.new_space.id}")
+    |> UI.click(testid: "space-#{Paths.space_id(ctx.new_space)}")
   end
 
   step :assert_project_moved_notification_sent, ctx do
